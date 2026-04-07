@@ -95,6 +95,12 @@
               "providerType": "String",
               "readOnly": true
             },
+            "campaignId": {
+              "displayName": "campaignId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
+            },
             "createdAt": {
               "displayName": "createdAt",
               "valueType": "datetime",
@@ -107,6 +113,12 @@
               "providerType": "Integer",
               "readOnly": true
             },
+            "destinationUrl": {
+              "displayName": "destinationUrl",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
             "id": {
               "displayName": "id",
               "valueType": "int",
@@ -118,6 +130,12 @@
               "valueType": "boolean",
               "providerType": "Boolean",
               "readOnly": true
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
             },
             "salesforceId": {
               "displayName": "salesforceId",
@@ -373,6 +391,12 @@
           "path": "email-templates",
           "responseKey": "values",
           "fields": {
+            "campaignId": {
+              "displayName": "campaignId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
+            },
             "createdAt": {
               "displayName": "createdAt",
               "valueType": "datetime",
@@ -385,17 +409,65 @@
               "providerType": "Integer",
               "readOnly": true
             },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
+            },
+            "htmlMessage": {
+              "displayName": "htmlMessage",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
             "id": {
               "displayName": "id",
               "valueType": "int",
               "providerType": "Integer",
               "readOnly": true
             },
+            "isAutoResponderEmail": {
+              "displayName": "isAutoResponderEmail",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": false
+            },
             "isDeleted": {
               "displayName": "isDeleted",
               "valueType": "boolean",
               "providerType": "Boolean",
               "readOnly": true
+            },
+            "isDripEmail": {
+              "displayName": "isDripEmail",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": false
+            },
+            "isListEmail": {
+              "displayName": "isListEmail",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": false
+            },
+            "isOneToOneEmail": {
+              "displayName": "isOneToOneEmail",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": false
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
             },
             "tagReplacementLanguage": {
               "displayName": "tagReplacementLanguage",
@@ -414,6 +486,38 @@
                 {
                   "value": "undetermined",
                   "displayValue": "undetermined"
+                }
+              ]
+            },
+            "textMessage": {
+              "displayName": "textMessage",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "trackerDomainId": {
+              "displayName": "trackerDomainId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "Enum",
+              "readOnly": false,
+              "values": [
+                {
+                  "value": "html",
+                  "displayValue": "html"
+                },
+                {
+                  "value": "text",
+                  "displayValue": "text"
+                },
+                {
+                  "value": "htmlAndText",
+                  "displayValue": "htmlAndText"
                 }
               ]
             },
@@ -437,6 +541,12 @@
           "path": "emails",
           "responseKey": "values",
           "fields": {
+            "campaignId": {
+              "displayName": "campaignId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
+            },
             "clientType": {
               "displayName": "clientType",
               "valueType": "string",
@@ -466,6 +576,18 @@
               "valueType": "int",
               "providerType": "Integer",
               "readOnly": true
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "prospectId": {
+              "displayName": "prospectId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
             },
             "salesforceCmsId": {
               "displayName": "salesforceCmsId",
@@ -537,6 +659,12 @@
               "providerType": "Boolean",
               "readOnly": true
             },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
             "recipientListIds": {
               "displayName": "recipientListIds",
               "valueType": "other",
@@ -603,6 +731,141 @@
             }
           },
           "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/engagement-studio-program-v5.html"
+        },
+        "exports": {
+          "displayName": "Exports",
+          "path": "exports",
+          "responseKey": "values",
+          "fields": {
+            "arguments": {
+              "displayName": "arguments",
+              "valueType": "other",
+              "providerType": "Object"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdBy": {
+              "displayName": "createdBy",
+              "valueType": "other",
+              "providerType": "User",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "fields": {
+              "displayName": "fields",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "includeByteOrderMark": {
+              "displayName": "includeByteOrderMark",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "isExpired": {
+              "displayName": "isExpired",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "legacyDateFormat": {
+              "displayName": "legacyDateFormat",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "maxFileSizeBytes": {
+              "displayName": "maxFileSizeBytes",
+              "valueType": "int",
+              "providerType": "Integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "procedure": {
+              "displayName": "procedure",
+              "valueType": "other",
+              "providerType": "Object"
+            },
+            "resultRefs": {
+              "displayName": "resultRefs",
+              "valueType": "other",
+              "providerType": "Array",
+              "readOnly": true
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedBy": {
+              "displayName": "updatedBy",
+              "valueType": "other",
+              "providerType": "User",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/export-v5.html"
+        },
+        "external-activities": {
+          "displayName": "External Activities",
+          "path": "https://pi.pardot.com/api/v5/external-activities",
+          "responseKey": "values",
+          "fields": {
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "extension": {
+              "displayName": "extension",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "value": {
+              "displayName": "value",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/external-activities-v5.html"
         },
         "files": {
           "displayName": "Files",
@@ -969,6 +1232,12 @@
           "path": "forms",
           "responseKey": "values",
           "fields": {
+            "campaignId": {
+              "displayName": "campaignId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
+            },
             "createdAt": {
               "displayName": "createdAt",
               "valueType": "datetime",
@@ -1005,6 +1274,18 @@
               "providerType": "Boolean",
               "readOnly": true
             },
+            "layoutTemplateId": {
+              "displayName": "layoutTemplateId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
             "salesforceCmsId": {
               "displayName": "salesforceCmsId",
               "valueType": "string",
@@ -1032,6 +1313,145 @@
           },
           "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/form-v5.html"
         },
+        "imports": {
+          "displayName": "Imports",
+          "path": "imports",
+          "responseKey": "values",
+          "fields": {
+            "batchesRef": {
+              "displayName": "batchesRef",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "createOnNoMatch": {
+              "displayName": "createOnNoMatch",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "createdBy": {
+              "displayName": "createdBy",
+              "valueType": "other",
+              "providerType": "User",
+              "readOnly": true
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "createdCount": {
+              "displayName": "createdCount",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "errorCount": {
+              "displayName": "errorCount",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "errorRef": {
+              "displayName": "errorRef",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": true
+            },
+            "fields": {
+              "displayName": "fields",
+              "valueType": "other",
+              "providerType": "Fields{}"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "isExpired": {
+              "displayName": "isExpired",
+              "valueType": "boolean",
+              "providerType": "Boolean",
+              "readOnly": true
+            },
+            "object": {
+              "displayName": "object",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "operation": {
+              "displayName": "operation",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "restoreDeleted": {
+              "displayName": "restoreDeleted",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "String",
+              "values": [
+                {
+                  "value": "Open"
+                },
+                {
+                  "value": "Waiting"
+                },
+                {
+                  "value": "Processing"
+                },
+                {
+                  "value": "Complete"
+                },
+                {
+                  "value": "Failed"
+                },
+                {
+                  "value": "Canceling"
+                },
+                {
+                  "value": "Canceled"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime",
+              "readOnly": true
+            },
+            "updatedBy": {
+              "displayName": "updatedBy",
+              "valueType": "other",
+              "providerType": "User",
+              "readOnly": true
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            },
+            "updatedCount": {
+              "displayName": "updatedCount",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": true
+            }
+          },
+          "docs": "https://developer.salesforce.com/docs/marketing/pardot/guide/import-v5.html"
+        },
         "landing-pages": {
           "displayName": "Landing Pages",
           "path": "landing-pages",
@@ -1048,6 +1468,12 @@
               "valueType": "string",
               "providerType": "String",
               "readOnly": true
+            },
+            "campaignId": {
+              "displayName": "campaignId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
             },
             "createdAt": {
               "displayName": "createdAt",
@@ -1121,6 +1547,12 @@
                 }
               ]
             },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
             "salesforceCmsId": {
               "displayName": "salesforceCmsId",
               "valueType": "string",
@@ -1188,6 +1620,18 @@
               "valueType": "boolean",
               "providerType": "Boolean",
               "readOnly": true
+            },
+            "layoutContent": {
+              "displayName": "layoutContent",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
             },
             "siteSearchContent": {
               "displayName": "siteSearchContent",
@@ -1325,6 +1769,12 @@
           "path": "list-emails",
           "responseKey": "values",
           "fields": {
+            "campaignId": {
+              "displayName": "campaignId",
+              "valueType": "int",
+              "providerType": "Integer",
+              "readOnly": false
+            },
             "clientType": {
               "displayName": "clientType",
               "valueType": "string",
@@ -1367,11 +1817,23 @@
               "providerType": "Boolean",
               "readOnly": true
             },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
             "operationalEmail": {
               "displayName": "operationalEmail",
               "valueType": "boolean",
               "providerType": "Boolean",
               "readOnly": true
+            },
+            "recipientListIds": {
+              "displayName": "recipientListIds",
+              "valueType": "other",
+              "providerType": "Array",
+              "readOnly": false
             },
             "sentAt": {
               "displayName": "sentAt",
@@ -1492,6 +1954,12 @@
               "valueType": "boolean",
               "providerType": "Boolean",
               "readOnly": true
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
             },
             "updatedAt": {
               "displayName": "updatedAt",
@@ -1877,6 +2345,12 @@
               "providerType": "Boolean",
               "readOnly": true
             },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
+            },
             "emailBouncedAt": {
               "displayName": "emailBouncedAt",
               "valueType": "datetime",
@@ -2170,6 +2644,12 @@
               "valueType": "int",
               "providerType": "Integer",
               "readOnly": true
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String",
+              "readOnly": false
             },
             "objectCount": {
               "displayName": "objectCount",

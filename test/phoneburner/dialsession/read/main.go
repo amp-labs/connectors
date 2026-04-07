@@ -27,4 +27,3 @@ func main() {
 		Fields:     connectors.Fields("dialsession_id", "start_when", "call_count"),
 	})
 }
-

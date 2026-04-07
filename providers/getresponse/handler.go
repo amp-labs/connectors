@@ -13,7 +13,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/getresponse/metadata"
 	"github.com/spyzhov/ajson"
@@ -74,15 +73,17 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	// Only add provider-side since/until filters if the object supports them
 	if shouldAddProviderSideFilter(params.ObjectName, params) {
 		if !params.Since.IsZero() {
-			url.WithQueryParam(sinceKey, datautils.Time.FormatRFC3339inUTC(params.Since))
+			url.WithQueryParam(sinceKey, params.Since.UTC().Format("2006-01-02T15:04:05+0000"))
 		}
 
 		if !params.Until.IsZero() {
-			url.WithQueryParam(untilKey, datautils.Time.FormatRFC3339inUTC(params.Until))
+			url.WithQueryParam(untilKey, params.Until.UTC().Format("2006-01-02T15:04:05+0000"))
 		}
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	requestURL := url.String()
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, requestURL, nil)
 }
 
 // addGetResponseFilters parses GetResponse filter string and adds query/sort parameters.

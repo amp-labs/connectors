@@ -1,7 +1,6 @@
 package zoho
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -41,7 +40,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrCaller,
-				errors.New(string(unsupportedResponse)), //nolint:err113
+				testutils.StringError(string(unsupportedResponse)),
 			},
 		},
 		{
@@ -66,31 +65,55 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Then:  mockserver.Response(http.StatusOK, contactsResponse),
 			}.Server(),
 			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"assistant": nil,
-						"created_by": map[string]any{
-							"email": "josephkarage@gmail.com",
-							"id":    "6493490000000486001",
-							"name":  "Joseph Karage",
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"assistant": nil,
+							"created_by": map[string]any{
+								"email": "josephkarage@gmail.com",
+								"id":    "6493490000000486001",
+								"name":  "Joseph Karage",
+							},
+							"created_time": "2024-12-20T10:09:52+03:00",
+							"full_name":    "Ryan Dahl2",
+							"id":           "6493490000001291001",
 						},
-						"created_time": "2024-12-20T10:09:52+03:00",
-						"full_name":    "Ryan Dahl2",
-						"id":           "6493490000001291001",
-					},
-					Raw: map[string]any{
-						"Assistant": nil,
-						"Created_By": map[string]any{
-							"email": "josephkarage@gmail.com",
-							"id":    "6493490000000486001",
-							"name":  "Joseph Karage",
+						Raw: map[string]any{
+							"Assistant": nil,
+							"Created_By": map[string]any{
+								"email": "josephkarage@gmail.com",
+								"id":    "6493490000000486001",
+								"name":  "Joseph Karage",
+							},
+							"Created_Time": "2024-12-20T10:09:52+03:00",
+							"Full_Name":    "Ryan Dahl2",
+							"id":           "6493490000001291001",
 						},
-						"Created_Time": "2024-12-20T10:09:52+03:00",
-						"Full_Name":    "Ryan Dahl2",
-						"id":           "6493490000001291001",
+						Id: "6493490000001291001",
 					},
-				}},
+					{
+						Fields: map[string]any{
+							"created_by": map[string]any{
+								"email": "josephkarage@gmail.com",
+								"id":    "6493490000000486001",
+								"name":  "Joseph Karage",
+							},
+							"full_name": "Jane Smith",
+							"id":        "6493490000001291002",
+						},
+						Raw: map[string]any{
+							"Created_By": map[string]any{
+								"email": "josephkarage@gmail.com",
+								"id":    "6493490000000486001",
+								"name":  "Joseph Karage",
+							},
+							"Full_Name": "Jane Smith",
+							"id":        "6493490000001291002",
+						},
+						Id: "6493490000001291002",
+					},
+				},
 				NextPage: "",
 				Done:     true,
 			},

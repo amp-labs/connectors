@@ -1,7 +1,6 @@
 package apollo
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -66,7 +65,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Errors: map[string]error{
 					"arsenal": mockutils.ExpectedSubsetErrors{
 						common.ErrCaller,
-						errors.New(string(unsupportedResponse)),
+						testutils.StringError(string(unsupportedResponse)),
 					},
 				},
 			},

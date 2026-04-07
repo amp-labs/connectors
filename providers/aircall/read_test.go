@@ -1,7 +1,6 @@
 package aircall
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -284,7 +283,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrAccessToken,
-				errors.New("Unauthorized"), //nolint:goerr113
+				testutils.StringError("Unauthorized"),
 			},
 		},
 		{
@@ -313,7 +312,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrCaller,
-				errors.New("Invalid parameter"), //nolint:goerr113
+				testutils.StringError("Invalid parameter"),
 			},
 		},
 		{
@@ -328,7 +327,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrServer,
-				errors.New("Internal Server Error"), //nolint:goerr113
+				testutils.StringError("Internal Server Error"),
 			},
 		},
 		{

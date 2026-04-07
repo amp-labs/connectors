@@ -7,6 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/spyzhov/ajson"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -331,5 +334,323 @@ func testComplexNestedJSON(mockNextPageFunc func(*ajson.Node) (string, error)) f
 		assert.NoError(t, err)
 		assert.Len(t, result, 2)
 		assert.Equal(t, "next-page", nextPage)
+	}
+}
+
+func TestMakeTimeFilterFuncWithZoom(t *testing.T) {
+	testFuncNextPage := func(node *ajson.Node) (string, error) {
+		return jsonquery.New(node).StrWithDefault("next", "")
+	}
+
+	testFuncRecords := func(node *ajson.Node) ([]*ajson.Node, error) {
+		return jsonquery.New(node).ArrayRequired("data")
+	}
+
+	type record struct {
+		id      string
+		updated string
+	}
+
+	createPayload := func(withNext bool, records ...record) map[string]any {
+		next := ""
+		if withNext {
+			next = "/next/page/token"
+		}
+
+		data := make([]map[string]any, len(records))
+		for index, item := range records {
+			data[index] = map[string]any{
+				"id":      item.id,
+				"updated": item.updated,
+			}
+		}
+
+		return map[string]any{
+			"data": data,
+			"next": next,
+		}
+	}
+
+	createReadParams := func(since string, until string) common.ReadParams {
+		var params common.ReadParams
+
+		if since != "" {
+			params.Since, _ = time.Parse(time.Kitchen, since)
+		}
+
+		if until != "" {
+			params.Until, _ = time.Parse(time.Kitchen, until)
+		}
+
+		return params
+	}
+
+	tests := []struct {
+		name              string
+		order             TimeOrder
+		payload           map[string]any
+		since             string
+		until             string
+		expectedErr       error
+		expectedNextPage  bool
+		expectedRecordIDs []string
+	}{
+		{
+			name:              "Empty list with chronological order",
+			order:             ChronologicalOrder,
+			payload:           createPayload(true), // provider returns next page token
+			since:             "1:00PM",
+			expectedErr:       nil,
+			expectedNextPage:  false, // ignore next page token, current page is empty
+			expectedRecordIDs: []string{},
+		},
+		{
+			name:              "Empty list with reverse order",
+			order:             ReverseOrder,
+			payload:           createPayload(true), // provider returns next page token
+			since:             "1:00PM",
+			expectedErr:       nil,
+			expectedNextPage:  false, // ignore next page token, current page is empty
+			expectedRecordIDs: []string{},
+		},
+		{
+			name:  "Payload without next page, reverse order",
+			order: ReverseOrder,
+			payload: createPayload(false, // next page doesn't exist
+				record{"C", "4:00PM"},
+				record{"B", "3:00PM"},
+				record{"A", "2:00PM"},
+			),
+			since:             "1:00PM", // time applies from page (num X) till page (num 1)
+			expectedErr:       nil,
+			expectedNextPage:  false, // no page to surface, but we would if we could
+			expectedRecordIDs: []string{"C", "B", "A"},
+		},
+		{
+			name:  "Payload without next page, chronological order",
+			order: ChronologicalOrder,
+			payload: createPayload(false, // next page doesn't exist
+				record{"A", "2:00PM"},
+				record{"B", "3:00PM"},
+				record{"C", "4:00PM"},
+			),
+			until:             "5:00PM", // time applies from page (num X) till page (num 1)
+			expectedErr:       nil,
+			expectedNextPage:  false, // no page to surface, but we would if we could
+			expectedRecordIDs: []string{"A", "B", "C"},
+		},
+		// Unordered records.
+		{
+			name:  "Cannot determine next page existence in unordered list",
+			order: Unordered,
+			payload: createPayload(true,
+				record{"B", "3:00PM"},
+				record{"A", "2:00PM"}, // pruned
+				record{"C", "2:44PM"}, // pruned
+			),
+			since:             "2:45PM",
+			expectedErr:       nil,
+			expectedNextPage:  true, // assume exists
+			expectedRecordIDs: []string{"B"},
+		},
+		// Time is picked on the outer edges of the records.
+		{
+			name:  "Since outside time window with chronological order",
+			order: ChronologicalOrder,
+			payload: createPayload(true,
+				record{"A", "2:00PM"},
+				record{"B", "3:00PM"},
+				record{"C", "4:00PM"},
+			),
+			since:             "1:00PM", // time applies from page (num -1) till page (infinity)
+			expectedErr:       nil,
+			expectedNextPage:  true,
+			expectedRecordIDs: []string{"A", "B", "C"},
+		},
+		{
+			name:  "Since outside time window with reverse order",
+			order: ReverseOrder,
+			payload: createPayload(true,
+				record{"C", "4:00PM"},
+				record{"B", "3:00PM"},
+				record{"A", "2:00PM"},
+			),
+			since:             "1:00PM", // time applies from page (num X) till page (num 1)
+			expectedErr:       nil,
+			expectedNextPage:  true,
+			expectedRecordIDs: []string{"C", "B", "A"},
+		},
+		{
+			name:  "Until outside time window with chronological order",
+			order: ChronologicalOrder,
+			payload: createPayload(true,
+				record{"A", "2:00PM"},
+				record{"B", "3:00PM"},
+				record{"C", "4:00PM"},
+				record{"D", "5:00PM"},
+			),
+			until:             "6:30PM", // time applies until page (num X) till page (num 1)
+			expectedErr:       nil,
+			expectedNextPage:  true,
+			expectedRecordIDs: []string{"A", "B", "C", "D"},
+		},
+		{
+			name:  "Until outside time window with reverse order",
+			order: ReverseOrder,
+			payload: createPayload(true,
+				record{"D", "5:00PM"},
+				record{"C", "4:00PM"},
+				record{"B", "3:00PM"},
+				record{"A", "2:00PM"},
+			),
+			until:             "6:30PM", // time applies from page (num -1) till page (infinity)
+			expectedErr:       nil,
+			expectedNextPage:  true,
+			expectedRecordIDs: []string{"D", "C", "B", "A"},
+		},
+		// Time is picked within the records on the current page.
+		{
+			name:  "Since inside time window with chronological order",
+			order: ChronologicalOrder,
+			payload: createPayload(true,
+				record{"A", "2:00PM"}, // pruned, and first in the list
+				record{"B", "3:00PM"},
+				record{"C", "4:00PM"},
+			),
+			since:             "2:45PM", // time applies from page (current) till page (infinity)
+			expectedErr:       nil,
+			expectedNextPage:  true, // must surface the page token
+			expectedRecordIDs: []string{"B", "C"},
+		},
+		{
+			name:  "Since inside time window with reverse order",
+			order: ReverseOrder,
+			payload: createPayload(true,
+				record{"C", "4:00PM"},
+				record{"B", "3:00PM"},
+				record{"A", "2:00PM"}, // pruned, and last in the list
+			),
+			since:             "2:45PM", // time applies from page (current) till page (current)
+			expectedErr:       nil,
+			expectedNextPage:  false, // ignore next page token, current page is the time edge
+			expectedRecordIDs: []string{"C", "B"},
+		},
+		{
+			name:  "SinceUntil inside time window with chronological order",
+			order: ChronologicalOrder,
+			payload: createPayload(true,
+				record{"A", "2:00PM"}, // pruned by since
+				record{"B", "3:00PM"},
+				record{"C", "4:00PM"},
+				record{"D", "5:00PM"}, // pruned by until
+			),
+			since:             "2:45PM",
+			until:             "4:10PM",
+			expectedErr:       nil,
+			expectedNextPage:  false, // last record excluded, hence no next page, we are on the time edge
+			expectedRecordIDs: []string{"B", "C"},
+		},
+		{
+			name:  "SinceUntil inside time window with reverse order",
+			order: ReverseOrder,
+			payload: createPayload(true,
+				record{"D", "5:00PM"}, // pruned by until
+				record{"C", "4:00PM"},
+				record{"B", "3:00PM"},
+				record{"A", "2:00PM"}, // pruned by since
+			),
+			since:             "2:45PM",
+			until:             "4:10PM",
+			expectedErr:       nil,
+			expectedNextPage:  false, // last record excluded, hence no next page, we are on the time edge
+			expectedRecordIDs: []string{"C", "B"},
+		},
+		// All records on current page are pruned. Next page may hold relevant records.
+		{
+			name:  "Since filters all latest records on current page",
+			order: ReverseOrder,
+			payload: createPayload(true,
+				record{"D", "5:00PM"}, // pruned
+				record{"C", "4:00PM"}, // pruned
+				record{"B", "3:00PM"}, // pruned
+				record{"A", "2:00PM"}, // pruned
+			),
+			since:             "6:00PM", // time applies from page (num -1) till page (negative X)
+			expectedErr:       nil,
+			expectedNextPage:  false, // this page was already too old, next page would be even older for `Since`
+			expectedRecordIDs: []string{},
+		},
+		{
+			name:  "Until filters all oldest records on current page",
+			order: ChronologicalOrder,
+			payload: createPayload(true,
+				record{"A", "2:00PM"}, // pruned
+				record{"B", "3:00PM"}, // pruned
+				record{"C", "4:00PM"}, // pruned
+				record{"D", "5:00PM"}, // pruned
+			),
+			until:             "1:00PM", // time applies from page (infinity) till page (num -1)
+			expectedErr:       nil,
+			expectedNextPage:  false, // this page was already too new, next page would be even newer for `Until`
+			expectedRecordIDs: []string{},
+		},
+		{
+			name:  "Since filters all records on unordered page",
+			order: Unordered,
+			payload: createPayload(true,
+				record{"B", "3:00PM"}, // pruned
+				record{"D", "5:00PM"}, // pruned
+				record{"A", "2:00PM"}, // pruned
+				record{"C", "4:00PM"}, // pruned
+			),
+			since:       "6:00PM",
+			expectedErr: nil,
+			// no page implications, must continue paginating even though all records where filtered out
+			expectedNextPage:  true,
+			expectedRecordIDs: []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			timeFilter := MakeTimeFilterFunc(
+				tt.order,
+				NewTimeBoundary(),
+				"updated", time.Kitchen,
+				testFuncNextPage,
+			)
+
+			body, err := jsonquery.Convertor.NodeFromMap(tt.payload)
+			if err != nil {
+				t.Fatalf("%v: invalid test: bad payload %v", tt.name, tt.payload)
+			}
+			records, err := testFuncRecords(body)
+			if err != nil {
+				t.Fatalf("%v: invalid test: no records %v", tt.name, tt.payload)
+			}
+
+			params := createReadParams(tt.since, tt.until)
+			filtered, nextPage, err := timeFilter(params, body, records)
+
+			var expectedErrors []error
+			if tt.expectedErr != nil {
+				expectedErrors = []error{tt.expectedErr}
+			}
+
+			testutils.CheckErrors(t, tt.name, expectedErrors, err)
+			testutils.CheckOutput(t, tt.name, tt.expectedNextPage, nextPage != "")
+
+			identifiers := make([]string, len(filtered))
+			for index, node := range filtered {
+				identifiers[index], err = jsonquery.New(node).TextWithDefault("id", "")
+				if err != nil {
+					t.Fatalf("%v: invalid test: record has no id %v", tt.name, node)
+				}
+			}
+
+			testutils.CheckOutput(t, tt.name, tt.expectedRecordIDs, identifiers)
+		})
 	}
 }

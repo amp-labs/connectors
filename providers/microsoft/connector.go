@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/microsoft/metadata"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/metadata"
 )
 
 const apiVersion = "v1.0"
@@ -82,8 +82,11 @@ func constructor(base *components.Connector) (*Connector, error) {
 	return connector, nil
 }
 
-func (c *Connector) getURL(parts ...string) (*urlbuilder.URL, error) {
-	path := append([]string{apiVersion}, parts...)
+func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
+	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, objectName)
+	if err != nil {
+		return nil, err
+	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, path...)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 }

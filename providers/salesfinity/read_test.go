@@ -34,6 +34,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseReadEmpty),
 			}.Server(),
@@ -55,6 +56,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLog),
 			}.Server(),
@@ -92,6 +94,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLogFirstPage),
 			}.Server(),
@@ -110,7 +113,7 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/v1/call-log?limit=100&page=2",
+				NextPage: testroutines.URLTestServer + "/v1/call-log?limit=100&sort=-updatedAt&page=2",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -120,7 +123,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "call-log",
 				Fields:     connectors.Fields("_id", "updatedAt", "from"),
-				NextPage:   testroutines.URLTestServer + "/v1/call-log?limit=100&page=2",
+				NextPage:   testroutines.URLTestServer + "/v1/call-log?limit=100&sort=-updatedAt&page=2",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -164,6 +167,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "50"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLog),
 			}.Server(),
@@ -197,6 +201,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/contact-lists/csv"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContactListsCsv),
 			}.Server(),
@@ -206,26 +211,26 @@ func TestRead(t *testing.T) {
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
-							"_id":  "test_list_id_001",
-							"name": "Test Contact List 1",
-							"user": "test_user_id_001",
+							"_id":  "test_list_id_002",
+							"name": "Test Contact List 2",
+							"user": "test_user_id_002",
 						},
 						Raw: map[string]any{
-							"_id":  "test_list_id_001",
-							"name": "Test Contact List 1",
-							"user": "test_user_id_001",
+							"_id":  "test_list_id_002",
+							"name": "Test Contact List 2",
+							"user": "test_user_id_002",
 						},
 					},
 					{
 						Fields: map[string]any{
-							"_id":  "test_list_id_002",
-							"name": "Test Contact List 2",
-							"user": "test_user_id_002",
+							"_id":  "test_list_id_001",
+							"name": "Test Contact List 1",
+							"user": "test_user_id_001",
 						},
 						Raw: map[string]any{
-							"_id":  "test_list_id_002",
-							"name": "Test Contact List 2",
-							"user": "test_user_id_002",
+							"_id":  "test_list_id_001",
+							"name": "Test Contact List 1",
+							"user": "test_user_id_001",
 						},
 					},
 				},
@@ -245,6 +250,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLog),
 			}.Server(),
@@ -279,43 +285,50 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path("/v1/call-log"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLogFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 0,
-				Data: []common.ReadResultRow{},
-				Done: true,
+				Data: []common.ReadResultRow{}, // records filtered out
+				// With reverse order (newest -> oldest), once a record is older than Since
+				// there cannot be any matching records on later pages.
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read contact-lists/csv with Since does not filter (no time-based filtering)",
+			Name: "Read contact-lists/csv with Since",
 			Input: common.ReadParams{
 				ObjectName: "contact-lists/csv",
 				Fields:     connectors.Fields("_id", "name"),
-				Since:      time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+				Since:      time.Date(2024, 1, 10, 10, 30, 0, 0, time.UTC),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v1/contact-lists/csv"),
 					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContactListsCsv),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 2,
+				Rows: 1,
 				Data: []common.ReadResultRow{
-					{
-						Fields: map[string]any{"_id": "test_list_id_001", "name": "Test Contact List 1"},
-						Raw:    map[string]any{"_id": "test_list_id_001", "name": "Test Contact List 1"},
-					},
+
 					{
 						Fields: map[string]any{"_id": "test_list_id_002", "name": "Test Contact List 2"},
-						Raw:    map[string]any{"_id": "test_list_id_002", "name": "Test Contact List 2"},
+						Raw: map[string]any{
+							"_id":       "test_list_id_002",
+							"name":      "Test Contact List 2",
+							"updatedAt": "2024-01-11T10:00:00.000Z",
+							"user":      "test_user_id_002",
+						},
 					},
 				},
 				Done: true,

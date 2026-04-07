@@ -58,6 +58,44 @@ func TestTimingFormatRFC3339inUTC(t *testing.T) {
 	}
 }
 
+func TestFormatRFC3339inLocation(t *testing.T) {
+	t.Parallel()
+
+	const hour = 60 * 60
+
+	pst := time.FixedZone("PST", -8*hour)
+	utc := time.FixedZone("UTC", 0)
+
+	// 12:00 UTC = 04:00 PST
+	input := time.Date(2024, 6, 15, 12, 0, 0, 0, utc)
+
+	tests := []struct {
+		name     string
+		location *time.Location
+		expected string
+	}{
+		{
+			name:     "UTC to PST",
+			location: pst,
+			expected: "2024-06-15 04:00:00",
+		},
+		{
+			name:     "UTC unchanged",
+			location: utc,
+			expected: "2024-06-15 12:00:00",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			output := Time.FormatRFC3339inLocation(input, tt.location)
+			testutils.CheckOutputWithError(t, tt.name, tt.expected, nil, output, nil)
+		})
+	}
+}
+
 func TestUnix(t *testing.T) {
 	t.Parallel()
 

@@ -1,9 +1,9 @@
 package microsoft
 
 import (
-	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -19,6 +19,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	errorUnknownResource := testutils.DataFromFile(t, "read/unknown-resource.json")
 	responseUsersFirst := testutils.DataFromFile(t, "read/users/1-first-page.json")
 	responseUsersLast := testutils.DataFromFile(t, "read/users/2-second-page.json")
+	responseCalendarEvents := testutils.DataFromFile(t, "read/events/list.json")
+	responseMessagesEvents := testutils.DataFromFile(t, "read/messages/list.json")
 
 	tests := []testroutines.Read{
 		{
@@ -40,11 +42,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Always: mockserver.Response(http.StatusBadRequest, errorUnknownResource),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("Resource not found for the segment 'user'."),
+				common.ErrBadRequest, testutils.StringError("Resource not found for the segment 'user'."),
 			},
 		},
 		{
-			Name:  "Successful read with chosen fields",
+			Name:  "Successfully read users",
 			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("displayName")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -86,6 +88,92 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Rows:     1,
 				NextPage: "",
 				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read events",
+			Input: common.ReadParams{
+				ObjectName: "me/events",
+				Fields:     connectors.Fields("subject", "bodyPreview"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+				PageSize: 28,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1.0/me/events"),
+					// Pacific time to UTC is achieved by adding 8 hours
+					mockcond.QueryParam("$filter", "lastModifiedDateTime ge 2024-09-19T12:30:45.000Z"),
+					mockcond.QueryParam("$top", "28"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCalendarEvents),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"subject":     "Movies night",
+						"bodypreview": "Gather to watch cinema.",
+					},
+					Raw: map[string]any{
+						"id":                         "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAB-ie_oAAB8hj1Rtd60SKTngNs3if9RAAEMsx4rAAA=",
+						"reminderMinutesBeforeStart": float64(15),
+						"isReminderOn":               true,
+						"hasAttachments":             false,
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read messages",
+			Input: common.ReadParams{
+				ObjectName: "me/messages",
+				Fields:     connectors.Fields("subject", "bodyPreview", "importance"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1.0/me/messages"),
+					// Pacific time to UTC is achieved by adding 8 hours
+					mockcond.QueryParam("$filter", "lastModifiedDateTime ge 2024-09-19T12:30:45.000Z"),
+					mockcond.QueryParam("$top", "100"), // default pagination
+				},
+				Then: mockserver.Response(http.StatusOK, responseMessagesEvents),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"subject":     "Timmy Wehner",
+						"bodypreview": "Forrest Von",
+						"importance":  "normal",
+					},
+					Raw: map[string]any{
+						"id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4IlAAA=",
+					},
+					Id: "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4IlAAA=",
+				}, {
+					Fields: map[string]any{
+						"subject":     "Gail Waelchi",
+						"bodypreview": "Eleonore Kutch",
+						"importance":  "normal",
+					},
+					Raw: map[string]any{
+						"id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4ImAAA=",
+					},
+					Id: "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4ImAAA=",
+				}},
+				NextPage: "https://graph.microsoft.com/v1.0/me/messages?%24top=10&%24skip=10",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},

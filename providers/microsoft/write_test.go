@@ -83,6 +83,108 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name:  "Create events vis POST",
+			Input: common.WriteParams{ObjectName: "me/events", RecordData: "dummy"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/v1.0/me/events"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"subject": "hello", "id": "753"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success: true, RecordId: "753", Data: map[string]any{"subject": "hello"},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Update events vis PATCH",
+			Input: common.WriteParams{ObjectName: "me/events", RecordData: "dummy", RecordId: "723"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.Path("/v1.0/me/events/723"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"subject": "hello", "id": "753"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success: true, RecordId: "753", Data: map[string]any{"subject": "hello"},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Create calendars vis POST",
+			Input: common.WriteParams{ObjectName: "calendars", RecordData: "dummy"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/v1.0/me/calendars"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"subject": "hello", "id": "753"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success: true, RecordId: "753", Data: map[string]any{"subject": "hello"},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Update calendars vis PATCH",
+			Input: common.WriteParams{ObjectName: "calendars", RecordData: "dummy", RecordId: "723"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.Path("/v1.0/me/calendars/723"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"subject": "hello", "id": "753"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success: true, RecordId: "753", Data: map[string]any{"subject": "hello"},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Create messages vis POST",
+			Input: common.WriteParams{ObjectName: "me/messages", RecordData: "dummy"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/v1.0/me/messages"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"subject": "hello", "id": "753"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success: true, RecordId: "753", Data: map[string]any{"subject": "hello"},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Update messages vis PATCH",
+			Input: common.WriteParams{ObjectName: "me/messages", RecordData: "dummy", RecordId: "723"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.Path("/v1.0/me/messages/723"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"subject": "hello", "id": "753"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success: true, RecordId: "753", Data: map[string]any{"subject": "hello"},
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {

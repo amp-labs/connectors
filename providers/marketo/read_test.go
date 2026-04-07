@@ -1,7 +1,6 @@
 package marketo
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -43,7 +42,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrCaller,
-				errors.New(string(unsupportedResponse)), //nolint:err113
+				testutils.StringError(string(unsupportedResponse)),
 			},
 		},
 		{
@@ -84,6 +83,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						"updatedAt":     "2024-08-23T12:09:55Z",
 						"workspaceName": "Default",
 					},
+					Id: "1023",
 				}},
 				Done: true,
 			},
@@ -123,6 +123,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						"updatedAt": "2024-03-20T06:45:20Z",
 						"createdAt": "2024-03-20T06:45:12Z",
 					},
+					Id: "1",
 				}},
 				Done: true,
 			},

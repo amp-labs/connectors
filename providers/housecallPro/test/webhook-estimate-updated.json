@@ -1,0 +1,109 @@
+{
+    "event": "estimate.updated",
+    "event_occurred_at": "2026-04-02T15:14:33Z",
+    "company_id": "7141dca7-882d-427b-a9c0-0ba0d74c85cf",
+    "estimate": {
+        "id": "csr_fb441cf2bb9445019530fabbda25555e",
+        "estimate_number": "8",
+        "work_status": "needs scheduling",
+        "lead_source": null,
+        "customer": {
+            "id": "cus_9985725dd4824c56b2a1aef45986d1cc",
+            "first_name": "Write Updated",
+            "last_name": "Test",
+            "email": "write.test@example.com",
+            "mobile_number": null,
+            "home_number": null,
+            "work_number": null,
+            "company": "Ampersand QA",
+            "notifications_enabled": true,
+            "lead_source": null,
+            "notes": null,
+            "created_at": "2026-04-02T14:25:13Z",
+            "updated_at": "2026-04-02T15:12:41Z",
+            "company_name": "Ampersand",
+            "company_id": "7141dca7-882d-427b-a9c0-0ba0d74c85cf",
+            "tags": []
+        },
+        "address": {
+            "id": null,
+            "type": "service",
+            "street": null,
+            "street_line_2": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country": null
+        },
+        "created_at": "2026-04-02T15:14:33Z",
+        "updated_at": "2026-04-02T15:14:33Z",
+        "company_name": "Ampersand",
+        "company_id": "7141dca7-882d-427b-a9c0-0ba0d74c85cf",
+        "work_timestamps": {
+            "on_my_way_at": null,
+            "started_at": null,
+            "completed_at": null
+        },
+        "schedule": {
+            "scheduled_start": null,
+            "scheduled_end": null,
+            "arrival_window": 0,
+            "appointments": []
+        },
+        "assigned_employees": [
+            {
+                "id": "pro_428388df89be4e71b7e745621e798706",
+                "first_name": "April",
+                "last_name": "Potter",
+                "email": "integration.user+housecall@withampersand.com",
+                "mobile_number": "4077392835",
+                "color_hex": "EF9159",
+                "avatar_url": "https://pro.housecallpro.com/assets/add_image_thumb_web_round.png",
+                "role": "field tech",
+                "tags": [],
+                "permissions": {
+                    "can_add_and_edit_job": true,
+                    "can_be_booked_online": true,
+                    "can_call_and_text_with_customers": true,
+                    "can_chat_with_customers": true,
+                    "can_delete_and_cancel_job": true,
+                    "can_edit_message_on_invoice": true,
+                    "can_see_street_view_data": true,
+                    "can_share_job": false,
+                    "can_take_payment_see_prices": true,
+                    "can_see_customers": true,
+                    "can_see_full_schedule": true,
+                    "can_see_future_jobs": true,
+                    "can_see_marketing_campaigns": true,
+                    "can_see_reporting": true,
+                    "can_edit_settings": true,
+                    "is_point_of_contact": false,
+                    "is_admin": true
+                },
+                "created_at": "2026-03-19T20:06:45Z",
+                "company_name": "Ampersand",
+                "company_id": "7141dca7-882d-427b-a9c0-0ba0d74c85cf"
+            }
+        ],
+        "estimate_fields": {
+            "job_type": null,
+            "business_unit": null
+        },
+        "options": [
+            {
+                "id": "est_90a3bf916a7a4df293b0979d667c0ec0",
+                "name": "Option #1",
+                "option_number": "8",
+                "total_amount": 0,
+                "approval_status": null,
+                "status": "needs scheduling",
+                "message_from_pro": null,
+                "tags": [],
+                "notes": [],
+                "created_at": "2026-04-02T15:14:33Z",
+                "updated_at": "2026-04-02T15:14:34Z",
+                "attachments": []
+            }
+        ]
+    }
+}

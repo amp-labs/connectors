@@ -1,0 +1,17 @@
+{
+  "jobs": [
+    {
+      "id": "job-001",
+      "name": "Scan Bridge",
+      "iTwinId": "itwin-abc",
+      "email": "user@example.com",
+      "state": "Completed",
+      "createdDateTime": "2024-06-15T10:30:00Z"
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://api.bentley.com/contextcapture/jobs"
+    }
+  }
+}

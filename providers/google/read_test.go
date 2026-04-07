@@ -1,7 +1,6 @@
 package google
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -48,7 +47,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid page token value."),
+				testutils.StringError("Invalid page token value."),
 			},
 		},
 		{
@@ -61,7 +60,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("The requested URL /calendar/v3/calendarList?maxResults=3000&showDeleted=true was not found on this server."), // nolint:lll
+				testutils.StringError("The requested URL /calendar/v3/calendarList?maxResults=3000&showDeleted=true was not found on this server."), // nolint:lll
 			},
 		},
 		{
@@ -333,7 +332,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Page size must be less than or equal to 1000."),
+				testutils.StringError("Page size must be less than or equal to 1000."),
 			},
 		},
 		{
@@ -346,7 +345,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("The requested URL /v1/bananas was not found on this server."),
+				testutils.StringError("The requested URL /v1/bananas was not found on this server."),
 			},
 		},
 		{
@@ -530,6 +529,9 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseMessagesFirstPage := testutils.DataFromFile(t, "mail/read/messages/1-first-page.json")
 	responseMessagesLastPage := testutils.DataFromFile(t, "mail/read/messages/2-last-page.json")
 	responseMessageItem := testutils.DataFromFile(t, "mail/read/messages/message-item.json")
+	responseDrafts := testutils.DataFromFile(t, "mail/read/drafts/drafts.json")
+	responseDraftMessageItem1 := testutils.DataFromFile(t, "mail/read/drafts/message-item-1.json")
+	responseDraftMessageItem2 := testutils.DataFromFile(t, "mail/read/drafts/message-item-2.json")
 
 	tests := []testroutines.Read{
 		{
@@ -553,7 +555,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrForbidden,
-				errors.New("CSE is not enabled."), // nolint:goerr113
+				testutils.StringError("CSE is not enabled."),
 			},
 		},
 		{
@@ -566,7 +568,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("The requested URL /gmail/v1/users/me/butterfly was not found on this server. That’s all we know"), // nolint:goerr113,lll
+				testutils.StringError("The requested URL /gmail/v1/users/me/butterfly was not found on this server. That’s all we know"), // nolint:lll
 			},
 		},
 		{
@@ -575,15 +577,14 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "messages",
 				Fields:     connectors.Fields("id"),
 				PageSize:   33,
-				Since: time.Date(2024, 9, 19, 23, 0, 0, 0,
-					time.FixedZone("UTC-8", -8*60*60)),
+				Since:      time.Unix(1726815600, 0),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/gmail/v1/users/me/messages"),
-					mockcond.QueryParam("maxResults", "33"),      // from params
-					mockcond.QueryParam("q", "after:2024/09/20"), // it is 20 due to time zone
+					mockcond.QueryParam("maxResults", "33"), // from params
+					mockcond.QueryParam("q", "after:1726815600"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseMessagesFirstPage),
 			}.Server(),
@@ -616,8 +617,8 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "messages",
 				Fields:     connectors.Fields("id", "$['payload']['body']", "threadId"),
 				NextPage:   "08277485409175924556",
-				Since:      time.Date(2024, 9, 31, 0, 0, 0, 0, time.UTC),
-				Until:      time.Date(2026, 1, 8, 0, 0, 0, 0, time.UTC),
+				Since:      time.Unix(1727740800, 0),
+				Until:      time.Unix(1767830400, 0),
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -627,7 +628,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						mockcond.Path("/gmail/v1/users/me/messages"),
 						mockcond.QueryParam("maxResults", "500"), // default page size
 						mockcond.QueryParam("pageToken", "08277485409175924556"),
-						mockcond.QueryParam("q", "after:2024/10/01 before:2026/01/08"),
+						mockcond.QueryParam("q", "after:1727740800 before:1767830400"),
 					},
 					Then: mockserver.Response(http.StatusOK, responseMessagesLastPage),
 				}, {
@@ -658,6 +659,121 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"sizeEstimate": float64(29817),
 						"historyId":    "31772",
 						"internalDate": "1769523000000",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read drafts with embedded messages",
+			Input: common.ReadParams{
+				ObjectName: "drafts",
+				Fields: connectors.Fields(
+					"$['message']['snippet']",
+					"$['message']['payload']['body']",
+					"$['message']['payload']['mimeType']",
+				),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.Path("/gmail/v1/users/me/drafts"),
+						mockcond.QueryParam("maxResults", "500"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseDrafts),
+				}, {
+					If:   mockcond.Path("/gmail/v1/users/me/messages/19c5a57884cc0fc0"),
+					Then: mockserver.Response(http.StatusOK, responseDraftMessageItem1),
+				}, {
+					If:   mockcond.Path("/gmail/v1/users/me/messages/19c5a576fbc9a5ec"),
+					Then: mockserver.Response(http.StatusOK, responseDraftMessageItem2),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Id: "r5482888295841858934",
+					Fields: map[string]any{
+						"message": map[string]any{
+							"snippet": "(DRAFT) Good news. You are being upgraded from Basic",
+							"payload": map[string]any{
+								"mimetype": "multipart/alternative",
+								"body": map[string]any{
+									"size": float64(0),
+								},
+							},
+						},
+					},
+					Raw: map[string]any{
+						"id": "r5482888295841858934",
+						"message": map[string]any{
+							"id":       "19c5a57884cc0fc0",
+							"threadId": "19c2643cde3cab88",
+							"labelIds": []any{"DRAFT"},
+							"snippet":  "(DRAFT) Good news. You are being upgraded from Basic",
+							"payload": map[string]any{
+								"partId":   "",
+								"mimeType": "multipart/alternative",
+								"filename": "",
+								"headers": []any{
+									map[string]any{
+										"name":  "Subject",
+										"value": "(DRAFT) Good news",
+									},
+								},
+								"body": map[string]any{
+									"size": float64(0),
+								},
+								"parts": []any{},
+							},
+							"sizeEstimate": float64(1924),
+							"historyId":    "39895",
+							"internalDate": "1771042211000",
+						},
+					},
+				}, {
+					Id: "r9115380863326367925",
+					Fields: map[string]any{
+						"message": map[string]any{
+							"snippet": "(DRAFT) You have had Linux installed for about a month now",
+							"payload": map[string]any{
+								"mimetype": "multipart/alternative",
+								"body": map[string]any{
+									"size": float64(0),
+								},
+							},
+						},
+					},
+					Raw: map[string]any{
+						"id": "r9115380863326367925",
+						"message": map[string]any{
+							"id":       "19c5a576fbc9a5ec",
+							"threadId": "19c5a5623749ebbb",
+							"labelIds": []any{"DRAFT"},
+							"snippet":  "(DRAFT) You have had Linux installed for about a month now",
+							"payload": map[string]any{
+								"partId":   "",
+								"mimeType": "multipart/alternative",
+								"filename": "",
+								"headers": []any{
+									map[string]any{
+										"name":  "Subject",
+										"value": "(DRAFT) Linux installed",
+									},
+								},
+								"body": map[string]any{
+									"size": float64(0),
+								},
+								"parts": []any{},
+							},
+							"sizeEstimate": float64(1677),
+							"historyId":    "39887",
+							"internalDate": "1771042205000",
+						},
 					},
 				}},
 				NextPage: "",

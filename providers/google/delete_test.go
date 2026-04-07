@@ -1,7 +1,6 @@
 package google
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -58,7 +57,7 @@ func TestCalendarDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"Not Found",
 				),
 			},

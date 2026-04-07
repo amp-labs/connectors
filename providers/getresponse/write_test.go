@@ -1,7 +1,6 @@
 package getresponse
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
@@ -77,7 +77,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrCaller,
-				errors.New("Validation failed"),
+				testutils.StringError("Validation failed"),
 			},
 		},
 		{

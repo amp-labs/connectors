@@ -1,7 +1,6 @@
 package intercom
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -39,7 +38,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("not_found[Resource Not Found]"),
+				testutils.StringError("not_found[Resource Not Found]"),
 			},
 		},
 		{

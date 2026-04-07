@@ -17,6 +17,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 	responseAccountsFirst := testutils.DataFromFile(t, "accounts-first-page.json")
 	responseAccountsSecond := testutils.DataFromFile(t, "accounts-second-page.json")
+	responseIssuesEmpty := testutils.DataFromFile(t, "issues-empty-response.json")
 
 	tests := []testroutines.Read{
 		{
@@ -63,6 +64,22 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}},
 				NextPage: "MjAyNS0wOC0yNlQxNjoxMTo1OC44NzFafGZiN2MzOTE4LTVhMTYtNDVlOS1iYTRhLTM1ZmVkNTA1ZDA3Zg==", // nolint:lll
 				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Empty response with only request_id returns zero records without error",
+			Input: common.ReadParams{ObjectName: "issues", Fields: connectors.Fields("id", "title")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/issues"),
+				Then:  mockserver.Response(http.StatusOK, responseIssuesEmpty),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     0,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},

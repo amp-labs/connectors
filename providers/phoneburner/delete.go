@@ -16,6 +16,7 @@ func buildDeleteRequest(ctx context.Context, baseURL string, params common.Delet
 	if params.ObjectName == "" {
 		return nil, common.ErrMissingObjects
 	}
+
 	if params.RecordId == "" {
 		return nil, common.ErrMissingRecordID
 	}

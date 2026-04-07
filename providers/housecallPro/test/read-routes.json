@@ -1,0 +1,34 @@
+{
+  "routes": [
+    {
+      "id": "route_123",
+      "name": "North Zone - Tuesday",
+      "color_hex": "#2D9CDB",
+      "date": "2026-03-24",
+      "employee_ids": [
+        "pro_7f12a9d4",
+        "pro_3c81be20"
+      ],
+      "job_appointments": [
+        {
+          "id": "appt_1001",
+          "job_id": "job_5001"
+        },
+        {
+          "id": "appt_1002",
+          "job_id": "job_5002"
+        }
+      ],
+      "event_ids": [
+        "evt_9001"
+      ],
+      "estimate_ids": [
+        "est_7001"
+      ]
+    }
+  ],
+  "total_items": 1,
+  "total_pages": 1,
+  "page": 1,
+  "page_size": 10
+}

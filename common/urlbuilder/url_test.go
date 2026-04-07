@@ -167,6 +167,31 @@ func TestAddPath(t *testing.T) { // nolint:funlen
 			input:    []string{"search", "///"},
 			expected: "/search",
 		},
+		{
+			name:     "Path with query params",
+			input:    []string{"search", "results?q=hello&v=1"},
+			expected: "/search/results?q=hello&v=1",
+		},
+		{
+			name:     "Multiple path segments with query params",
+			input:    []string{"search?a=1", "results?b=2"},
+			expected: "/search/results?a=1&b=2",
+		},
+		{
+			name:     "Query params with multiple values",
+			input:    []string{"search?a=1&a=2", "results?b=3"},
+			expected: "/search/results?a=1&a=2&b=3",
+		},
+		{
+			name:     "Path with encoded query params",
+			input:    []string{"search", "results?q=hello%20world"},
+			expected: "/search/results?q=hello+world",
+		},
+		{
+			name:     "Last path segment with identical query param takes precedence",
+			input:    []string{"search?a=25", "results?a=33"},
+			expected: "/search/results?a=33",
+		},
 	}
 
 	for _, tt := range tests { // nolint:varnamelen
@@ -186,8 +211,23 @@ func TestAddPath(t *testing.T) { // nolint:funlen
 			// We are testing only the path from root.
 			path, _ := strings.CutPrefix(fullURL, base)
 
-			if !reflect.DeepEqual(path, tt.expected) {
-				t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, path)
+			// Query parameters can be in any order, so we need to compare them carefully
+			// if they are present in expected.
+			if strings.Contains(tt.expected, "?") {
+				expectedURL, _ := url.Parse("https://google.com" + tt.expected)
+				actualURL, _ := url.Parse(fullURL)
+
+				if expectedURL.Path != actualURL.Path {
+					t.Fatalf("%s: expected path: (%v), got: (%v)", tt.name, expectedURL.Path, actualURL.Path)
+				}
+
+				if !reflect.DeepEqual(expectedURL.Query(), actualURL.Query()) {
+					t.Fatalf("%s: expected query: (%v), got: (%v)", tt.name, expectedURL.Query(), actualURL.Query())
+				}
+			} else {
+				if !reflect.DeepEqual(path, tt.expected) {
+					t.Fatalf("%s: expected: (%v), got: (%v)", tt.name, tt.expected, path)
+				}
 			}
 		})
 	}

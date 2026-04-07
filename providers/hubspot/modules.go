@@ -3,6 +3,7 @@ package hubspot
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 // supportedModules represents currently working and supported modules within the Hubspot connector.
@@ -16,6 +17,6 @@ var supportedModules = common.Modules{ // nolint: gochecknoglobals
 	providers.ModuleHubspotCRM: {
 		ID:      providers.ModuleHubspotCRM,
 		Label:   "crm",
-		Version: "v3",
+		Version: core.APIVersion3,
 	},
 }

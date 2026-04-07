@@ -2,6 +2,7 @@ package nutshell
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -27,7 +28,7 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
 	http.StatusMethodNotAllowed:     common.ErrBadRequest,
 	http.StatusUnsupportedMediaType: common.ErrBadRequest,
-	http.StatusConflict:             common.ErrBadRequest,
+	http.StatusConflict:             errors.Join(common.ErrConflict, common.ErrBadRequest),
 }
 
 var textErrorStatusCodeHandler = interpreter.DirectFaultyResponder{ // nolint:gochecknoglobals

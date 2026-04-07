@@ -81,6 +81,33 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
+			Name: "Read contacts with Since sends updated_from/update_to in PST",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("contact_user_id"),
+				// 2024-06-15 12:00:00 UTC = 2024-06-15 04:00:00 PST (UTC-8)
+				Since: time.Date(2024, 6, 15, 12, 0, 0, 0, time.UTC),
+				// 2024-06-16 00:00:00 UTC = 2024-06-15 16:00:00 PST (UTC-8)
+				Until: time.Date(2024, 6, 16, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/rest/1/contacts"),
+					mockcond.QueryParam("updated_from", "2024-06-15 04:00:00"),
+					mockcond.QueryParam("update_to", "2024-06-15 16:00:00"),
+					mockcond.QueryParam("include_new", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
 			Name:  "Provider envelope error is mapped (200 with http_status=401)",
 			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("contact_user_id")},
 			Server: mockserver.Conditional{
@@ -332,4 +359,3 @@ func comparatorSubsetReadOrderByFolderID(serverURL string, actual, expected *com
 
 	return testroutines.ComparatorSubsetRead(serverURL, actual, expected)
 }
-

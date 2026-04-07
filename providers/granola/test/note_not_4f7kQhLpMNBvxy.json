@@ -1,0 +1,60 @@
+{
+    "id": "not_4f7kQhLpMNBvxy",
+    "object": "note",
+    "title": "Monthly almond purchase analysis",
+    "owner": {
+        "name": "Hazel Kern",
+        "email": "hazel@granola.ai"
+    },
+    "created_at": "2026-02-10T09:15:00Z",
+    "updated_at": "2026-02-10T10:30:00Z",
+    "calendar_event": {
+        "event_title": "Monthly almond purchase analysis",
+        "invitees": [
+            {
+                "email": "nutty@granola.ai"
+            }
+        ],
+        "organiser": "hazel@granola.ai",
+        "calendar_event_id": "5gh88l2ppqk78jklmno4p9jfh_20260210T091500Z",
+        "scheduled_start_time": "2026-02-10T09:15:00Z",
+        "scheduled_end_time": "2026-02-10T10:15:00Z"
+    },
+    "attendees": [
+        {
+            "name": "Hazel Kern",
+            "email": "hazel@granola.ai"
+        },
+        {
+            "name": "Nutty Almond",
+            "email": "nutty@granola.ai"
+        }
+    ],
+    "folder_membership": [
+        {
+            "id": "fol_7r9KdpxQwLMC51",
+            "object": "folder",
+            "name": "Nut Inventory"
+        }
+    ],
+    "summary_text": "The monthly almond purchase analysis showed that we overspent by $5,000 but managed to negotiate better deals for next month.",
+    "summary_markdown": "## Monthly Almond Purchase Analysis\n\nThe monthly almond purchase analysis revealed overspending.\n\n- Overspent **$5,000**\n- Negotiated **better deals** for next month",
+    "transcript": [
+        {
+            "speaker": {
+                "source": "microphone"
+            },
+            "text": "We need to track almond costs more closely next month.",
+            "start_time": "2026-02-10T09:15:00Z",
+            "end_time": "2026-02-10T10:15:00Z"
+        },
+        {
+            "speaker": {
+                "source": "speaker"
+            },
+            "text": "Agreed. Let's finalize new supplier agreements by next week.",
+            "start_time": "2026-02-10T09:15:00Z",
+            "end_time": "2026-02-10T10:15:00Z"
+        }
+    ]
+}

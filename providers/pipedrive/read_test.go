@@ -1,7 +1,6 @@
 package pipedrive
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -86,7 +85,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrForbidden,
-				errors.New(string(ErrResponseBody)), //nolint:err113
+				testutils.StringError(string(ErrResponseBody)),
 			},
 			Expected: nil,
 		},

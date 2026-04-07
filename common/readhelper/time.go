@@ -97,3 +97,27 @@ func (b TimeBoundary) Contains(params common.ReadParams, timestamp time.Time) bo
 
 	return sinceOK && untilOK
 }
+
+func (b TimeBoundary) Before(params common.ReadParams, timestamp time.Time) bool {
+	if params.Since.IsZero() {
+		return false // boundary goes to infinity (extends to the past).
+	}
+
+	if b.excludeSince && timestamp.Equal(params.Since) {
+		return false
+	}
+
+	return timestamp.Before(params.Since)
+}
+
+func (b TimeBoundary) After(params common.ReadParams, timestamp time.Time) bool {
+	if params.Until.IsZero() {
+		return false // boundary goes to infinity (extends to the future).
+	}
+
+	if b.excludeUntil && timestamp.Equal(params.Until) {
+		return false
+	}
+
+	return timestamp.After(params.Until)
+}

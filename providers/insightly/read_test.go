@@ -1,7 +1,6 @@
 package insightly
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -45,7 +44,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					"API User does not have access to CommunityComments."),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("API User does not have access to CommunityComments."),
+				testutils.StringError("API User does not have access to CommunityComments."),
 				common.ErrRetryable,
 			},
 		},

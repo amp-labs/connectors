@@ -1,7 +1,6 @@
 package snapchatads
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -62,7 +61,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				Always: mockserver.Response(http.StatusOK, errorNotFound),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New(
+				testutils.StringError(
 					"request failed: failed to delete record: 400",
 				),
 			},

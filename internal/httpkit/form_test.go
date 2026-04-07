@@ -40,4 +40,3 @@ func TestEncodeForm(t *testing.T) { //nolint:funlen
 		t.Fatalf("unexpected parsed values:\nexpected: %#v\ngot:      %#v", expected, parsed)
 	}
 }
-

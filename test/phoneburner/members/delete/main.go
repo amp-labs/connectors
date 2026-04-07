@@ -43,4 +43,3 @@ func main() {
 
 	slog.Info("PhoneBurner members delete test completed successfully")
 }
-

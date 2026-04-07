@@ -37,6 +37,7 @@ func buildWriteRequest(ctx context.Context, baseURL string, params common.WriteP
 	}
 
 	req.Header.Set("Accept", "application/json")
+
 	if contentType != "" {
 		req.Header.Set("Content-Type", contentType)
 	}
@@ -49,10 +50,12 @@ func buildWriteURL(baseURL string, params common.WriteParams) (*urlbuilder.URL, 
 	case objectContacts, objectMembers, objectFolders:
 		if params.IsCreate() {
 			u, err := urlbuilder.New(baseURL, restPrefix, restVer, params.ObjectName)
+
 			return u, http.MethodPost, err
 		}
 
 		u, err := urlbuilder.New(baseURL, restPrefix, restVer, params.ObjectName, params.RecordId)
+
 		return u, http.MethodPut, err
 	case objectDialsession:
 		// Create only.
@@ -61,6 +64,7 @@ func buildWriteURL(baseURL string, params common.WriteParams) (*urlbuilder.URL, 
 		}
 
 		u, err := urlbuilder.New(baseURL, restPrefix, restVer, params.ObjectName)
+
 		return u, http.MethodPost, err
 	default:
 		return nil, "", common.ErrOperationNotSupportedForObject

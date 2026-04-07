@@ -84,7 +84,9 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{},
+						Fields: map[string]any{
+							"id": float64(1),
+						},
 						Raw: map[string]any{
 							"id":        float64(1),
 							"code":      "USD",
@@ -94,6 +96,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"default":   true,
 							"position":  float64(1),
 						},
+						Id: "1",
 					},
 				},
 				Done: true,

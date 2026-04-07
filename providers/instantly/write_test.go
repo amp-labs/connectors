@@ -1,7 +1,6 @@
 package instantly
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -89,7 +88,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Leads array is empty"),
+				testutils.StringError("Leads array is empty"),
 			},
 		},
 		{
@@ -117,7 +116,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Bad Request"),
+				testutils.StringError("Bad Request"),
 			},
 		},
 		{

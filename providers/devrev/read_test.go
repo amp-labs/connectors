@@ -1,0 +1,446 @@
+package devrev
+
+import (
+	"net/http"
+	"testing"
+	"time"
+
+	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
+)
+
+// nolint:funlen
+func TestRead(t *testing.T) {
+	t.Parallel()
+	responseAccountsEmpty := testutils.DataFromFile(t, "read-accounts-empty.json")
+	responseAccountsFirstPage := testutils.DataFromFile(t, "read-accounts-first-page.json")
+	responseAccountsLastPage := testutils.DataFromFile(t, "read-accounts-last-page.json")
+	responseArticlesEmpty := testutils.DataFromFile(t, "read-articles-empty.json")
+	responseArticles := testutils.DataFromFile(t, "read-articles.json")
+	responseVistasGroups := testutils.DataFromFile(t, "read-vistas-groups.json")
+
+	tests := []testroutines.Read{
+		{
+			Name: "Read accounts empty",
+			Input: common.ReadParams{
+				ObjectName: "accounts",
+				Fields:     connectors.Fields("id", "display_name", "modified_date"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/accounts.list"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParam("sort_by", "modified_date:desc"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsEmpty),
+			}.Server(),
+			Expected: &common.ReadResult{
+				Rows: 0,
+				Data: []common.ReadResultRow{},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read accounts first page with pagination",
+			Input: common.ReadParams{
+				ObjectName: "accounts",
+				Fields:     connectors.Fields("id", "modified_date"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/accounts.list"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParam("sort_by", "modified_date:desc"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":            "don:identity:devrev:ACCT-1",
+							"modified_date": "2026-02-20T17:51:38.642Z",
+						},
+						Raw: map[string]any{
+							"id":            "don:identity:devrev:ACCT-1",
+							"modified_date": "2026-02-20T17:51:38.642Z",
+						},
+					},
+				},
+				NextPage: testroutines.URLTestServer + "/accounts.list?limit=99&cursor=cursor_page_2&sort_by=modified_date%3Adesc",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read accounts second page using NextPage",
+			Input: common.ReadParams{
+				ObjectName: "accounts",
+				Fields:     connectors.Fields("id", "display_name", "modified_date"),
+				NextPage:   testroutines.URLTestServer + "/accounts.list?limit=99&cursor=cursor_page_2&sort_by=modified_date%3Adesc",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/accounts.list"),
+					mockcond.QueryParam("cursor", "cursor_page_2"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsLastPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":            "don:identity:devrev:ACCT-2",
+							"display_name":  "Beta Inc",
+							"modified_date": "2026-02-20T18:00:00.000Z",
+						},
+						Raw: map[string]any{
+							"id":            "don:identity:devrev:ACCT-2",
+							"display_name":  "Beta Inc",
+							"modified_date": "2026-02-20T18:00:00.000Z",
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read accounts with PageSize uses limit query param",
+			Input: common.ReadParams{
+				ObjectName: "accounts",
+				Fields:     connectors.Fields("id", "modified_date"),
+				PageSize:   50,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/accounts.list"),
+					mockcond.QueryParam("limit", "50"),
+					mockcond.QueryParam("sort_by", "modified_date:desc"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":            "don:identity:devrev:ACCT-1",
+							"modified_date": "2026-02-20T17:51:38.642Z",
+						},
+						Raw: map[string]any{
+							"id":            "don:identity:devrev:ACCT-1",
+							"modified_date": "2026-02-20T17:51:38.642Z",
+						},
+					},
+				},
+				NextPage: testroutines.URLTestServer + "/accounts.list?limit=50&cursor=cursor_page_2&sort_by=modified_date%3Adesc",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read accounts with Since adds modified_date.after",
+			Input: common.ReadParams{
+				ObjectName: "accounts",
+				Fields:     connectors.Fields("id", "modified_date"),
+				Since:      time.Date(2026, 2, 20, 17, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/accounts.list"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParam("sort_by", "modified_date:desc"),
+					mockcond.QueryParam("modified_date.after", "2026-02-20T17:00:00Z"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsFirstPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":            "don:identity:devrev:ACCT-1",
+							"modified_date": "2026-02-20T17:51:38.642Z",
+						},
+						Raw: map[string]any{
+							"id":            "don:identity:devrev:ACCT-1",
+							"modified_date": "2026-02-20T17:51:38.642Z",
+						},
+					},
+				},
+				NextPage: testroutines.URLTestServer + "/accounts.list?limit=99&cursor=cursor_page_2&modified_date.after=2026-02-20T17:00:00Z&sort_by=modified_date%3Adesc",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read articles empty",
+			Input: common.ReadParams{
+				ObjectName: "articles",
+				Fields:     connectors.Fields("id", "description", "created_date"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/articles.list"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParamsMissing("sort_by"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseArticlesEmpty),
+			}.Server(),
+			Expected: &common.ReadResult{
+				Rows: 0,
+				Data: []common.ReadResultRow{},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read articles",
+			Input: common.ReadParams{
+				ObjectName: "articles",
+				Fields:     connectors.Fields("id", "title", "created_date", "modified_date"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/articles.list"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParamsMissing("sort_by"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseArticles),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":            "don:core:devrev:article/1",
+							"title":         "api test",
+							"created_date":  "2026-02-20T17:51:38.642Z",
+							"modified_date": "2026-02-20T17:51:38.642Z",
+						},
+						Raw: map[string]any{
+							"id":            "don:core:devrev:article/1",
+							"title":         "api test",
+							"created_date":  "2026-02-20T17:51:38.642Z",
+							"modified_date": "2026-02-20T17:51:38.642Z",
+						},
+					},
+				},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read articles with Since keeps in-window rows (Unordered client filter)",
+			Input: common.ReadParams{
+				ObjectName: "articles",
+				Fields:     connectors.Fields("id", "modified_date"),
+				Since:      time.Date(2026, 2, 20, 17, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/articles.list"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParamsMissing("sort_by"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseArticles),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":            "don:core:devrev:article/1",
+							"modified_date": "2026-02-20T17:51:38.642Z",
+						},
+						Raw: map[string]any{
+							"id":            "don:core:devrev:article/1",
+							"modified_date": "2026-02-20T17:51:38.642Z",
+						},
+					},
+				},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read articles with Since after modified_date returns empty (client filter, Unordered)",
+			Input: common.ReadParams{
+				ObjectName: "articles",
+				Fields:     connectors.Fields("id", "modified_date"),
+				Since:      time.Date(2026, 2, 21, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/articles.list"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParamsMissing("sort_by"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseArticles),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 0,
+				Data: []common.ReadResultRow{},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read vistas.groups with Since skips time filter (no modified_date)",
+			Input: common.ReadParams{
+				ObjectName: "vistas.groups",
+				Fields:     connectors.Fields("id", "object_type"),
+				Since:      time.Date(2026, 2, 20, 17, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/vistas.groups.list"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParamsMissing("modified_date.after"),
+					mockcond.QueryParamsMissing("sort_by"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseVistasGroups),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read accounts with PageSize exceeding max limit uses max limit",
+			Input: common.ReadParams{
+				ObjectName: "accounts",
+				Fields:     connectors.Fields("id", "modified_date"),
+				PageSize:   500,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/accounts.list"),
+					mockcond.QueryParam("limit", "99"),
+					mockcond.QueryParam("sort_by", "modified_date:desc"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsEmpty),
+			}.Server(),
+			Expected: &common.ReadResult{
+				Rows: 0,
+				Data: []common.ReadResultRow{},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
+// TestReadAccountsSequentialPagination verifies that the connector can
+// iterate through all pages sequentially using the NextPage token returned
+// by the previous response, starting from the first page.
+func TestReadAccountsSequentialPagination(t *testing.T) {
+	t.Parallel()
+
+	responseAccountsFirstPage := testutils.DataFromFile(t, "read-accounts-first-page.json")
+	responseAccountsLastPage := testutils.DataFromFile(t, "read-accounts-last-page.json")
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: mockserver.Cases{
+			{
+				If: mockcond.And{
+					mockcond.Path("/accounts.list"),
+					mockcond.QueryParamsMissing("cursor"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsFirstPage),
+			},
+			{
+				If: mockcond.And{
+					mockcond.Path("/accounts.list"),
+					mockcond.QueryParam("cursor", "cursor_page_2"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsLastPage),
+			},
+		},
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("constructTestConnector: %v", err)
+	}
+
+	params := common.ReadParams{
+		ObjectName: "accounts",
+		Fields:     connectors.Fields("id"),
+	}
+
+	var all []common.ReadResultRow
+
+	for {
+		res, err := conn.Read(t.Context(), params)
+		if err != nil {
+			t.Fatalf("Read: %v", err)
+		}
+
+		all = append(all, res.Data...)
+
+		if res.Done {
+			if res.NextPage != "" {
+				t.Fatalf("expected empty NextPage on last page, got %q", res.NextPage)
+			}
+
+			break
+		}
+
+		params.NextPage = res.NextPage
+	}
+
+	if len(all) != 2 {
+		t.Fatalf("expected 2 rows across all pages, got %d", len(all))
+	}
+
+	if all[0].Fields["id"] != "don:identity:devrev:ACCT-1" {
+		t.Fatalf("unexpected first record id: %v", all[0].Fields["id"])
+	}
+
+	if all[1].Fields["id"] != "don:identity:devrev:ACCT-2" {
+		t.Fatalf("unexpected second record id: %v", all[1].Fields["id"])
+	}
+}

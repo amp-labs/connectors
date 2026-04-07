@@ -1,7 +1,6 @@
 package loxo
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestDelete(t *testing.T) { // nolint:funlen,cyclop
@@ -58,7 +58,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 					`HTTP status 404: retryable error: {"status":404,"error":"Not Found"}`),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New(`HTTP status 404: retryable error: {"status":404,"error":"Not Found"}`), //nolint:err113
+				testutils.StringError(`HTTP status 404: retryable error: {"status":404,"error":"Not Found"}`),
 			},
 		},
 	}

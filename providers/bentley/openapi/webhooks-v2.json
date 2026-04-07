@@ -1,0 +1,1951 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Webhooks",
+        "description": "The Webhooks API allows you to subscribe to events happening in iTwin Platform.\r\n\r\n### Supported event sources\r\n\r\n- iModels events\r\n",
+        "version": "v2"
+    },
+    "servers": [
+        {
+            "url": "https://api.bentley.com/webhooks"
+        }
+    ],
+    "paths": {
+        "/{webhookId}": {
+            "get": {
+                "tags": [
+                    "Webhooks"
+                ],
+                "summary": "Get webhook",
+                "description": "Retrieves the specified webhook.\r\n\r\n#### Authentication\r\n\r\nThe Webhooks API V2 can only be called by Service Applications. This request requires an `Authorization` header with a valid Bearer token with the `webhooks:read` scope. For more information on Service Applications and how to obtain an access token can be found [here](https://developer.bentley.com/tutorials/authorize-service/). A list of your Service Applications can be found [here](https://developer.bentley.com/my-apps).\r\n\r\n#### Authorization\r\n\r\nThe Service Application must have the `webhooks_maintainer` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n",
+                "operationId": "get-webhook",
+                "parameters": [
+                    {
+                        "name": "webhookId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v2+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/webhook"
+                                },
+                                "example": {
+                                    "id": "e6989b43-53ab-45e2-a610-560c6f7e879e",
+                                    "scope": "Account",
+                                    "scopeId": "5c9d64cf-d22f-4149-ad08-c24ff395c3a0",
+                                    "active": false,
+                                    "callbackUrl": "https://some-callback.example.com",
+                                    "eventTypes": [
+                                        "iModels.iModelDeleted.v1"
+                                    ],
+                                    "created": "2023-10-02T14:55:00.4630000+00:00",
+                                    "modified": "2023-10-06T20:03:15.5620000+00:00"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Specified webhook was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "WebhookNotFound",
+                                        "message": "Requested webhook is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Webhooks"
+                ],
+                "summary": "Delete webhook",
+                "description": "Delete the specified webhook. Once deleted, your webhook will stop receiving events.\r\n\r\n#### Authentication\r\n\r\nThe Webhooks API V2 can only be called by Service Applications. This request requires an `Authorization` header with a valid Bearer token with the `webhooks:modify` scope. For more information on Service Applications and how to obtain an access token can be found [here](https://developer.bentley.com/tutorials/authorize-service/). A list of your Service Applications can be found [here](https://developer.bentley.com/my-apps).\r\n\r\n#### Authorization\r\n\r\nThe Service Application must have the `webhooks_maintainer` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n",
+                "operationId": "delete-webhook",
+                "parameters": [
+                    {
+                        "name": "webhookId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v2+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Specified account webhooks was successfully deleted."
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Specified webhook was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "WebhookNotFound",
+                                        "message": "Requested webhook is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Webhooks"
+                ],
+                "summary": "Update webhook",
+                "description": "Updates the specified webhook.\r\n\r\n#### Activation\r\n\r\nTo activate a webhook, make a PATCH request with the `active` property set to `true`. By default, newly created webhooks are inactive by default and must be activated to start recieving events.\r\n\r\nThe following is a sample PATCH request to activate a webhook.\r\n\r\n```http\r\nPATCH https://api.bentley.com/webhooks/{webhookId}\r\n\r\n{\r\n  \"active\": true\r\n}\r\n```\r\n\r\n#### Deactivation\r\n\r\nTo deactivate a webhook, make a PATCH request with the `active` property set to `false`. Once deactivated, your webhook will stop receiving events.\r\n\r\nThe following is a sample PATCH request to deactivate a webhook.\r\n\r\n```http\r\nPATCH https://api.bentley.com/webhooks/{webhookId}\r\n\r\n{\r\n  \"active\": false\r\n}\r\n```\r\n\r\n#### Authentication\r\n\r\nThe Webhooks API V2 can only be called by Service Applications. This request requires an `Authorization` header with a valid Bearer token with the `webhooks:modify` scope. For more information on Service Applications and how to obtain an access token can be found [here](https://developer.bentley.com/tutorials/authorize-service/). A list of your Service Applications can be found [here](https://developer.bentley.com/my-apps).\r\n\r\n#### Authorization\r\n\r\nThe Service Application must have the `webhooks_maintainer` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n",
+                "operationId": "update-webhook",
+                "parameters": [
+                    {
+                        "name": "webhookId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v2+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/request-update-webhook"
+                            },
+                            "example": {
+                                "callbackUrl": "https://some-callback.example.com",
+                                "secret": "custom-secret",
+                                "active": true,
+                                "eventTypes": [
+                                    "iModels.iModelDeleted.v1",
+                                    "iModels.iModelCreated.v1",
+                                    "iModels.namedVersionCreated.v1",
+                                    "iModels.changesReady.v1",
+                                    "accessControl.memberAdded.v1",
+                                    "accessControl.invitationCreated.v1",
+                                    "accessControl.memberRemoved.v1",
+                                    "accessControl.roleAssigned.v1",
+                                    "accessControl.roleUnassigned.v1",
+                                    "iTwins.iTwinCreated.v1",
+                                    "iTwins.iTwinDeleted.v1",
+                                    "iTwins.iTwinUpdated.v1",
+                                    "synchronization.jobCompleted.v1",
+                                    "transformations.jobCompleted.v1",
+                                    "realityModeling.jobCompleted.v1",
+                                    "realityAnalysis.jobCompleted.v1",
+                                    "realityConversion.jobCompleted.v1",
+                                    "changedElements.jobCompleted.v1"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/webhook"
+                                },
+                                "example": {
+                                    "id": "e6989b43-53ab-45e2-a610-560c6f7e879e",
+                                    "scope": "Account",
+                                    "scopeId": "5c9d64cf-d22f-4149-ad08-c24ff395c3a0",
+                                    "active": false,
+                                    "callbackUrl": "https://some-callback.example.com",
+                                    "eventTypes": [
+                                        "iModels.iModelDeleted.v1"
+                                    ],
+                                    "created": "2023-10-02T14:55:00.4630000+00:00",
+                                    "modified": "2023-10-06T20:03:15.5620000+00:00"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Specified webhook was not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "WebhookNotFound",
+                                        "message": "Requested webhook is not available."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to create new account webhook. Make sure request had required properties and does not pass in readonly properties.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidUpdateWebhookRequest",
+                                        "message": "Cannot update a webhook. Make sure the request body is valid.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidRequestBody",
+                                                "message": "Invalid request body.",
+                                                "target": "callbackUrl"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/": {
+            "post": {
+                "tags": [
+                    "Webhooks"
+                ],
+                "summary": "Create webhook",
+                "description": "Creates a new webhook. On creation, webhook are inactive by default. To start receiving event, make a request to the [update webhook endpoint](/apis/webhooks-v2/operations/update-webhook/) with the `active` property set to `true`.\r\n\r\n#### Callback Url (Required)\r\n\r\nThe URL of the public endpoint all events will be sent to. `HTTPS` is required for this URL. This endpoint will receive requests containing events that have been triggered by different actions throughout the iTwin Platform. A POST request will be sent to this url when an event is triggered with event details in the body of the POST request.\r\n\r\n#### Scope (Required)\r\n\r\nThe `scope` property is required. Currently, there are two accepted value for `scope`: `Account`, `iTwin`.\r\n\r\nAll webhooks that are created with the `Account` scope are scoped to the account of the Service Application that created it. This means all events types the webhooks is subscribed to that happen inside that account will be sent to the webhook. Please be aware that Service Application's accounts are separate from the user's account that created the Service Application.\r\n\r\nIf the webhoook is created with the `iTwin` scope, then the property `scopeId` is required. `iTwin` scoped Webhooks will receive events for anything that is created directly inside of that `iTwin`.\r\n\r\n#### Secret (Optional)\r\n\r\nThe `secret` property is optional. If no secret is provided in the request a secret is generated and sent back in the response. If provided, the secret must be at least 32 characters.\r\n\r\nBefore forwarding an event to the client, the webhook secret is used together with the whole request body to generate a `HMAC-SHA256` signature which is included in the `Signature` request header. Before doing anything with the received event the callback endpoint should handle the authorization process by using its own webhook secret copy together with request body and generate another signature on their end to validate the event source. If both signatures are the same, the event should be accepted as authorized. If the signatures do not match the event should be ignored. An example of this workflow can be found in our [tutorial](/tutorials/create-and-react-to-events-using-webhooks-v2/#23-add-event-authorization) or in our [samples](/apis/webhooks-v2/samples/).\r\n\r\n#### Event Types (Required)\r\n\r\nA list of events the webhooks will be subscribed to. See the [Events](/apis/webhooks-v2/available-events) page for a detailed list of all available event types.\r\n\r\n#### Authentication\r\n\r\nWebhooks can only be created by a Service Application. This request requires an `Authorization` header with a valid Bearer token with the `webhooks:modify` scope. For more information on Service Applications and how to obtain an access token can be found [here](https://developer.bentley.com/tutorials/authorize-service/). A list of your Service Applications can be found [here](https://developer.bentley.com/my-apps).\r\n\r\n#### Authorization\r\n\r\nThe Service Application must have the `webhooks_maintainer` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n",
+                "operationId": "create-webhook",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v2+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/request-create-webhook"
+                            },
+                            "example": {
+                                "callbackUrl": "https://some-callback.example.com",
+                                "secret": "custom-secret",
+                                "scope": "iTwin",
+                                "scopeId": "122e514a-70f1-4b34-a2b3-1935b0caca43",
+                                "eventTypes": [
+                                    "iModels.iModelDeleted.v1",
+                                    "iModels.iModelCreated.v1",
+                                    "iModels.namedVersionCreated.v1",
+                                    "iModels.changesReady.v1",
+                                    "accessControl.memberAdded.v1",
+                                    "accessControl.memberRemoved.v1",
+                                    "accessControl.roleAssigned.v1",
+                                    "accessControl.roleUnassigned.v1",
+                                    "iTwins.iTwinCreated.v1",
+                                    "iTwins.iTwinDeleted.v1",
+                                    "synchronization.jobCompleted.v1",
+                                    "transformations.jobCompleted.v1",
+                                    "realityModeling.jobCompleted.v1",
+                                    "realityAnalysis.jobCompleted.v1",
+                                    "realityConversion.jobCompleted.v1",
+                                    "changedElements.jobCompleted.v1"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Account webhook was successfully created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/response-create-webhook"
+                                },
+                                "example": {
+                                    "id": "4a1e0818-ed02-4850-9b95-6c75aeb7bbff",
+                                    "callbackUrl": "https://some-callback.example.com",
+                                    "secret": "custom-secret",
+                                    "scope": "Account",
+                                    "scopeId": "5c9d64cf-d22f-4149-ad08-c24ff395c3a0",
+                                    "active": false,
+                                    "eventTypes": [
+                                        "iModels.iModelDeleted.v1"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request to update an account webhook. Make sure request had required properties and does not pass in readonly properties.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "InvalidCreateWebhookRequest",
+                                        "message": "Cannot create a webhook. Make sure the request body is valid.",
+                                        "details": [
+                                            {
+                                                "code": "InvalidRequestBody",
+                                                "message": "Invalid request body.",
+                                                "target": "callbackUrl"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Webhooks"
+                ],
+                "summary": "Get webhooks",
+                "description": "Retrieves a list of all webhooks that have been created by the calling user.\r\n\r\n#### Authentication\r\n\r\nThe Webhooks API V2 can only be called by Service Applications. This request requires an `Authorization` header with a valid Bearer token with the `webhooks:read` scope. For more information on Service Applications and how to obtain an access token can be found [here](https://developer.bentley.com/tutorials/authorize-service/). A list of your Service Applications can be found [here](https://developer.bentley.com/my-apps).\r\n\r\n#### Authorization\r\n\r\nThe Service Application must have the `webhooks_maintainer` permission assigned at the iTwin level or be an Organization Administrator for the Organization that owns a given iTwin.\r\n\r\nAn Organization Administrator must have at least one of the following roles assigned in User Management: Account Administrator, Co-Administrator, or CONNECT Services Administrator. For more information about User Management please visit our Bentley Communities [Licensing, Cloud, and Web Services](https://bentleysystems.service-now.com/community?id=kb_article_view&sys_kb_id=1e5410491b7d8a90f3fc5287624bcb57) wiki page.\r\n",
+                "operationId": "get-webhooks",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "OAuth access token with `itwin-platform` scope",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AuthorizationHeader"
+                        }
+                    },
+                    {
+                        "name": "Accept",
+                        "in": "header",
+                        "description": "Setting to `application/vnd.bentley.itwin-platform.v2+json` is recommended.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/AcceptHeader"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/webhooks-response"
+                                },
+                                "example": {
+                                    "webhooks": [
+                                        {
+                                            "id": "e6989b43-53ab-45e2-a610-560c6f7e879e",
+                                            "scope": "Account",
+                                            "scopeId": "5c9d64cf-d22f-4149-ad08-c24ff395c3a0",
+                                            "active": false,
+                                            "callbackUrl": "https://some-callback.example.com",
+                                            "eventTypes": [
+                                                "iModels.iModelDeleted.v1"
+                                            ],
+                                            "created": "2023-10-02T14:55:00.4630000+00:00",
+                                            "modified": "2023-10-06T20:03:15.5620000+00:00"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "This response indicates that request lacks valid authentication credentials. Access token might not been provided, issued by the wrong issuer, does not have required scopes or request headers were malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "examples": {
+                                    "HeaderNotFound": {
+                                        "value": {
+                                            "error": {
+                                                "code": "HeaderNotFound",
+                                                "message": "Header Authorization was not found in the request. Access denied."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "This response indicates that the client sent more requests than allowed by this API for the current tier of the client.",
+                        "headers": {
+                            "retry-after": {
+                                "description": "Number of seconds to wait until client is allowed to make more requests.",
+                                "required": true,
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "RateLimitExceeded",
+                                        "message": "The client sent more requests than allowed by this API for the current tier of the client."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "link": {
+                "title": "Link",
+                "type": "object",
+                "properties": {
+                    "href": {
+                        "type": "string",
+                        "description": "Hyperlink to the specific entity."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Hyperlink container."
+            },
+            "request-create-webhook": {
+                "title": "Create Webhook Request",
+                "type": "object",
+                "properties": {
+                    "callbackUrl": {
+                        "type": "string",
+                        "description": "URL where webhook events are sent."
+                    },
+                    "secret": {
+                        "type": "string",
+                        "description": "Optional. If none is passed one will be generated"
+                    },
+                    "scope": {
+                        "$ref": "#/components/schemas/webhook-scope"
+                    },
+                    "scopeId": {
+                        "type": "string",
+                        "description": "Required if scope is 'iTwin'. Globally unique identifier of the scope of the webhook. Not needed if `Account` scope is passed in. The scope id will automatically be the `Account` id of the calling service application"
+                    },
+                    "eventTypes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of event types the webhook is subscribed to."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Webhook creation request."
+            },
+            "response-create-webhook": {
+                "title": "Create Webhook Response",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Globally unique identifier of the webhook."
+                    },
+                    "scopeId": {
+                        "type": "string",
+                        "description": "Globally unique identifier of the scope of the webhook."
+                    },
+                    "scope": {
+                        "$ref": "#/components/schemas/webhook-scope"
+                    },
+                    "secret": {
+                        "type": "string",
+                        "description": "Random unique secret string that will be used to compute an HMAC digest for authorized content distribution."
+                    },
+                    "active": {
+                        "type": "boolean",
+                        "description": "An indicator showing webhook activity. If true, webhook is actively forwarding the events. If false, webhook events are stopped."
+                    },
+                    "callbackUrl": {
+                        "type": "string",
+                        "description": "URL where webhook events are sent."
+                    },
+                    "eventTypes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of event types the webhook is subscribed to."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Webhook creation response."
+            },
+            "request-update-webhook": {
+                "title": "Update Webhook Request",
+                "type": "object",
+                "properties": {
+                    "secret": {
+                        "type": "string",
+                        "description": "Optional. If none is passed one will be generated"
+                    },
+                    "active": {
+                        "type": "boolean",
+                        "description": "An indicator showing webhook activity. If true, webhook is actively forwarding the events. If false, webhook events are stopped."
+                    },
+                    "callbackUrl": {
+                        "type": "string",
+                        "description": "URL where webhook events are sent."
+                    },
+                    "eventTypes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of event types the webhook is subscribed to."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Webhook update request."
+            },
+            "webhooks-response": {
+                "type": "object",
+                "properties": {
+                    "webhooks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/webhook"
+                        },
+                        "description": "List of webhooks."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "webhook-scope": {
+                "enum": [
+                    "Account",
+                    "iTwin"
+                ],
+                "type": "string",
+                "description": "Scope of the webhook. Possible values: 'Account', 'iTwin'."
+            },
+            "webhook": {
+                "title": "Webhook",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Globally unique identifier of the webhook."
+                    },
+                    "scope": {
+                        "$ref": "#/components/schemas/webhook-scope"
+                    },
+                    "scopeId": {
+                        "type": "string",
+                        "description": "Globally unique identifier of the acount of the webhook."
+                    },
+                    "active": {
+                        "type": "boolean",
+                        "description": "An indicator showing webhook activity. If true, webhook is actively forwarding the events. If false, webhook events are stopped."
+                    },
+                    "callbackUrl": {
+                        "type": "string",
+                        "description": "URL where webhook events are sent."
+                    },
+                    "eventTypes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of event types the webhook is subscribed to."
+                    },
+                    "created": {
+                        "type": "string",
+                        "description": "When the webhook was created."
+                    },
+                    "modified": {
+                        "type": "string",
+                        "description": "When the webhook was modified."
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Common property representation of a webhook."
+            },
+            "base-event": {
+                "title": "Base Event",
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "description": "Event content."
+                    },
+                    "eventType": {
+                        "enum": [
+                            "iModels.iModelDeleted.v1",
+                            "iModels.iModelCreated.v1",
+                            "iModels.namedVersionCreated.v1",
+                            "iModels.changesReady.v1",
+                            "accessControl.memberAdded.v1",
+                            "accessControl.memberRemoved.v1",
+                            "accessControl.roleAssigned.v1",
+                            "accessControl.roleUnassigned.v1",
+                            "iTwins.iTwinCreated.v1",
+                            "iTwins.iTwinDeleted.v1",
+                            "synchronization.jobCompleted.v1",
+                            "transformations.jobCompleted.v1",
+                            "realityModeling.jobCompleted.v1",
+                            "realityAnalysis.jobCompleted.v1",
+                            "realityConversion.jobCompleted.v1",
+                            "changedElements.jobCompleted.v1"
+                        ],
+                        "type": "string",
+                        "description": "Event webhook event type."
+                    },
+                    "enqueuedDateTime": {
+                        "type": "string",
+                        "description": "Date and time when event was enqueued.",
+                        "example": "11/3/2023 8:07:01 PM"
+                    },
+                    "iTwinId": {
+                        "type": "string",
+                        "description": "iTwin Id.",
+                        "example": "ce40a55a-6954-4de3-85c7-f796c3e423d9"
+                    },
+                    "messageId": {
+                        "type": "string",
+                        "description": "Event message Id.",
+                        "example": "32369e4b-c9ff-47e4-b422-83b97247ce5b"
+                    },
+                    "webhookId": {
+                        "type": "string",
+                        "description": "Webhook Id.",
+                        "example": "7da4ba7e-3a35-4d97-a1b0-6d453aa97493"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "This information is included in every event the webhook will receive."
+            },
+            "iTwins.iTwinCreated.v1-event": {
+                "title": "iTwins.iTwinCreated.v1",
+                "type": "object",
+                "properties": {
+                    "eventCreatedBy": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the user who created the iTwin.",
+                        "example": "6411cfcf-d188-4788-9267-43eb0f208c8e"
+                    },
+                    "parentId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the parent iTwin.",
+                        "example": "8f6bd249-d17e-49b9-9d70-613611b8b816"
+                    },
+                    "accountOwnerId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the account owner.",
+                        "example": "e5c7ae4f-2d72-4319-b96a-d46492e4f860"
+                    },
+                    "accountOwnerType": {
+                        "type": "string",
+                        "description": "Type of the account owner.",
+                        "example": "User"
+                    },
+                    "iTwinClass": {
+                        "type": "string",
+                        "description": "iTwin class.",
+                        "example": "Endeavor"
+                    },
+                    "iTwinSubClass": {
+                        "type": "string",
+                        "description": "iTwin subclass.",
+                        "example": "Project"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a iTwin is created.",
+                "example": "iTwins"
+            },
+            "iTwins.iTwinDeleted.v1-event": {
+                "title": "iTwins.iTwinDeleted.v1",
+                "type": "object",
+                "properties": {
+                    "eventCreatedBy": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the user who deleted the iTwin.",
+                        "example": "6411cfcf-d188-4788-9267-43eb0f208c8e"
+                    },
+                    "parentId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the parent iTwin.",
+                        "example": "8f6bd249-d17e-49b9-9d70-613611b8b816"
+                    },
+                    "accountOwnerId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the account owner.",
+                        "example": "e5c7ae4f-2d72-4319-b96a-d46492e4f860"
+                    },
+                    "accountOwnerType": {
+                        "type": "string",
+                        "description": "Type of the account owner.",
+                        "example": "User"
+                    },
+                    "iTwinClass": {
+                        "type": "string",
+                        "description": "iTwin class.",
+                        "example": "Endeavor"
+                    },
+                    "iTwinSubClass": {
+                        "type": "string",
+                        "description": "iTwin subclass.",
+                        "example": "Project"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a iTwin is deleted.",
+                "example": "iTwins"
+            },
+            "iTwins.iTwinUpdated.v1-event": {
+                "title": "iTwins.iTwinUpdated.v1",
+                "type": "object",
+                "properties": {
+                    "eventCreatedBy": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the user who updated the iTwin.",
+                        "example": "6411cfcf-d188-4788-9267-43eb0f208c8e"
+                    },
+                    "iTwinAccountId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the iTwin account.",
+                        "example": "a1b2c3d4-5678-9abc-def0-123456789abc"
+                    },
+                    "parentId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the parent iTwin.",
+                        "nullable": true,
+                        "example": "8f6bd249-d17e-49b9-9d70-613611b8b816"
+                    },
+                    "accountOwnerId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the account owner.",
+                        "example": "e5c7ae4f-2d72-4319-b96a-d46492e4f860"
+                    },
+                    "accountOwnerType": {
+                        "type": "string",
+                        "description": "Type of the account owner.",
+                        "example": "User"
+                    },
+                    "iTwinClass": {
+                        "type": "string",
+                        "description": "iTwin class.",
+                        "example": "Endeavor"
+                    },
+                    "iTwinSubClass": {
+                        "type": "string",
+                        "description": "iTwin subclass.",
+                        "example": "Project"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event sent when an iTwin has been updated.",
+                "example": "iTwins"
+            },
+            "accessControl.memberAdded.v1-event": {
+                "title": "accessControl.memberAdded.v1",
+                "type": "object",
+                "properties": {
+                    "memberId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the member.",
+                        "example": "e5c7ae4f-2d72-4319-b96a-d46492e4f860"
+                    },
+                    "eventCreatedBy": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the user added the member.",
+                        "example": "6411cfcf-d188-4788-9267-43eb0f208c8e"
+                    },
+                    "memberType": {
+                        "type": "string",
+                        "description": "Type of member.",
+                        "example": "User"
+                    },
+                    "roleId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the role the member was assigned.",
+                        "example": "d42d3349-1117-41cb-b2c4-7afff1f80d23"
+                    },
+                    "roleName": {
+                        "type": "string",
+                        "description": "Name of the role the member was assigned.",
+                        "example": "Viewer"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a member is added to an iTwin.",
+                "example": "Access Control"
+            },
+            "accessControl.invitation.created.v1-event": {
+                "title": "accessControl.invitationCreated.v1",
+                "type": "object",
+                "properties": {
+                    "invitationId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the invitation.",
+                        "example": "00000000-0000-0000-0000-000000000000"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event sent when an invitation is emailed to a user.",
+                "example": "Access Control"
+            },
+            "accessControl.memberRemoved.v1-event": {
+                "title": "accessControl.memberRemoved.v1",
+                "type": "object",
+                "properties": {
+                    "memberId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the member.",
+                        "example": "e5c7ae4f-2d72-4319-b96a-d46492e4f860"
+                    },
+                    "eventCreatedBy": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the user who removed the member.",
+                        "example": "6411cfcf-d188-4788-9267-43eb0f208c8e"
+                    },
+                    "memberType": {
+                        "type": "string",
+                        "description": "Type of member.",
+                        "example": "User"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a member is removed from an iTwin.",
+                "example": "Access Control"
+            },
+            "accessControl.roleAssigned.v1-event": {
+                "title": "accessControl.roleAssigned.v1",
+                "type": "object",
+                "properties": {
+                    "memberId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the member.",
+                        "example": "e5c7ae4f-2d72-4319-b96a-d46492e4f860"
+                    },
+                    "eventCreatedBy": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the user who assigned the role.",
+                        "example": "6411cfcf-d188-4788-9267-43eb0f208c8e"
+                    },
+                    "memberType": {
+                        "type": "string",
+                        "description": "Type of member.",
+                        "example": "User"
+                    },
+                    "roleId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the role the member was assigned.",
+                        "example": "d42d3349-1117-41cb-b2c4-7afff1f80d23"
+                    },
+                    "roleName": {
+                        "type": "string",
+                        "description": "Name of the role the member was assigned.",
+                        "example": "Viewer"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a role is assigned to a member.",
+                "example": "Access Control"
+            },
+            "accessControl.roleUnassigned.v1-event": {
+                "title": "accessControl.roleUnassigned.v1",
+                "type": "object",
+                "properties": {
+                    "memberId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the member.",
+                        "example": "e5c7ae4f-2d72-4319-b96a-d46492e4f860"
+                    },
+                    "eventCreatedBy": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the user who unassigned the role.",
+                        "example": "6411cfcf-d188-4788-9267-43eb0f208c8e"
+                    },
+                    "memberType": {
+                        "type": "string",
+                        "description": "Type of member.",
+                        "example": "User"
+                    },
+                    "roleId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the role the member was assigned.",
+                        "example": "d42d3349-1117-41cb-b2c4-7afff1f80d23"
+                    },
+                    "roleName": {
+                        "type": "string",
+                        "description": "Name of the role the member was assigned.",
+                        "example": "Viewer"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a role is unassigned to a member.",
+                "example": "Access Control"
+            },
+            "iModels.iModelDeleted.v1-event": {
+                "title": "iModels.iModelDeleted.v1",
+                "type": "object",
+                "properties": {
+                    "imodelId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the iModel.",
+                        "example": "72640bf2-2173-4276-b896-c157bee0df76"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the user that deleted the iModel.",
+                        "example": "e5c7ae4f-2d72-4319-b96a-d46492e4f860"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when the iModel is deleted.",
+                "example": "iModels"
+            },
+            "iModels.iModelCreated.v1-event": {
+                "title": "iModels.iModelCreated.v1",
+                "type": "object",
+                "properties": {
+                    "imodelId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the iModel.",
+                        "example": "72640bf2-2173-4276-b896-c157bee0df76"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the user that created the iModel.",
+                        "example": "e5c7ae4f-2d72-4319-b96a-d46492e4f860"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when the iModel is created.",
+                "example": "iModels"
+            },
+            "iModels.namedVersionCreated.v1-event": {
+                "title": "iModels.namedVersionCreated.v1",
+                "type": "object",
+                "properties": {
+                    "changesetId": {
+                        "type": "string",
+                        "description": "Changeset id is a 40 characters SHA1 hash that is used to validate Changeset. The id of Changeset is generated from the id of its parent as well as its contents.",
+                        "example": "254c63645055a96d4a920425f5dfbc3adec5b602"
+                    },
+                    "changesetIndex": {
+                        "type": "string",
+                        "description": "Index of the Changeset (increasing, but not necessarily sequential).",
+                        "example": "1"
+                    },
+                    "imodelId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the iModel.",
+                        "example": "72640bf2-2173-4276-b896-c157bee0df76"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the user that created iModel named version.",
+                        "example": "e5c7ae4f-2d72-4319-b96a-d46492e4f860"
+                    },
+                    "versionId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the Named Version.",
+                        "example": "51c0ce59-a60d-47fc-a2e4-974712c707ce"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when new Named Version is created for the iModel.",
+                "example": "iModels"
+            },
+            "iModels.changesReady.v1-event": {
+                "title": "iModels.changesReady.v1",
+                "type": "object",
+                "properties": {
+                    "changesetId": {
+                        "type": "string",
+                        "description": "Changeset id is a 40 characters SHA1 hash that is used to validate Changeset. The id of Changeset is generated from the id of its parent as well as its contents.",
+                        "example": "254c63645055a96d4a920425f5dfbc3adec5b602"
+                    },
+                    "changesetIndex": {
+                        "type": "string",
+                        "description": "Index of the Changeset (increasing, but not necessarily sequential).",
+                        "example": "1"
+                    },
+                    "imodelId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the iModel.",
+                        "example": "72640bf2-2173-4276-b896-c157bee0df76"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the user that iModel changeset belongs to.",
+                        "example": "e5c7ae4f-2d72-4319-b96a-d46492e4f860"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when there are new changes to the iModel which are ready to be processed.",
+                "example": "iModels"
+            },
+            "synchronization.jobCompleted.v1-event": {
+                "title": "synchronization.jobCompleted.v1",
+                "type": "object",
+                "properties": {
+                    "synchronizationId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the synchronization.",
+                        "example": "2ad03109-7c6a-47ef-88f6-d15f2a675529"
+                    },
+                    "iModelId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the iModel.",
+                        "example": "72640bf2-2173-4276-b896-c157bee0df76"
+                    },
+                    "connectionId": {
+                        "type": "string",
+                        "description": "Identifier of the connection.",
+                        "example": "MWplZe9Uf0iR1IDMqyOMLqBN0_wHEVBGg_CzJmXdmE4"
+                    },
+                    "result": {
+                        "type": "string",
+                        "description": "Result of the synchronization",
+                        "example": "success"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a synchronization job is complete",
+                "example": "Synchronization"
+            },
+            "export.jobCompleted.v1-event": {
+                "title": "export.jobCompleted.v1",
+                "type": "object",
+                "properties": {
+                    "exportId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the export.",
+                        "example": "b1a1d87d-1aef-4a65-9baa-c747a382bf67"
+                    },
+                    "iModelId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the iModel.",
+                        "example": "72640bf2-2173-4276-b896-c157bee0df76"
+                    },
+                    "connectionId": {
+                        "type": "string",
+                        "description": "Identifier of the connection.",
+                        "example": "MWplZe9Uf0iR1IDMqyOMLqBN0_wHEVBGg_CzJmXdmE4"
+                    },
+                    "result": {
+                        "type": "string",
+                        "description": "Result of the export",
+                        "example": "success"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a export job is complete",
+                "example": "Export"
+            },
+            "transformations.jobCompleted.v1-event": {
+                "title": "transformations.jobCompleted.v1",
+                "type": "object",
+                "properties": {
+                    "transformationId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the transformation.",
+                        "example": "90c69811-1d4e-4bb8-a205-df4e98839c9e"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Status of the transformation",
+                        "example": "Succeeded"
+                    },
+                    "sourceITwinId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the souce iTwin.",
+                        "example": "99ff3a6a-26da-4313-ad6e-e2f3127afebe"
+                    },
+                    "targetITwinId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the target iTwin.",
+                        "example": "ce40a55a-6954-4de3-85c7-f796c3e423d9"
+                    },
+                    "targetIModelId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the target iModel.",
+                        "example": "72640bf2-2173-4276-b896-c157bee0df76"
+                    },
+                    "configurationId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the configuration.",
+                        "example": "645030a1-c34e-435f-bb99-53dafd6d779e"
+                    },
+                    "transformType": {
+                        "type": "string",
+                        "description": "Type of transformation.",
+                        "example": "MergeFork"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a transformation job is complete",
+                "example": "Transformations"
+            },
+            "realityModeling.jobCompleted.v1-event": {
+                "title": "realityModeling.jobCompleted.v1",
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the V1 reality modeling job.",
+                        "example": "79590d08-1281-418b-8920-e4413412884e"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a reality modeling job is completed from the Reality Modeling V1 API",
+                "example": "Reality Modeling"
+            },
+            "realityModeling.jobCompleted.v2-event": {
+                "title": "realityModeling.jobCompleted.v2",
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the reality modeling job.",
+                        "example": "79590d08-1281-418b-8920-e4413412884e"
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "The state of the job. Either 'Cancelled', 'Failed', or 'Success'.",
+                        "example": "Success"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a reality modeling job is completed from the Reality Modeling V2 API",
+                "example": "Reality Modeling"
+            },
+            "realityAnalysis.jobCompleted.v1-event": {
+                "title": "realityAnalysis.jobCompleted.v1",
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the reality analysis job.",
+                        "example": "7f99b1a1-30cd-4f7b-8a4a-62d7f7f7b56a"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a reality analysis job is complete",
+                "example": "Reality Analysis"
+            },
+            "realityConversion.jobCompleted.v1-event": {
+                "title": "realityConversion.jobCompleted.v1",
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the reality conversion job.",
+                        "example": "9f5e8bb1-e3e1-4037-8d83-e08d6d07d9cc"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a reality conversion job is complete",
+                "example": "Reality Conversion"
+            },
+            "changedElements.jobCompleted.v1-event": {
+                "title": "changedElements.jobCompleted.v1",
+                "type": "object",
+                "properties": {
+                    "jobId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the changed element comparison job.",
+                        "example": "9f5e8bb1-e3e1-4037-8d83-e08d6d07d9cc"
+                    },
+                    "iModelId": {
+                        "type": "string",
+                        "description": "Globally Unique Identifier of the iModel.",
+                        "example": "72640bf2-2173-4276-b896-c157bee0df76"
+                    },
+                    "jobSucceeded": {
+                        "type": "boolean",
+                        "description": "Boolean flag indicating success or failure of the changed element comparison job.",
+                        "example": true
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a changed element comparison job is complete",
+                "example": "Changed Elements"
+            },
+            "forms.attachmentAttached.v1-event": {
+                "title": "forms.attachmentAttached.v1",
+                "type": "object",
+                "properties": {
+                    "attachmentId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the attachment.",
+                        "example": "07373b30-52ce-4b4d-8af6-b7dd0a68c29c"
+                    },
+                    "formId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the form data the attachment became attached to.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    },
+                    "discipline": {
+                        "type": "string",
+                        "description": "The discipline of the data instance the attachment became unattached to.",
+                        "example": "General Purpose"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an attachment instance became attached (related) to a form data instance.",
+                "example": "Forms"
+            },
+            "forms.attachmentUnattached.v1-event": {
+                "title": "forms.attachmentUnattached.v1",
+                "type": "object",
+                "properties": {
+                    "attachmentId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the attachment.",
+                        "example": "07373b30-52ce-4b4d-8af6-b7dd0a68c29c"
+                    },
+                    "formId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the form data the attachment was unattached from.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    },
+                    "discipline": {
+                        "type": "string",
+                        "description": "The discipline of the data instance the attachment became unattached from.",
+                        "example": "General Purpose"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an attachment is unattached from a form.",
+                "example": "Forms"
+            },
+            "forms.commentCreated.v1-event": {
+                "title": "forms.commentCreated.v1",
+                "type": "object",
+                "properties": {
+                    "commentId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the comment.",
+                        "example": "969a8e68-07b8-47da-bf65-74a3c71a8c47"
+                    },
+                    "formId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the form data the comment was created for.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    },
+                    "discipline": {
+                        "type": "string",
+                        "description": "The discipline of the data instance the comment was created for.",
+                        "example": "General Purpose"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a comment was created for a particular form data instance.",
+                "example": "Forms"
+            },
+            "forms.formCreated.v1-event": {
+                "title": "forms.formCreated.v1",
+                "type": "object",
+                "properties": {
+                    "sourceEntityId": {
+                        "type": "string",
+                        "description": "Denotes what file or iModel element the data instance was created about. Will be null if not applicable.",
+                        "nullable": true,
+                        "example": "f9e89f85-ad02-4043-93eb-71f2e2b2a427"
+                    },
+                    "formId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the form data that was created.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    },
+                    "discipline": {
+                        "type": "string",
+                        "description": "The discipline of this data instance.",
+                        "example": "General Purpose"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a form data instance was created.",
+                "example": "Forms"
+            },
+            "forms.formDeleted.v1-event": {
+                "title": "forms.formDeleted.v1",
+                "type": "object",
+                "properties": {
+                    "sourceEntityId": {
+                        "type": "string",
+                        "description": "Denotes what file or iModel element the data instance was created about. Will be null if not applicable.",
+                        "nullable": true,
+                        "example": "f9e89f85-ad02-4043-93eb-71f2e2b2a427"
+                    },
+                    "formId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the form data that was deleted.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    },
+                    "discipline": {
+                        "type": "string",
+                        "description": "The discipline of this data instance.",
+                        "example": "General Purpose"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a form data instance was deleted.",
+                "example": "Forms"
+            },
+            "forms.formUpdated.v1-event": {
+                "title": "forms.formUpdated.v1",
+                "type": "object",
+                "properties": {
+                    "sourceEntityId": {
+                        "type": "string",
+                        "description": "Denotes what file or iModel element the data instance was created about. Will be null if not applicable.",
+                        "nullable": true,
+                        "example": "f9e89f85-ad02-4043-93eb-71f2e2b2a427"
+                    },
+                    "formId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the form data that was updated.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    },
+                    "discipline": {
+                        "type": "string",
+                        "description": "The discipline of this data instance.",
+                        "example": "General Purpose"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a form data instance was modified.",
+                "example": "Forms"
+            },
+            "forms.externalFileLinked.v1-event": {
+                "title": "forms.externalFileLinked.v1",
+                "type": "object",
+                "properties": {
+                    "fileId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the external file instance that was linked. Will generally consist of `ES_` followed by a GUID.",
+                        "example": "ES_41070fc0-9375-4b8a-84bf-e41d0ded68f8"
+                    },
+                    "formId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the form data the external file was linked to.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    },
+                    "discipline": {
+                        "type": "string",
+                        "description": "The discipline of the data instance the external file was linked to.",
+                        "example": "General Purpose"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an external file instance became linked (related) to a form data instance .",
+                "example": "Forms"
+            },
+            "forms.externalFileUnlinked.v1-event": {
+                "title": "forms.externalFileUnlinked.v1",
+                "type": "object",
+                "properties": {
+                    "fileId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the external file instance that was unlinked. Will generally consist of `ES_` followed by a GUID.",
+                        "example": "ES_41070fc0-9375-4b8a-84bf-e41d0ded68f8"
+                    },
+                    "formId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the form data the external file was unlinked from.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    },
+                    "discipline": {
+                        "type": "string",
+                        "description": "The discipline of the data instance the external file was unlinked from.",
+                        "example": "General Purpose"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an external file instance became unlinked from a form data instance . (This means the relationship between the two was deleted, but the external file itself may or may not have been deleted).",
+                "example": "Forms"
+            },
+            "forms.metadataDeleted.v1-event": {
+                "title": "forms.metadataDeleted.v1",
+                "type": "object",
+                "properties": {
+                    "metadataId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the form metadata instance.",
+                        "example": "f2510d7d-1cc2-47b6-bc15-0c984b8c8466"
+                    },
+                    "discipline": {
+                        "type": "string",
+                        "description": "The discipline of the related data instance.",
+                        "example": "General Purpose"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a form metadata instance (that is, a `Forms_EC_Mapping/Form` instance which groups together one or more FormDefinitions) was deleted.",
+                "example": "Forms"
+            },
+            "issues.attachmentAttached.v1-event": {
+                "title": "issues.attachmentAttached.v1",
+                "type": "object",
+                "properties": {
+                    "attachmentId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the attachment.",
+                        "example": "07373b30-52ce-4b4d-8af6-b7dd0a68c29c"
+                    },
+                    "issueId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the issue the attachment became attached to.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an attachment instance became attached (related) to an issue.",
+                "example": "Issues"
+            },
+            "issues.attachmentUnattached.v1-event": {
+                "title": "issues.attachmentUnattached.v1",
+                "type": "object",
+                "properties": {
+                    "attachmentId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the attachment.",
+                        "example": "07373b30-52ce-4b4d-8af6-b7dd0a68c29c"
+                    },
+                    "issueId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the issue the attachment was unattached from.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an attachment is unattached from an issue",
+                "example": "Issues"
+            },
+            "issues.commentCreated.v1-event": {
+                "title": "issues.commentCreated.v1",
+                "type": "object",
+                "properties": {
+                    "commentId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the comment.",
+                        "example": "969a8e68-07b8-47da-bf65-74a3c71a8c47"
+                    },
+                    "issueId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the issue the comment was created for.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when a comment was created for a particular issue instance.",
+                "example": "Issues"
+            },
+            "issues.issueCreated.v1-event": {
+                "title": "issues.issueCreated.v1",
+                "type": "object",
+                "properties": {
+                    "sourceEntityId": {
+                        "type": "string",
+                        "description": "Denotes what file or iModel element the data instance was created about. Will be null if not applicable.",
+                        "nullable": true,
+                        "example": "f9e89f85-ad02-4043-93eb-71f2e2b2a427"
+                    },
+                    "issueId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the issue that was created.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an issue was created.",
+                "example": "Issues"
+            },
+            "issues.issueDeleted.v1-event": {
+                "title": "issues.issueDeleted.v1",
+                "type": "object",
+                "properties": {
+                    "sourceEntityId": {
+                        "type": "string",
+                        "description": "Denotes what file or iModel element the data instance was created about. Will be null if not applicable.",
+                        "nullable": true,
+                        "example": "f9e89f85-ad02-4043-93eb-71f2e2b2a427"
+                    },
+                    "issueId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the issue that was deleted.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an issue was deleted.",
+                "example": "Issues"
+            },
+            "issues.issueUpdated.v1-event": {
+                "title": "issues.issueUpdated.v1",
+                "type": "object",
+                "properties": {
+                    "sourceEntityId": {
+                        "type": "string",
+                        "description": "Denotes what file or iModel element the data instance was created about. Will be null if not applicable.",
+                        "nullable": true,
+                        "example": "f9e89f85-ad02-4043-93eb-71f2e2b2a427"
+                    },
+                    "issueId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the issue that was updated.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an issue was modified.",
+                "example": "Issues"
+            },
+            "issues.externalFileLinked.v1-event": {
+                "title": "issues.externalFileLinked.v1",
+                "type": "object",
+                "properties": {
+                    "fileId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the external file instance that was linked. Will generally consist of `ES_` followed by a GUID.",
+                        "example": "ES_41070fc0-9375-4b8a-84bf-e41d0ded68f8"
+                    },
+                    "issueId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the issue the external file was linked to.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an external file instance became linked (related) to an issue.",
+                "example": "Issues"
+            },
+            "issues.externalFileUnlinked.v1-event": {
+                "title": "issues.externalFileUnlinked.v1",
+                "type": "object",
+                "properties": {
+                    "fileId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the external file instance that was unlinked. Will generally consist of `ES_` followed by a GUID.",
+                        "example": "ES_41070fc0-9375-4b8a-84bf-e41d0ded68f8"
+                    },
+                    "issueId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the issue the external file was unlinked from.",
+                        "example": "89f14044-47f3-4252-adcb-c75ed4b2a1b2"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an external file instance became unlinked from an issue. (This means the relationship between the two was deleted, but the external file itself may or may not have been deleted).",
+                "example": "Issues"
+            },
+            "issues.metadataDeleted.v1-event": {
+                "title": "issues.metadataDeleted.v1",
+                "type": "object",
+                "properties": {
+                    "metadataId": {
+                        "type": "string",
+                        "description": "The globally unique identifier of the issue metadata instance.",
+                        "example": "f2510d7d-1cc2-47b6-bc15-0c984b8c8466"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Event that gets triggered when an issue metadata instance was deleted.",
+                "example": "Issues"
+            },
+            "DetailedError": {
+                "required": [
+                    "code",
+                    "message",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "One of a server-defined set of error codes."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "A human-readable representation of the error."
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "The target of the error.",
+                        "nullable": true
+                    },
+                    "details": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "description": "Optional array of more specific errors."
+                    }
+                },
+                "description": "Contains error information and an array of more specific errors."
+            },
+            "DetailedErrorResponse": {
+                "title": "Detailed Error Response",
+                "required": [
+                    "error"
+                ],
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "$ref": "#/components/schemas/DetailedError"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Gives details for an error that occurred while handling the request. Note that clients MUST NOT assume that every failed request will produce an object of this schema, or that all of the properties in the response will be non-null, as the error may have prevented this response from being constructed."
+            },
+            "Error": {
+                "required": [
+                    "code",
+                    "message"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "One of a server-defined set of error codes."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "A human-readable representation of the error."
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "The target of the error.",
+                        "nullable": true
+                    }
+                },
+                "description": "Contains error information."
+            },
+            "ErrorResponse": {
+                "title": "Error Response",
+                "required": [
+                    "error"
+                ],
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "$ref": "#/components/schemas/Error"
+                    }
+                },
+                "additionalProperties": false,
+                "description": "Gives details for an error that occurred while handling the request. Note that clients MUST NOT assume that every failed request will produce an object of this schema, or that all of the properties in the response will be non-null, as the error may have prevented this response from being constructed."
+            },
+            "AcceptHeader": {
+                "type": "string",
+                "default": "application/vnd.bentley.itwin-platform.v2+json"
+            },
+            "AuthorizationHeader": {
+                "pattern": "^Bearer .*$",
+                "type": "string"
+            },
+            "PreferHeader": {
+                "enum": [
+                    "return=representation",
+                    "return=minimal"
+                ],
+                "type": "string"
+            }
+        },
+        "securitySchemes": {
+            "apiKeyHeader": {
+                "type": "apiKey",
+                "name": "X-Api-Subscription-Key",
+                "in": "header"
+            },
+            "apiKeyQuery": {
+                "type": "apiKey",
+                "name": "subscription-key",
+                "in": "query"
+            }
+        }
+    },
+    "security": [
+        {
+            "apiKeyHeader": []
+        },
+        {
+            "apiKeyQuery": []
+        }
+    ]
+}

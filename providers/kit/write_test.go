@@ -2,7 +2,6 @@
 package kit
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -160,7 +159,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Then:  mockserver.Response(http.StatusUnprocessableEntity, tagsIssue),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("Name has already been taken"),
+				testutils.StringError("Name has already been taken"),
 			},
 		},
 		{

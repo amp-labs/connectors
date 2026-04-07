@@ -1,7 +1,6 @@
 package dynamicsbusiness
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -48,7 +47,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Could not find a property named 'lastModifiedDateTime'"),
+				testutils.StringError("Could not find a property named 'lastModifiedDateTime'"),
 			},
 		},
 		{
@@ -61,7 +60,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("Environment does not exist."),
+				testutils.StringError("Environment does not exist."),
 			},
 		},
 		{

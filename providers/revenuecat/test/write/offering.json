@@ -1,0 +1,9 @@
+{
+  "object": "offering",
+  "id": "ofng_abc789",
+  "lookup_key": "default",
+  "display_name": "Default Offering",
+  "is_current": true,
+  "created_at": 1700000000000,
+  "project_id": "proj_123"
+}

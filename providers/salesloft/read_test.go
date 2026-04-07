@@ -1,7 +1,6 @@
 package salesloft
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -49,7 +48,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}`),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("Not Found"),
+				common.ErrBadRequest, testutils.StringError("Not Found"),
 			},
 		},
 		{

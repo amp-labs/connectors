@@ -1,7 +1,6 @@
 package copper
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -47,7 +46,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("not_found"), // nolint:lll
+				testutils.StringError("not_found"),
 			},
 		},
 		{
@@ -59,7 +58,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid input: Validation errors: Base: Unrecognized attributes specified: pageSize"), // nolint:lll
+				testutils.StringError("Invalid input: Validation errors: Base: Unrecognized attributes specified: pageSize"), // nolint:lll
 			},
 		},
 		{

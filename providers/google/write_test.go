@@ -1,7 +1,6 @@
 package google
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -41,7 +40,7 @@ func TestCalendarWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"Missing foreground color.",
 				),
 			},

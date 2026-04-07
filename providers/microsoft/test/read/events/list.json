@@ -1,0 +1,17 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/calendar/events",
+  "value": [
+    {
+      "@odata.etag": "W/\"fIY9UbXetEik54DbN4n/UQABDLWU7A==\"",
+      "id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAB-ie_oAAB8hj1Rtd60SKTngNs3if9RAAEMsx4rAAA=",
+      "createdDateTime": "2026-03-09T18:59:53.4891709Z",
+      "lastModifiedDateTime": "2026-03-09T20:44:33.6438977Z",
+      "categories": [],
+      "reminderMinutesBeforeStart": 15,
+      "isReminderOn": true,
+      "hasAttachments": false,
+      "subject": "Movies night",
+      "bodyPreview": "Gather to watch cinema."
+    }
+  ]
+}

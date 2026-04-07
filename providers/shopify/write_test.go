@@ -1,7 +1,6 @@
 package shopify
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -80,7 +79,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Customer must have a name, phone number or email address"),
+				testutils.StringError("Customer must have a name, phone number or email address"),
 			},
 		},
 		{

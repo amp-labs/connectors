@@ -1,7 +1,6 @@
 package iterable
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -58,7 +57,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid Json: No content to map due to end-of-input"),
+				testutils.StringError("Invalid Json: No content to map due to end-of-input"),
 			},
 		},
 		{
@@ -74,7 +73,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid JSON body"),
+				testutils.StringError("Invalid JSON body"),
 			},
 		},
 		{
@@ -177,7 +176,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrCaller,
-				errors.New("No webhook with id 0"),
+				testutils.StringError("No webhook with id 0"),
 			},
 		},
 	}

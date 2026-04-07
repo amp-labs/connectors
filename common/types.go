@@ -73,6 +73,9 @@ var (
 	// ErrBadRequest is returned when we get a 400 response from the provider.
 	ErrBadRequest = errors.New("bad request")
 
+	// ErrConflict is returned when we get a 409 response from the provider.
+	ErrConflict = errors.New("conflict")
+
 	// ErrNotFound is returned when we get a 404 response from the provider.
 	ErrNotFound = errors.New("not found")
 
@@ -92,6 +95,9 @@ var (
 
 	// ErrEmptyJSONHTTPResponse is returned when the JSONHTTPResponse is nil.
 	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
+
+	// ErrFailedUnmarshalling is returned when the HTTP response cannot be unmarshalled.
+	ErrFailedUnmarshalling = errors.New("json.Unmarshal failed")
 
 	// ErrEmptyRecordIdResponse is returned when the response body doesn't have record id.
 	ErrEmptyRecordIdResponse = errors.New("empty record id in response body")
@@ -177,6 +183,10 @@ type ReadParams struct {
 	//          - "query[name]=test&sort[createdOn]=DESC"
 	//      Reference: https://apireference.getresponse.com/#operation/getCampaignList
 	Filter string // optional
+
+	// BuilderFilter is an optional Ampersand-style structured filter for read actions.
+	// Multiple field filters are joined by AND. Only the "eq" operator is supported.
+	BuilderFilter *SearchFilter // optional
 
 	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
 	// It is optional and supported by the following connectors:
@@ -657,6 +667,10 @@ type FieldMetadata struct {
 	// Values is a list of possible values for this field.
 	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
 	Values []FieldValue
+
+	// ReferenceTo is the list of object types this field references.
+	// It is applicable only if the ProviderType is "reference" (i.e. a lookup field), otherwise nil.
+	ReferenceTo []string
 }
 
 type FieldsMetadata map[string]FieldMetadata

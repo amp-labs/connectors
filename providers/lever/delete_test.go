@@ -1,7 +1,6 @@
 package lever
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -62,7 +61,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrNotFound,
-				errors.New(
+				testutils.StringError(
 					"That requisition field doesn't exist on your account",
 				),
 			},

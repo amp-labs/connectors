@@ -73,8 +73,6 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 		return nil, err
 	}
 
-	// Many PhoneBurner list endpoints support page-based pagination. Defaulting these parameters
-	// makes NextPage generation deterministic.
 	if paginatedObjects.Has(params.ObjectName) {
 		url.WithQueryParam("page_size", readhelper.PageSizeWithDefaultStr(params, "100"))
 		url.WithQueryParam("page", "1")
@@ -85,19 +83,44 @@ func buildReadURL(baseURL string, params common.ReadParams) (*urlbuilder.URL, er
 	return url, nil
 }
 
+const (
+	// pstOffsetSeconds is the UTC offset for PST (UTC-8), in seconds.
+	pstOffsetSeconds = -8 * 60 * 60
+	// pstUTCOffsetHours is the absolute hour difference between UTC and PST.
+	// Used as a buffer when computing update_to to guarantee it is always
+	// ahead of any UTC-based updated_from value sent to PhoneBurner.
+	pstUTCOffsetHours = 8
+)
+
+// formatPST converts t to PST (UTC-8) and formats it as "YYYY-MM-DD HH:MM:SS".
+// PhoneBurner's API docs (https://www.phoneburner.com/developer/route_list#contacts)
+// do not explicitly state a timezone, but the server operates in PST and interprets
+// all timestamp params in that timezone. Sending UTC-formatted strings without
+// conversion causes PhoneBurner to treat them as PST values, which appear hours in
+// the future relative to its clock and triggers a 400 error.
+func formatPST(t time.Time) string {
+	return datautils.Time.FormatRFC3339inLocation(t, time.FixedZone("PST", pstOffsetSeconds))
+}
+
 // applyTimeScopingToURL adds object-specific time-filter query params.
 func applyTimeScopingToURL(url *urlbuilder.URL, params common.ReadParams) {
 	switch params.ObjectName {
 	case objectContacts:
 		// Docs: https://www.phoneburner.com/developer/route_list#contacts
-		// updated_from / update_to in "YYYY-MM-DD HH:ii:ss" format.
 		if !params.Since.IsZero() {
-			url.WithQueryParam("updated_from", params.Since.Format("2006-01-02 15:04:05"))
-			// include_new=1 ensures contacts created (not just updated) after updated_from are included.
+			url.WithQueryParam("updated_from", formatPST(params.Since))
 			url.WithQueryParam("include_new", "1")
-		}
-		if !params.Until.IsZero() {
-			url.WithQueryParam("update_to", params.Until.Format("2006-01-02 15:04:05"))
+
+			// update_to must always be sent explicitly. If omitted, PhoneBurner defaults
+			// it to PST "now", which can be earlier than updated_from and causes a 400.
+			// We add 8h (the PST UTC offset) as a buffer to guarantee update_to > updated_from
+			// regardless of when this runs.
+			updateTo := time.Now().Add(pstUTCOffsetHours * time.Hour)
+			if !params.Until.IsZero() {
+				updateTo = params.Until
+			}
+
+			url.WithQueryParam("update_to", formatPST(updateTo))
 		}
 	case objectDialsession:
 		// Docs: https://www.phoneburner.com/developer/route_list#dialsession
@@ -105,6 +128,7 @@ func applyTimeScopingToURL(url *urlbuilder.URL, params common.ReadParams) {
 		if !params.Since.IsZero() {
 			url.WithQueryParam("date_start", params.Since.Format(time.DateOnly))
 		}
+
 		if !params.Until.IsZero() {
 			url.WithQueryParam("date_end", params.Until.Format(time.DateOnly))
 		}

@@ -2,12 +2,15 @@ package salesforce
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/associations"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
 
 const defaultSOQLPageSize = 2000
@@ -57,39 +60,49 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	url.WithQueryParam("q", makeSOQL(config).String())
+	url.WithQueryParam("q", makeSOQL(config, c.getTimestampColumn()).String())
 
 	return url, nil
 }
 
 // makeSOQL returns the SOQL query for the desired read operation.
-func makeSOQL(params common.ReadParams) *core.SOQLBuilder {
+// The timestampColumn parameter specifies which field to use for Since/Until filtering
+// (typically "SystemModstamp").
+func makeSOQL(params common.ReadParams, timestampColumn string) *core.SOQLBuilder {
 	fields := associations.FieldsForSelectQueryRead(&params)
 	soql := (&core.SOQLBuilder{}).SelectFields(fields).From(params.ObjectName)
-	addWhereClauses(soql, params)
+	addWhereClauses(soql, params, timestampColumn)
 
 	return soql
 }
 
 // addWhereClauses adds WHERE clauses to the SOQL query based on the config.
-func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams) {
+func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, timestampColumn string) {
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
-		soql.Where("SystemModstamp > " + datautils.Time.FormatRFC3339inUTC(config.Since))
+		soql.Where(timestampColumn + " > " + datautils.Time.FormatRFC3339inUTC(config.Since))
 	}
 
 	if !config.Until.IsZero() {
-		soql.Where("SystemModstamp <= " + datautils.Time.FormatRFC3339inUTC(config.Until))
+		soql.Where(timestampColumn + " <= " + datautils.Time.FormatRFC3339inUTC(config.Until))
 	}
 
 	if config.Deleted {
 		soql.Where("IsDeleted = true")
 	}
 
-	// TODO: When we support builder facing filters, we should escape the
-	// filter string to avoid SOQL injection.
 	if config.Filter != "" {
 		soql.Where(config.Filter)
+	}
+
+	if config.BuilderFilter != nil {
+		for _, ff := range config.BuilderFilter.FieldFilters {
+			if ff.Operator != common.FilterOperatorEQ {
+				continue
+			}
+
+			soql.Where(buildSOQLEqCondition(ff.FieldName, ff.Value))
+		}
 	}
 
 	if config.PageSize > 0 {
@@ -97,6 +110,49 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams) {
 	}
 }
 
+// DeployApexTriggersForFilteredRead builds and deploys filtered-read apex triggers
+// (datetime indicator) for the given trigger params. Each trigger sets a timestamp
+// field to System.now() when any watched field changes.
+func (c *Connector) DeployApexTriggersForFilteredRead( //nolint:unused
+	ctx context.Context,
+	triggerParams map[common.ObjectName]*ApexTriggerParams,
+) (*DeployApexTriggersResult, error) {
+	if len(triggerParams) == 0 {
+		return &DeployApexTriggersResult{
+			Results: make(map[common.ObjectName]*ApexTriggerResult),
+			Errors:  make(map[common.ObjectName]error),
+		}, nil
+	}
+
+	triggerCodeMap := make(map[common.ObjectName]string, len(triggerParams))
+	for objName, params := range triggerParams {
+		triggerCodeMap[objName] = metadata.GenerateTriggerCodeForFilteredRead(*params, params.IndicatorField.FieldName)
+	}
+
+	zipDataMap, err := buildApexTriggerZips(triggerParams, triggerCodeMap)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.deployApexTriggers(ctx, triggerParams, zipDataMap)
+}
+
 func (c *Connector) DefaultPageSize() int {
 	return defaultSOQLPageSize
+}
+
+// buildSOQLEqCondition builds a SOQL equality condition for a field and value.
+// String values are single-quoted and escaped to prevent SOQL injection.
+func buildSOQLEqCondition(fieldName string, value any) string {
+	switch v := value.(type) {
+	case string:
+		escaped := strings.ReplaceAll(v, `\`, `\\`)
+		escaped = strings.ReplaceAll(escaped, "'", `\'`)
+
+		return fmt.Sprintf("%s = '%s'", fieldName, escaped)
+	case bool:
+		return fmt.Sprintf("%s = %t", fieldName, v)
+	default:
+		return fmt.Sprintf("%s = %v", fieldName, v)
+	}
 }

@@ -1,7 +1,6 @@
 package constantcontact
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -52,7 +51,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusBadRequest, responseContactIDsError),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("Descriptive error message."),
+				testutils.StringError("Descriptive error message."),
 				common.ErrBadRequest,
 			},
 		},

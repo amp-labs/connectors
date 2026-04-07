@@ -1,0 +1,27 @@
+{
+  "id": "00g_newgroup_12345",
+  "created": "2023-12-26T10:00:00.000Z",
+  "lastUpdated": "2023-12-26T10:00:00.000Z",
+  "lastMembershipUpdated": null,
+  "objectClass": ["okta:user_group"],
+  "type": "OKTA_GROUP",
+  "profile": {
+    "name": "New Group",
+    "description": "A newly created group"
+  },
+  "_links": {
+    "logo": [
+      {
+        "name": "medium",
+        "href": "https://example.okta.com/img/logos/groups/okta-medium.png",
+        "type": "image/png"
+      }
+    ],
+    "users": {
+      "href": "https://trial-4378019.okta.com/api/v1/groups/00g_newgroup_12345/users"
+    },
+    "apps": {
+      "href": "https://trial-4378019.okta.com/api/v1/groups/00g_newgroup_12345/apps"
+    }
+  }
+}
