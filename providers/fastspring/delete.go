@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/httpkit"
 )
 
 // FastSpring delete API references:
@@ -45,10 +46,9 @@ func (c *Connector) parseDeleteResponse(
 	_ *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.DeleteResult, error) {
-	switch response.Code {
-	case http.StatusOK, http.StatusAccepted, http.StatusNoContent:
-		return &common.DeleteResult{Success: true}, nil
-	default:
+	if !httpkit.Status2xx(response.Code) {
 		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
 	}
+
+	return &common.DeleteResult{Success: true}, nil
 }
