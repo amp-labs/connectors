@@ -12,28 +12,12 @@ import (
 // FastSpring delete API references:
 // - Delete product: https://developer.fastspring.com/reference/delete-a-product
 // - Cancel subscription: https://developer.fastspring.com/reference/cancel-a-subscription
-
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
 	if err := validateDeleteParams(params); err != nil {
 		return nil, err
 	}
 
-	baseURL := c.ProviderInfo().BaseURL
-
-	var (
-		deleteURL *urlbuilder.URL
-		err       error
-	)
-
-	switch params.ObjectName {
-	case objectProducts:
-		deleteURL, err = urlbuilder.New(baseURL, objectProducts, params.RecordId)
-	case objectSubscriptions:
-		deleteURL, err = urlbuilder.New(baseURL, objectSubscriptions, params.RecordId)
-	default:
-		return nil, common.ErrOperationNotSupportedForObject
-	}
-
+	deleteURL, err := buildDeleteURL(c.ProviderInfo().BaseURL, params)
 	if err != nil {
 		return nil, err
 	}
@@ -46,6 +30,17 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 	req.Header.Set("Accept", "application/json")
 
 	return req, nil
+}
+
+func buildDeleteURL(baseURL string, params common.DeleteParams) (*urlbuilder.URL, error) {
+	switch params.ObjectName {
+	case objectProducts:
+		return urlbuilder.New(baseURL, objectProducts, params.RecordId)
+	case objectSubscriptions:
+		return urlbuilder.New(baseURL, objectSubscriptions, params.RecordId)
+	default:
+		return nil, common.ErrOperationNotSupportedForObject
+	}
 }
 
 func validateDeleteParams(params common.DeleteParams) error {
