@@ -283,7 +283,7 @@ func (c *Connector) createSessionForToken(
 	}
 
 	req := &storagepb.CreateReadSessionRequest{
-		Parent: "projects/" + c.projectID,
+		Parent: "projects/" + c.projectId,
 		ReadSession: &storagepb.ReadSession{
 			Table:      c.tablePath(params.ObjectName),
 			DataFormat: storagepb.DataFormat_ARROW,

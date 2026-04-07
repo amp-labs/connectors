@@ -19,8 +19,8 @@ const (
 	// Can be an absolute path or a path relative to the working directory.
 	EnvServiceAccountPath = "BIGQUERY_SERVICE_ACCOUNT_PATH"
 
-	// EnvProject is the GCP project ID (e.g., "my-project-id"), not the numeric project number.
-	EnvProject = "BIGQUERY_PROJECT"
+	// EnvProjectId is the GCP project ID (e.g., "my-project-id"), not the numeric project number.
+	EnvProjectId = "BIGQUERY_PROJECT_ID"
 	EnvDataset            = "BIGQUERY_DATASET"
 	EnvTimestampColumn    = "BIGQUERY_TIMESTAMP_COLUMN"
 	EnvLocation           = "BIGQUERY_LOCATION" // optional
@@ -36,7 +36,7 @@ const (
 // Optional environment variables:
 //   - BIGQUERY_LOCATION: Dataset location (e.g., "US", "EU")
 func GetBigQueryConnector(ctx context.Context) *connectorbq.Connector {
-	project := os.Getenv(EnvProject)
+	project := os.Getenv(EnvProjectId)
 	if project == "" {
 		project = "ampersand-dev" // Default for local testing.
 	}
@@ -83,7 +83,7 @@ func GetBigQueryConnector(ctx context.Context) *connectorbq.Connector {
 	conn, err := connectorbq.NewConnector(common.ConnectorParams{
 		CustomAuthenticatedClient: auth,
 		Metadata: map[string]string{
-			"projectID":       project,
+			"projectId":       project,
 			"dataset":         dataset,
 			"timestampColumn": timestampColumn,
 		},
@@ -102,9 +102,9 @@ func GetBigQueryClient(ctx context.Context) *bigquery.Client {
 		utils.Fail("missing environment variable", "variable", EnvServiceAccountPath)
 	}
 
-	project := os.Getenv(EnvProject)
+	project := os.Getenv(EnvProjectId)
 	if project == "" {
-		utils.Fail("missing environment variable", "variable", EnvProject)
+		utils.Fail("missing environment variable", "variable", EnvProjectId)
 	}
 
 	serviceAccountJSON, err := os.ReadFile(serviceAccountPath)
@@ -127,7 +127,7 @@ func PrintUsage() {
 	fmt.Println()
 	fmt.Println("Required environment variables:")
 	fmt.Printf("  %s: Path to service account JSON file\n", EnvServiceAccountPath)
-	fmt.Printf("  %s: GCP project ID\n", EnvProject)
+	fmt.Printf("  %s: GCP project ID\n", EnvProjectId)
 	fmt.Printf("  %s: BigQuery dataset name\n", EnvDataset)
 	fmt.Printf("  %s: Timestamp column for time-based filtering and backfill windowing\n", EnvTimestampColumn)
 	fmt.Println()
@@ -136,7 +136,7 @@ func PrintUsage() {
 	fmt.Println()
 	fmt.Println("Example:")
 	fmt.Printf("  export %s=/path/to/service-account.json\n", EnvServiceAccountPath)
-	fmt.Printf("  export %s=my-gcp-project\n", EnvProject)
+	fmt.Printf("  export %s=my-gcp-project\n", EnvProjectId)
 	fmt.Printf("  export %s=my_dataset\n", EnvDataset)
 	fmt.Printf("  export %s=updated_at\n", EnvTimestampColumn)
 	fmt.Printf("  export %s=US\n", EnvLocation)
