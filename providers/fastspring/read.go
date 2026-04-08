@@ -159,13 +159,13 @@ func recordsFromSingleStringRow(
 	recordsKey, idField string,
 	arrayErr error,
 ) ([]map[string]any, error) {
-	str, serr := jsonquery.New(node).StringOptional(recordsKey)
+	str, serr := jsonquery.New(node).StrWithDefault(recordsKey, "")
 	if serr != nil {
 		return nil, arrayErr
 	}
 
-	if str != nil && *str != "" {
-		return []map[string]any{{idField: *str}}, nil
+	if str != "" {
+		return []map[string]any{{idField: str}}, nil
 	}
 
 	return nil, arrayErr
