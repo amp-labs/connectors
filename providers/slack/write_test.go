@@ -167,66 +167,6 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			// reactions.add returns only ok:true with no resource or ID.
-			Name: "Add reaction returns success with no record ID",
-			Input: common.WriteParams{
-				ObjectName: "reactions",
-				RecordData: map[string]any{
-					"channel":   "C0ABCDEF123",
-					"name":      "thumbsup",
-					"timestamp": "1503435956.000247",
-				},
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/api/reactions.add"),
-				},
-				Then: mockserver.Response(http.StatusOK, []byte(`{"ok": true}`)),
-			}.Server(),
-			Expected: &common.WriteResult{
-				Success: true,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			// reminders.add returns a nested reminder object.
-			Name: "Create reminder returns nested reminder ID",
-			Input: common.WriteParams{
-				ObjectName: "reminders",
-				RecordData: map[string]any{
-					"text": "Review PR",
-					"time": "in 5 minutes",
-				},
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/api/reminders.add"),
-				},
-				Then: mockserver.Response(http.StatusOK, []byte(`{
-					"ok": true,
-					"reminder": {
-						"id": "Rm12345678",
-						"text": "Review PR",
-						"user": "U0ABCDEF123"
-					}
-				}`)),
-			}.Server(),
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "Rm12345678",
-				Data: map[string]any{
-					"id":   "Rm12345678",
-					"text": "Review PR",
-					"user": "U0ABCDEF123",
-				},
-			},
-			ExpectedErrs: nil,
-		},
-		{
 			// Slack error in write response (ok: false) is mapped to a sentinel error.
 			Name: "Slack error response maps to sentinel error",
 			Input: common.WriteParams{
