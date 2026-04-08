@@ -54,3 +54,40 @@ var objectsWithConnectorSideFilter = datautils.Map[string, string]{ //nolint:goc
 	"users.conversations": "created",
 	"users":               "updated",
 }
+
+// objectsUsingAddSuffix contains write objects whose Slack API endpoint uses the ".add" method suffix.
+// All other supported write objects use ".create".
+var writeObjectsUsingAddSuffix = datautils.NewSet( //nolint:gochecknoglobals
+	"calls",
+	"bookmarks",
+	"files.remote",
+	"reminders",
+	"reactions",
+)
+
+// writeResponseSpec describes how to extract the created record from a Slack write response.
+type writeResponseSpec struct {
+	// objectKey is the JSON wrapper key for the created object (e.g. "channel", "reminder").
+	// Empty means the ID lives at the response root.
+	objectKey string
+	// idField is the field that holds the record ID. Empty means this object returns no ID.
+	idField string
+}
+
+// writeResponseField maps each supported write object (base name, without method suffix) to
+// the shape of its API response, used to extract the record ID and data after a successful write.
+//
+//nolint:gochecknoglobals
+var writeResponseField = map[string]writeResponseSpec{
+	"calls":                  {"call", "id"},
+	"bookmarks":              {"bookmark", "id"},
+	"canvases":               {"", "canvas_id"},
+	"conversations.canvases": {"", "canvas_id"},
+	"conversations":          {"channel", "id"},
+	"files.remote":           {"file", "id"},
+	"slackLists":             {"list", "id"},
+	"slackLists.items":       {"list_item", "id"},
+	"reminders":              {"reminder", "id"},
+	"usergroups":             {"usergroup", "id"},
+	// reactions.add returns only ok:true with no created resource.
+}
