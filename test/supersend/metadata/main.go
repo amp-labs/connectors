@@ -21,7 +21,6 @@ func main() {
 		"labels",
 		"contact/all",
 		"campaigns/overview",
-		"org",
 		"managed-domains",
 		"managed-mailboxes",
 		"placement-tests",

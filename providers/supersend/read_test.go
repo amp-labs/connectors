@@ -18,7 +18,6 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	responseTeams := testutils.DataFromFile(t, "read/teams.json")
 	responseSendersFirstPage := testutils.DataFromFile(t, "read/senders-first-page.json")
 	responseSendersLastPage := testutils.DataFromFile(t, "read/senders-last-page.json")
-	responseOrg := testutils.DataFromFile(t, "read/org.json")
 	responseConversations := testutils.DataFromFile(t, "read/conversations.json")
 
 	tests := []testroutines.Read{
@@ -167,41 +166,6 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read org (single object response)",
-			Input: common.ReadParams{
-				ObjectName: "org",
-				Fields:     connectors.Fields("id", "name", "current_plan"),
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/v1/org"),
-					mockcond.QueryParam("limit", "100"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseOrg),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{
-					{
-						Fields: map[string]any{
-							"id":           "org-001",
-							"name":         "Acme Corporation",
-							"current_plan": "enterprise",
-						},
-						Raw: map[string]any{
-							"domain":             "acme.com",
-							"activeSubscription": true,
-						},
-					},
-				},
-				NextPage: "",
-				Done:     true,
-			},
-			ExpectedErrs: nil,
-		},
-		{
 			Name: "Read conversations (nested responseKey)",
 			Input: common.ReadParams{
 				ObjectName: "conversation/latest-by-profile",
@@ -250,19 +214,19 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read with custom page size",
+			Name: "Read with custom page size and offset pagination",
 			Input: common.ReadParams{
-				ObjectName: "teams",
-				Fields:     connectors.Fields("id", "name"),
+				ObjectName: "senders",
+				Fields:     connectors.Fields("id", "email"),
 				PageSize:   50,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v1/teams"),
+					mockcond.Path("/v1/senders"),
 					mockcond.QueryParam("limit", "50"),
 				},
-				Then: mockserver.Response(http.StatusOK, responseTeams),
+				Then: mockserver.Response(http.StatusOK, responseSendersFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -270,25 +234,25 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
-							"id":   "team-001",
-							"name": "Engineering Team",
+							"id":    "sender-001",
+							"email": "john@example.com",
 						},
 						Raw: map[string]any{
-							"domain": "engineering.example.com",
+							"send_as": "John Doe",
 						},
 					},
 					{
 						Fields: map[string]any{
-							"id":   "team-002",
-							"name": "Sales Team",
+							"id":    "sender-002",
+							"email": "jane@example.com",
 						},
 						Raw: map[string]any{
-							"domain": "sales.example.com",
+							"send_as": "Jane Smith",
 						},
 					},
 				},
-				NextPage: "",
-				Done:     true,
+				NextPage: testroutines.URLTestServer + "/v1/senders?limit=50&offset=50",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
