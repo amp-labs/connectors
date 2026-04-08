@@ -100,3 +100,16 @@ var writeUpdateSuffix = datautils.Map[string, string]{
 	"slackLists":   ".update",
 	"usergroups":   ".update",
 }
+
+// writeUpdateIDField maps each updatable write object (base name) to the request body field
+// used to pass the record ID to the Slack update endpoint. Objects absent from this map do
+// not require an ID in the request body (e.g. the ID is encoded elsewhere or not needed).
+//
+//nolint:gochecknoglobals
+var writeUpdateIdField = datautils.Map[string, string]{
+	"calls":      "id",
+	"bookmarks":  "bookmark_id",
+	"canvases":   "canvas_id",
+	"slackLists": "id",
+	"usergroups": "usergroup",
+}

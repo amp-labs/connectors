@@ -70,7 +70,6 @@ func testUpdatingCalls(ctx context.Context, conn *cc.Connector, callId string) e
 		RecordId:   callId,
 		RecordData: map[string]any{
 			"title": "Updated Call Name",
-			"id":    callId,
 		},
 	}
 

@@ -27,6 +27,11 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
+	if params.RecordId != "" {
+		idKey := writeUpdateIDField[params.ObjectName]
+		body[idKey] = params.RecordId
+	}
+
 	return jsonPostRequest(ctx, url.String(), body)
 }
 

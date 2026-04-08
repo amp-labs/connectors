@@ -179,7 +179,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/api/calls.update"),
-					mockcond.Body(`{"title":"Updated Call"}`),
+					mockcond.Body(`{"id":"R0ABCDEF123","title":"Updated Call"}`),
 				},
 				Then: mockserver.Response(http.StatusOK, []byte(`{
 					"ok": true,
@@ -214,7 +214,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/api/bookmarks.edit"),
-					mockcond.Body(`{"title":"Updated Bookmark"}`),
+					mockcond.Body(`{"bookmark_id":"Bk0ABCDEF123","title":"Updated Bookmark"}`),
 				},
 				Then: mockserver.Response(http.StatusOK, []byte(`{
 					"ok": true,
@@ -249,7 +249,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/api/usergroups.update"),
-					mockcond.Body(`{"name":"Updated Group"}`),
+					mockcond.Body(`{"name":"Updated Group","usergroup":"S0ABCDEF123"}`),
 				},
 				Then: mockserver.Response(http.StatusOK, []byte(`{
 					"ok": true,
