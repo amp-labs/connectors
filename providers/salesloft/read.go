@@ -89,6 +89,9 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 			updatedSince := config.Since.Format(time.RFC3339Nano)
 			url.WithQueryParam("updated_at[gte]", updatedSince)
 		}
+	} else if !config.Since.IsZero() {
+		updatedSince := config.Since.Format(time.RFC3339Nano)
+		url.WithQueryParam("updated_at[gte]", updatedSince)
 	}
 
 	return url, nil
