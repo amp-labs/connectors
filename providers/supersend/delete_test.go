@@ -44,9 +44,8 @@ func TestDelete(t *testing.T) {
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
-		// Labels - soft delete
 		{
-			Name:  "Delete label successfully",
+			Name:  "Labels - soft delete",
 			Input: common.DeleteParams{ObjectName: "labels", RecordId: "label-456"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -58,9 +57,8 @@ func TestDelete(t *testing.T) {
 			}.Server(),
 			Expected: &common.DeleteResult{Success: true},
 		},
-		// Campaigns - delete
 		{
-			Name:  "Delete campaign successfully",
+			Name:  "Campaigns - delete",
 			Input: common.DeleteParams{ObjectName: "campaigns", RecordId: "campaign-001"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -72,9 +70,8 @@ func TestDelete(t *testing.T) {
 			}.Server(),
 			Expected: &common.DeleteResult{Success: true},
 		},
-		// Contacts - delete
 		{
-			Name:  "Delete contact successfully",
+			Name:  "Contacts - delete",
 			Input: common.DeleteParams{ObjectName: "contacts", RecordId: "contact-001"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -86,9 +83,8 @@ func TestDelete(t *testing.T) {
 			}.Server(),
 			Expected: &common.DeleteResult{Success: true},
 		},
-		// Sender Profiles - soft delete
 		{
-			Name:  "Delete sender profile successfully",
+			Name:  "Sender Profiles - soft delete",
 			Input: common.DeleteParams{ObjectName: "sender-profiles", RecordId: "sp-001"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),

@@ -14,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/supersend/metadata"
 	"github.com/spyzhov/ajson"
@@ -319,8 +320,7 @@ func (c *Connector) parseWriteResponse(
 		responseNode = dataNode
 	}
 
-	// Extract record ID from response
-	recordID, err := jsonquery.New(responseNode).StringOptional("id")
+	recordID, err := jsonquery.New(responseNode).StrWithDefault("id", params.RecordId)
 	if err != nil {
 		return nil, err
 	}
@@ -330,16 +330,11 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
-	result := &common.WriteResult{
-		Success: true,
-		Data:    data,
-	}
-
-	if recordID != nil {
-		result.RecordId = *recordID
-	}
-
-	return result, nil
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: recordID,
+		Data:     data,
+	}, nil
 }
 
 // buildDeleteRequest constructs the HTTP request for delete operations.
@@ -364,8 +359,7 @@ func (c *Connector) parseDeleteResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.DeleteResult, error) {
-	// Validate HTTP status code for delete operations
-	if response.Code != http.StatusOK && response.Code != http.StatusNoContent {
+	if !httpkit.Status2xx(response.Code) {
 		return nil, fmt.Errorf("%w: failed to delete record: %d", common.ErrRequestFailed, response.Code)
 	}
 
