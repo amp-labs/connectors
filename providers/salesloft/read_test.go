@@ -166,7 +166,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Listing Users uses cursor-based pagination",
+			Name: "Listing Users without updated_at uses offset-based pagination",
 			Input: common.ReadParams{
 				ObjectName: "users",
 				Fields:     connectors.Fields("email", "guid"),
@@ -190,9 +190,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"last_name":  "User",
 					},
 				}},
-				NextPage: testroutines.URLTestServer +
-					"/v2/users?per_page=100&sort_direction=ASC&updated_at%5Bgt%5D=2024-04-27T07%3A18%3A23.531659-04%3A00",
-				Done: false,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
