@@ -167,6 +167,111 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
+
+			Name: "Update call",
+			Input: common.WriteParams{
+				ObjectName: "calls",
+				RecordId:   "R0ABCDEF123",
+				RecordData: map[string]any{"title": "Updated Call"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/api/calls.update"),
+					mockcond.Body(`{"title":"Updated Call"}`),
+				},
+				Then: mockserver.Response(http.StatusOK, []byte(`{
+					"ok": true,
+					"call": {
+						"id": "R0ABCDEF123",
+						"title": "Updated Call",
+						"date_start": 1609459200
+					}
+				}`)),
+			}.Server(),
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "R0ABCDEF123",
+				Data: map[string]any{
+					"id":         "R0ABCDEF123",
+					"title":      "Updated Call",
+					"date_start": float64(1609459200),
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// bookmarks.edit routes to the ".edit" suffix and returns a nested bookmark object.
+			Name: "Update bookmark",
+			Input: common.WriteParams{
+				ObjectName: "bookmarks",
+				RecordId:   "Bk0ABCDEF123",
+				RecordData: map[string]any{"title": "Updated Bookmark"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/api/bookmarks.edit"),
+					mockcond.Body(`{"title":"Updated Bookmark"}`),
+				},
+				Then: mockserver.Response(http.StatusOK, []byte(`{
+					"ok": true,
+					"bookmark": {
+						"id": "Bk0ABCDEF123",
+						"channel_id": "C0ABCDEF123",
+						"title": "Updated Bookmark"
+					}
+				}`)),
+			}.Server(),
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "Bk0ABCDEF123",
+				Data: map[string]any{
+					"id":         "Bk0ABCDEF123",
+					"channel_id": "C0ABCDEF123",
+					"title":      "Updated Bookmark",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// usergroups.update routes to the ".update" suffix and returns a nested usergroup object.
+			Name: "Update usergroup",
+			Input: common.WriteParams{
+				ObjectName: "usergroups",
+				RecordId:   "S0ABCDEF123",
+				RecordData: map[string]any{"name": "Updated Group"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/api/usergroups.update"),
+					mockcond.Body(`{"name":"Updated Group"}`),
+				},
+				Then: mockserver.Response(http.StatusOK, []byte(`{
+					"ok": true,
+					"usergroup": {
+						"id": "S0ABCDEF123",
+						"name": "Updated Group",
+						"date_update": 1609459200
+					}
+				}`)),
+			}.Server(),
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "S0ABCDEF123",
+				Data: map[string]any{
+					"id":          "S0ABCDEF123",
+					"name":        "Updated Group",
+					"date_update": float64(1609459200),
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			// Slack error in write response (ok: false) is mapped to a sentinel error.
 			Name: "Slack error response maps to sentinel error",
 			Input: common.WriteParams{

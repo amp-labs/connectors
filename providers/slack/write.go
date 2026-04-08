@@ -31,6 +31,8 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 }
 
 // Slack always returns HTTP 200, even on failure, so we inspect the "ok" field first.
+//
+//nolint:funlen,gocognit,cyclop,maintidx
 func (c *Connector) parseWriteResponse(
 	ctx context.Context, //nolint:revive
 	params common.WriteParams,
