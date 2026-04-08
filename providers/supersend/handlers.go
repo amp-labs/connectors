@@ -125,7 +125,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	// LookupArrayFieldName returns the responseKey from the schema
 	responseKey := metadata.Schemas.LookupArrayFieldName(common.ModuleRoot, params.ObjectName)
-	nextPageFunc := makeNextRecordsURL(c.ProviderInfo().BaseURL, request.URL)
+	nextPageFunc := makeNextRecordsURL(request.URL)
 
 	return common.ParseResultFiltered(
 		params,
@@ -158,76 +158,20 @@ func makeFilterFunc(params common.ReadParams, nextPageFunc common.NextPageFunc) 
 }
 
 // getRecords returns a function that extracts records from the response.
-// Handles three cases:
-// 1. Nested responseKey (dot-notation like "data.conversations") - traverses nested structure
-// 2. Empty responseKey - response is a single object, wrap it in an array
-// 3. Standard responseKey - extract array from the specified key.
+// Uses slices for nested paths (e.g., "data.conversations" is split into
+// nestedPath=["data"] and jsonPath="conversations").
 func getRecords(responseKey string) common.NodeRecordsFunc {
-	return func(node *ajson.Node) ([]*ajson.Node, error) {
-		// Handle empty responseKey (single object response like /org endpoint)
-		if responseKey == "" {
-			return getSingleObjectAsArray(node)
-		}
-
-		// Handle nested responseKey (dot-notation like "data.conversations")
-		if strings.Contains(responseKey, ".") {
-			return getNestedRecords(node, responseKey)
-		}
-
-		// Standard responseKey - extract array from the specified key
-		return jsonquery.New(node).ArrayOptional(responseKey)
-	}
-}
-
-// getSingleObjectAsArray wraps a single object response in an array.
-// Handles the common SuperSend pattern where single object responses are wrapped
-// in a "data" key (e.g., /org returns {"data": {...}, "success": true}).
-func getSingleObjectAsArray(node *ajson.Node) ([]*ajson.Node, error) {
-	if !node.IsObject() {
-		return nil, jsonquery.ErrNotArray
-	}
-
-	// Check if the response has a "data" key containing the actual object
-	dataNode, err := jsonquery.New(node).ObjectOptional("data")
-	if err == nil && dataNode != nil {
-		return []*ajson.Node{dataNode}, nil
-	}
-
-	// Otherwise return the whole node as a single object
-	return []*ajson.Node{node}, nil
-}
-
-// getNestedRecords traverses a nested responseKey (dot-notation) to extract records.
-func getNestedRecords(node *ajson.Node, responseKey string) ([]*ajson.Node, error) {
 	parts := strings.Split(responseKey, ".")
-	currentNode := node
-
-	for i, part := range parts {
-		isLastPart := i == len(parts)-1
-
-		// Try as array for the last part
-		if isLastPart {
-			return jsonquery.New(currentNode).ArrayOptional(part)
-		}
-
-		childNode, err := jsonquery.New(currentNode).ObjectOptional(part)
-		if err != nil {
-			return nil, err
-		}
-
-		if childNode == nil {
-			return nil, jsonquery.ErrKeyNotFound
-		}
-
-		currentNode = childNode
+	if len(parts) > 1 {
+		return common.MakeRecordsFunc(parts[len(parts)-1], parts[:len(parts)-1]...)
 	}
 
-	return nil, jsonquery.ErrNotArray
+	return common.MakeRecordsFunc(responseKey)
 }
 
 // makeNextRecordsURL returns a function that builds the next page URL if more records exist.
 // SuperSend uses pagination.has_more to indicate if there are more records.
-func makeNextRecordsURL(baseURL string, requestURL *url.URL) common.NextPageFunc {
+func makeNextRecordsURL(requestURL *url.URL) common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
 		if !hasMoreRecords(node) {
 			return "", nil
@@ -236,23 +180,15 @@ func makeNextRecordsURL(baseURL string, requestURL *url.URL) common.NextPageFunc
 		// Calculate next offset based on current request
 		nextOffset := calculateNextOffset(requestURL)
 
-		return buildNextPageURL(baseURL, requestURL, nextOffset)
+		return buildNextPageURL(requestURL, nextOffset)
 	}
 }
 
 // hasMoreRecords checks the pagination.has_more field to determine if more records exist.
 func hasMoreRecords(node *ajson.Node) bool {
-	paginationNode, err := jsonquery.New(node).ObjectOptional("pagination")
-	if err != nil || paginationNode == nil {
-		return false
-	}
+	hasMore, _ := jsonquery.New(node, "pagination").BoolWithDefault("has_more", false)
 
-	hasMore, err := jsonquery.New(paginationNode).BoolOptional("has_more")
-	if err != nil || hasMore == nil {
-		return false
-	}
-
-	return *hasMore
+	return hasMore
 }
 
 // calculateNextOffset extracts current offset from URL and adds the limit to get next offset.
@@ -267,8 +203,8 @@ func calculateNextOffset(requestURL *url.URL) int {
 		}
 	}
 
-	// Get limit from URL, default to 100 if not present or invalid
-	limit := 100
+	// Get limit from URL, default to defaultPageSize if not present or invalid
+	limit, _ := strconv.Atoi(defaultPageSize)
 
 	if limitStr := query.Get(limitParam); limitStr != "" {
 		if parsed, err := strconv.Atoi(limitStr); err == nil {
@@ -280,27 +216,13 @@ func calculateNextOffset(requestURL *url.URL) int {
 }
 
 // buildNextPageURL constructs the URL for the next page of results.
-func buildNextPageURL(baseURL string, requestURL *url.URL, nextOffset int) (string, error) {
-	// Preserve existing query params but update offset
-	query := requestURL.Query()
-	query.Set(offsetParam, strconv.Itoa(nextOffset))
-
-	// Ensure limit is set
-	if query.Get(limitParam) == "" {
-		query.Set(limitParam, defaultPageSize)
-	}
-
-	nextURL, err := urlbuilder.New(baseURL, requestURL.Path)
+func buildNextPageURL(requestURL *url.URL, nextOffset int) (string, error) {
+	nextURL, err := urlbuilder.FromRawURL(requestURL)
 	if err != nil {
 		return "", err
 	}
 
-	// Apply all query params
-	for key, values := range query {
-		for _, value := range values {
-			nextURL.WithQueryParam(key, value)
-		}
-	}
+	nextURL.WithQueryParam(offsetParam, strconv.Itoa(nextOffset))
 
 	return nextURL.String(), nil
 }
