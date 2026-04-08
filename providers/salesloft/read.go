@@ -83,7 +83,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		// rate limit cost escalation and server errors.
 		// See: https://developers.salesloft.com/docs/platform/guides/building-an-efficient-cursor-poller/
 		url.WithQueryParam("sort", "updated_at")
-		url.WithQueryParam("sort_direction", "ASC")
+		url.WithQueryParam("sort_direction", "asc")
 
 		if !config.Since.IsZero() {
 			updatedSince := config.Since.Format(time.RFC3339Nano)
