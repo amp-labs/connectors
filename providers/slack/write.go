@@ -28,7 +28,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	if params.RecordId != "" {
-		idKey := writeUpdateIDField[params.ObjectName]
+		idKey := writeUpdateIdField[params.ObjectName]
 		body[idKey] = params.RecordId
 	}
 
