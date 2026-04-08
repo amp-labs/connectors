@@ -46,11 +46,14 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 	url.WithQueryParam("per_page", strconv.Itoa(DefaultPageSize))
 
+	// Always use cursor-based polling as recommended by Salesloft for efficient data retrieval.
+	// Results are sorted by updated_at ascending so we can use the last record's timestamp
+	// as the cursor for the next request, avoiding deep pagination (page 500+) which causes
+	// rate limit cost escalation and server errors.
+	// See: https://developers.salesloft.com/docs/platform/guides/building-an-efficient-cursor-poller/
+	url.WithQueryParam("sort_direction", "ASC")
+
 	if !config.Since.IsZero() {
-		// Documentation states ISO8601, while server accepts different formats
-		// but for consistency we are sticking to one format to be sent.
-		// For the reference any API resource that includes time data type mentions iso8601 string format.
-		// One example, say accounts is https://developers.salesloft.com/docs/api/accounts-index
 		updatedSince := config.Since.Format(time.RFC3339Nano)
 		url.WithQueryParam("updated_at[gte]", updatedSince)
 	}
