@@ -14,16 +14,13 @@ func main() {
 
 	conn := connTest.GetFastSpringConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{
-		"accounts",
-		"orders",
-		"products",
-		"subscriptions",
-		"events-processed",
-		"events-unprocessed",
-	})
+	m, err := conn.ListObjectMetadata(ctx, []string{"accounts"})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error fetching metadata: ", err)
+	}
+
+	for objName, objMeta := range m.Result {
+		log.Printf("   - %s: %d fields\n", objName, len(objMeta.Fields))
 	}
 
 	utils.DumpJSON(m, os.Stdout)

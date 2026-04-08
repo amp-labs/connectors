@@ -19,7 +19,8 @@ import (
 // List endpoints use limit + page; when ReadParams.PageSize is unset we send limit=defaultPageSize.
 // FastSpring documents a default of 50 for list operations (e.g. "limit" on List all accounts) and does
 // not document an upper bound. https://developer.fastspring.com/reference/list-all-accounts
-// We use 1000 here as an arbitrary larger page size to reduce round trips; callers can override via ReadParams.PageSize.
+// We use 1000 here as an arbitrary larger page size to reduce round trips;
+// callers can override via ReadParams.PageSize.
 const (
 	defaultPageSize  = "1000"
 	defaultEventDays = "30" // max 30 per API; used for event list reads (isEventObject)
@@ -92,7 +93,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 // Unprocessed: https://developer.fastspring.com/reference/list-all-unprocessed-events
 func isEventObject(objectName string) bool {
 	switch objectName {
-	case "events-processed", "events-unprocessed":
+	case objectEventsProcessed, objectEventsUnprocessed:
 		return true
 	default:
 		return false
@@ -129,66 +130,83 @@ func (c *Connector) parseReadResponse(
 // The response key may be absent when empty — jsonquery.ArrayOptional yields an empty slice without error.
 // If the value is a single string instead of an array, we treat it as one row (fallback after ErrNotArray).
 func recordsForRead(objectName, recordsKey string) common.RecordsFunc {
-	idQuery := stringIDFieldForListObject(objectName)
-	idField := idQuery.Field
+	idField := stringIDFieldForListObject(objectName).Field
 
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		arr, err := jsonquery.New(node).ArrayOptional(recordsKey)
-		if err != nil {
-			if errors.Is(err, jsonquery.ErrNotArray) {
-				str, serr := jsonquery.New(node).StringOptional(recordsKey)
-				if serr != nil {
-					return nil, err
-				}
-
-				if str != nil && *str != "" {
-					return []map[string]any{map[string]any{idField: *str}}, nil
-				}
-			}
-
-			return nil, err
-		}
-
-		if len(arr) == 0 {
-			return []map[string]any{}, nil
-		}
-
-		out := make([]map[string]any, 0, len(arr))
-
-		for _, v := range arr {
-			switch {
-			case v.IsObject():
-				m, convErr := jsonquery.Convertor.ObjectToMap(v)
-				if convErr != nil {
-					return nil, convErr
-				}
-
-				out = append(out, m)
-			case v.IsString():
-				s, strErr := v.GetString()
-				if strErr != nil {
-					return nil, strErr
-				}
-
-				out = append(out, map[string]any{idField: s})
-			default:
-				return nil, jsonquery.ErrNotObject
-			}
-		}
-
-		return out, nil
+		return recordsFromArrayOrStringKey(node, recordsKey, idField)
 	}
+}
+
+func recordsFromArrayOrStringKey(node *ajson.Node, recordsKey, idField string) ([]map[string]any, error) {
+	arr, err := jsonquery.New(node).ArrayOptional(recordsKey)
+	if err != nil {
+		if errors.Is(err, jsonquery.ErrNotArray) {
+			return recordsFromSingleStringRow(node, recordsKey, idField, err)
+		}
+
+		return nil, err
+	}
+
+	if len(arr) == 0 {
+		return []map[string]any{}, nil
+	}
+
+	return mapRecordNodesToMaps(arr, idField)
+}
+
+func recordsFromSingleStringRow(
+	node *ajson.Node,
+	recordsKey, idField string,
+	arrayErr error,
+) ([]map[string]any, error) {
+	str, serr := jsonquery.New(node).StrWithDefault(recordsKey, "")
+	if serr != nil {
+		return nil, arrayErr
+	}
+
+	if str != "" {
+		return []map[string]any{{idField: str}}, nil
+	}
+
+	return nil, arrayErr
+}
+
+func mapRecordNodesToMaps(arr []*ajson.Node, idField string) ([]map[string]any, error) {
+	out := make([]map[string]any, 0, len(arr))
+
+	for _, v := range arr {
+		switch {
+		case v.IsObject():
+			m, convErr := jsonquery.Convertor.ObjectToMap(v)
+			if convErr != nil {
+				return nil, convErr
+			}
+
+			out = append(out, m)
+		case v.IsString():
+			s, strErr := v.GetString()
+			if strErr != nil {
+				return nil, strErr
+			}
+
+			out = append(out, map[string]any{idField: s})
+		default:
+			return nil, jsonquery.ErrNotObject
+		}
+	}
+
+	return out, nil
 }
 
 func stringIDFieldForListObject(objectName string) readhelper.IdFieldQuery {
 	switch objectName {
-	case "accounts":
+	case objectAccounts:
 		return readhelper.NewIdField("id")
-	case "orders":
+	case objectOrders:
 		return readhelper.NewIdField("order")
-	case "products":
+	case objectProducts:
 		return readhelper.NewIdField("path")
-	case "subscriptions":
+	case objectSubscriptions:
 		return readhelper.NewIdField("subscription")
 	default:
 		return readhelper.NewIdField("id")
@@ -208,7 +226,8 @@ func nextPageFromIntegerCounter(previousRequestURL *url.URL) common.NextPageFunc
 			return "", err
 		}
 
-		// Re-parse from string so we do not mutate the live request URL when the builder serializes (it sets RawQuery on the delegate).
+		// Re-parse from string so we do not mutate the live request URL when the builder
+		// serializes (it sets RawQuery on the delegate).
 		cloned, err := url.Parse(previousRequestURL.String())
 		if err != nil {
 			return "", err
