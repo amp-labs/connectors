@@ -50,8 +50,8 @@ func makeNextRecordsURL(reqLink *urlbuilder.URL) common.NextPageFunc {
 			return makeCursorNextPageURL(reqLink, node)
 		}
 
-		// Fallback to offset-based pagination for requests without sort_direction
-		// (e.g., reads without a Since timestamp).
+		// Fallback to offset-based pagination for objects not in the cursor-based allow-list
+		// (e.g., users, tasks, meetings).
 		return makeOffsetNextPageURL(reqLink, node)
 	}
 }
