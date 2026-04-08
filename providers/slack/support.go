@@ -61,33 +61,42 @@ var writeObjectsUsingAddSuffix = datautils.NewSet( //nolint:gochecknoglobals
 	"calls",
 	"bookmarks",
 	"files.remote",
-	"reminders",
-	"reactions",
 )
 
 // writeResponseSpec describes how to extract the created record from a Slack write response.
 type writeResponseSpec struct {
-	// objectKey is the JSON wrapper key for the created object (e.g. "channel", "reminder").
+	// recordKey is the key for the created object (e.g. "channel", "reminder").
 	// Empty means the ID lives at the response root.
-	objectKey string
+	recordKey string
 	// idField is the field that holds the record ID. Empty means this object returns no ID.
 	idField string
 }
 
-// writeResponseField maps each supported write object (base name, without method suffix) to
+// writeResponseField maps each supported write object (base name, without suffix) to
 // the shape of its API response, used to extract the record ID and data after a successful write.
 //
 //nolint:gochecknoglobals
-var writeResponseField = map[string]writeResponseSpec{
+var writeResponseField = datautils.Map[string, writeResponseSpec]{
 	"calls":                  {"call", "id"},
 	"bookmarks":              {"bookmark", "id"},
 	"canvases":               {"", "canvas_id"},
 	"conversations.canvases": {"", "canvas_id"},
 	"conversations":          {"channel", "id"},
 	"files.remote":           {"file", "id"},
-	"slackLists":             {"list", "id"},
-	"slackLists.items":       {"list_item", "id"},
-	"reminders":              {"reminder", "id"},
+	"slackLists":             {"", "list_id"},
+	"slackLists.items":       {"item", "id"},
 	"usergroups":             {"usergroup", "id"},
-	// reactions.add returns only ok:true with no created resource.
+}
+
+// writeUpdateSuffix maps each write object that supports updates (base name) to the
+// Slack API method suffix used for the update call (e.g. ".update", ".edit").
+//
+//nolint:gochecknoglobals
+var writeUpdateSuffix = datautils.Map[string, string]{
+	"calls":        ".update",
+	"bookmarks":    ".edit",
+	"canvases":     ".edit",
+	"files.remote": ".update",
+	"slackLists":   ".update",
+	"usergroups":   ".update",
 }

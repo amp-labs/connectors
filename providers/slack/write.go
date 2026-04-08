@@ -11,18 +11,10 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// buildWriteRequest constructs a POST request for the given Slack write object.
-// All Slack write objects are create-only; updates are not supported.
-// The API method suffix (".add" or ".create") is appended to the object name to form the URL path.
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	if params.RecordId != "" {
-		return nil, fmt.Errorf("%w: %s does not support updates",
-			common.ErrOperationNotSupportedForObject, params.ObjectName)
-	}
-
-	suffix := ".create"
-	if writeObjectsUsingAddSuffix.Has(params.ObjectName) {
-		suffix = ".add"
+	suffix, err := getWriteSuffix(params)
+	if err != nil {
+		return nil, err
 	}
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName+suffix)
@@ -38,7 +30,6 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	return jsonPostRequest(ctx, url.String(), body)
 }
 
-// parseWriteResponse parses the Slack write response.
 // Slack always returns HTTP 200, even on failure, so we inspect the "ok" field first.
 func (c *Connector) parseWriteResponse(
 	ctx context.Context, //nolint:revive
@@ -72,14 +63,16 @@ func (c *Connector) parseWriteResponse(
 
 	spec, found := writeResponseField[params.ObjectName]
 	if !found || spec.idField == "" {
-		// Objects that return no resource (e.g. reactions.add).
+		// If the Ok field is true but we don't have a spec for this object,
+		// optimistically return success with no ID or data.
+		// There are some write objects (e.g. reactions.add) that return no record data on success,
 		return &common.WriteResult{Success: true}, nil
 	}
 
 	var recordNode *ajson.Node
 
-	if spec.objectKey != "" {
-		recordNode, err = jsonquery.New(body).ObjectRequired(spec.objectKey)
+	if spec.recordKey != "" {
+		recordNode, err = jsonquery.New(body).ObjectRequired(spec.recordKey)
 		if err != nil {
 			return nil, err
 		}
@@ -87,7 +80,7 @@ func (c *Connector) parseWriteResponse(
 		recordNode = body
 	}
 
-	recordID, err := jsonquery.New(recordNode).TextWithDefault(spec.idField, "")
+	recordID, err := jsonquery.New(recordNode).StrWithDefault(spec.idField, "")
 	if err != nil {
 		return nil, err
 	}
@@ -102,4 +95,23 @@ func (c *Connector) parseWriteResponse(
 		RecordId: recordID,
 		Data:     dataMap,
 	}, nil
+}
+
+func getWriteSuffix(params common.WriteParams) (string, error) {
+	if params.RecordId != "" {
+		updateSuffix, supported := writeUpdateSuffix[params.ObjectName]
+		if !supported {
+			return "", fmt.Errorf("%w: %s does not support updates",
+				common.ErrOperationNotSupportedForObject, params.ObjectName)
+		}
+
+		return updateSuffix, nil
+	}
+
+	// Create: append ".add" or ".create" suffix.
+	if writeObjectsUsingAddSuffix.Has(params.ObjectName) {
+		return ".add", nil
+	}
+
+	return ".create", nil
 }

@@ -23,7 +23,12 @@ func run() error {
 
 	conn := slack.NewConnector(ctx)
 
-	_, err := testCreatingCalls(ctx, conn)
+	callId, err := testCreatingCalls(ctx, conn)
+	if err != nil {
+		return err
+	}
+
+	err = testUpdatingCalls(ctx, conn, callId)
 	if err != nil {
 		return err
 	}
@@ -57,4 +62,33 @@ func testCreatingCalls(ctx context.Context, conn *cc.Connector) (string, error) 
 	_, _ = os.Stdout.WriteString("\n")
 
 	return res.Data["id"].(string), nil
+}
+
+func testUpdatingCalls(ctx context.Context, conn *cc.Connector, callId string) error {
+	params := common.WriteParams{
+		ObjectName: "calls",
+		RecordId:   callId,
+		RecordData: map[string]any{
+			"title": "Updated Call Name",
+			"id":    callId,
+		},
+	}
+
+	slog.Info("Updating calls...")
+
+	res, err := conn.Write(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
 }
