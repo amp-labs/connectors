@@ -95,7 +95,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Expected: &common.ReadResult{
 				Rows: 25,
 				NextPage: testroutines.URLTestServer +
-					"/v2/people?per_page=100&sort=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-03-07T02%3A43%3A26.305830-05%3A00",
+					"/v2/people?per_page=100&sort_by=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-03-07T02%3A43%3A26.305830-05%3A00",
 				Done: false,
 			},
 			ExpectedErrs: nil,
@@ -128,7 +128,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 				}},
 				NextPage: testroutines.URLTestServer +
-					"/v2/people?per_page=100&sort=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-03-07T02%3A43%3A26.305830-05%3A00",
+					"/v2/people?per_page=100&sort_by=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-03-07T02%3A43%3A26.305830-05%3A00",
 				Done: false,
 			},
 			ExpectedErrs: nil,
@@ -160,7 +160,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 				}},
 				NextPage: testroutines.URLTestServer +
-					"/v2/people?per_page=100&sort=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-03-07T02%3A43%3A26.305830-05%3A00",
+					"/v2/people?per_page=100&sort_by=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-03-07T02%3A43%3A26.305830-05%3A00",
 				Done: false,
 			},
 			ExpectedErrs: nil,
@@ -212,7 +212,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 4,
 				// Cursor-based: last account has updated_at "2024-06-06T12:35:41.051972-04:00"
 				NextPage: testroutines.URLTestServer +
-					"/v2/accounts?per_page=100&sort=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-06-06T12%3A35%3A41.051972-04%3A00",
+					"/v2/accounts?per_page=100&sort_by=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-06-06T12%3A35%3A41.051972-04%3A00",
 				Done: false,
 			},
 			ExpectedErrs: nil,
@@ -239,7 +239,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				// Cursor-based polling: next page URL uses updated_at[gt] with the last record's timestamp.
 				// The last record (Asics) has updated_at "2024-06-07T10:51:20.851224-04:00".
 				NextPage: testroutines.URLTestServer +
-					"/v2/accounts?per_page=100&sort=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-06-07T10%3A51%3A20.851224-04%3A00",
+					"/v2/accounts?per_page=100&sort_by=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-06-07T10%3A51%3A20.851224-04%3A00",
 				Done: false,
 			},
 			ExpectedErrs: nil,

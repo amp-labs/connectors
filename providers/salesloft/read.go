@@ -82,7 +82,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		// as the cursor for the next request, avoiding deep pagination (page 500+) which causes
 		// rate limit cost escalation and server errors.
 		// See: https://developers.salesloft.com/docs/platform/guides/building-an-efficient-cursor-poller/
-		url.WithQueryParam("sort", "updated_at")
+		url.WithQueryParam("sort_by", "updated_at")
 		url.WithQueryParam("sort_direction", "asc")
 
 		if !config.Since.IsZero() {
