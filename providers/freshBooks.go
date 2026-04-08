@@ -1,10 +1,10 @@
 package providers
 
-const Freshbooks Provider = "freshBooks"
+const FreshBooks Provider = "freshBooks"
 
 func init() {
-	SetInfo(Freshbooks, ProviderInfo{
-		DisplayName: "Freshbooks",
+	SetInfo(FreshBooks, ProviderInfo{
+		DisplayName: "FreshBooks",
 		AuthType:    Oauth2,
 		BaseURL:     "https://api.freshbooks.com",
 		Oauth2Opts: &Oauth2Opts{
