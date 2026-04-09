@@ -65,6 +65,12 @@ func makeCursorNextPageURL(reqLink *urlbuilder.URL, node *ajson.Node) (string, e
 		return "", err
 	}
 
+	// If the number of records is less than the page size, this is the last page.
+	// No need to fetch another page — we have all the data.
+	if len(records) < DefaultPageSize {
+		return "", nil
+	}
+
 	// Get the last record's updated_at value to use as the cursor.
 	lastRecord := records[len(records)-1]
 
