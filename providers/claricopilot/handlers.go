@@ -17,7 +17,9 @@ import (
 const (
 	limitQuery       = "limit"
 	metadataPageSize = "1"
-	pageSize         = "100"
+	pageSize         = "50" // Reduced from 100 due to persistent 502s from Clari Copilot API. Revert when resolved. Contact sso-errors@clari.com if needed.
+	// See: https://community.clari.com/clari-salesloft-integration-120/persistent-502s-being-returned-from-co-pilot-api-2890
+	// See: https://community.clari.com/product-q-a-6/how-to-use-copilot-apis-2258
 	skipKey          = "skip"
 	apiVersionV2     = "v2"
 	createPrefix     = "create"
