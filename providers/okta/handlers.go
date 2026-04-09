@@ -25,22 +25,23 @@ const (
 	sinceKey  = "since"
 )
 
-// Objects supporting incremental sync via lastUpdated filter.
-// Reference: https://developer.okta.com/docs/reference/api/users/#list-users
-// Reference: https://developer.okta.com/docs/reference/api/groups/#list-groups
+// Objects supporting incremental sync via provider-side lastUpdated filter.
+// Only users support the filter=lastUpdated gt "..." query parameter.
+// Reference: https://developer.okta.com/docs/reference/api/users/#list-users-with-a-filter
 //
 //nolint:gochecknoglobals
 var objectsWithProviderSideFilter = datautils.NewStringSet(
 	"users",
-	"groups",
-	"apps",
 )
 
 // Objects that support connector-side filtering via lastUpdated field.
-// These objects don't support provider-side filtering but have lastUpdated timestamp.
+// These objects have a lastUpdated timestamp but don't support provider-side filtering.
+// Groups and apps return 400 "Invalid search criteria" when using lastUpdated filter.
 //
 //nolint:gochecknoglobals
 var objectsWithConnectorSideFilter = datautils.NewStringSet(
+	"groups",
+	"apps",
 	"devices",
 	"idps",
 	"authorizationServers",
