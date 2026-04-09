@@ -27,7 +27,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	if params.RecordId != "" {
+	if params.IsUpdate() {
 		idKey := writeUpdateIdField[params.ObjectName]
 		body[idKey] = params.RecordId
 	}
@@ -105,7 +105,7 @@ func (c *Connector) parseWriteResponse(
 }
 
 func getWriteSuffix(params common.WriteParams) (string, error) {
-	if params.RecordId != "" {
+	if params.IsUpdate() {
 		updateSuffix, supported := writeUpdateSuffix[params.ObjectName]
 		if !supported {
 			return "", fmt.Errorf("%w: %s does not support updates",
