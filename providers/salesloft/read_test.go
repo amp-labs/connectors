@@ -84,7 +84,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Next page URL is correctly inferred using cursor-based pagination",
+			Name:  "Last page detected when records < per_page (cursor-based pagination)",
 			Input: common.ReadParams{ObjectName: "people", Fields: connectors.Fields("id")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -93,10 +93,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 25,
-				NextPage: testroutines.URLTestServer +
-					"/v2/people?per_page=100&sort_by=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-03-07T02%3A43%3A26.305830-05%3A00",
-				Done: false,
+				Rows:     25,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
@@ -127,9 +126,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						},
 					},
 				}},
-				NextPage: testroutines.URLTestServer +
-					"/v2/people?per_page=100&sort_by=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-03-07T02%3A43%3A26.305830-05%3A00",
-				Done: false,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
@@ -159,9 +157,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"person_company_website": "http://paypal.com",
 					},
 				}},
-				NextPage: testroutines.URLTestServer +
-					"/v2/people?per_page=100&sort_by=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-03-07T02%3A43%3A26.305830-05%3A00",
-				Done: false,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
@@ -210,10 +207,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 4,
-				// Cursor-based: last account has updated_at "2024-06-06T12:35:41.051972-04:00"
-				NextPage: testroutines.URLTestServer +
-					"/v2/accounts?per_page=100&sort_by=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-06-06T12%3A35%3A41.051972-04%3A00",
-				Done: false,
+				// Fewer than DefaultPageSize records means this is the last page — no next cursor needed.
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
@@ -236,11 +232,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 2,
-				// Cursor-based polling: next page URL uses updated_at[gt] with the last record's timestamp.
-				// The last record (Asics) has updated_at "2024-06-07T10:51:20.851224-04:00".
-				NextPage: testroutines.URLTestServer +
-					"/v2/accounts?per_page=100&sort_by=updated_at&sort_direction=asc&updated_at%5Bgt%5D=2024-06-07T10%3A51%3A20.851224-04%3A00",
-				Done: false,
+				// Fewer than DefaultPageSize records means this is the last page — no next cursor needed.
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
