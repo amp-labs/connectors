@@ -23,6 +23,11 @@ type parameters struct {
 	paramsbuilder.Module
 
 	timestampColumn string
+	// provider allows the same Connector implementation to be reused under a
+	// different provider name (e.g. salesforceJWT), which shares the underlying
+	// Salesforce APIs but differs only in its authentication scheme. Defaults
+	// to providers.Salesforce when unset.
+	provider providers.Provider
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
@@ -98,5 +103,15 @@ func WithMetadata(metadata map[string]string) Option {
 func WithTimestampColumn(field string) Option {
 	return func(params *parameters) {
 		params.timestampColumn = field
+	}
+}
+
+// WithProvider overrides the provider name this connector reports and uses
+// when looking up ProviderInfo. It is intended for twin providers that reuse
+// the same underlying Salesforce implementation but differ in auth scheme
+// (e.g. salesforceJWT). When unset, the default is providers.Salesforce.
+func WithProvider(provider providers.Provider) Option {
+	return func(params *parameters) {
+		params.provider = provider
 	}
 }
