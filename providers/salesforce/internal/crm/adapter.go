@@ -36,8 +36,11 @@ type Adapter struct {
 }
 
 // NewAdapter creates a new crm Adapter configured to work with Salesforce's APIs.
-func NewAdapter(params *common.ConnectorParams) (*Adapter, error) {
-	return components.Initialize(providers.Salesforce, *params, constructor)
+// The provider argument allows twin providers (e.g. salesforceJWT) to reuse this
+// adapter under a different provider name. Pass providers.Salesforce for the
+// default Salesforce connector.
+func NewAdapter(params *common.ConnectorParams, provider providers.Provider) (*Adapter, error) {
+	return components.Initialize(provider, *params, constructor)
 }
 
 func constructor(base *components.Connector) (*Adapter, error) {
