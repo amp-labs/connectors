@@ -98,33 +98,21 @@ func ParseRSAPrivateKey(pemBytes []byte) (*rsa.PrivateKey, error) {
 	return rsaKey, nil
 }
 
-// ResolveAudience chooses the correct JWT 'aud' claim value based on the
-// caller-provided environment override, with fallback heuristics on the
+// DetectAudience chooses the correct JWT 'aud' claim value by inspecting the
 // workspace subdomain.
 //
-// Heuristic (applied only when environment is empty or "auto"):
+// Heuristic:
 //
 //   - Workspaces containing ".sandbox" indicate an Enhanced-Domains sandbox
 //     (e.g. "acme--dev.sandbox"). These map to test.salesforce.com.
 //   - Workspaces containing "--" indicate a legacy pre-Enhanced-Domains
 //     sandbox subdomain (e.g. "acme--dev"). These also map to test.
 //     Note: this can false-positive on a small number of production orgs
-//     whose My Domain historically used "--"; set environment="production"
-//     to override.
+//     whose My Domain historically used "--" in the name itself. In practice
+//     this is extremely rare in Enhanced-Domains orgs (Spring '23+) because
+//     Salesforce restricts new My Domain names from containing "--".
 //   - Anything else → production (login.salesforce.com).
-//
-// This is intentionally imperfect — it covers the common cases. If a customer
-// reports "invalid audience", the environment input provides an explicit
-// escape hatch without a code change.
-func ResolveAudience(workspace, environment string) string {
-	switch strings.ToLower(strings.TrimSpace(environment)) {
-	case "production", "prod":
-		return ProductionAudience
-	case "sandbox", "test":
-		return SandboxAudience
-	}
-
-	// Auto-detect from workspace subdomain.
+func DetectAudience(workspace string) string {
 	if strings.Contains(workspace, ".sandbox") || strings.Contains(workspace, "--") {
 		return SandboxAudience
 	}

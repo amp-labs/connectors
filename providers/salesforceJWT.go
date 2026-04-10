@@ -50,11 +50,6 @@ func init() {
 					Prompt:      "The base64-encoded RSA private key (PEM) whose X.509 certificate is registered on the Connected App under 'Use digital signatures'. Must be RSA — EC keys are not supported by Salesforce for this flow.",
 					DocsURL:     "https://help.salesforce.com/s/articleView?id=sf.connected_app_create_api_integration.htm&language=en_US&type=5",
 				},
-				{
-					Name:        "environment",
-					DisplayName: "Environment",
-					Prompt:      "Optional override: 'production' or 'sandbox'. When unset, the environment is auto-detected from the workspace subdomain (presence of '.sandbox' or '--' indicates sandbox). Set explicitly only if auto-detection is wrong for your org.",
-				},
 			},
 		},
 		Support: Support{
