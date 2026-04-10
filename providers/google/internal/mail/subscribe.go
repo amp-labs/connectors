@@ -21,8 +21,8 @@ var (
 	_ connectors.SubscriptionMaintainerConnector = &Adapter{}
 )
 
-// watchRequest represents the Subscription.Request data expected from the builder.
-type watchRequest struct {
+// WatchRequest represents the Subscription.Request data expected from the builder.
+type WatchRequest struct {
 	// LabelIDs is a list of labelIds to restrict notifications about.
 	// By default, if unspecified, all changes are pushed out.
 	// If specified then dictates which labels are required for a push notification to be generated.
@@ -35,7 +35,8 @@ type watchRequest struct {
 	TopicName string `json:"topicName"`
 }
 
-type watchResponse struct {
+// WatchResponse represents the response from the Gmail watch API.
+type WatchResponse struct {
 	// HistoryID is the ID of the mailbox's current history record.
 	HistoryID string `json:"historyId"`
 
@@ -68,7 +69,7 @@ func (a *Adapter) EmptySubscriptionParams() *common.SubscribeParams {
 
 func (a *Adapter) EmptySubscriptionResult() *common.SubscriptionResult {
 	return &common.SubscriptionResult{
-		Result: &watchResponse{},
+		Result: &WatchResponse{},
 	}
 }
 
@@ -88,9 +89,9 @@ func (a *Adapter) Subscribe(
 		return nil, err
 	}
 
-	var watchReq watchRequest
+	var watchReq WatchRequest
 	if err := json.Unmarshal(req, &watchReq); err != nil {
-		return nil, fmt.Errorf("subscribe: unmarshaling into watchRequest: %w", err)
+		return nil, fmt.Errorf("subscribe: unmarshaling into WatchRequest: %w", err)
 	}
 
 	response, err := a.JSONHTTPClient().Post(ctx, watchURL, watchReq)
@@ -98,7 +99,7 @@ func (a *Adapter) Subscribe(
 		return nil, fmt.Errorf("subscribe: posting to gmail watch: %w", err)
 	}
 
-	result, err := common.UnmarshalJSON[watchResponse](response)
+	result, err := common.UnmarshalJSON[WatchResponse](response)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +135,7 @@ func (a *Adapter) DeleteSubscription(
 		return fmt.Errorf("delete subscribe: posting to gmail watch: %w", err)
 	}
 
-	_, err = common.UnmarshalJSON[watchResponse](response)
+	_, err = common.UnmarshalJSON[WatchResponse](response)
 	if err != nil {
 		return err
 	}
