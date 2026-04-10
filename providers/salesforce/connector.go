@@ -56,7 +56,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		return nil, err
 	}
 
-	// Default the provider to Salesforce when not explicitly overridden.
+	// Default the provider to Salesforce (OAuth provider) when not explicitly overridden.
 	if params.provider == "" {
 		params.provider = providers.Salesforce
 	}
