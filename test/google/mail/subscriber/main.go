@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
+	googleConn "github.com/amp-labs/connectors/providers/google"
 	"github.com/amp-labs/connectors/test/google"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -22,10 +23,10 @@ func main() {
 	conn := google.GetGoogleMailConnector(ctx)
 
 	subscribeParams := common.SubscribeParams{
-		Request: map[string]any{
-			"topicName":           "projects/ampersanddev/topics/gmail-event-received",
-			"labelIds":            []string{"INBOX", "UNREAD", "Label_1"}, // system & custom labels.
-			"labelFilterBehavior": "include",
+		Request: &googleConn.GmailSubscribeRequest{
+			TopicName:           "projects/ampersanddev/topics/gmail-event-received",
+			LabelIDs:            []string{"INBOX", "UNREAD", "Label_1"}, // system & custom labels.
+			LabelFilterBehavior: "include",
 		},
 	}
 

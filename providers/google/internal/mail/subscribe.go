@@ -2,7 +2,6 @@ package mail
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -45,26 +44,23 @@ type WatchResponse struct {
 	Expiration string `json:"expiration"`
 }
 
-func validateRequest(params common.SubscribeParams) ([]byte, error) {
+func validateRequest(params common.SubscribeParams) (*WatchRequest, error) {
 	if params.Request == nil {
 		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
 	}
 
-	req, ok := params.Request.(map[string]any)
+	req, ok := params.Request.(*WatchRequest)
 	if !ok {
 		return nil, fmt.Errorf("%w: expected '%T', got '%T'", errInvalidRequestType, req, params.Request)
 	}
 
-	raw, err := json.Marshal(req)
-	if err != nil {
-		return nil, fmt.Errorf("subscribe: marshaling request: %w", err)
-	}
-
-	return raw, nil
+	return req, nil
 }
 
 func (a *Adapter) EmptySubscriptionParams() *common.SubscribeParams {
-	return &common.SubscribeParams{}
+	return &common.SubscribeParams{
+		Request: &WatchRequest{},
+	}
 }
 
 func (a *Adapter) EmptySubscriptionResult() *common.SubscriptionResult {
@@ -84,14 +80,9 @@ func (a *Adapter) Subscribe(
 		return nil, fmt.Errorf("subscribe: building watch URL: %w", err)
 	}
 
-	req, err := validateRequest(params)
+	watchReq, err := validateRequest(params)
 	if err != nil {
 		return nil, err
-	}
-
-	var watchReq WatchRequest
-	if err := json.Unmarshal(req, &watchReq); err != nil {
-		return nil, fmt.Errorf("subscribe: unmarshaling into WatchRequest: %w", err)
 	}
 
 	response, err := a.JSONHTTPClient().Post(ctx, watchURL, watchReq)
