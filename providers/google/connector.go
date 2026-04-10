@@ -69,7 +69,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return connector, nil
 }
 
-func (c Connector) ListObjectMetadata(
+func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*connectors.ListObjectMetadataResult, error) {
 	if c.Calendar != nil {
@@ -87,7 +87,7 @@ func (c Connector) ListObjectMetadata(
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
+func (c *Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
 	if c.Calendar != nil {
 		return c.Calendar.Read(ctx, params)
 	}
@@ -103,7 +103,7 @@ func (c Connector) Read(ctx context.Context, params connectors.ReadParams) (*con
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) Write(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error) {
+func (c *Connector) Write(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error) {
 	if c.Calendar != nil {
 		return c.Calendar.Write(ctx, params)
 	}
@@ -119,7 +119,7 @@ func (c Connector) Write(ctx context.Context, params connectors.WriteParams) (*c
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
+func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
 	if c.Calendar != nil {
 		return c.Calendar.Delete(ctx, params)
 	}
@@ -135,7 +135,7 @@ func (c Connector) Delete(ctx context.Context, params connectors.DeleteParams) (
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) Subscribe(
+func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
@@ -146,7 +146,7 @@ func (c Connector) Subscribe(
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) UpdateSubscription(
+func (c *Connector) UpdateSubscription(
 	ctx context.Context,
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
@@ -158,7 +158,7 @@ func (c Connector) UpdateSubscription(
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) DeleteSubscription(
+func (c *Connector) DeleteSubscription(
 	ctx context.Context,
 	previousResult common.SubscriptionResult,
 ) error {
@@ -169,7 +169,7 @@ func (c Connector) DeleteSubscription(
 	return common.ErrNotImplemented
 }
 
-func (c Connector) EmptySubscriptionParams() *common.SubscribeParams {
+func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 	if c.Mail != nil {
 		return c.Mail.EmptySubscriptionParams()
 	}
@@ -177,7 +177,7 @@ func (c Connector) EmptySubscriptionParams() *common.SubscribeParams {
 	return nil
 }
 
-func (c Connector) EmptySubscriptionResult() *common.SubscriptionResult {
+func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	if c.Mail != nil {
 		return c.Mail.EmptySubscriptionResult()
 	}
@@ -185,7 +185,7 @@ func (c Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	return nil
 }
 
-func (c Connector) VerifyWebhookMessage(
+func (c *Connector) VerifyWebhookMessage(
 	ctx context.Context,
 	request *common.WebhookRequest,
 	params *common.VerificationParams,
@@ -197,7 +197,7 @@ func (c Connector) VerifyWebhookMessage(
 	return false, common.ErrNotImplemented
 }
 
-func (c Connector) GetRecordsByIds(ctx context.Context, // nolint: revive
+func (c *Connector) GetRecordsByIds(ctx context.Context, // nolint: revive
 	objectName string,
 	recordIds []string, //nolint:revive
 	fields []string,
@@ -210,7 +210,7 @@ func (c Connector) GetRecordsByIds(ctx context.Context, // nolint: revive
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) RunScheduledMaintenance(
+func (c *Connector) RunScheduledMaintenance(
 	ctx context.Context,
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
@@ -222,7 +222,7 @@ func (c Connector) RunScheduledMaintenance(
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) setUnitTestBaseURL(url string) {
+func (c *Connector) setUnitTestBaseURL(url string) {
 	if c.Calendar != nil {
 		c.Calendar.SetUnitTestBaseURL(url)
 	}
