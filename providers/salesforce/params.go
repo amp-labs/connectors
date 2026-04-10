@@ -21,6 +21,7 @@ type parameters struct {
 	paramsbuilder.Workspace
 	paramsbuilder.Metadata
 	paramsbuilder.Module
+
 	timestampColumn string
 }
 
