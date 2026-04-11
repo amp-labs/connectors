@@ -107,14 +107,14 @@ func (a *Adapter) Subscribe(
 		return nil, err
 	}
 
-	watchURL, err := url.JoinPath(a.ModuleInfo().BaseURL, apiVersion, "users/me/watch")
-	if err != nil {
-		return nil, fmt.Errorf("subscribe: building watch URL: %w", err)
-	}
-
 	watchReq, err := validateRequest(params)
 	if err != nil {
 		return nil, err
+	}
+
+	watchURL, err := url.JoinPath(a.ModuleInfo().BaseURL, apiVersion, "users/me/watch")
+	if err != nil {
+		return nil, fmt.Errorf("subscribe: building watch URL: %w", err)
 	}
 
 	response, err := a.JSONHTTPClient().Post(ctx, watchURL, watchReq)
