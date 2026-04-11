@@ -100,8 +100,9 @@ func (a *Adapter) Subscribe(
 	}
 
 	return &common.SubscriptionResult{
-		Result: result,
-		Status: common.SubscriptionStatusSuccess,
+		Result:       result,
+		Status:       common.SubscriptionStatusSuccess,
+		ObjectEvents: params.SubscriptionEvents,
 	}, nil
 }
 
