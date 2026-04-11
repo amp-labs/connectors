@@ -11,9 +11,12 @@ import (
 )
 
 var (
-	errMissingParams      = errors.New("missing required parameters")
-	errInvalidRequestType = errors.New("invalid request type")
+	errMissingParams              = errors.New("missing required parameters")
+	errInvalidRequestType         = errors.New("invalid request type")
+	errUnsupportedSubscribeObject = errors.New("unsupported subscribe object")
 )
+
+const messagesObject common.ObjectName = "messages"
 
 var (
 	_ connectors.SubscribeConnector              = &Adapter{}
@@ -49,17 +52,41 @@ func validateRequest(params common.SubscribeParams) (*WatchRequest, error) {
 		return nil, fmt.Errorf("%w: request is nil", errMissingParams)
 	}
 
-	req, ok := params.Request.(*WatchRequest)
-	if !ok {
-		return nil, fmt.Errorf("%w: expected '%T', got '%T'", errInvalidRequestType, req, params.Request)
+	requestMap, isRequestMap := params.Request.(*map[common.ObjectName]any)
+	if !isRequestMap {
+		return nil, fmt.Errorf("%w: expected '*map[common.ObjectName]any', got '%T'", errInvalidRequestType, params.Request)
 	}
 
-	return req, nil
+	raw, exists := (*requestMap)[messagesObject]
+	if !exists {
+		return nil, fmt.Errorf("%w: missing request for %q", errMissingParams, messagesObject)
+	}
+
+	watchReq, isWatchReq := raw.(*WatchRequest)
+	if !isWatchReq {
+		return nil, fmt.Errorf("%w: expected '*WatchRequest' for %q, got '%T'", errInvalidRequestType, messagesObject, raw)
+	}
+
+	return watchReq, nil
+}
+
+// validateSubscribeObjects checks that all requested objects are supported for subscription.
+// Currently only "messages" is supported.
+func validateSubscribeObjects(events map[common.ObjectName]common.ObjectEvents) error {
+	for obj := range events {
+		if obj != messagesObject {
+			return fmt.Errorf("%w: %q (only %q is supported)", errUnsupportedSubscribeObject, obj, messagesObject)
+		}
+	}
+
+	return nil
 }
 
 func (a *Adapter) EmptySubscriptionParams() *common.SubscribeParams {
 	return &common.SubscribeParams{
-		Request: &WatchRequest{},
+		Request: &map[common.ObjectName]any{
+			messagesObject: &WatchRequest{},
+		},
 	}
 }
 
@@ -71,10 +98,15 @@ func (a *Adapter) EmptySubscriptionResult() *common.SubscriptionResult {
 
 // Subscribe subscribes to the mailboxes events for the given params.
 // It returns subscriptions expiry timestamp with the history id.
+// Currently only the "messages" object is supported for subscription.
 func (a *Adapter) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
+	if err := validateSubscribeObjects(params.SubscriptionEvents); err != nil {
+		return nil, err
+	}
+
 	watchURL, err := url.JoinPath(a.ModuleInfo().BaseURL, apiVersion, "users/me/watch")
 	if err != nil {
 		return nil, fmt.Errorf("subscribe: building watch URL: %w", err)
@@ -100,8 +132,9 @@ func (a *Adapter) Subscribe(
 	}
 
 	return &common.SubscriptionResult{
-		Result: result,
-		Status: common.SubscriptionStatusSuccess,
+		Result:       result,
+		Status:       common.SubscriptionStatusSuccess,
+		ObjectEvents: params.SubscriptionEvents,
 	}, nil
 }
 
