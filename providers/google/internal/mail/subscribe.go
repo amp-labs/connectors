@@ -87,16 +87,21 @@ func (a *Adapter) Subscribe(
 
 	response, err := a.JSONHTTPClient().Post(ctx, watchURL, watchReq)
 	if err != nil {
-		return nil, fmt.Errorf("subscribe: posting to gmail watch: %w", err)
+		return &common.SubscriptionResult{
+			Status: common.SubscriptionStatusFailed,
+		}, fmt.Errorf("subscribe: posting to gmail watch: %w", err)
 	}
 
 	result, err := common.UnmarshalJSON[WatchResponse](response)
 	if err != nil {
-		return nil, err
+		return &common.SubscriptionResult{
+			Status: common.SubscriptionStatusFailed,
+		}, err
 	}
 
 	return &common.SubscriptionResult{
 		Result: result,
+		Status: common.SubscriptionStatusSuccess,
 	}, nil
 }
 
