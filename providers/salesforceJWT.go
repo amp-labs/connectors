@@ -20,7 +20,7 @@ const SalesforceJWT Provider = "salesforceJWT"
 // nolint:lll,funlen
 func init() {
 	SetInfo(SalesforceJWT, ProviderInfo{
-		DisplayName: "Salesforce (JWT)",
+		DisplayName: "Salesforce",
 		AuthType:    Custom,
 		BaseURL:     "https://{{.workspace}}.my.salesforce.com",
 		AuthHealthCheck: &AuthHealthCheck{
@@ -35,20 +35,20 @@ func init() {
 				{
 					Name:        "clientId",
 					DisplayName: "Consumer Key",
-					Prompt:      "The Consumer Key (client_id) of the Salesforce Connected App configured for JWT Bearer flow. Found under Setup → App Manager → [Your Connected App] → Manage Consumer Details.",
-					DocsURL:     "https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_jwt_flow.htm&language=en_US&type=5",
+					Prompt:      "The Consumer Key (Client ID) of the Salesforce External Client App configured for JWT Bearer flow. Found under Setup → External Client App Manager → [Your App] → Settings → OAuth Settings -> Consumer Key and Secret.",
+					DocsURL:     "https://docs.withampersand.com/customer-guides/salesforce",
 				},
 				{
 					Name:        "username",
 					DisplayName: "Salesforce Username",
-					Prompt:      "The Salesforce username the integration should act as (e.g. integration.user@acme.com). This becomes the JWT 'sub' claim. The user must be pre-authorized on the Connected App.",
-					DocsURL:     "https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_jwt_flow.htm&language=en_US&type=5",
+					Prompt:      "The Salesforce username the integration should act as (e.g. integration.user@acme.com). This becomes the JWT 'sub' claim. The user must be pre-authorized on the External Client App.",
+					DocsURL:     "https://docs.withampersand.com/customer-guides/salesforce",
 				},
 				{
 					Name:        "privateKey",
 					DisplayName: "Base64 encoded Private Key (PEM)",
-					Prompt:      "The base64-encoded RSA private key (PEM) whose X.509 certificate is registered on the Connected App under 'Use digital signatures'. Must be RSA — EC keys are not supported by Salesforce for this flow.",
-					DocsURL:     "https://help.salesforce.com/s/articleView?id=sf.connected_app_create_api_integration.htm&language=en_US&type=5",
+					Prompt:      "The base64-encoded RSA private key (PEM) whose X.509 certificate is registered on the External Client App under OAuth Settings → 'Use digital signatures'. Must be RSA — EC keys are not supported by Salesforce for this flow.",
+					DocsURL:     "https://docs.withampersand.com/customer-guides/salesforce",
 				},
 			},
 		},
@@ -80,7 +80,7 @@ func init() {
 		Modules: &Modules{
 			ModuleSalesforceCRM: {
 				BaseURL:     "https://{{.workspace}}.my.salesforce.com",
-				DisplayName: "Salesforce (JWT)",
+				DisplayName: "Salesforce",
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
 						Create: BatchWriteSupportConfig{
@@ -129,7 +129,7 @@ func init() {
 					Name:        "workspace",
 					DisplayName: "Subdomain",
 					DocsURL:     "https://help.salesforce.com/s/articleView?language=en_US&id=sf.faq_domain_name_what.htm&type=5",
-					Prompt:      "Your Salesforce My Domain subdomain (e.g. acme for acme.my.salesforce.com, or acme--dev.sandbox for sandbox).",
+					Prompt:      "Your Salesforce My Domain subdomain (e.g. `acme` for acme.my.salesforce.com, or `acme--dev.sandbox` for sandbox).",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleSalesforceCRM: {},
 					},
@@ -138,4 +138,3 @@ func init() {
 		},
 	})
 }
-
