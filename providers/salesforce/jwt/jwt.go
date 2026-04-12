@@ -36,7 +36,7 @@ import (
 var (
 	ErrNoPEMBlock     = errors.New("no PEM block found in private key")
 	ErrNotRSAKey      = errors.New("PKCS8 key is not an RSA key")
-	ErrTokenEndpoint  = errors.New("Salesforce JWT token endpoint error")
+	ErrTokenEndpoint  = errors.New("salesforce JWT token endpoint error")
 	ErrInvalidPrivKey = errors.New("invalid Salesforce JWT private key")
 )
 
@@ -142,6 +142,10 @@ type tokenSource struct {
 
 // Token creates a signed JWT assertion and exchanges it for an access token.
 func (s *tokenSource) Token() (*oauth2.Token, error) {
+	return s.tokenWithContext(context.Background())
+}
+
+func (s *tokenSource) tokenWithContext(ctx context.Context) (*oauth2.Token, error) {
 	now := time.Now()
 
 	signed, err := s.signAssertion(now)
@@ -159,10 +163,10 @@ func (s *tokenSource) Token() (*oauth2.Token, error) {
 		client = http.DefaultClient
 	}
 
-	req, err := http.NewRequestWithContext(context.Background(),
+	req, err := http.NewRequestWithContext(ctx,
 		http.MethodPost, s.tokenURL, strings.NewReader(data.Encode()))
 	if err != nil {
-		return nil, fmt.Errorf("Salesforce JWT token request: %w", err)
+		return nil, fmt.Errorf("error building salesforce JWT token request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -170,7 +174,7 @@ func (s *tokenSource) Token() (*oauth2.Token, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Salesforce JWT token request: %w", err)
+		return nil, fmt.Errorf("error sending salesforce JWT token request: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -252,8 +256,8 @@ func (r *retryingTokenSource) Token() (*oauth2.Token, error) {
 // forceRefresh mints a brand-new token directly from the base source,
 // bypassing the cache, and installs it as the new ReuseTokenSource base so
 // subsequent calls see the refreshed value.
-func (r *retryingTokenSource) forceRefresh() (*oauth2.Token, error) {
-	fresh, err := r.base.Token()
+func (r *retryingTokenSource) forceRefresh(ctx context.Context) (*oauth2.Token, error) {
+	fresh, err := r.base.tokenWithContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -291,7 +295,7 @@ func NewAuthenticatedClient( //nolint:ireturn
 
 	return common.NewCustomAuthHTTPClient(ctx,
 		common.WithCustomDynamicHeaders(newHeadersGenerator(rts)),
-		common.WithCustomUnauthorizedHandler(newUnauthorizedHandler(rts)),
+		common.WithCustomUnauthorizedHandler(newUnauthorizedHandler(rts)), //nolint:bodyclose
 	)
 }
 
@@ -301,7 +305,7 @@ func newHeadersGenerator(rts *retryingTokenSource) common.DynamicHeadersGenerato
 	return func(_ *http.Request) ([]common.Header, error) {
 		tok, err := rts.Token()
 		if err != nil {
-			return nil, fmt.Errorf("Salesforce JWT token: %w", err)
+			return nil, fmt.Errorf("error in headers generator: %w", err)
 		}
 
 		return []common.Header{
@@ -315,19 +319,25 @@ func newHeadersGenerator(rts *retryingTokenSource) common.DynamicHeadersGenerato
 // Authorization header, and replays the original request exactly once. If
 // the retry also fails auth, the second response is returned to the caller
 // as-is — we do not loop.
-func newUnauthorizedHandler(
-	rts *retryingTokenSource,
-) func(hdrs []common.Header, params []common.QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error) {
-	return func(_ []common.Header, _ []common.QueryParam, req *http.Request, rsp *http.Response) (*http.Response, error) {
+func newUnauthorizedHandler(rts *retryingTokenSource) func(
+	hdrs []common.Header,
+	params []common.QueryParam,
+	req *http.Request,
+	rsp *http.Response,
+) (*http.Response, error) {
+	return func(
+		_ []common.Header, _ []common.QueryParam,
+		req *http.Request, rsp *http.Response,
+	) (*http.Response, error) {
 		// Drain and close the stale 401 response body so the connection can
 		// be reused.
 		if rsp != nil && rsp.Body != nil {
 			rsp.Body.Close() //nolint:errcheck
 		}
 
-		tok, err := rts.forceRefresh()
+		tok, err := rts.forceRefresh(req.Context())
 		if err != nil {
-			return nil, fmt.Errorf("Salesforce JWT token refresh after 401: %w", err)
+			return nil, fmt.Errorf("refreshing salesforce JWT token after 401: %w", err)
 		}
 
 		// Clone the original request so we don't mutate it; replace the
