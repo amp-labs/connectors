@@ -18,7 +18,7 @@ func init() {
 		Oauth2Opts: &Oauth2Opts{
 			GrantType: AuthorizationCode,
 			// Integrations with Clio products are local to the regional instance.
-			// It's not possible, for example, create a US integration and have it work for Canadian Clio customers.
+			// It's not possible, for example, to create a US integration and have it work for Canadian Clio customers.
 			//
 			// Manage OAuth(US):
 			//   https://app.clio.com/oauth/authorize
@@ -101,19 +101,19 @@ func init() {
 					DisplayName:  "Clio API domain",
 					DefaultValue: "app.clio.com",
 					DocsURL:      "https://docs.developers.clio.com/handbook/getting-started/regions",
-					Prompt:       "Provide Clio Regional API domain(Manage/Platform). e.g. Manage US: app.clio.com, Platform US: api.clio.com",
+					Prompt:       "Provide the Clio regional API domain (Manage/Platform). For example, Manage US: app.clio.com, Platform US: api.clio.com",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleClioPlatform: ModuleDependency{},
 						ModuleClioManage:   ModuleDependency{},
 					},
 				},
-				// Platform uses a distinct auth host (e.g. US auth.api.clio.com). Manage uses the same host as the API;
+				// Platform uses a distinct auth host (e.g. US auth.api.clio.com). Manage uses the same host as the API.
 				{
 					Name:         "clio_oauth_domain",
 					DisplayName:  "Clio OAuth domain",
 					DefaultValue: "app.clio.com",
 					DocsURL:      "https://docs.developers.clio.com/handbook/getting-started/regions",
-					Prompt:       "Provide Clio Regional OAuth domain(Manage/Platform). e.g. Manage US: app.clio.com, Platform US: auth.api.clio.com",
+					Prompt:       "Provide the Clio regional OAuth domain (Manage/Platform). For example, Manage US: app.clio.com, Platform US: auth.api.clio.com",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleClioPlatform: ModuleDependency{},
 						ModuleClioManage:   ModuleDependency{},
