@@ -12,6 +12,11 @@ import (
 	"github.com/amp-labs/connectors/providers/google/internal/mail"
 )
 
+var (
+	_ connectors.SubscribeConnector              = &Connector{}
+	_ connectors.SubscriptionMaintainerConnector = &Connector{}
+)
+
 // Connector for Google provider.
 // Each adapter corresponds to Google Module implementation.
 // Only one adapter can be non-nil and will be delegated to on reading/writing operations.
@@ -64,7 +69,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return connector, nil
 }
 
-func (c Connector) ListObjectMetadata(
+func (c *Connector) ListObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*connectors.ListObjectMetadataResult, error) {
 	if c.Calendar != nil {
@@ -82,7 +87,7 @@ func (c Connector) ListObjectMetadata(
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
+func (c *Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
 	if c.Calendar != nil {
 		return c.Calendar.Read(ctx, params)
 	}
@@ -98,7 +103,7 @@ func (c Connector) Read(ctx context.Context, params connectors.ReadParams) (*con
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) Write(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error) {
+func (c *Connector) Write(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error) {
 	if c.Calendar != nil {
 		return c.Calendar.Write(ctx, params)
 	}
@@ -114,7 +119,7 @@ func (c Connector) Write(ctx context.Context, params connectors.WriteParams) (*c
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
+func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
 	if c.Calendar != nil {
 		return c.Calendar.Delete(ctx, params)
 	}
@@ -130,7 +135,94 @@ func (c Connector) Delete(ctx context.Context, params connectors.DeleteParams) (
 	return nil, common.ErrNotImplemented
 }
 
-func (c Connector) setUnitTestBaseURL(url string) {
+func (c *Connector) Subscribe(
+	ctx context.Context,
+	params common.SubscribeParams,
+) (*common.SubscriptionResult, error) {
+	if c.Mail != nil {
+		return c.Mail.Subscribe(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) UpdateSubscription(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error) {
+	if c.Mail != nil {
+		return c.Mail.UpdateSubscription(ctx, params, previousResult)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) DeleteSubscription(
+	ctx context.Context,
+	previousResult common.SubscriptionResult,
+) error {
+	if c.Mail != nil {
+		return c.Mail.DeleteSubscription(ctx, previousResult)
+	}
+
+	return common.ErrNotImplemented
+}
+
+func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
+	if c.Mail != nil {
+		return c.Mail.EmptySubscriptionParams()
+	}
+
+	return nil
+}
+
+func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
+	if c.Mail != nil {
+		return c.Mail.EmptySubscriptionResult()
+	}
+
+	return nil
+}
+
+func (c *Connector) VerifyWebhookMessage(
+	ctx context.Context,
+	request *common.WebhookRequest,
+	params *common.VerificationParams,
+) (bool, error) {
+	if c.Mail != nil {
+		return c.Mail.VerifyWebhookMessage(ctx, request, params)
+	}
+
+	return false, common.ErrNotImplemented
+}
+
+func (c *Connector) GetRecordsByIds(ctx context.Context, // nolint: revive
+	objectName string,
+	recordIds []string, //nolint:revive
+	fields []string,
+	associations []string,
+) ([]common.ReadResultRow, error) {
+	if c.Mail != nil {
+		return c.Mail.GetRecordsByIds(ctx, objectName, recordIds, fields, associations)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) RunScheduledMaintenance(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error) {
+	if c.Mail != nil {
+		return c.Mail.RunScheduledMaintenance(ctx, params, previousResult)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) setUnitTestBaseURL(url string) {
 	if c.Calendar != nil {
 		c.Calendar.SetUnitTestBaseURL(url)
 	}

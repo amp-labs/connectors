@@ -21,6 +21,7 @@ type parameters struct {
 	paramsbuilder.Workspace
 	paramsbuilder.Metadata
 	paramsbuilder.Module
+
 	timestampColumn string
 	// provider allows the same Connector implementation to be reused under a
 	// different provider name (e.g. salesforceJWT), which shares the underlying

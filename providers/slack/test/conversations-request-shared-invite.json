@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "invites": [
+    {
+      "id": "I0XYZ789",
+      "invite_id": "INV123",
+      "channel": {
+        "id": "C0ABCDEF123",
+        "name": "general"
+      }
+    }
+  ],
+  "response_metadata": {
+    "next_cursor": ""
+  }
+}
