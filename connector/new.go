@@ -250,6 +250,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Salesfinity:             wrapper(newSalesfinityConnector),
 	providers.Salesflare:              wrapper(newSalesflareConnector),
 	providers.Salesforce:              wrapper(newSalesforceConnector),
+	providers.SalesforceJWT:           wrapper(newSalesforceJWTConnector),
 	providers.Salesloft:               wrapper(newSalesloftConnector),
 	providers.Seismic:                 wrapper(newSeismicConnector),
 	providers.Sellsy:                  wrapper(newSellsyConnector),
@@ -288,6 +289,28 @@ func newSalesflareConnector(params common.ConnectorParams) (*salesflare.Connecto
 
 func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
 	opts := []salesforce.Option{
+		salesforce.WithAuthenticatedClient(params.AuthenticatedClient),
+		salesforce.WithWorkspace(params.Workspace),
+		salesforce.WithModule(params.Module),
+		salesforce.WithMetadata(params.Metadata),
+	}
+
+	if field, ok := params.Metadata["timestampColumn"]; ok && field != "" {
+		opts = append(opts, salesforce.WithTimestampColumn(field))
+	}
+
+	return salesforce.NewConnector(opts...)
+}
+
+// newSalesforceJWTConnector builds a Salesforce connector under the
+// SalesforceJWT twin provider. It reuses the standard salesforce.Connector
+// implementation — the only differences are the provider name (which
+// determines which ProviderInfo is loaded) and the pre-authenticated HTTP
+// client, which has already been wired with the JWT Bearer token source by
+// the server-side dispatcher.
+func newSalesforceJWTConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
+	opts := []salesforce.Option{
+		salesforce.WithProvider(providers.SalesforceJWT),
 		salesforce.WithAuthenticatedClient(params.AuthenticatedClient),
 		salesforce.WithWorkspace(params.Workspace),
 		salesforce.WithModule(params.Module),
