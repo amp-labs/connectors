@@ -5,12 +5,12 @@ import (
 )
 
 const (
-	Clio               Provider        = "clio"
-	ModuleClioPlatform common.ModuleID = "platform"
-	ModuleClioManage   common.ModuleID = "manage"
+	Clio             Provider        = "clio"
+	ModuleClioGrow   common.ModuleID = "grow"
+	ModuleClioManage common.ModuleID = "manage"
 )
 
-func init() {
+func init() { //nolint:funlen
 	SetInfo(Clio, ProviderInfo{
 		DisplayName: "Clio",
 		AuthType:    Oauth2,
@@ -18,7 +18,8 @@ func init() {
 		Oauth2Opts: &Oauth2Opts{
 			GrantType: AuthorizationCode,
 			// Integrations with Clio products are local to the regional instance.
-			// It's not possible, for example, to create a US integration and have it work for Canadian Clio customers.
+			// It's not possible, for example, to create a US integration and have it work for Canadian Clio
+			// customers.
 			//
 			// Manage OAuth(US):
 			//   https://app.clio.com/oauth/authorize
@@ -30,7 +31,8 @@ func init() {
 			TokenURL:                  "https://{{.clio_oauth_domain}}/oauth/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
-			DocsURL:                   "https://docs.developers.clio.com/handbook/getting-started/get-a-developer-account",
+			DocsURL: "https://docs.developers.clio.com/handbook/getting-started/" +
+				"get-a-developer-account",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -46,22 +48,26 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1776024411/media/clio.com_1776024411.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1776024397/media/clio.com_1776024397.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/" +
+					"v1776024411/media/clio.com_1776024411.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/" +
+					"v1776024397/media/clio.com_1776024397.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1776024373/media/clio.com_1776024372.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1776024349/media/clio.com_1776024349.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/" +
+					"v1776024373/media/clio.com_1776024372.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/" +
+					"v1776024349/media/clio.com_1776024349.svg",
 			},
 		},
 		// The Clio Platform is the current platform for building on Clio Grow.
 		// In future, it will be the single point of entry for building integrations with all Clio products.
-		// Doc: https://docs.developers.clio.com/handbook/getting-started/clio-manage-and-clio-platform/#multi-product-integrations
+		// Doc: https://docs.developers.clio.com/handbook/getting-started/clio-manage-and-clio-platform
 		DefaultModule: ModuleClioManage,
 		Modules: &Modules{
-			ModuleClioPlatform: {
+			ModuleClioGrow: {
 				BaseURL:     "https://{{.clio_api_domain}}",
-				DisplayName: "Clio Platform",
+				DisplayName: "Clio Grow",
 				Support: Support{
 					BulkWrite: BulkWriteSupport{
 						Insert: false,
@@ -100,23 +106,28 @@ func init() {
 					Name:         "clio_api_domain",
 					DisplayName:  "Clio API domain",
 					DefaultValue: "app.clio.com",
-					DocsURL:      "https://docs.developers.clio.com/handbook/getting-started/regions",
-					Prompt:       "Provide the Clio regional API domain (Manage/Platform). For example, Manage US: app.clio.com, Platform US: api.clio.com",
+					DocsURL: "https://docs.developers.clio.com/handbook/getting-started/" +
+						"regions",
+					Prompt: "Provide the Clio regional API domain (Manage/Platform). " +
+						"For example, Manage US: app.clio.com, Platform US: api.clio.com",
 					ModuleDependencies: &ModuleDependencies{
-						ModuleClioPlatform: ModuleDependency{},
-						ModuleClioManage:   ModuleDependency{},
+						ModuleClioGrow:   ModuleDependency{},
+						ModuleClioManage: ModuleDependency{},
 					},
 				},
-				// Platform uses a distinct auth host (e.g. US auth.api.clio.com). Manage uses the same host as the API.
+				// Platform uses a distinct auth host (e.g. US auth.api.clio.com).
+				// Manage uses the same host as the API.
 				{
 					Name:         "clio_oauth_domain",
 					DisplayName:  "Clio OAuth domain",
 					DefaultValue: "app.clio.com",
-					DocsURL:      "https://docs.developers.clio.com/handbook/getting-started/regions",
-					Prompt:       "Provide the Clio regional OAuth domain (Manage/Platform). For example, Manage US: app.clio.com, Platform US: auth.api.clio.com",
+					DocsURL: "https://docs.developers.clio.com/handbook/getting-started/" +
+						"regions",
+					Prompt: "Provide the Clio regional OAuth domain (Manage/Platform). " +
+						"For example, Manage US: app.clio.com, Platform US: auth.api.clio.com",
 					ModuleDependencies: &ModuleDependencies{
-						ModuleClioPlatform: ModuleDependency{},
-						ModuleClioManage:   ModuleDependency{},
+						ModuleClioGrow:   ModuleDependency{},
+						ModuleClioManage: ModuleDependency{},
 					},
 				},
 			},
