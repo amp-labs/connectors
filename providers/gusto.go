@@ -5,7 +5,7 @@ const (
 	GustoDemo Provider = "gustoDemo"
 )
 
-func init() {
+func init() { //nolint:funlen,dupl
 	// Gusto Production configuration
 	SetInfo(Gusto, ProviderInfo{
 		DisplayName: "Gusto",
