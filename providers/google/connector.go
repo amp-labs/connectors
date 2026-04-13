@@ -17,6 +17,12 @@ var (
 	_ connectors.SubscriptionMaintainerConnector = &Connector{}
 )
 
+// GmailSubscribeRequest is the request payload for Gmail watch subscriptions.
+type GmailSubscribeRequest = mail.WatchRequest
+
+// GmailSubscribeResponse is the response payload from Gmail watch subscriptions.
+type GmailSubscribeResponse = mail.WatchResponse
+
 // Connector for Google provider.
 // Each adapter corresponds to Google Module implementation.
 // Only one adapter can be non-nil and will be delegated to on reading/writing operations.
