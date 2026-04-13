@@ -11,12 +11,16 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
+// Sentinel errors for subscribe validation failures.
 var (
 	errMissingParams              = errors.New("missing required parameters")
 	errInvalidRequestType         = errors.New("invalid request type")
 	errUnsupportedSubscribeObject = errors.New("unsupported subscribe object")
 )
 
+// Supported subscribe object names. These correspond to Ampersand object names
+// that can be subscribed to via the Gmail API. Each maps to a Gmail label ID
+// used to filter which mailbox changes trigger push notifications.
 const (
 	messagesObject common.ObjectName = "messages"
 	draftsObject   common.ObjectName = "drafts"
@@ -32,6 +36,7 @@ var objectLabelIDs = map[common.ObjectName]string{
 	draftsObject:   "DRAFT",
 }
 
+// Compile-time interface conformance checks.
 var (
 	_ connectors.SubscribeConnector              = &Adapter{}
 	_ connectors.SubscriptionMaintainerConnector = &Adapter{}
@@ -93,12 +98,16 @@ func buildLabelIDs(events map[common.ObjectName]common.ObjectEvents) ([]string, 
 	return labels, nil
 }
 
+// EmptySubscriptionParams returns a zero-value SubscribeParams with a typed WatchRequest.
+// Used by the server for JSON deserialization of persisted subscription params.
 func (a *Adapter) EmptySubscriptionParams() *common.SubscribeParams {
 	return &common.SubscribeParams{
 		Request: &WatchRequest{},
 	}
 }
 
+// EmptySubscriptionResult returns a zero-value SubscriptionResult with a typed WatchResponse.
+// Used by the server for JSON deserialization of persisted subscription results.
 func (a *Adapter) EmptySubscriptionResult() *common.SubscriptionResult {
 	return &common.SubscriptionResult{
 		Result: &WatchResponse{},
@@ -106,27 +115,48 @@ func (a *Adapter) EmptySubscriptionResult() *common.SubscriptionResult {
 }
 
 // Subscribe creates a Gmail watch subscription for the requested objects.
-// It maps each object to a Gmail label ID (e.g. "messages" → "INBOX", "drafts" → "DRAFT"),
-// then issues a single watch API call with all labels combined. Only "messages" and "drafts"
-// are supported; any other object is rejected.
+//
+// The Gmail watch API (users.watch) accepts a single call with a set of label IDs
+// that filter which mailbox changes produce push notifications. This method:
+//
+//  1. Validates that all requested objects are supported ("messages", "drafts").
+//  2. Maps each object to its Gmail label ID ("messages" → "INBOX", "drafts" → "DRAFT").
+//  3. Extracts the WatchRequest from params, applying default label IDs and filter
+//     behavior ("include") if the caller did not provide explicit overrides.
+//  4. Issues a single POST to the Gmail watch endpoint.
+//  5. On success, returns SubscriptionStatusSuccess with the WatchResponse (containing
+//     the historyId and expiration) and the subscribed ObjectEvents.
+//
+// Error handling:
+//   - If the POST fails (network error or non-2xx), returns SubscriptionStatusFailed.
+//   - If the POST succeeds (2xx) but the response cannot be unmarshalled, the watch
+//     was created at the provider but we have no usable result. In this case, we attempt
+//     to roll back via stopWatch (users.stop). If rollback also fails, returns
+//     SubscriptionStatusFailedToRollback so the caller knows an orphaned watch may exist.
+//
+// ref: https://developers.google.com/gmail/api/reference/rest/v1/users/watch
 //
 //nolint:cyclop
 func (a *Adapter) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
+	// Step 1: Validate objects and resolve their Gmail label IDs.
 	labels, err := buildLabelIDs(params.SubscriptionEvents)
 	if err != nil {
 		return nil, err
 	}
 
+	// Step 2: Extract and validate the WatchRequest from params.
 	watchReq, err := validateRequest(params)
 	if err != nil {
 		return nil, err
 	}
 
-	// Use label IDs and filter behavior from the request if provided,
-	// otherwise default to the labels derived from the subscribed objects.
+	// Step 3: Apply defaults. If the caller provided explicit LabelIDs or
+	// LabelFilterBehavior in the request, those take precedence over the
+	// object-derived defaults. This allows builders to customize filtering
+	// beyond the standard object-to-label mapping.
 	if len(watchReq.LabelIDs) == 0 {
 		watchReq.LabelIDs = labels
 	}
@@ -135,6 +165,7 @@ func (a *Adapter) Subscribe(
 		watchReq.LabelFilterBehavior = "include"
 	}
 
+	// Step 4: Build the watch URL and call the Gmail API.
 	watchURL, err := url.JoinPath(a.ModuleInfo().BaseURL, apiVersion, "users/me/watch")
 	if err != nil {
 		return nil, fmt.Errorf("subscribe: building watch URL: %w", err)
@@ -147,11 +178,12 @@ func (a *Adapter) Subscribe(
 		}, fmt.Errorf("subscribe: posting to gmail watch: %w", err)
 	}
 
+	// Step 5: Parse the response. If unmarshalling fails after a successful HTTP call,
+	// the watch exists at the provider but we can't track it. Roll back to avoid orphans.
 	result, unmarshalErr := common.UnmarshalJSON[WatchResponse](response)
 	if unmarshalErr != nil {
-		// The watch call succeeded at the provider (2xx) but we can't parse the response.
-		// Attempt to roll back by stopping the watch so we don't leave an orphaned subscription.
 		if response.Code >= http.StatusOK && response.Code < http.StatusMultipleChoices {
+			// 2xx means the watch was created — attempt to stop it.
 			if rollbackErr := a.stopWatch(ctx); rollbackErr != nil {
 				return &common.SubscriptionResult{
 					Status: common.SubscriptionStatusFailedToRollback,
@@ -159,6 +191,7 @@ func (a *Adapter) Subscribe(
 			}
 		}
 
+		// Either non-2xx (watch was never created) or rollback succeeded.
 		return &common.SubscriptionResult{
 			Status: common.SubscriptionStatusFailed,
 		}, fmt.Errorf("subscribe: unmarshal failed: %w", unmarshalErr)
@@ -190,19 +223,26 @@ func (a *Adapter) DeleteSubscription(
 	return a.stopWatch(ctx)
 }
 
-// stopWatch calls the Gmail users.stop API to stop push notifications.
+// stopWatch calls the Gmail users.stop API to terminate push notifications for
+// the authenticated user's mailbox. This is used both by DeleteSubscription for
+// normal unsubscribe flows and by Subscribe as a rollback when the watch call
+// succeeds but the response cannot be parsed.
+//
+// The stop endpoint requires an empty request body and returns an empty response.
+// ref: https://developers.google.com/gmail/api/reference/rest/v1/users/stop
 func (a *Adapter) stopWatch(ctx context.Context) error {
 	watchURL, err := url.JoinPath(a.ModuleInfo().BaseURL, apiVersion, "users/me/stop")
 	if err != nil {
 		return fmt.Errorf("stop watch: building URL: %w", err)
 	}
 
-	// The request body must be empty per the API spec.
 	response, err := a.JSONHTTPClient().Post(ctx, watchURL, nil)
 	if err != nil {
 		return fmt.Errorf("stop watch: posting to gmail stop: %w", err)
 	}
 
+	// The stop endpoint returns an empty body on success. We still attempt to
+	// unmarshal to let the HTTP client surface any non-2xx error responses.
 	_, err = common.UnmarshalJSON[WatchResponse](response)
 	if err != nil {
 		return err
@@ -211,6 +251,7 @@ func (a *Adapter) stopWatch(ctx context.Context) error {
 	return nil
 }
 
+// GetRecordsByIds is not supported for the Gmail mail module.
 func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 	objectName string,
 	recordIds []string, //nolint:revive
@@ -230,6 +271,9 @@ func (a *Adapter) UpdateSubscription(
 	return a.Subscribe(ctx, params)
 }
 
+// VerifyWebhookMessage always returns true for Gmail. Gmail push notifications are
+// delivered via Google Cloud Pub/Sub which handles authentication at the transport layer,
+// so no application-level signature verification is needed.
 func (a *Adapter) VerifyWebhookMessage(
 	ctx context.Context,
 	request *common.WebhookRequest,
