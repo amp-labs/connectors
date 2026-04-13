@@ -11,14 +11,14 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// Sentinel errors for subscribe validation failures.
+// Errors for subscribe validation failures.
 var (
 	errMissingParams              = errors.New("missing required parameters")
 	errInvalidRequestType         = errors.New("invalid request type")
 	errUnsupportedSubscribeObject = errors.New("unsupported subscribe object")
 )
 
-// Supported subscribe object names. These correspond to Ampersand object names
+// Supported subscribe object names. These correspond to object names
 // that can be subscribed to via the Gmail API. Each maps to a Gmail label ID
 // used to filter which mailbox changes trigger push notifications.
 const (
