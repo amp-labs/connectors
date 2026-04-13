@@ -13,6 +13,116 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+func TestReadCRM(t *testing.T) {
+	t.Parallel()
+
+	dealsResponse := testutils.DataFromFile(t, "deals.json")
+	dealProductsResponse := testutils.DataFromFile(t, "deal-products.json")
+
+	tests := []testroutines.Read{
+		{
+			Name: "Deals include products when products field is requested",
+			Input: common.ReadParams{
+				ObjectName: "deals",
+				Fields:     connectors.Fields("title", "products"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If:   mockcond.Path("/api/v2/deals"),
+						Then: mockserver.Response(http.StatusOK, dealsResponse),
+					},
+					{
+						If:   mockcond.Path("/api/v2/deals/1/products"),
+						Then: mockserver.Response(http.StatusOK, dealProductsResponse),
+					},
+				},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"title": "Test Deal",
+						"products": []map[string]any{
+							{
+								"id":         float64(101),
+								"name":       "Test Product",
+								"quantity":   float64(2),
+								"unit_price": float64(500),
+							},
+							{
+								"id":         float64(102),
+								"name":       "Another Product",
+								"quantity":   float64(1),
+								"unit_price": float64(250),
+							},
+						},
+					},
+					Raw: map[string]any{
+						"id": float64(1),
+						"products": []map[string]any{
+							{
+								"id":         float64(101),
+								"name":       "Test Product",
+								"quantity":   float64(2),
+								"unit_price": float64(500),
+							},
+							{
+								"id":         float64(102),
+								"name":       "Another Product",
+								"quantity":   float64(1),
+								"unit_price": float64(250),
+							},
+						},
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// Server only handles /api/v2/deals — if the products endpoint is accidentally
+			// called it returns 500, which would fail this test.
+			Name: "Deals do not fetch products when products field is not requested",
+			Input: common.ReadParams{
+				ObjectName: "deals",
+				Fields:     connectors.Fields("title"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/v2/deals"),
+				Then:  mockserver.Response(http.StatusOK, dealsResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"title": "Test Deal",
+					},
+					Raw: map[string]any{
+						"id": float64(1),
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveCRM)
+			})
+		})
+	}
+}
+
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 

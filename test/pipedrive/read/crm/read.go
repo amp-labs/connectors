@@ -69,7 +69,7 @@ func readDeals(ctx context.Context, conn *pipedrive.Connector) error {
 	config := connectors.ReadParams{
 		ObjectName: "deals",
 		Since:      time.Now().Add(-720 * time.Hour),
-		Fields:     connectors.Fields("close_time", "id"),
+		Fields:     connectors.Fields("close_time", "id", "products"),
 	}
 
 	result, err := conn.Read(ctx, config)
