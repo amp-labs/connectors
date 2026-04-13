@@ -81,7 +81,7 @@ func TestSubscriptionEvent_inviteeCreated_scheduledEventURI(t *testing.T) {
 		"payload": map[string]any{
 			"uri": "https://api.calendly.com/scheduled_events/guest-1",
 			"scheduled_event": map[string]any{
-				"uri": "https://api.calendly.com/scheduled_events/se-1",
+				"uri":          "https://api.calendly.com/scheduled_events/se-1",
 				"organization": "https://api.calendly.com/organizations/org-9",
 			},
 		},
