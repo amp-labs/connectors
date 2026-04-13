@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/tools/debug"
 )
 
 var (
@@ -226,12 +225,5 @@ func (a *Adapter) VerifyWebhookMessage(
 	request *common.WebhookRequest,
 	params *common.VerificationParams,
 ) (bool, error) {
-	//nolint:forbidigo
-	fmt.Println("VerifyWebhookMessage-----------------",
-		"request-----------------",
-		debug.PrettyFormatStringJSON(request),
-		"params-----------------",
-		debug.PrettyFormatStringJSON(params))
-
 	return true, nil
 }
