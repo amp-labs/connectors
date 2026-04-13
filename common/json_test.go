@@ -1073,3 +1073,100 @@ func TestEnsureContentType_InvalidPattern(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to compile regex")
 }
+
+// ============================================================================
+// CHARSET TRANSCODING TESTS
+// ============================================================================
+
+func TestTranscodeToUTF8(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name        string
+		body        []byte
+		contentType string
+		expected    string
+	}{
+		{
+			name:        "UTF-8 body with no charset header is unchanged",
+			body:        []byte(`{"name":"João"}`),
+			contentType: "application/json",
+			expected:    `{"name":"João"}`,
+		},
+		{
+			name:        "UTF-8 body with explicit utf-8 charset is unchanged",
+			body:        []byte(`{"name":"João"}`),
+			contentType: "application/json; charset=utf-8",
+			expected:    `{"name":"João"}`,
+		},
+		{
+			name:        "ISO-8859-1 body with charset header is transcoded",
+			body:        []byte{'{', '"', 'n', 'a', 'm', 'e', '"', ':', '"', 'J', 'o', 0xe3, 'o', '"', '}'},
+			contentType: "application/json; charset=ISO-8859-1",
+			expected:    `{"name":"João"}`,
+		},
+		{
+			name:        "Windows-1252 body with charset header is transcoded",
+			body:        []byte{'{', '"', 'v', '"', ':', '"', 0x93, 'h', 'i', 0x94, '"', '}'},
+			contentType: "application/json; charset=windows-1252",
+			expected:    "{\"v\":\"\u201chi\u201d\"}",
+		},
+		{
+			name:        "Empty body is unchanged",
+			body:        []byte{},
+			contentType: "application/json; charset=ISO-8859-1",
+			expected:    "",
+		},
+		{
+			name:        "Empty content type leaves body unchanged",
+			body:        []byte(`{"ok":true}`),
+			contentType: "",
+			expected:    `{"ok":true}`,
+		},
+		{
+			name:        "Unknown charset falls back to original bytes",
+			body:        []byte(`{"ok":true}`),
+			contentType: "application/json; charset=nonexistent-encoding",
+			expected:    `{"ok":true}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result := transcodeToUTF8(tt.body, tt.contentType)
+			assert.Equal(t, tt.expected, string(result))
+		})
+	}
+}
+
+func TestParseJSONResponse_TranscodesISO88591(t *testing.T) {
+	t.Parallel()
+
+	// Simulate a Pardot-like response: JSON body with ISO-8859-1 encoded characters.
+	// 0xe1 = á in ISO-8859-1, 0xfa = ú in ISO-8859-1
+	isoBody := []byte(`{"firstName":"` + string([]byte{0x4a, 0x6f, 0xe3, 0x6f}) + `"}`)
+	// "João" with ã as 0xe3 in ISO-8859-1
+
+	res := &http.Response{
+		StatusCode: http.StatusOK,
+		Header: http.Header{
+			"Content-Type": []string{"application/json; charset=ISO-8859-1"},
+		},
+		Body: io.NopCloser(bytes.NewReader(isoBody)),
+	}
+
+	response, err := ParseJSONResponse(res, isoBody)
+	require.NoError(t, err)
+
+	body, ok := response.Body()
+	require.True(t, ok)
+
+	firstName, err := body.GetKey("firstName")
+	require.NoError(t, err)
+
+	firstNameStr, err := firstName.GetString()
+	require.NoError(t, err)
+	assert.Equal(t, "João", firstNameStr)
+}
