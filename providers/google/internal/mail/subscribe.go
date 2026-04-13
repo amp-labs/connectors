@@ -109,6 +109,8 @@ func (a *Adapter) EmptySubscriptionResult() *common.SubscriptionResult {
 // It maps each object to a Gmail label ID (e.g. "messages" → "INBOX", "drafts" → "DRAFT"),
 // then issues a single watch API call with all labels combined. Only "messages" and "drafts"
 // are supported; any other object is rejected.
+//
+//nolint:cyclop
 func (a *Adapter) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -123,7 +125,15 @@ func (a *Adapter) Subscribe(
 		return nil, err
 	}
 
-	watchReq.LabelIDs = labels
+	// Use label IDs and filter behavior from the request if provided,
+	// otherwise default to the labels derived from the subscribed objects.
+	if len(watchReq.LabelIDs) == 0 {
+		watchReq.LabelIDs = labels
+	}
+
+	if watchReq.LabelFilterBehavior == "" {
+		watchReq.LabelFilterBehavior = "include"
+	}
 
 	watchURL, err := url.JoinPath(a.ModuleInfo().BaseURL, apiVersion, "users/me/watch")
 	if err != nil {
