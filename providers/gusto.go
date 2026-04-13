@@ -1,3 +1,4 @@
+//nolint:dupl
 package providers
 
 const (
@@ -5,7 +6,7 @@ const (
 	GustoDemo Provider = "gustoDemo"
 )
 
-func init() { //nolint:funlen,dupl
+func init() { //nolint:funlen
 	// Gusto Production configuration
 	SetInfo(Gusto, ProviderInfo{
 		DisplayName: "Gusto",
