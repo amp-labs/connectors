@@ -16,7 +16,7 @@ const (
 	data                      = "data"
 	dealsObjectName           = "deals"
 	productsField             = "products"
-	maxConcurrentProductFetch = 4
+	maxConcurrentProductFetch = 4 // No strong reason (Pipedrive has 100req/10s)
 )
 
 var supportsIncSync = datautils.NewSet("activities", "deals", "organizations", "persons") // nolint: gochecknoglobals
