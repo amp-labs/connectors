@@ -5,6 +5,7 @@ const (
 	DeelSandbox Provider = "deelSandbox"
 )
 
+// nolint: funlen
 func init() {
 	// Deel configuration
 	SetInfo(Deel, ProviderInfo{
