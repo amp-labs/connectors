@@ -270,7 +270,7 @@ func parseCalendlySignatureHeader(header string) (timestamp, v1 string, err erro
 	}
 
 	if timestamp == "" || v1 == "" {
-		return "", "", errors.New("calendly: signature header missing t= or v1=")
+		return "", "", errCalendlySigHeaderFormat
 	}
 
 	return timestamp, v1, nil

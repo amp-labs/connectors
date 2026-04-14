@@ -266,22 +266,33 @@ func inferObjectEventsFromCalendlyEvents(events []string) map[common.ObjectName]
 	out := make(map[common.ObjectName]common.ObjectEvents)
 
 	for _, ev := range events {
-		objName, subEv := inferObjectAndNormalizedEvent(ev)
-		if objName == "" {
-			continue
-		}
-
-		cur := out[objName]
-		cur.Events = append(cur.Events, subEv)
-		out[objName] = cur
+		mergeCalendlyEventIntoMap(out, ev)
 	}
 
+	deduplicateSubscriptionEvents(out)
+
+	return out
+}
+
+func mergeCalendlyEventIntoMap(
+	out map[common.ObjectName]common.ObjectEvents,
+	calendlyEvent string,
+) {
+	objName, subEv := inferObjectAndNormalizedEvent(calendlyEvent)
+	if objName == "" {
+		return
+	}
+
+	cur := out[objName]
+	cur.Events = append(cur.Events, subEv)
+	out[objName] = cur
+}
+
+func deduplicateSubscriptionEvents(out map[common.ObjectName]common.ObjectEvents) {
 	for k, v := range out {
 		v.Events = datautils.NewSetFromList(v.Events).List()
 		out[k] = v
 	}
-
-	return out
 }
 
 func objectNameFromCalendlyPrefix(prefix string) common.ObjectName {
@@ -316,8 +327,12 @@ func inferObjectAndNormalizedEvent(calendlyEvent string) (common.ObjectName, com
 		return "", ""
 	}
 
-	prefix, action := parts[0], parts[1]
+	return normalizedFromCalendlyEventParts(parts[0], parts[1])
+}
 
+func normalizedFromCalendlyEventParts(
+	prefix, action string,
+) (common.ObjectName, common.SubscriptionEventType) {
 	obj := objectNameFromCalendlyPrefix(prefix)
 	if obj == "" {
 		return "", ""
