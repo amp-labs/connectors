@@ -128,7 +128,7 @@ func TestUnmarshalJSON(t *testing.T) { // nolint:funlen
 				Body: io.NopCloser(bytes.NewReader(ttc.input)),
 			}
 
-			output, err := ParseJSONResponse(resp, ttc.input)
+			output, err := ParseJSONResponse(context.Background(), resp, ttc.input)
 			if err != nil {
 				testutils.CheckErrors(t, ttc.name, []error{ttc.expectedErr}, err)
 
@@ -589,7 +589,7 @@ func TestParseJSONResponse_EmptyBody(t *testing.T) {
 		Body:       io.NopCloser(strings.NewReader("")),
 	}
 
-	response, err := ParseJSONResponse(res, []byte{})
+	response, err := ParseJSONResponse(context.Background(), res, []byte{})
 
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusNoContent, response.Code)
@@ -613,7 +613,7 @@ func TestParseJSONResponse_ValidJSON(t *testing.T) {
 		Body: io.NopCloser(strings.NewReader(bodyData)),
 	}
 
-	response, err := ParseJSONResponse(res, []byte(bodyData))
+	response, err := ParseJSONResponse(context.Background(), res, []byte(bodyData))
 
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusOK, response.Code)
@@ -655,7 +655,7 @@ func TestParseJSONResponse_InvalidContentType(t *testing.T) {
 		Body: io.NopCloser(strings.NewReader(bodyData)),
 	}
 
-	_, err := ParseJSONResponse(res, []byte(bodyData))
+	_, err := ParseJSONResponse(context.Background(), res, []byte(bodyData))
 
 	require.Error(t, err)
 	assert.ErrorIs(t, err, ErrNotJSON)
@@ -725,7 +725,7 @@ func TestParseJSONResponse_VariousJSONContentTypes(t *testing.T) {
 				Body: io.NopCloser(strings.NewReader(bodyData)),
 			}
 
-			response, err := ParseJSONResponse(res, []byte(bodyData))
+			response, err := ParseJSONResponse(context.Background(), res, []byte(bodyData))
 
 			if tt.expectError {
 				require.Error(t, err)
@@ -761,7 +761,7 @@ func TestParseJSONResponse_InvalidJSON(t *testing.T) {
 		Body: io.NopCloser(strings.NewReader(bodyData)),
 	}
 
-	_, err := ParseJSONResponse(res, []byte(bodyData))
+	_, err := ParseJSONResponse(context.Background(), res, []byte(bodyData))
 
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to unmarshall response body into JSON")
@@ -806,7 +806,7 @@ func TestUnmarshalJSON_ComplexTypes(t *testing.T) {
 		Body: io.NopCloser(strings.NewReader(jsonData)),
 	}
 
-	response, err := ParseJSONResponse(res, []byte(jsonData))
+	response, err := ParseJSONResponse(context.Background(), res, []byte(jsonData))
 	require.NoError(t, err)
 
 	user, err := UnmarshalJSON[User](response)
@@ -1157,7 +1157,7 @@ func TestParseJSONResponse_TranscodesISO88591(t *testing.T) {
 		Body: io.NopCloser(bytes.NewReader(isoBody)),
 	}
 
-	response, err := ParseJSONResponse(res, isoBody)
+	response, err := ParseJSONResponse(context.Background(), res, isoBody)
 	require.NoError(t, err)
 
 	body, ok := response.Body()
