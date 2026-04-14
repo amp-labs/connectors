@@ -2,12 +2,16 @@ package calendly
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
+
+// errEmptyResource is returned when a Calendly JSON envelope has no resource payload.
+var errEmptyResource = errors.New("calendly: empty resource")
 
 // GetRecordsByIds fetches event type resources by their canonical Calendly API URIs.
 func (c *Connector) GetRecordsByIds(
@@ -46,7 +50,7 @@ func (c *Connector) GetRecordsByIds(
 		}
 
 		if parsed.Resource == nil {
-			return nil, fmt.Errorf("calendly: empty resource for %s", recordURI)
+			return nil, fmt.Errorf("%w for %s", errEmptyResource, recordURI)
 		}
 
 		row := common.ReadResultRow{
