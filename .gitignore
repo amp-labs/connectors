@@ -148,4 +148,5 @@ output/
 apex
 test/salesforce/apex/apex
 subscribe
+subscriber
 test/salesforce/subscribe/subscribe
