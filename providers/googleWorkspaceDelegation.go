@@ -26,8 +26,8 @@ func init() {
 				{
 					Name:        "serviceAccountKey",
 					DisplayName: "Service Account Key (Base64)",
-					Prompt:      "Base64-encoded JSON key file for a GCP service account with domain-wide delegation enabled. The Workspace admin must authorize this service account's client ID with the required API scopes in the Admin console (Security > API controls > Domain-wide delegation).",
-					DocsURL:     "https://docs.withampersand.com/provider-guides/google",
+					Prompt:      "Base64-encoded JSON key file for a GCP service account with domain-wide delegation enabled.",
+					DocsURL:     "https://docs.withampersand.com/provider-guides/google-workspace-delegation",
 				},
 			},
 		},
@@ -76,7 +76,8 @@ func init() {
 				{
 					Name:        "userEmail",
 					DisplayName: "User Email",
-					Prompt:      "The Google Workspace email address of the user to access (e.g. user@company.com). The service account will impersonate this user via domain-wide delegation.",
+					Prompt:      "The Google Workspace email address of the user to access (e.g. `user@company.com`). The service account will impersonate this user via domain-wide delegation.",
+					DocsURL:     "https://docs.withampersand.com/provider-guides/google-workspace-delegation",
 				},
 			},
 		},
