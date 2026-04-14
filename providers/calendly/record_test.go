@@ -86,7 +86,8 @@ func TestGetRecordsByIds_success(t *testing.T) {
 			},
 		})
 		require.NoError(t, err)
-		_, err = w.Write(body)
+		// Test-only mock: JSON to the HTTP client, not HTML in a browser.
+		_, err = w.Write(body) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 		require.NoError(t, err)
 	}))
 	t.Cleanup(srv.Close)
@@ -119,7 +120,7 @@ func TestGetRecordsByIds_skipsEmptyURI(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		callCount++
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"resource":{"uri":"u","name":"only"}}`))
+		_, err := w.Write([]byte(`{"resource":{"uri":"u","name":"only"}}`)) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 		require.NoError(t, err)
 	}))
 	t.Cleanup(srv.Close)
@@ -141,7 +142,7 @@ func TestGetRecordsByIds_emptyResource(t *testing.T) {
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_, err := w.Write([]byte(`{"resource":null}`))
+		_, err := w.Write([]byte(`{"resource":null}`)) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 		require.NoError(t, err)
 	}))
 	t.Cleanup(srv.Close)
