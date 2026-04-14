@@ -1,0 +1,19 @@
+{
+  "body": {
+    "error": {
+      "code": "InvalidRequest",
+      "innerError": {
+        "client-request-id": "08332586-054a-4464-9a4e-4fcef5928b52",
+        "date": "2026-04-14T15:11:01",
+        "request-id": "08332586-054a-4464-9a4e-4fcef5928b52"
+      },
+      "message": "'encryptionCertificate' and 'encryptionCertificateId' cannot be empty"
+    }
+  },
+  "headers": {
+    "Cache-Control": "no-cache",
+    "Content-Type": "application/json"
+  },
+  "id": "me/messages",
+  "status": 400
+}

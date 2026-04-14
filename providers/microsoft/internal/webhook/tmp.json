@@ -1,0 +1,28 @@
+{
+  "value": [
+    {
+      "subscriptionId": "a359cf8d-40ec-43a6-ab68-6339f787bd26",
+      "subscriptionExpirationDateTime": "2026-04-14T20:27:40+00:00",
+      "changeType": "created",
+      "resource": "Users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/messages('AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAACsvo1TAAB8hj1Rtd60SKTngNs3if9RAAEiI3c-AAA=')",
+      "clientState": "123456_my_state",
+      "tenantId": "5c6241d0-74cc-48a2-b667-3eb0d738af72",
+      "encryptedContent": {
+        "data": "",
+        "dataKey": "",
+        "dataSignature": "12zReYcmAzvp3YuDsMhSbGsvE/MUXFO8zeAb3kJjtsQ=",
+        "encryptionCertificateId": "test-encryption-cert-1",
+        "encryptionCertificateThumbprint": "E623C30A2255D234058D7E71D49E0DC4605F5899"
+      },
+      "resourceData": {
+        "@odata.type": "#microsoft.graph.message",
+        "@odata.id": "Users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/messages('AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAACsvo1TAAB8hj1Rtd60SKTngNs3if9RAAEiI3c-AAA=')",
+        "@odata.etag": "W/\"CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAEiHwxm\"",
+        "id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAACsvo1TAAB8hj1Rtd60SKTngNs3if9RAAEiI3c-AAA="
+      }
+    }
+  ],
+  "validationTokens": [
+    ""
+  ]
+}
