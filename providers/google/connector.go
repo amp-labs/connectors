@@ -29,8 +29,18 @@ type Connector struct {
 	Mail     *mail.Adapter
 }
 
+// NewConnector creates a new Google connector. It defaults to the Google
+// provider; use NewConnectorForProvider for twin providers (e.g. GoogleWorkspaceDelegation)
+// that share the same implementation but differ in auth scheme.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(providers.Google, params,
+	return NewConnectorForProvider(providers.Google, params)
+}
+
+// NewConnectorForProvider creates a new Google connector under the given
+// provider name. This allows twin providers like GoogleWorkspaceDelegation to reuse the
+// same connector implementation with a different auth configuration.
+func NewConnectorForProvider(provider providers.Provider, params common.ConnectorParams) (*Connector, error) {
+	connector, err := components.Initialize(provider, params,
 		func(base *components.Connector) (*Connector, error) {
 			return &Connector{Connector: base}, nil
 		},

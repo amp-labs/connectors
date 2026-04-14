@@ -198,6 +198,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Github:                  wrapper(newGithubConnector),
 	providers.Gong:                    wrapper(newGongConnector),
 	providers.Google:                  wrapper(newGoogleConnector),
+	providers.GoogleWorkspaceDelegation:          wrapper(newGoogleWorkspaceDelegationConnector),
 	providers.Gorgias:                 wrapper(newGorgiasConnector),
 	providers.Granola:                 wrapper(newGranolaConnector),
 	providers.Groove:                  wrapper(newGrooveConnector),
@@ -823,6 +824,12 @@ func newGoogleConnector(
 	params common.ConnectorParams,
 ) (*google.Connector, error) {
 	return google.NewConnector(params)
+}
+
+func newGoogleWorkspaceDelegationConnector(
+	params common.ConnectorParams,
+) (*google.Connector, error) {
+	return google.NewConnectorForProvider(providers.GoogleWorkspaceDelegation, params)
 }
 
 func newLeverConnector(
