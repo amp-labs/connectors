@@ -181,7 +181,7 @@ func getRecordIdentifierValue(object map[string]any, key string) string {
 }
 
 func createObject[CP any](
-	ctx context.Context, conn ConnectorCRUD, objectName string, payload *CP,
+	ctx context.Context, conn connectors.WriteConnector, objectName string, payload *CP,
 ) (*common.WriteResult, error) {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: objectName,

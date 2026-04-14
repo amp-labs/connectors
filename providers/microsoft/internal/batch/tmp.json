@@ -1,0 +1,19 @@
+{
+  "body": {
+    "error": {
+      "code": "ExtensionError",
+      "innerError": {
+        "client-request-id": "3c1dbc3f-a915-4773-8de7-79153c102891",
+        "date": "2026-04-14T16:05:55",
+        "request-id": "3c1dbc3f-a915-4773-8de7-79153c102891"
+      },
+      "message": "Operation: Create; Exception: [Status Code: BadRequest; Reason: $top, $skip, $orderby, $select=body,uniqueBody and $expand other than singleValueExtendedProperties,multiValueExtendedProperties are not supported in subscription resource Url.]"
+    }
+  },
+  "headers": {
+    "Cache-Control": "no-cache",
+    "Content-Type": "application/json"
+  },
+  "id": "me/messages",
+  "status": 400
+}

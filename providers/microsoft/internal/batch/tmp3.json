@@ -1,0 +1,19 @@
+{
+  "body": {
+    "error": {
+      "code": "InvalidRequest",
+      "innerError": {
+        "client-request-id": "6e084bb7-c4d5-4869-83cc-088132115e96",
+        "date": "2026-04-14T15:14:14",
+        "request-id": "6e084bb7-c4d5-4869-83cc-088132115e96"
+      },
+      "message": "Certificate validation error: The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters. "
+    }
+  },
+  "headers": {
+    "Cache-Control": "no-cache",
+    "Content-Type": "application/json"
+  },
+  "id": "me/messages",
+  "status": 400
+}

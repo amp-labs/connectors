@@ -9,6 +9,13 @@ import (
 
 // DumpJSON dumps the given value as JSON to the given writer.
 func DumpJSON(v any, w io.Writer) {
+	if bytesData, ok := v.([]byte); ok {
+		jsonData := make(map[string]any)
+		if err := json.Unmarshal(bytesData, &jsonData); err == nil {
+			v = jsonData
+		}
+	}
+
 	// Convert any error interfaces recursively before encoding.
 	convertedValue := substituteErrorsToStrings(v)
 

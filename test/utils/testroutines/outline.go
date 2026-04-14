@@ -27,6 +27,9 @@ type TestCase[Input any, Output any] struct {
 	ExpectedErrs []error
 }
 
+// None can be used to indicate no Input or no Output type.
+type None struct{}
+
 func (c TestCase[Input, Output]) Close() {
 	c.Server.Close()
 }

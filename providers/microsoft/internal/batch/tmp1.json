@@ -1,0 +1,19 @@
+{
+  "body": {
+    "error": {
+      "code": "InvalidRequest",
+      "innerError": {
+        "client-request-id": "00d29f8d-cfa3-4262-86e4-501864a11f3f",
+        "date": "2026-04-14T14:55:41",
+        "request-id": "00d29f8d-cfa3-4262-86e4-501864a11f3f"
+      },
+      "message": "Could not process subscription creation payload. Are all property names spelled and camelCased properly?Also are the dateTimeOffest properties in a valid Internet Date and Time format?"
+    }
+  },
+  "headers": {
+    "Cache-Control": "no-cache",
+    "Content-Type": "application/json"
+  },
+  "id": "me/messages",
+  "status": 400
+}

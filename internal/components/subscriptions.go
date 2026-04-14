@@ -2,10 +2,14 @@ package components
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
+
+var ErrInvalidSubscriptionRequestType = errors.New("request type of common.SubscribeParams is invalid")
 
 // SubscriptionInputOutput is a generic helper that provides type-safe implementations
 // of the EmptySubscriptionParams and EmptySubscriptionResult methods
@@ -26,6 +30,21 @@ func (SubscriptionInputOutput[I, O]) EmptySubscriptionResult() *common.Subscript
 	return &common.SubscriptionResult{
 		Result: &result,
 	}
+}
+
+func (s SubscriptionInputOutput[I, O]) TypedSubscriptionRequest(params common.SubscribeParams) (I, error) {
+	var input I
+
+	if params.Request != nil {
+		var ok bool
+
+		input, ok = params.Request.(I)
+		if !ok {
+			return input, fmt.Errorf("%w: expected %T, got %T", ErrInvalidSubscriptionRequestType, input, params.Request)
+		}
+	}
+
+	return input, nil
 }
 
 // WebhookMessageVerifier is the minimal interface for a connector that can verify webhook messages.

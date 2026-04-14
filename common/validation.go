@@ -142,3 +142,11 @@ func (p SearchParams) ValidateParams(withRequiredFields bool) error {
 
 	return nil
 }
+
+func (p SubscribeParams) ValidateParams() error {
+	if len(p.SubscriptionEvents) == 0 {
+		return ErrMissingObjects
+	}
+
+	return nil
+}

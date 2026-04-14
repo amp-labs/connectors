@@ -12,10 +12,16 @@ import (
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/metadata"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/subscriber"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/webhook"
 )
 
 const apiVersion = "v1.0"
+
+type (
+	SubscribeRequest  = subscriber.Input
+	SubscribeResponse = subscriber.Output
+)
 
 type Connector struct {
 	// Basic connector
@@ -30,6 +36,7 @@ type Connector struct {
 	components.Writer
 	components.Deleter
 	webhook.Verifier
+	subscriber.Strategy
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -80,6 +87,8 @@ func constructor(base *components.Connector) (*Connector, error) {
 			ErrorHandler:  errorHandler,
 		},
 	)
+
+	connector.Strategy = *subscriber.NewStrategy(connector.JSONHTTPClient(), connector.ProviderContext.ProviderInfo())
 
 	return connector, nil
 }
