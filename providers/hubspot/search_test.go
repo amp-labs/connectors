@@ -86,7 +86,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 				}, {
 					If: mockcond.And{
 						mockcond.MethodPOST(),
-						mockcond.Path("/crm/v4/associations/contacts/companies/batch/read"),
+						mockcond.Path("/crm/associations/2026-03/contacts/companies/batch/read"),
 						mockcond.Body(`{"inputs":[{"id":"501"}]}`), // contact ID
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsToCompanies),
@@ -146,7 +146,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 					Then: mockserver.Response(http.StatusOK, responseContactsLastPage),
 				}, {
 					If: mockcond.And{
-						mockcond.Path("/crm/v4/associations/contacts/companies/batch/read"),
+						mockcond.Path("/crm/associations/2026-03/contacts/companies/batch/read"),
 						mockcond.Body(`{"inputs":[{"id":"103107104018"}]}`), // contact ID
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsToCompanies),
