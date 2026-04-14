@@ -31,6 +31,10 @@ func InterpretJSONError(res *http.Response, body []byte) error {
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrLimitExceeded, apiError))
 	case http.StatusServiceUnavailable:
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrApiDisabled, apiError))
+	case 477:
+		// HubSpot returns 477 while a hub is being migrated between data hosting locations.
+		// Migrations resolve in hours, so it is a retryable error.
+		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrRetryable, apiError))
 	default:
 		return common.InterpretError(res, body)
 	}
