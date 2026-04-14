@@ -14,25 +14,29 @@ import (
 var errEmptyResource = errors.New("calendly: empty resource")
 
 // GetRecordsByIds fetches event type resources by their canonical Calendly API URIs.
-func (c *Connector) GetRecordsByIds(
+func (c *Connector) GetRecordsByIds( //nolint:revive // matches connectors.BatchRecordReaderConnector
 	ctx context.Context,
 	objectName string,
-	recordIds []string,
+	recordIDs []string,
 	fields []string,
 	_ []string,
 ) ([]common.ReadResultRow, error) {
-	if objectName != "event_types" {
-		return nil, fmt.Errorf("calendly: GetRecordsByIds unsupported for object %q: %w", objectName, common.ErrNotImplemented)
+	if objectName != objectNameEventTypes {
+		return nil, fmt.Errorf(
+			"calendly: GetRecordsByIds unsupported for object %q: %w",
+			objectName,
+			common.ErrNotImplemented,
+		)
 	}
 
-	if len(recordIds) == 0 {
+	if len(recordIDs) == 0 {
 		return nil, common.ErrMissingRecordID
 	}
 
 	fieldSet := datautils.NewSetFromList(fields)
-	out := make([]common.ReadResultRow, 0, len(recordIds))
+	out := make([]common.ReadResultRow, 0, len(recordIDs))
 
-	for _, recordURI := range recordIds {
+	for _, recordURI := range recordIDs {
 		if recordURI == "" {
 			continue
 		}

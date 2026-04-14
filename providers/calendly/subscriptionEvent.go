@@ -58,7 +58,7 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 
 	parts := splitEventName(raw)
 	if len(parts) != 2 { //nolint:mnd
-		return common.SubscriptionEventTypeOther, fmt.Errorf("unexpected event name: %q", raw)
+		return common.SubscriptionEventTypeOther, fmt.Errorf("%w: %q", errUnexpectedEventName, raw)
 	}
 
 	switch parts[1] {
@@ -81,18 +81,18 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 
 	parts := splitEventName(raw)
 	if len(parts) != 2 { //nolint:mnd
-		return "", fmt.Errorf("unexpected event name: %q", raw)
+		return "", fmt.Errorf("%w: %q", errUnexpectedEventName, raw)
 	}
 
 	switch parts[0] {
-	case "event_type":
-		return "event_types", nil
-	case "invitee", "invitee_no_show":
-		return "scheduled_events", nil
-	case "routing_form_submission":
-		return "routing_forms", nil
+	case calendlyPrefixEventType:
+		return objectNameEventTypes, nil
+	case calendlyPrefixInvitee, calendlyPrefixInviteeNoShow:
+		return objectNameScheduledEvents, nil
+	case calendlyPrefixRoutingFormSubmission:
+		return objectNameRoutingForms, nil
 	default:
-		return "", fmt.Errorf("unsupported webhook event family: %q", parts[0])
+		return "", fmt.Errorf("%w: %q", errUnsupportedWebhookFamily, parts[0])
 	}
 }
 
@@ -103,57 +103,57 @@ func (evt SubscriptionEvent) Workspace() (string, error) {
 		return org, nil
 	}
 
-	pm, err := evt.payloadMap()
+	payload, err := evt.payloadMap()
 	if err != nil {
 		return "", err
 	}
 
-	if org, err := pm.GetString("organization"); err == nil && org != "" {
+	if org, err := payload.GetString("organization"); err == nil && org != "" {
 		return org, nil
 	}
 
-	if org, err := nestedString(pm, "scheduled_event", "organization"); err == nil && org != "" {
+	if org, err := nestedString(payload, "scheduled_event", "organization"); err == nil && org != "" {
 		return org, nil
 	}
 
-	return "", errors.New("calendly webhook: organization not found")
+	return "", errWebhookOrgNotFound
 }
 
 func (evt SubscriptionEvent) RecordId() (string, error) {
-	pm, err := evt.payloadMap()
+	payload, err := evt.payloadMap()
 	if err != nil {
 		return "", err
 	}
 
 	// Event type webhooks: resource is the event type URI.
-	if uri, err := pm.GetString("event_type"); err == nil && uri != "" {
+	if uri, err := payload.GetString("event_type"); err == nil && uri != "" {
 		return uri, nil
 	}
 
-	if uri, err := pm.GetString("uri"); err == nil && uri != "" {
+	if uri, err := payload.GetString("uri"); err == nil && uri != "" {
 		return uri, nil
 	}
 
-	if uri, err := nestedString(pm, "event_type", "uri"); err == nil && uri != "" {
+	if uri, err := nestedString(payload, calendlyPrefixEventType, "uri"); err == nil && uri != "" {
 		return uri, nil
 	}
 
-	if uri, err := nestedString(pm, "scheduled_event", "uri"); err == nil && uri != "" {
+	if uri, err := nestedString(payload, "scheduled_event", "uri"); err == nil && uri != "" {
 		return uri, nil
 	}
 
-	return "", errors.New("calendly webhook: record uri not found in payload")
+	return "", errWebhookRecordURINotFound
 }
 
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
-	pm, err := evt.payloadMap()
+	payload, err := evt.payloadMap()
 	if err != nil {
 		return 0, err
 	}
 
 	// Try common timestamp fields.
 	for _, key := range []string{"created_at", "updated_at", "canceled_at"} {
-		if s, err := pm.GetString(key); err == nil && s != "" {
+		if s, err := payload.GetString(key); err == nil && s != "" {
 			t, err := time.Parse(time.RFC3339, s)
 			if err == nil {
 				return t.UnixNano(), nil
@@ -161,7 +161,7 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 		}
 	}
 
-	return 0, errors.New("calendly webhook: timestamp not found in payload")
+	return 0, errWebhookTimestampNotFound
 }
 
 func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
@@ -171,18 +171,22 @@ func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 func (evt SubscriptionEvent) payloadMap() (common.StringMap, error) {
 	m := common.StringMap(evt)
 
-	p, err := m.Get("payload")
-	if err != nil {
+	if !m.Has("payload") {
 		// Some samples use a flat body; treat the root object as the payload.
 		return m, nil
 	}
 
-	pm, ok := p.(map[string]any)
-	if !ok {
-		return nil, fmt.Errorf("calendly webhook: payload is %T, expected object", p)
+	payloadRoot, err := m.Get("payload")
+	if err != nil {
+		return nil, err
 	}
 
-	return common.ToStringMap(pm), nil
+	payloadObj, ok := payloadRoot.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: got %T", errWebhookPayloadNotObject, payloadRoot)
+	}
+
+	return common.ToStringMap(payloadObj), nil
 }
 
 func nestedString(m common.StringMap, path ...string) (string, error) {
@@ -213,24 +217,24 @@ func nestedString(m common.StringMap, path ...string) (string, error) {
 var errNestedWalk = errors.New("nested field not found")
 
 // VerifyWebhookMessage verifies Calendly's webhook signature (Calendly-Webhook-Signature header).
-// Format: t=<unix_seconds>,v1=<hex_hmac> per https://developer.calendly.com/api-docs/ZG9jOjM2MzE2MDM4-webhook-signatures
+// Signature format is t=<unix_seconds>,v1=<hex_hmac> (see Calendly webhook signature docs).
 func (*Connector) VerifyWebhookMessage(
 	_ context.Context,
 	request *common.WebhookRequest,
 	params *common.VerificationParams,
 ) (bool, error) {
-	p, err := common.AssertType[*CalendlyVerificationParams](params.Param)
+	verifyParams, err := common.AssertType[*CalendlyVerificationParams](params.Param)
 	if err != nil {
 		return false, fmt.Errorf("calendly: invalid verification params: %w", err)
 	}
 
-	if p.SigningKey == "" {
-		return false, errors.New("calendly: signing key is empty")
+	if verifyParams.SigningKey == "" {
+		return false, errCalendlySigningKeyEmpty
 	}
 
 	sigHeader := request.Headers.Get(headerCalendlyWebhookSignature)
 	if sigHeader == "" {
-		return false, errors.New("calendly: missing Calendly-Webhook-Signature header")
+		return false, errCalendlyMissingSigHeader
 	}
 
 	ts, v1, err := parseCalendlySignatureHeader(sigHeader)
@@ -238,7 +242,7 @@ func (*Connector) VerifyWebhookMessage(
 		return false, err
 	}
 
-	expected := calendlyHMACHex(p.SigningKey, ts, request.Body)
+	expected := calendlyHMACHex(verifyParams.SigningKey, ts, request.Body)
 
 	ok, err := secureCompareHex(expected, v1)
 	if err != nil {
@@ -253,7 +257,7 @@ func parseCalendlySignatureHeader(header string) (timestamp, v1 string, err erro
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
 		kv := strings.SplitN(part, "=", 2) //nolint:mnd
-		if len(kv) != 2 {                    //nolint:mnd
+		if len(kv) != 2 {                  //nolint:mnd
 			continue
 		}
 
@@ -286,21 +290,21 @@ func secureCompareHex(expectedHex, received string) (bool, error) {
 	received = strings.TrimSpace(strings.ToLower(received))
 	expectedHex = strings.TrimSpace(strings.ToLower(expectedHex))
 
-	eb, err := hex.DecodeString(expectedHex)
+	expectedBytes, err := hex.DecodeString(expectedHex)
 	if err != nil {
 		return false, fmt.Errorf("calendly: decode expected hex: %w", err)
 	}
 
-	rb, err := hex.DecodeString(received)
+	receivedBytes, err := hex.DecodeString(received)
 	if err != nil {
 		return false, fmt.Errorf("calendly: decode signature hex: %w", err)
 	}
 
-	if len(eb) == 0 || len(rb) == 0 {
-		return false, errors.New("calendly: empty signature bytes")
+	if len(expectedBytes) == 0 || len(receivedBytes) == 0 {
+		return false, errCalendlyEmptySignatureBytes
 	}
 
-	return hmac.Equal(eb, rb), nil
+	return hmac.Equal(expectedBytes, receivedBytes), nil
 }
 
 var _ connectors.WebhookVerifierConnector = (*Connector)(nil)

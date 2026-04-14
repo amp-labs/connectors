@@ -17,7 +17,7 @@ import (
 var _ connectors.SubscribeConnector = (*Connector)(nil)
 
 var (
-	errMissingSubscriptionParams = errors.New("missing required subscription parameters")
+	errMissingSubscriptionParams  = errors.New("missing required subscription parameters")
 	errInvalidSubscriptionRequest = errors.New("invalid subscription request type")
 )
 
@@ -183,10 +183,10 @@ func (c *Connector) buildWebhookSubscriptionBody(req *SubscriptionRequest, event
 	user := firstNonEmpty(req.UserURI, c.userURI)
 
 	body := map[string]any{
-		"url":          req.CallbackURL,
-		"events":       events,
-		"scope":        req.Scope,
-		"signing_key":  req.SigningKey,
+		"url":         req.CallbackURL,
+		"events":      events,
+		"scope":       req.Scope,
+		"signing_key": req.SigningKey,
 	}
 
 	if org != "" {
@@ -225,12 +225,12 @@ func buildCalendlyEventList(params common.SubscribeParams, req *SubscriptionRequ
 
 func calendlyEventPrefix(objectName string) string {
 	switch objectName {
-	case "event_types", "event_type":
-		return "event_type"
-	case "scheduled_events", "invitee":
-		return "invitee"
-	case "routing_forms", "routing_form":
-		return "routing_form_submission"
+	case objectNameEventTypes, objectAliasEventType:
+		return calendlyPrefixEventType
+	case objectNameScheduledEvents, calendlyPrefixInvitee:
+		return calendlyPrefixInvitee
+	case objectNameRoutingForms, objectAliasRoutingForm:
+		return calendlyPrefixRoutingFormSubmission
 	default:
 		return ""
 	}
@@ -244,12 +244,17 @@ func calendlyEventFromCRUD(prefix string, ev common.SubscriptionEventType) (stri
 		return prefix + ".updated", true
 	case common.SubscriptionEventTypeDelete:
 		return prefix + ".deleted", true
+	case common.SubscriptionEventTypeAssociationUpdate, common.SubscriptionEventTypeOther:
+		return "", false
 	default:
 		return "", false
 	}
 }
 
-func objectEventsForResult(params common.SubscribeParams, resolvedEvents []string) map[common.ObjectName]common.ObjectEvents {
+func objectEventsForResult(
+	params common.SubscribeParams,
+	resolvedEvents []string,
+) map[common.ObjectName]common.ObjectEvents {
 	if len(params.SubscriptionEvents) > 0 {
 		return maps.Clone(params.SubscriptionEvents)
 	}
@@ -279,6 +284,32 @@ func inferObjectEventsFromCalendlyEvents(events []string) map[common.ObjectName]
 	return out
 }
 
+func objectNameFromCalendlyPrefix(prefix string) common.ObjectName {
+	switch prefix {
+	case calendlyPrefixEventType:
+		return objectNameEventTypes
+	case calendlyPrefixInvitee, calendlyPrefixInviteeNoShow:
+		return objectNameScheduledEvents
+	case calendlyPrefixRoutingFormSubmission:
+		return objectNameRoutingForms
+	default:
+		return ""
+	}
+}
+
+func normalizedEventFromAction(action string) (common.SubscriptionEventType, bool) {
+	switch action {
+	case "created":
+		return common.SubscriptionEventTypeCreate, true
+	case "updated":
+		return common.SubscriptionEventTypeUpdate, true
+	case "deleted", "canceled":
+		return common.SubscriptionEventTypeDelete, true
+	default:
+		return "", false
+	}
+}
+
 func inferObjectAndNormalizedEvent(calendlyEvent string) (common.ObjectName, common.SubscriptionEventType) {
 	parts := splitEventName(calendlyEvent)
 	if len(parts) != 2 { //nolint:mnd
@@ -287,35 +318,17 @@ func inferObjectAndNormalizedEvent(calendlyEvent string) (common.ObjectName, com
 
 	prefix, action := parts[0], parts[1]
 
-	var obj common.ObjectName
-
-	switch prefix {
-	case "event_type":
-		obj = "event_types"
-	case "invitee":
-		obj = "scheduled_events"
-	case "invitee_no_show":
-		obj = "scheduled_events"
-	case "routing_form_submission":
-		obj = "routing_forms"
-	default:
+	obj := objectNameFromCalendlyPrefix(prefix)
+	if obj == "" {
 		return "", ""
 	}
 
-	var et common.SubscriptionEventType
-
-	switch action {
-	case "created":
-		et = common.SubscriptionEventTypeCreate
-	case "updated":
-		et = common.SubscriptionEventTypeUpdate
-	case "deleted", "canceled":
-		et = common.SubscriptionEventTypeDelete
-	default:
+	eventType, ok := normalizedEventFromAction(action)
+	if !ok {
 		return "", ""
 	}
 
-	return obj, et
+	return obj, eventType
 }
 
 func splitEventName(calendlyEvent string) []string {
