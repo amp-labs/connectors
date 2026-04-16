@@ -96,6 +96,9 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		common.ConnectorParams{
 			AuthenticatedClient: mockutils.NewClient(),
+			Metadata: map[string]string{
+				"clientId": "dummy",
+			},
 		},
 	)
 	if err != nil {
@@ -103,7 +106,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.ModuleInfo().BaseURL, serverURL))
+	connector.SetUnitTestMockServerBaseURL(serverURL)
 
 	return connector, nil
 }
