@@ -228,6 +228,25 @@ func (c *Connector) RunScheduledMaintenance(
 	return nil, common.ErrNotImplemented
 }
 
+// Re-exports of Gmail history.list types so external callers can use them
+// without importing the internal mail package.
+type (
+	HistoryListParams = mail.HistoryListParams
+	HistoryListResult = mail.HistoryListResult
+)
+
+// HistoryList fetches Gmail mailbox changes since the given history checkpoint.
+// Only valid when the connector is initialized for the Gmail module.
+func (c *Connector) HistoryList(
+	ctx context.Context, params HistoryListParams,
+) (*HistoryListResult, error) {
+	if c.Mail == nil {
+		return nil, common.ErrNotImplemented
+	}
+
+	return c.Mail.HistoryList(ctx, params)
+}
+
 func (c *Connector) setUnitTestBaseURL(url string) {
 	if c.Calendar != nil {
 		c.Calendar.SetUnitTestBaseURL(url)

@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 // Errors for subscribe validation failures.
@@ -269,6 +271,138 @@ func (a *Adapter) UpdateSubscription(
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
 	return a.Subscribe(ctx, params)
+}
+
+// HistoryListParams are inputs for Gmail users.history.list.
+// Ref: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.history/list
+type HistoryListParams struct {
+	// StartHistoryID is the checkpoint to fetch changes since. Required.
+	StartHistoryID string
+
+	// HistoryTypes restricts results to these record types
+	// (messageAdded, messageDeleted, labelAdded, labelRemoved). Optional.
+	HistoryTypes []string
+
+	// LabelID restricts history records to those affecting the given label. Optional.
+	LabelID string
+
+	// MaxResults is the max number of history records per page. Optional (Gmail default: 100, max: 500).
+	MaxResults int
+}
+
+// HistoryMessage is the minimal message shape embedded in history records.
+type HistoryMessage struct {
+	ID       string   `json:"id"`
+	ThreadID string   `json:"threadId"`
+	LabelIDs []string `json:"labelIds,omitempty"`
+}
+
+// HistoryMessageChange wraps a message reference for messagesAdded / messagesDeleted entries.
+type HistoryMessageChange struct {
+	Message HistoryMessage `json:"message"`
+}
+
+// HistoryLabelChange is a labelsAdded / labelsRemoved entry.
+type HistoryLabelChange struct {
+	Message  HistoryMessage `json:"message"`
+	LabelIDs []string       `json:"labelIds,omitempty"`
+}
+
+// HistoryRecord is a single record from the history.list response.
+type HistoryRecord struct {
+	ID              string                 `json:"id"`
+	Messages        []HistoryMessage       `json:"messages,omitempty"`
+	MessagesAdded   []HistoryMessageChange `json:"messagesAdded,omitempty"`
+	MessagesDeleted []HistoryMessageChange `json:"messagesDeleted,omitempty"`
+	LabelsAdded     []HistoryLabelChange   `json:"labelsAdded,omitempty"`
+	LabelsRemoved   []HistoryLabelChange   `json:"labelsRemoved,omitempty"`
+}
+
+// HistoryListResult is the aggregated result from paginating history.list.
+type HistoryListResult struct {
+	// HistoryID is the root historyId from the latest page — use as the next checkpoint.
+	HistoryID string `json:"historyId"`
+
+	// History is the concatenated records across all pages.
+	History []HistoryRecord `json:"history"`
+}
+
+// historyListPage is a single page of the history.list response.
+type historyListPage struct {
+	History       []HistoryRecord `json:"history"`
+	HistoryID     string          `json:"historyId"`
+	NextPageToken string          `json:"nextPageToken"`
+}
+
+// buildHistoryListURL constructs the users.history URL for a single page fetch.
+func (a *Adapter) buildHistoryListURL(params HistoryListParams, pageToken string) (string, error) {
+	historyURL, err := urlbuilder.New(a.ModuleInfo().BaseURL, apiVersion, "users/me/history")
+	if err != nil {
+		return "", fmt.Errorf("history.list: building URL: %w", err)
+	}
+
+	historyURL.WithQueryParam("startHistoryId", params.StartHistoryID)
+
+	if len(params.HistoryTypes) > 0 {
+		historyURL.WithQueryParamList("historyTypes", params.HistoryTypes)
+	}
+
+	if params.LabelID != "" {
+		historyURL.WithQueryParam("labelId", params.LabelID)
+	}
+
+	if params.MaxResults > 0 {
+		historyURL.WithQueryParam("maxResults", strconv.Itoa(params.MaxResults))
+	}
+
+	if pageToken != "" {
+		historyURL.WithQueryParam("pageToken", pageToken)
+	}
+
+	return historyURL.String(), nil
+}
+
+// HistoryList fetches Gmail mailbox history since params.StartHistoryID, paginating through all pages.
+// Returns the aggregated records plus the root historyId — the new checkpoint to persist.
+func (a *Adapter) HistoryList(
+	ctx context.Context,
+	params HistoryListParams,
+) (*HistoryListResult, error) {
+	if params.StartHistoryID == "" {
+		return nil, fmt.Errorf("%w: startHistoryId is required", errMissingParams)
+	}
+
+	result := &HistoryListResult{}
+
+	var pageToken string
+
+	for {
+		historyURL, err := a.buildHistoryListURL(params, pageToken)
+		if err != nil {
+			return nil, err
+		}
+
+		resp, err := a.JSONHTTPClient().Get(ctx, historyURL)
+		if err != nil {
+			return nil, fmt.Errorf("history.list: GET: %w", err)
+		}
+
+		page, err := common.UnmarshalJSON[historyListPage](resp)
+		if err != nil {
+			return nil, fmt.Errorf("history.list: unmarshaling response: %w", err)
+		}
+
+		result.History = append(result.History, page.History...)
+		result.HistoryID = page.HistoryID
+
+		if page.NextPageToken == "" {
+			break
+		}
+
+		pageToken = page.NextPageToken
+	}
+
+	return result, nil
 }
 
 // VerifyWebhookMessage always returns true for Gmail. Gmail push notifications are
