@@ -164,9 +164,6 @@ func classOfHTTPStatus(status int) (ErrorClass, bool) {
 		return ErrorClassForbidden, true
 	case http.StatusTooManyRequests:
 		return ErrorClassRateLimited, true
-	case 477:
-		// HubSpot-specific: hub data-center migration in progress.
-		return ErrorClassProviderMigration, true
 	}
 
 	if status >= 500 && status < 600 {

@@ -186,8 +186,8 @@ func TestClassOf_StringFallbacks(t *testing.T) {
 // Verify a custom error type can implement Classifier and wins over sentinels.
 type customClassifierErr struct{}
 
-func (customClassifierErr) Error() string             { return "custom" }
-func (customClassifierErr) ErrorClass() ErrorClass    { return ErrorClassProviderMigration }
+func (customClassifierErr) Error() string          { return "custom" }
+func (customClassifierErr) ErrorClass() ErrorClass { return ErrorClassProviderMigration }
 
 func TestClassOf_ClassifierInterfaceWins(t *testing.T) {
 	t.Parallel()
