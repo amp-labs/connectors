@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -345,7 +346,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	}
 }
 
-func comparatorSubsetReadOrderByFolderID(serverURL string, actual, expected *common.ReadResult) bool {
+func comparatorSubsetReadOrderByFolderID(
+	serverURL string, actual, expected *common.ReadResult,
+) *mockutils.CompareResult {
 	sort.Slice(actual.Data, func(i, j int) bool {
 		ai, _ := actual.Data[i].Fields["folder_id"].(string)
 		aj, _ := actual.Data[j].Fields["folder_id"].(string)

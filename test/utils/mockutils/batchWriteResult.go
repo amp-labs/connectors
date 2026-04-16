@@ -1,6 +1,8 @@
 package mockutils
 
 import (
+	"fmt"
+
 	"github.com/amp-labs/connectors/common"
 )
 
@@ -12,16 +14,18 @@ var BatchWriteResultComparator = batchWriteResultComparator{}
 
 type batchWriteResultComparator struct{}
 
-// SubsetWriteResults compares two BatchWriteResult objects and returns true
+// SubsetWriteResults compares two BatchWriteResult objects and returns a CompareResult
 // if each WriteResult in `expected` matches its corresponding entry in `actual`.
 //
 // A match is defined as follows:
 //   - Subset equality for the Data field of each WriteResult (only expected keys/values are checked).
 //   - Normalized equality for Errors, supporting struct/JSON, string, or golang error comparison.
 //   - Exact equality for the Success and RecordId fields.
-func (batchWriteResultComparator) SubsetWriteResults(actual, expected *common.BatchWriteResult) bool {
+func (batchWriteResultComparator) SubsetWriteResults(actual, expected *common.BatchWriteResult) *CompareResult {
+	result := NewCompareResult()
 	if len(actual.Results) != len(expected.Results) {
-		return false
+		result.AddDiff(fmt.Sprintf("expected %d batch results, got %d", len(expected.Results), len(actual.Results)))
+		return result
 	}
 
 	// Compare each result using existing comparator
@@ -29,15 +33,21 @@ func (batchWriteResultComparator) SubsetWriteResults(actual, expected *common.Ba
 		actualResult := &actual.Results[i]
 		expectedResult := &expected.Results[i]
 
-		a := WriteResultComparator.SubsetData(actualResult, expectedResult)
-		b := ErrorNormalizedComparator.EachErrorEquals(actualResult.Errors, expectedResult.Errors)
-		c := actualResult.Success == expectedResult.Success &&
-			actualResult.RecordId == expectedResult.RecordId
+		dataComparison := WriteResultComparator.SubsetData(actualResult, expectedResult)
+		errorComparison := ErrorNormalizedComparator.EachErrorEquals(actualResult.Errors, expectedResult.Errors)
 
-		if !(a && b && c) {
-			return false
+		for _, diff := range dataComparison.Diff {
+			result.AddDiff(fmt.Sprintf("Result[%d] %s", i, diff))
 		}
+
+		for _, diff := range errorComparison.Diff {
+			result.AddDiff(fmt.Sprintf("Result[%d] %s", i, diff))
+		}
+
+		result.AddMismatch(fmt.Sprintf("Result[%d].Success", i), expectedResult.Success, actualResult.Success)
+		result.AddMismatch(fmt.Sprintf("Result[%d].RecordId", i), expectedResult.RecordId, actualResult.RecordId)
+
 	}
 
-	return true
+	return result
 }

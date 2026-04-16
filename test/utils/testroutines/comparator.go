@@ -1,6 +1,7 @@
 package testroutines
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -13,21 +14,25 @@ import (
 // For usage please refer to ComparatorPagination.
 const URLTestServer = "{{testServerURL}}"
 
-// Comparator is an equality function with custom rules.
-// This package provides the most commonly used comparators.
-type Comparator[Output any] func(serverURL string, actual, expected Output) bool
+// Comparator is an equality function with custom rules for specific test scenarios.
+// Takes server URL actual output, expected output, and returns detailed comparison result.
+//
+// This package provides the most commonly used comparators like ComparatorSubsetRead, ComparatorPagination,
+// ComparatorSubsetWrite, ComparatorSubsetMetadata for partial field matching in large API responses.
+type Comparator[Output any] func(serverURL string, actual, expected Output) *mockutils.CompareResult
 
 // ComparatorSubsetRead ensures that a subset of fields or raw data is present in the response.
 // This is convenient for cases where the returned data is large,
 // allowing for a more concise test that still validates the desired behavior.
-func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult) bool {
-	a := mockutils.ReadResultComparator.SubsetFields(actual, expected)
-	b := mockutils.ReadResultComparator.SubsetRaw(actual, expected)
-	c := mockutils.ReadResultComparator.SubsetAssociationsRaw(actual, expected)
-	d := ComparatorPagination(serverURL, actual, expected)
-	e := mockutils.ReadResultComparator.Identifiers(actual, expected)
+func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult) *mockutils.CompareResult {
+	result := mockutils.NewCompareResult()
+	result.Merge(mockutils.ReadResultComparator.SubsetFields(actual, expected))
+	result.Merge(mockutils.ReadResultComparator.SubsetRaw(actual, expected))
+	result.Merge(mockutils.ReadResultComparator.SubsetAssociationsRaw(actual, expected))
+	result.Merge(mockutils.ReadResultComparator.Identifiers(actual, expected))
+	result.Merge(ComparatorPagination(serverURL, actual, expected))
 
-	return a && b && c && d && e
+	return result
 }
 
 // ComparatorPagination will check pagination related fields.
@@ -41,16 +46,23 @@ func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult)
 // At runtime this may look as follows: http://127.0.0.1:38653/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTI=.
 // The query parameters in URL can be in different order, encoding could differ as soon as the URL content matches
 // the check will conclude that pagination matches.
-func ComparatorPagination(serverURL string, actual *common.ReadResult, expected *common.ReadResult) bool {
+func ComparatorPagination(
+	serverURL string, actual *common.ReadResult, expected *common.ReadResult,
+) *mockutils.CompareResult {
+	result := mockutils.NewCompareResult()
 	expectedNextPage := resolveTestServerURL(expected.NextPage.String(), serverURL)
 
-	a := compareNextPageToken(actual.NextPage.String(), expectedNextPage)
-	b := actual.Rows == expected.Rows
-	c := actual.Done == expected.Done
+	if !compareNextPageToken(actual.NextPage.String(), expectedNextPage) {
+		result.AddMismatch(fmt.Sprintf("NextPage mismatch"), expectedNextPage, actual.NextPage.String())
+	}
+	if actual.Rows != expected.Rows {
+		result.AddMismatch(fmt.Sprintf("Rows mismatch"), expected.Rows, actual.Rows)
+	}
+	if actual.Done != expected.Done {
+		result.AddMismatch(fmt.Sprintf("Done mismatch"), expected.Done, actual.Done)
+	}
 
-	return a &&
-		b &&
-		c
+	return result
 }
 
 func compareNextPageToken(actual, expected string) bool {
@@ -89,11 +101,19 @@ func compareNextPageToken(actual, expected string) bool {
 //
 // This comparator is typically used when only a subset of Data fields
 // needs verification rather than a full equality check.
-func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) bool {
-	return mockutils.WriteResultComparator.SubsetData(actual, expected) &&
-		mockutils.ErrorNormalizedComparator.EachErrorEquals(actual.Errors, expected.Errors) &&
-		actual.Success == expected.Success &&
-		actual.RecordId == expected.RecordId
+func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) *mockutils.CompareResult {
+	result := mockutils.NewCompareResult()
+	result.Merge(mockutils.WriteResultComparator.SubsetData(actual, expected))
+	result.Merge(mockutils.ErrorNormalizedComparator.EachErrorEquals(actual.Errors, expected.Errors))
+
+	if actual.Success != expected.Success {
+		result.AddMismatch(fmt.Sprintf("Success mismatch"), expected.Success, actual.Success)
+	}
+	if actual.RecordId != expected.RecordId {
+		result.AddMismatch(fmt.Sprintf("RecordId mismatch"), expected.RecordId, actual.RecordId)
+	}
+
+	return result
 }
 
 // ComparatorSubsetBatchWrite compares two BatchWriteResult objects,
@@ -106,15 +126,24 @@ func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) bool 
 //
 // This enables expressive, stable tests that verify meaningful fields
 // without enforcing strict structural equality across the entire batch.
-func ComparatorSubsetBatchWrite(_ string, actual, expected *common.BatchWriteResult) bool {
-	if actual.Status != expected.Status ||
-		actual.SuccessCount != expected.SuccessCount ||
-		actual.FailureCount != expected.FailureCount {
-		return false
+func ComparatorSubsetBatchWrite(_ string, actual, expected *common.BatchWriteResult) *mockutils.CompareResult {
+	result := mockutils.NewCompareResult()
+	if actual.Status != expected.Status {
+		result.AddMismatch(fmt.Sprintf("Status mismatch"), expected.Status, actual.Status)
+	}
+	if actual.SuccessCount != expected.SuccessCount {
+		result.AddMismatch(fmt.Sprintf("SuccessCount mismatch"),
+			expected.SuccessCount, actual.SuccessCount)
+	}
+	if actual.FailureCount != expected.FailureCount {
+		result.AddMismatch(fmt.Sprintf("FailureCount mismatch"),
+			expected.FailureCount, actual.FailureCount)
 	}
 
-	return mockutils.BatchWriteResultComparator.SubsetWriteResults(actual, expected) &&
-		mockutils.ErrorNormalizedComparator.EachErrorEquals(actual.Errors, expected.Errors)
+	result.Merge(mockutils.BatchWriteResultComparator.SubsetWriteResults(actual, expected))
+	result.Merge(mockutils.ErrorNormalizedComparator.EachErrorEquals(actual.Errors, expected.Errors))
+
+	return result
 }
 
 // ComparatorSubsetMetadata will check a subset of fields is present.
@@ -132,13 +161,16 @@ func ComparatorSubsetBatchWrite(_ string, actual, expected *common.BatchWriteRes
 //		"arsenal": common.NewHTTPError(http.StatusBadRequest,		// Is doing exact match.
 //			headers, body, fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse))),
 //	},
-func ComparatorSubsetMetadata(_ string, actual, expected *common.ListObjectMetadataResult) bool {
+func ComparatorSubsetMetadata(_ string, actual, expected *common.ListObjectMetadataResult) *mockutils.CompareResult {
 	if len(expected.Result)+len(expected.Errors) == 0 {
 		panic("please specify expected Result or Errors in Metadata response")
 	}
 
-	return mockutils.MetadataResultComparator.SubsetFields(actual, expected) &&
-		mockutils.MetadataResultComparator.SubsetErrors(actual, expected)
+	result := mockutils.NewCompareResult()
+	result.Merge(mockutils.MetadataResultComparator.SubsetFields(actual, expected))
+	result.Merge(mockutils.MetadataResultComparator.SubsetErrors(actual, expected))
+
+	return result
 }
 
 func resolveTestServerURL(urlTemplate string, serverURL string) string {
@@ -160,43 +192,54 @@ func resolveTestServerURL(urlTemplate string, serverURL string) string {
 //   - Metadata is compared using subset semantics — all key/value
 //     pairs defined in expected.Metadata must be present in
 //     actual.Metadata, but actual may contain additional entries.
-func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMetadataResult) bool {
-	if actual.Success != expected.Success || len(actual.Fields) != len(expected.Fields) {
-		return false
+func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMetadataResult) *mockutils.CompareResult {
+	result := mockutils.NewCompareResult()
+	if actual.Success != expected.Success {
+		result.AddMismatch(fmt.Sprintf("Success mismatch"), expected.Success, actual.Success)
+	}
+
+	if len(actual.Fields) != len(expected.Fields) {
+		result.AddMismatch(fmt.Sprintf("Fields length mismatch"), len(expected.Fields), len(actual.Fields))
 	}
 
 	// Compare field results.
-	// When first difference is found, return with failure.
 	for propertyName, property := range expected.Fields {
 		for fieldName, expectedField := range property {
 			actualProperty, ok := actual.Fields[propertyName]
 			if !ok {
-				return false
+				result.AddDiff(fmt.Sprintf("Fields[%s] missing", propertyName))
+				continue
 			}
 
 			actualField, ok := actualProperty[fieldName]
 			if !ok {
-				return false
+				result.AddDiff(fmt.Sprintf("Fields[%s][%s] missing", propertyName, fieldName))
+				continue
 			}
 
 			// Field properties should be the same. This is a hard comparison.
-			generalPropertiesIdentical := actualField.FieldName == expectedField.FieldName &&
-				actualField.Action == expectedField.Action &&
-				reflect.DeepEqual(actualField.Warnings, expectedField.Warnings)
-
-			if !generalPropertiesIdentical {
-				return false
+			if actualField.FieldName != expectedField.FieldName {
+				result.AddMismatch(fmt.Sprintf("Fields[%s][%s].FieldName mismatch",
+					propertyName, fieldName), expectedField.FieldName, actualField.FieldName)
+			}
+			if actualField.Action != expectedField.Action {
+				result.AddMismatch(fmt.Sprintf("Fields[%s][%s].Action mismatch",
+					propertyName, fieldName), expectedField.Action, actualField.Action)
+			}
+			if !reflect.DeepEqual(actualField.Warnings, expectedField.Warnings) {
+				result.AddMismatch(fmt.Sprintf("Fields[%s][%s].Warnings mismatch",
+					propertyName, fieldName), expectedField.Warnings, actualField.Warnings)
 			}
 
 			// A set of expected fields must be present
 			if !mapIsSubsetMap(expectedField.Metadata, actualField.Metadata) {
-				return false
+				result.AddMismatch(fmt.Sprintf("Fields[%s][%s].Metadata mismatch",
+					propertyName, fieldName), expectedField.Metadata, actualField.Metadata)
 			}
 		}
 	}
 
-	// Everything is the same.
-	return true
+	return result
 }
 
 func mapIsSubsetMap(subset, superset map[string]any) bool {
