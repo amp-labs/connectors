@@ -1,0 +1,56 @@
+[
+  {
+    "id": 31045,
+    "firstName": "Alex",
+    "lastName": "Morgan",
+    "company": {
+      "id": 20481,
+      "identifier": "ACME_CORP",
+      "name": "Acme Corporation",
+      "_info": {}
+    },
+    "site": {},
+    "inactiveFlag": false,
+    "title": "Operations Manager",
+    "marriedFlag": false,
+    "childrenFlag": true,
+    "portalSecurityLevel": 2,
+    "disablePortalLoginFlag": false,
+    "unsubscribeFlag": false,
+    "mobileGuid": "7f3a2c11-9b6e-4d5a-a9c2-1e8f7b2c4d90",
+    "defaultPhoneType": "Mobile",
+    "defaultPhoneNbr": "5558675309",
+    "defaultBillingFlag": false,
+    "defaultFlag": true,
+    "companyLocation": {},
+    "types": [],
+    "customFields": [
+      {
+        "id": 21,
+        "caption": "external_contact_id",
+        "type": "Number",
+        "entryMethod": "EntryField",
+        "numberOfDecimals": 0,
+        "value": null,
+        "connectWiseId": "c1a9f4e2-3d7b-4c6e-91fa-2b7e9c8d1234",
+        "rowNum": 1,
+        "userDefinedFieldRecId": 21,
+        "podId": "contact_overview"
+      },
+      {
+        "id": 22,
+        "caption": "sync_status",
+        "type": "Text",
+        "entryMethod": "List",
+        "numberOfDecimals": 0,
+        "value": "pending",
+        "connectWiseId": "a8d5c2f9-6b44-4e2d-8c1f-5d3a7b9e5678",
+        "rowNum": 1,
+        "userDefinedFieldRecId": 22,
+        "podId": "contact_detail"
+      }
+    ],
+    "ignoreDuplicates": false,
+    "_info": {}
+  }
+]
