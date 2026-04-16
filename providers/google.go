@@ -92,7 +92,8 @@ func init() {
 				{
 					Name:        "gcpProjectId",
 					DisplayName: "GCP Project ID",
-					Prompt:      "The ID of the Google Cloud project where your Pub/Sub topic lives. Ampersand uses this to subscribe to Gmail change notifications on behalf of your users.",
+					Prompt: "The ID of the Google Cloud project where your Pub/Sub topic lives. " +
+						"Ampersand uses this to subscribe to Gmail change notifications on behalf of your users.",
 					// TODO: add DocsURL once Ampersand docs page for Gmail Pub/Sub setup is published.
 					ModuleDependencies: &ModuleDependencies{
 						ModuleGoogleGmail: {},
@@ -101,7 +102,9 @@ func init() {
 				{
 					Name:        "gcpPubSubTopicName",
 					DisplayName: "GCP Pub/Sub Topic Name",
-					Prompt:      "The name of the Pub/Sub topic that Gmail will publish change notifications to. Must be in the same GCP project as above and have the Gmail API service account granted publish permissions.",
+					Prompt: "The name of the Pub/Sub topic that Gmail will publish change notifications to. " +
+						"Must be in the same GCP project as above and have the Gmail API service account " +
+						"granted publish permissions.",
 					// TODO: add DocsURL once Ampersand docs page for Gmail Pub/Sub setup is published.
 					ModuleDependencies: &ModuleDependencies{
 						ModuleGoogleGmail: {},

@@ -174,7 +174,8 @@ func init() { // nolint:funlen
 				{
 					Name:        "packageInstallURL",
 					DisplayName: "Package Install URL",
-					Prompt:      "Enter the package install URL that the UI library should show to your users to install your Salesforce managed package.",
+					Prompt: "Enter the package install URL that the UI library should show to your users " +
+						"to install your Salesforce managed package.",
 					DocsURL:     "https://docs.withampersand.com/provider-guides/salesforce#6-package-the-external-client-app",
 				},
 			},
