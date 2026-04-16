@@ -156,6 +156,10 @@ func classOfMessage(raw string) ErrorClass {
 // HTTPError.ErrorClass as the first signal — more specific than the wrapped
 // sentinel in many cases (e.g. a 477 from HubSpot is "provider_migration"
 // regardless of what sentinel it wraps).
+// hubspotMigrationStatus is the non-standard HTTP 477 status code HubSpot
+// returns when a hub is being migrated between data hosting locations.
+const hubspotMigrationStatus = 477
+
 func classOfHTTPStatus(status int) (ErrorClass, bool) {
 	switch status {
 	case http.StatusUnauthorized:
@@ -164,6 +168,8 @@ func classOfHTTPStatus(status int) (ErrorClass, bool) {
 		return ErrorClassForbidden, true
 	case http.StatusTooManyRequests:
 		return ErrorClassRateLimited, true
+	case hubspotMigrationStatus:
+		return ErrorClassProviderMigration, true
 	}
 
 	if status >= 500 && status < 600 {
