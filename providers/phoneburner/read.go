@@ -166,10 +166,12 @@ func parseReadResponse(
 		}
 	}
 
-	records, err := recordsFunc(params.ObjectName)
+	baseRecords, err := recordsFunc(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
+
+	records := withContactCustomFieldFlatten(baseRecords, params.ObjectName)
 
 	return common.ParseResult(
 		response,
