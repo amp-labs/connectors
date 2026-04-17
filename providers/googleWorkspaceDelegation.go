@@ -16,7 +16,7 @@ const GoogleWorkspaceDelegation Provider = "googleWorkspaceDelegation"
 //nolint:funlen
 func init() {
 	SetInfo(GoogleWorkspaceDelegation, ProviderInfo{
-		DisplayName: "Google (Domain-Wide Delegation)",
+		DisplayName: "Google",
 		AuthType:    Custom,
 		BaseURL:     "https://www.googleapis.com",
 		CustomOpts: &CustomAuthOpts{
@@ -76,7 +76,7 @@ func init() {
 				{
 					Name:        "userEmail",
 					DisplayName: "User Email",
-					Prompt:      "The Google Workspace email address of the user to access (e.g. `user@company.com`). The service account will impersonate this user via domain-wide delegation.",
+					Prompt:      "The email address of the user whose data this integration will access (e.g. `user@company.com`). The service account will impersonate this user via domain-wide delegation.",
 					DocsURL:     "https://docs.withampersand.com/provider-guides/google-workspace-delegation",
 				},
 			},
