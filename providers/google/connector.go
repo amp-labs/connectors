@@ -231,10 +231,10 @@ func (c *Connector) RunScheduledMaintenance(
 // Re-exports of Gmail history.list types so external callers can use them
 // without importing the internal mail package.
 type (
-	HistoryListParams  = mail.HistoryListParams
-	HistoryListResult  = mail.HistoryListResult
-	HistoryRecord      = mail.HistoryRecord
-	HistoryMessage     = mail.HistoryMessage
+	HistoryListParams    = mail.HistoryListParams
+	HistoryListResult    = mail.HistoryListResult
+	HistoryRecord        = mail.HistoryRecord
+	HistoryMessage       = mail.HistoryMessage
 	HistoryMessageChange = mail.HistoryMessageChange
 )
 

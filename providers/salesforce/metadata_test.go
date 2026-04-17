@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -356,7 +357,20 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 				},
 				Then: mockserver.Response(http.StatusOK, prospectsCustomFields),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: func(
+				serverURL string, actual, expected *common.ListObjectMetadataResult,
+			) *mockutils.CompareResult {
+				result := mockutils.NewCompareResult()
+				// Usual subset comparison.
+				result.Merge(testroutines.ComparatorSubsetMetadata(serverURL, actual, expected))
+
+				// The "language" field must be excluded from the response.
+				if _, present := actual.Result["prospects"].Fields["language__c"]; present {
+					result.AddDiff("Result['prospects']['language__c'] is present, but expected to be missing")
+				}
+
+				return result
+			},
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"prospects": {
@@ -380,8 +394,16 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 							},
 							"hobby__c": {
 								DisplayName:  "Hobby",
-								ValueType:    "other",
+								ValueType:    "string",
 								ProviderType: "radio button",
+								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(true),
+							},
+							"age__c": {
+								DisplayName:  "Age",
+								ValueType:    "float",
+								ProviderType: "number",
 								IsRequired:   goutils.Pointer(false),
 								ReadOnly:     goutils.Pointer(false),
 								IsCustom:     goutils.Pointer(true),
