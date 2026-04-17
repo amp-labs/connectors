@@ -15,6 +15,20 @@
       "isRequired": false,
       "name": "Hobby",
       "type": "radio button"
+    },
+    {
+      "id": 247674,
+      "fieldId": "language",
+      "isRequired": false,
+      "name": "Language",
+      "type": "multi-select"
+    },
+    {
+      "id": 247704,
+      "fieldId": "age",
+      "isRequired": false,
+      "name": "Age",
+      "type": "number"
     }
   ]
 }
