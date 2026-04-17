@@ -1,17 +1,23 @@
 package phoneburner
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
+
+	responseCustomfieldsDefinitions := testutils.DataFromFile(t, "read/customfields-definitions.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -108,6 +114,42 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Title",
 								ValueType:    "string",
 								ProviderType: "string",
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Contacts metadata merges member custom field definitions from GET /rest/1/customfields",
+			Input: []string{"contacts"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/rest/1/customfields"),
+					mockcond.QueryParam("page_size", "100"),
+					mockcond.QueryParam("page", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCustomfieldsDefinitions),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "Contacts",
+						Fields: map[string]common.FieldMetadata{
+							"contact_user_id": {
+								DisplayName:  "Contact User Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"custom_lead_score": {
+								DisplayName:  "Lead Score",
+								ValueType:    "float",
+								ProviderType: "Numeric",
+								IsCustom:     goutils.Pointer(true),
 							},
 						},
 					},
