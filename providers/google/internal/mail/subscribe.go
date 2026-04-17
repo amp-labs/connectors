@@ -10,7 +10,9 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 // Errors for subscribe validation failures.
@@ -253,14 +255,46 @@ func (a *Adapter) stopWatch(ctx context.Context) error {
 	return nil
 }
 
-// GetRecordsByIds is not supported for the Gmail mail module.
+// GetRecordsByIds fetches full Gmail message payloads for the given IDs.
+// Only the "messages" object is supported; other objects return ErrGetRecordNotSupportedForObject.
 func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 	objectName string,
 	recordIds []string, //nolint:revive
 	fields []string,
 	associations []string,
 ) ([]common.ReadResultRow, error) {
-	return nil, common.ErrGetRecordNotSupportedForObject
+	if objectName != objectNameMessages {
+		return nil, common.ErrGetRecordNotSupportedForObject
+	}
+
+	if len(recordIds) == 0 {
+		return []common.ReadResultRow{}, nil
+	}
+
+	messages, err := a.fetchMessagesByIDs(ctx, recordIds)
+	if err != nil {
+		return nil, fmt.Errorf("GetRecordsByIds: fetching messages: %w", err)
+	}
+
+	fieldSet := datautils.NewSetFromList(fields)
+	rows := make([]common.ReadResultRow, 0, len(messages))
+
+	for id, msg := range messages {
+		row := common.ReadResultRow{
+			Id:  id,
+			Raw: msg,
+		}
+
+		if len(fieldSet) > 0 {
+			row.Fields = readhelper.SelectFields(msg, fieldSet)
+		} else {
+			row.Fields = msg
+		}
+
+		rows = append(rows, row)
+	}
+
+	return rows, nil
 }
 
 // UpdateSubscription re-issues the watch call with the updated params.
