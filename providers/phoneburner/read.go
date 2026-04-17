@@ -166,18 +166,21 @@ func parseReadResponse(
 		}
 	}
 
-	baseRecords, err := recordsFunc(params.ObjectName)
+	records, err := recordsFunc(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	records := withContactCustomFieldFlatten(baseRecords, params.ObjectName)
+	marshalFunc := common.GetMarshaledData
+	if params.ObjectName == objectContacts {
+		marshalFunc = getMarshaledDataContactsWithCustomFieldsPreservingRaw
+	}
 
 	return common.ParseResult(
 		response,
 		records,
 		nextRecordsURL(url, params.ObjectName),
-		common.GetMarshaledData,
+		marshalFunc,
 		params.Fields,
 	)
 }

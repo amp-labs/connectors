@@ -2,7 +2,9 @@ package phoneburner
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"maps"
 	"regexp"
 	"strconv"
 	"strings"
@@ -181,21 +183,39 @@ func flattenContactCustomFieldsInMap(record map[string]any) map[string]any {
 	return record
 }
 
-func withContactCustomFieldFlatten(inner common.RecordsFunc, objectName string) common.RecordsFunc {
-	return func(node *ajson.Node) ([]map[string]any, error) {
-		out, err := inner(node)
-		if err != nil {
-			return nil, err
+// getMarshaledDataContactsWithCustomFieldsPreservingRaw flattens custom field values into
+// ReadResultRow.Fields while leaving ReadResultRow.Raw as the provider payload (Slab:
+// "ReadResultRow.Raw should not be modified").
+func getMarshaledDataContactsWithCustomFieldsPreservingRaw(
+	records []map[string]any, fields []string,
+) ([]common.ReadResultRow, error) {
+	data := make([]common.ReadResultRow, len(records))
+
+	fields = append(fields, "id")
+
+	//nolint:varnamelen
+	for i, record := range records {
+		rawSnapshot := maps.Clone(record)
+		flattenContactCustomFieldsInMap(record)
+
+		data[i] = common.ReadResultRow{
+			Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
+			Raw:    rawSnapshot,
 		}
 
-		if objectName != objectContacts {
-			return out, nil
+		var id string
+
+		switch v := data[i].Fields["id"].(type) {
+		case string:
+			id = v
+		case float64:
+			id = strconv.FormatFloat(v, 'f', -1, 64)
+		case json.Number:
+			id = v.String()
 		}
 
-		for i := range out {
-			out[i] = flattenContactCustomFieldsInMap(out[i])
-		}
-
-		return out, nil
+		data[i].Id = id
 	}
+
+	return data, nil
 }
