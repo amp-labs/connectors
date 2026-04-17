@@ -51,6 +51,7 @@ func normalizeCustomFieldKey(label string) string {
 	s = strings.ReplaceAll(s, " ", "_")
 	s = nonAlphaNumUnderscore.ReplaceAllString(s, "_")
 	s = strings.Trim(s, "_")
+
 	for strings.Contains(s, "__") {
 		s = strings.ReplaceAll(s, "__", "_")
 	}
@@ -68,53 +69,14 @@ func (c *Connector) fetchMemberCustomFieldDefinitions(ctx context.Context) ([]me
 	page := 1
 
 	for {
-		url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restPrefix, restVer, "customfields")
+		defs, totalPages, err := c.getMemberCustomFieldDefinitionsPage(ctx, page)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
+			return nil, err
 		}
 
-		url.WithQueryParam("page_size", "100")
-		url.WithQueryParam("page", strconv.Itoa(page))
+		out = append(out, defs...)
 
-		resp, err := c.JSONHTTPClient().Get(ctx, url.String())
-		if err != nil {
-			return nil, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
-		}
-
-		if err := interpretPhoneBurnerEnvelopeError(resp); err != nil {
-			return nil, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
-		}
-
-		body, ok := resp.Body()
-		if !ok {
-			return nil, fmt.Errorf("%w: empty customfields body", common.ErrResolvingCustomFields)
-		}
-
-		wrapper, err := jsonquery.New(body).ObjectRequired("customfields")
-		if err != nil {
-			return nil, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
-		}
-
-		arr, err := jsonquery.New(wrapper).ArrayOptional("customfields")
-		if err != nil {
-			return nil, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
-		}
-
-		for _, n := range arr {
-			def, err := jsonquery.ParseNode[memberCustomFieldDefinition](n)
-			if err != nil {
-				return nil, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
-			}
-
-			out = append(out, *def)
-		}
-
-		totalPages, err := jsonquery.New(wrapper).IntegerWithDefault("total_pages", 1)
-		if err != nil {
-			return nil, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
-		}
-
-		if page >= int(totalPages) {
+		if page >= totalPages {
 			break
 		}
 
@@ -122,6 +84,64 @@ func (c *Connector) fetchMemberCustomFieldDefinitions(ctx context.Context) ([]me
 	}
 
 	return out, nil
+}
+
+func (c *Connector) getMemberCustomFieldDefinitionsPage(ctx context.Context, page int) (
+	[]memberCustomFieldDefinition, int, error,
+) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restPrefix, restVer, "customfields")
+	if err != nil {
+		return nil, 0, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
+	}
+
+	url.WithQueryParam("page_size", "100")
+	url.WithQueryParam("page", strconv.Itoa(page))
+
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
+	if err != nil {
+		return nil, 0, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
+	}
+
+	if err := interpretPhoneBurnerEnvelopeError(resp); err != nil {
+		return nil, 0, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
+	}
+
+	body, ok := resp.Body()
+	if !ok {
+		return nil, 0, fmt.Errorf("%w: empty customfields body", common.ErrResolvingCustomFields)
+	}
+
+	return parseMemberCustomFieldDefinitionsPage(body)
+}
+
+func parseMemberCustomFieldDefinitionsPage(body *ajson.Node) ([]memberCustomFieldDefinition, int, error) {
+	wrapper, err := jsonquery.New(body).ObjectRequired("customfields")
+	if err != nil {
+		return nil, 0, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
+	}
+
+	arr, err := jsonquery.New(wrapper).ArrayOptional("customfields")
+	if err != nil {
+		return nil, 0, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
+	}
+
+	out := make([]memberCustomFieldDefinition, 0, len(arr))
+
+	for _, n := range arr {
+		def, err := jsonquery.ParseNode[memberCustomFieldDefinition](n)
+		if err != nil {
+			return nil, 0, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
+		}
+
+		out = append(out, *def)
+	}
+
+	totalPages, err := jsonquery.New(wrapper).IntegerWithDefault("total_pages", 1)
+	if err != nil {
+		return nil, 0, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
+	}
+
+	return out, int(totalPages), nil
 }
 
 // flattenContactCustomFieldsInMap promotes each contacts GET "custom_fields" entry to a top-level key
