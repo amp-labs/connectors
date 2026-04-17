@@ -1,0 +1,128 @@
+[
+    {
+        "id": 9288,
+        "name": "active",
+        "ttype": "boolean",
+        "required": false,
+        "readonly": false,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 9294,
+        "name": "create_date",
+        "ttype": "datetime",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 9293,
+        "name": "create_uid",
+        "ttype": "many2one",
+        "required": false,
+        "readonly": true,
+        "relation": "res.users",
+        "state": "base"
+    },
+    {
+        "id": 9284,
+        "name": "display_name",
+        "ttype": "char",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 9291,
+        "name": "factor",
+        "ttype": "float",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 9283,
+        "name": "id",
+        "ttype": "integer",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 9285,
+        "name": "name",
+        "ttype": "char",
+        "required": true,
+        "readonly": false,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 9292,
+        "name": "parent_path",
+        "ttype": "char",
+        "required": false,
+        "readonly": false,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 9290,
+        "name": "related_uom_ids",
+        "ttype": "one2many",
+        "required": false,
+        "readonly": false,
+        "relation": "uom.uom",
+        "state": "base"
+    },
+    {
+        "id": 9287,
+        "name": "relative_factor",
+        "ttype": "float",
+        "required": true,
+        "readonly": false,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 9289,
+        "name": "relative_uom_id",
+        "ttype": "many2one",
+        "required": false,
+        "readonly": false,
+        "relation": "uom.uom",
+        "state": "base"
+    },
+    {
+        "id": 9286,
+        "name": "sequence",
+        "ttype": "integer",
+        "required": false,
+        "readonly": false,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 9296,
+        "name": "write_date",
+        "ttype": "datetime",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 9295,
+        "name": "write_uid",
+        "ttype": "many2one",
+        "required": false,
+        "readonly": true,
+        "relation": "res.users",
+        "state": "base"
+    }
+]
