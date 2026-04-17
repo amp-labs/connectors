@@ -5,7 +5,7 @@ const (
 	QuickbooksSandbox Provider = "quickbooksSandbox"
 )
 
-func init() {
+func init() { //nolint:funlen
 	SetInfo(QuickBooks, ProviderInfo{
 		DisplayName: "QuickBooks",
 		AuthType:    Oauth2,
