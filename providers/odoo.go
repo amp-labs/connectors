@@ -14,7 +14,7 @@ func init() {
 			DocsURL: "https://www.odoo.com/documentation/19.0/developer/reference/external_api.html#configuration",
 		},
 		// e.g. yourcompany.odoo.com,odoo.yourdomain.com
-		BaseURL:  "https://{{.odoo_domain}}",
+		BaseURL:  "https://{{.workspace}}",
 		AuthType: ApiKey,
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -41,7 +41,7 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name:        "odoo_domain",
+					Name:        "workspace",
 					DisplayName: "API Domain",
 					Prompt:      "Enter your Odoo domain (e.g. yourcompany.odoo.com or odoo.yourdomain.com)",
 				},
