@@ -7,6 +7,16 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
+// Gmail history change categories, as they appear in the history.list response.
+// Stored verbatim on SubscriptionEvent.RawName so EventType can map them to the
+// common subscription event taxonomy.
+const (
+	historyCategoryMessagesAdded   = "messagesAdded"
+	historyCategoryMessagesDeleted = "messagesDeleted"
+	historyCategoryLabelsAdded     = "labelsAdded"
+	historyCategoryLabelsRemoved   = "labelsRemoved"
+)
+
 // SubscriptionEvent is a single Gmail message-level event derived from a Gmail
 // watch push notification. Gmail pushes only carry {emailAddress, historyId};
 // the caller (typically a worker that received the push) is expected to call
@@ -23,35 +33,43 @@ import (
 // webhook body and re-emitting the event as a map for RawEvent). Without
 // tags on every field, that re-emit leaks Go field names into the payload.
 type SubscriptionEvent struct {
-	MessageID    string                       `json:"messageId"              mapstructure:"messageId"`
-	HistoryID    string                       `json:"historyId"              mapstructure:"historyId"`
-	EmailAddress string                       `json:"emailAddress"           mapstructure:"emailAddress"`
-	Type         common.SubscriptionEventType `json:"eventType"              mapstructure:"eventType"`
-	OccurredAt   int64                        `json:"occurredAt,omitempty"   mapstructure:"occurredAt"`
+	MessageID    string `json:"messageId"              mapstructure:"messageId"`
+	HistoryID    string `json:"historyId"              mapstructure:"historyId"`
+	EmailAddress string `json:"emailAddress"           mapstructure:"emailAddress"`
+	// RawName is the Gmail history change category (e.g. "messagesAdded").
+	RawName    string `json:"rawEventName"           mapstructure:"rawEventName"`
+	OccurredAt int64  `json:"occurredAt,omitempty"   mapstructure:"occurredAt"`
 }
 
 var _ common.SubscriptionEvent = SubscriptionEvent{}
 
-// EventType returns the subscription event category (create/update/delete).
-// Falls back to Other if the type field is empty, matching the contract of
-// other providers' SubscriptionEvent implementations.
+// EventType maps the Gmail history change category stored in RawName to the
+// common subscription event taxonomy.
 func (e SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
-	if e.Type == "" {
+	switch e.RawName {
+	case historyCategoryMessagesAdded:
+		return common.SubscriptionEventTypeCreate, nil
+	case historyCategoryMessagesDeleted:
+		return common.SubscriptionEventTypeDelete, nil
+	case historyCategoryLabelsAdded, historyCategoryLabelsRemoved:
+		return common.SubscriptionEventTypeUpdate, nil
+	default:
 		return common.SubscriptionEventTypeOther, nil
 	}
-
-	return e.Type, nil
 }
 
-// RawEventName returns the event type as a string. Gmail has no separate
-// provider-native event name (unlike HubSpot's "contact.creation"), so this
-// mirrors EventType.
+// RawEventName returns the Gmail history change category verbatim
+// (e.g. "messagesAdded", "labelsRemoved").
 func (e SubscriptionEvent) RawEventName() (string, error) {
-	return string(e.Type), nil
+	return e.RawName, nil
 }
 
 // ObjectName returns the Gmail object name. Only "messages" is supported for
 // subscriptions today.
+//
+// TODO(ENG-3851): derive the object name by parsing RawName (e.g.
+// "messagesAdded" → "messages", "labelsAdded" → "labels") rather than
+// hardcoding. https://linear.app/ampersand/issue/ENG-3851
 func (e SubscriptionEvent) ObjectName() (string, error) {
 	return "messages", nil
 }
@@ -87,7 +105,7 @@ func (e SubscriptionEvent) RawMap() (map[string]any, error) {
 		"messageId":    e.MessageID,
 		"historyId":    e.HistoryID,
 		"emailAddress": e.EmailAddress,
-		"eventType":    string(e.Type),
+		"rawEventName": e.RawName,
 		"occurredAt":   e.OccurredAt,
 	}), nil
 }
@@ -118,9 +136,9 @@ func SubscriptionEventsFromHistory(history []HistoryRecord, emailID string) []Su
 
 	var events []SubscriptionEvent
 
-	add := func(msgID, historyID string, evtType common.SubscriptionEventType) {
+	add := func(msgID, historyID, rawName string) {
 		if idx, ok := seen[msgID]; ok {
-			events[idx].Type = evtType
+			events[idx].RawName = rawName
 			events[idx].HistoryID = historyID
 
 			return
@@ -131,25 +149,25 @@ func SubscriptionEventsFromHistory(history []HistoryRecord, emailID string) []Su
 			MessageID:    msgID,
 			HistoryID:    historyID,
 			EmailAddress: emailID,
-			Type:         evtType,
+			RawName:      rawName,
 		})
 	}
 
 	for _, rec := range history {
 		for _, added := range rec.MessagesAdded {
-			add(added.Message.ID, rec.ID, common.SubscriptionEventTypeCreate)
+			add(added.Message.ID, rec.ID, historyCategoryMessagesAdded)
 		}
 
 		for _, deleted := range rec.MessagesDeleted {
-			add(deleted.Message.ID, rec.ID, common.SubscriptionEventTypeDelete)
+			add(deleted.Message.ID, rec.ID, historyCategoryMessagesDeleted)
 		}
 
 		for _, labelAdded := range rec.LabelsAdded {
-			add(labelAdded.Message.ID, rec.ID, common.SubscriptionEventTypeUpdate)
+			add(labelAdded.Message.ID, rec.ID, historyCategoryLabelsAdded)
 		}
 
 		for _, labelRemoved := range rec.LabelsRemoved {
-			add(labelRemoved.Message.ID, rec.ID, common.SubscriptionEventTypeUpdate)
+			add(labelRemoved.Message.ID, rec.ID, historyCategoryLabelsRemoved)
 		}
 	}
 
