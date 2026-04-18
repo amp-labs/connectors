@@ -18,15 +18,16 @@ import (
 // This type is a struct (rather than a map like HubSpot's SubscriptionEvent)
 // because Ampersand generates these events itself from HistoryList output,
 // so the shape is fully known and stable.
+// mapstructure tags mirror the json tags because the server's messenger
+// roundtrips this struct through mapstructure (both decoding the incoming
+// webhook body and re-emitting the event as a map for RawEvent). Without
+// tags on every field, that re-emit leaks Go field names into the payload.
 type SubscriptionEvent struct {
-	MessageID    string                       `json:"messageId"`
-	HistoryID    string                       `json:"historyId"`
-	EmailAddress string                       `json:"emailAddress"`
-	// mapstructure tag is required because the server's messenger decodes the
-	// inbound webhook body via json → []map[string]any → mapstructure.Decode;
-	// without the tag, the "eventType" key wouldn't map to the Type field.
-	Type       common.SubscriptionEventType `json:"eventType"       mapstructure:"eventType"`
-	OccurredAt int64                        `json:"occurredAt,omitempty" mapstructure:"occurredAt"`
+	MessageID    string                       `json:"messageId"              mapstructure:"messageId"`
+	HistoryID    string                       `json:"historyId"              mapstructure:"historyId"`
+	EmailAddress string                       `json:"emailAddress"           mapstructure:"emailAddress"`
+	Type         common.SubscriptionEventType `json:"eventType"              mapstructure:"eventType"`
+	OccurredAt   int64                        `json:"occurredAt,omitempty"   mapstructure:"occurredAt"`
 }
 
 var _ common.SubscriptionEvent = SubscriptionEvent{}
