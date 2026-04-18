@@ -97,3 +97,61 @@ func (e SubscriptionEvent) RawMap() (map[string]any, error) {
 func (e SubscriptionEvent) PreLoadData(_ *common.SubscriptionEventPreLoadData) error {
 	return nil
 }
+
+// SubscriptionEventsFromHistory fans a Gmail history.list response out into one
+// SubscriptionEvent per affected message, mapping each history change category
+// to the standard subscribe event type:
+//
+//	messagesAdded   → create
+//	messagesDeleted → delete
+//	labelsAdded     → update (e.g. TRASH added when a user moves to Trash)
+//	labelsRemoved   → update
+//
+// When the same message id appears in multiple categories within a single
+// history fetch, the last-seen category wins — matching the "last write"
+// semantics the server-side dispatch pipeline expects (one entry per record id).
+//
+// The emailID argument populates every event's Workspace/EmailAddress so the
+// subscribe pipeline can route each event back to the right connection.
+func SubscriptionEventsFromHistory(history []HistoryRecord, emailID string) []SubscriptionEvent {
+	seen := make(map[string]int)
+
+	var events []SubscriptionEvent
+
+	add := func(msgID, historyID string, evtType common.SubscriptionEventType) {
+		if idx, ok := seen[msgID]; ok {
+			events[idx].Type = evtType
+			events[idx].HistoryID = historyID
+
+			return
+		}
+
+		seen[msgID] = len(events)
+		events = append(events, SubscriptionEvent{
+			MessageID:    msgID,
+			HistoryID:    historyID,
+			EmailAddress: emailID,
+			Type:         evtType,
+		})
+	}
+
+	for _, rec := range history {
+		for _, added := range rec.MessagesAdded {
+			add(added.Message.ID, rec.ID, common.SubscriptionEventTypeCreate)
+		}
+
+		for _, deleted := range rec.MessagesDeleted {
+			add(deleted.Message.ID, rec.ID, common.SubscriptionEventTypeDelete)
+		}
+
+		for _, labelAdded := range rec.LabelsAdded {
+			add(labelAdded.Message.ID, rec.ID, common.SubscriptionEventTypeUpdate)
+		}
+
+		for _, labelRemoved := range rec.LabelsRemoved {
+			add(labelRemoved.Message.ID, rec.ID, common.SubscriptionEventTypeUpdate)
+		}
+	}
+
+	return events
+}
