@@ -117,13 +117,9 @@ func (e SubscriptionEvent) PreLoadData(_ *common.SubscriptionEventPreLoadData) e
 }
 
 // SubscriptionEventsFromHistory fans a Gmail history.list response out into one
-// SubscriptionEvent per affected message, mapping each history change category
-// to the standard subscribe event type:
-//
-//	messagesAdded   → create
-//	messagesDeleted → delete
-//	labelsAdded     → update (e.g. TRASH added when a user moves to Trash)
-//	labelsRemoved   → update
+// SubscriptionEvent per affected message. Each event stores the Gmail-native
+// change category (e.g. "messagesAdded") in RawName; callers use EventType()
+// to map that into the common.SubscriptionEventType taxonomy.
 //
 // When the same message id appears in multiple categories within a single
 // history fetch, the last-seen category wins — matching the "last write"
