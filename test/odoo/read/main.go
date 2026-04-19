@@ -4,6 +4,7 @@ import (
 	"context"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -23,10 +24,16 @@ func main() {
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "crm.lead",
 		Fields:     connectors.Fields("id", "name", "write_date"),
+		Since:      time.Date(2026, 4, 17, 2, 28, 40, 0, time.UTC),
 	})
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "res.partner",
 		Fields:     connectors.Fields("id", "name", "write_date"),
+	})
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "crm.iap.lead.role",
+		Fields:     connectors.Fields("id", "name", "write_date"),
+		PageSize:   10,
 	})
 
 }

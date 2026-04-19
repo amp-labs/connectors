@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	roleObjectName     = "res.partner.role"
-	roleSearchReadPath = "/json/2/res.partner.role/search_read"
+	roleObjectName     = "crm.iap.lead.role"
+	roleSearchReadPath = "/json/2/crm.iap.lead.role/search_read"
 )
 
 // nolint:funlen
@@ -32,7 +32,7 @@ func TestRead(t *testing.T) {
 
 	tests := []testroutines.Read{
 		{
-			Name: "Read res.partner.role empty",
+			Name: "Read crm.iap.lead.role empty",
 			Input: common.ReadParams{
 				ObjectName: roleObjectName,
 				Fields:     connectors.Fields("display_name", "name", "create_date"),
@@ -55,7 +55,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read res.partner.role with PageSize sets search_read limit and next offset",
+			Name: "Read crm.iap.lead.role with PageSize sets search_read limit and next offset",
 			Input: common.ReadParams{
 				ObjectName: roleObjectName,
 				Fields:     connectors.Fields("display_name", "name", "create_date"),
@@ -93,7 +93,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read res.partner.role with Since sends write_date lower bound in search_read domain",
+			Name: "Read crm.iap.lead.role with Since sends write_date lower bound in search_read domain",
 			Input: common.ReadParams{
 				ObjectName: roleObjectName,
 				Fields:     connectors.Fields("name"),
@@ -117,7 +117,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read res.partner.role with Until sends write_date upper bound in search_read domain",
+			Name: "Read crm.iap.lead.role with Until sends write_date upper bound in search_read domain",
 			Input: common.ReadParams{
 				ObjectName: roleObjectName,
 				Fields:     connectors.Fields("name"),
@@ -149,7 +149,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read res.partner.role with Since and Until sends write_date window in search_read domain",
+			Name: "Read crm.iap.lead.role with Since and Until sends write_date window in search_read domain",
 			Input: common.ReadParams{
 				ObjectName: roleObjectName,
 				Fields:     connectors.Fields("name"),
@@ -182,7 +182,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read res.partner.role first page",
+			Name: "Read crm.iap.lead.role first page",
 			Input: common.ReadParams{
 				ObjectName: roleObjectName,
 				Fields:     connectors.Fields("display_name", "name", "create_date"),
@@ -220,7 +220,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read res.partner.role second page using NextPage",
+			Name: "Read crm.iap.lead.role second page using NextPage",
 			Input: common.ReadParams{
 				ObjectName: roleObjectName,
 				Fields:     connectors.Fields("display_name", "name", "create_date"),
@@ -259,7 +259,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read res.partner.role last page using NextPage",
+			Name: "Read crm.iap.lead.role last page using NextPage",
 			Input: common.ReadParams{
 				ObjectName: roleObjectName,
 				Fields:     connectors.Fields("display_name", "name", "create_date"),
