@@ -93,7 +93,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read crm.iap.lead.role with Since sends write_date lower bound in search_read domain",
+			Name: "Read crm.iap.lead.role with Since sends write_date >= lower bound in search_read domain",
 			Input: common.ReadParams{
 				ObjectName: roleObjectName,
 				Fields:     connectors.Fields("name"),
@@ -104,7 +104,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path(roleSearchReadPath),
 					mockcond.MethodPOST(),
-					mockcond.Body(`{"domain":[["write_date",">","2026-05-01 00:00:00"]],"fields":["name"],"limit":500,"offset":0}`),
+					mockcond.Body(`{"domain":[["write_date",">=","2026-05-01 00:00:00"]],"fields":["name"],"limit":500,"offset":0,"order":"write_date asc, id asc"}`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseRoleEmpty),
 			}.Server(),
@@ -129,7 +129,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path(roleSearchReadPath),
 					mockcond.MethodPOST(),
-					mockcond.Body(`{"domain":[["write_date","<=","2026-06-15 14:30:00"]],"fields":["name"],"limit":25,"offset":0}`),
+					mockcond.Body(`{"domain":[["write_date","<=","2026-06-15 14:30:00"]],"fields":["name"],"limit":25,"offset":0,"order":"write_date asc, id asc"}`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseRoleUntilWindow),
 			}.Server(),
@@ -149,7 +149,7 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read crm.iap.lead.role with Since and Until sends write_date window in search_read domain",
+			Name: "Read crm.iap.lead.role with Since and Until sends write_date >= and <= window in search_read domain",
 			Input: common.ReadParams{
 				ObjectName: roleObjectName,
 				Fields:     connectors.Fields("name"),
@@ -162,7 +162,7 @@ func TestRead(t *testing.T) {
 				If: mockcond.And{
 					mockcond.Path(roleSearchReadPath),
 					mockcond.MethodPOST(),
-					mockcond.Body(`{"domain":[["write_date",">","2026-04-01 00:00:00"],["write_date","<=","2026-04-30 23:59:59"]],"fields":["name"],"limit":10,"offset":0}`),
+					mockcond.Body(`{"domain":[["write_date",">=","2026-04-01 00:00:00"],["write_date","<=","2026-04-30 23:59:59"]],"fields":["name"],"limit":10,"offset":0,"order":"write_date asc, id asc"}`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseRoleUntilWindow),
 			}.Server(),

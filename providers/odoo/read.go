@@ -25,26 +25,37 @@ func formatOdooSearchReadDomainTime(t time.Time) string {
 	return t.UTC().Format(odooSearchReadDomainTimeLayout)
 }
 
+// NextPage = decimal offset.
+// Done when returned rows < limit.
+func searchReadLimitAndOffset(params common.ReadParams) (limit, offset int, err error) {
+	limit = params.PageSize
+	if limit <= 0 {
+		limit = defaultReadLimit
+	}
+
+	offset = 0
+
+	if params.NextPage != "" {
+		o, convErr := strconv.Atoi(params.NextPage.String())
+		if convErr != nil {
+			return 0, 0, fmt.Errorf("invalid NextPage (expected numeric offset): %w", convErr)
+		}
+
+		offset = o
+	}
+
+	return limit, offset, nil
+}
+
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	urlStr, err := c.getURL(params.ObjectName, "search_read")
 	if err != nil {
 		return nil, err
 	}
 
-	limit := params.PageSize
-	if limit <= 0 {
-		limit = defaultReadLimit
-	}
-
-	offset := 0
-
-	if params.NextPage != "" {
-		o, convErr := strconv.Atoi(params.NextPage.String())
-		if convErr != nil {
-			return nil, fmt.Errorf("invalid NextPage (expected numeric offset): %w", convErr)
-		}
-
-		offset = o
+	limit, offset, err := searchReadLimitAndOffset(params)
+	if err != nil {
+		return nil, err
 	}
 
 	body := map[string]any{
@@ -52,6 +63,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		"fields": params.Fields.List(),
 		"limit":  limit,
 		"offset": offset,
+		"order":  "id asc",
 	}
 
 	jsonData, err := json.Marshal(body)
@@ -73,7 +85,7 @@ func buildSearchReadDomain(params common.ReadParams) []any {
 	var domain []any
 
 	if !params.Since.IsZero() {
-		domain = append(domain, []any{"write_date", ">", formatOdooSearchReadDomainTime(params.Since)})
+		domain = append(domain, []any{"write_date", ">=", formatOdooSearchReadDomainTime(params.Since)})
 	}
 
 	if !params.Until.IsZero() {
@@ -89,20 +101,9 @@ func (c *Connector) parseReadResponse(
 	_ *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	limit := params.PageSize
-	if limit <= 0 {
-		limit = defaultReadLimit
-	}
-
-	offset := 0
-
-	if params.NextPage != "" {
-		o, convErr := strconv.Atoi(params.NextPage.String())
-		if convErr != nil {
-			return nil, fmt.Errorf("invalid NextPage: %w", convErr)
-		}
-
-		offset = o
+	limit, offset, err := searchReadLimitAndOffset(params)
+	if err != nil {
+		return nil, err
 	}
 
 	extractRecords := func(node *ajson.Node) ([]*ajson.Node, error) {
@@ -122,9 +123,6 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
-// searchReadNextPageOffset returns the next search_read offset as a decimal string when the
-// response might have more rows (exactly `limit` rows returned). Otherwise it
-// returns an empty string. currentOffset is the offset used for this request (from ReadParams.NextPage).
 func searchReadNextPageOffset(currentOffset, limit int, body *ajson.Node) (string, error) {
 	records, err := jsonquery.New(body).ArrayRequired("")
 	if err != nil {
@@ -132,7 +130,7 @@ func searchReadNextPageOffset(currentOffset, limit int, body *ajson.Node) (strin
 	}
 
 	n := len(records)
-	// check creating a new one in the middle
+
 	if limit <= 0 || n == 0 || n < limit {
 		return "", nil
 	}
