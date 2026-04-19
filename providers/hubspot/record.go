@@ -22,12 +22,12 @@ var (
 
 /*
    docs:
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/companies
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/contacts
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/deals
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/tickets
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/line_items
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/products
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/companies/guide
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/guide
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/deals/guide
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/tickets/guide
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/line-items/guide
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/products/guide
 */
 
 //nolint:revive,funlen

@@ -447,6 +447,15 @@ type Oauth2OptsGrantType string
 // Provider defines model for Provider.
 type Provider = string
 
+// ProviderAppMetadata Describes the provider-app-level fields that the Ampersand dashboard should collect from the builder when creating a ProviderApp for this provider. These descriptors tell the dashboard which form fields to render; the submitted values are stored in ProviderApp.metadata.
+type ProviderAppMetadata struct {
+	// AuthQueryParams Descriptors for fields stored in ProviderApp.metadata.authQueryParams (e.g., optional_scope for HubSpot).
+	AuthQueryParams []MetadataItemInput `json:"authQueryParams,omitempty"`
+
+	// ProviderParams Descriptors for fields stored in ProviderApp.metadata.providerParams (e.g., packageInstallURL for Salesforce, gcpProjectId for Gmail).
+	ProviderParams []MetadataItemInput `json:"providerParams,omitempty"`
+}
+
 // ProviderInfo defines model for ProviderInfo.
 type ProviderInfo struct {
 	// ApiKeyOpts Configuration for API key. Must be provided if authType is apiKey.
@@ -485,6 +494,9 @@ type ProviderInfo struct {
 
 	// PostAuthInfoNeeded If true, we require additional information after auth to start making requests.
 	PostAuthInfoNeeded bool `json:"postAuthInfoNeeded,omitempty"`
+
+	// ProviderAppMetadata Describes the provider-app-level fields that the Ampersand dashboard should collect from the builder when creating a ProviderApp for this provider. These descriptors tell the dashboard which form fields to render; the submitted values are stored in ProviderApp.metadata.
+	ProviderAppMetadata *ProviderAppMetadata `json:"providerAppMetadata,omitempty"`
 
 	// ProviderOpts Additional provider-specific metadata.
 	ProviderOpts  ProviderOpts   `json:"providerOpts"`

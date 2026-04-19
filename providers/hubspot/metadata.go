@@ -124,12 +124,12 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 func (c *Connector) getObjectMetadataFromPropertyAPI(
 	ctx context.Context, objectName string,
 ) (*common.ObjectMetadata, error) {
-	u, err := c.getPropertiesURL(objectName)
+	url, err := c.getPropertiesURL(objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, u)
+	rsp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)
 	}
@@ -221,8 +221,12 @@ type AccountInfo struct {
 func (c *Connector) GetAccountInfo(ctx context.Context) (*AccountInfo, *common.JSONHTTPResponse, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
-	// https://developers.hubspot.com/docs/api-reference/account-account-info-v3/details/get-account-info-v3-details
-	resp, err := c.Client.Get(ctx, fmt.Sprintf("account-info/%v/details", core.APIVersion3))
+	url, err := c.getAccountDetailsURL()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	resp, err := c.Client.Get(ctx, url.String())
 	if err != nil {
 		return nil, resp, fmt.Errorf("error fetching HubSpot token info: %w", err)
 	}
@@ -321,8 +325,8 @@ func (f fieldDescription) implyEnumerationType(fieldName string) (common.ValueTy
 		for index, option := range f.Options {
 			displayValue := option.Label
 			// For persona field, use description if it exists, otherwise fall back to label
-			// https://community.hubspot.com/t5/APIs-Integrations/Getting-Wrong-Value-from-Persona-in-API/
-			// m-p/1193587/highlight/true#M84004
+			// nolint:lll
+			// https://community.hubspot.com/t5/APIs-Integrations/Getting-Wrong-Value-from-Persona-in-API/m-p/1193587/highlight/true#M84004
 			if strings.EqualFold(fieldName, "hs_persona") && option.Description != "" {
 				displayValue = option.Description
 			}
@@ -359,16 +363,16 @@ var objectsWithExternalMetadataFields = datautils.Map[string, []externalFieldDis
 	"contacts": {
 		{
 			FieldNames: []string{"hs_pipeline"},
-			// https://developers.hubspot.com/docs/api-reference/crm-pipelines-v3/guide#retrieve-pipelines
-			EndpointPath:      fmt.Sprintf("/crm/%v/pipelines/contacts", core.APIVersion3),
+			// https://developers.hubspot.com/docs/api-reference/latest/crm/pipelines/guide#retrieve-pipelines
+			EndpointPath:      fmt.Sprintf("/crm/pipelines/%v/contacts", core.APIVersion2026March),
 			ResponseProcessor: parsePipelineFieldValues,
 		},
 	},
 	"deals": {
 		{
 			FieldNames: []string{"pipeline", "dealstage"},
-			// https://developers.hubspot.com/docs/api-reference/crm-pipelines-v3/guide#retrieve-pipelines
-			EndpointPath:      fmt.Sprintf("/crm/%v/pipelines/deals", core.APIVersion3),
+			// https://developers.hubspot.com/docs/api-reference/latest/crm/pipelines/guide#retrieve-pipelines
+			EndpointPath:      fmt.Sprintf("/crm/pipelines/%v/deals", core.APIVersion2026March),
 			ResponseProcessor: parsePipelineFieldValuesWithStages,
 		},
 	},
@@ -390,7 +394,7 @@ func (c *Connector) fetchExternalMetadataEnumValues(
 	// For each external field that we support make an API call to fetch enumeration options.
 	// Store this values for each field within each object.
 	for _, discovery := range externalFields {
-		rsp, err := c.Client.Get(ctx, c.providerInfo.BaseURL+discovery.EndpointPath)
+		rsp, err := c.Client.Get(ctx, c.getURLFromRoot(discovery.EndpointPath))
 		if err != nil {
 			return nil, fmt.Errorf("error resolving external metadata values for HubSpot: %w", err)
 		}
@@ -495,7 +499,7 @@ func parsePipelineFieldValues(response *common.JSONHTTPResponse) ([]common.Field
 }
 
 // For more details, refer to the HubSpot documentation on Pipelines.
-// https://developers.hubspot.com/docs/guides/api/crm/pipelines#retrieve-pipelines
+// https://developers.hubspot.com/docs/api-reference/latest/crm/pipelines/get-pipelines
 type pipelineResponse struct {
 	Pipelines []pipeline `json:"results"`
 }

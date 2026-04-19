@@ -280,6 +280,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
+	prospectsCustomFields := testutils.DataFromFile(t, "pardot/metadata/prospects-custom-fields.json")
+
+	pardotHeader := http.Header{
+		"Pardot-Business-Unit-Id": []string{"test-business-unit-id"},
+	}
+
 	tests := []testroutines.Metadata{
 		{
 			Name:         "At least one object name must be queried",
@@ -332,6 +338,54 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 							"sentAt":          "sentAt",
 							"listId":          "listId",
 							"salesforceCmsId": "salesforceCmsId",
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successfully describe Prospects object with custom fields",
+			Input: []string{"Prospects"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v5/objects/custom-fields"),
+					mockcond.Header(pardotHeader),
+				},
+				Then: mockserver.Response(http.StatusOK, prospectsCustomFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"prospects": {
+						DisplayName: "Prospects",
+						Fields: map[string]common.FieldMetadata{
+							"email": {
+								DisplayName:  "email",
+								ValueType:    "string",
+								ProviderType: "String",
+								IsRequired:   nil,
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     nil,
+							},
+							"biography__c": {
+								DisplayName:  "Biography",
+								ValueType:    "string",
+								ProviderType: "text",
+								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(true),
+							},
+							"hobby__c": {
+								DisplayName:  "Hobby",
+								ValueType:    "other",
+								ProviderType: "radio button",
+								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(true),
+							},
 						},
 					},
 				},

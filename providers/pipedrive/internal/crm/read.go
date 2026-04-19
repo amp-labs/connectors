@@ -12,11 +12,13 @@ import (
 )
 
 const (
-	readAPIVersion            = "api/v2"
-	data                      = "data"
-	dealsObjectName           = "deals"
-	productsField             = "products"
-	maxConcurrentProductFetch = 4 // No strong reason (Pipedrive has 100req/10s)
+	readAPIVersion   = "api/v2"
+	data             = "data"
+	dealsObjectName  = "deals"
+	productsFieldKey = "products"
+
+	// ref: https://pipedrive.readme.io/docs/core-api-concepts-rate-limiting
+	maxConcurrentProductFetch = 4 // No strong reason (Pipedrive has 10 requests per 2 seconds)
 )
 
 var supportsIncSync = datautils.NewSet("activities", "deals", "organizations", "persons") // nolint: gochecknoglobals
@@ -46,7 +48,7 @@ func (a *Adapter) Read(ctx context.Context, params common.ReadParams) (*common.R
 		return nil, err
 	}
 
-	if params.ObjectName == dealsObjectName && params.Fields.Has(productsField) {
+	if params.ObjectName == dealsObjectName && params.Fields.Has(productsFieldKey) {
 		if err := a.enrichDealsWithProducts(ctx, result.Data); err != nil {
 			return nil, err
 		}
@@ -72,8 +74,8 @@ func (a *Adapter) enrichDealsWithProducts(ctx context.Context, rows []common.Rea
 
 			// we manually add these cause we have already parsed the response
 			// at this stage.
-			rows[idx].Fields[productsField] = products
-			rows[idx].Raw[productsField] = products
+			rows[idx].Fields[productsFieldKey] = products
+			rows[idx].Raw[productsFieldKey] = products
 
 			return nil
 		}
@@ -84,7 +86,7 @@ func (a *Adapter) enrichDealsWithProducts(ctx context.Context, rows []common.Rea
 
 // fetchDealProducts calls /api/v2/deals/{id}/products and returns the data array.
 func (a *Adapter) fetchDealProducts(ctx context.Context, dealID string) ([]map[string]any, error) {
-	url, err := urlbuilder.New(a.moduleInfo.BaseURL, readAPIVersion, dealsObjectName, dealID, productsField)
+	url, err := urlbuilder.New(a.moduleInfo.BaseURL, readAPIVersion, dealsObjectName, dealID, productsFieldKey)
 	if err != nil {
 		return nil, err
 	}

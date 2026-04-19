@@ -470,6 +470,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseMissingQuery := testutils.DataFromFile(t, "pardot/read/emails/err-missing-query.json")
 	responseEmailsFirstPage := testutils.DataFromFile(t, "pardot/read/emails/1-first-page.json")
 	responseEmailsEmptyPage := testutils.DataFromFile(t, "pardot/read/emails/2-empty-page.json")
+	responseProspects := testutils.DataFromFile(t, "pardot/read/prospects.json")
 
 	pardotHeader := http.Header{
 		"Pardot-Business-Unit-Id": []string{"test-business-unit-id"},
@@ -608,6 +609,70 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Expected: &common.ReadResult{
 				Rows:     0,
 				Data:     []common.ReadResultRow{},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read prospects with custom field",
+			Input: common.ReadParams{
+				ObjectName: "prospects",
+				Fields:     connectors.Fields("hobby__c"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v5/objects/prospects"),
+					mockcond.QueryParam("limit", "1000"),
+					mockcond.QueryParam("fields", "hobby__c"),
+					mockcond.Header(pardotHeader),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProspects),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Data: []common.ReadResultRow{{
+					Id: "55389571",
+					Fields: map[string]any{
+						"hobby__c": nil,
+					},
+					Raw: map[string]any{
+						"id":           float64(55389571),
+						"email":        "a.alexander@sample.com",
+						"firstName":    "Athenasius",
+						"lastName":     "Alexander",
+						"biography__c": nil,
+						"hobby__c":     nil,
+					},
+				}, {
+					Id: "55389574",
+					Fields: map[string]any{
+						"hobby__c": nil,
+					},
+					Raw: map[string]any{
+						"id":           float64(55389574),
+						"email":        "spidey@test.com",
+						"firstName":    "Man",
+						"lastName":     "Spider",
+						"biography__c": nil,
+						"hobby__c":     nil,
+					},
+				}, {
+					Id: "64629229",
+					Fields: map[string]any{
+						"hobby__c": "swimming",
+					},
+					Raw: map[string]any{
+						"id":           float64(64629229),
+						"email":        "b.loretta@sample.com",
+						"firstName":    "Loretta",
+						"lastName":     "Burke",
+						"biography__c": nil,
+						"hobby__c":     "swimming",
+					},
+				}},
 				NextPage: "",
 				Done:     true,
 			},

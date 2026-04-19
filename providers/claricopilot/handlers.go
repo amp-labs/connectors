@@ -20,7 +20,7 @@ const (
 	// Reduced from 100 due to persistent 502s from Clari Copilot API. See:
 	// https://community.clari.com/clari-salesloft-integration-120/
 	//   persistent-502s-being-returned-from-co-pilot-api-2890
-	pageSize     = "50"
+	pageSize     = "25"
 	skipKey      = "skip"
 	apiVersionV2 = "v2"
 	createPrefix = "create"

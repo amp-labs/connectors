@@ -29,7 +29,7 @@ func GetSalesforceAccountEngagementConnector(ctx context.Context) *salesforce.Co
 }
 
 func getSalesforceConnector(ctx context.Context, module common.ModuleID) *salesforce.Connector {
-	reader := getSalesforceJSONReader()
+	reader := getSalesforceJSONReader(module)
 
 	conn, err := salesforce.NewConnector(
 		salesforce.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
@@ -61,13 +61,13 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 }
 
 func GetSalesforceAccessToken() common.AuthToken {
-	reader := getSalesforceJSONReader()
+	reader := getSalesforceJSONReader(providers.ModuleSalesforceCRM)
 
 	return common.AuthToken(reader.Get(credscanning.Fields.AccessToken))
 }
 
-func getSalesforceJSONReader() *credscanning.ProviderCredentials {
-	filePath := credscanning.LoadPath(providers.Salesforce)
+func getSalesforceJSONReader(module string) *credscanning.ProviderCredentials {
+	filePath := credscanning.LoadPath(providers.Salesforce, module)
 	reader := utils.MustCreateProvCredJSON(filePath, true,
 		fieldBusinessUnitID,
 	)
