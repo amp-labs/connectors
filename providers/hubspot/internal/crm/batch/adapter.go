@@ -62,15 +62,15 @@ func (a *Adapter) getModuleURL() string {
 // getCreateURL builds the HubSpot batch create endpoint for the given object type.
 //
 // nolint:lll
-// Contacts example: https://developers.hubspot.com/docs/api-reference/crm-contacts-v3/batch/post-crm-v3-objects-contacts-batch-create
+// Contacts example: https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/batch/create-contacts
 func (a *Adapter) getCreateURL(objectName common.ObjectName) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), core.APIVersion3, "objects", objectName.String(), "batch/create")
+	return urlbuilder.New(a.getModuleURL(), "objects", core.APIVersion2026March, objectName.String(), "batch/create")
 }
 
 // getUpdateURL builds the HubSpot batch update endpoint for the given object type.
 //
 // nolint:lll
-// Contacts example: https://developers.hubspot.com/docs/api-reference/crm-contacts-v3/batch/post-crm-v3-objects-contacts-batch-update
+// Contacts example: https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/batch/update-contacts
 func (a *Adapter) getUpdateURL(objectName common.ObjectName) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), core.APIVersion3, "objects", objectName.String(), "batch/update")
+	return urlbuilder.New(a.getModuleURL(), "objects", core.APIVersion2026March, objectName.String(), "batch/update")
 }

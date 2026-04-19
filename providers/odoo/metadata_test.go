@@ -539,7 +539,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
 		Metadata: map[string]string{
-			"odoo_domain": "mock.example.com",
+			"workspace": "mock.example.com",
 		},
 	})
 	if err != nil {

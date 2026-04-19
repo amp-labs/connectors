@@ -63,7 +63,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/create"),
 				},
 				Then: mockserver.Response(http.StatusConflict, errConflictExisting),
 			}.Server(),
@@ -88,7 +88,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/create"),
 				},
 				Then: mockserver.Response(http.StatusBadRequest, nil),
 			}.Server(),
@@ -113,7 +113,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/create"),
 				},
 				Then: mockserver.Response(http.StatusBadRequest, errManyInvalidFields),
 			}.Server(),
@@ -154,7 +154,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/create"),
 				},
 				Then: mockserver.Response(http.StatusMultiStatus, errPartialSuccess),
 			}.Server(),
@@ -203,7 +203,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/create"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateContacts),
 			}.Server(),
@@ -283,7 +283,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/update"),
 				},
 				Then: mockserver.Response(http.StatusBadRequest, errDuplicateIDs),
 			}.Server(),
@@ -308,7 +308,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/update"),
 				},
 				Then: mockserver.Response(http.StatusBadRequest, errManyInvalidFields),
 			}.Server(),
@@ -363,7 +363,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/update"),
 				},
 				Then: mockserver.Response(http.StatusMultiStatus, errUpdatePartial),
 			}.Server(),
@@ -411,7 +411,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/update"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseUpdateContacts),
 			}.Server(),

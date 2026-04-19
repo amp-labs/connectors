@@ -10,29 +10,20 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-var fieldOdooDomain = credscanning.Field{ //nolint:gochecknoglobals
-	Name:      "odoo_domain",
-	PathJSON:  "metadata.odoo_domain",
-	SuffixENV: "ODOO_DOMAIN",
-}
-
-// GetConnector builds an Odoo connector from ./odoo-creds.json or ODOO_CRED_FILE.
 func GetConnector(ctx context.Context) *odoo.Connector {
 	filePath := credscanning.LoadPath(providers.Odoo)
-	reader := utils.MustCreateProvCredJSON(filePath, false, fieldOdooDomain)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	client := utils.NewAPIKeyClient(ctx, reader, providers.Odoo)
 
-	domain := reader.Get(fieldOdooDomain)
-	if domain == "" {
-		utils.Fail("missing metadata.odoo_domain in creds")
+	workspace := reader.Get(credscanning.Fields.Workspace)
+	if workspace == "" {
+		utils.Fail("missing metadata.workspace in creds")
 	}
 
 	conn, err := odoo.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
-		Metadata: map[string]string{
-			"odoo_domain": domain,
-		},
+		Workspace:           workspace,
 	})
 	if err != nil {
 		utils.Fail("error creating Odoo connector", "error", err)

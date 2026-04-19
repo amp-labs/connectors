@@ -14,13 +14,13 @@ import (
 
 var (
 	// ErrAccessToken is a token which isn't valid.
-	ErrAccessToken = errors.New("access token invalid")
+	ErrAccessToken error = newClassedErr("access token invalid", ErrorClassAuthInvalidated)
 
 	// ErrApiDisabled means a customer didn't enable this API on their SaaS instance.
-	ErrApiDisabled = errors.New("API disabled")
+	ErrApiDisabled error = newClassedErr("API disabled", ErrorClassAPIDisabled)
 
 	// ErrForbidden means the user doesn't have access to this resource.
-	ErrForbidden = errors.New("forbidden")
+	ErrForbidden error = newClassedErr("forbidden", ErrorClassForbidden)
 
 	// ErrInvalidSessionId means the session ID is invalid.
 	ErrInvalidSessionId = errors.New("invalid session id")
@@ -29,22 +29,22 @@ var (
 	ErrUnableToLockRow = errors.New("unable to lock row")
 
 	// ErrInvalidGrant means the OAuth grant is invalid.
-	ErrInvalidGrant = errors.New("invalid grant")
+	ErrInvalidGrant error = newClassedErr("invalid grant", ErrorClassAuthInvalidated)
 
 	// ErrLimitExceeded means a quota limit was exceeded.
-	ErrLimitExceeded = errors.New("request limit exceeded")
+	ErrLimitExceeded error = newClassedErr("request limit exceeded", ErrorClassRateLimited)
 
 	// ErrRetryable represents a temporary error. Can retry.
-	ErrRetryable = errors.New("retryable error")
+	ErrRetryable error = newClassedErr("retryable error", ErrorClassRetryable)
 
 	// ErrCaller represents non-retryable errors caused by bad input from the caller.
-	ErrCaller = errors.New("caller error")
+	ErrCaller error = newClassedErr("caller error", ErrorClassBadRequest)
 
 	// ErrServer represents non-retryable errors caused by something on the server.
-	ErrServer = errors.New("server error")
+	ErrServer error = newClassedErr("server error", ErrorClassProvider5xx)
 
 	// ErrUnknown represents an unknown status code response.
-	ErrUnknown = errors.New("unknown error")
+	ErrUnknown error = newClassedErr("unknown error", ErrorClassUnknown)
 
 	// ErrNotJSON is returned when a response is not JSON.
 	ErrNotJSON = errors.New("response is not JSON")
@@ -71,7 +71,7 @@ var (
 	ErrParseError = errors.New("parse error")
 
 	// ErrBadRequest is returned when we get a 400 response from the provider.
-	ErrBadRequest = errors.New("bad request")
+	ErrBadRequest error = newClassedErr("bad request", ErrorClassBadRequest)
 
 	// ErrConflict is returned when we get a 409 response from the provider.
 	ErrConflict = errors.New("conflict")
@@ -80,11 +80,11 @@ var (
 	ErrNotFound = errors.New("not found")
 
 	// ErrCursorGone is returned when a cursor used for pagination is no longer valid.
-	ErrCursorGone = errors.New("pagination cursor gone or expired")
+	ErrCursorGone error = newClassedErr("pagination cursor gone or expired", ErrorClassCursorGone)
 
 	// ErrResultsLimitExceeded is returned when a search query exceeds the provider's
 	// maximum result limit (e.g., HubSpot's 10,000 record search limit).
-	ErrResultsLimitExceeded = errors.New("results limit exceeded")
+	ErrResultsLimitExceeded error = newClassedErr("results limit exceeded", ErrorClassRateLimited)
 
 	// ErrMissingExpectedValues is returned when response data doesn't have values expected for processing.
 	ErrMissingExpectedValues = errors.New("response data is missing expected values")
@@ -551,6 +551,27 @@ func (r HTTPError) Error() string {
 
 func (r HTTPError) Unwrap() error {
 	return r.err
+}
+
+// ErrorClass derives a stable class for this HTTP error. The status code is
+// the primary signal (e.g. 401 → auth_invalidated, 477 → provider_migration,
+// 5xx → provider_5xx); if the status doesn't map cleanly, we defer to the
+// wrapped error, which self-classifies via the Classifier interface.
+func (r HTTPError) ErrorClass() ErrorClass {
+	if class, ok := classOfHTTPStatus(r.Status); ok {
+		return class
+	}
+
+	if r.err == nil {
+		return ErrorClassUnknown
+	}
+
+	var c Classifier
+	if errors.As(r.err, &c) {
+		return c.ErrorClass()
+	}
+
+	return ErrorClassUnknown
 }
 
 type ListObjectMetadataResult struct {

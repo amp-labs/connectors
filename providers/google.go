@@ -87,5 +87,32 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
+		ProviderAppMetadata: &ProviderAppMetadata{
+			ProviderParams: []MetadataItemInput{
+				{
+					Name:        "gcpProjectId",
+					DisplayName: "GCP Project ID",
+					Prompt: "If you are using Gmail subscribe actions, this is the ID of the Google Cloud Project " +
+						"where your Pub/Sub topic lives. " +
+						"Ampersand uses this to subscribe to Gmail change notifications on behalf of your users.",
+					// TODO: add DocsURL once Ampersand docs page for Gmail Pub/Sub setup is published.
+					ModuleDependencies: &ModuleDependencies{
+						ModuleGoogleGmail: {},
+					},
+				},
+				{
+					Name:        "gcpPubSubTopicName",
+					DisplayName: "GCP Pub/Sub Topic Name",
+					Prompt: "If you are using Gmail subscribe actions, this is the name of the Pub/Sub topic " +
+						"that Gmail will publish change notifications to. " +
+						"Must be in the same GCP project as above and have the Gmail API service account " +
+						"granted publish permissions.",
+					// TODO: add DocsURL once Ampersand docs page for Gmail Pub/Sub setup is published.
+					ModuleDependencies: &ModuleDependencies{
+						ModuleGoogleGmail: {},
+					},
+				},
+			},
+		},
 	})
 }

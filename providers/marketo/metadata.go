@@ -46,7 +46,7 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 
 		defer httpResp.Body.Close()
 
-		resp, err := common.ParseJSONResponse(httpResp, body)
+		resp, err := common.ParseJSONResponse(ctx, httpResp, body)
 		if err != nil {
 			logging.Logger(ctx).Error("failed to parse metadata response", "object", obj, "body", body, "err", err.Error())
 			runFallback(obj, &metadataResult)

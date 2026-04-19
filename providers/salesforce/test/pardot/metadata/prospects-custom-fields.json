@@ -1,0 +1,20 @@
+{
+  "nextPageToken": null,
+  "nextPageUrl": null,
+  "values": [
+    {
+      "id": 247666,
+      "fieldId": "biography",
+      "isRequired": false,
+      "name": "Biography",
+      "type": "text"
+    },
+    {
+      "id": 247672,
+      "fieldId": "hobby",
+      "isRequired": false,
+      "name": "Hobby",
+      "type": "radio button"
+    }
+  ]
+}
