@@ -63,7 +63,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		"fields": params.Fields.List(),
 		"limit":  limit,
 		"offset": offset,
-		"order":  "id asc",
+		"order":  "write_date asc, id asc",
 	}
 
 	jsonData, err := json.Marshal(body)
