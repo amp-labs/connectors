@@ -47,7 +47,7 @@ func init() {
 				{
 					Name:        "workspace",
 					DisplayName: "Tenant ID",
-					Prompt:      "The Azure AD tenant GUID",
+					Prompt:      "The Azure AD tenant GUID (e.g. `951a1899-8810-4356-ax10-3a5f8fg99a65`)",
 					DocsURL:     "https://docs.withampersand.com/customer-guides/microsoft-client-credentials",
 				},
 			},
