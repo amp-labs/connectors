@@ -31,6 +31,7 @@ import (
 	"github.com/amp-labs/connectors/providers/campaignmonitor"
 	"github.com/amp-labs/connectors/providers/capsule"
 	"github.com/amp-labs/connectors/providers/chargebee"
+	"github.com/amp-labs/connectors/providers/chargeover"
 	"github.com/amp-labs/connectors/providers/chilipiper"
 	"github.com/amp-labs/connectors/providers/chorus"
 	"github.com/amp-labs/connectors/providers/claricopilot"
@@ -1108,4 +1109,8 @@ func newBentleyConnector(params common.ConnectorParams) (*bentley.Connector, err
 
 func newFourFourConnector(params common.ConnectorParams) (*fourfour.Connector, error) {
 	return fourfour.NewConnector(params)
+}
+
+func newChargeOver(params common.ConnectorParams) (*chargeover.Connector, error) {
+	return chargeover.NewConnector(params)
 }

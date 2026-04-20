@@ -107,5 +107,16 @@ func init() { //nolint:funlen
 				},
 			},
 		},
+		ProviderAppMetadata: &ProviderAppMetadata{
+			AuthQueryParams: []MetadataItemInput{
+				{
+					Name:        "optional_scope",
+					DisplayName: "Optional Scopes",
+					Prompt: "Optional HubSpot scopes that users can grant during OAuth, " +
+						"these must also be configured in your HubSpot app.",
+					DocsURL: "https://developers.hubspot.com/docs/api/working-with-oauth#scopes",
+				},
+			},
+		},
 	})
 }

@@ -17,6 +17,12 @@ var (
 	_ connectors.SubscriptionMaintainerConnector = &Connector{}
 )
 
+// GmailSubscribeRequest is the request payload for Gmail watch subscriptions.
+type GmailSubscribeRequest = mail.WatchRequest
+
+// GmailSubscribeResponse is the response payload from Gmail watch subscriptions.
+type GmailSubscribeResponse = mail.WatchResponse
+
 // Connector for Google provider.
 // Each adapter corresponds to Google Module implementation.
 // Only one adapter can be non-nil and will be delegated to on reading/writing operations.
@@ -230,6 +236,28 @@ func (c *Connector) RunScheduledMaintenance(
 	}
 
 	return nil, common.ErrNotImplemented
+}
+
+// Re-exports of Gmail history.list types so external callers can use them
+// without importing the internal mail package.
+type (
+	HistoryListParams    = mail.HistoryListParams
+	HistoryListResult    = mail.HistoryListResult
+	HistoryRecord        = mail.HistoryRecord
+	HistoryMessage       = mail.HistoryMessage
+	HistoryMessageChange = mail.HistoryMessageChange
+)
+
+// HistoryList fetches Gmail mailbox changes since the given history checkpoint.
+// Only valid when the connector is initialized for the Gmail module.
+func (c *Connector) HistoryList(
+	ctx context.Context, params HistoryListParams,
+) (*HistoryListResult, error) {
+	if c.Mail == nil {
+		return nil, common.ErrNotImplemented
+	}
+
+	return c.Mail.HistoryList(ctx, params)
 }
 
 func (c *Connector) setUnitTestBaseURL(url string) {

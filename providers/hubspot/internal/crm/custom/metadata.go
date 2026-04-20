@@ -16,7 +16,7 @@ import (
 // validation rules (such as regex, ranges, or character limits) can only be
 // configured manually in the HubSpot dashboard and are not exposed through the API.
 //
-// See: https://developers.hubspot.com/docs/api-reference/crm-property-validations-v3/guide
+// See: https://developers.hubspot.com/docs/api-reference/latest/crm/property-validations/guide
 func (a *Adapter) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {

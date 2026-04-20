@@ -146,7 +146,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithAccount),
 			}.Server(),
-			Comparator: comparatorSubsetReadWithAssociations,
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -217,7 +217,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithContacts),
 			}.Server(),
-			Comparator: comparatorSubsetReadWithAssociations,
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{

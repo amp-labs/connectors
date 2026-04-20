@@ -2,8 +2,8 @@
 package common
 
 import (
-	"context"
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,7 +12,9 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 
+	"github.com/amp-labs/amp-common/logger"
 	"github.com/spyzhov/ajson"
 	"golang.org/x/net/html/charset"
 )
@@ -65,7 +67,7 @@ func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header)
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
-	return ParseJSONResponse(res, body)
+	return ParseJSONResponse(ctx, res, body)
 }
 
 // Post makes a POST request to the given URL and returns the response body as a JSON object.
@@ -86,7 +88,7 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
-	return ParseJSONResponse(res, body)
+	return ParseJSONResponse(ctx, res, body)
 }
 
 func (j *JSONHTTPClient) Put(ctx context.Context,
@@ -102,7 +104,7 @@ func (j *JSONHTTPClient) Put(ctx context.Context,
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
-	return ParseJSONResponse(res, body)
+	return ParseJSONResponse(ctx, res, body)
 }
 
 func (j *JSONHTTPClient) Patch(ctx context.Context,
@@ -118,7 +120,7 @@ func (j *JSONHTTPClient) Patch(ctx context.Context,
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
-	return ParseJSONResponse(res, body)
+	return ParseJSONResponse(ctx, res, body)
 }
 
 func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Header) (*JSONHTTPResponse, error) {
@@ -127,11 +129,11 @@ func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Head
 		return nil, j.ErrorPostProcessor.handleError(err)
 	}
 
-	return ParseJSONResponse(res, body)
+	return ParseJSONResponse(ctx, res, body)
 }
 
 // ParseJSONResponse parses the given HTTP response and returns a JSONHTTPResponse.
-func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, error) {
+func ParseJSONResponse(ctx context.Context, res *http.Response, body []byte) (*JSONHTTPResponse, error) {
 	// empty response body should not be parsed as JSON since it will cause ajson to err
 	if len(body) == 0 {
 		// Empty response. Both object and error are returned.
@@ -155,6 +157,11 @@ func ParseJSONResponse(res *http.Response, body []byte) (*JSONHTTPResponse, erro
 	// ISO-8859-1 or other legacy charsets, which corrupts non-ASCII characters
 	// when the raw bytes are treated as UTF-8.
 	body = transcodeToUTF8(body, res.Header.Get("Content-Type"))
+
+	if !utf8.Valid(body) {
+		logger.Get(ctx).Warn("response body contains invalid UTF-8 content",
+			"content-type", res.Header.Get("Content-Type"))
+	}
 
 	// Unmarshall the response body into JSON
 	jsonBody, err := ajson.Unmarshal(body)
