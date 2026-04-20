@@ -2,21 +2,20 @@ package providers
 
 import "net/http"
 
-// MicrosoftWorkspaceDelegation is a twin of the Microsoft provider that
-// authenticates using OAuth2 client credentials with admin-consented
-// application permissions, instead of the per-user Authorization Code grant.
-// It targets the same Microsoft Graph APIs, so the connector implementation
-// in providers/microsoft is reused under a different provider name.
+// MicrosoftClientCredentials is a twin of the Microsoft provider that
+// authenticates using the OAuth2 client credentials grant instead of the
+// per-user Authorization Code grant. It targets the same Microsoft Graph
+// APIs, so the connector implementation in providers/microsoft is reused
+// under a different provider name.
 //
-// Motivation: the Authorization Code flow requires each end user to complete
-// an OAuth consent flow individually. Admin consent lets a tenant admin
-// approve the app once, and the platform can then access any user's data
-// (mail, calendar, contacts) in that tenant via client credentials — no
-// per-user OAuth flows needed.
-const MicrosoftWorkspaceDelegation Provider = "microsoftWorkspaceDelegation"
+// Use cases include admin-consented bulk access (accessing many users'
+// mailboxes/calendars without individual OAuth flows), background services,
+// and any scenario where the app acts as itself rather than on behalf of a
+// signed-in user.
+const MicrosoftClientCredentials Provider = "microsoftClientCredentials"
 
 func init() {
-	SetInfo(MicrosoftWorkspaceDelegation, ProviderInfo{
+	SetInfo(MicrosoftClientCredentials, ProviderInfo{
 		DisplayName: "Microsoft",
 		AuthType:    Oauth2,
 		BaseURL:     "https://graph.microsoft.com",
@@ -49,7 +48,7 @@ func init() {
 					Name:        "workspace",
 					DisplayName: "Tenant ID",
 					Prompt:      "The Azure AD tenant GUID. The customer's admin can find this in Azure portal → Entra ID → Overview → Tenant ID. Admin consent must be granted for this tenant before creating a connection.",
-					DocsURL:     "https://docs.withampersand.com/customer-guides/microsoft-workspace-delegation",
+					DocsURL:     "https://docs.withampersand.com/customer-guides/microsoft-client-credentials",
 				},
 			},
 		},

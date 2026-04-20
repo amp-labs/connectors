@@ -32,14 +32,14 @@ type Connector struct {
 
 // NewConnector creates a new Microsoft connector. It defaults to the Microsoft
 // provider; use NewConnectorForProvider for twin providers (e.g.
-// MicrosoftWorkspaceDelegation) that share the same implementation but differ
+// MicrosoftClientCredentials) that share the same implementation but differ
 // in auth scheme.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return NewConnectorForProvider(providers.Microsoft, params)
 }
 
 // NewConnectorForProvider creates a new Microsoft connector under the given
-// provider name. This allows twin providers like MicrosoftWorkspaceDelegation
+// provider name. This allows twin providers like MicrosoftClientCredentials
 // to reuse the same connector implementation with a different auth
 // configuration.
 func NewConnectorForProvider(provider providers.Provider, params common.ConnectorParams) (*Connector, error) {
