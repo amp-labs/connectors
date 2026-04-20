@@ -22,8 +22,6 @@ func init() {
 		AuthType:    Custom,
 		BaseURL:     "https://www.googleapis.com",
 		CustomOpts: &CustomAuthOpts{
-			// Token acquisition is handled by the server's DynamicHeadersGenerator:
-			// service account JSON → JWT with sub=userEmail → token endpoint → Bearer header.
 			Inputs: []CustomAuthInput{
 				{
 					Name:        "serviceAccountKey",

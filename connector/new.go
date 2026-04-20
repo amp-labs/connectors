@@ -171,6 +171,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.CampaignMonitor:           wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                   wrapper(newCapsuleConnector),
 	providers.Chargebee:                 wrapper(newChargebeeConnector),
+	providers.ChargeOver:                wrapper(newChargeOver),
 	providers.ChiliPiper:                wrapper(newChiliPiperConnector),
 	providers.Chorus:                    wrapper(newChorusConnector),
 	providers.ClariCopilot:              wrapper(newClariCopilotConnector),
