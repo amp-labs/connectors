@@ -174,8 +174,7 @@ type ReadParams struct {
 	//		Note: timing is already handled by Since argument.
 	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
 	//	* Marketo: Comma-separated activityTypeIds for filtering lead activities.
-	//		Note: Only supported when
-	//  reading Lead Activities (not other endpoints).
+	//		Note: Only supported when reading Lead Activities (not other endpoints).
 	//		Example: "1,6,12" (for visitWebpage, fillOutForm, emailClicked)
 	//		Reference: https://developer.adobe.com/marketo-apis/api/mapi/#tag/Activities
 	//  * GetResponse: An ampersand-style filter string that maps directly to GetResponse's
