@@ -158,9 +158,18 @@ func (s Strategy) fetchObjectAssociations( //nolint:cyclop
 
 		for _, assoc := range result.To {
 			for _, t := range assoc.AssociationTypes {
+				metadata := map[string]any{
+					"category": t.Category,
+					"typeId":   t.TypeId,
+				}
+				if t.Label != nil {
+					metadata["label"] = *t.Label
+				}
+
 				assocs = append(assocs, common.Association{
-					ObjectId:        strconv.FormatInt(assoc.ToObjectId, 10),
-					AssociationType: t.String(),
+					ObjectId:                    strconv.FormatInt(assoc.ToObjectId, 10),
+					AssociationType:             t.String(),
+					ProviderAssociationMetadata: metadata,
 				})
 			}
 		}

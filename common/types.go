@@ -174,7 +174,8 @@ type ReadParams struct {
 	//		Note: timing is already handled by Since argument.
 	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
 	//	* Marketo: Comma-separated activityTypeIds for filtering lead activities.
-	//		Note: Only supported when reading Lead Activities (not other endpoints).
+	//		Note: Only supported when
+	//  reading Lead Activities (not other endpoints).
 	//		Example: "1,6,12" (for visitWebpage, fillOutForm, emailClicked)
 	//		Reference: https://developer.adobe.com/marketo-apis/api/mapi/#tag/Activities
 	//  * GetResponse: An ampersand-style filter string that maps directly to GetResponse's
@@ -337,6 +338,9 @@ type Association struct {
 	// AssociationType is the type of association.
 	AssociationType string         `json:"associationType,omitempty"`
 	Raw             map[string]any `json:"raw,omitempty"`
+	// ProviderAssociationMetadata holds provider-specific metadata about the association type.
+	// For HubSpot, this includes category, typeId, and label from the associations API.
+	ProviderAssociationMetadata map[string]any `json:"providerAssociationMetadata,omitempty"`
 }
 
 // WriteResult represents the outcome of a single record write operation.
