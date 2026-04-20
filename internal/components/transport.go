@@ -3,6 +3,7 @@ package components
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
 // Transport
@@ -44,7 +45,7 @@ func NewTransport(
 }
 
 // SetBaseURL should be used for setting up unit tests.
-// To better indicate the intent use SetUnitTestBaseURL.
+// To better indicate the intent use SetUnitTestMockServerBaseURL.
 // Deprecated.
 func (t *Transport) SetBaseURL(newURL string) {
 	t.ProviderContext.providerInfo.BaseURL = newURL
@@ -52,10 +53,23 @@ func (t *Transport) SetBaseURL(newURL string) {
 	t.json.HTTPClient.Base = newURL
 }
 
+// SetUnitTestBaseURL should be used for setting up unit tests.
+// To better handle diverse Module vs Provider BaseURLs use SetUnitTestMockServerBaseURL.
+// Deprecated.
 func (t *Transport) SetUnitTestBaseURL(newURL string) {
 	t.ProviderContext.providerInfo.BaseURL = newURL
 	t.ProviderContext.moduleInfo.BaseURL = newURL
 	t.json.HTTPClient.Base = newURL
+}
+
+// SetUnitTestMockServerBaseURL replaces the URL Origin with mock server URL Origin.
+// This allows to reroute all requests to mock server used in unit tests and preserve all URI parts if any.
+func (t *Transport) SetUnitTestMockServerBaseURL(testServerURL string) {
+	providerURL := t.ProviderContext.providerInfo.BaseURL
+	t.ProviderContext.providerInfo.BaseURL = mockutils.ReplaceURLOrigin(providerURL, testServerURL)
+	moduleURL := t.ProviderContext.moduleInfo.BaseURL
+	t.ProviderContext.moduleInfo.BaseURL = mockutils.ReplaceURLOrigin(moduleURL, testServerURL)
+	t.json.HTTPClient.Base = testServerURL
 }
 
 func (t *Transport) SetErrorHandler(handler common.ErrorHandler) {
