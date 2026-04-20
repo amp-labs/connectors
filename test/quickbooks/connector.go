@@ -38,6 +38,32 @@ func GetQuickBooksConnector(ctx context.Context) *quickbooks.Connector {
 	return conn
 }
 
+func GetQuickBooksSandboxConnector(ctx context.Context) *quickbooks.Connector {
+	filePath := credscanning.LoadPath(providers.QuickbooksSandbox)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
+
+	client, err := common.NewOAuthHTTPClient(ctx,
+		common.WithOAuthClient(http.DefaultClient),
+		common.WithOAuthConfig(getConfig(reader)),
+		common.WithOAuthToken(reader.GetOauthToken()),
+	)
+	if err != nil {
+		utils.Fail(err.Error())
+	}
+
+	conn, err := quickbooks.NewSandboxConnector(common.ConnectorParams{
+		AuthenticatedClient: client,
+		Metadata: map[string]string{
+			"realmId": "9341456591101632", // QuickBooks Sandbox Company ID
+		},
+	})
+	if err != nil {
+		utils.Fail("create quickbooks sandbox connector", "error: ", err)
+	}
+
+	return conn
+}
+
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 	cfg := &oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),

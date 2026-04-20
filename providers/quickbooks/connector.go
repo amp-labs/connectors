@@ -47,6 +47,17 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return conn, nil
 }
 
+func NewSandboxConnector(params common.ConnectorParams) (*Connector, error) {
+	conn, err := components.Initialize(providers.QuickbooksSandbox, params, constructor)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.realmId = params.Metadata["realmId"]
+
+	return conn, nil
+}
+
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
