@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -280,6 +281,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
+	prospectsCustomFields := testutils.DataFromFile(t, "pardot/metadata/prospects-custom-fields.json")
+
+	pardotHeader := http.Header{
+		"Pardot-Business-Unit-Id": []string{"test-business-unit-id"},
+	}
+
 	tests := []testroutines.Metadata{
 		{
 			Name:         "At least one object name must be queried",
@@ -332,6 +339,75 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 							"sentAt":          "sentAt",
 							"listId":          "listId",
 							"salesforceCmsId": "salesforceCmsId",
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successfully describe Prospects object with custom fields",
+			Input: []string{"Prospects"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v5/objects/custom-fields"),
+					mockcond.Header(pardotHeader),
+				},
+				Then: mockserver.Response(http.StatusOK, prospectsCustomFields),
+			}.Server(),
+			Comparator: func(
+				serverURL string, actual, expected *common.ListObjectMetadataResult,
+			) *mockutils.CompareResult {
+				result := mockutils.NewCompareResult()
+				// Usual subset comparison.
+				result.Merge(testroutines.ComparatorSubsetMetadata(serverURL, actual, expected))
+
+				// The "language" field must be excluded from the response.
+				if _, present := actual.Result["prospects"].Fields["language__c"]; present {
+					result.AddDiff("Result['prospects']['language__c'] is present, but expected to be missing")
+				}
+
+				return result
+			},
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"prospects": {
+						DisplayName: "Prospects",
+						Fields: map[string]common.FieldMetadata{
+							"email": {
+								DisplayName:  "email",
+								ValueType:    "string",
+								ProviderType: "String",
+								IsRequired:   nil,
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     nil,
+							},
+							"biography__c": {
+								DisplayName:  "Biography",
+								ValueType:    "string",
+								ProviderType: "text",
+								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(true),
+							},
+							"hobby__c": {
+								DisplayName:  "Hobby",
+								ValueType:    "string",
+								ProviderType: "radio button",
+								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(true),
+							},
+							"age__c": {
+								DisplayName:  "Age",
+								ValueType:    "float",
+								ProviderType: "number",
+								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     goutils.Pointer(false),
+								IsCustom:     goutils.Pointer(true),
+							},
 						},
 					},
 				},

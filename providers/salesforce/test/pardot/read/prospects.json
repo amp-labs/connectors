@@ -1,0 +1,30 @@
+{
+  "nextPageToken": null,
+  "nextPageUrl": null,
+  "values": [
+    {
+      "id": 55389571,
+      "email": "a.alexander@sample.com",
+      "firstName": "Athenasius",
+      "lastName": "Alexander",
+      "biography__c": null,
+      "hobby__c": null
+    },
+    {
+      "id": 55389574,
+      "email": "spidey@test.com",
+      "firstName": "Man",
+      "lastName": "Spider",
+      "biography__c": null,
+      "hobby__c": null
+    },
+    {
+      "id": 64629229,
+      "email": "b.loretta@sample.com",
+      "firstName": "Loretta",
+      "lastName": "Burke",
+      "biography__c": null,
+      "hobby__c": "swimming"
+    }
+  ]
+}
