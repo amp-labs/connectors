@@ -11,6 +11,8 @@ package providers
 // admin authorize a service account once, and the platform can then access
 // any user's data in the domain by impersonating them via JWT assertions —
 // no per-user OAuth flows needed.
+//
+// See https://developers.google.com/identity/protocols/oauth2/service-account#delegatingauthority
 const GoogleWorkspaceDelegation Provider = "googleWorkspaceDelegation"
 
 //nolint:funlen
