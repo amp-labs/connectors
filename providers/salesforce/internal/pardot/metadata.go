@@ -91,6 +91,13 @@ func (a *Adapter) fetchProspectsCustomFields(
 		}
 
 		for _, field := range response.Values {
+			if field.IsArrayField() {
+				// Array fields should not be advertised by ListObjectMetadata.
+				// Underlying endpoint used by Read(Prospects) fails when such fields are used.
+				// Individual, per-record request would work, but would be deemed costly.
+				continue
+			}
+
 			metadata.AddFieldMetadata(field.FieldName(), common.FieldMetadata{
 				DisplayName:  field.DisplayName,
 				ValueType:    field.ValueType(),
@@ -131,10 +138,36 @@ func (v prospectCustomFieldsResponseValue) FieldName() string {
 	return v.FieldID + "__c"
 }
 
+// ValueType returns a mapping of a field type to Ampersand defined field types.
+// https://developer.salesforce.com/docs/marketing/pardot/guide/custom-field-v5.html#required-editable-fields
 func (v prospectCustomFieldsResponseValue) ValueType() common.ValueType {
-	if v.Type == "text" {
+	switch strings.ToLower(v.Type) {
+	case "text", "textarea", "radio button", "dropdown", "hidden", "crm user":
 		return common.ValueTypeString
+	case "multi-select", "checkbox":
+		return common.ValueTypeMultiSelect
+	case "number":
+		return common.ValueTypeFloat
+	case "date":
+		// Salesforce performs validation on a string. It must be properly formatted date.
+		return common.ValueTypeDate
+	default:
+		return common.ValueTypeOther
 	}
+}
 
-	return common.ValueTypeOther
+// IsArrayField reports if the custom field of a prospect holds an array.
+// Alternatively it can be a string, a float.
+//
+// Array custom fields are not supported by Prospect Query endpoint.
+// https://developer.salesforce.com/docs/marketing/pardot/guide/prospect-v5.html#requesting-custom-fields
+func (v prospectCustomFieldsResponseValue) IsArrayField() bool {
+	switch strings.ToLower(v.Type) {
+	case "multi-select":
+		return true
+	case "checkbox":
+		return true
+	default:
+		return false
+	}
 }
