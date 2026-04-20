@@ -47,7 +47,7 @@ func init() {
 				{
 					Name:        "workspace",
 					DisplayName: "Tenant ID",
-					Prompt:      "The Azure AD tenant GUID. The customer's admin can find this in Azure portal → Entra ID → Overview → Tenant ID. Admin consent must be granted for this tenant before creating a connection.",
+					Prompt:      "The Azure AD tenant GUID",
 					DocsURL:     "https://docs.withampersand.com/customer-guides/microsoft-client-credentials",
 				},
 			},
