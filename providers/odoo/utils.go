@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 // relationModel maps ir.model.fields "relation" to a model name, or "" when there is no relation
@@ -30,9 +29,9 @@ func relationModel(v any) string {
 func isCustomFromOdooState(state string) *bool {
 	switch strings.ToLower(strings.TrimSpace(state)) {
 	case "manual":
-		return goutils.Pointer(true)
+		return new(true)
 	case "base":
-		return goutils.Pointer(false)
+		return new(false)
 	default:
 		return nil
 	}

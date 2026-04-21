@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/spyzhov/ajson"
 )
@@ -80,7 +79,7 @@ func TestQueryIntegerOptional(t *testing.T) { // nolint:funlen
 			input: inType{
 				key: "count",
 			},
-			expected: goutils.Pointer[int64](38),
+			expected: new(int64(38)),
 		},
 		{
 			name: "Reaching for nested integer",
@@ -88,7 +87,7 @@ func TestQueryIntegerOptional(t *testing.T) { // nolint:funlen
 				key:  "amount",
 				zoom: []string{"payload", "notes", "body"},
 			},
-			expected: goutils.Pointer[int64](359),
+			expected: new(int64(359)),
 		},
 		{
 			name: "Reaching for nested integer using self reference",
@@ -96,7 +95,7 @@ func TestQueryIntegerOptional(t *testing.T) { // nolint:funlen
 				key:  "", // empty string acts as 'self'
 				zoom: []string{"payload", "notes", "body", "amount"},
 			},
-			expected: goutils.Pointer[int64](359),
+			expected: new(int64(359)),
 		},
 		{
 			name: "Reaching for nested null using self reference",
@@ -300,7 +299,7 @@ func TestQueryStringOptional(t *testing.T) { // nolint:funlen
 			input: inType{
 				key: "text",
 			},
-			expected: goutils.Pointer("Hello World"),
+			expected: new("Hello World"),
 		},
 		{
 			name: "Reaching for nested string",
@@ -308,7 +307,7 @@ func TestQueryStringOptional(t *testing.T) { // nolint:funlen
 				key:  "text",
 				zoom: []string{"payload", "notes", "body"},
 			},
-			expected: goutils.Pointer("Some notes"),
+			expected: new("Some notes"),
 		},
 		{
 			name: "Reaching for nested string using self reference",
@@ -316,7 +315,7 @@ func TestQueryStringOptional(t *testing.T) { // nolint:funlen
 				key:  "", // empty string acts as 'self'
 				zoom: []string{"payload", "notes", "body", "text"},
 			},
-			expected: goutils.Pointer("Some notes"),
+			expected: new("Some notes"),
 		},
 		{
 			name: "Reaching for nested null using self reference",
@@ -513,7 +512,7 @@ func TestQueryBoolOptional(t *testing.T) { // nolint:funlen
 			input: inType{
 				key: "inProgress",
 			},
-			expected: goutils.Pointer(false),
+			expected: new(false),
 		},
 		{
 			name: "Reaching for nested bool",
@@ -521,7 +520,7 @@ func TestQueryBoolOptional(t *testing.T) { // nolint:funlen
 				key:  "purchased",
 				zoom: []string{"payload", "notes", "body"},
 			},
-			expected: goutils.Pointer(true),
+			expected: new(true),
 		},
 		{
 			name: "Reaching for nested bool using self reference",
@@ -529,7 +528,7 @@ func TestQueryBoolOptional(t *testing.T) { // nolint:funlen
 				key:  "", // empty string acts as 'self'
 				zoom: []string{"payload", "notes", "body", "purchased"},
 			},
-			expected: goutils.Pointer(true),
+			expected: new(true),
 		},
 		{
 			name: "Reaching for nested null using self reference",

@@ -79,8 +79,8 @@ func (c *Connector) schemaToFieldsMetadata(schema []*bigquery.FieldSchema) commo
 			DisplayName:  field.Name, // Keep original casing for display
 			ValueType:    bigqueryTypeToValueType(field.Type),
 			ProviderType: string(field.Type),
-			ReadOnly:     boolPtr(false),
-			IsRequired:   boolPtr(field.Required),
+			ReadOnly:     new(false),
+			IsRequired:   new(field.Required),
 		}
 
 		// Handle nested fields (RECORD type)
@@ -91,8 +91,8 @@ func (c *Connector) schemaToFieldsMetadata(schema []*bigquery.FieldSchema) commo
 				DisplayName:  field.Name,
 				ValueType:    common.ValueTypeOther,
 				ProviderType: string(field.Type),
-				ReadOnly:     boolPtr(false),
-				IsRequired:   boolPtr(field.Required),
+				ReadOnly:     new(false),
+				IsRequired:   new(field.Required),
 			}
 		}
 	}

@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/codec"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 var (
@@ -23,7 +22,7 @@ var (
 // decodes it into a concrete BatchInput structure.
 func ParseInput(input any) (*BatchInput, error) {
 	if input == nil {
-		return goutils.Pointer(make(BatchInput, 0)), nil
+		return new(make(BatchInput, 0)), nil
 	}
 
 	return codec.Parse[*BatchInput](input)

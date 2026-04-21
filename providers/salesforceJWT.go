@@ -2,8 +2,6 @@ package providers
 
 import (
 	"net/http"
-
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 // SalesforceJWT is a twin of the Salesforce provider that authenticates using
@@ -84,12 +82,12 @@ func init() {
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
 						Create: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							DefaultRecordLimit: new(100), // nolint:mnd
 							ObjectRecordLimits: nil,
 							Supported:          true,
 						},
 						Update: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							DefaultRecordLimit: new(100), // nolint:mnd
 							ObjectRecordLimits: nil,
 							Supported:          true,
 						},

@@ -10,7 +10,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/go-playground/validator"
 )
 
@@ -587,7 +586,7 @@ func (c *Connector) upsertQuotaOptimizationFields(
 				Description: "THIS IS AUTOMATED FIELD. DO NOT EDIT THIS FIELD. " + //nolint:lll
 					"This field is used to track if the quota optimization is used for the object",
 				StringOptions: &common.StringFieldOptions{
-					DefaultValue: goutils.Pointer("false"),
+					DefaultValue: new("false"),
 				},
 			},
 		}

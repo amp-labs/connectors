@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -23,7 +22,6 @@ func (s scrappedSchemas) SaveData(model scrapper.ModelDocLink, fieldName, fieldT
 	modelDisplayName := displayNameMapping.Get(model.Name)
 	fieldDisplayName := formatDisplay(fieldName)
 
-	isReadOnly := strings.Contains(specialTag, "Read only")
 	fieldValueOptions := filterOutExceptions(implyValueOptions(description))
 	fieldType = formatFieldType(fieldType)
 
@@ -49,7 +47,7 @@ func (s scrappedSchemas) SaveData(model scrapper.ModelDocLink, fieldName, fieldT
 				DisplayName:  fieldDisplayName,
 				ValueType:    getFieldValueType(fieldType, fieldValueOptions),
 				ProviderType: fieldType,
-				ReadOnly:     goutils.Pointer(isReadOnly),
+				ReadOnly:     new(strings.Contains(specialTag, "Read only")),
 				Values:       getFieldValueOptions(fieldValueOptions),
 			},
 		}

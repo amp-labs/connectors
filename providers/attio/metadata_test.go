@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -196,28 +195,28 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "record_id",
 								ValueType:    "string",
 								ProviderType: "text",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"domains": {
 								DisplayName:  "domains",
 								ValueType:    "multiSelect",
 								ProviderType: "domain",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values:       nil,
 							},
 							"name": {
 								DisplayName:  "name",
 								ValueType:    "string",
 								ProviderType: "text",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values:       nil,
 							},
 							"team": {
 								DisplayName:  "team",
 								ValueType:    "multiSelect",
 								ProviderType: "record-reference",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: common.FieldValues{
 									{
 										Value:        "d0be3734-3b4d-4094-9925-9dd906941197",
@@ -229,14 +228,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "created_at",
 								ValueType:    "datetime",
 								ProviderType: "timestamp",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"created_by": {
 								DisplayName:  "created_by",
 								ValueType:    "other",
 								ProviderType: "actor-reference",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 						},
@@ -255,21 +254,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "record_id",
 								ValueType:    "string",
 								ProviderType: "text",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"user_id": {
 								DisplayName:  "user_id",
 								ValueType:    "string",
 								ProviderType: "text",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values:       nil,
 							},
 							"education": {
 								DisplayName:  "education",
 								ValueType:    "multiSelect",
 								ProviderType: "select",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: common.FieldValues{
 									{Value: "UG", DisplayValue: "UG"},
 									{Value: "PG", DisplayValue: "PG"},

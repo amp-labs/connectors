@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/codec"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 // BatchWrite executes a Salesforce composite create or update request.
@@ -153,7 +152,7 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 
 	return &Payload{
 		Records:   items,
-		AllOrNone: goutils.Pointer(params.GetAllOrNone()),
+		AllOrNone: new(params.GetAllOrNone()),
 	}, nil
 }
 
