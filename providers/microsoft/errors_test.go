@@ -3,6 +3,7 @@ package microsoft
 import (
 	"errors"
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -29,18 +30,18 @@ func TestHandleErrorResponse(t *testing.T) { //nolint:funlen
 		wantErrSubstring string
 	}{
 		{
-			name:            "401 with CAE insufficient_claims is retryable",
+			name:            "401 with CAE insufficient_claims is bad-creds (needs re-auth, not retryable)",
 			status:          http.StatusUnauthorized,
 			wwwAuthenticate: `Bearer realm="", authorization_uri="https://login.microsoftonline.com/common/oauth2/authorize", error="insufficient_claims", claims="eyJhY2Nlc3NfdG9rZW4iOnsiYWNycyI6eyJlc3NlbnRpYWwiOnRydWUsInZhbHVlIjoiYzEifX19"`,
 			body:            genericInvalidTokenBody,
-			wantRetryable:   true,
+			wantAccessToken: true,
 		},
 		{
-			name:            "401 with interaction_required is retryable",
+			name:            "401 with interaction_required is bad-creds (needs user interaction, not retryable)",
 			status:          http.StatusUnauthorized,
 			wwwAuthenticate: `Bearer error="interaction_required", error_description="additional auth required"`,
 			body:            genericInvalidTokenBody,
-			wantRetryable:   true,
+			wantAccessToken: true,
 		},
 		{
 			name:             "401 InvalidAuthenticationToken lifetime-expired is retryable",
@@ -126,6 +127,85 @@ func TestHandleErrorResponse(t *testing.T) { //nolint:funlen
 				t.Errorf("expected error to contain %q, got %v", tt.wantErrSubstring, err)
 			}
 		})
+	}
+}
+
+func TestClaimsChallengeErrorExposesStructuredFields(t *testing.T) {
+	t.Parallel()
+
+	reqURL, err := url.Parse("https://graph.microsoft.com/v1.0/users")
+	if err != nil {
+		t.Fatalf("parse url: %v", err)
+	}
+
+	req := &http.Request{
+		Method: http.MethodGet,
+		URL:    reqURL,
+	}
+
+	res := &http.Response{
+		StatusCode: http.StatusUnauthorized,
+		Header:     http.Header{},
+		Request:    req,
+	}
+	res.Header.Set("WWW-Authenticate",
+		`Bearer error="insufficient_claims", claims="eyJhY2Nlc3NfdG9rZW4iOnsiYWNycyI6eyJlc3NlbnRpYWwiOnRydWUsInZhbHVlIjoiYzEifX19"`)
+	res.Header.Set("x-ms-request-id", "e9e89775-0174-4796-8446-a8fc421b3600")
+
+	returned := handleErrorResponse(res, []byte(`{"error":{"code":"InvalidAuthenticationToken","message":"x"}}`))
+
+	// Claim challenges are NOT retryable — retries cannot satisfy the
+	// challenge without user action. They must surface as bad credentials
+	// (common.ErrAccessToken) so the server flips the connection and the
+	// user is prompted to re-auth.
+	if !errors.Is(returned, common.ErrAccessToken) {
+		t.Fatalf("expected errors.Is(err, ErrAccessToken) to be true, got %v", returned)
+	}
+
+	if errors.Is(returned, common.ErrRetryable) {
+		t.Fatalf("claim challenge must not be retryable, but errors.Is(err, ErrRetryable) was true: %v", returned)
+	}
+
+	var chErr *ClaimsChallengeError
+	if !errors.As(returned, &chErr) {
+		t.Fatalf("expected errors.As to populate *ClaimsChallengeError, got %T: %v", returned, returned)
+	}
+
+	if chErr.Reason != "insufficient_claims" {
+		t.Errorf("Reason: got %q, want %q", chErr.Reason, "insufficient_claims")
+	}
+
+	if chErr.RequestMethod != http.MethodGet {
+		t.Errorf("RequestMethod: got %q, want %q", chErr.RequestMethod, http.MethodGet)
+	}
+
+	if chErr.RequestURL != "https://graph.microsoft.com/v1.0/users" {
+		t.Errorf("RequestURL: got %q", chErr.RequestURL)
+	}
+
+	if chErr.MSRequestID != "e9e89775-0174-4796-8446-a8fc421b3600" {
+		t.Errorf("MSRequestID: got %q", chErr.MSRequestID)
+	}
+
+	if !strings.Contains(chErr.WWWAuthenticate, `error="insufficient_claims"`) {
+		t.Errorf("WWWAuthenticate: missing original header content, got %q", chErr.WWWAuthenticate)
+	}
+
+	// Error() should include every diagnostic field so the existing server
+	// logger pattern (logger.Error("...", "error", err)) surfaces them all
+	// without requiring an errors.As block on the server side.
+	msg := chErr.Error()
+	for _, want := range []string{
+		"microsoft claims challenge",
+		"insufficient_claims",
+		http.MethodGet,
+		"https://graph.microsoft.com/v1.0/users",
+		"x-ms-request-id=e9e89775-0174-4796-8446-a8fc421b3600",
+		"www-authenticate=",
+	} {
+		if !strings.Contains(msg, want) {
+			t.Errorf("Error() missing %q\ngot: %s", want, msg)
+		}
 	}
 }
 
