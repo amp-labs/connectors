@@ -111,6 +111,18 @@ func handleErrorResponse(res *http.Response, body []byte) error {
 // asking for a new access token with extra claims, not signalling revoked
 // credentials.
 //
+// References:
+//   - Claims challenges / claims requests / CAE client handling:
+//     https://learn.microsoft.com/en-us/entra/identity-platform/claims-challenge
+//   - Continuous Access Evaluation (overview + resilience guidance):
+//     https://learn.microsoft.com/en-us/entra/identity-platform/app-resilience-continuous-access-evaluation
+//   - CAE in Conditional Access (operator-facing explanation of which events
+//     cause insufficient_claims):
+//     https://learn.microsoft.com/en-us/entra/identity/conditional-access/concept-continuous-access-evaluation
+//   - interaction_required is the OIDC standard "step-up" response, used by
+//     Entra when a Conditional Access policy demands MFA/compliant device/etc.:
+//     https://openid.net/specs/openid-connect-core-1_0.html#AuthError
+//
 // Known limitation: a full CAE implementation would parse the claims="..."
 // parameter out of the header and feed it back into the next token request
 // so the re-issued access token satisfies the challenge. That requires
@@ -151,6 +163,23 @@ func claimsChallengeReason(header string) (string, bool) {
 //
 // In both cases a retry with the same (or a freshly re-minted) token usually
 // succeeds within seconds.
+//
+// References:
+//   - Microsoft Graph error response schema (documents the `error.code` /
+//     `error.message` envelope matched here):
+//     https://learn.microsoft.com/en-us/graph/errors
+//   - InvalidAuthenticationToken in the Graph error code reference:
+//     https://learn.microsoft.com/en-us/graph/errors#code-property
+//   - AAD signing key rollover (explains the JWKS replication race that
+//     produces transient signature/lifetime validation failures on freshly
+//     minted tokens):
+//     https://learn.microsoft.com/en-us/entra/identity-platform/signing-key-rollover
+//   - Entra ID (AAD) error code reference — companion to Graph errors, lists
+//     the AADSTS codes that can accompany InvalidAuthenticationToken:
+//     https://learn.microsoft.com/en-us/entra/identity-platform/reference-error-codes
+//   - JWT `nbf` / `exp` semantics that underlie the "not yet valid" and
+//     "lifetime validation failed" messages (RFC 7519 §4.1.4–4.1.5):
+//     https://www.rfc-editor.org/rfc/rfc7519#section-4.1.4
 //
 // The matcher is intentionally conservative:
 //   - We require Error.Code == "InvalidAuthenticationToken"; a message that
