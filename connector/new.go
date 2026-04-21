@@ -246,7 +246,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Podium:                    wrapper(newPodiumConnector),
 	providers.Pylon:                     wrapper(newPylonConnector),
 	providers.QuickBooks:                wrapper(newQuickbooksConnector),
-  providers.QuickbooksSandbox:         wrapper(newQuickbooksSandboxConnector),
+	providers.QuickbooksSandbox:         wrapper(newQuickbooksSandboxConnector),
 	providers.Recurly:                   wrapper(newRecurlyConnector),
 	providers.RevenueCat:                wrapper(newRevenueCatConnector),
 	providers.RingCentral:               wrapper(newRingCentral),

@@ -76,8 +76,14 @@ func init() {
 				{
 					Name:        "userEmail",
 					DisplayName: "User Email",
-					Prompt:      "The email address of the user whose data this integration will access (e.g. `user@company.com`). The service account will impersonate this user via domain-wide delegation.",
-					DocsURL:     "https://docs.withampersand.com/provider-guides/google-workspace-delegation",
+					Prompt: "The email address of the user whose data this integration will access (e.g. `user@company.com`). " +
+						" The service account will impersonate this user via domain-wide delegation.",
+					DocsURL: "https://docs.withampersand.com/provider-guides/google-workspace-delegation",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleGoogleGmail:    {},
+						ModuleGoogleCalendar: {},
+						ModuleGoogleContacts: {},
+					},
 				},
 			},
 		},
