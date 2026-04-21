@@ -246,6 +246,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Podium:                    wrapper(newPodiumConnector),
 	providers.Pylon:                     wrapper(newPylonConnector),
 	providers.QuickBooks:                wrapper(newQuickbooksConnector),
+  providers.QuickbooksSandbox:         wrapper(newQuickbooksSandboxConnector),
 	providers.Recurly:                   wrapper(newRecurlyConnector),
 	providers.RevenueCat:                wrapper(newRevenueCatConnector),
 	providers.RingCentral:               wrapper(newRingCentral),
@@ -1070,6 +1071,10 @@ func newRingCentral(params common.ConnectorParams) (*ringcentral.Connector, erro
 
 func newQuickbooksConnector(params common.ConnectorParams) (*quickbooks.Connector, error) {
 	return quickbooks.NewConnector(params)
+}
+
+func newQuickbooksSandboxConnector(params common.ConnectorParams) (*quickbooks.Connector, error) {
+	return quickbooks.NewSandboxConnector(params)
 }
 
 func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connector, error) {
