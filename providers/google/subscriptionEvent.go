@@ -33,12 +33,12 @@ const (
 // webhook body and re-emitting the event as a map for RawEvent). Without
 // tags on every field, that re-emit leaks Go field names into the payload.
 type SubscriptionEvent struct {
-	MessageID    string `json:"messageId"              mapstructure:"messageId"`
-	HistoryID    string `json:"historyId"              mapstructure:"historyId"`
-	EmailAddress string `json:"emailAddress"           mapstructure:"emailAddress"`
+	MessageID    string `json:"messageId"    mapstructure:"messageId"`
+	HistoryID    string `json:"historyId"    mapstructure:"historyId"`
+	EmailAddress string `json:"emailAddress" mapstructure:"emailAddress"`
 	// RawName is the Gmail history change category (e.g. "messagesAdded").
-	RawName    string `json:"rawEventName"           mapstructure:"rawEventName"`
-	OccurredAt int64  `json:"occurredAt,omitempty"   mapstructure:"occurredAt"`
+	RawName    string `json:"rawEventName"         mapstructure:"rawEventName"`
+	OccurredAt int64  `json:"occurredAt,omitempty" mapstructure:"occurredAt"`
 }
 
 var _ common.SubscriptionEvent = SubscriptionEvent{}

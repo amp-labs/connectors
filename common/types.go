@@ -337,6 +337,9 @@ type Association struct {
 	// AssociationType is the type of association.
 	AssociationType string         `json:"associationType,omitempty"`
 	Raw             map[string]any `json:"raw,omitempty"`
+	// ProviderAssociationMetadata holds provider-specific metadata about the association type.
+	// For HubSpot, this includes category, typeId, and label from the associations API.
+	ProviderAssociationMetadata map[string]any `json:"providerAssociationMetadata,omitempty"`
 }
 
 // WriteResult represents the outcome of a single record write operation.
