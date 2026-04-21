@@ -111,7 +111,7 @@ func (s Strategy) FillAssociations(
 
 // fetchObjectAssociations returns the associations for the given object names and IDs. It returns
 // a mapping of object IDs to their associations.
-func (s Strategy) fetchObjectAssociations( //nolint:cyclop
+func (s Strategy) fetchObjectAssociations( //nolint:cyclop,funlen,varnamelen
 	ctx context.Context,
 	fromObject string,
 	fromIDs []string,
