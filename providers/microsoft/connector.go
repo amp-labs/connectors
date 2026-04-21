@@ -54,6 +54,11 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
+	// DirectFaultyResponder (vs. the default FaultyResponder) gives the
+	// callback access to the raw *http.Response, including headers.
+	// handleErrorResponse needs WWW-Authenticate to detect CAE / step-up
+	// claim challenges on 401s; see providers/microsoft/errors.go for the
+	// classification logic and known limitations.
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.DirectFaultyResponder{Callback: handleErrorResponse},
 	}.Handle
