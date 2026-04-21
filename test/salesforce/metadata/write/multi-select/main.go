@@ -9,7 +9,6 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
@@ -46,7 +45,7 @@ func main() {
 				StringOptions: &common.StringFieldOptions{
 					Values:           []string{"high", "low"},
 					ValuesRestricted: true,
-					DefaultValue:     goutils.Pointer("low"),
+					DefaultValue:     new("low"),
 				},
 			}},
 		},
@@ -67,7 +66,7 @@ func main() {
 				StringOptions: &common.StringFieldOptions{
 					Values:           []string{"high", "medium", "low"},
 					ValuesRestricted: true,
-					DefaultValue:     goutils.Pointer("low"),
+					DefaultValue:     new("low"),
 				},
 			}},
 		},

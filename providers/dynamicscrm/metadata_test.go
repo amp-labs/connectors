@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -127,70 +126,70 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "New Password Input",
 								ValueType:    "string",
 								ProviderType: "StringType",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values:       nil,
 							},
 							"adx_publicprofilecopy": {
 								DisplayName:  "Public Profile Copy",
 								ValueType:    "string",
 								ProviderType: "MemoType",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values:       nil,
 							},
 							"merged": {
 								DisplayName:  "Merged",
 								ValueType:    "boolean",
 								ProviderType: "BooleanType",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"versionnumber": {
 								DisplayName:  "Version Number",
 								ValueType:    "int",
 								ProviderType: "BigIntType",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"importsequencenumber": {
 								DisplayName:  "Import Sequence Number",
 								ValueType:    "int",
 								ProviderType: "IntegerType",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values:       nil,
 							},
 							"exchangerate": {
 								DisplayName:  "Exchange Rate",
 								ValueType:    "float",
 								ProviderType: "DecimalType",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"annualincome": {
 								DisplayName:  "Annual Income",
 								ValueType:    "float",
 								ProviderType: "MoneyType",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values:       nil,
 							},
 							"birthdate": {
 								DisplayName:  "Birthday",
 								ValueType:    "date",
 								ProviderType: "DateTimeType",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values:       nil,
 							},
 							"createdon": {
 								DisplayName:  "Created On",
 								ValueType:    "datetime",
 								ProviderType: "DateTimeType",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"statecode": {
 								DisplayName:  "Status",
 								ValueType:    "singleSelect",
 								ProviderType: "StateType",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: []common.FieldValue{{
 									Value:        "0",
 									DisplayValue: "Active",
@@ -203,7 +202,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Status Reason",
 								ValueType:    "singleSelect",
 								ProviderType: "StatusType",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: []common.FieldValue{{
 									Value:        "1",
 									DisplayValue: "Active",
@@ -216,7 +215,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Gender",
 								ValueType:    "singleSelect",
 								ProviderType: "PicklistType",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: []common.FieldValue{{
 									Value:        "1",
 									DisplayValue: "Male",
@@ -229,7 +228,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Marital Status",
 								ValueType:    "singleSelect",
 								ProviderType: "PicklistType",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: []common.FieldValue{{
 									Value:        "1",
 									DisplayValue: "Single",
@@ -248,7 +247,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Education",
 								ValueType:    "singleSelect",
 								ProviderType: "PicklistType",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: []common.FieldValue{{
 									Value:        "1",
 									DisplayValue: "Default Value",
@@ -258,21 +257,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "LeadSourceCodeName",
 								ValueType:    "other",
 								ProviderType: "VirtualType",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"_accountid_value": {
 								DisplayName:  "Account",
 								ValueType:    "other",
 								ProviderType: "LookupType",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"_createdby_value": {
 								DisplayName:  "Created By",
 								ValueType:    "other",
 								ProviderType: "LookupType",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 						},

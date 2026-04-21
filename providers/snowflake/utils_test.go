@@ -398,12 +398,12 @@ func TestConvertSQLValue(t *testing.T) {
 func TestBoolPtr(t *testing.T) {
 	t.Parallel()
 
-	truePtr := boolPtr(true)
+	truePtr := new(true)
 	if truePtr == nil || *truePtr != true {
 		t.Errorf("boolPtr(true) = %v, want pointer to true", truePtr)
 	}
 
-	falsePtr := boolPtr(false)
+	falsePtr := new(false)
 	if falsePtr == nil || *falsePtr != false {
 		t.Errorf("boolPtr(false) = %v, want pointer to false", falsePtr)
 	}

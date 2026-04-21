@@ -167,8 +167,3 @@ func (c *Connector) tablePath(table string) string {
 		table,
 	)
 }
-
-// boolPtr returns a pointer to a bool.
-func boolPtr(b bool) *bool {
-	return &b
-}

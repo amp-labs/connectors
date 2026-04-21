@@ -1,6 +1,6 @@
 module github.com/amp-labs/connectors
 
-go 1.25.1
+go 1.26.1
 
 require (
 	cloud.google.com/go/bigquery v1.75.0

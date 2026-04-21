@@ -8,7 +8,6 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -41,7 +40,7 @@ func main() {
 					Unique:      false,
 					Indexed:     false,
 					StringOptions: &common.StringFieldOptions{
-						Length: goutils.Pointer(30),
+						Length: new(30),
 					},
 				},
 				{
@@ -53,8 +52,8 @@ func main() {
 					Unique:      false,
 					Indexed:     false,
 					StringOptions: &common.StringFieldOptions{
-						Length:          goutils.Pointer(444),
-						NumDisplayLines: goutils.Pointer(39),
+						Length:          new(444),
+						NumDisplayLines: new(39),
 					},
 				},
 				{
@@ -66,9 +65,9 @@ func main() {
 					Unique:      false,
 					Indexed:     false,
 					NumericOptions: &common.NumericFieldOptions{
-						DefaultValue: goutils.Pointer(18.0),
-						Precision:    goutils.Pointer(3),
-						Scale:        goutils.Pointer(2),
+						DefaultValue: new(18.0),
+						Precision:    new(3),
+						Scale:        new(2),
 					},
 				},
 				{
@@ -82,7 +81,7 @@ func main() {
 					StringOptions: &common.StringFieldOptions{
 						Values:           []string{"art", "travel", "swimming"},
 						ValuesRestricted: true,
-						DefaultValue:     goutils.Pointer("art"),
+						DefaultValue:     new("art"),
 					},
 				},
 				{
@@ -94,7 +93,7 @@ func main() {
 					Unique:      false,
 					Indexed:     false,
 					StringOptions: &common.StringFieldOptions{
-						DefaultValue: goutils.Pointer("false"),
+						DefaultValue: new("false"),
 					},
 				},
 				{

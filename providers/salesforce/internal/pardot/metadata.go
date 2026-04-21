@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/tools/scrapper"
@@ -74,7 +73,7 @@ func (a *Adapter) fetchProspectsCustomFields(
 
 	url.WithQueryParam("fields", "id,name,fieldId,type,isRequired")
 
-	endpoint := goutils.Pointer(url.String())
+	endpoint := new(url.String())
 
 	for endpoint != nil {
 		resp, err := a.JSONHTTPClient().Get(ctx, *endpoint, common.Header{
@@ -102,8 +101,8 @@ func (a *Adapter) fetchProspectsCustomFields(
 				DisplayName:  field.DisplayName,
 				ValueType:    field.ValueType(),
 				ProviderType: field.Type,
-				ReadOnly:     goutils.Pointer(false), // can write, modify data
-				IsCustom:     goutils.Pointer(true),
+				ReadOnly:     new(false), // can write, modify data
+				IsCustom:     new(true),
 				IsRequired:   field.IsRequired,
 				Values:       nil, // API does not return anything even for radio buttons or dropdowns.
 				ReferenceTo:  nil, // not applicable

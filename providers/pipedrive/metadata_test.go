@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -127,7 +126,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Priority",
 								ValueType:    "singleSelect",
 								ProviderType: "enum",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: common.FieldValues{
 									{
 										Value:        "24",
@@ -189,22 +188,22 @@ func TestListObjectMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Title",
 								ValueType:    common.ValueTypeString,
 								ProviderType: "varchar",
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(true),
+								IsCustom:     new(false),
+								IsRequired:   new(true),
 							},
 							"status": {
 								DisplayName:  "Status",
 								ValueType:    common.ValueTypeOther,
 								ProviderType: "status",
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(true),
+								IsCustom:     new(false),
+								IsRequired:   new(true),
 							},
 							"archive_time": {
 								DisplayName:  "Archive time",
 								ValueType:    common.ValueTypeDate,
 								ProviderType: "date",
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(true),
+								IsCustom:     new(false),
+								IsRequired:   new(true),
 							},
 							"products": {
 								DisplayName: "Products",

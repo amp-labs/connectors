@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/amp-common/jsonpath"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 func mapSageIntacctTypeToValueType(sageType string) common.ValueType {
@@ -113,7 +112,7 @@ func flattenFields(pathParts []string, fields map[string]SageIntacctFieldDef) ma
 			DisplayName:  strings.Join(capitalizedParts, " > "),
 			ValueType:    mapSageIntacctTypeToValueType(fieldDef.Type),
 			ProviderType: fieldDef.Type,
-			ReadOnly:     goutils.Pointer(fieldDef.ReadOnly),
+			ReadOnly:     new(fieldDef.ReadOnly),
 			Values:       mapValuesFromEnum(fieldDef),
 		}
 	}
