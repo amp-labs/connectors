@@ -55,7 +55,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
 	errorHandler := interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+		JSON: interpreter.DirectFaultyResponder{Callback: handleErrorResponse},
 	}.Handle
 
 	connector.Reader = reader.NewHTTPReader(
