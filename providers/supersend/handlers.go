@@ -23,7 +23,7 @@ import (
 // Pagination constants for SuperSend API.
 // SuperSend uses offset-based pagination with limit/offset query parameters.
 // The API returns pagination.has_more to indicate if more records exist.
-// See: https://documenter.getpostman.com/view/19579115/2sA3kSo3FD
+// See: https://docs.supersend.io
 const (
 	defaultPageSize = "100" // Default page size for SuperSend API (max is 100)
 	limitParam      = "limit"
@@ -33,13 +33,13 @@ const (
 	// SuperSend API doesn't support native time-based filtering, so we filter
 	// records client-side using the updatedAt field for incremental sync.
 	// Format: ISO 8601 / RFC3339 (e.g., "2024-01-15T10:00:00.000Z").
-	// See: https://documenter.getpostman.com/view/19579115/2sA3kSo3FD
+	// See: https://docs.supersend.io
 	updatedAtField = "updatedAt"
 )
 
 // writePathConfig defines the write/delete path configuration for each object.
 // SuperSend API uses different paths for read vs write/delete operations.
-// See: https://documenter.getpostman.com/view/19579115/2sA3kSo3FD
+// See: https://docs.supersend.io
 type writePathConfig struct {
 	createPath string // Path for POST (create) - without record ID
 	updatePath string // Path for PUT (update) - record ID will be appended
@@ -231,7 +231,7 @@ func buildNextPageURL(requestURL *url.URL, nextOffset int) (string, error) {
 // buildWriteRequest constructs the HTTP request for write operations.
 // Uses POST for create (no RecordId) and PUT/PATCH for update (with RecordId).
 // SuperSend API uses different paths for write vs read operations.
-// See: https://documenter.getpostman.com/view/19579115/2sA3kSo3FD
+// See: https://docs.supersend.io
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	config, ok := objectWritePaths[params.ObjectName]
 	if !ok {
