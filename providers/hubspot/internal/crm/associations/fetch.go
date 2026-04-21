@@ -111,7 +111,7 @@ func (s Strategy) FillAssociations(
 
 // fetchObjectAssociations returns the associations for the given object names and IDs. It returns
 // a mapping of object IDs to their associations.
-func (s Strategy) fetchObjectAssociations( //nolint:cyclop,funlen,varnamelen
+func (s Strategy) fetchObjectAssociations( //nolint:cyclop,funlen
 	ctx context.Context,
 	fromObject string,
 	fromIDs []string,
@@ -157,18 +157,18 @@ func (s Strategy) fetchObjectAssociations( //nolint:cyclop,funlen,varnamelen
 		var assocs []common.Association
 
 		for _, assoc := range result.To {
-			for _, t := range assoc.AssociationTypes {
+			for _, assocType := range assoc.AssociationTypes {
 				metadata := map[string]any{
-					"category": t.Category,
-					"typeId":   t.TypeId,
+					"category": assocType.Category,
+					"typeId":   assocType.TypeId,
 				}
-				if t.Label != nil {
-					metadata["label"] = *t.Label
+				if assocType.Label != nil {
+					metadata["label"] = *assocType.Label
 				}
 
 				assocs = append(assocs, common.Association{
 					ObjectId:                    strconv.FormatInt(assoc.ToObjectId, 10),
-					AssociationType:             t.String(),
+					AssociationType:             assocType.String(),
 					ProviderAssociationMetadata: metadata,
 				})
 			}
