@@ -171,7 +171,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.CampaignMonitor:            wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                    wrapper(newCapsuleConnector),
 	providers.Chargebee:                  wrapper(newChargebeeConnector),
-	providers.ChargeOver:                 wrapper(newChargeOverConnector),
+	providers.ChargeOver:                 wrapper(newChargeOver),
 	providers.ChiliPiper:                 wrapper(newChiliPiperConnector),
 	providers.Chorus:                     wrapper(newChorusConnector),
 	providers.ClariCopilot:               wrapper(newClariCopilotConnector),
@@ -200,6 +200,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Github:                     wrapper(newGithubConnector),
 	providers.Gong:                       wrapper(newGongConnector),
 	providers.Google:                     wrapper(newGoogleConnector),
+	providers.GoogleWorkspaceDelegation:  wrapper(newGoogleWorkspaceDelegationConnector),
 	providers.Gorgias:                    wrapper(newGorgiasConnector),
 	providers.Granola:                    wrapper(newGranolaConnector),
 	providers.Groove:                     wrapper(newGrooveConnector),
@@ -246,6 +247,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Podium:                     wrapper(newPodiumConnector),
 	providers.Pylon:                      wrapper(newPylonConnector),
 	providers.QuickBooks:                 wrapper(newQuickbooksConnector),
+	providers.QuickbooksSandbox:          wrapper(newQuickbooksSandboxConnector),
 	providers.Recurly:                    wrapper(newRecurlyConnector),
 	providers.RevenueCat:                 wrapper(newRevenueCatConnector),
 	providers.RingCentral:                wrapper(newRingCentral),
@@ -834,6 +836,12 @@ func newGoogleConnector(
 	return google.NewConnector(params)
 }
 
+func newGoogleWorkspaceDelegationConnector(
+	params common.ConnectorParams,
+) (*google.Connector, error) {
+	return google.NewConnectorForProvider(providers.GoogleWorkspaceDelegation, params)
+}
+
 func newLeverConnector(
 	params common.ConnectorParams,
 ) (*lever.Connector, error) {
@@ -1072,6 +1080,10 @@ func newQuickbooksConnector(params common.ConnectorParams) (*quickbooks.Connecto
 	return quickbooks.NewConnector(params)
 }
 
+func newQuickbooksSandboxConnector(params common.ConnectorParams) (*quickbooks.Connector, error) {
+	return quickbooks.NewSandboxConnector(params)
+}
+
 func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connector, error) {
 	return dropboxsign.NewConnector(params)
 }
@@ -1112,6 +1124,6 @@ func newFourFourConnector(params common.ConnectorParams) (*fourfour.Connector, e
 	return fourfour.NewConnector(params)
 }
 
-func newChargeOverConnector(params common.ConnectorParams) (*chargeover.Connector, error) {
+func newChargeOver(params common.ConnectorParams) (*chargeover.Connector, error) {
 	return chargeover.NewConnector(params)
 }
