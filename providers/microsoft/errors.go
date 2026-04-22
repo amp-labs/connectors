@@ -59,9 +59,10 @@ func (r ResponseMessageError) CombineErr(base error) error {
 // defaultJSONResponder handles any response whose error classification is
 // unambiguous from the HTTP status code alone. It combines the standard
 // status-code mapping (401 -> ErrAccessToken, 403 -> ErrForbidden, 5xx ->
-// ErrServer, etc.) with the Microsoft error-body parser above. handleErrorResponse
-// delegates to this responder for every status except 401, where the extra
-// inspection below is required.
+// ErrServer, etc.) with the Microsoft error-body parser above.
+// handleErrorResponse delegates to this responder for all non-401 responses,
+// and for 401s that don't match either the transient-marker case or the
+// claim-challenge case — i.e. anything that really is an invalid token.
 var defaultJSONResponder = interpreter.NewFaultyResponder(errorFormats, nil) //nolint:gochecknoglobals
 
 // handleErrorResponse classifies Microsoft error responses and is the single
