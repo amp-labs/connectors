@@ -176,7 +176,7 @@ func init() { // nolint:funlen
 					Prompt: "If you are using External Client Apps (instead of Connected Apps) to connect your " +
 						"Salesforce account, enter the package install URL that the UI library should show to " +
 						"your users to install your Salesforce managed package.",
-					DocsURL: "https://docs.withampersand.com/provider-guides/salesforce#6-package-the-external-client-app",
+					DocsURL: "https://docs.withampersand.com/provider-guides/salesforce#6-build-the-package-install-url",
 				},
 			},
 		},
