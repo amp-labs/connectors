@@ -261,8 +261,8 @@ func transientAuthErrorMessage(body []byte) (string, bool) {
 //
 // Example server-side use:
 //
-//	var chErr *microsoft.ClaimsChallengeError
-//	if errors.As(err, &chErr) {
+//	chErr, ok := errors.AsType[*microsoft.ClaimsChallengeError](err)
+//	if ok {
 //	    logger.Warn("microsoft claims challenge",
 //	        "reason", chErr.Reason,
 //	        "url", chErr.RequestURL,
