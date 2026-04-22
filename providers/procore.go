@@ -19,6 +19,7 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 		},
+
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
@@ -31,6 +32,17 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "company",
+					DisplayName: "Company ID",
+					DocsURL:     "https://procore.github.io/documentation/tutorial-mpz", //nolint
+				},
+			},
+		},
+
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/q_auto/f_auto/v1776428797/Image_1776428788_0_hanjjk.png",                //nolint: lll
@@ -66,6 +78,17 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "company",
+					DisplayName: "Company ID",
+					DocsURL:     "https://procore.github.io/documentation/tutorial-mpz", //nolint
+				},
+			},
+		},
+
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/q_auto/f_auto/v1776428797/Image_1776428788_0_hanjjk.png",                //nolint: lll
