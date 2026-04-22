@@ -142,6 +142,9 @@ var (
 	// This can be used when the provider returns a 200 OK status,
 	// but the body of the response indicates an error or is missing expected fields.
 	ErrBadProviderResponse = errors.New("bad response from provider")
+
+	// ErrProxyNotApplicable indicates that a proxy cannot be used in the given context.
+	ErrProxyNotApplicable = errors.New("proxy is not applicable in this context")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
