@@ -1,6 +1,7 @@
 package housecallpro
 
 import (
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/deleter"
@@ -20,6 +21,11 @@ type Connector struct {
 	components.Deleter
 	common.RequireAuthenticatedClient
 }
+
+var (
+	_ connectors.WebhookVerifierConnector   = (*Connector)(nil)
+	_ connectors.BatchRecordReaderConnector = (*Connector)(nil)
+)
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return components.Initialize(providers.HousecallPro, params, constructor)

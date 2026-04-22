@@ -27,6 +27,12 @@ type Connector struct {
 	moduleInfo   *providers.ModuleInfo
 	moduleID     common.ModuleID
 
+	// provider is the provider name this connector reports. It allows the
+	// same implementation to serve twin providers (e.g. salesforceJWT) that
+	// share the underlying Salesforce APIs but differ in auth scheme.
+	// Defaults to providers.Salesforce.
+	provider providers.Provider
+
 	// crmAdapter handles the core Salesforce CRM module.
 	// It provides dedicated support for SalesforceCRM-specific functionality.
 	crmAdapter *crm.Adapter
@@ -34,6 +40,11 @@ type Connector struct {
 	// pardotAdapter handles the Salesforce Account Engagement (Pardot) module.
 	// It provides dedicated support for Pardot-specific endpoints and metadata.
 	pardotAdapter *pardot.Adapter
+
+	// timestampColumn overrides the default "SystemModstamp" field used in
+	// incremental read queries (Since/Until WHERE clauses). When empty,
+	// "SystemModstamp" is used.
+	timestampColumn string
 }
 
 // NewConnector returns a new Salesforce connector.
@@ -45,10 +56,17 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		return nil, err
 	}
 
+	// Default the provider to Salesforce when not explicitly overridden.
+	if params.provider == "" {
+		params.provider = providers.Salesforce
+	}
+
 	conn, err := oldConstructor(params)
 	if err != nil {
 		return nil, err
 	}
+
+	conn.timestampColumn = params.timestampColumn
 
 	connectorParams, err := newParams(opts)
 	if err != nil {
@@ -60,12 +78,12 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	// Operations are delegated to either one.
 	moduleID := params.Module.Selection.ID
 	if isPardotModule(moduleID) {
-		conn.pardotAdapter, err = pardot.NewAdapter(connectorParams)
+		conn.pardotAdapter, err = pardot.NewAdapter(connectorParams, conn.provider)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		conn.crmAdapter, err = crm.NewAdapter(connectorParams)
+		conn.crmAdapter, err = crm.NewAdapter(connectorParams, conn.provider)
 		if err != nil {
 			return nil, err
 		}
@@ -81,6 +99,7 @@ func oldConstructor(params *parameters) (*Connector, error) {
 			HTTPClient: params.Client.Caller,
 		},
 		moduleID: params.Module.Selection.ID,
+		provider: params.provider,
 	}
 
 	var err error
@@ -101,9 +120,15 @@ func oldConstructor(params *parameters) (*Connector, error) {
 	return conn, nil
 }
 
-// Provider returns the connector provider.
+// Provider returns the connector provider. For twin providers such as
+// salesforceJWT that reuse this implementation with a different auth scheme,
+// this returns the configured provider name (defaulting to providers.Salesforce).
 func (c *Connector) Provider() providers.Provider {
-	return providers.Salesforce
+	if c.provider == "" {
+		return providers.Salesforce
+	}
+
+	return c.provider
 }
 
 // String returns a string representation of the connector, which is useful for logging / debugging.
@@ -144,6 +169,17 @@ func (c *Connector) getModuleURL() string {
 
 func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(crmcore.URISobjects, objectName, "describe")
+}
+
+const defaultTimestampColumn = "SystemModstamp"
+
+// getTimestampColumn returns the field name used for incremental read queries.
+func (c *Connector) getTimestampColumn() string {
+	if c.timestampColumn != "" {
+		return c.timestampColumn
+	}
+
+	return defaultTimestampColumn
 }
 
 func (c *Connector) isPardotModule() bool {

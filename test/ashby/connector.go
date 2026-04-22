@@ -25,7 +25,7 @@ func GetAshbyConnector(ctx context.Context) *ashby.Connector {
 		},
 	)
 	if err != nil {
-		testUtils.Fail("error creating ashby connector", "error", err)
+		testUtils.Fail("error creating chargeover connector", "error", err)
 	}
 
 	return conn

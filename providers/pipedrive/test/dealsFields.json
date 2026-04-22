@@ -1,0 +1,52 @@
+{
+  "success": true,
+  "data": [
+    {
+      "field_name": "Title",
+      "field_code": "title",
+      "field_type": "varchar",
+      "options": null,
+      "subfields": null,
+      "is_custom_field": false,
+      "is_optional_response_field": false
+    },
+    {
+      "field_name": "Status",
+      "field_code": "status",
+      "field_type": "status",
+      "options": [
+        {
+          "id": "open",
+          "label": "Open"
+        },
+        {
+          "id": "lost",
+          "label": "Lost"
+        },
+        {
+          "id": "won",
+          "label": "Won"
+        },
+        {
+          "id": "deleted",
+          "label": "Deleted"
+        }
+      ],
+      "subfields": null,
+      "is_custom_field": false,
+      "is_optional_response_field": false
+    },
+    {
+      "field_name": "Archive time",
+      "field_code": "archive_time",
+      "field_type": "date",
+      "options": null,
+      "subfields": null,
+      "is_custom_field": false,
+      "is_optional_response_field": false
+    }
+  ],
+  "additional_data": {
+    "next_cursor": null
+  }
+}

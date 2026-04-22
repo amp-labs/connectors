@@ -46,17 +46,19 @@ func main() {
 	ctx = common.WithAuthToken(ctx, connTest.GetSalesforceAccessToken())
 
 	objectName := "Lead"
-	triggerName := salesforce.GenerateApexTriggerName(objectName)
+	triggerName, err := salesforce.GenerateApexTriggerNameForCDC(objectName)
+	if err != nil {
+		utils.Fail("failed to generate apex trigger name", "error", err)
+	}
 
 	// Deploy the apex trigger.
 	fmt.Println("====== Deploying Apex Trigger ======")
 
-	zipData, err := salesforce.ConstructApexTriggerZip(salesforce.ApexTriggerParams{
-		ObjectName:        objectName,
-		TriggerName:       triggerName,
-		CheckboxFieldName: *checkboxField,
-		WatchFields:       []string{"Email", "Phone"},
-	})
+	zipData, err := salesforce.ConstructApexTriggerZipForCDC(salesforce.ApexTriggerParams{
+		ObjectName:  objectName,
+		TriggerName: triggerName,
+		WatchFields: []string{"Email", "Phone"},
+	}, *checkboxField)
 	if err != nil {
 		utils.Fail("failed to construct apex trigger zip", "error", err)
 	}

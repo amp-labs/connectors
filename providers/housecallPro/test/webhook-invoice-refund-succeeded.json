@@ -1,0 +1,79 @@
+{
+  "event": "invoice.refund.succeeded",
+  "event_occurred_at": "2026-04-03T13:48:22Z",
+  "company_id": "7141dca7-882d-427b-a9c0-0ba0d74c85cf",
+  "invoice": {
+    "id": "invoice_5f3de0f1d9e1483f9a4e4be0c7a44f0b",
+    "status": "paid",
+    "invoice_number": "INV-1042",
+    "amount": 12450,
+    "subtotal": 11800,
+    "due_amount": 0,
+    "due_at": "2026-04-10T23:59:59Z",
+    "display_due_concept": "Net 7",
+    "due_concept": "net_7",
+    "paid_at": "2026-04-03T13:10:02Z",
+    "sent_at": "2026-04-03T12:00:00Z",
+    "service_date": "2026-04-03",
+    "invoice_date": "2026-04-03",
+    "items": [
+      {
+        "name": "Outdoor condenser coil cleaning",
+        "unit_cost": 3800,
+        "unit_price": 5900,
+        "qty_in_hundredths": 100,
+        "amount": 5900,
+        "type": "labor"
+      },
+      {
+        "name": "Capacitor replacement (45/5 mfd)",
+        "unit_cost": 1900,
+        "unit_price": 2900,
+        "qty_in_hundredths": 100,
+        "amount": 2900,
+        "type": "material"
+      },
+      {
+        "name": "Service call fee",
+        "unit_cost": 0,
+        "unit_price": 3000,
+        "qty_in_hundredths": 100,
+        "amount": 3000,
+        "type": "labor"
+      }
+    ],
+    "taxes": [
+      {
+        "rate": 5.5,
+        "amount": 650,
+        "name": "State Sales Tax"
+      }
+    ],
+    "discounts": [
+      {
+        "amount": 1500,
+        "name": "Loyalty Credit",
+        "description": "Returning customer spring promo"
+      }
+    ],
+    "payments": [
+      {
+        "status": "succeeded",
+        "payment_method": "card",
+        "amount": 12450,
+        "note": "Visa ending 4242",
+        "paid_at": "2026-04-03T13:10:02Z",
+        "category": "customer_payment"
+      },
+      {
+        "status": "succeeded",
+        "payment_method": "card_refund",
+        "amount": -3000,
+        "note": "Partial refund for overcharge",
+        "paid_at": "2026-04-03T13:48:22Z",
+        "category": "refund"
+      }
+    ],
+    "job_id": "job_ac6f3efd11c14a5aa93e9fc0ab5354ab"
+  }
+}

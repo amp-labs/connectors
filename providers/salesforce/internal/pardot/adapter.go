@@ -31,8 +31,11 @@ type Adapter struct {
 }
 
 // NewAdapter creates a new pardot Adapter configured to work with Salesforce's Account Management APIs.
-func NewAdapter(params *common.ConnectorParams) (*Adapter, error) {
-	adapter, err := components.Initialize(providers.Salesforce, *params, constructor)
+// The provider argument allows twin providers (e.g. salesforceJWT) to reuse this
+// adapter under a different provider name. Pass providers.Salesforce for the
+// default Salesforce connector.
+func NewAdapter(params *common.ConnectorParams, provider providers.Provider) (*Adapter, error) {
+	adapter, err := components.Initialize(provider, *params, constructor)
 	if err != nil {
 		return nil, err
 	}

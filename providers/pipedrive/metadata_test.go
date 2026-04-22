@@ -162,6 +162,82 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	}
 }
 
+func TestListObjectMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	dealsFields := testutils.DataFromFile(t, "dealsFields.json")
+
+	tests := []testroutines.Metadata{
+		{
+			Name:  "A success API Response for Deals",
+			Input: []string{"deals"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/v2/dealFields"),
+				},
+				Then: mockserver.Response(http.StatusOK, dealsFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"deals": {
+						DisplayName: "Deals",
+						Fields: map[string]common.FieldMetadata{
+							"title": {
+								DisplayName:  "Title",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "varchar",
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(true),
+							},
+							"status": {
+								DisplayName:  "Status",
+								ValueType:    common.ValueTypeOther,
+								ProviderType: "status",
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(true),
+							},
+							"archive_time": {
+								DisplayName:  "Archive time",
+								ValueType:    common.ValueTypeDate,
+								ProviderType: "date",
+								IsCustom:     goutils.Pointer(false),
+								IsRequired:   goutils.Pointer(true),
+							},
+							"products": {
+								DisplayName: "Products",
+								ValueType:   common.ValueTypeOther,
+								ReferenceTo: []string{"products"},
+							},
+						},
+						FieldsMap: map[string]string{
+							"title":        "Title",
+							"status":       "Status",
+							"archive_time": "Archive time",
+							"products":     "Products",
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveCRM)
+			})
+		})
+	}
+}
+
 func constructTestConnector(serverURL string, moduleID common.ModuleID) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
