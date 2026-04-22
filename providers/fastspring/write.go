@@ -200,7 +200,7 @@ func extractWriteRecordID(params common.WriteParams, body *ajson.Node) (recordID
 	}
 }
 
-func extractAccountWriteRecordID(body *ajson.Node) (string, bool) {
+func extractAccountWriteRecordID(body *ajson.Node) (recordID string, ambiguousMultiple bool) {
 	if id, err := jsonquery.New(body).TextWithDefault("id", ""); err == nil && id != "" {
 		return id, false
 	}
@@ -212,7 +212,7 @@ func extractAccountWriteRecordID(body *ajson.Node) (string, bool) {
 	return "", false
 }
 
-func firstArrayElementTextField(body *ajson.Node, arrayKey, fieldKey string) (string, bool) {
+func firstArrayElementTextField(body *ajson.Node, arrayKey, fieldKey string) (recordID string, ambiguousMultiple bool) {
 	arr, err := jsonquery.New(body).ArrayOptional(arrayKey)
 	if err != nil || len(arr) == 0 {
 		return "", false
@@ -230,15 +230,15 @@ func firstArrayElementTextField(body *ajson.Node, arrayKey, fieldKey string) (st
 	return id, false
 }
 
-func extractProductWriteRecordID(body *ajson.Node) (string, bool) {
+func extractProductWriteRecordID(body *ajson.Node) (recordID string, ambiguousMultiple bool) {
 	return firstArrayElementTextField(body, "products", "product")
 }
 
-func extractOrderWriteRecordID(body *ajson.Node) (string, bool) {
+func extractOrderWriteRecordID(body *ajson.Node) (recordID string, ambiguousMultiple bool) {
 	return firstArrayElementTextField(body, "orders", "order")
 }
 
-func extractSubscriptionWriteRecordID(body *ajson.Node) (string, bool) {
+func extractSubscriptionWriteRecordID(body *ajson.Node) (recordID string, ambiguousMultiple bool) {
 	if id, err := jsonquery.New(body).TextWithDefault("subscription", ""); err == nil && id != "" {
 		return id, false
 	}
