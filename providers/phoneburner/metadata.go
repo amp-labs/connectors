@@ -7,7 +7,6 @@ import (
 	"slices"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	pbmetadata "github.com/amp-labs/connectors/providers/phoneburner/metadata"
 )
 
@@ -53,11 +52,13 @@ func (c *Connector) ListObjectMetadata(
 		}
 
 		key := customFieldMetadataKey(def.DisplayName)
+		isCustom := true
+
 		objectMetadata.Fields[key] = common.FieldMetadata{
 			DisplayName:  def.DisplayName,
 			ValueType:    memberCustomFieldTypeToValueType(def.TypeID),
 			ProviderType: def.TypeName,
-			IsCustom:     goutils.Pointer(true),
+			IsCustom:     &isCustom,
 		}
 	}
 

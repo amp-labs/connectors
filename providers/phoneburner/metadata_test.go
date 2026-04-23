@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -16,6 +15,8 @@ import (
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
+
+	isCustomField := true
 
 	responseCustomfieldsDefinitions := testutils.DataFromFile(t, "read/customfields-definitions.json")
 
@@ -149,7 +150,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Lead Score",
 								ValueType:    "float",
 								ProviderType: "Numeric",
-								IsCustom:     goutils.Pointer(true),
+								IsCustom:     &isCustomField,
 							},
 						},
 					},
