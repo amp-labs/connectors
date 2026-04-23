@@ -170,9 +170,10 @@ func flattenContactCustomFieldsInMap(record map[string]any) map[string]any {
 	return record
 }
 
-// getMarshaledDataContactsWithCustomFieldsPreservingRaw flattens custom field values into
-// ReadResultRow.Fields while leaving ReadResultRow.Raw as the provider payload (Slab:
-// "ReadResultRow.Raw should not be modified").
+// getMarshaledDataContactsWithCustomFieldsPreservingRaw builds each ReadResultRow from two separate
+// shallow copies of the contact map (same intent as copper's MakeMarshaledDataFunc(attachReadCustomFields)):
+// one copy is the provider payload for Raw; the other is flattened in place for Fields. Extracted
+// records in the passed-in slice are not mutated, so Raw and Fields never share the same map.
 func getMarshaledDataContactsWithCustomFieldsPreservingRaw(
 	records []map[string]any, fields []string,
 ) ([]common.ReadResultRow, error) {
@@ -182,12 +183,13 @@ func getMarshaledDataContactsWithCustomFieldsPreservingRaw(
 
 	//nolint:varnamelen
 	for i, record := range records {
-		rawSnapshot := maps.Clone(record)
-		flattenContactCustomFieldsInMap(record)
+		raw := maps.Clone(record)
+		working := maps.Clone(record)
+		flattenContactCustomFieldsInMap(working)
 
 		data[i] = common.ReadResultRow{
-			Fields: common.ExtractLowercaseFieldsFromRaw(fields, record),
-			Raw:    rawSnapshot,
+			Fields: common.ExtractLowercaseFieldsFromRaw(fields, working),
+			Raw:    raw,
 		}
 
 		var id string
