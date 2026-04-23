@@ -133,8 +133,9 @@ func parseMemberCustomFieldDefinitionsPage(body *ajson.Node) ([]memberCustomFiel
 	return out, int(totalPages), nil
 }
 
-// flattenContactCustomFieldsInMap promotes each contacts GET "custom_fields" entry to a top-level key
-// using the same naming as ListObjectMetadata (see customFieldMetadataKey; "name" matches display_name).
+// flattenContactCustomFieldsInMap is only for the working copy used to build ReadResultRow.Fields.
+// It must never run on the map used for ReadResultRow.Raw: Raw stays the API shape with nested
+// "custom_fields" only; we do not put merged custom_* top-level keys on Raw.
 func flattenContactCustomFieldsInMap(record map[string]any) map[string]any {
 	raw, ok := record["custom_fields"]
 	if !ok || raw == nil {
@@ -172,8 +173,10 @@ func flattenContactCustomFieldsInMap(record map[string]any) map[string]any {
 
 // getMarshaledDataContactsWithCustomFieldsPreservingRaw builds each ReadResultRow from two separate
 // shallow copies of the contact map (same intent as copper's MakeMarshaledDataFunc(attachReadCustomFields)):
-// one copy is the provider payload for Raw; the other is flattened in place for Fields. Extracted
-// records in the passed-in slice are not mutated, so Raw and Fields never share the same map.
+// Raw is a clone of the row as returned by the provider (including "custom_fields" array only).
+// Fields are derived from a second clone that flattenContactCustomFieldsInMap mutates, promoting
+// custom values to top-level keys for ExtractLowercaseFieldsFromRaw. Merged custom keys exist only
+// in Fields, not in Raw, and the extracted []map from the response body is not mutated in place.
 func getMarshaledDataContactsWithCustomFieldsPreservingRaw(
 	records []map[string]any, fields []string,
 ) ([]common.ReadResultRow, error) {
