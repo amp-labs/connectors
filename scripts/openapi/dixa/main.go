@@ -35,8 +35,10 @@ var (
 func main() {
 	explorer, err := FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
+			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
 		),
+		api3.WithVersionPrefix("/v1/"),
 		api3.WithMediaType("application/json"),
 	)
 	goutils.MustBeNil(err)
