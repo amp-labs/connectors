@@ -10,11 +10,13 @@ const (
 	ModuleClioManage common.ModuleID = "manage"
 )
 
+const clioRegionTemplate = "{{if and .region (ne .region \"us\") (ne .region \"US\")}}{{.region}}.{{end}}"
+
 func init() { //nolint:funlen
 	SetInfo(Clio, ProviderInfo{
 		DisplayName: "Clio",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{if and .region (ne .region \"us\") (ne .region \"US\")}}{{.region}}.{{end}}{{.workspace}}",
+		BaseURL:     "https://" + clioRegionTemplate + "{{.workspace}}",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType: AuthorizationCode,
 			// Integrations with Clio products are local to the regional instance.
@@ -32,10 +34,10 @@ func init() { //nolint:funlen
 			// treat it as empty (no prefix).
 			//
 			// Manage OAuth uses the app host; Platform OAuth uses auth.api.clio.com (not api.clio.com).
-			AuthURL: "https://{{if and .region (ne .region \"us\") (ne .region \"US\")}}{{.region}}.{{end}}" +
+			AuthURL: "https://" + clioRegionTemplate +
 				"{{if eq .workspace \"api.clio.com\"}}auth.api.clio.com{{else}}{{.workspace}}{{end}}" +
 				"/oauth/authorize",
-			TokenURL: "https://{{if and .region (ne .region \"us\") (ne .region \"US\")}}{{.region}}.{{end}}" +
+			TokenURL: "https://" + clioRegionTemplate +
 				"{{if eq .workspace \"api.clio.com\"}}auth.api.clio.com{{else}}{{.workspace}}{{end}}" +
 				"/oauth/token",
 			ExplicitScopesRequired:    false,
@@ -75,7 +77,7 @@ func init() { //nolint:funlen
 		DefaultModule: ModuleClioManage,
 		Modules: &Modules{
 			ModuleClioGrow: {
-				BaseURL:     "https://{{if and .region (ne .region \"us\") (ne .region \"US\")}}{{.region}}.{{end}}api.clio.com",
+				BaseURL:     "https://" + clioRegionTemplate + "api.clio.com",
 				DisplayName: "Clio Grow",
 				Support: Support{
 					BulkWrite: BulkWriteSupport{
@@ -91,7 +93,7 @@ func init() { //nolint:funlen
 				},
 			},
 			ModuleClioManage: {
-				BaseURL:     "https://{{if and .region (ne .region \"us\") (ne .region \"US\")}}{{.region}}.{{end}}app.clio.com",
+				BaseURL:     "https://" + clioRegionTemplate + "app.clio.com",
 				DisplayName: "Clio Manage",
 				Support: Support{
 					BulkWrite: BulkWriteSupport{
@@ -127,7 +129,7 @@ func init() { //nolint:funlen
 					DefaultValue: "app.clio.com",
 					DocsURL: "https://docs.developers.clio.com/handbook/getting-started/" +
 						"regions",
-					Prompt: "Clio Manage: app.clio.com. Clio Grow: api.clio.com.",
+					Prompt: "Clio Manage: \"app.clio.com\". Clio Grow: \"api.clio.com\".",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleClioGrow:   ModuleDependency{},
 						ModuleClioManage: ModuleDependency{},
