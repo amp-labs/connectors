@@ -25,10 +25,10 @@ func NewConnector(ctx context.Context) (*procore.Connector, error) {
 		utils.Fail("error creating connector", "error", err)
 	}
 
-	return procore.NewConnector(common.ConnectorParams{
+	return procore.NewSandboxConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 		Metadata: map[string]string{
-			"company": "12345",
+			"company": "4283186",
 		},
 	})
 }

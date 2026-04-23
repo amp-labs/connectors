@@ -23,13 +23,37 @@ type Connector struct {
 	companyId string
 }
 
+const metadataKeyCompany = "company"
+
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	// Create base connector with provider info
-	return components.Initialize(providers.Procore, params, constructor)
+	conn, err := components.Initialize(providers.Procore, params, constructor)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.companyId = params.Metadata[metadataKeyCompany]
+
+	return conn, nil
+}
+
+func NewSandboxConnector(params common.ConnectorParams) (*Connector, error) {
+	conn, err := components.Initialize(providers.ProcoreSandbox, params, constructor)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.companyId = params.Metadata[metadataKeyCompany]
+
+	return conn, nil
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
+	connector := &Connector{
+		Connector: base,
+		RequireMetadata: common.RequireMetadata{
+			ExpectedMetadataKeys: []string{metadataKeyCompany},
+		},
+	}
 
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(

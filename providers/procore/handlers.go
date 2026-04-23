@@ -2,6 +2,7 @@ package procore
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -11,19 +12,28 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-const (
-	apiVersion = "v2"
-	apiPath    = "metadata"
+var (
+	ErrMissingCompanyID = errors.New("company metadata is required for this object")
+	ErrInvalidObject    = errors.New("object name cannot be empty")
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, "api", apiVersion, apiPath, objectName)
+	fullObjectEndpoint := resolveAPIPath(objectName, c.companyId)
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, fullObjectEndpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Procore-Company-Id", c.companyId)
+
+	return req, nil
 }
 
 func (c *Connector) parseSingleObjectMetadataResponse(
@@ -37,22 +47,13 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
-	res, err := common.UnmarshalJSON[map[string]any](response)
+	records, err := extractRecords(response)
 	if err != nil {
-		return nil, common.ErrFailedToUnmarshalBody
-	}
-
-	if res == nil || len(*res) == 0 {
-		return nil, common.ErrMissingExpectedValues
-	}
-
-	records, exist := (*res)["data"].([]any)
-	if !exist {
-		return nil, fmt.Errorf("expected 'data' field not found in response")
+		return nil, err
 	}
 
 	if len(records) == 0 {
-		return nil, fmt.Errorf("%w: could not find a record to sample fields from", common.ErrMissingExpectedValues)
+		return nil, common.ErrMissingExpectedValues
 	}
 
 	firstRecord, ok := records[0].(map[string]any)
@@ -69,6 +70,27 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	return &objectMetadata, nil
+}
+
+// extractRecords returns the list of records from a Procore response.
+// Procore returns either a bare array or an object with the array under a "data" key.
+func extractRecords(response *common.JSONHTTPResponse) ([]any, error) {
+	arr, err := common.UnmarshalJSON[[]any](response)
+	if err == nil {
+		return *arr, nil
+	}
+
+	obj, err := common.UnmarshalJSON[map[string]any](response)
+	if err != nil || obj == nil {
+		return nil, common.ErrFailedToUnmarshalBody
+	}
+
+	data, ok := (*obj)["data"].([]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: response object missing array under \"data\" key", common.ErrMissingExpectedValues)
+	}
+
+	return data, nil
 }
 
 func analyzeValue(value any) common.ValueType {
