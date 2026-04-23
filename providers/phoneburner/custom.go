@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"maps"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -15,11 +14,9 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// customFieldKeyPrefix avoids collisions between PhoneBurner custom field display names
-// and built-in contact fields (e.g. "First Name" vs first_name).
+// customFieldKeyPrefix disambiguates member-defined custom field values on the contact from built-in
+// top-level contact keys when we promote custom_fields into the read record.
 const customFieldKeyPrefix = "custom_"
-
-var nonAlphaNumUnderscore = regexp.MustCompile(`[^a-z0-9_]+`) //nolint:gochecknoglobals
 
 // memberCustomFieldDefinition is a row from GET /rest/1/customfields (member-level definitions).
 // See: https://www.phoneburner.com/developer/route_list#customfields
@@ -47,22 +44,12 @@ func memberCustomFieldTypeToValueType(typeID string) common.ValueType {
 	}
 }
 
-// normalizeCustomFieldKey builds a stable, lower_snake_case key used in metadata and read flattening.
-func normalizeCustomFieldKey(label string) string {
-	s := strings.TrimSpace(strings.ToLower(label))
-	s = strings.ReplaceAll(s, " ", "_")
-	s = nonAlphaNumUnderscore.ReplaceAllString(s, "_")
-	s = strings.Trim(s, "_")
-
-	for strings.Contains(s, "__") {
-		s = strings.ReplaceAll(s, "__", "_")
-	}
-
-	return s
-}
-
+// customFieldMetadataKey is the key used in ListObjectMetadata and when flattening contact
+// custom_fields to the read record: [customFieldKeyPrefix] + the provider display name, trimmed only.
+// The name is not slugified. common.ExtractLowercaseFieldsFromRaw still lowercases for lookup, so
+// ReadResultRow.Fields use lowercase keys.
 func customFieldMetadataKey(displayName string) string {
-	return customFieldKeyPrefix + normalizeCustomFieldKey(displayName)
+	return customFieldKeyPrefix + strings.TrimSpace(displayName)
 }
 
 func (c *Connector) fetchMemberCustomFieldDefinitions(ctx context.Context) ([]memberCustomFieldDefinition, error) {
@@ -147,7 +134,7 @@ func parseMemberCustomFieldDefinitionsPage(body *ajson.Node) ([]memberCustomFiel
 }
 
 // flattenContactCustomFieldsInMap promotes each contacts GET "custom_fields" entry to a top-level key
-// using the same naming as ListObjectMetadata (custom_ + normalized display name / name).
+// using the same naming as ListObjectMetadata (see customFieldMetadataKey; "name" matches display_name).
 func flattenContactCustomFieldsInMap(record map[string]any) map[string]any {
 	raw, ok := record["custom_fields"]
 	if !ok || raw == nil {
