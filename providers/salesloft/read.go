@@ -32,6 +32,36 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	)
 }
 
+// objectsWithCursorPagination lists objects that support cursor-based pagination.
+// These objects have an updated_at field AND the API sorts by updated_at when sort_direction is set.
+// All other objects fall back to offset-based pagination (page=N).
+//
+//nolint:gochecknoglobals
+var objectsWithCursorPagination = map[string]bool{
+	"accounts":            true,
+	"actions":             true,
+	"activities/calls":    true,
+	"activities/emails":   true,
+	"cadence_memberships": true,
+	"cadences":            true,
+	"call_data_records":   true,
+	"conversations":       true,
+	"crm_activities":      true,
+	"email_templates":     true,
+	"notes":               true,
+	"opportunities":       true,
+	"opportunity_people":  true,
+	"opportunity_stages":  true,
+	"people":              true,
+	"steps":               true,
+	"successes":           true,
+	"team_templates":      true,
+}
+
+func supportsCursorPagination(objectName string) bool {
+	return objectsWithCursorPagination[objectName]
+}
+
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
 	if len(config.NextPage) != 0 {
 		// Next page
@@ -46,11 +76,20 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 	url.WithQueryParam("per_page", strconv.Itoa(DefaultPageSize))
 
-	if !config.Since.IsZero() {
-		// Documentation states ISO8601, while server accepts different formats
-		// but for consistency we are sticking to one format to be sent.
-		// For the reference any API resource that includes time data type mentions iso8601 string format.
-		// One example, say accounts is https://developers.salesloft.com/docs/api/accounts-index
+	if supportsCursorPagination(config.ObjectName) {
+		// Use cursor-based polling as recommended by Salesloft for efficient data retrieval.
+		// Results are sorted by updated_at ascending so we can use the last record's timestamp
+		// as the cursor for the next request, avoiding deep pagination (page 500+) which causes
+		// rate limit cost escalation and server errors.
+		// See: https://developers.salesloft.com/docs/platform/guides/building-an-efficient-cursor-poller/
+		url.WithQueryParam("sort_by", "updated_at")
+		url.WithQueryParam("sort_direction", "asc")
+
+		if !config.Since.IsZero() {
+			updatedSince := config.Since.Format(time.RFC3339Nano)
+			url.WithQueryParam("updated_at[gte]", updatedSince)
+		}
+	} else if !config.Since.IsZero() {
 		updatedSince := config.Since.Format(time.RFC3339Nano)
 		url.WithQueryParam("updated_at[gte]", updatedSince)
 	}

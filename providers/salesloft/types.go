@@ -1,0 +1,54 @@
+package salesloft
+
+import (
+	"github.com/amp-labs/connectors/common"
+)
+
+type SubscriptionRequest struct {
+	UniqueRef       string `json:"unique_ref"        validate:"required"`
+	WebhookEndPoint string `json:"webhook_end_point" validate:"required"`
+	Secret          string `json:"secret,omitempty"`
+}
+
+type subscriptionPayload struct {
+	CallbackURL   string `json:"callback_url"   validate:"required"`
+	EventType     string `json:"event_type"     validate:"required"`
+	CallbackToken string `json:"callback_token" validate:"required"`
+}
+
+type SubscriptionResponse struct {
+	UserGUID      string `json:"user_guid"`
+	TenantId      string `json:"tenant_id"`
+	ID            int    `json:"id"`
+	EventType     string `json:"event_type"`
+	Enabled       bool   `json:"enabled"`
+	CallbackURL   string `json:"callback_url"`
+	CallbackToken string `json:"callback_token"`
+}
+type SuccessfulSubscription struct {
+	ID         string
+	ObjectName string
+	EventName  string
+}
+
+type SubscriptionResult struct {
+	Subscriptions map[common.ObjectName]map[moduleEvent]SubscriptionResponse `json:"subscriptions"`
+}
+
+// moduleEvent represents the combined event type string used by Salesloft.
+// A moduleEvent value has the format "{objectName}_{eventAction}" (e.g., "person_created", "call_updated").
+type moduleEvent string
+
+type eventMapping struct {
+	CreateEvents []moduleEvent
+	UpdateEvents []moduleEvent
+	DeleteEvents []moduleEvent
+}
+
+type salesloftObjectMapping struct {
+	// ObjectName is the prefix used in Salesloft webhook event names.
+	// For example, "task" is used in events like "task_created", "task_updated".
+	// This differs from the map key which represents the actual object name used in read/write operations.
+	ObjectName string
+	Events     eventMapping
+}

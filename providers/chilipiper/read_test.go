@@ -89,6 +89,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						"name":        "Dev Team",
 						"workspaceId": "cad33722-df27-4691-bc11-1f2c89c1dd31",
 					},
+					Id: "4edf8761-e5ee-48b2-81c8-c5e4849481fc",
 				}},
 				Done: true,
 			},

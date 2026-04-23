@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/microsoft/metadata"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/metadata"
 )
 
 const apiVersion = "v1.0"
@@ -30,8 +30,20 @@ type Connector struct {
 	components.Deleter
 }
 
+// NewConnector creates a new Microsoft connector. It defaults to the Microsoft
+// provider; use NewConnectorForProvider for twin providers (e.g.
+// MicrosoftClientCredentials) that share the same implementation but differ
+// in auth scheme.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.Microsoft, params, constructor)
+	return NewConnectorForProvider(providers.Microsoft, params)
+}
+
+// NewConnectorForProvider creates a new Microsoft connector under the given
+// provider name. This allows twin providers like MicrosoftClientCredentials
+// to reuse the same connector implementation with a different auth
+// configuration.
+func NewConnectorForProvider(provider providers.Provider, params common.ConnectorParams) (*Connector, error) {
+	return components.Initialize(provider, params, constructor)
 }
 
 // nolint:funlen
@@ -42,8 +54,13 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
+	// DirectFaultyResponder (vs. the default FaultyResponder) gives the
+	// callback access to the raw *http.Response, including headers.
+	// handleErrorResponse needs WWW-Authenticate to detect CAE / step-up
+	// claim challenges on 401s; see providers/microsoft/errors.go for the
+	// classification logic and known limitations.
 	errorHandler := interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+		JSON: interpreter.DirectFaultyResponder{Callback: handleErrorResponse},
 	}.Handle
 
 	connector.Reader = reader.NewHTTPReader(
@@ -82,8 +99,11 @@ func constructor(base *components.Connector) (*Connector, error) {
 	return connector, nil
 }
 
-func (c *Connector) getURL(parts ...string) (*urlbuilder.URL, error) {
-	path := append([]string{apiVersion}, parts...)
+func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
+	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, objectName)
+	if err != nil {
+		return nil, err
+	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, path...)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 }

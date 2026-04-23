@@ -2,6 +2,8 @@ package apollo
 
 import (
 	"strings"
+
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 //nolint:gochecknoglobals
@@ -38,6 +40,8 @@ var productNameToObjectName = map[string]string{
 	"deal_stages":    "opportunity_stages",
 	"lists_and_tags": "labels",
 }
+
+var usesFieldsResource = datautils.NewStringSet("contacts", "accounts", "opportunities") // nolint: gochecknoglobals
 
 // Apollo uses mismatched API object names and display names in the documentation.
 // We want to support both naming conventions. This function checks whether the provided objectName

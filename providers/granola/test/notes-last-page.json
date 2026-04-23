@@ -1,0 +1,16 @@
+{
+    "notes": [
+        {
+            "id": "not_1d3tmYTlCICgjy",
+            "object": "note",
+            "title": "Quarterly yoghurt budget review",
+            "owner": {
+                "name": "Oat Benson",
+                "email": "oat@granola.ai"
+            },
+            "created_at": "2026-01-27T15:30:00Z"
+        }
+    ],
+    "hasMore": false,
+    "cursor": null
+}

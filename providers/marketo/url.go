@@ -32,7 +32,7 @@ const ( //nolint:gochecknoglobals
 	fields               = "fields"
 
 	newLeadActivityType = "12"
-	startingIDIdx       = "1"
+	maxReturn           = 200
 )
 
 type pagingTokenResponse struct {
@@ -141,7 +141,7 @@ func (c *Connector) constructURLQueries(
 		return c.handleLeadsAPI(ctx, url, params)
 	}
 
-	// Handle other idfiltering objects like opportuities, companies
+	// TODO:  Handle other id filtering objects like opportunities, companies
 
 	return "", nil
 }

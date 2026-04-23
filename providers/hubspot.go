@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 const Hubspot Provider = "hubspot"
@@ -39,10 +38,16 @@ func init() { //nolint:funlen
 				Upsert: false,
 				Delete: false,
 			},
+			Delete:    true,
 			Proxy:     true,
 			Read:      true,
-			Subscribe: false,
+			Subscribe: true,
 			Write:     true,
+			Search: SearchSupport{
+				Operators: SearchOperators{
+					Equals: true,
+				},
+			},
 		},
 		DefaultModule: ModuleHubspotCRM,
 		Modules: &Modules{
@@ -52,19 +57,25 @@ func init() { //nolint:funlen
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
 						Create: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							DefaultRecordLimit: new(100), // nolint:mnd
 							ObjectRecordLimits: nil,
 							Supported:          true,
 						},
 						Update: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							DefaultRecordLimit: new(100), // nolint:mnd
 							ObjectRecordLimits: nil,
 							Supported:          true,
 						},
 					},
+					Delete:    true,
 					Read:      true,
-					Subscribe: false,
+					Subscribe: true,
 					Write:     true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 		},
@@ -89,6 +100,20 @@ func init() { //nolint:funlen
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "ownerId",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleHubspotCRM: ModuleDependency{},
+					},
+				},
+			},
+		},
+		ProviderAppMetadata: &ProviderAppMetadata{
+			AuthQueryParams: []MetadataItemInput{
+				{
+					Name:        "optional_scope",
+					DisplayName: "Optional Scopes",
+					Prompt: "Optional HubSpot scopes that users can grant during OAuth, " +
+						"these must also be configured in your HubSpot app.",
+					DocsURL: "https://developers.hubspot.com/docs/api/working-with-oauth#scopes",
 				},
 			},
 		},

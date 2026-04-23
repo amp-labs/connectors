@@ -28,11 +28,37 @@ func GetQuickBooksConnector(ctx context.Context) *quickbooks.Connector {
 	conn, err := quickbooks.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 		Metadata: map[string]string{
-			"realmID": "9341455309256114", // QuickBooks Company ID, should be set dynamically
+			"realmId": "9341456546759717", // QuickBooks Company ID, should be set dynamically
 		},
 	})
 	if err != nil {
 		utils.Fail("create quickbooks connector", "error: ", err)
+	}
+
+	return conn
+}
+
+func GetQuickBooksSandboxConnector(ctx context.Context) *quickbooks.Connector {
+	filePath := credscanning.LoadPath(providers.QuickbooksSandbox)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
+
+	client, err := common.NewOAuthHTTPClient(ctx,
+		common.WithOAuthClient(http.DefaultClient),
+		common.WithOAuthConfig(getConfig(reader)),
+		common.WithOAuthToken(reader.GetOauthToken()),
+	)
+	if err != nil {
+		utils.Fail(err.Error())
+	}
+
+	conn, err := quickbooks.NewSandboxConnector(common.ConnectorParams{
+		AuthenticatedClient: client,
+		Metadata: map[string]string{
+			"realmId": "9341456591101632", // QuickBooks Sandbox Company ID
+		},
+	})
+	if err != nil {
+		utils.Fail("create quickbooks sandbox connector", "error: ", err)
 	}
 
 	return conn

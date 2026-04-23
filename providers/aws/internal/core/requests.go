@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 // nolint:lll
@@ -27,7 +26,7 @@ type ReadPayload struct {
 func NewReadPayload(params common.ReadParams) *ReadPayload {
 	var nextToken *string
 	if len(params.NextPage) != 0 {
-		nextToken = goutils.Pointer(params.NextPage.String())
+		nextToken = new(params.NextPage.String())
 	}
 
 	return &ReadPayload{

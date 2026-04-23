@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 const (
@@ -194,8 +193,9 @@ func handleTypeString(field MetadataCustomField, definition common.FieldDefiniti
 
 	field.Type = fieldTypeLongText
 	// Must specify 'visibleLines' for a CustomField of type LongTextArea
-	visibleLines := valueOrDefault(definition.StringOptions.NumDisplayLines, defaultNumDisplayLines)
-	field.VisibleLines = goutils.Pointer(strconv.Itoa(visibleLines))
+	field.VisibleLines = new(strconv.Itoa(
+		valueOrDefault(definition.StringOptions.NumDisplayLines, defaultNumDisplayLines),
+	))
 
 	return field
 }
@@ -221,8 +221,9 @@ func handleTypeSelections(
 ) MetadataCustomField {
 	if definition.ValueType == common.ValueTypeMultiSelect {
 		// Must specify 'visibleLines' for a CustomField of type MultiselectPicklist.
-		visibleLines := valueOrDefault(definition.StringOptions.NumDisplayLines, defaultNumDisplayLines)
-		field.VisibleLines = goutils.Pointer(strconv.Itoa(visibleLines))
+		field.VisibleLines = new(strconv.Itoa(
+			valueOrDefault(definition.StringOptions.NumDisplayLines, defaultNumDisplayLines),
+		))
 	}
 
 	if definition.StringOptions != nil {
@@ -280,7 +281,7 @@ func enhanceWithStringOptions(
 	}
 
 	if definition.StringOptions.Pattern != "" {
-		field.Formula = goutils.Pointer(definition.StringOptions.Pattern)
+		field.Formula = new(definition.StringOptions.Pattern)
 	}
 
 	return field
@@ -307,18 +308,18 @@ func enhanceWithAssociation(
 		return field
 	}
 
-	field.ReferenceTo = goutils.Pointer(definition.Association.TargetObject)
+	field.ReferenceTo = new(definition.Association.TargetObject)
 
 	if definition.Association.TargetField != "" {
-		field.ReferenceTargetField = goutils.Pointer(definition.Association.TargetField)
+		field.ReferenceTargetField = new(definition.Association.TargetField)
 	}
 
 	if field.ReferenceTargetField == nil {
-		field.DeleteConstraint = goutils.Pointer(string(definition.Association.OnDelete))
+		field.DeleteConstraint = new(string(definition.Association.OnDelete))
 	}
 
 	if definition.Association.ReverseLookupFieldName != "" {
-		field.RelationshipName = goutils.Pointer(definition.Association.ReverseLookupFieldName)
+		field.RelationshipName = new(definition.Association.ReverseLookupFieldName)
 	}
 
 	return field
@@ -347,6 +348,33 @@ func valueOrDefault(value *int, defaultValue int) int {
 	}
 
 	return *value
+}
+
+// DeleteMetadataPayload represents the request body for the Salesforce Metadata API
+// `deleteMetadata` operation.
+// https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deleteMetadata.htm
+type DeleteMetadataPayload struct {
+	XMLName xml.Name `xml:"deleteMetadata"`
+
+	// Type is the metadata component type. Ex: CustomField.
+	Type string `xml:"type"`
+	// FullNames is the list of component full names to delete.
+	FullNames []string `xml:"fullNames"`
+}
+
+func NewDeleteCustomFieldsPayload(params *common.DeleteMetadataParams) *DeleteMetadataPayload {
+	fullNames := make([]string, 0)
+
+	for objectName, fieldNames := range params.Fields {
+		for _, fieldName := range fieldNames {
+			fullNames = append(fullNames, fmt.Sprintf("%v.%v", objectName, fieldName))
+		}
+	}
+
+	return &DeleteMetadataPayload{
+		Type:      metadataTypeCustomField,
+		FullNames: fullNames,
+	}
 }
 
 // ReadMetadataPayload used to read metadata objects.

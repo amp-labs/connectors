@@ -4,19 +4,11 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm"
 	crmcore "github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/pardot"
-)
-
-const (
-	apiVersion                 = "60.0"
-	versionPrefix              = "v"
-	version                    = versionPrefix + apiVersion
-	restAPISuffix              = "/services/data/" + version
-	uriSobjects                = restAPISuffix + "/sobjects"
-	uriToolingEventRelayConfig = restAPISuffix + "/tooling/sobjects/EventRelayConfig"
 )
 
 // Connector provides integration with Salesforce provider.
@@ -30,11 +22,19 @@ const (
 // while others are delegated to specialized sub-adapters (see below).
 // These sub-adapters will be consolidated as the migration completes under "crm.Adapter".
 type Connector struct {
+	*components.ProxyResolver
+
 	Client *common.JSONHTTPClient
 
 	providerInfo *providers.ProviderInfo
 	moduleInfo   *providers.ModuleInfo
 	moduleID     common.ModuleID
+
+	// provider is the provider name this connector reports. It allows the
+	// same implementation to serve twin providers (e.g. salesforceJWT) that
+	// share the underlying Salesforce APIs but differ in auth scheme.
+	// Defaults to providers.Salesforce.
+	provider providers.Provider
 
 	// crmAdapter handles the core Salesforce CRM module.
 	// It provides dedicated support for SalesforceCRM-specific functionality.
@@ -43,10 +43,15 @@ type Connector struct {
 	// pardotAdapter handles the Salesforce Account Engagement (Pardot) module.
 	// It provides dedicated support for Pardot-specific endpoints and metadata.
 	pardotAdapter *pardot.Adapter
+
+	// timestampColumn overrides the default "SystemModstamp" field used in
+	// incremental read queries (Since/Until WHERE clauses). When empty,
+	// "SystemModstamp" is used.
+	timestampColumn string
 }
 
 // NewConnector returns a new Salesforce connector.
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
+func NewConnector(opts ...Option) (*Connector, error) {
 	params, err := paramsbuilder.Apply(parameters{}, opts,
 		WithModule(providers.ModuleSalesforceCRM),
 	)
@@ -54,13 +59,57 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		return nil, err
 	}
 
-	httpClient := params.Client.Caller
-	conn = &Connector{
+	// Default the provider to Salesforce when not explicitly overridden.
+	if params.provider == "" {
+		params.provider = providers.Salesforce
+	}
+
+	conn, err := oldConstructor(params)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.timestampColumn = params.timestampColumn
+
+	connectorParams, err := newParams(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	// Initialize the Pardot (Account Engagement) adapter if applicable.
+	// Otherwise, initialize default Salesforce CRM module.
+	// Operations are delegated to either one.
+	moduleID := params.Module.Selection.ID
+	if isPardotModule(moduleID) {
+		conn.pardotAdapter, err = pardot.NewAdapter(connectorParams, conn.provider)
+		if err != nil {
+			return nil, err
+		}
+
+		conn.ProxyResolver = conn.pardotAdapter.Connector.ProxyResolver
+	} else {
+		conn.crmAdapter, err = crm.NewAdapter(connectorParams, conn.provider)
+		if err != nil {
+			return nil, err
+		}
+
+		conn.ProxyResolver = conn.crmAdapter.Connector.ProxyResolver
+	}
+
+	return conn, nil
+}
+
+// This constructor uses the old style parameters.
+func oldConstructor(params *parameters) (*Connector, error) {
+	conn := &Connector{
 		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
+			HTTPClient: params.Client.Caller,
 		},
 		moduleID: params.Module.Selection.ID,
+		provider: params.provider,
 	}
+
+	var err error
 
 	conn.providerInfo, err = providers.ReadInfo(conn.Provider(), &params.Workspace)
 	if err != nil {
@@ -75,33 +124,18 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	// Setup CRM error handler for methods that have not been moved to internal/crm.
 	conn.Client.HTTPClient.ErrorHandler = crmcore.NewErrorHandler().Handle
 
-	// Initialize the Pardot (Account Engagement) adapter if applicable.
-	// In that case, read/write/list metadata operations are delegated to it.
-	moduleID := params.Module.Selection.ID
-	if isPardotModule(moduleID) {
-		conn.pardotAdapter, err = pardot.NewAdapter(conn.Client, conn.moduleInfo, params.Metadata.Map)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		// Default Salesforce CRM module.
-		connectorParams, err := newParams(opts)
-		if err != nil {
-			return nil, err
-		}
-
-		conn.crmAdapter, err = crm.NewAdapter(connectorParams)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	return conn, nil
 }
 
-// Provider returns the connector provider.
+// Provider returns the connector provider. For twin providers such as
+// salesforceJWT that reuse this implementation with a different auth scheme,
+// this returns the configured provider name (defaulting to providers.Salesforce).
 func (c *Connector) Provider() providers.Provider {
-	return providers.Salesforce
+	if c.provider == "" {
+		return providers.Salesforce
+	}
+
+	return c.provider
 }
 
 // String returns a string representation of the connector, which is useful for logging / debugging.
@@ -119,7 +153,7 @@ func (c *Connector) SetBaseURL(newURL string) {
 
 func (c *Connector) getRestApiURL(paths ...string) (*urlbuilder.URL, error) {
 	parts := append([]string{
-		restAPISuffix, // scope URLs to API version
+		crmcore.RestAPISuffix, // scope URLs to API version
 	}, paths...)
 
 	return urlbuilder.New(c.getModuleURL(), parts...)
@@ -132,7 +166,7 @@ func (c *Connector) getDomainURL(paths ...string) (*urlbuilder.URL, error) {
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) getURLEventRelayConfig(identifier string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.getModuleURL(), uriToolingEventRelayConfig, identifier)
+	return urlbuilder.New(c.getModuleURL(), crmcore.URIToolingEventRelayConfig, identifier)
 }
 
 // Gateway access to URLs.
@@ -141,7 +175,18 @@ func (c *Connector) getModuleURL() string {
 }
 
 func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(uriSobjects, objectName, "describe")
+	return urlbuilder.New(crmcore.URISobjects, objectName, "describe")
+}
+
+const defaultTimestampColumn = "SystemModstamp"
+
+// getTimestampColumn returns the field name used for incremental read queries.
+func (c *Connector) getTimestampColumn() string {
+	if c.timestampColumn != "" {
+		return c.timestampColumn
+	}
+
+	return defaultTimestampColumn
 }
 
 func (c *Connector) isPardotModule() bool {

@@ -18,6 +18,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 
 	errConflictExisting := testutils.DataFromFile(t, "batch/create/contacts/err-conflict.json")
 	errManyInvalidFields := testutils.DataFromFile(t, "batch/create/contacts/err-many-invalid-properties.json")
+	errPartialSuccess := testutils.DataFromFile(t, "batch/create/contacts/err-partial-success.json")
 	responseCreateContacts := testutils.DataFromFile(t, "batch/create/contacts/success.json")
 
 	createRecords := common.BatchItems{{
@@ -49,20 +50,20 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "contacts",
 			},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrUnknownBatchWriteType},
+			ExpectedErrs: []error{common.ErrUnknownWriteType},
 		},
 		{
 			Name: "General high level error not tied to any record",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeCreate,
+				Type:       common.WriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/create"),
 				},
 				Then: mockserver.Response(http.StatusConflict, errConflictExisting),
 			}.Server(),
@@ -80,14 +81,14 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Bad request without the body",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeCreate,
+				Type:       common.WriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/create"),
 				},
 				Then: mockserver.Response(http.StatusBadRequest, nil),
 			}.Server(),
@@ -105,14 +106,14 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Many errors not traceable to any record",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeCreate,
+				Type:       common.WriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/create"),
 				},
 				Then: mockserver.Response(http.StatusBadRequest, errManyInvalidFields),
 			}.Server(),
@@ -143,17 +144,66 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Successful write",
+			Name: "Partial success where first contact already exists",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeCreate,
+				Type:       common.WriteTypeCreate,
 				Batch:      createRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/create"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/create"),
+				},
+				Then: mockserver.Response(http.StatusMultiStatus, errPartialSuccess),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetBatchWrite,
+			Expected: &common.BatchWriteResult{
+				Status: common.BatchStatusPartial,
+				// objectWriteTraceId is removed from all errors (internal field)
+				Errors: []any{mockutils.JSONErrorWrapper(`{
+					"status": "error",
+					"category": "CONFLICT",
+					"message": "Contact already exists. Existing ID: 171591000198",
+					"context": {"existingId": ["171591000198"]}
+				}`)},
+				Results: []common.WriteResult{{
+					Success:  false,
+					RecordId: "",
+					Errors: []any{mockutils.JSONErrorWrapper(`{
+						"status": "error",
+						"category": "CONFLICT",
+						"message": "Contact already exists. Existing ID: 171591000198",
+						"context": {"existingId": ["171591000198"]}
+					}`)},
+					Data: nil,
+				}, {
+					Success:  true,
+					RecordId: "171596044870",
+					Errors:   nil,
+					Data: map[string]any{
+						"email":     "siena.dyer@hubspot.com",
+						"firstname": "Siena",
+					},
+				}},
+				SuccessCount: 1,
+				FailureCount: 1,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Successful write",
+			Input: &common.BatchWriteParam{
+				ObjectName: "contacts",
+				Type:       common.WriteTypeCreate,
+				Batch:      createRecords,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/create"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateContacts),
 			}.Server(),
@@ -226,14 +276,14 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "General high level error not tied to any record",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeUpdate,
+				Type:       common.WriteTypeUpdate,
 				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/update"),
 				},
 				Then: mockserver.Response(http.StatusBadRequest, errDuplicateIDs),
 			}.Server(),
@@ -251,14 +301,14 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Many errors not traceable to any record",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeUpdate,
+				Type:       common.WriteTypeUpdate,
 				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/update"),
 				},
 				Then: mockserver.Response(http.StatusBadRequest, errManyInvalidFields),
 			}.Server(),
@@ -292,7 +342,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Partial result where one contact did not have an id",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeUpdate,
+				Type:       common.WriteTypeUpdate,
 				Batch: common.BatchItems{{
 					Record: map[string]any{
 						"id":        "unknownIdentifier888", // This identifier will have no response corespondent.
@@ -313,24 +363,29 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/update"),
 				},
 				Then: mockserver.Response(http.StatusMultiStatus, errUpdatePartial),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status: common.BatchStatusPartial,
+				// Top-level errors are sanitized (ids removed from context)
 				Errors: []any{mockutils.JSONErrorWrapper(`{
 					  "status": "error",
 					  "category": "OBJECT_NOT_FOUND",
-					  "message": "Could not get some CONTACT objects, they may be deleted or not exist. Check that ids are valid.",
-					  "context": {"ids": [""]}
+					  "message": "Could not get some CONTACT objects, they may be deleted or not exist. Check that ids are valid."
 				}`)},
 				Results: []common.WriteResult{{
 					Success:  false,
 					RecordId: "unknownIdentifier888",
-					Errors:   []any{common.ErrBatchUnprocessedRecord},
-					Data:     nil,
+					// Per-record error matched by ID and sanitized
+					Errors: []any{mockutils.JSONErrorWrapper(`{
+						"status": "error",
+						"category": "OBJECT_NOT_FOUND",
+						"message": "Could not get some CONTACT objects, they may be deleted or not exist. Check that ids are valid."
+					}`)},
+					Data: nil,
 				}, {
 					Success:  true,
 					RecordId: "171591000199",
@@ -349,14 +404,14 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Successful write",
 			Input: &common.BatchWriteParam{
 				ObjectName: "contacts",
-				Type:       common.BatchWriteTypeUpdate,
+				Type:       common.WriteTypeUpdate,
 				Batch:      updateRecords,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/crm/v3/objects/contacts/batch/update"),
+					mockcond.Path("/crm/objects/2026-03/contacts/batch/update"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseUpdateContacts),
 			}.Server(),

@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -91,6 +93,53 @@ func (a *Adapter) UpsertMetadata(
 
 	// [Current state]: Fields upserted, permission set updated, and current user is assigned to the permission set.
 	return result, nil
+}
+
+// DeleteMetadata deletes custom field definitions in Salesforce.
+//
+// Reference:
+//
+//	https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deleteMetadata.htm
+func (a *Adapter) DeleteMetadata(
+	ctx context.Context, params *common.DeleteMetadataParams,
+) (*common.DeleteMetadataResult, error) {
+	if err := params.ValidateParams(); err != nil {
+		return nil, err
+	}
+
+	payload := NewDeleteCustomFieldsPayload(params)
+
+	response, err := performMetadataAPICall[DeleteMetadataResponse](ctx, a, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range response.Response.Results {
+		if !result.Success {
+			errorMessages := make([]string, len(result.Errors))
+			for i, e := range result.Errors {
+				errorMessages[i] = e.Message
+			}
+
+			joined := strings.Join(errorMessages, "; ")
+
+			// If the field doesn't exist, log and continue rather than failing.
+			if strings.Contains(joined, "no CustomField named") ||
+				strings.Contains(joined, "does not exist or is not accessible") {
+				slog.Warn("Field already deleted or does not exist, skipping",
+					"fullName", result.FullName, "errors", joined)
+
+				continue
+			}
+
+			return nil, fmt.Errorf("%w: failed to delete %s: %s",
+				common.ErrBadRequest, result.FullName, joined)
+		}
+	}
+
+	return &common.DeleteMetadataResult{
+		Success: true,
+	}, nil
 }
 
 func (a *Adapter) upsertCustomFields(

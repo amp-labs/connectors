@@ -61,13 +61,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 		},
 		{
 			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"report/activities", "devices/groups"},
+			Input:      []string{"activities_report", "devices_groups"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"report/activities": {
-						DisplayName: "Activities",
+					"activities_report": {
+						DisplayName: "Activities Report",
 						Fields: map[string]common.FieldMetadata{
 							"type": {
 								DisplayName:  "type",
@@ -89,8 +89,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 							"version":     "version",
 						},
 					},
-					"devices/groups": {
-						DisplayName: "Device Groups",
+					"devices_groups": {
+						DisplayName: "Devices Groups",
 						Fields: map[string]common.FieldMetadata{
 							"zdm_group_id": {
 								DisplayName:  "zdm_group_id",

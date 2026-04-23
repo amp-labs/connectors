@@ -1,13 +1,12 @@
 package salesforce
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -58,53 +57,53 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Name",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 							},
 							"preferencesconsentmanagementenabled": {
 								DisplayName:  "ConsentManagementEnabled",
 								ValueType:    "boolean",
 								ProviderType: "boolean",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 							"latitude": {
 								DisplayName:  "Latitude",
 								ValueType:    "float",
 								ProviderType: "double",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 							"monthlypageviewsused": {
 								DisplayName:  "Monthly Page Views Used",
 								ValueType:    "int",
 								ProviderType: "int",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 							"systemmodstamp": {
 								DisplayName:  "System Modstamp",
 								ValueType:    "datetime",
 								ProviderType: "datetime",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 							"defaultaccountaccess": {
 								DisplayName:  "Default Account Access",
 								ValueType:    "singleSelect",
 								ProviderType: "picklist",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values: []common.FieldValue{{
 									Value:        "None",
 									DisplayValue: "Private",
@@ -126,9 +125,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Phone",
 								ValueType:    "string",
 								ProviderType: "phone",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 						},
@@ -169,17 +168,17 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Record ID",
 								ValueType:    "string",
 								ProviderType: "id",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 							},
 							"interests__c": {
 								DisplayName:  "Interests",
 								ValueType:    "multiSelect",
 								ProviderType: "multipicklist",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(true),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(true),
+								IsRequired:   new(false),
 								Values: []common.FieldValue{{
 									Value:        "art",
 									DisplayValue: "art",
@@ -195,9 +194,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "MailBox",
 								ValueType:    "string",
 								ProviderType: "email",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(true),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(true),
+								IsRequired:   new(false),
 							},
 						},
 					},
@@ -228,33 +227,34 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Account Name",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(true),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(true),
 							},
 							"createddate": {
 								DisplayName:  "Created Date",
 								ValueType:    "datetime",
 								ProviderType: "datetime",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 							},
 							"createdbyid": {
 								DisplayName:  "Created By ID",
-								ValueType:    "string",
+								ValueType:    "reference",
 								ProviderType: "reference",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+								ReferenceTo:  []string{"User"},
 							},
 							"photourl": {
 								DisplayName:  "Photo URL",
 								ValueType:    "string",
 								ProviderType: "url",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 							},
 						},
 					},
@@ -280,6 +280,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
+	prospectsCustomFields := testutils.DataFromFile(t, "pardot/metadata/prospects-custom-fields.json")
+
+	pardotHeader := http.Header{
+		"Pardot-Business-Unit-Id": []string{"test-business-unit-id"},
+	}
+
 	tests := []testroutines.Metadata{
 		{
 			Name:         "At least one object name must be queried",
@@ -297,41 +303,110 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 					"emails": {
 						DisplayName: "Emails",
 						Fields: map[string]common.FieldMetadata{
-							"htmlMessage": {
-								DisplayName:  "HTML Message",
-								ValueType:    "string",
-								ProviderType: "string",
+							"listId": {
+								DisplayName:  "listId",
+								ValueType:    "int",
+								ProviderType: "Integer",
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"sentAt": {
-								DisplayName:  "Sent At",
+								DisplayName:  "sentAt",
 								ValueType:    "datetime",
-								ProviderType: "datetime",
-								ReadOnly:     goutils.Pointer(true),
+								ProviderType: "DateTime",
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"type": {
-								DisplayName:  "Type",
+								DisplayName:  "type",
 								ValueType:    "singleSelect",
-								ProviderType: "enum",
-								ReadOnly:     goutils.Pointer(true),
+								ProviderType: "Enum",
+								ReadOnly:     new(true),
 								Values: []common.FieldValue{{
 									Value:        "html",
-									DisplayValue: "HTML",
+									DisplayValue: "html",
 								}, {
 									Value:        "text",
-									DisplayValue: "Text",
+									DisplayValue: "text",
 								}, {
 									Value:        "htmlAndText",
-									DisplayValue: "HTML and Text",
+									DisplayValue: "htmlAndText",
 								}},
 							},
 						},
 						FieldsMap: map[string]string{
-							"sentAt":          "Sent At",
-							"subject":         "Subject",
-							"textMessage":     "Text Message",
-							"trackerDomainId": "Tracker Domain ID",
+							"sentAt":          "sentAt",
+							"listId":          "listId",
+							"salesforceCmsId": "salesforceCmsId",
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successfully describe Prospects object with custom fields",
+			Input: []string{"Prospects"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v5/objects/custom-fields"),
+					mockcond.Header(pardotHeader),
+				},
+				Then: mockserver.Response(http.StatusOK, prospectsCustomFields),
+			}.Server(),
+			Comparator: func(
+				serverURL string, actual, expected *common.ListObjectMetadataResult,
+			) *mockutils.CompareResult {
+				result := mockutils.NewCompareResult()
+				// Usual subset comparison.
+				result.Merge(testroutines.ComparatorSubsetMetadata(serverURL, actual, expected))
+
+				// The "language" field must be excluded from the response.
+				if _, present := actual.Result["prospects"].Fields["language__c"]; present {
+					result.AddDiff("Result['prospects']['language__c'] is present, but expected to be missing")
+				}
+
+				return result
+			},
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"prospects": {
+						DisplayName: "Prospects",
+						Fields: map[string]common.FieldMetadata{
+							"email": {
+								DisplayName:  "email",
+								ValueType:    "string",
+								ProviderType: "String",
+								IsRequired:   nil,
+								ReadOnly:     new(false),
+								IsCustom:     nil,
+							},
+							"biography__c": {
+								DisplayName:  "Biography",
+								ValueType:    "string",
+								ProviderType: "text",
+								IsRequired:   new(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(true),
+							},
+							"hobby__c": {
+								DisplayName:  "Hobby",
+								ValueType:    "string",
+								ProviderType: "radio button",
+								IsRequired:   new(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(true),
+							},
+							"age__c": {
+								DisplayName:  "Age",
+								ValueType:    "float",
+								ProviderType: "number",
+								IsRequired:   new(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(true),
+							},
 						},
 					},
 				},
@@ -388,7 +463,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							Unique:      false,
 							Indexed:     false,
 							StringOptions: &common.StringFieldOptions{
-								DefaultValue: goutils.Pointer("false"),
+								DefaultValue: new("false"),
 							},
 						},
 					},
@@ -405,7 +480,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Expected: nil,
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Can not specify 'required' for a CustomField of type Checkbox"), // nolint:err113
+				testutils.StringError("Can not specify 'required' for a CustomField of type Checkbox"), // nolint:err113
 			},
 		},
 		{
@@ -422,7 +497,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							Unique:      false,
 							Indexed:     false,
 							StringOptions: &common.StringFieldOptions{
-								Length: goutils.Pointer(30),
+								Length: new(30),
 							},
 						}, {
 							FieldName:   "Hobby__c",
@@ -433,8 +508,8 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							Unique:      false,
 							Indexed:     false,
 							StringOptions: &common.StringFieldOptions{
-								Length:          goutils.Pointer(444),
-								NumDisplayLines: goutils.Pointer(39),
+								Length:          new(444),
+								NumDisplayLines: new(39),
 							},
 						}, {
 							FieldName:   "Age__c",
@@ -445,9 +520,9 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							Unique:      false,
 							Indexed:     false,
 							NumericOptions: &common.NumericFieldOptions{
-								DefaultValue: goutils.Pointer(18.0),
-								Precision:    goutils.Pointer(3),
-								Scale:        goutils.Pointer(2),
+								DefaultValue: new(18.0),
+								Precision:    new(3),
+								Scale:        new(2),
 							},
 						}, {
 							FieldName:   "Interests__c",
@@ -460,7 +535,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							StringOptions: &common.StringFieldOptions{
 								Values:           []string{"art", "travel", "swimming"},
 								ValuesRestricted: true,
-								DefaultValue:     goutils.Pointer("art"),
+								DefaultValue:     new("art"),
 							},
 						}, {
 							FieldName:   "IsReady__c",
@@ -471,7 +546,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							Unique:      false,
 							Indexed:     false,
 							StringOptions: &common.StringFieldOptions{
-								DefaultValue: goutils.Pointer("false"),
+								DefaultValue: new("false"),
 							},
 						}, {
 							FieldName:   "Connection__c",
@@ -628,6 +703,110 @@ func TestUpsertMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocogni
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.UpsertMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
+func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	payloadDeleteFields := testutils.DataFromFile(t, "metadata/delete/delete-fields-payload.xml")
+	responseDeleteFields := testutils.DataFromFile(t, "metadata/delete/delete-fields-response.xml")
+	responseFieldNotFound := testutils.DataFromFile(t, "metadata/delete/delete-field-not-found.xml")
+
+	tests := []testroutines.DeleteMetadata{
+		{
+			Name:         "At least one field must be provided",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFieldsMetadata},
+		},
+		{
+			Name: "Empty fields map",
+			Input: &common.DeleteMetadataParams{
+				Fields: map[common.ObjectName][]string{},
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFieldsMetadata},
+		},
+		{
+			Name: "Delete non-existent field logs warning and succeeds",
+			Input: &common.DeleteMetadataParams{
+				Fields: map[common.ObjectName][]string{
+					"TestObject15__c": {"NonExistent__c"},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentXML(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/services/Soap/m/60.0"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseFieldNotFound),
+			}.Server(),
+			Expected: &common.DeleteMetadataResult{
+				Success: true,
+			},
+		},
+		{
+			Name: "Successfully delete a custom field",
+			Input: &common.DeleteMetadataParams{
+				Fields: map[common.ObjectName][]string{
+					"TestObject15__c": {"Birthday__c"},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentXML(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/services/Soap/m/60.0"),
+					mockcond.BodyBytes(payloadDeleteFields),
+				},
+				Then: mockserver.Response(http.StatusOK, responseDeleteFields),
+			}.Server(),
+			Expected: &common.DeleteMetadataResult{
+				Success: true,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := common.WithAuthToken(t.Context(), "TEST_ACCESS_TOKEN")
+
+			tt.RunWithContext(t, ctx, func() (connectors.DeleteMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
+func TestDeleteMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	tests := []testroutines.DeleteMetadata{
+		{
+			Name: "Access token must be injected into the context",
+			Input: &common.DeleteMetadataParams{
+				Fields: map[common.ObjectName][]string{
+					"TestObject15__c": {"Birthday__c"},
+				},
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingAccessToken},
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.DeleteMetadataConnector, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

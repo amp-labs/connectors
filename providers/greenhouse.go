@@ -14,7 +14,6 @@ func init() {
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://auth.greenhouse.io/authorize",
-			AuthURLParams:             map[string]string{"state": "csrf_prevention_token_abc987"},
 			TokenURL:                  "https://auth.greenhouse.io/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,

@@ -138,3 +138,15 @@ vendor/
 
 # Custom golangci-lint binary
 custom-gcl
+
+# Salesforce deploy artifacts
+deploy.zip
+destructive.zip
+output/
+
+# Salesforce test binaries
+apex
+test/salesforce/apex/apex
+subscribe
+subscriber
+test/salesforce/subscribe/subscribe

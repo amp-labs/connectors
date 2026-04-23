@@ -64,7 +64,7 @@ func (c *Connector) parseReadResponse(
 	}
 
 	if nestedObjects.Has(params.ObjectName) {
-		return c.parseNestedResponse(response, params, baseURL.String())
+		return c.parseNestedResponse(ctx, response, params, baseURL.String())
 	}
 
 	return common.ParseResult(
@@ -130,7 +130,7 @@ func (c *Connector) parseWriteResponse(
 	}, nil
 }
 
-func (c *Connector) parseNestedResponse(response *common.JSONHTTPResponse, params common.ReadParams, baseURL string) (*common.ReadResult, error) { //nolint:lll
+func (c *Connector) parseNestedResponse(ctx context.Context, response *common.JSONHTTPResponse, params common.ReadParams, baseURL string) (*common.ReadResult, error) { //nolint:lll
 	body, ok := response.Body()
 	if !ok {
 		return nil, common.ErrEmptyJSONHTTPResponse
@@ -142,6 +142,7 @@ func (c *Connector) parseNestedResponse(response *common.JSONHTTPResponse, param
 	}
 
 	jsonResponse, err := common.ParseJSONResponse(
+		ctx,
 		&http.Response{
 			StatusCode: response.Code,
 			Header:     response.Headers,

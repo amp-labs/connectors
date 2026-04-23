@@ -2,7 +2,6 @@ package hubspot
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,6 +9,8 @@ import (
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 //nolint:gochecknoglobals
@@ -21,15 +22,13 @@ var (
 
 /*
    docs:
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/companies
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/contacts
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/deals
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/tickets
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/line_items
-   https://developers.hubspot.com/beta-docs/reference/api/crm/objects/products
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/companies/guide
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/guide
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/deals/guide
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/tickets/guide
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/line-items/guide
+   https://developers.hubspot.com/docs/api-reference/latest/crm/objects/products/guide
 */
-
-var errMissingId = errors.New("missing id field in raw record")
 
 //nolint:revive,funlen
 func (c *Connector) GetRecordsByIds(
@@ -37,9 +36,11 @@ func (c *Connector) GetRecordsByIds(
 	objectName string,
 	ids []string,
 	fields []string,
-	associations []string,
+	associationsList []string,
 ) ([]common.ReadResultRow, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
+
+	objectName = strings.ToLower(objectName)
 
 	singularObjName := naming.NewSingularString(objectName).String()
 	if !getRecordSupportedObjectsSet.Has(singularObjName) {
@@ -55,7 +56,7 @@ func (c *Connector) GetRecordsByIds(
 
 	pluralObjectName := naming.NewPluralString(objectName).String()
 
-	u, err := c.getBatchRecordsURL(pluralObjectName, associations)
+	u, err := c.getBatchRecordsURL(pluralObjectName, associationsList)
 	if err != nil {
 		return nil, err
 	}
@@ -75,12 +76,16 @@ func (c *Connector) GetRecordsByIds(
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
-	records, err := getRecords(resBody)
+	records, err := core.GetRecords(resBody)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.getDataMarshaller(ctx, objectName, associations)(records, fields)
+	marshaller := associations.CreateDataMarshallerWithAssociations(
+		ctx, c.crmAdapter.AssociationsFiller, objectName, associationsList,
+	)
+
+	return marshaller(records, fields)
 }
 
 func (c *Connector) getBatchRecordsURL(objectName string, associations []string) (string, error) {

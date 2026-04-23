@@ -11,12 +11,17 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const defaultPageSize = "500"
+const (
+	defaultPageSize = "500"
+
+	objectNameMessages = "messages"
+	objectNameDrafts   = "drafts"
+)
 
 // https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/list
 // https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list
 // https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.threads/list
-var paginatedObjects = datautils.NewSet("drafts", "messages", "threads") // nolint:gochecknoglobals
+var paginatedObjects = datautils.NewSet(objectNameDrafts, objectNameMessages, "threads") // nolint:gochecknoglobals
 
 func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if err := params.ValidateParams(true); err != nil {
@@ -56,7 +61,7 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list
 	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/list
 	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.threads/list
-	if datautils.NewSet("drafts", "messages", "threads").Has(params.ObjectName) {
+	if datautils.NewSet(objectNameDrafts, objectNameMessages, "threads").Has(params.ObjectName) {
 		query := newTimeQuery().
 			WithSince(params.Since).
 			WithUntil(params.Until).
@@ -76,12 +81,38 @@ func (a *Adapter) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	marshaller := common.MakeMarshaledDataFunc(nil)
+
+	// Messages and Drafts objects with extra fields require fetching the full message.
+	// See Gmail API: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list#response-body
+	if (params.ObjectName == objectNameMessages || params.ObjectName == objectNameDrafts) &&
+		params.Fields.HasExtra(datautils.NewSet("id", "threadId")) {
+		messages, err := a.fetchMessages(ctx, params.ObjectName, resp)
+		if err != nil {
+			return nil, err
+		}
+
+		if params.ObjectName == objectNameMessages {
+			marshaller = readhelper.MakeMarshaledSelectedDataFunc(
+				messagesEmbedMessageFields(messages),
+				messagesEmbedMessageRaw(messages),
+			)
+		} else {
+			marshaller = readhelper.MakeMarshaledSelectedDataFunc(
+				draftsEmbedMessageFields(messages),
+				draftsEmbedMessageRaw(messages),
+			)
+		}
+	}
+
 	responseFieldName := Schemas.LookupArrayFieldName(a.Module(), params.ObjectName)
 
 	return common.ParseResult(resp,
-		common.ExtractOptionalRecordsFromPath(responseFieldName),
+		func(node *ajson.Node) ([]*ajson.Node, error) {
+			return jsonquery.New(node).ArrayOptional(responseFieldName)
+		},
 		makeNextRecordsURL(params),
-		common.GetMarshaledData,
+		marshaller,
 		params.Fields,
 	)
 }

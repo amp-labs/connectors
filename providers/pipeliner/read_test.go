@@ -1,7 +1,6 @@
 package pipeliner
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -45,7 +44,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("The requested URL was not found on the server"),
+				testutils.StringError("The requested URL was not found on the server"),
 			},
 		},
 		{

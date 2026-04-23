@@ -1,7 +1,6 @@
 package klaviyo
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -55,7 +54,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"Invalid input: 'page_size' is not a valid field for the resource 'list'."),
 			},
 		},

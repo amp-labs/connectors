@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"maps"
 	"net/http"
 	"slices"
 	"strconv"
@@ -71,9 +72,12 @@ func (p PathItem[C]) RetrieveSchemaOperation(
 		displayName = displayProcessor(displayName)
 	}
 
-	fields, responseKey, err := extractObjectFields(p.objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
+	fields, responseKey, err := extractObjectFields(
+		p.urlPath, p.objectName,
+		schema, locator, propertyFlattener, autoSelectArrayItem,
+	)
 	if err == nil && len(fields) == 0 {
-		slog.Warn("not an array of objects", "object", p.objectName)
+		slog.Warn("not an array of objects", "urlPath", p.urlPath)
 	}
 
 	return &metadatadef.ExtendedSchema[C]{
@@ -106,20 +110,21 @@ func (p PathItem[C]) selectOperation(operationName string) (*openapi3.Operation,
 }
 
 func extractObjectFields(
+	urlPath string,
 	objectName string, schema *openapi3.Schema, locator ObjectArrayLocator,
 	propertyFlattener PropertyFlattener,
 	autoSelectArrayItem bool,
 ) (fields metadatadef.Fields, location string, err error) {
 	switch getSchemaType(objectName, schema) {
 	case schemaTypeObject:
-		return extractFieldsFromArrayHolder(objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
+		return extractFieldsFromArrayHolder(urlPath, objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
 	case schemaTypeArray:
-		return extractFieldsFromArray(objectName, schema, propertyFlattener)
+		return extractFieldsFromArray(urlPath, objectName, schema, propertyFlattener)
 	case schemaTypeUnknown:
 		// Even though OpenAPI doesn't explicitly state that the schema is of object type,
 		// Attempt to process it as such.
 		// It seems that some OpenAPI files are not that strict about such things. Ex: Pipedrive, Zendesk.
-		return extractFieldsFromArrayHolder(objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
+		return extractFieldsFromArrayHolder(urlPath, objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
 	default:
 		return nil, "", createUnprocessableObjectError(objectName)
 	}
@@ -152,19 +157,31 @@ type Array struct {
 // Alternatively, if only one array is present and autoSelectArrayItem is enabled,
 // the selection will happen automatically without invoking the callback.
 func extractFieldsFromArrayHolder(
+	urlPath string,
 	objectName string, schema *openapi3.Schema, locator ObjectArrayLocator,
 	propertyFlattener PropertyFlattener,
 	autoSelectArrayItem bool,
 ) (fields metadatadef.Fields, location string, err error) {
-	arrayOptions := extractPropertiesArrayType(schema)
+	arrayOptions := extractPropertiesArrayType(urlPath, schema)
+
+	if len(arrayOptions) == 0 {
+		// This schema has no arrays, therefore it is not a collection.
+		statsObjectsWithNoArrays.AddOne(urlPath)
+	}
 
 	// Only one array property exists. We can conclude that this is the array item we are looking for.
 	// Otherwise, match object name with target field name.
 	approved := autoSelectArrayItem && len(arrayOptions) == 1
 
+	if approved {
+		// Array will be auto selected.
+		// Collect the stats. Developer may inspect it, in case the object should conceptually be not approved.
+		statsObjectsWithAutoSelectedArrays.Add(arrayOptions[0].Name, urlPath)
+	}
+
 	for _, option := range arrayOptions {
 		// Verify with the discriminator whether this is the target "Array".
-		if approved || locator(objectName, option.Name) {
+		if approved || locatorWrapper(urlPath, objectName, arrayOptions, locator, option) {
 			fields, err = extractFields(objectName, propertyFlattener, option.Item.Value)
 			if err != nil {
 				return nil, "", err
@@ -183,31 +200,67 @@ func extractFieldsFromArrayHolder(
 	return nil, "", createUnprocessableObjectError(objectName)
 }
 
-// The schema contains multiple properties that collectively form a normalized representation of the API response.
-// The procedure will identify and collect only the fields of array type.
-func extractPropertiesArrayType(schema *openapi3.Schema) []Array {
-	definitions := []openapi3.Schemas{
-		schema.Properties,
+func locatorWrapper(urlPath string, objectName string, options []Array, locator ObjectArrayLocator, option Array) bool {
+	list := datautils.ForEach(options, func(arr Array) string {
+		return arr.Name
+	})
+
+	if len(list) > 0 {
+		statsObjectsWithMultipleArrays[urlPath] = list
 	}
 
-	compositeSchemas := datautils.MergeSlices(schema.AllOf, schema.OneOf, schema.AnyOf)
-	// Item schema will likely be inside composite schema
-	for _, comp := range compositeSchemas {
-		if comp != nil && comp.Value != nil {
-			definitions = append(definitions, comp.Value.Properties)
+	return locator(objectName, option.Name)
+}
+
+// flattenSchema recursively merges all properties from allOf, oneOf, anyOf into a single Schema.
+func flattenSchema(schema *openapi3.Schema) *openapi3.Schema {
+	if schema == nil {
+		return nil
+	}
+
+	// We create a new schema to hold the flattened properties.
+	// This prevents modifying the original schema and handles recursion.
+	flat := *schema
+	flat.AllOf = nil
+	flat.OneOf = nil
+	flat.AnyOf = nil
+	flat.Properties = make(openapi3.Schemas)
+
+	maps.Copy(flat.Properties, schema.Properties)
+
+	// Merge all composite schemas.
+	compositeRefs := datautils.MergeSlices(schema.AllOf, schema.OneOf, schema.AnyOf)
+	for _, ref := range compositeRefs {
+		if ref != nil && ref.Value != nil {
+			flattenedRef := flattenSchema(ref.Value)
+
+			if flat.Type != nil && flattenedRef.Type != nil &&
+				!slices.Equal(flat.Type.Slice(), flattenedRef.Type.Slice()) {
+				slog.Warn("type of flattened schema does not match the parent")
+			} else {
+				flat.Type = flattenedRef.Type
+			}
+
+			maps.Copy(flat.Properties, flattenedRef.Properties)
 		}
 	}
 
+	return &flat
+}
+
+// The schema contains multiple properties that collectively form a normalized representation of the API response.
+// The procedure will identify and collect only the fields of array type.
+func extractPropertiesArrayType(urlPath string, schema *openapi3.Schema) []Array {
+	flatSchema := flattenSchema(schema)
+
 	arrays := make([]Array, 0)
 	// Collect properties that are of an array type.
-	for _, definition := range definitions {
-		for name, nestedSchema := range definition {
-			if itemsSchema, isArray := getItems(nestedSchema); isArray {
-				arrays = append(arrays, Array{
-					Name: name,
-					Item: itemsSchema,
-				})
-			}
+	for name, nestedSchema := range flatSchema.Properties {
+		if itemsSchema, isArray := getItems(urlPath, nestedSchema); isArray {
+			arrays = append(arrays, Array{
+				Name: name,
+				Item: itemsSchema,
+			})
 		}
 	}
 
@@ -216,10 +269,10 @@ func extractPropertiesArrayType(schema *openapi3.Schema) []Array {
 
 // Response schema is an array itself. Collect fields that describe single item.
 func extractFieldsFromArray(
-	objectName string, schema *openapi3.Schema,
+	urlPath, objectName string, schema *openapi3.Schema,
 	propertyFlattener PropertyFlattener,
 ) (fields metadatadef.Fields, location string, err error) {
-	items, isArray := getItems(schema.NewRef())
+	items, isArray := getItems(urlPath, schema.NewRef())
 	if !isArray {
 		return nil, "", createUnprocessableObjectError(objectName)
 	}
@@ -229,12 +282,21 @@ func extractFieldsFromArray(
 	return fields, "", err
 }
 
-func getItems(schema *openapi3.SchemaRef) (itemsSchema *openapi3.SchemaRef, isArray bool) {
+func getItems(urlPath string, schema *openapi3.SchemaRef) (itemsSchemaRef *openapi3.SchemaRef, isArray bool) {
 	if schema.Value == nil {
 		return nil, false
 	}
 
 	if schema.Value.Items == nil {
+		return nil, false
+	}
+
+	// Array of strings or array of integers is not the collection we need.
+	itemsSchema := flattenSchema(schema.Value.Items.Value)
+	schemaType := getSchemaType(urlPath, itemsSchema)
+
+	// We need collection of objects.
+	if schemaType != schemaTypeObject {
 		return nil, false
 	}
 
@@ -296,6 +358,8 @@ func extractFields(
 	objectName string,
 	propertyFlattener PropertyFlattener, source *openapi3.Schema,
 ) (metadatadef.Fields, error) {
+	source = flattenSchema(source)
+
 	combinedFields := make(metadatadef.Fields)
 
 	if source.AnyOf != nil {
@@ -412,6 +476,8 @@ const (
 //
 // Returns enum marking the type of schema. This can be used to adjust processing.
 func getSchemaType(objectName string, schema *openapi3.Schema) definitionSchemaType {
+	schema = flattenSchema(schema)
+
 	if schema.Type == nil {
 		slog.Warn("Schema definition has no type", "objectName", objectName)
 

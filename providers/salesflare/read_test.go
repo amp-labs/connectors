@@ -1,7 +1,6 @@
 package salesflare
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -30,7 +29,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Always: mockserver.Response(http.StatusNotFound, responseNotFoundError),
 			}.Server(),
 			ExpectedErrs: []error{
-				errors.New("Not Found"),
+				testutils.StringError("Not Found"),
 				common.ErrNotFound,
 				common.ErrBadRequest,
 			},

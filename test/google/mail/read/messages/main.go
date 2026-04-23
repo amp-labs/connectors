@@ -25,10 +25,13 @@ func main() {
 
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "messages",
-		Fields:     connectors.Fields("threadId"),
-		Since:      timestamp("2026-01-06T00:00:00"),
-		Until:      timestamp("2026-01-07T00:00:00"),
-		PageSize:   2,
+		Fields: connectors.Fields(
+			"snippet",
+			"$['payload']['body']",
+			"$['payload']['mimeType']",
+		),
+		// Since:    time.Now().Add(-1 * time.Minute * 60 * 48),
+		PageSize: 10,
 	})
 }
 

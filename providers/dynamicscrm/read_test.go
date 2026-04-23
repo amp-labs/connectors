@@ -1,7 +1,6 @@
 package dynamicscrm
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -45,7 +44,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}`),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, errors.New("Resource not found for the segment 'conacs'"),
+				common.ErrBadRequest, testutils.StringError("Resource not found for the segment 'conacs'"),
 			},
 		},
 		{

@@ -9,6 +9,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 const (
@@ -22,13 +24,13 @@ const (
 	searchPageSize = "200"
 )
 
-// Search uses the POST /search endpoint to filter object records and return the result.
+// ReadUsingSearchAPI uses the POST /search endpoint to filter object records and return the result.
 // This endpoint has a limit of 10,000 records. If the result has more than 10,000 records,
 // the caller should employ sorting to paginate through the result on the client side.
 // This endpoint paginates using paging.next.after which is to be used as an offset.
 // Archived results do not appear in search results.
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
-func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
+func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
 	if err := config.ValidateParams(); err != nil {
@@ -47,7 +49,7 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 		)
 	}
 
-	if crmObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
+	if core.ObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
 		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
 		// For instance such object is Lists.
 		return c.searchCRM(ctx, searchCRMParams{
@@ -67,23 +69,17 @@ func (c *Connector) Search(ctx context.Context, config SearchParams) (*common.Re
 
 	return common.ParseResult(
 		rsp,
-		getRecords,
-		getNextRecordsAfter,
-		c.getDataMarshaller(ctx, config.ObjectName, config.AssociatedObjects),
+		core.GetRecords,
+		core.GetNextRecordsAfter,
+		associations.CreateDataMarshallerWithAssociations(
+			ctx, c.crmAdapter.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }
 
 // searchCRM is intended for objects outside HubSpot's ObjectAPI.
-// For objects within ObjectAPI, refer to the Search method.
-//
-// Case-by-case explanation:
-// * Lists
-//   - Provider API endpoint for search
-//     https://developers.hubspot.com/docs/guides/api/crm/lists/overview#search-for-a-list
-//   - Search always returns an array of items, unlike the usual "read" operation.
-//     Therefore, the "retrieve" API endpoint is not used
-//     https://developers.hubspot.com/docs/guides/api/crm/lists/overview#retrieve-lists
+// For objects within ObjectAPI, refer to the ReadUsingSearchAPI method.
+// https://developers.hubspot.com/docs/api-reference/latest/crm/lists/guide#retrieve-by-searching-list-details
 func (c *Connector) searchCRM(
 	ctx context.Context, config searchCRMParams,
 ) (*common.ReadResult, error) {
@@ -109,10 +105,34 @@ func (c *Connector) searchCRM(
 	return common.ParseResult(
 		rsp,
 		common.ExtractOptionalRecordsFromPath(config.ObjectName),
-		getNextRecordsURLCRM,
+		core.GetNextRecordsURLCRM,
 		common.GetMarshaledData,
 		config.Fields,
 	)
+}
+
+// BuildBuilderFilters converts a common.SearchFilter into a slice of HubSpot Filters.
+// Only the eq operator is supported.
+func BuildBuilderFilters(filter *common.SearchFilter) []Filter {
+	if filter == nil {
+		return nil
+	}
+
+	out := make([]Filter, 0, len(filter.FieldFilters))
+
+	for _, ff := range filter.FieldFilters {
+		if ff.Operator != common.FilterOperatorEQ {
+			continue
+		}
+
+		out = append(out, Filter{
+			FieldName: ff.FieldName,
+			Operator:  FilterOperatorTypeEQ,
+			Value:     fmt.Sprintf("%v", ff.Value),
+		})
+	}
+
+	return out
 }
 
 // BuildLastModifiedFilterGroup filters records modified since the given time.

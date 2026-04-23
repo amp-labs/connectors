@@ -17,6 +17,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 	responseCallFirst := testutils.DataFromFile(t, "calls-first-page.json")
 	responseCallLast := testutils.DataFromFile(t, "calls-second-page.json")
+	responseScorecardTemplates := testutils.DataFromFile(t, "scorecardtemplates.json")
 
 	tests := []testroutines.Read{
 		{
@@ -60,7 +61,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"call_review_page_url": "https://copilot.clari.com/call/7549847e-4e97-4650-a20d-87791520e529",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/calls?limit=100&skip=1", // nolint:lll
+				NextPage: testroutines.URLTestServer + "/calls?limit=25&skip=1", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -79,6 +80,35 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     2,
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successful read of scorecard templates",
+			Input: common.ReadParams{ObjectName: "scorecard-template", Fields: connectors.Fields("id", "name", "type")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/scorecard-template"),
+				Then:  mockserver.Response(http.StatusOK, responseScorecardTemplates),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":   "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+						"name": "Sales Discovery Call",
+						"type": "CALL",
+					},
+					Raw: map[string]any{
+						"id":          "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+						"customer_id": "cust-001",
+						"name":        "Sales Discovery Call",
+						"type":        "CALL",
+					},
+				}},
 				NextPage: "",
 				Done:     true,
 			},

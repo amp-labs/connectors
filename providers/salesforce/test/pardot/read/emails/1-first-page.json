@@ -1,0 +1,24 @@
+{
+  "nextPageToken": "eyJvcmRlckJ5IjoiIiwiZmlsdGVycyI6W10sImxpbWl0IjoxLCJyZXN1bWVWYWx1ZSI6eyJpZCI6MzQyNzc4NjN9LCJwYWdlIjoyLCJyZWNDb3VudCI6MiwiZXhwaXJlVGltZSI6IjIwMjUtMDUtMTZUMjA6Mzc6MTMtMDc6MDAiLCJkZWxldGVkIjpudWxsfQ==",
+  "nextPageUrl": "https://pi.demo.pardot.com/api/v5/objects/emails?fields=id,name,subject,clientType,prospectId,listEmailId,updatedAt&nextPageToken=eyJvcmRlckJ5IjoiIiwiZmlsdGVycyI6W10sImxpbWl0IjoxLCJyZXN1bWVWYWx1ZSI6eyJpZCI6MzQyNzc4NjN9LCJwYWdlIjoyLCJyZWNDb3VudCI6MiwiZXhwaXJlVGltZSI6IjIwMjUtMDUtMTZUMjA6Mzc6MTMtMDc6MDAiLCJkZWxldGVkIjpudWxsfQ==",
+  "values": [
+    {
+      "id": 34277860,
+      "clientType": "Web",
+      "listEmailId": null,
+      "name": "Sending first email ever",
+      "prospectId": null,
+      "subject": "Few Moments Later",
+      "updatedAt": "2025-05-16T11:27:08-07:00"
+    },
+    {
+      "id": 34277863,
+      "clientType": "Web",
+      "listEmailId": null,
+      "name": "Second email, on the roll",
+      "prospectId": null,
+      "subject": "Second email, unbelievable",
+      "updatedAt": "2025-05-16T11:29:03-07:00"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-package many
+package main
 
 import (
 	"context"
@@ -13,11 +13,6 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/brianvoe/gofakeit/v6"
 )
-
-type record struct {
-	ID         string         `json:"id"`
-	Properties map[string]any `json:"properties"`
-}
 
 func main() {
 	// Handle Ctrl-C gracefully.
@@ -45,7 +40,7 @@ func main() {
 	// Batch create many records.
 	res, err := conn.BatchWrite(ctx, &connectors.BatchWriteParam{
 		ObjectName: "contacts",
-		Type:       connectors.BatchWriteTypeCreate,
+		Type:       connectors.WriteTypeCreate,
 		Batch:      records,
 	})
 	if err != nil {

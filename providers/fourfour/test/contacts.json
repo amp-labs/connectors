@@ -1,0 +1,20 @@
+{
+  "value": [
+    {
+      "id": "string",
+      "first_name": "string",
+      "last_name": "string",
+      "email": "string",
+      "phone": "string",
+      "title": "string",
+      "account_id": "string",
+      "department": "string",
+      "lead_source": "string",
+      "owner_id": "string",
+      "region": "string",
+      "created": "2019-08-24T14:15:22Z",
+      "updated": "2019-08-24T14:15:22Z"
+    }
+  ],
+  "@count": 1
+}

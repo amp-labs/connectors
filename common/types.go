@@ -14,13 +14,13 @@ import (
 
 var (
 	// ErrAccessToken is a token which isn't valid.
-	ErrAccessToken = errors.New("access token invalid")
+	ErrAccessToken error = newClassedErr("access token invalid", ErrorClassAuthInvalidated)
 
 	// ErrApiDisabled means a customer didn't enable this API on their SaaS instance.
-	ErrApiDisabled = errors.New("API disabled")
+	ErrApiDisabled error = newClassedErr("API disabled", ErrorClassAPIDisabled)
 
 	// ErrForbidden means the user doesn't have access to this resource.
-	ErrForbidden = errors.New("forbidden")
+	ErrForbidden error = newClassedErr("forbidden", ErrorClassForbidden)
 
 	// ErrInvalidSessionId means the session ID is invalid.
 	ErrInvalidSessionId = errors.New("invalid session id")
@@ -29,22 +29,22 @@ var (
 	ErrUnableToLockRow = errors.New("unable to lock row")
 
 	// ErrInvalidGrant means the OAuth grant is invalid.
-	ErrInvalidGrant = errors.New("invalid grant")
+	ErrInvalidGrant error = newClassedErr("invalid grant", ErrorClassAuthInvalidated)
 
 	// ErrLimitExceeded means a quota limit was exceeded.
-	ErrLimitExceeded = errors.New("request limit exceeded")
+	ErrLimitExceeded error = newClassedErr("request limit exceeded", ErrorClassRateLimited)
 
 	// ErrRetryable represents a temporary error. Can retry.
-	ErrRetryable = errors.New("retryable error")
+	ErrRetryable error = newClassedErr("retryable error", ErrorClassRetryable)
 
 	// ErrCaller represents non-retryable errors caused by bad input from the caller.
-	ErrCaller = errors.New("caller error")
+	ErrCaller error = newClassedErr("caller error", ErrorClassBadRequest)
 
 	// ErrServer represents non-retryable errors caused by something on the server.
-	ErrServer = errors.New("server error")
+	ErrServer error = newClassedErr("server error", ErrorClassProvider5xx)
 
 	// ErrUnknown represents an unknown status code response.
-	ErrUnknown = errors.New("unknown error")
+	ErrUnknown error = newClassedErr("unknown error", ErrorClassUnknown)
 
 	// ErrNotJSON is returned when a response is not JSON.
 	ErrNotJSON = errors.New("response is not JSON")
@@ -71,17 +71,20 @@ var (
 	ErrParseError = errors.New("parse error")
 
 	// ErrBadRequest is returned when we get a 400 response from the provider.
-	ErrBadRequest = errors.New("bad request")
+	ErrBadRequest error = newClassedErr("bad request", ErrorClassBadRequest)
+
+	// ErrConflict is returned when we get a 409 response from the provider.
+	ErrConflict = errors.New("conflict")
 
 	// ErrNotFound is returned when we get a 404 response from the provider.
 	ErrNotFound = errors.New("not found")
 
 	// ErrCursorGone is returned when a cursor used for pagination is no longer valid.
-	ErrCursorGone = errors.New("pagination cursor gone or expired")
+	ErrCursorGone error = newClassedErr("pagination cursor gone or expired", ErrorClassCursorGone)
 
 	// ErrResultsLimitExceeded is returned when a search query exceeds the provider's
 	// maximum result limit (e.g., HubSpot's 10,000 record search limit).
-	ErrResultsLimitExceeded = errors.New("results limit exceeded")
+	ErrResultsLimitExceeded error = newClassedErr("results limit exceeded", ErrorClassRateLimited)
 
 	// ErrMissingExpectedValues is returned when response data doesn't have values expected for processing.
 	ErrMissingExpectedValues = errors.New("response data is missing expected values")
@@ -92,6 +95,9 @@ var (
 
 	// ErrEmptyJSONHTTPResponse is returned when the JSONHTTPResponse is nil.
 	ErrEmptyJSONHTTPResponse = errors.New("empty json http response")
+
+	// ErrFailedUnmarshalling is returned when the HTTP response cannot be unmarshalled.
+	ErrFailedUnmarshalling = errors.New("json.Unmarshal failed")
 
 	// ErrEmptyRecordIdResponse is returned when the response body doesn't have record id.
 	ErrEmptyRecordIdResponse = errors.New("empty record id in response body")
@@ -131,6 +137,14 @@ var (
 	// It should be used to explicitly catch cases that would otherwise lead to panics (e.g., nil pointer dereference).
 	// This typically indicates a broken assumption or inconsistency in the implementation logic.
 	ErrImplementation = errors.New("code took invalid execution path")
+
+	// ErrBadProviderResponse is returned when the provider returns a response that doesn't match the expected format.
+	// This can be used when the provider returns a 200 OK status,
+	// but the body of the response indicates an error or is missing expected fields.
+	ErrBadProviderResponse = errors.New("bad response from provider")
+
+	// ErrProxyNotApplicable indicates that a proxy cannot be used in the given context.
+	ErrProxyNotApplicable = errors.New("proxy is not applicable in this context")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -177,6 +191,10 @@ type ReadParams struct {
 	//          - "query[name]=test&sort[createdOn]=DESC"
 	//      Reference: https://apireference.getresponse.com/#operation/getCampaignList
 	Filter string // optional
+
+	// BuilderFilter is an optional Ampersand-style structured filter for read actions.
+	// Multiple field filters are joined by AND. Only the "eq" operator is supported.
+	BuilderFilter *SearchFilter // optional
 
 	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
 	// It is optional and supported by the following connectors:
@@ -270,6 +288,9 @@ type DeleteParams struct {
 
 	// The external ID of the object instance we are removing.
 	RecordId string // required
+
+	// Headers contains additional headers to be added to the delete request.
+	Headers []WriteHeader // optional
 }
 
 // NextPageToken is an opaque token that can be used to get the next page of results.
@@ -319,6 +340,9 @@ type Association struct {
 	// AssociationType is the type of association.
 	AssociationType string         `json:"associationType,omitempty"`
 	Raw             map[string]any `json:"raw,omitempty"`
+	// ProviderAssociationMetadata holds provider-specific metadata about the association type.
+	// For HubSpot, this includes category, typeId, and label from the associations API.
+	ProviderAssociationMetadata map[string]any `json:"providerAssociationMetadata,omitempty"`
 }
 
 // WriteResult represents the outcome of a single record write operation.
@@ -348,13 +372,34 @@ const (
 	BatchStatusPartial BatchStatus = "partial"
 )
 
-// BatchWriteType specifies the intended operation type within a batch modification.
-type BatchWriteType string
+// WriteType specifies the type of write operation (create, update, delete, upsert).
+type WriteType string
 
 const (
-	BatchWriteTypeCreate BatchWriteType = "create"
-	BatchWriteTypeUpdate BatchWriteType = "update"
+	WriteTypeCreate WriteType = "create"
+	WriteTypeUpdate WriteType = "update"
+	WriteTypeDelete WriteType = "delete"
+	WriteTypeUpsert WriteType = "upsert"
 )
+
+// BatchPolicy configures the behavior of batch write operations.
+// This struct is extensible for future batch configuration options.
+type BatchPolicy struct {
+	// AllOrNone controls whether partial success is allowed.
+	// When true, if any record fails, the entire batch is rolled back.
+	// When false (default), successful records are committed even if others fail.
+	// If nil, defaults to false (partial success allowed).
+	AllOrNone *bool `json:"allOrNone,omitempty"`
+}
+
+// GetAllOrNone returns the AllOrNone value, defaulting to false if nil.
+func (p *BatchPolicy) GetAllOrNone() bool {
+	if p == nil || p.AllOrNone == nil {
+		return false
+	}
+
+	return *p.AllOrNone
+}
 
 // BatchWriteParam defines the input required to execute a batch write operation.
 // It allows creating, updating, or upserting multiple records in a single request.
@@ -362,11 +407,30 @@ type BatchWriteParam struct {
 	// ObjectName identifies the target object for the write operation.
 	ObjectName ObjectName
 	// Type defines how the records should be processed: create, update, or upsert.
-	Type BatchWriteType
+	Type WriteType
 	// Batch contains the collection of record payloads to be written.
 	Batch BatchItems
 	// Headers contains additional headers to be added to the request.
 	Headers []WriteHeader // optional
+	// Policy configures batch write behavior (partial success, etc.)
+	Policy *BatchPolicy
+	// Deprecated: Use Policy.AllOrNone instead.
+	AllOrNone *bool
+}
+
+// GetAllOrNone returns the effective AllOrNone value.
+// Prefers Policy.AllOrNone if set, falls back to deprecated AllOrNone field,
+// defaults to false (partial success allowed) if neither is set.
+func (p BatchWriteParam) GetAllOrNone() bool {
+	if p.Policy != nil && p.Policy.AllOrNone != nil {
+		return *p.Policy.AllOrNone
+	}
+
+	if p.AllOrNone != nil {
+		return *p.AllOrNone
+	}
+
+	return false // default: partial success allowed
 }
 
 func TransformWriteHeaders(headers []WriteHeader, mode HeaderMode) []Header {
@@ -394,11 +458,11 @@ func (i BatchItem) GetRecord() (Record, error) {
 type BatchItems []BatchItem
 
 func (p BatchWriteParam) IsCreate() bool {
-	return p.Type == BatchWriteTypeCreate
+	return p.Type == WriteTypeCreate
 }
 
 func (p BatchWriteParam) IsUpdate() bool {
-	return p.Type == BatchWriteTypeUpdate
+	return p.Type == WriteTypeUpdate
 }
 
 type Record map[string]any
@@ -493,6 +557,27 @@ func (r HTTPError) Error() string {
 
 func (r HTTPError) Unwrap() error {
 	return r.err
+}
+
+// ErrorClass derives a stable class for this HTTP error. The status code is
+// the primary signal (e.g. 401 → auth_invalidated, 477 → provider_migration,
+// 5xx → provider_5xx); if the status doesn't map cleanly, we defer to the
+// wrapped error, which self-classifies via the Classifier interface.
+func (r HTTPError) ErrorClass() ErrorClass {
+	if class, ok := classOfHTTPStatus(r.Status); ok {
+		return class
+	}
+
+	if r.err == nil {
+		return ErrorClassUnknown
+	}
+
+	var c Classifier
+	if errors.As(r.err, &c) {
+		return c.ErrorClass()
+	}
+
+	return ErrorClassUnknown
 }
 
 type ListObjectMetadataResult struct {
@@ -614,6 +699,10 @@ type FieldMetadata struct {
 	// Values is a list of possible values for this field.
 	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
 	Values []FieldValue
+
+	// ReferenceTo is the list of object types this field references.
+	// It is applicable only if the ProviderType is "reference" (i.e. a lookup field), otherwise nil.
+	ReferenceTo []string
 }
 
 type FieldsMetadata map[string]FieldMetadata
@@ -651,7 +740,7 @@ const (
 )
 
 type SubscriptionEventPreLoadData struct {
-	Request *http.Request
+	RequestHeaders *http.Header
 }
 
 // SubscriptionEvent is an interface for webhook events coming from the provider.
@@ -812,3 +901,38 @@ const (
 	// SubscriptionStatusFailedToRollback registration returned error, and failed to rollback some intermittent steps.
 	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
 )
+
+type SearchFilter struct {
+	// multiple filters are joined by `and` by default.
+	FieldFilters []FieldFilter `json:"fieldFilters" validate:"required,dive"`
+}
+
+type FieldFilter struct {
+	FieldName string         `json:"fieldName" validate:"required"`
+	Operator  FilterOperator `json:"operator"  validate:"required"`
+	Value     any            `json:"value"     validate:"required"`
+}
+
+type FilterOperator string
+
+const (
+	FilterOperatorEQ FilterOperator = "eq"
+)
+
+type SearchParams struct {
+	ObjectName string `json:"objectName" validate:"required"`
+
+	// Fields to return in the search result.
+	Fields   datautils.StringSet `json:"fields"             validate:"required"`
+	Filter   SearchFilter        `json:"filter"             validate:"required"`
+	NextPage NextPageToken       `json:"nextPage,omitempty"`
+
+	// Page Limit for the search. If omitted, return provider's default limit.
+	Limit int64 `json:"limit,omitempty"`
+
+	// AssociatedObjects specifies a list of related objects to fetch along with the main object.
+	// Optional.
+	AssociatedObjects []string `json:"associatedObjects,omitempty"`
+}
+
+type SearchResult = ReadResult

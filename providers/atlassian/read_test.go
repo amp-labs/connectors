@@ -1,7 +1,6 @@
 package atlassian
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -45,7 +44,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Date value '-53s' for field 'updated' is invalid"),
+				testutils.StringError("Date value '-53s' for field 'updated' is invalid"),
 			},
 		},
 		{
@@ -57,7 +56,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Not Found - No message available"),
+				testutils.StringError("Not Found - No message available"),
 			},
 		},
 		{

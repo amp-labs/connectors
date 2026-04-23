@@ -6,7 +6,6 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
 	connTest "github.com/amp-labs/connectors/test/aws"
 	"github.com/amp-labs/connectors/test/utils"
@@ -58,7 +57,7 @@ func main() {
 				},
 			},
 			TrustedTokenIssuerType: "OIDC_JWT",
-			ClientToken:            goutils.Pointer(uuid.New().String()),
+			ClientToken:            new(uuid.New().String()),
 		},
 		CreatePayload{
 			Name: "OKTA",
@@ -71,7 +70,7 @@ func main() {
 				},
 			},
 			TrustedTokenIssuerType: "OIDC_JWT",
-			ClientToken:            goutils.Pointer(uuid.New().String()),
+			ClientToken:            new(uuid.New().String()),
 		},
 		testscenario.CRUDTestSuite{
 			ReadFields: datautils.NewSet("TrustedTokenIssuerArn", "Name", "TrustedTokenIssuerConfiguration", "TrustedTokenIssuerType"),

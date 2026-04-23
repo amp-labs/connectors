@@ -1,0 +1,26 @@
+{
+    "ok": true,
+    "channels": [
+        {
+            "id": "C0ABCDEF123",
+            "name": "general",
+            "is_channel": true,
+            "is_group": false,
+            "is_im": false,
+            "is_mpim": false,
+            "is_private": false,
+            "created": 1449252889,
+            "updated": 1449252889,
+            "is_archived": false,
+            "is_general": true,
+            "name_normalized": "general",
+            "is_shared": false,
+            "is_org_shared": false,
+            "is_member": true,
+            "num_members": 4
+        }
+    ],
+    "response_metadata": {
+        "next_cursor": ""
+    }
+}

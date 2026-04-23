@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 const Salesforce Provider = "salesforce"
@@ -35,6 +34,7 @@ func init() { // nolint:funlen
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
+			AuthURLParams:             map[string]string{"prompt": "login"},
 			TokenURL:                  "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
@@ -52,12 +52,12 @@ func init() { // nolint:funlen
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
 						Create: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							DefaultRecordLimit: new(100), // nolint:mnd
 							ObjectRecordLimits: nil,
 							Supported:          true,
 						},
 						Update: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							DefaultRecordLimit: new(100), // nolint:mnd
 							ObjectRecordLimits: nil,
 							Supported:          true,
 						},
@@ -68,10 +68,16 @@ func init() { // nolint:funlen
 						Upsert: true,
 						Delete: true,
 					},
+					Delete:    true,
 					Proxy:     true,
 					Read:      true,
-					Subscribe: false,
+					Subscribe: true,
 					Write:     true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 			ModuleSalesforceAccountEngagement: {
@@ -85,9 +91,9 @@ func init() { // nolint:funlen
 						Delete: false,
 					},
 					Proxy:     false,
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 			},
 			ModuleSalesforceAccountEngagementDemo: {
@@ -101,9 +107,9 @@ func init() { // nolint:funlen
 						Delete: false,
 					},
 					Proxy:     false,
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 			},
 		},
@@ -114,10 +120,16 @@ func init() { // nolint:funlen
 				Upsert: true,
 				Delete: true,
 			},
+			Delete:    true,
 			Proxy:     true,
 			Read:      true,
-			Subscribe: false,
+			Subscribe: true,
 			Write:     true,
+			Search: SearchSupport{
+				Operators: SearchOperators{
+					Equals: true,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -135,9 +147,36 @@ func init() { // nolint:funlen
 					Name:        "workspace",
 					DisplayName: "Subdomain",
 					DocsURL:     "https://help.salesforce.com/s/articleView?language=en_US&id=sf.faq_domain_name_what.htm&type=5",
+					// ModuleDependencies specifies which modules REQUIRE this metadata item.
+					// Here, it means: "the CRM module depends on/requires the workspace metadata".
 					ModuleDependencies: &ModuleDependencies{
-						ModuleSalesforceCRM: ModuleDependency{},
+						ModuleSalesforceCRM:                   {},
+						ModuleSalesforceAccountEngagement:     {},
+						ModuleSalesforceAccountEngagementDemo: {},
 					},
+				},
+				{
+					DisplayName: "Business Unit ID",
+					DocsURL:     "https://developer.salesforce.com/docs/marketing/pardot/guide/authentication.html",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleSalesforceAccountEngagement:     {},
+						ModuleSalesforceAccountEngagementDemo: {},
+					},
+					Name: "businessUnitId",
+					Prompt: "Business Unit ID is the 18-character ID that starts with 0Uv, " +
+						"found in Business Unit Setup within Salesforce Setup or Marketing Setup.",
+				},
+			},
+		},
+		ProviderAppMetadata: &ProviderAppMetadata{
+			ProviderParams: []MetadataItemInput{
+				{
+					Name:        "packageInstallURL",
+					DisplayName: "External Client App Install URL",
+					Prompt: "If you are using External Client Apps (instead of Connected Apps) to connect your " +
+						"Salesforce account, enter the package install URL that the UI library should show to " +
+						"your users to install your Salesforce managed package.",
+					DocsURL: "https://docs.withampersand.com/provider-guides/salesforce#6-build-the-package-install-url",
 				},
 			},
 		},

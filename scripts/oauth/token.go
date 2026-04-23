@@ -22,7 +22,6 @@ import (
 	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/internal/future"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/scripts/utils/credutils"
 	"golang.org/x/oauth2"
@@ -170,7 +169,7 @@ func (a *OAuthApp) processCallback(writer http.ResponseWriter, request *http.Req
 	}
 
 	// Print the token which will also print raw metadata
-	fmt.Printf("%+v", tok)
+	fmt.Printf("%+v\n", tok)
 
 	if a.WriteCreds {
 		// Update the creds.json file with the new token values.
@@ -331,7 +330,7 @@ func setup() *OAuthApp {
 
 	switch providerInfo.Oauth2Opts.GrantType {
 	case providers.AuthorizationCodePKCE:
-		codeVerifier = goutils.Pointer(oauth2.GenerateVerifier())
+		codeVerifier = new(oauth2.GenerateVerifier())
 		// PKCE is an additional set of rules for Oauth2.
 
 		fallthrough
@@ -344,6 +343,7 @@ func setup() *OAuthApp {
 
 		// Determine the OAuth redirect URL.
 		redirect := fmt.Sprintf("%s://localhost:%d%s", *proto, *port, *callback)
+		// redirect := "https://api.withampersand.com/callbacks/v1/oauth"
 
 		state, err := registry.GetString(credscanning.Fields.State.Name)
 		if err != nil {

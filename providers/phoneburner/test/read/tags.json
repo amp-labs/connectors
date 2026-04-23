@@ -1,0 +1,20 @@
+{
+  "http_status": 200,
+  "status": "success",
+  "tags": {
+    "tags": [
+      {
+        "id": 1,
+        "title": "Tag #1"
+      },
+      {
+        "id": 2,
+        "title": "Tag #2"
+      }
+    ],
+    "page": 1,
+    "page_size": 2,
+    "total_pages": 2,
+    "total_results": 4
+  }
+}

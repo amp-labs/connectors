@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "filtering": {},
+    "paging": {
+      "per_page": 100,
+      "current_page": 1,
+      "next_page": null,
+      "prev_page": null
+    },
+    "sorting": {
+      "sort_by": "updated_at",
+      "sort_direction": "DESC NULLS LAST"
+    }
+  },
+  "data": [
+    {
+      "id": 48371814,
+      "name": "Reebok",
+      "domain": "https://www.reebok.eu/en-gb/",
+      "do_not_contact": false
+    },
+    {
+      "id": 48371806,
+      "name": "Asics",
+      "domain": "https://www.asics.com/gb/en-gb/",
+      "do_not_contact": false
+    }
+  ]
+}

@@ -83,7 +83,7 @@ func (op *HTTPOperation[RequestType, ResponseType]) ExecuteRequest(
 		return response, common.InterpretError(resp, body)
 	}
 
-	jsonResp, err := common.ParseJSONResponse(resp, body)
+	jsonResp, err := common.ParseJSONResponse(ctx, resp, body)
 	if err != nil {
 		return response, err
 	}

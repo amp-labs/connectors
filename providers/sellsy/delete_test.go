@@ -1,7 +1,6 @@
 package sellsy
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -39,7 +38,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("bad request: not found: Not Found"),
+				testutils.StringError("bad request: not found: Not Found"),
 			},
 		},
 		{

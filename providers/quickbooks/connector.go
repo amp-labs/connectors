@@ -31,7 +31,7 @@ type Connector struct {
 
 	// realmID is the Company ID in QuickBooks.
 	// http://developer.intuit.com/app/developer/qbo/docs/develop/authentication-and-authorization/oauth-2.0
-	realmID string
+	realmId string
 	// graphQLBaseURL is a variable on the struct so it can be mocked in unit tests.
 	graphQLBaseURL string
 }
@@ -42,7 +42,18 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		return nil, err
 	}
 
-	conn.realmID = params.Metadata["realmID"]
+	conn.realmId = params.Metadata["realmId"]
+
+	return conn, nil
+}
+
+func NewSandboxConnector(params common.ConnectorParams) (*Connector, error) {
+	conn, err := components.Initialize(providers.QuickbooksSandbox, params, constructor)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.realmId = params.Metadata["realmId"]
 
 	return conn, nil
 }

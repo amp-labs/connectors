@@ -1,7 +1,6 @@
 package klaviyo
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -63,7 +62,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"Not found: A tag with id 5eb337d5-a132-4627-aa1e-04bc9aac260d does not exist.",
 				),
 			},

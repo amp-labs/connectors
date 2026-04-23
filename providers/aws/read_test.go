@@ -1,7 +1,6 @@
 package aws
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -42,7 +41,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("The operation is not supported for this Identity Center instance"),
+				testutils.StringError("The operation is not supported for this Identity Center instance"),
 			},
 		},
 		{

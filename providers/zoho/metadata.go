@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -198,7 +197,7 @@ func parseCRMMetadataResponse(resp *common.JSONHTTPResponse, objectName string) 
 			DisplayName:  fld.DisplayName,
 			ValueType:    nativeCRMType(fld.Type),
 			ProviderType: fld.Type,
-			ReadOnly:     goutils.Pointer(fld.FieldReadOnly),
+			ReadOnly:     new(fld.FieldReadOnly),
 			Values:       fieldValues,
 		}
 

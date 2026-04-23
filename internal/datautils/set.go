@@ -126,3 +126,14 @@ func (s *Set[T]) UnmarshalJSON(bytes []byte) error {
 
 	return nil
 }
+
+// HasExtra returns true if this set contains any elements not in the allowed set.
+func (s Set[T]) HasExtra(allowed Set[T]) bool {
+	for key := range s {
+		if !allowed.Has(key) {
+			return true
+		}
+	}
+
+	return false
+}

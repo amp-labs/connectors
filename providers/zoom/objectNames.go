@@ -15,24 +15,38 @@ var (
 	objectNameTrackingField = "tracking_fields" // nolint: gochecknoglobals
 	objectNameDevice        = "devices"         // nolint: gochecknoglobals
 	objectNameH322Device    = "h323_devices"    // nolint: gochecknoglobals
+	objectNameMeeting       = "meetings"        // nolint: gochecknoglobals
+	objectNameTsp           = "tsp"             // nolint: gochecknoglobals
+	objectNameWebinar       = "webinars"        // nolint: gochecknoglobals
 )
 
-// ObjectNameToResponseField maps ObjectName to the response field name which contains that object.
-var ObjectNameToResponseField = common.ModuleObjectNameToFieldName{ // nolint: gochecknoglobals
-	common.ModuleRoot: datautils.NewDefaultMap(map[string]string{
-		"device_groups":     "groups",
-		"archive_files":     "meetings",
-		"meeting_summaries": "summaries",
-		"billing_report":    "billing_reports",
-		"activities_report": "activity_logs",
-		"h323_devices":      "devices",
-		"contacts_groups":   "groups",
-	},
-		func(objectName string) (fieldName string) {
-			return objectName
-		},
-	),
-}
+var incrementalObjects = datautils.NewSet( //nolint:gochecknoglobals
+	"recordings",
+	"archive_files",
+	"meeting_summaries",
+	"activities",
+	"meetings",
+	"users_report",
+	"recordings_report",
+	"meetings_report",
+	"operation_logs_report",
+	"meeting_activities_report",
+	"telephone_report",
+	"upcoming_events_report",
+)
+
+// mandatoryDateObjects defines which objects require mandatory from/to query parameters.
+// These endpoints will get default 29-day range when Since/Until are not provided.
+var mandatoryDateObjects = datautils.NewSet( //nolint:gochecknoglobals
+	"users_report",
+	"recordings_report",
+	"meetings_report",
+	"operation_logs_report",
+	"meeting_activities_report",
+	"telephone_report",
+	"upcoming_events_report",
+	"recordings",
+)
 
 var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint: gochecknoglobals
 	common.ModuleRoot: datautils.NewSet(
@@ -42,6 +56,8 @@ var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint
 		objectNameTrackingField,
 		objectNameDevice,
 		objectNameH322Device,
+		objectNameTsp,
+		objectNameWebinar,
 	),
 }
 
@@ -52,6 +68,9 @@ var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint
 	objectNameTrackingField: "/tracking_fields",
 	objectNameDevice:        "/devices",
 	objectNameH322Device:    "/h323/devices",
+	objectNameMeeting:       "/users/me/meetings",
+	objectNameTsp:           "/users/me/tsp",
+	objectNameWebinar:       "/users/me/webinars",
 }, func(objectName string) (path string) {
 	return objectName
 },

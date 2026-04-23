@@ -1,0 +1,36 @@
+{
+  "from": "2022-01-01",
+  "to": "2022-04-01",
+  "next_page_token": "Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3",
+  "page_count": 1,
+  "page_size": 30,
+  "total_records": 1,
+  "meetings": [
+    {
+      "account_id": "Cx3wERazSgup7ZWRHQM8-w",
+      "duration": 20,
+      "host_id": "_0ctZtY0REqWalTmwvrdIw",
+      "id": 6840331990,
+      "recording_count": 22,
+      "start_time": "2021-03-18T05:41:36Z",
+      "topic": "My Personal Meeting",
+      "total_size": 22,
+      "type": "1",
+      "uuid": "BOKXuumlTAGXuqwr3bLyuQ==",
+      "recording_files": [
+        {
+          "deleted_time": "2021-03-18T05:41:36Z",
+          "download_url": "https://example.com/rec/download/Qg75t7xZBtEbAkjdlgbfdngBBBB",
+          "file_path": "/9090876528/path01/demo.mp4",
+          "file_size": 7220,
+          "file_type": "MP4",
+          "file_extension": "M4A",
+          "id": "72576a1f-4e66-4a77-87c4-f13f9808bd76",
+          "meeting_id": "L0AGOEPVR9m5WSOOs/d+FQ==",
+          "play_url": "https://example.com/rec/play/Qg75t7xZBtEbAkjdlgbfdngBBBB",
+          "recording_end": "2021-03-18T05:41:36Z"
+        }
+      ]
+    }
+  ]
+}

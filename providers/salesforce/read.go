@@ -2,101 +2,18 @@ package salesforce
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/associations"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
 
 const defaultSOQLPageSize = 2000
-
-// This helps us identify if we can use a SOQL subquery to get an associated object, since SOQL subqueries
-// only work for child objects.
-func getParentFieldMap() map[string]map[string]string {
-	return map[string]map[string]string{
-		"opportunity": {
-			"accounts": "AccountId",
-		},
-	}
-}
-
-func isParentRelationship(objectName, associatedObject string) bool {
-	parentFieldMap := getParentFieldMap()
-
-	objMap, ok := parentFieldMap[strings.ToLower(objectName)]
-	if !ok {
-		return false
-	}
-
-	_, ok = objMap[strings.ToLower(associatedObject)]
-
-	return ok
-}
-
-func getParentFieldName(objectName, associatedObject string) string {
-	parentFieldMap := getParentFieldMap()
-
-	objMap, ok := parentFieldMap[strings.ToLower(objectName)]
-	if !ok {
-		return ""
-	}
-
-	return objMap[strings.ToLower(associatedObject)]
-}
-
-// containsField checks if a field exists in the fields list (case-insensitive).
-// e.g. containsField(["Id", "Name", "AccountId"], "accountid") -> true.
-func containsField(fields []string, fieldName string) bool {
-	fieldLower := strings.ToLower(fieldName)
-	for _, field := range fields {
-		if strings.ToLower(field) == fieldLower {
-			return true
-		}
-	}
-
-	return false
-}
-
-// junctionRelationshipMapping defines the relationship name and related ID field for junction relationships.
-type junctionRelationshipMapping struct {
-	RelationshipName string // e.g., "OpportunityContactRoles"
-	RelatedIdField   string // e.g., "ContactId"
-}
-
-// getJunctionRelationshipMap returns the junction relationship map.
-// This is used for junction objects where we query a child relationship but extract a related object ID.
-// e.g., For Opportunity -> contacts, we query OpportunityContactRoles but extract ContactId.
-func getJunctionRelationshipMap() map[string]map[string]junctionRelationshipMapping {
-	return map[string]map[string]junctionRelationshipMapping{
-		"opportunity": {
-			"contacts": {
-				RelationshipName: "OpportunityContactRoles",
-				RelatedIdField:   "ContactId",
-			},
-		},
-	}
-}
-
-// getJunctionRelationship returns the relationship name and related ID field for junction relationships.
-// Returns ok=false if this is not a junction relationship.
-func getJunctionRelationship(objectName, associatedObject string) (relationshipName, relatedIdField string, ok bool) {
-	junctionRelationshipMap := getJunctionRelationshipMap()
-
-	objMap, found := junctionRelationshipMap[strings.ToLower(objectName)]
-
-	if !found {
-		return "", "", false
-	}
-
-	mapping, found := objMap[strings.ToLower(associatedObject)]
-	if !found {
-		return "", "", false
-	}
-
-	return mapping.RelationshipName, mapping.RelatedIdField, true
-}
 
 // Read reads data from Salesforce. By default, it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
@@ -121,9 +38,9 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	return common.ParseResult(
 		rsp,
-		getRecords,
-		getNextRecordsURL,
-		getSalesforceDataMarshaller(config),
+		core.GetRecords,
+		core.GetNextRecordsURL,
+		core.GetDataMarshallerForRead(config),
 		config.Fields,
 	)
 }
@@ -137,98 +54,105 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 
 	// If NextPage is not set, then we're reading the first page of results.
 	// We need to construct the SOQL query and then make the request.
+	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_query.htm
 	url, err := c.getRestApiURL("query")
 	if err != nil {
 		return nil, err
 	}
 
-	url.WithQueryParam("q", makeSOQL(config).String())
+	url.WithQueryParam("q", makeSOQL(config, c.getTimestampColumn()).String())
 
 	return url, nil
 }
 
 // makeSOQL returns the SOQL query for the desired read operation.
-func makeSOQL(config common.ReadParams) *core.SOQLBuilder {
-	fields := addAssociationFields(config)
-	soql := (&core.SOQLBuilder{}).SelectFields(fields).From(config.ObjectName)
-	addWhereClauses(soql, config)
+// The timestampColumn parameter specifies which field to use for Since/Until filtering
+// (typically "SystemModstamp").
+func makeSOQL(params common.ReadParams, timestampColumn string) *core.SOQLBuilder {
+	fields := associations.FieldsForSelectQueryRead(&params)
+	soql := (&core.SOQLBuilder{}).SelectFields(fields).From(params.ObjectName)
+	addWhereClauses(soql, params, timestampColumn)
 
 	return soql
 }
 
-// addAssociationFields adds fields for associated objects to the fields list.
-func addAssociationFields(config common.ReadParams) []string {
-	fields := config.Fields.List()
-
-	if config.AssociatedObjects == nil {
-		return fields
-	}
-
-	for _, obj := range config.AssociatedObjects {
-		fields = addFieldForAssociation(fields, config.ObjectName, obj)
-	}
-
-	return fields
-}
-
-// addFieldForAssociation adds a field or subquery for an associated object.
-func addFieldForAssociation(fields []string, objectName, assocObj string) []string {
-	// Some objects cannot be queried using a subquery, such as when the associated object is a parent object.
-	// In that case, we fetch the associated object's ID as a field, and fetch the full object in the q
-	if isParentRelationship(objectName, assocObj) {
-		parentField := getParentFieldName(objectName, assocObj)
-		if parentField != "" && !containsField(fields, parentField) {
-			fields = append(fields, parentField)
-		}
-
-		return fields
-	}
-
-	// Check for junction relationship (child relationship that maps to a different object)
-	relationshipName, _, isJunction := getJunctionRelationship(objectName, assocObj)
-	if isJunction {
-		// Use the mapped relationship name for SOQL subquery
-		// e.g., (SELECT FIELDS(STANDARD) FROM OpportunityContactRoles)
-		fields = append(fields, "(SELECT FIELDS(STANDARD) FROM "+relationshipName+")")
-
-		return fields
-	}
-
-	// Standard child relationship
-	// Generates subqueries like: (SELECT FIELDS(STANDARD) FROM Contacts)
-	// Just standard fields for now, because salesforce errors out > 200 fields on an object.
-	// Source: https://www.infallibletechie.com/2023/04/parent-child-records-in-salesforce-soql-using-rest-api.html
-	fields = append(fields, "(SELECT FIELDS(STANDARD) FROM "+assocObj+")")
-
-	return fields
-}
-
 // addWhereClauses adds WHERE clauses to the SOQL query based on the config.
-func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams) {
+func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, timestampColumn string) {
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
-		soql.Where("SystemModstamp > " + datautils.Time.FormatRFC3339inUTC(config.Since))
+		soql.Where(timestampColumn + " > " + datautils.Time.FormatRFC3339inUTC(config.Since))
 	}
 
 	if !config.Until.IsZero() {
-		soql.Where("SystemModstamp <= " + datautils.Time.FormatRFC3339inUTC(config.Until))
+		soql.Where(timestampColumn + " <= " + datautils.Time.FormatRFC3339inUTC(config.Until))
 	}
 
 	if config.Deleted {
 		soql.Where("IsDeleted = true")
 	}
 
-	// TODO: When we support builder facing filters, we should escape the
-	// filter string to avoid SOQL injection.
 	if config.Filter != "" {
 		soql.Where(config.Filter)
 	}
 
-	if config.PageSize > 0 {
-		soql.Limit(config.PageSize)
+	if config.BuilderFilter != nil {
+		for _, ff := range config.BuilderFilter.FieldFilters {
+			if ff.Operator != common.FilterOperatorEQ {
+				continue
+			}
+
+			soql.Where(buildSOQLEqCondition(ff.FieldName, ff.Value))
+		}
 	}
+
+	if config.PageSize > 0 {
+		soql.Limit(int64(config.PageSize))
+	}
+}
+
+// DeployApexTriggersForFilteredRead builds and deploys filtered-read apex triggers
+// (datetime indicator) for the given trigger params. Each trigger sets a timestamp
+// field to System.now() when any watched field changes.
+func (c *Connector) DeployApexTriggersForFilteredRead( //nolint:unused
+	ctx context.Context,
+	triggerParams map[common.ObjectName]*ApexTriggerParams,
+) (*DeployApexTriggersResult, error) {
+	if len(triggerParams) == 0 {
+		return &DeployApexTriggersResult{
+			Results: make(map[common.ObjectName]*ApexTriggerResult),
+			Errors:  make(map[common.ObjectName]error),
+		}, nil
+	}
+
+	triggerCodeMap := make(map[common.ObjectName]string, len(triggerParams))
+	for objName, params := range triggerParams {
+		triggerCodeMap[objName] = metadata.GenerateTriggerCodeForFilteredRead(*params, params.IndicatorField.FieldName)
+	}
+
+	zipDataMap, err := buildApexTriggerZips(triggerParams, triggerCodeMap)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.deployApexTriggers(ctx, triggerParams, zipDataMap)
 }
 
 func (c *Connector) DefaultPageSize() int {
 	return defaultSOQLPageSize
+}
+
+// buildSOQLEqCondition builds a SOQL equality condition for a field and value.
+// String values are single-quoted and escaped to prevent SOQL injection.
+func buildSOQLEqCondition(fieldName string, value any) string {
+	switch v := value.(type) {
+	case string:
+		escaped := strings.ReplaceAll(v, `\`, `\\`)
+		escaped = strings.ReplaceAll(escaped, "'", `\'`)
+
+		return fmt.Sprintf("%s = '%s'", fieldName, escaped)
+	case bool:
+		return fmt.Sprintf("%s = %t", fieldName, v)
+	default:
+		return fmt.Sprintf("%s = %v", fieldName, v)
+	}
 }

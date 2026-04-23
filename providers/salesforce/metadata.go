@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 var ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
@@ -18,6 +17,16 @@ func (c *Connector) UpsertMetadata(
 ) (*common.UpsertMetadataResult, error) {
 	if c.crmAdapter != nil {
 		return c.crmAdapter.UpsertMetadata(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) DeleteMetadata(
+	ctx context.Context, params *common.DeleteMetadataParams,
+) (*common.DeleteMetadataResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.DeleteMetadata(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented
@@ -154,6 +163,7 @@ type fieldResult struct {
 	Type string `json:"type"`
 
 	PicklistValues []picklistValue `json:"picklistValues"`
+	ReferenceTo    []string        `json:"referenceTo"`
 
 	Autonumber        *bool `json:"autonumber,omitempty"`
 	Calculated        *bool `json:"calculated,omitempty"`
@@ -192,7 +202,7 @@ func (f fieldResult) isReadOnly() bool {
 		(f.Createable != nil && !*f.Createable && f.Updateable != nil && !*f.Updateable)
 }
 
-func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
+func (f fieldResult) transformToFieldMetadata() common.FieldMetadata { //nolint:cyclop
 	var (
 		valueType common.ValueType
 		values    []common.FieldValue
@@ -201,8 +211,10 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 	// Based on type property map value to Ampersand value type.
 	// See https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/field_types.htm
 	switch f.Type {
-	case "string", "textarea", "url", "email", "reference", "id", "phone":
+	case "string", "textarea", "url", "email", "id", "phone":
 		valueType = common.ValueTypeString
+	case "reference":
+		valueType = common.ValueTypeReference
 	case "boolean":
 		valueType = common.ValueTypeBoolean
 	case "int":
@@ -227,11 +239,20 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata {
 		DisplayName:  f.DisplayName,
 		ValueType:    valueType,
 		ProviderType: f.Type,
-		ReadOnly:     goutils.Pointer(f.isReadOnly()),
+		ReadOnly:     new(f.isReadOnly()),
 		IsCustom:     f.Custom,
 		IsRequired:   f.isRequired(),
 		Values:       values,
+		ReferenceTo:  f.getReferenceTo(),
 	}
+}
+
+func (f fieldResult) getReferenceTo() []string {
+	if f.Type == "reference" && len(f.ReferenceTo) > 0 {
+		return f.ReferenceTo
+	}
+
+	return nil
 }
 
 func (f fieldResult) getFieldValues() []common.FieldValue {
@@ -259,7 +280,7 @@ func (f fieldResult) getFieldValues() []common.FieldValue {
 func (f fieldResult) isRequired() *bool {
 	// Platform-populated fields are never required inputs.
 	if f.Autonumber != nil && *f.Autonumber || f.Calculated != nil && *f.Calculated {
-		return goutils.Pointer(false)
+		return new(false)
 	}
 
 	// Cannot determine without all three metadata flags.
@@ -268,7 +289,5 @@ func (f fieldResult) isRequired() *bool {
 	}
 
 	// Required when createable, non-nillable, and not defaulted by Salesforce.
-	requiredOnCreate := *f.Createable && !*f.Nillable && !*f.DefaultedOnCreate
-
-	return goutils.Pointer(requiredOnCreate)
+	return new(*f.Createable && !*f.Nillable && !*f.DefaultedOnCreate)
 }

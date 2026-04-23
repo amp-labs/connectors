@@ -1,0 +1,1293 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "booking_windows": {
+          "displayName": "Booking Windows",
+          "path": "/company/schedule_availability/booking_windows",
+          "responseKey": "booking_windows",
+          "fields": {
+            "available": {
+              "displayName": "available",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "end_time": {
+              "displayName": "end_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_time": {
+              "displayName": "start_time",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "checklists": {
+          "displayName": "Checklists",
+          "path": "/checklists",
+          "responseKey": "checklists",
+          "fields": {
+            "estimate_uuid": {
+              "displayName": "estimate_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "job_uuid": {
+              "displayName": "job_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sections": {
+              "displayName": "sections",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "customers": {
+          "displayName": "Customers",
+          "path": "/customers",
+          "responseKey": "customers",
+          "fields": {
+            "addresses": {
+              "displayName": "addresses",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "attachments": {
+              "displayName": "attachments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "company": {
+              "displayName": "company",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_id": {
+              "displayName": "company_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "do_not_service": {
+              "displayName": "do_not_service",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "home_number": {
+              "displayName": "home_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lead_source": {
+              "displayName": "lead_source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mobile_number": {
+              "displayName": "mobile_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notifications_enabled": {
+              "displayName": "notifications_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "work_number": {
+              "displayName": "work_number",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "employees": {
+          "displayName": "Employees",
+          "path": "/employees",
+          "responseKey": "employees",
+          "fields": {
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "color_hex": {
+              "displayName": "color_hex",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_id": {
+              "displayName": "company_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mobile_number": {
+              "displayName": "mobile_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "permissions": {
+              "displayName": "permissions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "role": {
+              "displayName": "role",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "estimates": {
+          "displayName": "Estimates",
+          "path": "/estimates",
+          "responseKey": "estimates",
+          "fields": {
+            "address": {
+              "displayName": "address",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "assigned_employees": {
+              "displayName": "assigned_employees",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "company_id": {
+              "displayName": "company_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customer": {
+              "displayName": "customer",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "estimate_fields": {
+              "displayName": "estimate_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "estimate_number": {
+              "displayName": "estimate_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lead_source": {
+              "displayName": "lead_source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "options": {
+              "displayName": "options",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "schedule": {
+              "displayName": "schedule",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "work_status": {
+              "displayName": "work_status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "work_timestamps": {
+              "displayName": "work_timestamps",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "events": {
+          "displayName": "Events",
+          "path": "/events",
+          "responseKey": "events",
+          "fields": {
+            "address": {
+              "displayName": "address",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "all_day": {
+              "displayName": "all_day",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "assigned_employees": {
+              "displayName": "assigned_employees",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "company_id": {
+              "displayName": "company_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "note": {
+              "displayName": "note",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recurrence_rule": {
+              "displayName": "recurrence_rule",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "schedule": {
+              "displayName": "schedule",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "invoices": {
+          "displayName": "Invoices",
+          "path": "/invoices",
+          "responseKey": "invoices",
+          "fields": {
+            "amount": {
+              "displayName": "amount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "discounts": {
+              "displayName": "discounts",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "display_due_concept": {
+              "displayName": "display_due_concept",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "due_amount": {
+              "displayName": "due_amount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "due_at": {
+              "displayName": "due_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "due_concept": {
+              "displayName": "due_concept",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoice_date": {
+              "displayName": "invoice_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoice_number": {
+              "displayName": "invoice_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "items": {
+              "displayName": "items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "job_id": {
+              "displayName": "job_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "paid_at": {
+              "displayName": "paid_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payments": {
+              "displayName": "payments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "sent_at": {
+              "displayName": "sent_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "service_date": {
+              "displayName": "service_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subtotal": {
+              "displayName": "subtotal",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "taxes": {
+              "displayName": "taxes",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "job_fields/job_types": {
+          "displayName": "Job Types",
+          "path": "/job_fields/job_types",
+          "responseKey": "job_types",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "jobs": {
+          "displayName": "Jobs",
+          "path": "/jobs",
+          "responseKey": "jobs",
+          "fields": {
+            "address": {
+              "displayName": "address",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "assigned_employees": {
+              "displayName": "assigned_employees",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "attachments": {
+              "displayName": "attachments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "canceled_at": {
+              "displayName": "canceled_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_id": {
+              "displayName": "company_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customer": {
+              "displayName": "customer",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "deleted_at": {
+              "displayName": "deleted_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoice_number": {
+              "displayName": "invoice_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "job_fields": {
+              "displayName": "job_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "lead_source": {
+              "displayName": "lead_source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locked_at": {
+              "displayName": "locked_at",
+              "valueType": "other",
+              "providerType": "date-time"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "original_estimate_id": {
+              "displayName": "original_estimate_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "original_estimate_uuids": {
+              "displayName": "original_estimate_uuids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "outstanding_balance": {
+              "displayName": "outstanding_balance",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "recurrence_number": {
+              "displayName": "recurrence_number",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "recurrence_rule": {
+              "displayName": "recurrence_rule",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "schedule": {
+              "displayName": "schedule",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "subtotal": {
+              "displayName": "subtotal",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "total_amount": {
+              "displayName": "total_amount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "work_status": {
+              "displayName": "work_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "needs scheduling",
+                  "displayValue": "needs scheduling"
+                },
+                {
+                  "value": "scheduled",
+                  "displayValue": "scheduled"
+                },
+                {
+                  "value": "in progress",
+                  "displayValue": "in progress"
+                },
+                {
+                  "value": "complete rated",
+                  "displayValue": "complete rated"
+                },
+                {
+                  "value": "complete unrated",
+                  "displayValue": "complete unrated"
+                },
+                {
+                  "value": "user canceled",
+                  "displayValue": "user canceled"
+                },
+                {
+                  "value": "pro canceled",
+                  "displayValue": "pro canceled"
+                }
+              ]
+            },
+            "work_timestamps": {
+              "displayName": "work_timestamps",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "lead_sources": {
+          "displayName": "Lead Sources",
+          "path": "/lead_sources",
+          "responseKey": "lead_sources",
+          "fields": {
+            "editable": {
+              "displayName": "editable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "leads": {
+          "displayName": "Leads",
+          "path": "/leads",
+          "responseKey": "leads",
+          "fields": {
+            "address": {
+              "displayName": "address",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "assigned_employee": {
+              "displayName": "assigned_employee",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "company_id": {
+              "displayName": "company_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company_name": {
+              "displayName": "company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "conversions": {
+              "displayName": "conversions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customer": {
+              "displayName": "customer",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "job_fields": {
+              "displayName": "job_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "lead_source": {
+              "displayName": "lead_source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lost_at": {
+              "displayName": "lost_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "pipeline_status": {
+              "displayName": "pipeline_status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "lost",
+                  "displayValue": "lost"
+                },
+                {
+                  "value": "open",
+                  "displayValue": "open"
+                },
+                {
+                  "value": "won",
+                  "displayValue": "won"
+                }
+              ]
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "total_amount": {
+              "displayName": "total_amount",
+              "valueType": "other",
+              "providerType": "number"
+            }
+          }
+        },
+        "price_book/material_categories": {
+          "displayName": "Material Categories",
+          "path": "/api/price_book/material_categories",
+          "responseKey": "data",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image": {
+              "displayName": "image",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "object": {
+              "displayName": "object",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent_uuid": {
+              "displayName": "parent_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "price_book/materials": {
+          "displayName": "Materials",
+          "path": "/api/price_book/materials",
+          "responseKey": "data",
+          "fields": {
+            "cost": {
+              "displayName": "cost",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "flat_rate_enabled": {
+              "displayName": "flat_rate_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "image": {
+              "displayName": "image",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "material_category_name": {
+              "displayName": "material_category_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "material_category_uuid": {
+              "displayName": "material_category_uuid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "object": {
+              "displayName": "object",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "part_number": {
+              "displayName": "part_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "price": {
+              "displayName": "price",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "taxable": {
+              "displayName": "taxable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "unit_of_measure": {
+              "displayName": "unit_of_measure",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "price_book/price_forms": {
+          "displayName": "Price Forms",
+          "path": "/api/price_book/price_forms",
+          "responseKey": "data",
+          "fields": {
+            "assigned_pros": {
+              "displayName": "assigned_pros",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "assigned_route_templates": {
+              "displayName": "assigned_route_templates",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "assigned_tags": {
+              "displayName": "assigned_tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "automatically_add_to_new_job": {
+              "displayName": "automatically_add_to_new_job",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "bookable_as": {
+              "displayName": "bookable_as",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration_in_minutes": {
+              "displayName": "duration_in_minutes",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "dynamic_duration_enabled": {
+              "displayName": "dynamic_duration_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "enable_advanced_calculation": {
+              "displayName": "enable_advanced_calculation",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "fields": {
+              "displayName": "fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image_url": {
+              "displayName": "image_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "kind": {
+              "displayName": "kind",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "object": {
+              "displayName": "object",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "olb_enabled": {
+              "displayName": "olb_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "order_index": {
+              "displayName": "order_index",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "question_1": {
+              "displayName": "question_1",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "question_2": {
+              "displayName": "question_2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "route_mode_enabled": {
+              "displayName": "route_mode_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "service_area_pricing_enabled": {
+              "displayName": "service_area_pricing_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "taxable": {
+              "displayName": "taxable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "template_type": {
+              "displayName": "template_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "price_book/services": {
+          "displayName": "Price Book Services",
+          "path": "/api/price_book/services",
+          "responseKey": "data",
+          "fields": {
+            "assigned_pros": {
+              "displayName": "assigned_pros",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "bookable_as": {
+              "displayName": "bookable_as",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category": {
+              "displayName": "category",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cost": {
+              "displayName": "cost",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "duration": {
+              "displayName": "duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "flat_rate_enabled": {
+              "displayName": "flat_rate_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "image": {
+              "displayName": "image",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "industry": {
+              "displayName": "industry",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "managed_by": {
+              "displayName": "managed_by",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "object": {
+              "displayName": "object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "service",
+                  "displayValue": "service"
+                }
+              ]
+            },
+            "online_booking_enabled": {
+              "displayName": "online_booking_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "price": {
+              "displayName": "price",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "question_1": {
+              "displayName": "question_1",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "question_2": {
+              "displayName": "question_2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "service_labor_rates": {
+              "displayName": "service_labor_rates",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "service_materials": {
+              "displayName": "service_materials",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "task_number": {
+              "displayName": "task_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "taxable": {
+              "displayName": "taxable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "unit_of_measure": {
+              "displayName": "unit_of_measure",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "routes": {
+          "displayName": "Routes",
+          "path": "/routes",
+          "responseKey": "routes",
+          "fields": {
+            "color_hex": {
+              "displayName": "color_hex",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date": {
+              "displayName": "date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employee_ids": {
+              "displayName": "employee_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "estimate_ids": {
+              "displayName": "estimate_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "event_ids": {
+              "displayName": "event_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "job_appointments": {
+              "displayName": "job_appointments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "service_zones": {
+          "displayName": "Service Zones",
+          "path": "/service_zones",
+          "responseKey": "service_zones",
+          "fields": {
+            "cities": {
+              "displayName": "cities",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "coverage_type": {
+              "displayName": "coverage_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fee_name": {
+              "displayName": "fee_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "service_pros": {
+              "displayName": "service_pros",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "trip_charge": {
+              "displayName": "trip_charge",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "zip_codes": {
+              "displayName": "zip_codes",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "statuses": {
+          "displayName": "Statuses",
+          "path": "/pipeline/statuses",
+          "responseKey": "statuses",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status_type": {
+              "displayName": "status_type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "responseKey": "tags",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

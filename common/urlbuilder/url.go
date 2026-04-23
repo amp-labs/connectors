@@ -129,8 +129,9 @@ func (u *URL) String() string {
 	// Everything stays the same
 	// The only thing that we alter in the delegate's query params
 	u.delegate.RawQuery = u.queryValuesToString()
+	output := u.delegate.String()
 
-	return u.delegate.String()
+	return output
 }
 
 // URL may have special encoding rules.
@@ -169,6 +170,18 @@ func (u *URL) queryValuesToString() string { // nolint:funcorder
 	return result
 }
 
+// AddPath appends one or more path segments to the URL.
+//
+// Each provided string is treated as a path segment and joined to the
+// underlying URL using url.URL.JoinPath.
+//
+// If a path segment contains query parameters (for example "users?id=1"),
+// the path portion is appended while the query parameters are extracted
+// and merged into the URL's existing query parameters. If the same query
+// parameter key appears multiple times, the last value added takes precedence.
+//
+// The URL is modified in place and the receiver is returned to allow
+// method chaining. If no paths are provided, the URL is returned unchanged.
 func (u *URL) AddPath(paths ...string) *URL {
 	// replace delegate with a new URL
 	if len(paths) == 0 {
@@ -178,13 +191,28 @@ func (u *URL) AddPath(paths ...string) *URL {
 
 	uriParts := make([]string, len(paths))
 
-	for i, p := range paths {
-		if i == len(paths)-1 {
+	for index, path := range paths {
+		if index == len(paths)-1 {
 			// last index
-			p = cleanTrailingSlashes(p)
+			path = cleanTrailingSlashes(path)
 		}
 
-		uriParts[i] = p
+		sections := strings.Split(path, "?")
+		if len(sections) != 2 { // nolint:mnd
+			// No query params, just raw path.
+			uriParts[index] = path
+
+			continue
+		}
+
+		// This path has query parameters.
+		uriParts[index] = sections[0]
+
+		if parsed, err := url.ParseQuery(sections[1]); err == nil {
+			for key, vals := range parsed {
+				u.WithQueryParamList(key, vals)
+			}
+		}
 	}
 
 	u.delegate = u.delegate.JoinPath(uriParts...)

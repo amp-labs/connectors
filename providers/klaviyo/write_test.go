@@ -2,7 +2,6 @@ package klaviyo
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"testing"
 
@@ -49,7 +48,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrAccessToken,
-				errors.New(
+				testutils.StringError(
 					"Incorrect authentication credentials.",
 				),
 			},
@@ -67,7 +66,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(
+				testutils.StringError(
 					"Invalid input: One of `attributes`, `relationships` or `id` must be included in the request payload.", // nolint:lll
 				),
 			},
@@ -85,7 +84,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Tag Service Error: Tag with name 'popular' already exists"),
+				testutils.StringError("Tag Service Error: Tag with name 'popular' already exists"),
 			},
 		},
 		{

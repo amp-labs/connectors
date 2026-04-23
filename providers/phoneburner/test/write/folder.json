@@ -1,0 +1,10 @@
+{
+  "http_status": 200,
+  "status": "success",
+  "folders": {
+    "0": {
+      "folder_id": "11888",
+      "folder_name": "Folder #1"
+    }
+  }
+}

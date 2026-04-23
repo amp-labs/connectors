@@ -1,0 +1,4091 @@
+{
+    "modules": {
+        "root": {
+            "id": "root",
+            "path": "",
+            "objects": {
+                "accounts": {
+                    "displayName": "Accounts",
+                    "path": "/accounts.list",
+                    "responseKey": "accounts",
+                    "fields": {
+                        "artifacts": {
+                            "displayName": "artifacts",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "custom_fields": {
+                            "displayName": "custom_fields",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "custom_schema_fragments": {
+                            "displayName": "custom_schema_fragments",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_name": {
+                            "displayName": "display_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "domains": {
+                            "displayName": "domains",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "external_refs": {
+                            "displayName": "external_refs",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "owned_by": {
+                            "displayName": "owned_by",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "primary_account": {
+                            "displayName": "primary_account",
+                            "valueType": "other"
+                        },
+                        "stock_schema_fragment": {
+                            "displayName": "stock_schema_fragment",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "subtype": {
+                            "displayName": "subtype",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "tags": {
+                            "displayName": "tags",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "tier": {
+                            "displayName": "tier",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "websites": {
+                            "displayName": "websites",
+                            "valueType": "other",
+                            "providerType": "array"
+                        }
+                    }
+                },
+                "articles": {
+                    "displayName": "Articles",
+                    "path": "/articles.list",
+                    "responseKey": "articles",
+                    "fields": {
+                        "applies_to_parts": {
+                            "displayName": "applies_to_parts",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "article_type": {
+                            "displayName": "article_type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "article",
+                                    "displayValue": "article"
+                                },
+                                {
+                                    "value": "content_block",
+                                    "displayValue": "content_block"
+                                },
+                                {
+                                    "value": "page",
+                                    "displayValue": "page"
+                                }
+                            ]
+                        },
+                        "authored_by": {
+                            "displayName": "authored_by",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "extracted_content": {
+                            "displayName": "extracted_content",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "num_downvotes": {
+                            "displayName": "num_downvotes",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "num_upvotes": {
+                            "displayName": "num_upvotes",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "owned_by": {
+                            "displayName": "owned_by",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "parent": {
+                            "displayName": "parent",
+                            "valueType": "other"
+                        },
+                        "rank": {
+                            "displayName": "rank",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "resource": {
+                            "displayName": "resource",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "scope": {
+                            "displayName": "scope",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "status": {
+                            "displayName": "status",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "archived",
+                                    "displayValue": "archived"
+                                },
+                                {
+                                    "value": "draft",
+                                    "displayValue": "draft"
+                                },
+                                {
+                                    "value": "published",
+                                    "displayValue": "published"
+                                },
+                                {
+                                    "value": "review_needed",
+                                    "displayValue": "review_needed"
+                                }
+                            ]
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "tags": {
+                            "displayName": "tags",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "title": {
+                            "displayName": "title",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "artifacts": {
+                    "displayName": "Artifacts",
+                    "path": "/artifacts.list",
+                    "responseKey": "artifacts",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "file": {
+                            "displayName": "file",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "auth-tokens": {
+                    "displayName": "Auth Tokens",
+                    "path": "/auth-tokens.list",
+                    "responseKey": "tokens",
+                    "fields": {
+                        "client_id": {
+                            "displayName": "client_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "expires_at": {
+                            "displayName": "expires_at",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "issued_at": {
+                            "displayName": "issued_at",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "requested_token_type": {
+                            "displayName": "requested_token_type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:aat",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:aat"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:aat:act-as",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:aat:act-as"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:aat:public",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:aat:public"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:dev",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:dev"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:dev:connect",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:dev:connect"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:gat",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:gat"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:pat",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:pat"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:pat:act-as",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:pat:act-as"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:rat",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:rat"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:rev",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:rev"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:session",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:session"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:session:dev",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:session:dev"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:session:dev0",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:session:dev0"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:session:onetime",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:session:onetime"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:session:rev",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:session:rev"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:session:rev:act-as",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:session:rev:act-as"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:session:rev:public",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:session:rev:public"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:super",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:super"
+                                },
+                                {
+                                    "value": "urn:devrev:params:oauth:token-type:sys",
+                                    "displayValue": "urn:devrev:params:oauth:token-type:sys"
+                                },
+                                {
+                                    "value": "urn:ietf:params:oauth:token-type:jwt",
+                                    "displayValue": "urn:ietf:params:oauth:token-type:jwt"
+                                }
+                            ]
+                        },
+                        "scopes": {
+                            "displayName": "scopes",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "status": {
+                            "displayName": "status",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "active",
+                                    "displayValue": "active"
+                                },
+                                {
+                                    "value": "expired",
+                                    "displayValue": "expired"
+                                },
+                                {
+                                    "value": "revoked",
+                                    "displayValue": "revoked"
+                                }
+                            ]
+                        },
+                        "subject": {
+                            "displayName": "subject",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "token_hint": {
+                            "displayName": "token_hint",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "brands": {
+                    "displayName": "Brands",
+                    "path": "/brands.list",
+                    "responseKey": "brands",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "code-changes": {
+                    "displayName": "Code Changes",
+                    "path": "/code-changes.list",
+                    "responseKey": "code_changes",
+                    "fields": {
+                        "branch": {
+                            "displayName": "branch",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "closed_date": {
+                            "displayName": "closed_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "commit_id": {
+                            "displayName": "commit_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "external_identifier": {
+                            "displayName": "external_identifier",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "filtered_loc": {
+                            "displayName": "filtered_loc",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "repo_url": {
+                            "displayName": "repo_url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "source": {
+                            "displayName": "source",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "azure_devops",
+                                    "displayValue": "azure_devops"
+                                },
+                                {
+                                    "value": "bitbucket",
+                                    "displayValue": "bitbucket"
+                                },
+                                {
+                                    "value": "github",
+                                    "displayValue": "github"
+                                },
+                                {
+                                    "value": "gitlab",
+                                    "displayValue": "gitlab"
+                                }
+                            ]
+                        },
+                        "target_branch": {
+                            "displayName": "target_branch",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "title": {
+                            "displayName": "title",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "total_loc": {
+                            "displayName": "total_loc",
+                            "valueType": "other",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "commands": {
+                    "displayName": "Commands",
+                    "path": "/commands.list",
+                    "responseKey": "commands",
+                    "fields": {
+                        "action": {
+                            "displayName": "action",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_name": {
+                            "displayName": "display_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "namespace": {
+                            "displayName": "namespace",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "shared_with": {
+                            "displayName": "shared_with",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "source": {
+                            "displayName": "source",
+                            "valueType": "other"
+                        },
+                        "status": {
+                            "displayName": "status",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "disabled",
+                                    "displayValue": "disabled"
+                                },
+                                {
+                                    "value": "draft",
+                                    "displayValue": "draft"
+                                },
+                                {
+                                    "value": "enabled",
+                                    "displayValue": "enabled"
+                                }
+                            ]
+                        },
+                        "surfaces": {
+                            "displayName": "surfaces",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "usage_hint": {
+                            "displayName": "usage_hint",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "content-template": {
+                    "displayName": "Content Templates",
+                    "path": "/content-template.list",
+                    "responseKey": "content_template",
+                    "fields": {
+                        "type": {
+                            "displayName": "type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "notification_content_template",
+                                    "displayValue": "notification_content_template"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "conversations": {
+                    "displayName": "Conversations",
+                    "path": "/conversations.list",
+                    "responseKey": "conversations",
+                    "fields": {
+                        "account": {
+                            "displayName": "account",
+                            "valueType": "other"
+                        },
+                        "actual_close_date": {
+                            "displayName": "actual_close_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "applies_to_parts": {
+                            "displayName": "applies_to_parts",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "channels": {
+                            "displayName": "channels",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "custom_fields": {
+                            "displayName": "custom_fields",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "custom_schema_fragments": {
+                            "displayName": "custom_schema_fragments",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "group": {
+                            "displayName": "group",
+                            "valueType": "other"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "is_frozen": {
+                            "displayName": "is_frozen",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "last_external_message_date": {
+                            "displayName": "last_external_message_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "members": {
+                            "displayName": "members",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "messages": {
+                            "displayName": "messages",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "metadata": {
+                            "displayName": "metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "owned_by": {
+                            "displayName": "owned_by",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "sentiment": {
+                            "displayName": "sentiment",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "sentiment_modified_date": {
+                            "displayName": "sentiment_modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "sentiment_summary": {
+                            "displayName": "sentiment_summary",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "sla_summary": {
+                            "displayName": "sla_summary",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "sla_tracker": {
+                            "displayName": "sla_tracker",
+                            "valueType": "other"
+                        },
+                        "source_channel": {
+                            "displayName": "source_channel",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "source_channel_v2": {
+                            "displayName": "source_channel_v2",
+                            "valueType": "other"
+                        },
+                        "stage": {
+                            "displayName": "stage",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "stock_schema_fragment": {
+                            "displayName": "stock_schema_fragment",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "subtype": {
+                            "displayName": "subtype",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "tags": {
+                            "displayName": "tags",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "title": {
+                            "displayName": "title",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "custom-objects": {
+                    "displayName": "Custom Objects",
+                    "path": "/custom-objects.list",
+                    "responseKey": "result",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "custom_fields": {
+                            "displayName": "custom_fields",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "custom_schema_fragments": {
+                            "displayName": "custom_schema_fragments",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "leaf_type": {
+                            "displayName": "leaf_type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "stage": {
+                            "displayName": "stage",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "stock_schema_fragment": {
+                            "displayName": "stock_schema_fragment",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "subtype": {
+                            "displayName": "subtype",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "title": {
+                            "displayName": "title",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "unique_key": {
+                            "displayName": "unique_key",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "dev-orgs.auth-connections": {
+                    "displayName": "Dev Org Auth Connections",
+                    "path": "/dev-orgs.auth-connections.list",
+                    "responseKey": "auth_connections",
+                    "fields": {
+                        "display_name": {
+                            "displayName": "display_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "enabled": {
+                            "displayName": "enabled",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "type": {
+                            "displayName": "type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "google_apps",
+                                    "displayValue": "google_apps"
+                                },
+                                {
+                                    "value": "oidc",
+                                    "displayValue": "oidc"
+                                },
+                                {
+                                    "value": "okta",
+                                    "displayValue": "okta"
+                                },
+                                {
+                                    "value": "samlp",
+                                    "displayValue": "samlp"
+                                },
+                                {
+                                    "value": "social",
+                                    "displayValue": "social"
+                                },
+                                {
+                                    "value": "waad",
+                                    "displayValue": "waad"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "dev-users": {
+                    "displayName": "Dev Users",
+                    "path": "/dev-users.list",
+                    "responseKey": "dev_users",
+                    "fields": {
+                        "availability_modes": {
+                            "displayName": "availability_modes",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "custom_fields": {
+                            "displayName": "custom_fields",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "custom_schema_fragments": {
+                            "displayName": "custom_schema_fragments",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_name": {
+                            "displayName": "display_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_picture": {
+                            "displayName": "display_picture",
+                            "valueType": "other"
+                        },
+                        "email": {
+                            "displayName": "email",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "experience_start_date": {
+                            "displayName": "experience_start_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "external_identities": {
+                            "displayName": "external_identities",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "full_name": {
+                            "displayName": "full_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "job_history": {
+                            "displayName": "job_history",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "phone_numbers": {
+                            "displayName": "phone_numbers",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "primary_identity": {
+                            "displayName": "primary_identity",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "reports_to": {
+                            "displayName": "reports_to",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "skills": {
+                            "displayName": "skills",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "state": {
+                            "displayName": "state",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "active",
+                                    "displayValue": "active"
+                                },
+                                {
+                                    "value": "deactivated",
+                                    "displayValue": "deactivated"
+                                },
+                                {
+                                    "value": "deleted",
+                                    "displayValue": "deleted"
+                                },
+                                {
+                                    "value": "locked",
+                                    "displayValue": "locked"
+                                },
+                                {
+                                    "value": "shadow",
+                                    "displayValue": "shadow"
+                                },
+                                {
+                                    "value": "unassigned",
+                                    "displayValue": "unassigned"
+                                }
+                            ]
+                        },
+                        "stock_schema_fragment": {
+                            "displayName": "stock_schema_fragment",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "subtype": {
+                            "displayName": "subtype",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "timezone": {
+                            "displayName": "timezone",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "directories": {
+                    "displayName": "Directories",
+                    "path": "/directories.list",
+                    "responseKey": "directories",
+                    "fields": {
+                        "body": {
+                            "displayName": "body",
+                            "valueType": "other"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "icon": {
+                            "displayName": "icon",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "parent": {
+                            "displayName": "parent",
+                            "valueType": "other"
+                        },
+                        "published": {
+                            "displayName": "published",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "rank": {
+                            "displayName": "rank",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "tags": {
+                            "displayName": "tags",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "thumbnail": {
+                            "displayName": "thumbnail",
+                            "valueType": "other"
+                        },
+                        "title": {
+                            "displayName": "title",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "engagements": {
+                    "displayName": "Engagements",
+                    "path": "/engagements.list",
+                    "responseKey": "engagements",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "groups": {
+                    "displayName": "Groups",
+                    "path": "/groups.list",
+                    "responseKey": "groups",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "is_default": {
+                            "displayName": "is_default",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "member_type": {
+                            "displayName": "member_type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "dev_user",
+                                    "displayValue": "dev_user"
+                                },
+                                {
+                                    "value": "rev_user",
+                                    "displayValue": "rev_user"
+                                }
+                            ]
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "owner": {
+                            "displayName": "owner",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "parents": {
+                            "displayName": "parents",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "groups.members": {
+                    "displayName": "Group Members",
+                    "path": "/groups.members.list",
+                    "responseKey": "members",
+                    "fields": {
+                        "member": {
+                            "displayName": "member",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "member_rev_org": {
+                            "displayName": "member_rev_org",
+                            "valueType": "other"
+                        }
+                    }
+                },
+                "incidents": {
+                    "displayName": "Incidents",
+                    "path": "/incidents.list",
+                    "responseKey": "incidents",
+                    "fields": {
+                        "acknowledged_date": {
+                            "displayName": "acknowledged_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "actual_close_date": {
+                            "displayName": "actual_close_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "applies_to_parts": {
+                            "displayName": "applies_to_parts",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "artifacts": {
+                            "displayName": "artifacts",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "body": {
+                            "displayName": "body",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "custom_fields": {
+                            "displayName": "custom_fields",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "custom_schema_fragments": {
+                            "displayName": "custom_schema_fragments",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "identified_date": {
+                            "displayName": "identified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "impact": {
+                            "displayName": "impact",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "mitigated_date": {
+                            "displayName": "mitigated_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "owned_by": {
+                            "displayName": "owned_by",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "pia": {
+                            "displayName": "pia",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "playbooks": {
+                            "displayName": "playbooks",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "reported_by": {
+                            "displayName": "reported_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "severity": {
+                            "displayName": "severity",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "sla_summary": {
+                            "displayName": "sla_summary",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "sla_tracker": {
+                            "displayName": "sla_tracker",
+                            "valueType": "other"
+                        },
+                        "source": {
+                            "displayName": "source",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "stage": {
+                            "displayName": "stage",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "stock_schema_fragment": {
+                            "displayName": "stock_schema_fragment",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "subtype": {
+                            "displayName": "subtype",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "tags": {
+                            "displayName": "tags",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "target_close_date": {
+                            "displayName": "target_close_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "title": {
+                            "displayName": "title",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "jobs": {
+                    "displayName": "Jobs",
+                    "path": "/jobs.list",
+                    "responseKey": "jobs",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "job_category": {
+                            "displayName": "job_category",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "bulk_upgrade",
+                                    "displayValue": "bulk_upgrade"
+                                },
+                                {
+                                    "value": "convert_conversation_ticket",
+                                    "displayValue": "convert_conversation_ticket"
+                                },
+                                {
+                                    "value": "delete_part_hierarchy",
+                                    "displayValue": "delete_part_hierarchy"
+                                },
+                                {
+                                    "value": "export_account",
+                                    "displayValue": "export_account"
+                                },
+                                {
+                                    "value": "export_article",
+                                    "displayValue": "export_article"
+                                },
+                                {
+                                    "value": "export_audit_log",
+                                    "displayValue": "export_audit_log"
+                                },
+                                {
+                                    "value": "export_conversation",
+                                    "displayValue": "export_conversation"
+                                },
+                                {
+                                    "value": "export_custom_object",
+                                    "displayValue": "export_custom_object"
+                                },
+                                {
+                                    "value": "export_devuser",
+                                    "displayValue": "export_devuser"
+                                },
+                                {
+                                    "value": "export_incident",
+                                    "displayValue": "export_incident"
+                                },
+                                {
+                                    "value": "export_part",
+                                    "displayValue": "export_part"
+                                },
+                                {
+                                    "value": "export_revuser",
+                                    "displayValue": "export_revuser"
+                                },
+                                {
+                                    "value": "export_work",
+                                    "displayValue": "export_work"
+                                },
+                                {
+                                    "value": "get_object_async",
+                                    "displayValue": "get_object_async"
+                                },
+                                {
+                                    "value": "merge_account",
+                                    "displayValue": "merge_account"
+                                },
+                                {
+                                    "value": "merge_devuser",
+                                    "displayValue": "merge_devuser"
+                                },
+                                {
+                                    "value": "merge_revorg",
+                                    "displayValue": "merge_revorg"
+                                },
+                                {
+                                    "value": "merge_revuser",
+                                    "displayValue": "merge_revuser"
+                                },
+                                {
+                                    "value": "merge_ticket",
+                                    "displayValue": "merge_ticket"
+                                },
+                                {
+                                    "value": "move_revorg",
+                                    "displayValue": "move_revorg"
+                                },
+                                {
+                                    "value": "move_revuser",
+                                    "displayValue": "move_revuser"
+                                },
+                                {
+                                    "value": "oasis_data_export",
+                                    "displayValue": "oasis_data_export"
+                                },
+                                {
+                                    "value": "oasis_job",
+                                    "displayValue": "oasis_job"
+                                }
+                            ]
+                        },
+                        "job_id": {
+                            "displayName": "job_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "metadata_list": {
+                            "displayName": "metadata_list",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "output_artifacts": {
+                            "displayName": "output_artifacts",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "progress": {
+                            "displayName": "progress",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "retry_count": {
+                            "displayName": "retry_count",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "state": {
+                            "displayName": "state",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "completed",
+                                    "displayValue": "completed"
+                                },
+                                {
+                                    "value": "failed",
+                                    "displayValue": "failed"
+                                },
+                                {
+                                    "value": "in_progress",
+                                    "displayValue": "in_progress"
+                                },
+                                {
+                                    "value": "queued",
+                                    "displayValue": "queued"
+                                },
+                                {
+                                    "value": "started",
+                                    "displayValue": "started"
+                                }
+                            ]
+                        },
+                        "title": {
+                            "displayName": "title",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "link-types.custom": {
+                    "displayName": "Custom Link Types",
+                    "path": "/link-types.custom.list",
+                    "responseKey": "result",
+                    "fields": {
+                        "backward_name": {
+                            "displayName": "backward_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "forward_name": {
+                            "displayName": "forward_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "is_deprecated": {
+                            "displayName": "is_deprecated",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "source_types": {
+                            "displayName": "source_types",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "target_types": {
+                            "displayName": "target_types",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "tooltip": {
+                            "displayName": "tooltip",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "links": {
+                    "displayName": "Links",
+                    "path": "/links.list",
+                    "responseKey": "links",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "custom_link_type": {
+                            "displayName": "custom_link_type",
+                            "valueType": "other"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "link_type": {
+                            "displayName": "link_type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "custom_link",
+                                    "displayValue": "custom_link"
+                                },
+                                {
+                                    "value": "developed_with",
+                                    "displayValue": "developed_with"
+                                },
+                                {
+                                    "value": "imports",
+                                    "displayValue": "imports"
+                                },
+                                {
+                                    "value": "is_analyzed_by",
+                                    "displayValue": "is_analyzed_by"
+                                },
+                                {
+                                    "value": "is_converted_to",
+                                    "displayValue": "is_converted_to"
+                                },
+                                {
+                                    "value": "is_dependent_on",
+                                    "displayValue": "is_dependent_on"
+                                },
+                                {
+                                    "value": "is_duplicate_of",
+                                    "displayValue": "is_duplicate_of"
+                                },
+                                {
+                                    "value": "is_follow_up_of",
+                                    "displayValue": "is_follow_up_of"
+                                },
+                                {
+                                    "value": "is_merged_into",
+                                    "displayValue": "is_merged_into"
+                                },
+                                {
+                                    "value": "is_parent_of",
+                                    "displayValue": "is_parent_of"
+                                },
+                                {
+                                    "value": "is_part_of",
+                                    "displayValue": "is_part_of"
+                                },
+                                {
+                                    "value": "is_related_to",
+                                    "displayValue": "is_related_to"
+                                },
+                                {
+                                    "value": "serves",
+                                    "displayValue": "serves"
+                                }
+                            ]
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "source": {
+                            "displayName": "source",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "target": {
+                            "displayName": "target",
+                            "valueType": "other",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "meetings": {
+                    "displayName": "Meetings",
+                    "path": "/meetings.list",
+                    "responseKey": "meetings",
+                    "fields": {
+                        "artifacts": {
+                            "displayName": "artifacts",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "channel": {
+                            "displayName": "channel",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "amazon_connect",
+                                    "displayValue": "amazon_connect"
+                                },
+                                {
+                                    "value": "google_meet",
+                                    "displayValue": "google_meet"
+                                },
+                                {
+                                    "value": "offline",
+                                    "displayValue": "offline"
+                                },
+                                {
+                                    "value": "other",
+                                    "displayValue": "other"
+                                },
+                                {
+                                    "value": "teams",
+                                    "displayValue": "teams"
+                                },
+                                {
+                                    "value": "zoom",
+                                    "displayValue": "zoom"
+                                }
+                            ]
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "custom_fields": {
+                            "displayName": "custom_fields",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "custom_schema_fragments": {
+                            "displayName": "custom_schema_fragments",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "direction": {
+                            "displayName": "direction",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "incoming",
+                                    "displayValue": "incoming"
+                                },
+                                {
+                                    "value": "internal",
+                                    "displayValue": "internal"
+                                },
+                                {
+                                    "value": "outgoing",
+                                    "displayValue": "outgoing"
+                                }
+                            ]
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "ended_date": {
+                            "displayName": "ended_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "external_ref": {
+                            "displayName": "external_ref",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "external_url": {
+                            "displayName": "external_url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "members": {
+                            "displayName": "members",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "organizer": {
+                            "displayName": "organizer",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "parent": {
+                            "displayName": "parent",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "recording": {
+                            "displayName": "recording",
+                            "valueType": "other"
+                        },
+                        "recording_url": {
+                            "displayName": "recording_url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "scheduled_date": {
+                            "displayName": "scheduled_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "source_date": {
+                            "displayName": "source_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "state": {
+                            "displayName": "state",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "canceled",
+                                    "displayValue": "canceled"
+                                },
+                                {
+                                    "value": "completed",
+                                    "displayValue": "completed"
+                                },
+                                {
+                                    "value": "no_show",
+                                    "displayValue": "no_show"
+                                },
+                                {
+                                    "value": "ongoing",
+                                    "displayValue": "ongoing"
+                                },
+                                {
+                                    "value": "rejected",
+                                    "displayValue": "rejected"
+                                },
+                                {
+                                    "value": "rescheduled",
+                                    "displayValue": "rescheduled"
+                                },
+                                {
+                                    "value": "scheduled",
+                                    "displayValue": "scheduled"
+                                },
+                                {
+                                    "value": "waiting",
+                                    "displayValue": "waiting"
+                                }
+                            ]
+                        },
+                        "stock_schema_fragment": {
+                            "displayName": "stock_schema_fragment",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "subtype": {
+                            "displayName": "subtype",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "tags": {
+                            "displayName": "tags",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "title": {
+                            "displayName": "title",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "transcript": {
+                            "displayName": "transcript",
+                            "valueType": "other"
+                        },
+                        "visibility": {
+                            "displayName": "visibility",
+                            "valueType": "other",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "metric-definitions": {
+                    "displayName": "Metric Definitions",
+                    "path": "/metric-definitions.list",
+                    "responseKey": "metric_definitions",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "observability.sessions": {
+                    "displayName": "Observability Sessions",
+                    "path": "/observability.sessions.list",
+                    "responseKey": "sessions",
+                    "fields": {
+                        "platform": {
+                            "displayName": "platform",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "android",
+                                    "displayValue": "android"
+                                },
+                                {
+                                    "value": "ios",
+                                    "displayValue": "ios"
+                                },
+                                {
+                                    "value": "web",
+                                    "displayValue": "web"
+                                }
+                            ]
+                        },
+                        "session_id": {
+                            "displayName": "session_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "type": {
+                            "displayName": "type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "mobile",
+                                    "displayValue": "mobile"
+                                },
+                                {
+                                    "value": "web",
+                                    "displayValue": "web"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "org-schedules": {
+                    "displayName": "Org Schedules",
+                    "path": "/org-schedules.list",
+                    "responseKey": "org_schedules",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "default_weekly_org_schedule": {
+                            "displayName": "default_weekly_org_schedule",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "min_valid_days": {
+                            "displayName": "min_valid_days",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "org_schedule_fragments": {
+                            "displayName": "org_schedule_fragments",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "status": {
+                            "displayName": "status",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "archived",
+                                    "displayValue": "archived"
+                                },
+                                {
+                                    "value": "draft",
+                                    "displayValue": "draft"
+                                },
+                                {
+                                    "value": "published",
+                                    "displayValue": "published"
+                                }
+                            ]
+                        },
+                        "timezone": {
+                            "displayName": "timezone",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "valid_until": {
+                            "displayName": "valid_until",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "version_number": {
+                            "displayName": "version_number",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "weekly_org_schedules": {
+                            "displayName": "weekly_org_schedules",
+                            "valueType": "other",
+                            "providerType": "array"
+                        }
+                    }
+                },
+                "parts": {
+                    "displayName": "Parts",
+                    "path": "/parts.list",
+                    "responseKey": "parts",
+                    "fields": {
+                        "type": {
+                            "displayName": "type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "capability",
+                                    "displayValue": "capability"
+                                },
+                                {
+                                    "value": "enhancement",
+                                    "displayValue": "enhancement"
+                                },
+                                {
+                                    "value": "feature",
+                                    "displayValue": "feature"
+                                },
+                                {
+                                    "value": "linkable",
+                                    "displayValue": "linkable"
+                                },
+                                {
+                                    "value": "product",
+                                    "displayValue": "product"
+                                },
+                                {
+                                    "value": "runnable",
+                                    "displayValue": "runnable"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "question-answers": {
+                    "displayName": "Question Answers",
+                    "path": "/question-answers.list",
+                    "responseKey": "question_answers",
+                    "fields": {
+                        "answer": {
+                            "displayName": "answer",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "applies_to_parts": {
+                            "displayName": "applies_to_parts",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "question": {
+                            "displayName": "question",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "sources": {
+                            "displayName": "sources",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "status": {
+                            "displayName": "status",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "archived",
+                                    "displayValue": "archived"
+                                },
+                                {
+                                    "value": "discarded",
+                                    "displayValue": "discarded"
+                                },
+                                {
+                                    "value": "draft",
+                                    "displayValue": "draft"
+                                },
+                                {
+                                    "value": "published",
+                                    "displayValue": "published"
+                                },
+                                {
+                                    "value": "review_needed",
+                                    "displayValue": "review_needed"
+                                }
+                            ]
+                        },
+                        "suggested_answer": {
+                            "displayName": "suggested_answer",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "suggested_for_deletion": {
+                            "displayName": "suggested_for_deletion",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "topic": {
+                            "displayName": "topic",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "verified": {
+                            "displayName": "verified",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        }
+                    }
+                },
+                "reactions": {
+                    "displayName": "Reactions",
+                    "path": "/reactions.list",
+                    "responseKey": "reactors",
+                    "fields": {
+                        "type": {
+                            "displayName": "type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "dev_user",
+                                    "displayValue": "dev_user"
+                                },
+                                {
+                                    "value": "rev_user",
+                                    "displayValue": "rev_user"
+                                },
+                                {
+                                    "value": "service_account",
+                                    "displayValue": "service_account"
+                                },
+                                {
+                                    "value": "sys_user",
+                                    "displayValue": "sys_user"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "rev-orgs": {
+                    "displayName": "Rev Orgs",
+                    "path": "/rev-orgs.list",
+                    "responseKey": "rev_orgs",
+                    "fields": {
+                        "account": {
+                            "displayName": "account",
+                            "valueType": "other"
+                        },
+                        "artifacts": {
+                            "displayName": "artifacts",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "custom_fields": {
+                            "displayName": "custom_fields",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "custom_schema_fragments": {
+                            "displayName": "custom_schema_fragments",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_name": {
+                            "displayName": "display_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "external_ref": {
+                            "displayName": "external_ref",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "primary_rev_org": {
+                            "displayName": "primary_rev_org",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "stock_schema_fragment": {
+                            "displayName": "stock_schema_fragment",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "subtype": {
+                            "displayName": "subtype",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "tags": {
+                            "displayName": "tags",
+                            "valueType": "other",
+                            "providerType": "array"
+                        }
+                    }
+                },
+                "rev-users": {
+                    "displayName": "Rev Users",
+                    "path": "/rev-users.list",
+                    "responseKey": "rev_users",
+                    "fields": {
+                        "artifacts": {
+                            "displayName": "artifacts",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "custom_fields": {
+                            "displayName": "custom_fields",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "custom_schema_fragments": {
+                            "displayName": "custom_schema_fragments",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_name": {
+                            "displayName": "display_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_picture": {
+                            "displayName": "display_picture",
+                            "valueType": "other"
+                        },
+                        "email": {
+                            "displayName": "email",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "external_ref": {
+                            "displayName": "external_ref",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "external_refs": {
+                            "displayName": "external_refs",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "full_name": {
+                            "displayName": "full_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "is_verified": {
+                            "displayName": "is_verified",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "phone_numbers": {
+                            "displayName": "phone_numbers",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "primary_identity": {
+                            "displayName": "primary_identity",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "rev_org": {
+                            "displayName": "rev_org",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "state": {
+                            "displayName": "state",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "active",
+                                    "displayValue": "active"
+                                },
+                                {
+                                    "value": "deactivated",
+                                    "displayValue": "deactivated"
+                                },
+                                {
+                                    "value": "deleted",
+                                    "displayValue": "deleted"
+                                },
+                                {
+                                    "value": "locked",
+                                    "displayValue": "locked"
+                                },
+                                {
+                                    "value": "shadow",
+                                    "displayValue": "shadow"
+                                },
+                                {
+                                    "value": "unassigned",
+                                    "displayValue": "unassigned"
+                                }
+                            ]
+                        },
+                        "stock_schema_fragment": {
+                            "displayName": "stock_schema_fragment",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "subtype": {
+                            "displayName": "subtype",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "tags": {
+                            "displayName": "tags",
+                            "valueType": "other",
+                            "providerType": "array"
+                        }
+                    }
+                },
+                "rev-users.associations": {
+                    "displayName": "Rev Users Associations",
+                    "path": "/rev-users.associations.list",
+                    "responseKey": "associations",
+                    "fields": {
+                        "associated_to": {
+                            "displayName": "associated_to",
+                            "valueType": "other",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "schemas.custom": {
+                    "displayName": "Custom Schema Fragments",
+                    "path": "/schemas.custom.list",
+                    "responseKey": "result",
+                    "fields": {
+                        "type": {
+                            "displayName": "type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "app_fragment",
+                                    "displayValue": "app_fragment"
+                                },
+                                {
+                                    "value": "custom_type_fragment",
+                                    "displayValue": "custom_type_fragment"
+                                },
+                                {
+                                    "value": "tenant_fragment",
+                                    "displayValue": "tenant_fragment"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "schemas.stock": {
+                    "displayName": "Stock Schema Fragments",
+                    "path": "/schemas.stock.list",
+                    "responseKey": "result",
+                    "fields": {
+                        "composite_schemas": {
+                            "displayName": "composite_schemas",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "fields": {
+                            "displayName": "fields",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "leaf_type": {
+                            "displayName": "leaf_type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "new_fragment_ref": {
+                            "displayName": "new_fragment_ref",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "old_fragment_ref": {
+                            "displayName": "old_fragment_ref",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "title": {
+                            "displayName": "title",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "schemas.subtypes": {
+                    "displayName": "Subtypes",
+                    "path": "/schemas.subtypes.list",
+                    "responseKey": "subtypes",
+                    "fields": {
+                        "display_name": {
+                            "displayName": "display_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "fragment_id": {
+                            "displayName": "fragment_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "leaf_type": {
+                            "displayName": "leaf_type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "value": {
+                            "displayName": "value",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "sla-trackers": {
+                    "displayName": "Sla Trackers",
+                    "path": "/sla-trackers.list",
+                    "responseKey": "sla_trackers",
+                    "fields": {
+                        "applies_to_id": {
+                            "displayName": "applies_to_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "applies_to_type": {
+                            "displayName": "applies_to_type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "conversation",
+                                    "displayValue": "conversation"
+                                },
+                                {
+                                    "value": "incident",
+                                    "displayValue": "incident"
+                                },
+                                {
+                                    "value": "issue",
+                                    "displayValue": "issue"
+                                },
+                                {
+                                    "value": "ticket",
+                                    "displayValue": "ticket"
+                                }
+                            ]
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "metric_target_summaries": {
+                            "displayName": "metric_target_summaries",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "removed_sla_metric_history": {
+                            "displayName": "removed_sla_metric_history",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "sla": {
+                            "displayName": "sla",
+                            "valueType": "other"
+                        },
+                        "sla_policy_id": {
+                            "displayName": "sla_policy_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "stage": {
+                            "displayName": "stage",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "status": {
+                            "displayName": "status",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "slas": {
+                    "displayName": "Slas",
+                    "path": "/slas.list",
+                    "responseKey": "slas",
+                    "fields": {
+                        "account_filter": {
+                            "displayName": "account_filter",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "compensation": {
+                            "displayName": "compensation",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "evaluation_period": {
+                            "displayName": "evaluation_period",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "monthly",
+                                    "displayValue": "monthly"
+                                },
+                                {
+                                    "value": "quarterly",
+                                    "displayValue": "quarterly"
+                                },
+                                {
+                                    "value": "weekly",
+                                    "displayValue": "weekly"
+                                },
+                                {
+                                    "value": "yearly",
+                                    "displayValue": "yearly"
+                                }
+                            ]
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "policies": {
+                            "displayName": "policies",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "sla_type": {
+                            "displayName": "sla_type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "external",
+                                    "displayValue": "external"
+                                },
+                                {
+                                    "value": "internal",
+                                    "displayValue": "internal"
+                                }
+                            ]
+                        },
+                        "status": {
+                            "displayName": "status",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "archived",
+                                    "displayValue": "archived"
+                                },
+                                {
+                                    "value": "draft",
+                                    "displayValue": "draft"
+                                },
+                                {
+                                    "value": "published",
+                                    "displayValue": "published"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "stage-diagrams": {
+                    "displayName": "Stage Diagrams",
+                    "path": "/stage-diagrams.list",
+                    "responseKey": "result",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "is_custom_leaf_type": {
+                            "displayName": "is_custom_leaf_type",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "is_default": {
+                            "displayName": "is_default",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "leaf_type": {
+                            "displayName": "leaf_type",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "stages": {
+                            "displayName": "stages",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "stages.custom": {
+                    "displayName": "Custom Stages",
+                    "path": "/stages.custom.list",
+                    "responseKey": "result",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "ordinal": {
+                            "displayName": "ordinal",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "state": {
+                            "displayName": "state",
+                            "valueType": "other"
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "states.custom": {
+                    "displayName": "Custom States",
+                    "path": "/states.custom.list",
+                    "responseKey": "result",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "is_final": {
+                            "displayName": "is_final",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "ordinal": {
+                            "displayName": "ordinal",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "sync_metadata": {
+                            "displayName": "sync_metadata",
+                            "valueType": "other",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "subscribers": {
+                    "displayName": "Subscribers",
+                    "path": "/subscribers.list",
+                    "responseKey": "users",
+                    "fields": {
+                        "type": {
+                            "displayName": "type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "dev_user",
+                                    "displayValue": "dev_user"
+                                },
+                                {
+                                    "value": "rev_user",
+                                    "displayValue": "rev_user"
+                                },
+                                {
+                                    "value": "service_account",
+                                    "displayValue": "service_account"
+                                },
+                                {
+                                    "value": "sys_user",
+                                    "displayValue": "sys_user"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "surveys": {
+                    "displayName": "Surveys",
+                    "path": "/surveys.list",
+                    "responseKey": "surveys",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "header": {
+                            "displayName": "header",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "introductory_text": {
+                            "displayName": "introductory_text",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "response_text": {
+                            "displayName": "response_text",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "schema": {
+                            "displayName": "schema",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "schema_with_metadata": {
+                            "displayName": "schema_with_metadata",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "title": {
+                            "displayName": "title",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "surveys.responses": {
+                    "displayName": "Surveys Responses",
+                    "path": "/surveys.responses.list",
+                    "responseKey": "survey_responses",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "dispatch_id": {
+                            "displayName": "dispatch_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "dispatched_channels": {
+                            "displayName": "dispatched_channels",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "object": {
+                            "displayName": "object",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "recipient": {
+                            "displayName": "recipient",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "response": {
+                            "displayName": "response",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "response_channel": {
+                            "displayName": "response_channel",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "stage": {
+                            "displayName": "stage",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "survey": {
+                            "displayName": "survey",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "sys-users": {
+                    "displayName": "Sys Users",
+                    "path": "/sys-users.list",
+                    "responseKey": "sys_users",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_name": {
+                            "displayName": "display_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_picture": {
+                            "displayName": "display_picture",
+                            "valueType": "other"
+                        },
+                        "email": {
+                            "displayName": "email",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "full_name": {
+                            "displayName": "full_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "phone_numbers": {
+                            "displayName": "phone_numbers",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "primary_identity": {
+                            "displayName": "primary_identity",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "state": {
+                            "displayName": "state",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "active",
+                                    "displayValue": "active"
+                                },
+                                {
+                                    "value": "deactivated",
+                                    "displayValue": "deactivated"
+                                },
+                                {
+                                    "value": "deleted",
+                                    "displayValue": "deleted"
+                                },
+                                {
+                                    "value": "locked",
+                                    "displayValue": "locked"
+                                },
+                                {
+                                    "value": "shadow",
+                                    "displayValue": "shadow"
+                                },
+                                {
+                                    "value": "unassigned",
+                                    "displayValue": "unassigned"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "tags": {
+                    "displayName": "Tags",
+                    "path": "/tags.list",
+                    "responseKey": "tags",
+                    "fields": {
+                        "allowed_values": {
+                            "displayName": "allowed_values",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "style": {
+                            "displayName": "style",
+                            "valueType": "other",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "timeline-entries": {
+                    "displayName": "Timeline Entries",
+                    "path": "/timeline-entries.list",
+                    "responseKey": "timeline_entries",
+                    "fields": {
+                        "type": {
+                            "displayName": "type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "timeline_change_event",
+                                    "displayValue": "timeline_change_event"
+                                },
+                                {
+                                    "value": "timeline_comment",
+                                    "displayValue": "timeline_comment"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "uoms": {
+                    "displayName": "Uoms",
+                    "path": "/uoms.list",
+                    "responseKey": "uoms",
+                    "fields": {
+                        "aggregation_details": {
+                            "displayName": "aggregation_details",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "dimensions": {
+                            "displayName": "dimensions",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "is_enabled": {
+                            "displayName": "is_enabled",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "metric_name": {
+                            "displayName": "metric_name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "metric_scope": {
+                            "displayName": "metric_scope",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "org",
+                                    "displayValue": "org"
+                                },
+                                {
+                                    "value": "user",
+                                    "displayValue": "user"
+                                }
+                            ]
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "name": {
+                            "displayName": "name",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "part": {
+                            "displayName": "part",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "product": {
+                            "displayName": "product",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "unit": {
+                            "displayName": "unit",
+                            "valueType": "other",
+                            "providerType": "object"
+                        }
+                    }
+                },
+                "vistas": {
+                    "displayName": "Vistas",
+                    "path": "/vistas.list",
+                    "responseKey": "vistas",
+                    "fields": {
+                        "type": {
+                            "displayName": "type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "curated",
+                                    "displayValue": "curated"
+                                },
+                                {
+                                    "value": "dynamic",
+                                    "displayValue": "dynamic"
+                                },
+                                {
+                                    "value": "grouped",
+                                    "displayValue": "grouped"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "vistas.groups": {
+                    "displayName": "Vistas Groups",
+                    "path": "/vistas.groups.list",
+                    "responseKey": "vista_group",
+                    "fields": {
+                        "object_type": {
+                            "displayName": "object_type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "conversations",
+                                    "displayValue": "conversations"
+                                },
+                                {
+                                    "value": "parts",
+                                    "displayValue": "parts"
+                                },
+                                {
+                                    "value": "works",
+                                    "displayValue": "works"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "web-crawler-jobs": {
+                    "displayName": "Web Crawler Jobs",
+                    "path": "/web-crawler-jobs.list",
+                    "responseKey": "web_crawler_jobs",
+                    "fields": {
+                        "accept_regexs": {
+                            "displayName": "accept_regexs",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "description": {
+                            "displayName": "description",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "domain_names": {
+                            "displayName": "domain_names",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "frequency": {
+                            "displayName": "frequency",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "max_depth": {
+                            "displayName": "max_depth",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "no_parent": {
+                            "displayName": "no_parent",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "notify_on_complete": {
+                            "displayName": "notify_on_complete",
+                            "valueType": "boolean",
+                            "providerType": "boolean"
+                        },
+                        "num_bytes": {
+                            "displayName": "num_bytes",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "num_timeout_urls": {
+                            "displayName": "num_timeout_urls",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "num_urls_scraped": {
+                            "displayName": "num_urls_scraped",
+                            "valueType": "int",
+                            "providerType": "integer"
+                        },
+                        "reject_regexs": {
+                            "displayName": "reject_regexs",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "sitemap_index_urls": {
+                            "displayName": "sitemap_index_urls",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "sitemap_urls": {
+                            "displayName": "sitemap_urls",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "state": {
+                            "displayName": "state",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "aborted",
+                                    "displayValue": "aborted"
+                                },
+                                {
+                                    "value": "completed",
+                                    "displayValue": "completed"
+                                },
+                                {
+                                    "value": "running",
+                                    "displayValue": "running"
+                                },
+                                {
+                                    "value": "scheduled",
+                                    "displayValue": "scheduled"
+                                },
+                                {
+                                    "value": "suspended",
+                                    "displayValue": "suspended"
+                                }
+                            ]
+                        },
+                        "urls": {
+                            "displayName": "urls",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "user_agent": {
+                            "displayName": "user_agent",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "webhooks": {
+                    "displayName": "Webhooks",
+                    "path": "/webhooks.list",
+                    "responseKey": "webhooks",
+                    "fields": {
+                        "created_by": {
+                            "displayName": "created_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "created_date": {
+                            "displayName": "created_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "display_id": {
+                            "displayName": "display_id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "event_types": {
+                            "displayName": "event_types",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "headers": {
+                            "displayName": "headers",
+                            "valueType": "other",
+                            "providerType": "array"
+                        },
+                        "id": {
+                            "displayName": "id",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "modified_by": {
+                            "displayName": "modified_by",
+                            "valueType": "other",
+                            "providerType": "object"
+                        },
+                        "modified_date": {
+                            "displayName": "modified_date",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "secret": {
+                            "displayName": "secret",
+                            "valueType": "string",
+                            "providerType": "string"
+                        },
+                        "status": {
+                            "displayName": "status",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "active",
+                                    "displayValue": "active"
+                                },
+                                {
+                                    "value": "inactive",
+                                    "displayValue": "inactive"
+                                },
+                                {
+                                    "value": "unverified",
+                                    "displayValue": "unverified"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "displayName": "url",
+                            "valueType": "string",
+                            "providerType": "string"
+                        }
+                    }
+                },
+                "works": {
+                    "displayName": "Works",
+                    "path": "/works.list",
+                    "responseKey": "works",
+                    "fields": {
+                        "type": {
+                            "displayName": "type",
+                            "valueType": "singleSelect",
+                            "providerType": "string",
+                            "values": [
+                                {
+                                    "value": "issue",
+                                    "displayValue": "issue"
+                                },
+                                {
+                                    "value": "opportunity",
+                                    "displayValue": "opportunity"
+                                },
+                                {
+                                    "value": "task",
+                                    "displayValue": "task"
+                                },
+                                {
+                                    "value": "ticket",
+                                    "displayValue": "ticket"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

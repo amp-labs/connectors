@@ -83,6 +83,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"forward_email": "gmailcomtestemail@freshdesk.com",
 						},
 					},
+					Id: "1",
 				}},
 				Done: true,
 			},

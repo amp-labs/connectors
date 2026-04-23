@@ -1,7 +1,6 @@
 package zendesksupport
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -57,7 +56,7 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Parameter brands is required"),
+				testutils.StringError("Parameter brands is required"),
 			},
 		},
 		{
@@ -69,8 +68,8 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("[RecordInvalid]Record validation errors"),
-				errors.New("[DuplicateValue]Subdomain: nk2 has already been taken"),
+				testutils.StringError("[RecordInvalid]Record validation errors"),
+				testutils.StringError("[DuplicateValue]Subdomain: nk2 has already been taken"),
 			},
 		},
 		{
@@ -82,10 +81,10 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("[RecordInvalid]Record validation errors"),
-				errors.New("[InvalidValue]Subdomain: is invalid"),
-				errors.New("[InvalidFormat]Email is not properly formatted"),
-				errors.New("[BlankValue]Name: cannot be blank"),
+				testutils.StringError("[RecordInvalid]Record validation errors"),
+				testutils.StringError("[InvalidValue]Subdomain: is invalid"),
+				testutils.StringError("[InvalidFormat]Email is not properly formatted"),
+				testutils.StringError("[BlankValue]Name: cannot be blank"),
 			},
 		},
 		{

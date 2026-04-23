@@ -14,7 +14,7 @@ func responseField(objectName string) string {
 	case "scorecard":
 		return "scorecards"
 	case "scorecard-template":
-		return "scoreCardTemplates"
+		return "scorecardTemplates"
 	default:
 		return objectName
 	}

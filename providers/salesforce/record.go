@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
 // GetRecordsByIds returns records matching identifiers.
@@ -42,9 +43,9 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 
 	readResult, err := common.ParseResult(
 		rsp,
-		getRecords,
-		getNextRecordsURL,
-		getSalesforceDataMarshaller(config.ReadParams),
+		core.GetRecords,
+		core.GetNextRecordsURL,
+		core.GetDataMarshallerForRead(config.ReadParams),
 		config.Fields,
 	)
 	if err != nil {
@@ -62,12 +63,13 @@ type recordsByIDsParams struct {
 
 func (c *Connector) buildReadByIdentifierURL(config recordsByIDsParams) (*urlbuilder.URL, error) {
 	// Requesting record identifiers using SOQL query.
+	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_query.htm
 	url, err := c.getRestApiURL("query")
 	if err != nil {
 		return nil, err
 	}
 
-	query := makeSOQL(config.ReadParams).
+	query := makeSOQL(config.ReadParams, c.getTimestampColumn()).
 		WithIDs(config.RecordIdentifiers.List()).
 		String()
 

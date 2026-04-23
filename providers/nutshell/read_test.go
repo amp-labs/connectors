@@ -1,7 +1,6 @@
 package nutshell
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -47,7 +46,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrServer,
-				errors.New("Internal Server Error"),
+				testutils.StringError("Internal Server Error"),
 			},
 		},
 		{
@@ -60,7 +59,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(`"Internal Error"`),
+				testutils.StringError(`"Internal Error"`),
 			},
 		},
 		{
@@ -73,7 +72,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
 				common.ErrNotFound,
-				errors.New("An Error Occurred: Not Found"),
+				testutils.StringError("An Error Occurred: Not Found"),
 			},
 		},
 		{
@@ -85,7 +84,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New("Invalid filter [Invalid page number: -1]"),
+				testutils.StringError("Invalid filter [Invalid page number: -1]"),
 			},
 		},
 		{

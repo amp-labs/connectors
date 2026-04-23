@@ -131,7 +131,7 @@ func (m *ModuleLinter) run(pass *analysis.Pass) (any, error) {
 				}
 			}
 
-			// Rule 2: Check ModuleDependencies in metadata inputs when provider has modules
+			// Rule 2: Check ModuleDependencies in metadata Input and PostAuthentication when provider has modules.
 			if hasModules && metadataField != nil {
 				m.checkMetadataModuleDependencies(pass, metadataField)
 			}
@@ -143,8 +143,16 @@ func (m *ModuleLinter) run(pass *analysis.Pass) (any, error) {
 	return nil, nil
 }
 
-// checkMetadataModuleDependencies validates that all MetadataItemInput have ModuleDependencies
-// when the provider has modules.
+// checkMetadataModuleDependencies validates that all MetadataItemInput and MetadataItemPostAuthentication
+// have ModuleDependencies when the provider has modules.
+//
+// NOTE on naming: "ModuleDependencies" is arguably a misnomer. A better name would be
+// "dependentModules" since this field specifies which modules DEPEND ON (i.e., require)
+// this metadata item, NOT which modules the metadata item depends on.
+//
+// Example: If a metadata item "workspace" has ModuleDependencies: {ModuleCRM: {}},
+// it means the CRM module requires/depends on the workspace metadata - not that
+// the workspace metadata depends on the CRM module.
 func (m *ModuleLinter) checkMetadataModuleDependencies(pass *analysis.Pass, metadataField ast.Expr) {
 	// metadataField is &ProviderMetadata{...}
 	// We need to unwrap it and find the Input field
@@ -161,26 +169,17 @@ func (m *ModuleLinter) checkMetadataModuleDependencies(pass *analysis.Pass, meta
 	}
 
 	// Find the Input field in ProviderMetadata
-	var inputField ast.Expr
-	for _, elt := range metadataLit.Elts {
-		kv, ok := elt.(*ast.KeyValueExpr)
-		if !ok {
-			continue
-		}
-
-		key, ok := kv.Key.(*ast.Ident)
-		if !ok || key.Name != "Input" {
-			continue
-		}
-
-		inputField = kv.Value
-		break
+	if field := findChild(metadataLit, "Input"); field != nil {
+		checkProviderMetadataInput(pass, field)
 	}
 
-	if inputField == nil {
-		return // No Input field
+	// Find the PostAuthentication field in ProviderMetadata
+	if field := findChild(metadataLit, "PostAuthentication"); field != nil {
+		checkProviderMetadataPostAuthentication(pass, field)
 	}
+}
 
+func checkProviderMetadataInput(pass *analysis.Pass, inputField ast.Expr) {
 	// Input should be a composite literal of []MetadataItemInput
 	inputLit, ok := inputField.(*ast.CompositeLit)
 	if !ok {
@@ -222,6 +221,69 @@ func (m *ModuleLinter) checkMetadataModuleDependencies(pass *analysis.Pass, meta
 			})
 		}
 	}
+}
+
+func checkProviderMetadataPostAuthentication(pass *analysis.Pass, postAuthField ast.Expr) {
+	// Input should be a composite literal of []MetadataItemPostAuthentication
+	inputLit, ok := postAuthField.(*ast.CompositeLit)
+	if !ok {
+		return
+	}
+
+	// Check each MetadataItemPostAuthentication
+	for _, item := range inputLit.Elts {
+		itemLit, ok := item.(*ast.CompositeLit)
+		if !ok {
+			continue
+		}
+
+		// Check if this MetadataItemPostAuthentication has ModuleDependencies field
+		hasModuleDependencies := false
+		for _, field := range itemLit.Elts {
+			kv, ok := field.(*ast.KeyValueExpr)
+			if !ok {
+				continue
+			}
+
+			key, ok := kv.Key.(*ast.Ident)
+			if !ok || key.Name != "ModuleDependencies" {
+				continue
+			}
+
+			// Found ModuleDependencies, check if it's non-nil
+			if !isZeroValue(kv.Value) {
+				hasModuleDependencies = true
+			}
+			break
+		}
+
+		if !hasModuleDependencies {
+			pass.Report(analysis.Diagnostic{
+				Pos:     itemLit.Pos(),
+				End:     itemLit.End(),
+				Message: "MetadataItemPostAuthentication in multi-module provider must have ModuleDependencies set to non-nil value",
+			})
+		}
+	}
+}
+
+// findChild locates child node by name.
+func findChild(composite *ast.CompositeLit, name string) ast.Expr {
+	for _, elt := range composite.Elts {
+		kv, ok := elt.(*ast.KeyValueExpr)
+		if !ok {
+			continue
+		}
+
+		key, ok := kv.Key.(*ast.Ident)
+		if !ok || key.Name != name {
+			continue
+		}
+
+		return kv.Value
+	}
+
+	return nil
 }
 
 // checkModuleConstantNaming validates that module constants follow the naming convention:

@@ -18,9 +18,11 @@ import (
 
 //nolint:lll
 /*
-Older version doc: https://developers.hubspot.com/docs/guides/api/app-management/webhooks#webhook-subscriptions
+Older docs:
+	https://developers.hubspot.com/docs/guides/api/app-management/webhooks#webhook-subscriptions
+	https://developers.hubspot.com/docs/guides/apps/public-apps/create-generic-webhook-subscriptions#general
 
-Newer version doc: https://developers.hubspot.com/docs/guides/apps/public-apps/create-generic-webhook-subscriptions#general
+Newer version doc: https://developers.hubspot.com/docs/api-reference/latest/webhooks/create-webhook-appId
 
 */
 

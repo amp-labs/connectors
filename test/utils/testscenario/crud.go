@@ -2,6 +2,7 @@ package testscenario
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -52,6 +53,8 @@ type CRUDTestSuite struct {
 type Property struct {
 	Key   string
 	Value string
+	// Since is used to scope the Read to locate a record with matching key and value within the time window.
+	Since time.Time
 }
 
 func (p Property) isZero() bool {
@@ -73,7 +76,8 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 
 	// CREATE
 	fmt.Println("Creating", objectName)
-	createResult := createObject(ctx, conn, objectName, &createPayload)
+	createResult, err := createObject(ctx, conn, objectName, &createPayload)
+	failOnError(err)
 
 	if suite.WaitBeforeSearch != 0 {
 		fmt.Println("... waiting")
@@ -82,7 +86,8 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 
 	// READ
 	fmt.Println("Reading", objectName)
-	res := readObjects(ctx, conn, objectName, suite.ReadFields)
+	res, err := readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
+	failOnError(err)
 
 	// SEARCH
 	fmt.Println("Finding recently created", objectName)
@@ -91,8 +96,9 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 
 	if !suite.SearchBy.isZero() {
 		search := suite.SearchBy
-		object := searchObject(res, search.Key, search.Value)
-		objectID = getRecordIdentifierValue(object, suite.RecordIdentifierKey)
+		object, err := searchObjectRecord(res, search.Key, search.Value)
+		failOnError(err)
+		objectID = object.getRecordIdentifierValue(suite.RecordIdentifierKey)
 	}
 
 	fmt.Println("Object record identifier is", objectID)
@@ -108,7 +114,8 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 
 	// UPDATE
 	fmt.Println("Updating some object properties")
-	updateObject(ctx, conn, objectName, objectID, &updatePayload)
+	err = updateObject(ctx, conn, objectName, objectID, &updatePayload)
+	failOnError(err)
 	fmt.Println("Validate object has changed accordingly")
 
 	if suite.WaitBeforeSearch != 0 {
@@ -130,14 +137,30 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 		}
 	}
 
-	res = readObjects(ctx, conn, objectName, suite.ReadFields)
-	object := searchObject(res, suite.RecordIdentifierKey, objectID)
-	validateUpdatedFieldsFunc(object)
+	res, err = readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
+	failOnError(err)
+	object, err := searchObjectRecord(res, suite.RecordIdentifierKey, objectID)
+	failOnError(err)
+	validateUpdatedFieldsFunc(object.Fields)
 
 	// DELETE
 	fmt.Println("Removing this", objectName)
-	removeObject(ctx, conn, objectName, objectID)
+	err = removeObject(ctx, conn, objectName, objectID)
+	failOnError(err)
 	fmt.Println("> Successful test completion")
+}
+
+type objectRecord struct {
+	common.ReadResultRow
+}
+
+func (r objectRecord) getRecordIdentifierValue(key string) string {
+	if r.Id != "" {
+		return r.Id
+	}
+
+	// Old style where identifier will be inside the fields.
+	return getRecordIdentifierValue(r.Fields, key)
 }
 
 func getRecordIdentifierValue(object map[string]any, key string) string {
@@ -157,30 +180,34 @@ func getRecordIdentifierValue(object map[string]any, key string) string {
 	}
 }
 
-func createObject[CP any](ctx context.Context, conn ConnectorCRUD, objectName string, payload *CP) *common.WriteResult {
+func createObject[CP any](
+	ctx context.Context, conn ConnectorCRUD, objectName string, payload *CP,
+) (*common.WriteResult, error) {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: objectName,
 		RecordId:   "",
 		RecordData: payload,
 	})
 	if err != nil {
-		utils.Fail("error creating an object", "error", err)
+		return nil, fmt.Errorf("error creating an object: %w", err)
 	}
 
 	if !res.Success {
-		utils.Fail("failed to create an object")
+		return nil, errors.New("failed to create an object")
 	}
 
-	return res
+	return res, nil
 }
 
-func readObjects(ctx context.Context, conn ConnectorCRUD, objectName string, fields datautils.StringSet) *common.ReadResult {
+func readObjects(ctx context.Context, conn ConnectorCRUD,
+	objectName string, fields datautils.StringSet, since time.Time) (*common.ReadResult, error) {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
 		Fields:     fields,
+		Since:      since,
 	})
 	if err != nil {
-		utils.Fail("error reading from provider", "error", err)
+		return nil, fmt.Errorf("error reading from provider: %w", err)
 	}
 
 	// Paginate
@@ -193,53 +220,69 @@ func readObjects(ctx context.Context, conn ConnectorCRUD, objectName string, fie
 
 		nextRes, err := conn.Read(ctx, params)
 		if err != nil {
-			utils.Fail("error reading next page from provider", "error", err)
+			return nil, fmt.Errorf("error reading next page from provider: %w", err)
 		}
 
 		res.Data = append(res.Data, nextRes.Data...)
 		res.NextPage = nextRes.NextPage
 	}
 
-	return res
+	return res, nil
 }
 
-func searchObject(res *common.ReadResult, key, value string) map[string]any {
+func searchObjectRecord(res *common.ReadResult, key, value string) (*objectRecord, error) {
 	for _, data := range res.Data {
 		if mockutils.DoesObjectCorrespondToString(data.Fields[key], value) {
-			return data.Fields
+			return &objectRecord{data}, nil
+		}
+
+		// If we are searching using primary identifier it not be present in data.Fields all the time.
+		// Need to check separately.
+		if mockutils.DoesObjectCorrespondToString(data.Id, value) {
+			return &objectRecord{data}, nil
 		}
 	}
 
-	utils.Fail("error finding object in a list")
-
-	return nil
+	return nil, errors.New("error finding object in a list")
 }
 
-func updateObject[UP any](ctx context.Context, conn ConnectorCRUD, objectName string, objectID string, payload *UP) {
+func updateObject[UP any](
+	ctx context.Context, conn ConnectorCRUD, objectName string, objectID string, payload *UP,
+) error {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: objectName,
 		RecordId:   objectID,
 		RecordData: payload,
 	})
 	if err != nil {
-		utils.Fail("error updating object", "error", err)
+		return fmt.Errorf("error updating object: %w", err)
 	}
 
 	if !res.Success {
-		utils.Fail("failed to update an object")
+		return errors.New("failed to update an object")
 	}
+
+	return nil
 }
 
-func removeObject(ctx context.Context, conn ConnectorCRUD, objectName string, objectID string) {
+func removeObject(ctx context.Context, conn ConnectorCRUD, objectName string, objectID string) error {
 	res, err := conn.Delete(ctx, common.DeleteParams{
 		ObjectName: objectName,
 		RecordId:   objectID,
 	})
 	if err != nil {
-		utils.Fail("error deleting for provider", "error", err)
+		return fmt.Errorf("error deleting for provider: %w", err)
 	}
 
 	if !res.Success {
-		utils.Fail("failed to remove object")
+		return errors.New("failed to remove object")
+	}
+
+	return nil
+}
+
+func failOnError(err error) {
+	if err != nil {
+		utils.Fail("fatal", "error", err)
 	}
 }

@@ -1,0 +1,247 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "contacts",
+          "fields": {
+            "contact_user_id": {
+              "displayName": "Contact User Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner_id": {
+              "displayName": "Owner Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_added": {
+              "displayName": "Date Added",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "raw_phone": {
+              "displayName": "Raw Phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "unique_id": {
+              "displayName": "Unique Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ad_code": {
+              "displayName": "Ad Code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "language": {
+              "displayName": "Language",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "region": {
+              "displayName": "Region",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time_zone": {
+              "displayName": "Time Zone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location_name": {
+              "displayName": "Location Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "latitude": {
+              "displayName": "Latitude",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "longitude": {
+              "displayName": "Longitude",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "raw_zip": {
+              "displayName": "Raw Zip",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "folders": {
+          "displayName": "Folders",
+          "path": "/folders",
+          "responseKey": "folders",
+          "fields": {
+            "folder_id": {
+              "displayName": "Folder Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "folder_name": {
+              "displayName": "Folder Name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "members": {
+          "displayName": "Members",
+          "path": "/members",
+          "responseKey": "members",
+          "fields": {
+            "user_id": {
+              "displayName": "User Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "username": {
+              "displayName": "Username",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email_address": {
+              "displayName": "Email Address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone": {
+              "displayName": "Phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "Display Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscription_status": {
+              "displayName": "Subscription Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_added": {
+              "displayName": "Date Added",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "voicemails": {
+          "displayName": "Voicemails",
+          "path": "/voicemails",
+          "responseKey": "voicemails",
+          "fields": {
+            "recording_id": {
+              "displayName": "Recording Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "playback_url": {
+              "displayName": "Playback Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_when": {
+              "displayName": "Created When",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "dialsession": {
+          "displayName": "Dial Sessions",
+          "path": "/dialsession",
+          "responseKey": "dialsessions",
+          "fields": {
+            "dialsession_id": {
+              "displayName": "Dialsession Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "callerid": {
+              "displayName": "Caller Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_when": {
+              "displayName": "Start When",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "end_when": {
+              "displayName": "End When",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "connected_when": {
+              "displayName": "Connected When",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "disconnected_when": {
+              "displayName": "Disconnected When",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "call_count": {
+              "displayName": "Call Count",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/tags",
+          "responseKey": "tags",
+          "fields": {
+            "id": {
+              "displayName": "Tag Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

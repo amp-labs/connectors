@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -245,9 +244,16 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				BaseURL:     "https://api.hubapi.com",
 				DisplayName: "HubSpot",
 				Support: Support{
-					Proxy: true,
-					Read:  true,
-					Write: true,
+					Delete:    true,
+					Proxy:     true,
+					Read:      true,
+					Subscribe: true,
+					Write:     true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 		},
@@ -348,18 +354,59 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
 						Create: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							DefaultRecordLimit: new(100), // nolint:mnd
 							ObjectRecordLimits: nil,
 							Supported:          true,
 						},
 						Update: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							DefaultRecordLimit: new(100), // nolint:mnd
 							ObjectRecordLimits: nil,
 							Supported:          true,
 						},
 					},
-					Read:  true,
-					Write: true,
+					Delete:    true,
+					Read:      true,
+					Subscribe: true,
+					Write:     true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Hubspot CRM module",
+			input: inType{
+				provider: Hubspot,
+				moduleID: ModuleHubspotCRM,
+			},
+			expected: &ModuleInfo{
+				BaseURL:     "https://api.hubapi.com/crm",
+				DisplayName: "HubSpot CRM",
+				Support: Support{
+					BatchWrite: &BatchWriteSupport{
+						Create: BatchWriteSupportConfig{
+							DefaultRecordLimit: new(100), // nolint:mnd
+							ObjectRecordLimits: nil,
+							Supported:          true,
+						},
+						Update: BatchWriteSupportConfig{
+							DefaultRecordLimit: new(100), // nolint:mnd
+							ObjectRecordLimits: nil,
+							Supported:          true,
+						},
+					},
+					Delete:    true,
+					Read:      true,
+					Subscribe: true,
+					Write:     true,
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 		},
@@ -398,33 +445,6 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				BaseURL:     "https://api.atlassian.com/ex/jira/{{.cloudId}}/rest/api",
 				DisplayName: "Atlassian Jira",
 				Support: Support{
-					Read:  true,
-					Write: true,
-				},
-			},
-		},
-		{
-			name: "Hubspot CRM module",
-			input: inType{
-				provider: Hubspot,
-				moduleID: ModuleHubspotCRM,
-			},
-			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com/crm",
-				DisplayName: "HubSpot CRM",
-				Support: Support{
-					BatchWrite: &BatchWriteSupport{
-						Create: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
-							ObjectRecordLimits: nil,
-							Supported:          true,
-						},
-						Update: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
-							ObjectRecordLimits: nil,
-							Supported:          true,
-						},
-					},
 					Read:  true,
 					Write: true,
 				},

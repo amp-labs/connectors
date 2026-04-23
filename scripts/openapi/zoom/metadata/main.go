@@ -25,7 +25,9 @@ func main() {
 	)
 
 	for _, object := range objects {
-		objectName, _ := strings.CutPrefix(object.URLPath, "/")
+		objectName := object.ObjectName
+
+		urlPath := strings.ReplaceAll(object.URLPath, "{userId}", "me")
 
 		if object.Problem != nil {
 			slog.Error("schema not extracted",
@@ -35,7 +37,7 @@ func main() {
 		}
 
 		for _, field := range object.Fields {
-			schemas.Add(common.ModuleRoot, objectName, object.DisplayName, object.URLPath, object.ResponseKey,
+			schemas.Add(common.ModuleRoot, objectName, object.DisplayName, urlPath, object.ResponseKey,
 				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 

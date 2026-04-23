@@ -1,0 +1,37 @@
+{
+    "data": [
+        {
+            "_id": "test_call_id_456",
+            "to": "(555) 987-6543",
+            "disposition": {
+                "internal_id": 20,
+                "external_id": "20",
+                "external_name": "Connected"
+            },
+            "contact": {
+                "_id": "test_contact_id_789",
+                "first_name": "Second",
+                "last_name": "Contact"
+            },
+            "contact_list": {
+                "_id": "test_list_id_102",
+                "name": "Test Contact List"
+            },
+            "user": {
+                "_id": "test_user_id_202",
+                "first_name": "Test",
+                "last_name": "User"
+            },
+            "createdAt": "2024-01-15T12:00:00.000Z",
+            "updatedAt": "2024-01-15T12:30:00.000Z",
+            "recording_url": "",
+            "transcription": "",
+            "from": "15559876543"
+        }
+    ],
+    "pagination": {
+        "total": 2,
+        "page": 2,
+        "next": null
+    }
+}

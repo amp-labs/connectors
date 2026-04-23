@@ -265,6 +265,10 @@ func nextRecordsURL() common.NextPageFunc {
 			return "", err
 		}
 
+		if links == nil {
+			return "", nil
+		}
+
 		nextURL, err := jsonquery.New(links).StringOptional("next")
 		if err != nil {
 			return "", err

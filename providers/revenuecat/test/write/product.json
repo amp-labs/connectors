@@ -1,0 +1,8 @@
+{
+  "object": "product",
+  "id": "prod_xyz789",
+  "store_identifier": "monthly.premium",
+  "type": "subscription",
+  "created_at": 1700000000000,
+  "app_id": "app_xyz123"
+}

@@ -119,7 +119,25 @@
             "kpi": {
               "displayName": "kpi",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "modified": {
               "displayName": "modified",
@@ -150,6 +168,78 @@
               "displayName": "unit_id",
               "valueType": "string",
               "providerType": "string"
+            }
+          }
+        },
+        "AccountProductPricings": {
+          "displayName": "Account Product Pricings",
+          "path": "/entities/AccountProductPricings",
+          "responseKey": "data",
+          "fields": {
+            "account": {
+              "displayName": "account",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "account_id": {
+              "displayName": "account_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currency": {
+              "displayName": "currency",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currency_id": {
+              "displayName": "currency_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_delete_protected": {
+              "displayName": "is_delete_protected",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_deleted": {
+              "displayName": "is_deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "modified": {
+              "displayName": "modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "price": {
+              "displayName": "price",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "product": {
+              "displayName": "product",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "product_id": {
+              "displayName": "product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "revision": {
+              "displayName": "revision",
+              "valueType": "int",
+              "providerType": "integer"
             }
           }
         },
@@ -419,7 +509,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -471,7 +571,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "unit": {
               "displayName": "unit",
@@ -737,7 +847,29 @@
             "account_class": {
               "displayName": "account_class",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                }
+              ]
             },
             "account_type": {
               "displayName": "account_type",
@@ -982,7 +1114,25 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -1245,7 +1395,17 @@
             "kpi": {
               "displayName": "kpi",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "modified": {
               "displayName": "modified",
@@ -1883,7 +2043,17 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "username": {
               "displayName": "username",
@@ -1945,7 +2115,21 @@
             "response": {
               "displayName": "response",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "revision": {
               "displayName": "revision",
@@ -2002,7 +2186,17 @@
             "invitee_type": {
               "displayName": "invitee_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
             },
             "is_delete_protected": {
               "displayName": "is_delete_protected",
@@ -2027,7 +2221,21 @@
             "response": {
               "displayName": "response",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "revision": {
               "displayName": "revision",
@@ -2104,7 +2312,21 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -2141,7 +2363,21 @@
             "appointment_location_type": {
               "displayName": "appointment_location_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "appointment_owner": {
               "displayName": "appointment_owner",
@@ -2196,7 +2432,17 @@
             "confirmation_page_type": {
               "displayName": "confirmation_page_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
             },
             "confirmation_page_url": {
               "displayName": "confirmation_page_url",
@@ -2271,7 +2517,21 @@
             "planning_type": {
               "displayName": "planning_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "reminder_email_enabled": {
               "displayName": "reminder_email_enabled",
@@ -2286,7 +2546,25 @@
             "reminder_email_offset_type": {
               "displayName": "reminder_email_offset_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "reply_company_email": {
               "displayName": "reply_company_email",
@@ -2311,7 +2589,17 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
             },
             "url": {
               "displayName": "url",
@@ -2353,7 +2641,105 @@
             "icon": {
               "displayName": "icon",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                },
+                {
+                  "value": "13",
+                  "displayValue": "13"
+                },
+                {
+                  "value": "14",
+                  "displayValue": "14"
+                },
+                {
+                  "value": "15",
+                  "displayValue": "15"
+                },
+                {
+                  "value": "16",
+                  "displayValue": "16"
+                },
+                {
+                  "value": "17",
+                  "displayValue": "17"
+                },
+                {
+                  "value": "18",
+                  "displayValue": "18"
+                },
+                {
+                  "value": "19",
+                  "displayValue": "19"
+                },
+                {
+                  "value": "20",
+                  "displayValue": "20"
+                },
+                {
+                  "value": "21",
+                  "displayValue": "21"
+                },
+                {
+                  "value": "22",
+                  "displayValue": "22"
+                },
+                {
+                  "value": "23",
+                  "displayValue": "23"
+                }
+              ]
             },
             "id": {
               "displayName": "id",
@@ -2660,7 +3046,33 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "subject": {
               "displayName": "subject",
@@ -2752,7 +3164,21 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -2824,7 +3250,29 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                }
+              ]
             }
           }
         },
@@ -2856,7 +3304,57 @@
             "entity_type": {
               "displayName": "entity_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                }
+              ]
             },
             "id": {
               "displayName": "id",
@@ -2968,7 +3466,21 @@
             "approval_status": {
               "displayName": "approval_status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "approvers": {
               "displayName": "approvers",
@@ -3068,7 +3580,29 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                }
+              ]
             }
           }
         },
@@ -3255,6 +3789,68 @@
               "displayName": "twilio_call_sid",
               "valueType": "string",
               "providerType": "string"
+            }
+          }
+        },
+        "ChatConversations": {
+          "displayName": "Chat Conversations",
+          "path": "/entities/ChatConversations",
+          "responseKey": "data",
+          "fields": {
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_delete_protected": {
+              "displayName": "is_delete_protected",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_deleted": {
+              "displayName": "is_deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "messages": {
+              "displayName": "messages",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "modified": {
+              "displayName": "modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner_id": {
+              "displayName": "owner_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -3779,7 +4375,17 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
             },
             "unit_manager_ids": {
               "displayName": "unit_manager_ids",
@@ -3840,7 +4446,57 @@
             "entity_type": {
               "displayName": "entity_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                }
+              ]
             },
             "id": {
               "displayName": "id",
@@ -4211,6 +4867,11 @@
               "valueType": "int",
               "providerType": "integer"
             },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
             "step": {
               "displayName": "step",
               "valueType": "string",
@@ -4311,7 +4972,17 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "template_entity_api_name": {
               "displayName": "template_entity_api_name",
@@ -4334,6 +5005,10 @@
                 {
                   "value": "AccountKPI",
                   "displayValue": "AccountKPI"
+                },
+                {
+                  "value": "AccountProductPricing",
+                  "displayValue": "AccountProductPricing"
                 },
                 {
                   "value": "AccountRole",
@@ -4474,6 +5149,10 @@
                 {
                   "value": "AutomationHubItem",
                   "displayValue": "AutomationHubItem"
+                },
+                {
+                  "value": "ChatConversation",
+                  "displayValue": "ChatConversation"
                 },
                 {
                   "value": "Client",
@@ -4642,6 +5321,10 @@
                 {
                   "value": "Data",
                   "displayValue": "Data"
+                },
+                {
+                  "value": "Ebook",
+                  "displayValue": "Ebook"
                 },
                 {
                   "value": "Email",
@@ -5376,12 +6059,68 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "-1",
+                  "displayValue": "-1"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                }
+              ]
             },
             "upload_source": {
               "displayName": "upload_source",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "url": {
               "displayName": "url",
@@ -5498,12 +6237,68 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "-1",
+                  "displayValue": "-1"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                }
+              ]
             },
             "upload_source": {
               "displayName": "upload_source",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "url": {
               "displayName": "url",
@@ -5575,7 +6370,21 @@
             "service_type": {
               "displayName": "service_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "settings": {
               "displayName": "settings",
@@ -5729,7 +6538,25 @@
             "relationship": {
               "displayName": "relationship",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "revision": {
               "displayName": "revision",
@@ -5853,7 +6680,25 @@
             "kpi": {
               "displayName": "kpi",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "modified": {
               "displayName": "modified",
@@ -6106,7 +6951,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -6158,7 +7013,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "unit": {
               "displayName": "unit",
@@ -6529,7 +7394,25 @@
             "gender": {
               "displayName": "gender",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "id": {
               "displayName": "id",
@@ -6669,7 +7552,25 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -7133,7 +8034,33 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "url": {
               "displayName": "url",
@@ -7200,7 +8127,29 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                }
+              ]
             }
           }
         },
@@ -7297,7 +8246,29 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                }
+              ]
             }
           }
         },
@@ -7374,7 +8345,21 @@
             "end_reason": {
               "displayName": "end_reason",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "end_time": {
               "displayName": "end_time",
@@ -7394,7 +8379,57 @@
             "entity_type": {
               "displayName": "entity_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                }
+              ]
             },
             "excluded_from_stats": {
               "displayName": "excluded_from_stats",
@@ -7486,7 +8521,25 @@
             "deactivation_reason": {
               "displayName": "deactivation_reason",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "description": {
               "displayName": "description",
@@ -7561,7 +8614,17 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -7675,7 +8738,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -7727,7 +8800,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "unit": {
               "displayName": "unit",
@@ -7819,7 +8902,25 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -7849,7 +8950,21 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -7901,7 +9016,21 @@
             "content_share_mode": {
               "displayName": "content_share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "content_sharing_clients": {
               "displayName": "content_sharing_clients",
@@ -7936,7 +9065,17 @@
             "direction": {
               "displayName": "direction",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "documents": {
               "displayName": "documents",
@@ -8071,12 +9210,44 @@
             "sentiment": {
               "displayName": "sentiment",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -8126,7 +9297,17 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "uid": {
               "displayName": "uid",
@@ -8330,7 +9511,57 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                }
+              ]
             }
           }
         },
@@ -8347,7 +9578,57 @@
             "entity_type": {
               "displayName": "entity_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                }
+              ]
             },
             "entity_type_id": {
               "displayName": "entity_type_id",
@@ -8424,7 +9705,57 @@
             "entity_type": {
               "displayName": "entity_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                }
+              ]
             },
             "id": {
               "displayName": "id",
@@ -8491,7 +9822,57 @@
             "entity_type": {
               "displayName": "entity_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                }
+              ]
             },
             "id": {
               "displayName": "id",
@@ -8645,7 +10026,33 @@
             "operation": {
               "displayName": "operation",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "revision": {
               "displayName": "revision",
@@ -8742,7 +10149,21 @@
             "permission_level": {
               "displayName": "permission_level",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "revision": {
               "displayName": "revision",
@@ -8761,6 +10182,16 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "filter": {
+              "displayName": "filter",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "has_draft": {
+              "displayName": "has_draft",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
             "id": {
               "displayName": "id",
               "valueType": "string",
@@ -8776,6 +10207,11 @@
               "valueType": "boolean",
               "providerType": "boolean"
             },
+            "is_published": {
+              "displayName": "is_published",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
             "modified": {
               "displayName": "modified",
               "valueType": "string",
@@ -8785,6 +10221,16 @@
               "displayName": "pattern",
               "valueType": "string",
               "providerType": "string"
+            },
+            "sequence_set_id": {
+              "displayName": "sequence_set_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sort_order": {
+              "displayName": "sort_order",
+              "valueType": "int",
+              "providerType": "integer"
             }
           }
         },
@@ -8888,6 +10334,11 @@
               "valueType": "boolean",
               "providerType": "boolean"
             },
+            "is_readonly_on_recurrent_appointment": {
+              "displayName": "is_readonly_on_recurrent_appointment",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
             "is_unique": {
               "displayName": "is_unique",
               "valueType": "boolean",
@@ -8953,6 +10404,11 @@
               "valueType": "other",
               "providerType": "object"
             },
+            "sequence": {
+              "displayName": "sequence",
+              "valueType": "other",
+              "providerType": "object"
+            },
             "sequence_id": {
               "displayName": "sequence_id",
               "valueType": "string",
@@ -8960,6 +10416,11 @@
             },
             "sequence_pattern": {
               "displayName": "sequence_pattern",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sequence_set_id": {
+              "displayName": "sequence_set_id",
               "valueType": "string",
               "providerType": "string"
             },
@@ -9113,12 +10574,40 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "share_mode_params": {
               "displayName": "share_mode_params",
-              "valueType": "string",
-              "providerType": "string"
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "shared_clients": {
               "displayName": "shared_clients",
@@ -9200,7 +10689,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -9252,7 +10751,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "unit": {
               "displayName": "unit",
@@ -9374,7 +10883,25 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -9741,7 +11268,41 @@
             "entity_type": {
               "displayName": "entity_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                }
+              ]
             },
             "id": {
               "displayName": "id",
@@ -9796,7 +11357,21 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -9883,7 +11458,57 @@
             "entity_type": {
               "displayName": "entity_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                }
+              ]
             },
             "entity_type_id": {
               "displayName": "entity_type_id",
@@ -9979,6 +11604,11 @@
               "displayName": "revision",
               "valueType": "int",
               "providerType": "integer"
+            },
+            "settings": {
+              "displayName": "settings",
+              "valueType": "string",
+              "providerType": "string"
             },
             "task_type": {
               "displayName": "task_type",
@@ -10226,7 +11856,25 @@
             "relationship": {
               "displayName": "relationship",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "revision": {
               "displayName": "revision",
@@ -10407,7 +12055,37 @@
             "kpi": {
               "displayName": "kpi",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                }
+              ]
             },
             "lead": {
               "displayName": "lead",
@@ -10519,7 +12197,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -10576,7 +12264,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "unit": {
               "displayName": "unit",
@@ -10948,8 +12646,22 @@
             },
             "label_flag": {
               "displayName": "label_flag",
-              "valueType": "string",
-              "providerType": "string"
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "lead_source": {
               "displayName": "lead_source",
@@ -11079,7 +12791,25 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -11099,7 +12829,17 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "step": {
               "displayName": "step",
@@ -11145,6 +12885,11 @@
             },
             "access_accounts": {
               "displayName": "access_accounts",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "access_ai_record_detail": {
+              "displayName": "access_ai_record_detail",
               "valueType": "boolean",
               "providerType": "boolean"
             },
@@ -11201,7 +12946,21 @@
             "access_calling_company_phone": {
               "displayName": "access_calling_company_phone",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "access_calling_purchase_phone": {
               "displayName": "access_calling_purchase_phone",
@@ -11211,7 +12970,21 @@
             "access_company_emails": {
               "displayName": "access_company_emails",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "access_contacts": {
               "displayName": "access_contacts",
@@ -11241,7 +13014,29 @@
             "access_entity_account": {
               "displayName": "access_entity_account",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_account_copy": {
               "displayName": "access_entity_account_copy",
@@ -11256,7 +13051,33 @@
             "access_entity_account_direction": {
               "displayName": "access_entity_account_direction",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "access_entity_account_private": {
               "displayName": "access_entity_account_private",
@@ -11271,12 +13092,44 @@
             "access_entity_account_types": {
               "displayName": "access_entity_account_types",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "access_entity_appointment": {
               "displayName": "access_entity_appointment",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_appointment_delete": {
               "displayName": "access_entity_appointment_delete",
@@ -11286,7 +13139,33 @@
             "access_entity_appointment_direction": {
               "displayName": "access_entity_appointment_direction",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "access_entity_appointment_tag_create": {
               "displayName": "access_entity_appointment_tag_create",
@@ -11296,7 +13175,21 @@
             "access_entity_better_navigator": {
               "displayName": "access_entity_better_navigator",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_better_navigator_delete_not_owned": {
               "displayName": "access_entity_better_navigator_delete_not_owned",
@@ -11321,7 +13214,29 @@
             "access_entity_contact": {
               "displayName": "access_entity_contact",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_contact_copy": {
               "displayName": "access_entity_contact_copy",
@@ -11336,7 +13251,33 @@
             "access_entity_contact_direction": {
               "displayName": "access_entity_contact_direction",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "access_entity_contact_private": {
               "displayName": "access_entity_contact_private",
@@ -11351,12 +13292,36 @@
             "access_entity_contact_types": {
               "displayName": "access_entity_contact_types",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "access_entity_dashboard": {
               "displayName": "access_entity_dashboard",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_dashboard_delete_not_owned": {
               "displayName": "access_entity_dashboard_delete_not_owned",
@@ -11381,7 +13346,21 @@
             "access_entity_email_content_share_mode": {
               "displayName": "access_entity_email_content_share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "access_entity_email_delete_not_owned": {
               "displayName": "access_entity_email_delete_not_owned",
@@ -11391,12 +13370,40 @@
             "access_entity_email_sequence": {
               "displayName": "access_entity_email_sequence",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "access_entity_email_template": {
               "displayName": "access_entity_email_template",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_email_template_create_delete_folder": {
               "displayName": "access_entity_email_template_create_delete_folder",
@@ -11426,7 +13433,21 @@
             "access_entity_forecast": {
               "displayName": "access_entity_forecast",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_forecast_delete_not_owned": {
               "displayName": "access_entity_forecast_delete_not_owned",
@@ -11456,7 +13477,21 @@
             "access_entity_form_view": {
               "displayName": "access_entity_form_view",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_form_view_delete_not_owned": {
               "displayName": "access_entity_form_view_delete_not_owned",
@@ -11481,7 +13516,29 @@
             "access_entity_lead": {
               "displayName": "access_entity_lead",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_lead_copy": {
               "displayName": "access_entity_lead_copy",
@@ -11496,7 +13553,33 @@
             "access_entity_lead_direction": {
               "displayName": "access_entity_lead_direction",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "access_entity_lead_private": {
               "displayName": "access_entity_lead_private",
@@ -11511,7 +13594,17 @@
             "access_entity_lead_types": {
               "displayName": "access_entity_lead_types",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "access_entity_message_tag_create": {
               "displayName": "access_entity_message_tag_create",
@@ -11521,7 +13614,29 @@
             "access_entity_oppty": {
               "displayName": "access_entity_oppty",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_oppty_copy": {
               "displayName": "access_entity_oppty_copy",
@@ -11536,7 +13651,33 @@
             "access_entity_oppty_direction": {
               "displayName": "access_entity_oppty_direction",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "access_entity_oppty_private": {
               "displayName": "access_entity_oppty_private",
@@ -11551,17 +13692,63 @@
             "access_entity_pipeline": {
               "displayName": "access_entity_pipeline",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "access_entity_process": {
               "displayName": "access_entity_process",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "access_entity_profile": {
               "displayName": "access_entity_profile",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_profile_default_screen_profiles": {
               "displayName": "access_entity_profile_default_screen_profiles",
@@ -11591,7 +13778,29 @@
             "access_entity_project": {
               "displayName": "access_entity_project",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_project_copy": {
               "displayName": "access_entity_project_copy",
@@ -11606,7 +13815,33 @@
             "access_entity_project_direction": {
               "displayName": "access_entity_project_direction",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "access_entity_project_private": {
               "displayName": "access_entity_project_private",
@@ -11621,7 +13856,29 @@
             "access_entity_quote": {
               "displayName": "access_entity_quote",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_quote_copy": {
               "displayName": "access_entity_quote_copy",
@@ -11636,17 +13893,67 @@
             "access_entity_quote_direction": {
               "displayName": "access_entity_quote_direction",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "access_entity_quote_types": {
               "displayName": "access_entity_quote_types",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "access_entity_report": {
               "displayName": "access_entity_report",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_report_create_delete_folder": {
               "displayName": "access_entity_report_create_delete_folder",
@@ -11663,6 +13970,21 @@
               "valueType": "boolean",
               "providerType": "boolean"
             },
+            "access_entity_report_private": {
+              "displayName": "access_entity_report_private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "access_entity_report_schedule_create": {
+              "displayName": "access_entity_report_schedule_create",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "access_entity_report_schedule_management": {
+              "displayName": "access_entity_report_schedule_management",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
             "access_entity_report_sharing_custom": {
               "displayName": "access_entity_report_sharing_custom",
               "valueType": "boolean",
@@ -11676,7 +13998,21 @@
             "access_entity_target": {
               "displayName": "access_entity_target",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_target_delete_not_owned": {
               "displayName": "access_entity_target_delete_not_owned",
@@ -11691,7 +14027,29 @@
             "access_entity_task": {
               "displayName": "access_entity_task",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "access_entity_task_delete": {
               "displayName": "access_entity_task_delete",
@@ -11701,7 +14059,33 @@
             "access_entity_task_direction": {
               "displayName": "access_entity_task_direction",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "access_entity_task_tag_create": {
               "displayName": "access_entity_task_tag_create",
@@ -11821,7 +14205,21 @@
             "access_whats_app_company_phone": {
               "displayName": "access_whats_app_company_phone",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "allowed_account_types": {
               "displayName": "allowed_account_types",
@@ -11983,7 +14381,33 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             },
             "task": {
               "displayName": "task",
@@ -12013,7 +14437,21 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             }
           }
         },
@@ -12612,7 +15050,29 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                }
+              ]
             }
           }
         },
@@ -12997,7 +15457,57 @@
             "entity_type": {
               "displayName": "entity_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                }
+              ]
             },
             "form_edit": {
               "displayName": "form_edit",
@@ -13254,7 +15764,29 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                }
+              ]
             }
           }
         },
@@ -13355,8 +15887,22 @@
             },
             "label_flag": {
               "displayName": "label_flag",
-              "valueType": "string",
-              "providerType": "string"
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "lead_source": {
               "displayName": "lead_source",
@@ -13526,7 +16072,25 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -13546,7 +16110,21 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "step": {
               "displayName": "step",
@@ -13879,7 +16457,21 @@
             "period_type": {
               "displayName": "period_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "periods": {
               "displayName": "periods",
@@ -14154,8 +16746,18 @@
           "fields": {
             "condition": {
               "displayName": "condition",
-              "valueType": "string",
-              "providerType": "string"
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "created": {
               "displayName": "created",
@@ -14165,12 +16767,168 @@
             "day": {
               "displayName": "day",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                },
+                {
+                  "value": "13",
+                  "displayValue": "13"
+                },
+                {
+                  "value": "14",
+                  "displayValue": "14"
+                },
+                {
+                  "value": "15",
+                  "displayValue": "15"
+                },
+                {
+                  "value": "16",
+                  "displayValue": "16"
+                },
+                {
+                  "value": "17",
+                  "displayValue": "17"
+                },
+                {
+                  "value": "18",
+                  "displayValue": "18"
+                },
+                {
+                  "value": "19",
+                  "displayValue": "19"
+                },
+                {
+                  "value": "20",
+                  "displayValue": "20"
+                },
+                {
+                  "value": "21",
+                  "displayValue": "21"
+                },
+                {
+                  "value": "22",
+                  "displayValue": "22"
+                },
+                {
+                  "value": "23",
+                  "displayValue": "23"
+                },
+                {
+                  "value": "24",
+                  "displayValue": "24"
+                },
+                {
+                  "value": "25",
+                  "displayValue": "25"
+                },
+                {
+                  "value": "26",
+                  "displayValue": "26"
+                },
+                {
+                  "value": "27",
+                  "displayValue": "27"
+                },
+                {
+                  "value": "28",
+                  "displayValue": "28"
+                },
+                {
+                  "value": "29",
+                  "displayValue": "29"
+                },
+                {
+                  "value": "30",
+                  "displayValue": "30"
+                },
+                {
+                  "value": "31",
+                  "displayValue": "31"
+                }
+              ]
             },
             "day_of_week": {
               "displayName": "day_of_week",
-              "valueType": "string",
-              "providerType": "string"
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "16",
+                  "displayValue": "16"
+                },
+                {
+                  "value": "32",
+                  "displayValue": "32"
+                },
+                {
+                  "value": "64",
+                  "displayValue": "64"
+                }
+              ]
             },
             "end_date": {
               "displayName": "end_date",
@@ -14200,7 +16958,57 @@
             "month": {
               "displayName": "month",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                }
+              ]
             },
             "occur_every": {
               "displayName": "occur_every",
@@ -14245,12 +17053,80 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                }
+              ]
             },
             "week": {
               "displayName": "week",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "-1",
+                  "displayValue": "-1"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             }
           }
         },
@@ -14359,7 +17235,21 @@
             "period_type": {
               "displayName": "period_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "periods": {
               "displayName": "periods",
@@ -14508,7 +17398,33 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                }
+              ]
             }
           }
         },
@@ -14632,7 +17548,29 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                }
+              ]
             }
           }
         },
@@ -14739,7 +17677,29 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                }
+              ]
             }
           }
         },
@@ -14820,6 +17780,11 @@
               "valueType": "other",
               "providerType": "array"
             },
+            "ai_conversation": {
+              "displayName": "ai_conversation",
+              "valueType": "other",
+              "providerType": "object"
+            },
             "created": {
               "displayName": "created",
               "valueType": "string",
@@ -14828,7 +17793,25 @@
             "deactivation_reason": {
               "displayName": "deactivation_reason",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "description": {
               "displayName": "description",
@@ -14903,7 +17886,17 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -15185,6 +18178,11 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "is_active": {
+              "displayName": "is_active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
             "is_delete_protected": {
               "displayName": "is_delete_protected",
               "valueType": "boolean",
@@ -15215,10 +18213,30 @@
               "valueType": "int",
               "providerType": "integer"
             },
+            "rules": {
+              "displayName": "rules",
+              "valueType": "other",
+              "providerType": "object"
+            },
             "start_date": {
               "displayName": "start_date",
               "valueType": "string",
               "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -15312,7 +18330,17 @@
             "allowed_pipelines": {
               "displayName": "allowed_pipelines",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "created": {
               "displayName": "created",
@@ -15660,7 +18688,133 @@
             "entity": {
               "displayName": "entity",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                },
+                {
+                  "value": "13",
+                  "displayValue": "13"
+                },
+                {
+                  "value": "14",
+                  "displayValue": "14"
+                },
+                {
+                  "value": "15",
+                  "displayValue": "15"
+                },
+                {
+                  "value": "16",
+                  "displayValue": "16"
+                },
+                {
+                  "value": "17",
+                  "displayValue": "17"
+                },
+                {
+                  "value": "18",
+                  "displayValue": "18"
+                },
+                {
+                  "value": "19",
+                  "displayValue": "19"
+                },
+                {
+                  "value": "20",
+                  "displayValue": "20"
+                },
+                {
+                  "value": "21",
+                  "displayValue": "21"
+                },
+                {
+                  "value": "22",
+                  "displayValue": "22"
+                },
+                {
+                  "value": "23",
+                  "displayValue": "23"
+                },
+                {
+                  "value": "24",
+                  "displayValue": "24"
+                },
+                {
+                  "value": "25",
+                  "displayValue": "25"
+                },
+                {
+                  "value": "26",
+                  "displayValue": "26"
+                },
+                {
+                  "value": "27",
+                  "displayValue": "27"
+                },
+                {
+                  "value": "28",
+                  "displayValue": "28"
+                },
+                {
+                  "value": "29",
+                  "displayValue": "29"
+                },
+                {
+                  "value": "30",
+                  "displayValue": "30"
+                },
+                {
+                  "value": "31",
+                  "displayValue": "31"
+                },
+                {
+                  "value": "32",
+                  "displayValue": "32"
+                }
+              ]
             },
             "entity_api_name": {
               "displayName": "entity_api_name",
@@ -15720,7 +18874,25 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "sync_enabled": {
               "displayName": "sync_enabled",
@@ -15740,7 +18912,17 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "use_lang": {
               "displayName": "use_lang",
@@ -15916,7 +19098,13 @@
             "kpi": {
               "displayName": "kpi",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
             },
             "modified": {
               "displayName": "modified",
@@ -16075,7 +19263,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -16127,7 +19325,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "unit": {
               "displayName": "unit",
@@ -16174,7 +19382,17 @@
             "icon": {
               "displayName": "icon",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
             },
             "id": {
               "displayName": "id",
@@ -16371,7 +19589,25 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -16396,7 +19632,21 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "tags": {
               "displayName": "tags",
@@ -16644,7 +19894,25 @@
             "kpi": {
               "displayName": "kpi",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             },
             "modified": {
               "displayName": "modified",
@@ -16803,7 +20071,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -16855,7 +20133,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "unit": {
               "displayName": "unit",
@@ -17194,7 +20482,25 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -17214,7 +20520,21 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "step": {
               "displayName": "step",
@@ -17355,10 +20675,48 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "report_name": {
+              "displayName": "report_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "report_owner_id": {
+              "displayName": "report_owner_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "report_type": {
+              "displayName": "report_type",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
+            },
             "revision": {
               "displayName": "revision",
               "valueType": "int",
               "providerType": "integer"
+            },
+            "sender_email": {
+              "displayName": "sender_email",
+              "valueType": "string",
+              "providerType": "string"
             },
             "settings": {
               "displayName": "settings",
@@ -17425,7 +20783,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -17477,7 +20845,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "unit": {
               "displayName": "unit",
@@ -17584,12 +20962,40 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "share_mode_params": {
               "displayName": "share_mode_params",
-              "valueType": "string",
-              "providerType": "string"
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -17619,7 +21025,25 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             }
           }
         },
@@ -17728,7 +21152,17 @@
             "unit_role": {
               "displayName": "unit_role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             }
           }
         },
@@ -17869,7 +21303,17 @@
             "cloud_object_format": {
               "displayName": "cloud_object_format",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
             },
             "cloud_object_template": {
               "displayName": "cloud_object_template",
@@ -17929,12 +21373,72 @@
             "item_type": {
               "displayName": "item_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                }
+              ]
             },
             "item_validation": {
               "displayName": "item_validation",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "label": {
               "displayName": "label",
@@ -18019,7 +21523,17 @@
             "visibility_type": {
               "displayName": "visibility_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
             }
           }
         },
@@ -18339,8 +21853,46 @@
             },
             "supported_entities": {
               "displayName": "supported_entities",
-              "valueType": "string",
-              "providerType": "string"
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "16",
+                  "displayValue": "16"
+                },
+                {
+                  "value": "32",
+                  "displayValue": "32"
+                },
+                {
+                  "value": "64",
+                  "displayValue": "64"
+                },
+                {
+                  "value": "128",
+                  "displayValue": "128"
+                },
+                {
+                  "value": "256",
+                  "displayValue": "256"
+                }
+              ]
             },
             "use_lang": {
               "displayName": "use_lang",
@@ -18414,7 +21966,21 @@
             "calculation_type": {
               "displayName": "calculation_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "child_targets": {
               "displayName": "child_targets",
@@ -18514,7 +22080,25 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             }
           }
         },
@@ -18531,12 +22115,168 @@
             "day": {
               "displayName": "day",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                },
+                {
+                  "value": "13",
+                  "displayValue": "13"
+                },
+                {
+                  "value": "14",
+                  "displayValue": "14"
+                },
+                {
+                  "value": "15",
+                  "displayValue": "15"
+                },
+                {
+                  "value": "16",
+                  "displayValue": "16"
+                },
+                {
+                  "value": "17",
+                  "displayValue": "17"
+                },
+                {
+                  "value": "18",
+                  "displayValue": "18"
+                },
+                {
+                  "value": "19",
+                  "displayValue": "19"
+                },
+                {
+                  "value": "20",
+                  "displayValue": "20"
+                },
+                {
+                  "value": "21",
+                  "displayValue": "21"
+                },
+                {
+                  "value": "22",
+                  "displayValue": "22"
+                },
+                {
+                  "value": "23",
+                  "displayValue": "23"
+                },
+                {
+                  "value": "24",
+                  "displayValue": "24"
+                },
+                {
+                  "value": "25",
+                  "displayValue": "25"
+                },
+                {
+                  "value": "26",
+                  "displayValue": "26"
+                },
+                {
+                  "value": "27",
+                  "displayValue": "27"
+                },
+                {
+                  "value": "28",
+                  "displayValue": "28"
+                },
+                {
+                  "value": "29",
+                  "displayValue": "29"
+                },
+                {
+                  "value": "30",
+                  "displayValue": "30"
+                },
+                {
+                  "value": "31",
+                  "displayValue": "31"
+                }
+              ]
             },
             "day_of_week": {
               "displayName": "day_of_week",
-              "valueType": "string",
-              "providerType": "string"
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "16",
+                  "displayValue": "16"
+                },
+                {
+                  "value": "32",
+                  "displayValue": "32"
+                },
+                {
+                  "value": "64",
+                  "displayValue": "64"
+                }
+              ]
             },
             "end_date": {
               "displayName": "end_date",
@@ -18566,7 +22306,57 @@
             "month": {
               "displayName": "month",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                }
+              ]
             },
             "occur_every": {
               "displayName": "occur_every",
@@ -18601,12 +22391,80 @@
             "type": {
               "displayName": "type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                }
+              ]
             },
             "week": {
               "displayName": "week",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "-1",
+                  "displayValue": "-1"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                }
+              ]
             }
           }
         },
@@ -18663,7 +22521,21 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "task": {
               "displayName": "task",
@@ -18725,7 +22597,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "task": {
               "displayName": "task",
@@ -18777,7 +22659,17 @@
             "role": {
               "displayName": "role",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "task": {
               "displayName": "task",
@@ -18834,7 +22726,105 @@
             "icon": {
               "displayName": "icon",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                },
+                {
+                  "value": "13",
+                  "displayValue": "13"
+                },
+                {
+                  "value": "14",
+                  "displayValue": "14"
+                },
+                {
+                  "value": "15",
+                  "displayValue": "15"
+                },
+                {
+                  "value": "16",
+                  "displayValue": "16"
+                },
+                {
+                  "value": "17",
+                  "displayValue": "17"
+                },
+                {
+                  "value": "18",
+                  "displayValue": "18"
+                },
+                {
+                  "value": "19",
+                  "displayValue": "19"
+                },
+                {
+                  "value": "20",
+                  "displayValue": "20"
+                },
+                {
+                  "value": "21",
+                  "displayValue": "21"
+                },
+                {
+                  "value": "22",
+                  "displayValue": "22"
+                },
+                {
+                  "value": "23",
+                  "displayValue": "23"
+                }
+              ]
             },
             "id": {
               "displayName": "id",
@@ -19051,7 +23041,21 @@
             "priority": {
               "displayName": "priority",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "project_relations": {
               "displayName": "project_relations",
@@ -19076,7 +23080,25 @@
             "share_mode": {
               "displayName": "share_mode",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "sharing_clients": {
               "displayName": "sharing_clients",
@@ -19096,7 +23118,29 @@
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                }
+              ]
             },
             "subject": {
               "displayName": "subject",
@@ -19349,8 +23393,23 @@
               "valueType": "other",
               "providerType": "array"
             },
+            "chat_conversation": {
+              "displayName": "chat_conversation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "chat_conversation_id": {
+              "displayName": "chat_conversation_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "content": {
               "displayName": "content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "content_as_html": {
+              "displayName": "content_as_html",
               "valueType": "string",
               "providerType": "string"
             },
@@ -19367,7 +23426,17 @@
             "direction": {
               "displayName": "direction",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "id": {
               "displayName": "id",
@@ -19399,10 +23468,37 @@
               "valueType": "int",
               "providerType": "integer"
             },
+            "score": {
+              "displayName": "score",
+              "valueType": "int",
+              "providerType": "integer"
+            },
             "status": {
               "displayName": "status",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                }
+              ]
             },
             "text_message_conversation": {
               "displayName": "text_message_conversation",
@@ -19460,11 +23556,6 @@
               "displayName": "oppty",
               "valueType": "string",
               "providerType": "string"
-            },
-            "revision": {
-              "displayName": "revision",
-              "valueType": "int",
-              "providerType": "integer"
             },
             "step": {
               "displayName": "step",
@@ -19561,7 +23652,17 @@
             "form_type": {
               "displayName": "form_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
             },
             "has_draft": {
               "displayName": "has_draft",
@@ -19591,7 +23692,25 @@
             "label_type": {
               "displayName": "label_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                }
+              ]
             },
             "lead_type": {
               "displayName": "lead_type",
@@ -19776,13 +23895,31 @@
                 {
                   "value": "uuid",
                   "displayValue": "uuid"
+                },
+                {
+                  "value": "tsvector",
+                  "displayValue": "tsvector"
                 }
               ]
             },
             "relation_type": {
               "displayName": "relation_type",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "validator": {
               "displayName": "validator",
@@ -20523,8 +24660,18 @@
             },
             "display_param": {
               "displayName": "display_param",
-              "valueType": "string",
-              "providerType": "string"
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "entity": {
               "displayName": "entity",
@@ -20569,7 +24716,17 @@
             "request_method": {
               "displayName": "request_method",
               "valueType": "int",
-              "providerType": "integer"
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
             },
             "revision": {
               "displayName": "revision",

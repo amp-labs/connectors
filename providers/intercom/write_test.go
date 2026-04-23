@@ -1,7 +1,6 @@
 package intercom
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 
@@ -42,7 +41,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				errors.New(messageForInvalidSyntax),
+				testutils.StringError(messageForInvalidSyntax),
 			},
 		},
 		{

@@ -1,13 +1,14 @@
 package hubspot
 
 import (
+	"context"
+
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/batch"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/custom"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 )
 
 // Connector provides integration with Hubspot provider.
@@ -21,15 +22,10 @@ type Connector struct {
 	moduleInfo   *providers.ModuleInfo
 	moduleID     common.ModuleID
 
-	// CRM module sub-adapters
-	// These delegate specialized subsets of Hubspot CRM functionality to keep Connector modular and prevent code bloat.
-	customAdapter *custom.Adapter // used for connectors.UpsertMetadataConnector capabilities.
-	batchAdapter  *batch.Adapter  // used for connectors.BatchWriteConnector capabilities.
+	// crmAdapter handles the core Hubspot CRM module.
+	// It provides dedicated support for HubspotCRM-specific functionality.
+	crmAdapter *crm.Adapter
 }
-
-const (
-	ModuleCRMVersion = "v3"
-)
 
 var _ connectors.WebhookVerifierConnector = &Connector{}
 
@@ -62,8 +58,20 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	conn.Client.HTTPClient.ErrorHandler = core.InterpretJSONError
 	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
 
-	conn.customAdapter = custom.NewAdapter(conn.Client, conn.moduleInfo)
-	conn.batchAdapter = batch.NewAdapter(conn.Client.HTTPClient, conn.moduleInfo)
+	connectorParams, err := newParams(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	conn.crmAdapter, err = crm.NewAdapter(connectorParams)
+	if err != nil {
+		return nil, err
+	}
 
 	return conn, nil
+}
+
+func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error) {
+	// Delegated.
+	return c.crmAdapter.Search(ctx, params)
 }

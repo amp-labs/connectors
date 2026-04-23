@@ -1,0 +1,77 @@
+{
+  "inputs": [
+    {
+      "name": "hobby__c",
+      "label": "Hobby",
+      "groupName": "integrationcreatedproperties",
+      "type": "string",
+      "fieldType": "text",
+      "description": "Your hobby description",
+      "formField": true,
+      "dataSensitivity": "non_sensitive",
+      "hasUniqueValue": true
+    },
+    {
+      "name": "age__c",
+      "label": "Age",
+      "groupName": "integrationcreatedproperties",
+      "type": "number",
+      "fieldType": "number",
+      "description": "How old are you?",
+      "formField": true,
+      "dataSensitivity": "non_sensitive"
+    },
+    {
+      "name": "interests__c",
+      "label": "Interests",
+      "groupName": "integrationcreatedproperties",
+      "type": "enumeration",
+      "fieldType": "select",
+      "description": "Topics that are of interest.",
+      "formField": true,
+      "dataSensitivity": "non_sensitive",
+      "options": [
+        {
+          "label": "art",
+          "value": "art",
+          "description": "art"
+        },
+        {
+          "label": "travel",
+          "value": "travel",
+          "description": "travel",
+          "displayOrder": 1
+        },
+        {
+          "label": "swimming",
+          "value": "swimming",
+          "description": "swimming",
+          "displayOrder": 2
+        }
+      ]
+    },
+    {
+      "name": "isready__c",
+      "label": "IsReady",
+      "groupName": "integrationcreatedproperties",
+      "type": "bool",
+      "fieldType": "booleancheckbox",
+      "description": "Indicates the readiness for next steps.",
+      "formField": true,
+      "dataSensitivity": "non_sensitive",
+      "options": [
+        {
+          "label": "True",
+          "value": "true",
+          "description": "True"
+        },
+        {
+          "label": "False",
+          "value": "false",
+          "description": "False",
+          "displayOrder": 1
+        }
+      ]
+    }
+  ]
+}
