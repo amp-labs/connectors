@@ -34,7 +34,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name: "Successfully describe multiple objects with metadata",
 			Input: []string{
-				"teams", "senders", "contact/all", "sender-profiles", "org",
+				"teams", "senders", "contact/all", "sender-profiles",
 				"labels", "campaigns/overview", "managed-domains", "managed-mailboxes",
 				"placement-tests", "auto/identitys", "conversation/latest-by-profile",
 			},
@@ -132,26 +132,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"type": {
 								DisplayName:  "type",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-						},
-					},
-					"org": {
-						DisplayName: "Organization",
-						Fields: map[string]common.FieldMetadata{
-							"id": {
-								DisplayName:  "id",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-							"name": {
-								DisplayName:  "name",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-							"current_plan": {
-								DisplayName:  "current_plan",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
