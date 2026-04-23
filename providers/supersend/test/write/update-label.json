@@ -1,0 +1,12 @@
+{
+  "data": {
+    "id": "label-456",
+    "name": "Very Important",
+    "color": "#FF0000",
+    "deleted": false,
+    "OrgId": "org-001",
+    "createdAt": "2025-01-22T12:00:00.000Z",
+    "updatedAt": "2025-01-22T14:00:00.000Z"
+  },
+  "success": true
+}

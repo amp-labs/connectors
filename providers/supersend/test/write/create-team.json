@@ -1,0 +1,17 @@
+{
+  "data": {
+    "id": "team-123",
+    "name": "New Team",
+    "domain": "newteam.example.com",
+    "logo": null,
+    "about": "",
+    "isDefault": false,
+    "deleted": false,
+    "tags": [],
+    "mail_warm_topics": [],
+    "OrgId": "org-001",
+    "createdAt": "2025-01-22T10:30:00.000Z",
+    "updatedAt": "2025-01-22T10:30:00.000Z"
+  },
+  "success": true
+}

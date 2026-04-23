@@ -1,0 +1,20 @@
+{
+  "senders": [
+    {
+      "id": "sender-003",
+      "email": "alex@example.com",
+      "send_as": "Alex Johnson",
+      "signature": "<p>Thanks,<br>Alex</p>",
+      "warm": true,
+      "disabled": true,
+      "max_per_day": 75,
+      "global_max_per_day": 300,
+      "TeamId": "team-002",
+      "createdAt": "2024-02-05T14:00:00.000Z",
+      "updatedAt": "2024-03-10T16:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "has_more": false
+  }
+}

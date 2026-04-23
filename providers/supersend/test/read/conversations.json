@@ -1,0 +1,29 @@
+{
+  "data": {
+    "conversations": [
+      {
+        "id": "conv-001",
+        "title": "Meeting follow-up",
+        "last_activity_at": "2024-03-20T14:30:00.000Z",
+        "is_unread": false,
+        "platform_type": 1,
+        "inbox_mood": "positive",
+        "contact_id": "contact-001",
+        "labels": ["follow-up", "meeting"]
+      },
+      {
+        "id": "conv-002",
+        "title": "Product inquiry",
+        "last_activity_at": "2024-03-19T09:15:00.000Z",
+        "is_unread": true,
+        "platform_type": 2,
+        "inbox_mood": "neutral",
+        "contact_id": "contact-002",
+        "labels": ["inquiry"]
+      }
+    ]
+  },
+  "pagination": {
+    "has_more": false
+  }
+}

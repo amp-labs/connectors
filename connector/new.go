@@ -124,6 +124,7 @@ import (
 	"github.com/amp-labs/connectors/providers/snowflake"
 	"github.com/amp-labs/connectors/providers/solarwinds"
 	"github.com/amp-labs/connectors/providers/stripe"
+	"github.com/amp-labs/connectors/providers/supersend"
 	"github.com/amp-labs/connectors/providers/talkdesk"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/teamwork"
@@ -269,6 +270,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Snowflake:                  wrapper(newSnowflakeConnector),
 	providers.SolarWindsServiceDesk:      wrapper(newSolarWindsConnector),
 	providers.Stripe:                     wrapper(newStripeConnector),
+	providers.SuperSend:                  wrapper(newSuperSendConnector),
 	providers.Talkdesk:                   wrapper(newTalkdeskConnector),
 	providers.Teamleader:                 wrapper(newTeamleaderConnector),
 	providers.Teamwork:                   wrapper(newTeamworkConnector),
@@ -1092,6 +1094,10 @@ func newQuickbooksSandboxConnector(params common.ConnectorParams) (*quickbooks.C
 
 func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connector, error) {
 	return dropboxsign.NewConnector(params)
+}
+
+func newSuperSendConnector(params common.ConnectorParams) (*supersend.Connector, error) {
+	return supersend.NewConnector(params)
 }
 
 func newCallRail(params common.ConnectorParams) (*callrail.Connector, error) {
