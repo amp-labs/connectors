@@ -85,7 +85,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Name: "Read contacts flattens custom_fields to custom_ prefixed keys",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				Fields:     connectors.Fields("contact_user_id", "custom_lead_score"),
+				Fields:     connectors.Fields("contact_user_id", "custom_Lead Score"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -102,7 +102,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"contact_user_id":   "30919237",
-						"custom_lead_score": "42",
+						"custom_lead score": "42",
 					},
 					Raw: map[string]any{
 						"contact_user_id": "30919237",
