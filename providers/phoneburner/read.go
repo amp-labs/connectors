@@ -173,6 +173,8 @@ func parseReadResponse(
 
 	marshalFunc := common.GetMarshaledData
 	if params.ObjectName == objectContacts {
+		// Contacts: custom fields are merged into Fields from a copy; Raw is a separate copy of the
+		// provider row (see getMarshaledDataContactsWithCustomFieldsPreservingRaw).
 		marshalFunc = getMarshaledDataContactsWithCustomFieldsPreservingRaw
 	}
 
