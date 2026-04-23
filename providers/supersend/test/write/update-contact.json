@@ -1,0 +1,12 @@
+{
+  "data": {
+    "id": "contact-001",
+    "email": "contact@example.com",
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "OrgId": "org-001",
+    "createdAt": "2025-01-22T10:00:00.000Z",
+    "updatedAt": "2025-01-22T14:00:00.000Z"
+  },
+  "success": true
+}
