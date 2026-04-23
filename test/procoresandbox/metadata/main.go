@@ -24,7 +24,7 @@ func main() {
 		utils.Fail("error creating procore connector", "error", err)
 	}
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"companies", "projects", "offices", "operations", "programs"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"companies", "projects", "project_stages", "settings/permissions"})
 	if err != nil {
 		utils.Fail("error listing metadata for Procore", "error", err)
 	}

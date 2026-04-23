@@ -47,7 +47,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
 
-	records, err := extractRecords(response)
+	records, err := extractRecords(response, objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -74,23 +74,29 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 
 // extractRecords returns the list of records from a Procore response.
 // Procore returns either a bare array or an object with the array under a "data" key.
-func extractRecords(response *common.JSONHTTPResponse) ([]any, error) {
+func extractRecords(response *common.JSONHTTPResponse, objectName string) ([]any, error) {
+	responseKey := readResponseKey.Get(objectName)
+
+	if responseKey != "" {
+		obj, err := common.UnmarshalJSON[map[string]any](response)
+		if err != nil || obj == nil {
+			return nil, common.ErrFailedToUnmarshalBody
+		}
+
+		data, ok := (*obj)[responseKey].([]any)
+		if !ok {
+			return nil, fmt.Errorf("%w: response object missing array under \"%s\" key", common.ErrMissingExpectedValues, responseKey)
+		}
+
+		return data, nil
+	}
+
 	arr, err := common.UnmarshalJSON[[]any](response)
 	if err == nil {
 		return *arr, nil
 	}
 
-	obj, err := common.UnmarshalJSON[map[string]any](response)
-	if err != nil || obj == nil {
-		return nil, common.ErrFailedToUnmarshalBody
-	}
-
-	data, ok := (*obj)["data"].([]any)
-	if !ok {
-		return nil, fmt.Errorf("%w: response object missing array under \"data\" key", common.ErrMissingExpectedValues)
-	}
-
-	return data, nil
+	return nil, fmt.Errorf("response body is not in an expected format: %w", common.ErrMissingExpectedValues)
 }
 
 func analyzeValue(value any) common.ValueType {
