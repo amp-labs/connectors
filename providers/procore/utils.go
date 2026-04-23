@@ -17,6 +17,7 @@ var readResponseKey = datautils.NewDefaultMap(map[string]string{ //nolint:gochec
 	"settings/permissions":                  "tools",
 	"change_order_change_reasons":           "data",
 	"currency_configuration/exchange_rates": "exchange_rates",
+	"workflows/bulk_replace_requests":       "data",
 },
 	func(objectName string) (fieldName string) {
 		return ""
@@ -142,6 +143,62 @@ func resolveAPIPath(objectName string, companyId string) string {
 
 	if objectName == "uom_categories" {
 		return "rest/v1.0/companies/" + companyId + "/uom_categories"
+	}
+
+	if objectName == "people/inactive" {
+		return "rest/v1.0/companies/" + companyId + "/people/inactive"
+	}
+
+	if objectName == "users/inactive" {
+		return "rest/v1.0/companies/" + companyId + "/users/inactive"
+	}
+
+	if objectName == "vendors/inactive" {
+		return "rest/v1.0/companies/" + companyId + "/vendors/inactive"
+	}
+
+	if objectName == "insurances" {
+		return "rest/v1.0/companies/" + companyId + "/insurances"
+	}
+
+	if objectName == "people" {
+		return "rest/v1.0/companies/" + companyId + "/people"
+	}
+
+	if objectName == "permission_templates" {
+		return "rest/v1.0/companies/" + companyId + "/permission_templates"
+	}
+
+	if objectName == "vendors" {
+		return "rest/v1.0/vendors?company_id=" + companyId
+	}
+
+	if objectName == "departments" {
+		return "rest/v1.0/departments?company_id=" + companyId
+	}
+
+	if objectName == "distribution_groups" {
+		return "rest/v1.0/companies/" + companyId + "/distribution_groups"
+	}
+
+	if objectName == "pdf_template_configs" {
+		return "rest/v1.0/companies/" + companyId + "/pdf_template_configs"
+	}
+
+	if objectName == "projects" {
+		return "rest/v1.1/projects?company_id=" + companyId
+	}
+
+	if objectName == "project_templates" {
+		return "rest/v1.0/project_templates?company_id=" + companyId
+	}
+
+	if objectName == "workflow_instances" {
+		return "rest/v1.0/workflow_instances?company_id=" + companyId
+	}
+
+	if objectName == "workflows/bulk_replace_requests" {
+		return "rest/v2.0/companies/" + companyId + "/workflows/bulk_replace_requests"
 	}
 
 	return "rest/v1.0/" + objectName
