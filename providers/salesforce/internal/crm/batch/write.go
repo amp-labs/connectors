@@ -141,8 +141,8 @@ func buildBatchWritePayload(params *common.BatchWriteParam) (*Payload, error) {
 	items := make([]PayloadItem, len(records))
 	for index, record := range records {
 		items[index] = PayloadItem{
-			Record: record,
-			Extension: RecordExtension{
+			Raw: record,
+			Data: RecordExtension{
 				Attributes: RecordAttributes{
 					Type: params.ObjectName.String(),
 				},
@@ -170,7 +170,7 @@ type Payload struct {
 // It wraps a core Record with Salesforce-specific attributes required
 // for batch or composite write operations. Fields from RecordExtension
 // are merged alongside the record's own properties in the final payload.
-type PayloadItem = codec.DecoratedRecord[RecordExtension]
+type PayloadItem = codec.RawJSON[RecordExtension]
 
 type RecordExtension struct {
 	Attributes RecordAttributes `json:"attributes"`
