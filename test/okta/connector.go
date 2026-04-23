@@ -40,11 +40,14 @@ func getConfig(workspace string) func(*credscanning.ProviderCredentials) *oauth2
 				AuthStyle: oauth2.AuthStyleInParams,
 			},
 			Scopes: []string{
+				"offline_access",
 				"okta.users.read",
 				"okta.users.manage",
 				"okta.groups.read",
 				"okta.groups.manage",
 				"okta.apps.read",
+				"okta.logs.read",
+				"okta.devices.read",
 				"okta.schemas.read",
 			},
 		}

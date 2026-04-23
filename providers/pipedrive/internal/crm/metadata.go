@@ -62,6 +62,21 @@ func (a *Adapter) ListObjectMetadata(
 			objectMetadata.Errors[obj] = err
 		}
 
+		if obj == dealsObjectName {
+			// Connector embeds this field during reading.
+			// Therefore, metadata artificially includes this property to advertise this to users.
+			metadata.AddFieldMetadata(productsFieldKey, common.FieldMetadata{
+				DisplayName:  "Products",
+				ValueType:    common.ValueTypeOther,
+				ProviderType: "",
+				ReadOnly:     nil,
+				IsCustom:     nil,
+				IsRequired:   nil,
+				Values:       nil,
+				ReferenceTo:  []string{"products"},
+			})
+		}
+
 		objectMetadata.Result[obj] = metadata
 	}
 

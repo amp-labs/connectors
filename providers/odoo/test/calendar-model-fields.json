@@ -1,0 +1,218 @@
+[
+    {
+        "id": 1874,
+        "name": "active",
+        "ttype": "boolean",
+        "required": false,
+        "readonly": false,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1875,
+        "name": "attendance_ids",
+        "ttype": "one2many",
+        "required": false,
+        "readonly": false,
+        "relation": "resource.calendar.attendance",
+        "state": "base"
+    },
+    {
+        "id": 1876,
+        "name": "attendance_ids_1st_week",
+        "ttype": "one2many",
+        "required": false,
+        "readonly": false,
+        "relation": "resource.calendar.attendance",
+        "state": "base"
+    },
+    {
+        "id": 1877,
+        "name": "attendance_ids_2nd_week",
+        "ttype": "one2many",
+        "required": false,
+        "readonly": false,
+        "relation": "resource.calendar.attendance",
+        "state": "base"
+    },
+    {
+        "id": 1878,
+        "name": "company_id",
+        "ttype": "many2one",
+        "required": false,
+        "readonly": false,
+        "relation": "res.company",
+        "state": "base"
+    },
+    {
+        "id": 1880,
+        "name": "country_code",
+        "ttype": "char",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1879,
+        "name": "country_id",
+        "ttype": "many2one",
+        "required": false,
+        "readonly": true,
+        "relation": "res.country",
+        "state": "base"
+    },
+    {
+        "id": 1892,
+        "name": "create_date",
+        "ttype": "datetime",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1891,
+        "name": "create_uid",
+        "ttype": "many2one",
+        "required": false,
+        "readonly": true,
+        "relation": "res.users",
+        "state": "base"
+    },
+    {
+        "id": 1872,
+        "name": "display_name",
+        "ttype": "char",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1882,
+        "name": "full_time_required_hours",
+        "ttype": "float",
+        "required": false,
+        "readonly": false,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1883,
+        "name": "global_leave_ids",
+        "ttype": "one2many",
+        "required": false,
+        "readonly": false,
+        "relation": "resource.calendar.leaves",
+        "state": "base"
+    },
+    {
+        "id": 1884,
+        "name": "hours_per_day",
+        "ttype": "float",
+        "required": false,
+        "readonly": false,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1885,
+        "name": "hours_per_week",
+        "ttype": "float",
+        "required": false,
+        "readonly": false,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1871,
+        "name": "id",
+        "ttype": "integer",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1886,
+        "name": "is_fulltime",
+        "ttype": "boolean",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1881,
+        "name": "leave_ids",
+        "ttype": "one2many",
+        "required": false,
+        "readonly": false,
+        "relation": "resource.calendar.leaves",
+        "state": "base"
+    },
+    {
+        "id": 1873,
+        "name": "name",
+        "ttype": "char",
+        "required": true,
+        "readonly": false,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1887,
+        "name": "two_weeks_calendar",
+        "ttype": "boolean",
+        "required": false,
+        "readonly": false,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1888,
+        "name": "two_weeks_explanation",
+        "ttype": "char",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1889,
+        "name": "work_resources_count",
+        "ttype": "integer",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1890,
+        "name": "work_time_rate",
+        "ttype": "float",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1894,
+        "name": "write_date",
+        "ttype": "datetime",
+        "required": false,
+        "readonly": true,
+        "relation": false,
+        "state": "base"
+    },
+    {
+        "id": 1893,
+        "name": "write_uid",
+        "ttype": "many2one",
+        "required": false,
+        "readonly": true,
+        "relation": "res.users",
+        "state": "base"
+    }
+]

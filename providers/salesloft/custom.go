@@ -8,7 +8,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -60,7 +59,7 @@ func (c *Connector) attachCustomMetadata(
 				ValueType:    field.ValueType(),
 				ProviderType: field.ProviderType,
 				ReadOnly:     nil,
-				IsCustom:     goutils.Pointer(true),
+				IsCustom:     new(true),
 				IsRequired:   nil,
 				Values:       nil,
 			})

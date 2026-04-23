@@ -1,0 +1,34 @@
+{
+  "nextPageToken": null,
+  "nextPageUrl": null,
+  "values": [
+    {
+      "id": 247666,
+      "fieldId": "biography",
+      "isRequired": false,
+      "name": "Biography",
+      "type": "text"
+    },
+    {
+      "id": 247672,
+      "fieldId": "hobby",
+      "isRequired": false,
+      "name": "Hobby",
+      "type": "radio button"
+    },
+    {
+      "id": 247674,
+      "fieldId": "language",
+      "isRequired": false,
+      "name": "Language",
+      "type": "multi-select"
+    },
+    {
+      "id": 247704,
+      "fieldId": "age",
+      "isRequired": false,
+      "name": "Age",
+      "type": "number"
+    }
+  ]
+}

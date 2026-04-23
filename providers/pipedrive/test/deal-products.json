@@ -1,0 +1,17 @@
+{
+    "success": true,
+    "data": [
+        {
+            "id": 101,
+            "name": "Test Product",
+            "quantity": 2,
+            "unit_price": 500
+        },
+        {
+            "id": 102,
+            "name": "Another Product",
+            "quantity": 1,
+            "unit_price": 250
+        }
+    ]
+}

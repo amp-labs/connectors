@@ -181,16 +181,6 @@ func (i *ProviderInfo) SubstituteWith(vars catalogreplacer.CatalogVariables) err
 	return catalogreplacer.NewCatalogSubstitutionRegistry(vars).Apply(i)
 }
 
-func (i *ProviderInfo) GetOption(key string) (string, bool) {
-	if i.ProviderOpts == nil {
-		return "", false
-	}
-
-	val, ok := i.ProviderOpts[key]
-
-	return val, ok
-}
-
 // ReadModuleInfo finds information about the module.
 // If module is not found fallbacks to the default.
 func (i *ProviderInfo) ReadModuleInfo(moduleID common.ModuleID) *ModuleInfo {

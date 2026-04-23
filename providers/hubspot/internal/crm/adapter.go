@@ -58,7 +58,8 @@ func constructor(base *components.Connector) (*Adapter, error) {
 
 	adapter.SetErrorHandler(core.InterpretJSONError)
 	adapter.customAdapter = custom.NewAdapter(adapter.JSONHTTPClient(), adapter.ModuleInfo())
-	associationsStrategy := associations.NewStrategy(adapter.JSONHTTPClient(), adapter.ModuleInfo())
+	associationsStrategy := associations.NewStrategy(adapter.JSONHTTPClient(),
+		adapter.ModuleInfo(), adapter.ProviderInfo())
 	adapter.AssociationsFiller = associationsStrategy
 	adapter.batchAdapter = batch.NewAdapter(adapter.HTTPClient(), adapter.ModuleInfo(), associationsStrategy)
 	adapter.searchStrategy = search.NewStrategy(
@@ -88,7 +89,7 @@ func (a *Adapter) getModuleURL() string {
 	return a.ModuleInfo().BaseURL
 }
 
-// https://developers.hubspot.com/docs/api-reference/crm-objects-v3/basic/delete-crm-v3-objects-objectType-objectId
+// https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/delete-contact
 func (a *Adapter) getDeleteURL(objectName, recordID string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), core.APIVersion3, "objects", objectName, recordID)
+	return urlbuilder.New(a.getModuleURL(), "objects", core.APIVersion2026March, objectName, recordID)
 }

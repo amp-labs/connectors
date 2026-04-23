@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -127,7 +126,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Priority",
 								ValueType:    "singleSelect",
 								ProviderType: "enum",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: common.FieldValues{
 									{
 										Value:        "24",
@@ -157,6 +156,82 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
 				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveLegacy)
+			})
+		})
+	}
+}
+
+func TestListObjectMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
+	t.Parallel()
+
+	dealsFields := testutils.DataFromFile(t, "dealsFields.json")
+
+	tests := []testroutines.Metadata{
+		{
+			Name:  "A success API Response for Deals",
+			Input: []string{"deals"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/v2/dealFields"),
+				},
+				Then: mockserver.Response(http.StatusOK, dealsFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"deals": {
+						DisplayName: "Deals",
+						Fields: map[string]common.FieldMetadata{
+							"title": {
+								DisplayName:  "Title",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "varchar",
+								IsCustom:     new(false),
+								IsRequired:   new(true),
+							},
+							"status": {
+								DisplayName:  "Status",
+								ValueType:    common.ValueTypeOther,
+								ProviderType: "status",
+								IsCustom:     new(false),
+								IsRequired:   new(true),
+							},
+							"archive_time": {
+								DisplayName:  "Archive time",
+								ValueType:    common.ValueTypeDate,
+								ProviderType: "date",
+								IsCustom:     new(false),
+								IsRequired:   new(true),
+							},
+							"products": {
+								DisplayName: "Products",
+								ValueType:   common.ValueTypeOther,
+								ReferenceTo: []string{"products"},
+							},
+						},
+						FieldsMap: map[string]string{
+							"title":        "Title",
+							"status":       "Status",
+							"archive_time": "Archive time",
+							"products":     "Products",
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveCRM)
 			})
 		})
 	}

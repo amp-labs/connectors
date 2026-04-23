@@ -6,7 +6,6 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 	connTest "github.com/amp-labs/connectors/test/dynamicscrm"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
@@ -45,8 +44,8 @@ func main() {
 			Subject:     "Burgers",
 		},
 		LeadUpdatePayload{
-			LastName:  goutils.Pointer(""),
-			FirstName: goutils.Pointer("Squidward"),
+			LastName:  new(""),
+			FirstName: new("Squidward"),
 		},
 		testscenario.CRUDTestSuite{
 			ReadFields: datautils.NewSet("leadid", "lastname", "firstname", "companyname", "subject"),

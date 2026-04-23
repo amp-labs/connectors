@@ -62,8 +62,8 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 			DisplayName:  col.Name, // Keep original casing for display
 			ValueType:    snowflakeTypeToValueType(col.DataType, col.NumericScale),
 			ProviderType: col.DataType,
-			ReadOnly:     boolPtr(false), // Snowflake columns are generally writable if table is
-			IsRequired:   boolPtr(!col.IsNullable),
+			ReadOnly:     new(false), // Snowflake columns are generally writable if table is
+			IsRequired:   new(!col.IsNullable),
 		}
 	}
 

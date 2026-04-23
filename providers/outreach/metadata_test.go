@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -56,7 +55,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "createdAt",
 								ValueType:    common.ValueTypeDateTime,
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 							},
 							"description": {
 								DisplayName:  "description",
@@ -107,7 +106,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "touchedAt",
 								ValueType:    common.ValueTypeDateTime,
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 							},
 							"trashedAt": {
 								DisplayName:  "trashedAt",
@@ -118,7 +117,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "updatedAt",
 								ValueType:    common.ValueTypeDateTime,
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 							},
 						},
 						FieldsMap: map[string]string{

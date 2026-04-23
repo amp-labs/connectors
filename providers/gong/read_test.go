@@ -53,7 +53,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
 		{
-			Name:  "Bad request handling test",
+			Name:  "Cursor expired error",
 			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: mockserver.Fixed{
 				Setup: mockserver.ContentJSON(),
@@ -65,7 +65,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}`),
 			}.Server(),
 			ExpectedErrs: []error{
-				common.ErrBadRequest, testutils.StringError("Failed to verify cursor"),
+				common.ErrCursorGone, testutils.StringError("Failed to verify cursor"),
 			},
 		},
 		{

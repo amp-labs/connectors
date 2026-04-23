@@ -35,3 +35,7 @@ func CapitalizeFirstLetter(text string) string {
 func SeparateUnderscoreWords(text string) string {
 	return strings.ReplaceAll(text, "_", " ")
 }
+
+func SeparateDotWords(text string) string {
+	return strings.ReplaceAll(text, ".", " ")
+}

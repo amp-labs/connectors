@@ -43,7 +43,7 @@ func TestBatchCreate(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodGET(),
-					mockcond.Path("/crm/v3/schemas/contacts"),
+					mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
 				},
 				Then: mockserver.ResponseString(http.StatusNotFound, `test-message`),
 			}.Server(),
@@ -67,13 +67,13 @@ func TestBatchCreate(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Cases: []mockserver.Case{{
 					If: mockcond.And{
 						mockcond.MethodGET(),
-						mockcond.Path("/crm/v3/schemas/contacts"),
+						mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsSchema),
 				}, {
 					If: mockcond.And{
 						mockcond.MethodPOST(),
-						mockcond.Path("/crm/v4/associations/0-1/0-3/batch/create"),
+						mockcond.Path("/crm/associations/2026-03/0-1/0-3/batch/create"),
 					},
 					Then: mockserver.Response(http.StatusOK, []byte(`{"results":[]}`)), // dummy success response
 				}},
@@ -95,13 +95,13 @@ func TestBatchCreate(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Cases: []mockserver.Case{{
 					If: mockcond.And{
 						mockcond.MethodGET(),
-						mockcond.Path("/crm/v3/schemas/contacts"),
+						mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsSchema),
 				}, {
 					If: mockcond.And{
 						mockcond.MethodPOST(),
-						mockcond.Path("/crm/v4/associations/0-1/0-3/batch/create"),
+						mockcond.Path("/crm/associations/2026-03/0-1/0-3/batch/create"),
 					},
 					Then: mockserver.Response(http.StatusMultiStatus, errorAssociationCreation),
 				}},
@@ -137,13 +137,13 @@ func TestBatchCreate(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Cases: []mockserver.Case{{
 					If: mockcond.And{
 						mockcond.MethodGET(),
-						mockcond.Path("/crm/v3/schemas/contacts"),
+						mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsSchema),
 				}, {
 					If: mockcond.And{
 						mockcond.MethodPOST(),
-						mockcond.Path("/crm/v4/associations/0-1/0-3/batch/create"),
+						mockcond.Path("/crm/associations/2026-03/0-1/0-3/batch/create"),
 						mockcond.Body(`{"inputs":[{
 							"from":{"id":"contact_id"},
 							"to":{"id":"deal_id"},
@@ -154,7 +154,7 @@ func TestBatchCreate(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}, {
 					If: mockcond.And{
 						mockcond.MethodPOST(),
-						mockcond.Path("/crm/v4/associations/0-1/0-2/batch/create"),
+						mockcond.Path("/crm/associations/2026-03/0-1/0-2/batch/create"),
 						mockcond.Body(`{"inputs":[{
 							"from":{"id":"contact_id"},
 							"to":{"id":"company_id"},
@@ -194,9 +194,9 @@ func constructTestStrategy(serverURL string) (*Strategy, error) {
 		return nil, err
 	}
 
-	transport.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(transport.ModuleInfo().BaseURL, serverURL))
+	transport.SetUnitTestMockServerBaseURL(serverURL)
 
-	return NewStrategy(transport.JSONHTTPClient(), transport.ModuleInfo()), nil
+	return NewStrategy(transport.JSONHTTPClient(), transport.ModuleInfo(), transport.ProviderInfo()), nil
 }
 
 type (
@@ -211,12 +211,13 @@ func (c batchCreateTestCase) Run(t *testing.T, builder testroutines.ConnectorBui
 	testCaseTypeBatchCreate(c).Validate(t, err, output)
 }
 
-func batchCreateComparator(_ string, actual, expected *BatchCreateResult) bool {
-	different := actual.Success != expected.Success ||
-		!mockutils.ErrorNormalizedComparator.EachErrorEquals(
-			goutils.ToAnySlice(expected.Errors),
-			goutils.ToAnySlice(actual.Errors),
-		)
+func batchCreateComparator(_ string, actual, expected *BatchCreateResult) *mockutils.CompareResult {
+	result := mockutils.NewCompareResult()
+	result.Assert("Success", expected.Success, actual.Success)
+	result.Merge(mockutils.ErrorNormalizedComparator.EachErrorEquals(
+		goutils.ToAnySlice(expected.Errors),
+		goutils.ToAnySlice(actual.Errors),
+	))
 
-	return !different
+	return result
 }

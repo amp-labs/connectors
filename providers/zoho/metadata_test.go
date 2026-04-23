@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -68,14 +67,14 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Deal Owner",
 								ValueType:    "other",
 								ProviderType: "ownerlookup",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 								Values:       nil,
 							},
 							"Stage": {
 								DisplayName:  "Stage",
 								ValueType:    "singleSelect",
 								ProviderType: "picklist",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: common.FieldValues{
 									{
 										Value:        "Qualification",

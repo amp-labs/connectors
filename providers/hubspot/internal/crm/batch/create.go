@@ -37,7 +37,7 @@ func (a *Adapter) batchCreate(ctx context.Context, params *common.BatchWritePara
 	return parseBulkResponse(params, payload, rsp)
 }
 
-// https://developers.hubspot.com/docs/api-reference/crm-deals-v3/batch/post-crm-v3-objects-0-3-batch-create
+// https://developers.hubspot.com/docs/api-reference/latest/crm/objects/deals/batch/create-deals
 func buildBatchCreatePayload(params *common.BatchWriteParam) (*Payload, error) {
 	payloadItems := make([]PayloadItem, len(params.Batch))
 

@@ -65,6 +65,41 @@ func (a *Adapter) fetchMessages(
 	return messageRegistry, nil
 }
 
+// fetchMessagesByIDs fetches full message payloads for the given IDs concurrently.
+// This is the same fan-out/fan-in pattern as fetchMessages but accepts explicit IDs
+// instead of extracting them from a collection response.
+func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (MessageRecords, error) {
+	if len(messageIDs) == 0 {
+		return MessageRecords{}, nil
+	}
+
+	messagesChannel := make(chan MessageRecord, len(messageIDs))
+	callbacks := make([]simultaneously.Job, 0, len(messageIDs))
+
+	for _, messageID := range messageIDs {
+		callbacks = append(callbacks, a.fetchMessage(messagesChannel, messageID))
+	}
+
+	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+		return nil, err
+	}
+
+	close(messagesChannel)
+
+	messageRegistry := make(MessageRecords, len(messageIDs))
+
+	for message := range messagesChannel {
+		id, ok := message["id"].(string)
+		if !ok {
+			return nil, errors.New("missing field 'id' in response for object 'messages'") // nolint:err113
+		}
+
+		messageRegistry[id] = message
+	}
+
+	return messageRegistry, nil
+}
+
 // fetchMessage returns a concurrently executable job that fetches a single message
 // by ID and sends the fully decoded MessageRecord to messagesChannel.
 func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId string,

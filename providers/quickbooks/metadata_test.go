@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -235,11 +234,11 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"BillWithParent":          {DisplayName: "BillWithParent", ValueType: "boolean"},
 							"Job":                     {DisplayName: "Job", ValueType: "boolean"},
 							// Custom fields from GraphQL response
-							"ProjectCode":  {DisplayName: "ProjectCode", ValueType: "string", ProviderType: "StringType", IsCustom: goutils.Pointer(true)},
-							"Department":   {DisplayName: "Department", ValueType: "string", ProviderType: "StringType", IsCustom: goutils.Pointer(true)},
-							"BudgetAmount": {DisplayName: "BudgetAmount", ValueType: "float", ProviderType: "NumberType", IsCustom: goutils.Pointer(true)},
-							"StartDate":    {DisplayName: "StartDate", ValueType: "datetime", ProviderType: "DateType", IsCustom: goutils.Pointer(true)},
-							"Status":       {DisplayName: "Status", ValueType: "singleSelect", ProviderType: "ListType", IsCustom: goutils.Pointer(true)},
+							"ProjectCode":  {DisplayName: "ProjectCode", ValueType: "string", ProviderType: "StringType", IsCustom: new(true)},
+							"Department":   {DisplayName: "Department", ValueType: "string", ProviderType: "StringType", IsCustom: new(true)},
+							"BudgetAmount": {DisplayName: "BudgetAmount", ValueType: "float", ProviderType: "NumberType", IsCustom: new(true)},
+							"StartDate":    {DisplayName: "StartDate", ValueType: "datetime", ProviderType: "DateType", IsCustom: new(true)},
+							"Status":       {DisplayName: "Status", ValueType: "singleSelect", ProviderType: "ListType", IsCustom: new(true)},
 						},
 					},
 				},
@@ -282,11 +281,11 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"BillWithParent":          {DisplayName: "BillWithParent", ValueType: "boolean"},
 							"Job":                     {DisplayName: "Job", ValueType: "boolean"},
 							// Custom fields from GraphQL response
-							"ProjectCode":  {DisplayName: "ProjectCode", ValueType: "string", ProviderType: "StringType", IsCustom: goutils.Pointer(true)},
-							"Department":   {DisplayName: "Department", ValueType: "string", ProviderType: "StringType", IsCustom: goutils.Pointer(true)},
-							"BudgetAmount": {DisplayName: "BudgetAmount", ValueType: "float", ProviderType: "NumberType", IsCustom: goutils.Pointer(true)},
-							"StartDate":    {DisplayName: "StartDate", ValueType: "datetime", ProviderType: "DateType", IsCustom: goutils.Pointer(true)},
-							"Status":       {DisplayName: "Status", ValueType: "singleSelect", ProviderType: "ListType", IsCustom: goutils.Pointer(true)},
+							"ProjectCode":  {DisplayName: "ProjectCode", ValueType: "string", ProviderType: "StringType", IsCustom: new(true)},
+							"Department":   {DisplayName: "Department", ValueType: "string", ProviderType: "StringType", IsCustom: new(true)},
+							"BudgetAmount": {DisplayName: "BudgetAmount", ValueType: "float", ProviderType: "NumberType", IsCustom: new(true)},
+							"StartDate":    {DisplayName: "StartDate", ValueType: "datetime", ProviderType: "DateType", IsCustom: new(true)},
+							"Status":       {DisplayName: "Status", ValueType: "singleSelect", ProviderType: "ListType", IsCustom: new(true)},
 						},
 					},
 					"account": {

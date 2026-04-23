@@ -9,6 +9,10 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
+// HubSpot returns 477 while a hub is being migrated between data hosting locations.
+// Migrations resolve in hours, so it is a retryable error.
+const hubspotMigrationStatusCode = 477
+
 // InterpretJSONError interprets the error response from Hubspot
 // as per https://developers.hubspot.com/docs/api/error-handling.
 func InterpretJSONError(res *http.Response, body []byte) error {
@@ -31,6 +35,8 @@ func InterpretJSONError(res *http.Response, body []byte) error {
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrLimitExceeded, apiError))
 	case http.StatusServiceUnavailable:
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrApiDisabled, apiError))
+	case hubspotMigrationStatusCode:
+		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrRetryable, apiError))
 	default:
 		return common.InterpretError(res, body)
 	}

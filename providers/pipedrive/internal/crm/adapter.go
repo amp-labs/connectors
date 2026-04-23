@@ -14,21 +14,21 @@ const (
 )
 
 type Adapter struct {
-	Client  *common.JSONHTTPClient
-	BaseURL string
+	Client     *common.JSONHTTPClient
+	moduleInfo *providers.ModuleInfo
 }
 
 func NewAdapter(
 	client *common.JSONHTTPClient, info *providers.ModuleInfo,
 ) *Adapter {
 	return &Adapter{
-		Client:  client,
-		BaseURL: info.BaseURL,
+		Client:     client,
+		moduleInfo: info,
 	}
 }
 
 func (a *Adapter) getAPIURL(apiVersion, object string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.BaseURL, apiVersion, object)
+	return urlbuilder.New(a.moduleInfo.BaseURL, apiVersion, object)
 }
 
 func (a *Adapter) constructMetadataURL(objectName string) (*urlbuilder.URL, error) {

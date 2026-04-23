@@ -11,28 +11,29 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
-func TestGenerateApexTriggerName(t *testing.T) {
+func TestGenerateApexTriggerNameForCDC(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name       string
-		objectName string
-		expected   string
+		name      string
+		object    string
+		expected  string
+		expectErr bool
 	}{
 		{
-			name:       "Standard object",
-			objectName: "Lead",
-			expected:   "Lead",
+			name:     "Standard object",
+			object:   "Lead",
+			expected: "CDC_Lead",
 		},
 		{
-			name:       "Custom object",
-			objectName: "MyObject__c",
-			expected:   "MyObject__c",
+			name:     "Custom object",
+			object:   "MyObject__c",
+			expected: "CDC_MyObject__c",
 		},
 		{
-			name:       "Empty object name",
-			objectName: "",
-			expected:   "",
+			name:      "Empty object name returns error",
+			object:    "",
+			expectErr: true,
 		},
 	}
 
@@ -40,90 +41,49 @@ func TestGenerateApexTriggerName(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := GenerateApexTriggerName(tt.objectName)
+			got, err := GenerateApexTriggerNameForCDC(tt.object)
+			if tt.expectErr {
+				if err == nil {
+					t.Fatal("expected error, got nil")
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
 			if got != tt.expected {
-				t.Errorf("GenerateApexTriggerName(%q) = %q, want %q", tt.objectName, got, tt.expected)
+				t.Errorf("GenerateApexTriggerNameForCDC(%q) = %q, want %q", tt.object, got, tt.expected)
 			}
 		})
 	}
 }
 
-func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
+func TestGenerateApexTriggerNameForRead(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name        string
-		params      ApexTriggerParams
-		expectErr   error
-		expectFiles []string // expected file names inside the zip
+		name      string
+		object    string
+		expected  string
+		expectErr bool
 	}{
 		{
-			name: "Empty watch fields returns error",
-			params: ApexTriggerParams{
-				ObjectName:        "Lead",
-				TriggerName:       "Lead",
-				CheckboxFieldName: "AmpTriggerSubscription__c",
-				WatchFields:       nil,
-			},
-			expectErr: errWatchFieldsEmpty,
+			name:     "Standard object",
+			object:   "Lead",
+			expected: "Read_Lead",
 		},
 		{
-			name: "Empty object name returns error",
-			params: ApexTriggerParams{
-				ObjectName:        "",
-				TriggerName:       "Lead",
-				CheckboxFieldName: "AmpTriggerSubscription__c",
-				WatchFields:       []string{"Email"},
-			},
-			expectErr: errRequiredParamsMet,
+			name:     "Custom object",
+			object:   "MyObject__c",
+			expected: "Read_MyObject__c",
 		},
 		{
-			name: "Empty trigger name returns error",
-			params: ApexTriggerParams{
-				ObjectName:        "Lead",
-				TriggerName:       "",
-				CheckboxFieldName: "AmpTriggerSubscription__c",
-				WatchFields:       []string{"Email"},
-			},
-			expectErr: errRequiredParamsMet,
-		},
-		{
-			name: "Empty checkbox field name returns error",
-			params: ApexTriggerParams{
-				ObjectName:        "Lead",
-				TriggerName:       "Lead",
-				CheckboxFieldName: "",
-				WatchFields:       []string{"Email"},
-			},
-			expectErr: errRequiredParamsMet,
-		},
-		{
-			name: "Valid params with single watch field",
-			params: ApexTriggerParams{
-				ObjectName:        "Lead",
-				TriggerName:       "Lead",
-				CheckboxFieldName: "AmpTriggerSubscription__c",
-				WatchFields:       []string{"Email"},
-			},
-			expectFiles: []string{
-				"package.xml",
-				"triggers/Lead.trigger",
-				"triggers/Lead.trigger-meta.xml",
-			},
-		},
-		{
-			name: "Valid params with multiple watch fields",
-			params: ApexTriggerParams{
-				ObjectName:        "Contact",
-				TriggerName:       "Contact",
-				CheckboxFieldName: "AmpTriggerSubscription__c",
-				WatchFields:       []string{"Email", "Phone", "LastName"},
-			},
-			expectFiles: []string{
-				"package.xml",
-				"triggers/Contact.trigger",
-				"triggers/Contact.trigger-meta.xml",
-			},
+			name:      "Empty object name returns error",
+			object:    "",
+			expectErr: true,
 		},
 	}
 
@@ -131,7 +91,100 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			zipData, err := ConstructApexTrigger(tt.params)
+			got, err := GenerateApexTriggerNameForRead(tt.object)
+			if tt.expectErr {
+				if err == nil {
+					t.Fatal("expected error, got nil")
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if got != tt.expected {
+				t.Errorf("GenerateApexTriggerNameForRead(%q) = %q, want %q", tt.object, got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestValidateApexTriggerParams(t *testing.T) { //nolint:funlen,cyclop
+	t.Parallel()
+
+	tests := []struct {
+		name               string
+		params             ApexTriggerParams
+		indicatorFieldName string
+		expectErr          error
+	}{
+		{
+			name: "Empty watch fields returns error",
+			params: ApexTriggerParams{
+				ObjectName:  "Lead",
+				TriggerName: "Lead",
+				WatchFields: nil,
+			},
+			indicatorFieldName: "AmpTriggerSubscription__c",
+			expectErr:          errWatchFieldsEmpty,
+		},
+		{
+			name: "Empty object name returns error",
+			params: ApexTriggerParams{
+				ObjectName:  "",
+				TriggerName: "Lead",
+				WatchFields: []string{"Email"},
+			},
+			indicatorFieldName: "AmpTriggerSubscription__c",
+			expectErr:          errRequiredParamsMet,
+		},
+		{
+			name: "Empty trigger name returns error",
+			params: ApexTriggerParams{
+				ObjectName:  "Lead",
+				TriggerName: "",
+				WatchFields: []string{"Email"},
+			},
+			indicatorFieldName: "AmpTriggerSubscription__c",
+			expectErr:          errRequiredParamsMet,
+		},
+		{
+			name: "Empty indicator field name returns error",
+			params: ApexTriggerParams{
+				ObjectName:  "Lead",
+				TriggerName: "Lead",
+				WatchFields: []string{"Email"},
+			},
+			indicatorFieldName: "",
+			expectErr:          errRequiredParamsMet,
+		},
+		{
+			name: "Valid params with single watch field",
+			params: ApexTriggerParams{
+				ObjectName:  "Lead",
+				TriggerName: "Lead",
+				WatchFields: []string{"Email"},
+			},
+			indicatorFieldName: "AmpTriggerSubscription__c",
+		},
+		{
+			name: "Valid params with multiple watch fields",
+			params: ApexTriggerParams{
+				ObjectName:  "Contact",
+				TriggerName: "Contact",
+				WatchFields: []string{"Email", "Phone", "LastName"},
+			},
+			indicatorFieldName: "AmpTriggerSubscription__c",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			err := ValidateApexTriggerParams(tt.params, tt.indicatorFieldName)
 
 			if tt.expectErr != nil {
 				if err == nil {
@@ -148,23 +201,45 @@ func TestConstructApexTrigger(t *testing.T) { //nolint:funlen,cyclop
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
-
-			assertZipContainsFiles(t, zipData, tt.expectFiles)
 		})
 	}
 }
 
-func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
+func TestConstructApexTriggerZip(t *testing.T) {
 	t.Parallel()
 
 	params := ApexTriggerParams{
-		ObjectName:        "Lead",
-		TriggerName:       "Lead",
-		CheckboxFieldName: "AmpTriggerSubscription__c",
-		WatchFields:       []string{"Email", "Phone"},
+		ObjectName:  "Lead",
+		TriggerName: "Lead",
+		WatchFields: []string{"Email"},
 	}
 
-	zipData, err := ConstructApexTrigger(params)
+	triggerCode := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
+
+	zipData, err := ConstructApexTrigger(params, triggerCode)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	assertZipContainsFiles(t, zipData, []string{
+		"package.xml",
+		"triggers/Lead.trigger",
+		"triggers/Lead.trigger-meta.xml",
+	})
+}
+
+func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "Lead",
+		WatchFields: []string{"Email", "Phone"},
+	}
+
+	triggerCode := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
+
+	zipData, err := ConstructApexTrigger(params, triggerCode)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -229,6 +304,169 @@ func TestConstructApexTriggerContent(t *testing.T) { //nolint:funlen
 </Package>`, core.APIVersion)
 	if packageXML != expectedPackageXML {
 		t.Errorf("package.xml mismatch.\nGot:\n%s\nWant:\n%s", packageXML, expectedPackageXML)
+	}
+}
+
+func TestConstructApexTriggerForFilteredReadContent(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "Lead",
+		WatchFields: []string{"Email", "Phone"},
+	}
+
+	triggerCode := GenerateTriggerCodeForFilteredRead(params, "AmpTimestamp__c")
+
+	zipData, err := ConstructApexTrigger(params, triggerCode)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	files := readZipFiles(t, zipData)
+
+	triggerCode, ok := files["triggers/Lead.trigger"]
+	if !ok {
+		t.Fatal("trigger file not found in zip")
+	}
+
+	expectedTriggerCode := `trigger Lead on Lead (before insert, before update) {
+    if (Trigger.isBefore) {
+        for (Lead rec : Trigger.new) {
+            Boolean fieldChanged = false;
+
+            if (Trigger.isInsert) {
+                fieldChanged = (rec.Email != null) || (rec.Phone != null);
+            } else if (Trigger.isUpdate) {
+                Lead oldRec = Trigger.oldMap.get(rec.Id);
+                fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
+            }
+
+            if (fieldChanged) {
+                rec.AmpTimestamp__c = System.now();
+            }
+        }
+    }
+}
+`
+	if triggerCode != expectedTriggerCode {
+		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", triggerCode, expectedTriggerCode)
+	}
+}
+
+func TestGenerateTriggerCodeForCDC(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "Lead",
+		WatchFields: []string{"Email", "Phone"},
+	}
+
+	got := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
+
+	expected := `trigger Lead on Lead (before insert, before update) {
+    if (Trigger.isBefore) {
+        for (Lead rec : Trigger.new) {
+            Boolean fieldChanged = false;
+
+            if (Trigger.isInsert) {
+                fieldChanged = (rec.Email != null) || (rec.Phone != null);
+            } else if (Trigger.isUpdate) {
+                Lead oldRec = Trigger.oldMap.get(rec.Id);
+                fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
+            }
+
+            rec.AmpTriggerSubscription__c = fieldChanged;
+        }
+    }
+}
+`
+	if got != expected {
+		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", got, expected)
+	}
+}
+
+func TestGenerateTriggerCodeForCDCSingleField(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Contact",
+		TriggerName: "Contact",
+		WatchFields: []string{"LastName"},
+	}
+
+	got := GenerateTriggerCodeForCDC(params, "AmpChanged__c")
+
+	if !strings.Contains(got, "rec.AmpChanged__c = fieldChanged;") {
+		t.Errorf("expected boolean assignment, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "(rec.LastName != null)") {
+		t.Errorf("expected insert condition for LastName, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "(rec.LastName != oldRec.LastName)") {
+		t.Errorf("expected update condition for LastName, got:\n%s", got)
+	}
+}
+
+func TestGenerateTriggerCodeForFilteredRead(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "Lead",
+		WatchFields: []string{"Email", "Phone"},
+	}
+
+	got := GenerateTriggerCodeForFilteredRead(params, "AmpTimestamp__c")
+
+	expected := `trigger Lead on Lead (before insert, before update) {
+    if (Trigger.isBefore) {
+        for (Lead rec : Trigger.new) {
+            Boolean fieldChanged = false;
+
+            if (Trigger.isInsert) {
+                fieldChanged = (rec.Email != null) || (rec.Phone != null);
+            } else if (Trigger.isUpdate) {
+                Lead oldRec = Trigger.oldMap.get(rec.Id);
+                fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
+            }
+
+            if (fieldChanged) {
+                rec.AmpTimestamp__c = System.now();
+            }
+        }
+    }
+}
+`
+	if got != expected {
+		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", got, expected)
+	}
+}
+
+func TestGenerateTriggerCodeForFilteredReadSingleField(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Account",
+		TriggerName: "Account",
+		WatchFields: []string{"Name"},
+	}
+
+	got := GenerateTriggerCodeForFilteredRead(params, "AmpLastModified__c")
+
+	if !strings.Contains(got, "rec.AmpLastModified__c = System.now();") {
+		t.Errorf("expected timestamp assignment, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "if (fieldChanged)") {
+		t.Errorf("expected conditional guard, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "(rec.Name != null)") {
+		t.Errorf("expected insert condition for Name, got:\n%s", got)
 	}
 }
 

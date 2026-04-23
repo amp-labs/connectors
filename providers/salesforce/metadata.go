@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 var ErrCannotReadMetadata = errors.New("cannot read object metadata, it is possible you don't have the correct permissions set") // nolint:lll
@@ -240,7 +239,7 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata { //nolint:
 		DisplayName:  f.DisplayName,
 		ValueType:    valueType,
 		ProviderType: f.Type,
-		ReadOnly:     goutils.Pointer(f.isReadOnly()),
+		ReadOnly:     new(f.isReadOnly()),
 		IsCustom:     f.Custom,
 		IsRequired:   f.isRequired(),
 		Values:       values,
@@ -281,7 +280,7 @@ func (f fieldResult) getFieldValues() []common.FieldValue {
 func (f fieldResult) isRequired() *bool {
 	// Platform-populated fields are never required inputs.
 	if f.Autonumber != nil && *f.Autonumber || f.Calculated != nil && *f.Calculated {
-		return goutils.Pointer(false)
+		return new(false)
 	}
 
 	// Cannot determine without all three metadata flags.
@@ -290,7 +289,5 @@ func (f fieldResult) isRequired() *bool {
 	}
 
 	// Required when createable, non-nillable, and not defaulted by Salesforce.
-	requiredOnCreate := *f.Createable && !*f.Nillable && !*f.DefaultedOnCreate
-
-	return goutils.Pointer(requiredOnCreate)
+	return new(*f.Createable && !*f.Nillable && !*f.DefaultedOnCreate)
 }

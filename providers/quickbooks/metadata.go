@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 // ListObjectMetadata overrides the base SchemaProvider to enhance metadata with custom fields.
@@ -45,7 +44,7 @@ func (c *Connector) ListObjectMetadata(
 				DisplayName:  field.Name,
 				ValueType:    getFieldValueType(field),
 				ProviderType: field.Type,
-				IsCustom:     goutils.Pointer(true),
+				IsCustom:     new(true),
 				Values:       nil,
 			})
 		}

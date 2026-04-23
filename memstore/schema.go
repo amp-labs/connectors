@@ -11,11 +11,6 @@ import (
 	"github.com/kaptinlin/jsonschema"
 )
 
-// boolPtr returns a pointer to a boolean value.
-func boolPtr(b bool) *bool {
-	return &b
-}
-
 // injectExtrasIntoSchemaMap reads jsonschema_extras tags from a struct and injects them into the schema map.
 // This is needed because the invopop library doesn't always include these custom extensions.
 func injectExtrasIntoSchemaMap(schemaMap map[string]any, structType reflect.Type) error {
@@ -623,8 +618,6 @@ func schemaToObjectMetadata(
 		}
 
 		// Apply required fields map
-		isRequired := requiredFields[fieldName]
-
 		// Note: Association metadata is stored in the storage layer and will be used
 		// during Read operations for expansion. FieldMetadata doesn't currently have
 		// an Association field (that's in FieldDefinition), so we skip it here.
@@ -636,8 +629,8 @@ func schemaToObjectMetadata(
 			ValueType:    valueType,
 			ProviderType: providerType,
 			ReadOnly:     readOnly,
-			IsRequired:   boolPtr(isRequired),
-			IsCustom:     boolPtr(false),
+			IsRequired:   new(requiredFields[fieldName]),
+			IsCustom:     new(false),
 			Values:       values,
 		}
 	}

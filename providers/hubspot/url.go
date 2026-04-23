@@ -61,14 +61,24 @@ func (c *Connector) getCRMSearchURL(config searchCRMParams) (string, error) {
 	return c.getURL(relativeURL)
 }
 
-// https://developers.hubspot.com/docs/api-reference/crm-properties-v3/core/get-crm-v3-properties-objectType
-func (c *Connector) getPropertiesURL(objectName string) (string, error) {
-	return c.getURL(strings.Join([]string{"properties", objectName}, "/"))
+// https://developers.hubspot.com/docs/api-reference/latest/crm/properties/get-properties
+// Note: Version APIVersion2026March is NOT FOUND at the moment for this endpoint. Using older V3.
+func (c *Connector) getPropertiesURL(objectName string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "/")
 }
 
-// https://developers.hubspot.com/docs/api-reference/crm-schemas-v3/core/get-crm-object-schemas-v3-schemas-objectType
+// https://developers.hubspot.com/docs/api-reference/latest/crm/objects/schemas/get-schema
 func (c *Connector) getObjectSchemaURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.getRootProviderURL(), "crm-object-schemas", core.APIVersion3, "schemas", objectName)
+	return urlbuilder.New(c.getRootProviderURL(), "crm-object-schemas", core.APIVersion2026March, "schemas", objectName)
+}
+
+// https://developers.hubspot.com/docs/api-reference/latest/account/account-information/get-account-details
+func (c *Connector) getAccountDetailsURL() (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.getRootProviderURL(), "account-info", core.APIVersion2026March, "details")
+}
+
+func (c *Connector) getURLFromRoot(relativePath string) string {
+	return c.getRootProviderURL() + relativePath
 }
 
 // Returns module agnostic Hubspot URL.

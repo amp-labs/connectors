@@ -1,0 +1,11 @@
+{
+  "data": {
+    "id": "sp-001",
+    "name": "Updated Marketing Profile",
+    "email": "marketing@example.com",
+    "OrgId": "org-001",
+    "createdAt": "2025-01-22T10:00:00.000Z",
+    "updatedAt": "2025-01-22T14:00:00.000Z"
+  },
+  "success": true
+}

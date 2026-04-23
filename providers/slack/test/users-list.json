@@ -1,0 +1,28 @@
+{
+    "ok": true,
+    "members": [
+        {
+            "id": "W012A3CDE",
+            "team_id": "T012AB3C4",
+            "name": "spengler",
+            "deleted": false,
+            "color": "9f69e7",
+            "real_name": "Egon Spengler",
+            "tz": "America/Los_Angeles",
+            "tz_label": "Pacific Daylight Time",
+            "tz_offset": -25200,
+            "is_admin": true,
+            "is_owner": false,
+            "is_primary_owner": false,
+            "is_restricted": false,
+            "is_ultra_restricted": false,
+            "is_bot": false,
+            "updated": 1502138686,
+            "is_app_user": false,
+            "has_2fa": false
+        }
+    ],
+    "response_metadata": {
+        "next_cursor": ""
+    }
+}
