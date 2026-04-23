@@ -18,6 +18,10 @@ var readResponseKey = datautils.NewDefaultMap(map[string]string{ //nolint:gochec
 	"change_order_change_reasons":           "data",
 	"currency_configuration/exchange_rates": "exchange_rates",
 	"workflows/bulk_replace_requests":       "data",
+	"estimating/bid_board_projects":         "data",
+	"bid_packages":                          "bidPackages",
+	"estimating/catalogs":                   "data",
+	"notification-profiles":                 "data",
 },
 	func(objectName string) (fieldName string) {
 		return ""
@@ -199,6 +203,150 @@ func resolveAPIPath(objectName string, companyId string) string {
 
 	if objectName == "workflows/bulk_replace_requests" {
 		return "rest/v2.0/companies/" + companyId + "/workflows/bulk_replace_requests"
+	}
+
+	if objectName == "app_configurations" {
+		return "rest/v1.0/companies/" + companyId + "/app_configurations"
+	}
+
+	if objectName == "estimating/bid_board_projects" {
+		return "rest/v2.0/companies/" + companyId + "/estimating/bid_board_projects"
+	}
+
+	if objectName == "bid_packages" {
+		return "rest/v1.0/companies/" + companyId + "/bid_packages"
+	}
+
+	if objectName == "estimating/catalogs" {
+		return "rest/v2.0/companies/" + companyId + "/estimating/catalogs"
+	}
+
+	if objectName == "recycle_bin/action_plans/plan_template_item_assignees" {
+		return "rest/v1.0/companies/" + companyId + "	/recycle_bin/action_plans/plan_template_item_assignees"
+	}
+
+	if objectName == "recycle_bin/action_plans/plan_template_items" {
+		return "rest/v1.0/companies/" + companyId + "/recycle_bin/action_plans/plan_template_items"
+	}
+
+	if objectName == "recycle_bin/action_plans/plan_template_references" {
+		return "rest/v1.0/companies/" + companyId + "/recycle_bin/action_plans/plan_template_references"
+	}
+
+	if objectName == "recycle_bin/action_plans/plan_template_sections" {
+		return "rest/v1.0/companies/" + companyId + "/recycle_bin/action_plans/plan_template_sections"
+	}
+
+	if objectName == "recycle_bin/action_plans/plan_template_test_record_requests" {
+		return "rest/v1.0/companies/" + companyId + "/recycle_bin/action_plans/plan_template_test_record_requests"
+	}
+
+	if objectName == "recycle_bin/action_plans/plan_templates" {
+		return "rest/v1.0/companies/" + companyId + "/recycle_bin/action_plans/plan_templates"
+	}
+
+	if objectName == "action_plans/plan_types" {
+		return "rest/v1.0/companies/" + companyId + "/action_plans/plan_types"
+	}
+
+	if objectName == "timecard_time_types" {
+		return "rest/v1.0/companies/" + companyId + "/timecard_time_types"
+	}
+
+	if objectName == "timesheets/filters/crews" {
+		return "companies/" + companyId + "/timesheets/filters/crews"
+	}
+
+	if objectName == "incidents/action_types" {
+		return "rest/v1.0/companies/" + companyId + "/incidents/action_types"
+	}
+
+	if objectName == "incidents/affliction_types" {
+		return "rest/v1.0/companies/" + companyId + "/incidents/affliction_types"
+	}
+
+	if objectName == "incidents/body_parts" {
+		return "rest/v1.0/companies/" + companyId + "/incidents/body_parts"
+	}
+
+	if objectName == "contributing_behaviors" {
+		return "rest/v1.0/companies/" + companyId + "/contributing_behaviors"
+	}
+
+	if objectName == "contributing_conditions" {
+		return "rest/v1.0/companies/" + companyId + "/contributing_conditions"
+	}
+
+	if objectName == "incidents/environmental_types" {
+		return "rest/v1.0/companies/" + companyId + "/incidents/environmental_types"
+	}
+
+	if objectName == "incidents/injury_filing_types" {
+		return "rest/v1.0/companies/" + companyId + "/incidents/injury_filing_types"
+	}
+
+	if objectName == "incidents/harm_sources" {
+		return "rest/v1.0/companies/" + companyId + "/incidents/harm_sources"
+	}
+
+	if objectName == "hazards" {
+		return "rest/v1.0/companies/" + companyId + "/hazards"
+	}
+
+	if objectName == "incidents/statuses" {
+		return "rest/v1.0/companies/" + companyId + "/incidents/statuses"
+	}
+
+	if objectName == "incidents/severity_levels" {
+		return "/rest/v1.0/companies/" + companyId + "/incidents/severity_levels"
+	}
+
+	if objectName == "incidents/work_activities" {
+		return "rest/v1.0/companies/" + companyId + "/incidents/work_activities"
+	}
+
+	if objectName == "checklist/alternative_response_sets" {
+		return "rest/v1.0/companies/" + companyId + "/checklist/alternative_response_sets"
+	}
+
+	if objectName == "checklist/list_templates" {
+		return "rest/v1.0/companies/" + companyId + "/checklist/list_templates"
+	}
+
+	if objectName == "recycle_bin/checklist/list_templates" {
+		return "rest/v1.0/companies/" + companyId + "/recycle_bin/checklist/list_templates"
+	}
+
+	if objectName == "inspection_types" {
+		return "rest/v1.0/companies/" + companyId + "/inspection_types"
+	}
+
+	if objectName == "checklist/item/response_sets" {
+		return "rest/v1.0/companies/" + companyId + "/checklist/item/response_sets"
+	}
+
+	if objectName == "checklist/responses" {
+		return "rest/v1.0/companies/" + companyId + "/checklist/responses"
+	}
+
+	if objectName == "meeting_templates" {
+		return "rest/v1.0/companies/" + companyId + "/meeting_templates"
+	}
+
+	if objectName == "observation_types" {
+		return "rest/v1.0/companies/" + companyId + "/observation_types"
+	}
+
+	if objectName == "groups" {
+		return "rest/v1.0/workforce-planning/v2/companies/" + companyId + "/groups"
+	}
+
+	if objectName == "notification-profiles" {
+		return "rest/v1.0/workforce-planning/v2/companies/" + companyId + "/notification-profiles"
+	}
+
+	if objectName == "tags" {
+		return "rest/v1.0/workforce-planning/v2/companies/" + companyId + "/tags"
 	}
 
 	return "rest/v1.0/" + objectName
