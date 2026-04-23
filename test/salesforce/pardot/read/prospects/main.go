@@ -25,7 +25,9 @@ func main() {
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "prospects",
 		Fields: connectors.Fields(
-			"id", "firstName", "lastName", "email"),
+			"id", "firstName", "lastName", "email",
+			"hobby__c", // Custom field. Comment it, if you don't have it.
+		),
 		Since:    utils.Timestamp("2025-05-16T11:24:11-07:00"),
 		PageSize: 2,
 	})

@@ -12,7 +12,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/metadata"
@@ -306,8 +305,8 @@ func (f fieldDescription) transformToFieldMetadata() common.FieldMetadata {
 		DisplayName:  f.Label,
 		ValueType:    valueType,
 		ProviderType: f.Type + "." + f.FieldType,
-		ReadOnly:     goutils.Pointer(f.ModificationMetadata.ReadOnlyValue),
-		IsCustom:     goutils.Pointer(!f.IsBuiltIn),
+		ReadOnly:     new(f.ModificationMetadata.ReadOnlyValue),
+		IsCustom:     new(!f.IsBuiltIn),
 		// IsRequired is not known from current struct,
 		// info is acquired by different API call and set by fetchRequiredFieldsBestEffort.
 		IsRequired: nil,
@@ -546,11 +545,9 @@ func (c *Connector) fetchRequiredFieldsBestEffort(
 		return nil, fmt.Errorf("error unmarshalling schemaResponse response into JSON: %w", err)
 	}
 
-	required := datautils.NewSetFromList(resp.RequiredProperties)
-
+	required := datautils.NewSetFromList(resp.RequiredProperties) // nolint:staticcheck
 	for name, meta := range fields {
-		isRequired := required.Has(name)
-		meta.IsRequired = goutils.Pointer(isRequired)
+		meta.IsRequired = new(required.Has(name))
 		fields[name] = meta
 	}
 

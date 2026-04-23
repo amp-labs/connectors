@@ -5,7 +5,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -183,13 +182,13 @@ func TestMailListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "Id",
 								ValueType:    "string",
 								ProviderType: "string",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 							},
 							"message": {
 								DisplayName:  "Message",
 								ValueType:    "other",
 								ProviderType: "object",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 							},
 						},
 					},

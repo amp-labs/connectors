@@ -1,11 +1,11 @@
 package testroutines
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
 type (
@@ -21,36 +21,29 @@ func (r PostAuthInfo) Run(t *testing.T, builder ConnectorBuilder[connectors.Auth
 		PostAuthInfoType(r).Close()
 	})
 
-	r.Comparator = func(serverURL string, actual, expected *common.PostAuthInfo) bool {
-		if actual.ProviderWorkspaceRef != expected.ProviderWorkspaceRef {
-			return false
-		}
+	r.Comparator = func(serverURL string, actual, expected *common.PostAuthInfo) *mockutils.CompareResult {
+		result := mockutils.NewCompareResult()
 
-		if !reflect.DeepEqual(actual.CatalogVars, expected.CatalogVars) {
-			return false
-		}
+		result.Assert("ProviderWorkspaceRef", expected.ProviderWorkspaceRef, actual.ProviderWorkspaceRef)
+		result.Assert("CatalogVars", expected.CatalogVars, actual.CatalogVars)
 
 		if actual.RawResponse == nil && expected.RawResponse != nil {
-			return false
+			result.AddDiff("RawResponse is nil, expected non-nil")
 		}
 
 		if actual.RawResponse != nil && expected.RawResponse == nil {
-			return false
+			result.AddDiff("RawResponse is non-nil, expected nil")
 		}
 
 		if actual.RawResponse != nil && expected != nil {
-			if actual.RawResponse.Code != expected.RawResponse.Code {
-				return false
-			}
+			result.Assert("RawResponse.Code", expected.RawResponse.Code, actual.RawResponse.Code)
 
 			if expected.RawResponse.Headers != nil {
-				t.Fatalf("RawResoponse.Headers is not supported by PostAuthInfo TestCase")
-
-				return false
+				result.AddDiff("RawResponse.Headers is not supported by PostAuthInfo TestCase")
 			}
 		}
 
-		return true
+		return result
 	}
 
 	conn := builder.Build(t, r.Name)

@@ -3,7 +3,6 @@ package salesforce
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -161,7 +160,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithAccount),
 			}.Server(),
-			Comparator: comparatorSubsetReadWithAssociations,
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -231,7 +230,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithContacts),
 			}.Server(),
-			Comparator: comparatorSubsetReadWithAssociations,
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -309,160 +308,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	}
 }
 
-// comparatorSubsetReadWithAssociations extends ComparatorSubsetRead to also validate associations.
-func comparatorSubsetReadWithAssociations(serverURL string, actual, expected *common.ReadResult) bool {
-	// First check fields, raw, and pagination using the standard comparator
-	if !testroutines.ComparatorSubsetRead(serverURL, actual, expected) {
-		return false
-	}
-
-	// Then check associations
-	if len(actual.Data) < len(expected.Data) {
-		return false
-	}
-
-	for i := range expected.Data {
-		if !validateAssociationsForRow(actual.Data[i].Associations, expected.Data[i].Associations) {
-			return false
-		}
-	}
-
-	return true
-}
-
-// validateAssociationsForRow validates associations for a single row.
-func validateAssociationsForRow(actualAssoc, expectedAssoc map[string][]common.Association) bool {
-	// If expected has no associations, actual can have none or some (we don't care)
-	if len(expectedAssoc) == 0 {
-		return true
-	}
-
-	// If expected has associations but actual doesn't, that's a failure
-	if len(actualAssoc) == 0 {
-		return false
-	}
-
-	// Check each expected association type
-	for assocType, expectedAssociations := range expectedAssoc {
-		actualAssociations, ok := actualAssoc[assocType]
-		if !ok {
-			return false
-		}
-
-		if !validateAssociationsList(actualAssociations, expectedAssociations) {
-			return false
-		}
-	}
-
-	return true
-}
-
-// validateAssociationsList validates a list of associations.
-func validateAssociationsList(actualAssociations, expectedAssociations []common.Association) bool {
-	// Check that we have at least as many associations as expected
-	if len(actualAssociations) < len(expectedAssociations) {
-		return false
-	}
-
-	// Check each expected association
-	for j, expectedAssoc := range expectedAssociations {
-		actualAssoc := actualAssociations[j]
-
-		if !validateSingleAssociation(actualAssoc, expectedAssoc) {
-			return false
-		}
-	}
-
-	return true
-}
-
-// validateSingleAssociation validates a single association.
-func validateSingleAssociation(actualAssoc, expectedAssoc common.Association) bool {
-	// Check ObjectId
-	if expectedAssoc.ObjectId != "" && actualAssoc.ObjectId != expectedAssoc.ObjectId {
-		return false
-	}
-
-	// Check Raw - if expected is nil, actual should be nil
-	if expectedAssoc.Raw == nil && actualAssoc.Raw != nil {
-		return false
-	}
-
-	// If expected has Raw data, check it matches
-	if expectedAssoc.Raw != nil {
-		if !reflect.DeepEqual(actualAssoc.Raw, expectedAssoc.Raw) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func TestReadWithCustomTimestampColumn(t *testing.T) {
-	t.Parallel()
-
-	responseListContacts := testutils.DataFromFile(t, "read-list-contacts.json")
-
-	since := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
-
-	tests := []testroutines.Read{
-		{
-			Name: "Incremental read uses custom timestamp column in SOQL",
-			Input: common.ReadParams{
-				ObjectName: "contacts",
-				Fields:     connectors.Fields("Department"),
-				Since:      since,
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/services/data/v60.0/query"),
-					mockcond.QueryParam("q",
-						"SELECT Id,Department FROM contacts WHERE LastModifiedDate > 2024-01-15T00:00:00Z"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseListContacts),
-			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
-			Expected: &common.ReadResult{
-				Rows: 20,
-				Done: true,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name: "Backfill read unaffected by custom timestamp column",
-			Input: common.ReadParams{
-				ObjectName: "contacts",
-				Fields:     connectors.Fields("Department"),
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/services/data/v60.0/query"),
-					mockcond.QueryParam("q", "SELECT Id,Department FROM contacts"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseListContacts),
-			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
-			Expected: &common.ReadResult{
-				Rows: 20,
-				Done: true,
-			},
-			ExpectedErrs: nil,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.Name, func(t *testing.T) {
-			t.Parallel()
-
-			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnectorWithTimestampColumn(tt.Server.URL, "LastModifiedDate")
-			})
-		})
-	}
-}
-
 func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
@@ -470,6 +315,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseMissingQuery := testutils.DataFromFile(t, "pardot/read/emails/err-missing-query.json")
 	responseEmailsFirstPage := testutils.DataFromFile(t, "pardot/read/emails/1-first-page.json")
 	responseEmailsEmptyPage := testutils.DataFromFile(t, "pardot/read/emails/2-empty-page.json")
+	responseProspects := testutils.DataFromFile(t, "pardot/read/prospects.json")
 
 	pardotHeader := http.Header{
 		"Pardot-Business-Unit-Id": []string{"test-business-unit-id"},
@@ -613,6 +459,70 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Read prospects with custom field",
+			Input: common.ReadParams{
+				ObjectName: "prospects",
+				Fields:     connectors.Fields("hobby__c"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v5/objects/prospects"),
+					mockcond.QueryParam("limit", "1000"),
+					mockcond.QueryParam("fields", "hobby__c"),
+					mockcond.Header(pardotHeader),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProspects),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Data: []common.ReadResultRow{{
+					Id: "55389571",
+					Fields: map[string]any{
+						"hobby__c": nil,
+					},
+					Raw: map[string]any{
+						"id":           float64(55389571),
+						"email":        "a.alexander@sample.com",
+						"firstName":    "Athenasius",
+						"lastName":     "Alexander",
+						"biography__c": nil,
+						"hobby__c":     nil,
+					},
+				}, {
+					Id: "55389574",
+					Fields: map[string]any{
+						"hobby__c": nil,
+					},
+					Raw: map[string]any{
+						"id":           float64(55389574),
+						"email":        "spidey@test.com",
+						"firstName":    "Man",
+						"lastName":     "Spider",
+						"biography__c": nil,
+						"hobby__c":     nil,
+					},
+				}, {
+					Id: "64629229",
+					Fields: map[string]any{
+						"hobby__c": "swimming",
+					},
+					Raw: map[string]any{
+						"id":           float64(64629229),
+						"email":        "b.loretta@sample.com",
+						"firstName":    "Loretta",
+						"lastName":     "Burke",
+						"biography__c": nil,
+						"hobby__c":     "swimming",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -655,6 +565,10 @@ func constructTestConnectorAccountEngagement(serverURL string) (*Connector, erro
 	return constructTestConnectorGeneral(serverURL, providers.ModuleSalesforceAccountEngagement)
 }
 
+func constructTestConnectorAccountEngagementDemo(serverURL string) (*Connector, error) {
+	return constructTestConnectorGeneral(serverURL, providers.ModuleSalesforceAccountEngagementDemo)
+}
+
 func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
@@ -670,6 +584,8 @@ func constructTestConnectorGeneral(serverURL string, module common.ModuleID) (*C
 	}
 
 	// for testing we want to redirect calls to our mock server
+	// Some methods still live directly on the connector struct
+	// and not under nested adapter so this should be preserved.
 	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL))
 
 	if connector.crmAdapter != nil {

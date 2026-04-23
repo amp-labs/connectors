@@ -3,6 +3,7 @@ package components
 import (
 	"errors"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
@@ -19,7 +20,13 @@ type ConnectorConstructor[T any] func(*Connector) (*T, error)
 // to avoid ambiguity when combined with interfaces that embed fmt.Stringer.
 type Connector struct {
 	*Transport
+	*ProxyResolver
 }
+
+var (
+	_ connectors.Connector      = (*Connector)(nil)
+	_ connectors.ProxyConnector = (*Connector)(nil)
+)
 
 // Initialize initializes a connector with the given provider and parameters
 // by using Connector as a base type. It runs the constructor with the connector
@@ -44,7 +51,10 @@ func Initialize[T any](
 		return nil, err
 	}
 
-	conn, err = constructor(&Connector{Transport: transport})
+	conn, err = constructor(&Connector{
+		Transport:     transport,
+		ProxyResolver: NewProxyResolver(transport.ProviderContext),
+	})
 	if err != nil {
 		return nil, err
 	}

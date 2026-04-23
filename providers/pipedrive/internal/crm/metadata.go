@@ -64,7 +64,7 @@ func (a *Adapter) ListObjectMetadata(
 
 		if obj == dealsObjectName {
 			// Connector embeds this field during reading.
-			// Therefore, metadata artifically includes this property to advertise this to users.
+			// Therefore, metadata artificially includes this property to advertise this to users.
 			metadata.AddFieldMetadata(productsFieldKey, common.FieldMetadata{
 				DisplayName:  "Products",
 				ValueType:    common.ValueTypeOther,

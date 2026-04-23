@@ -4,6 +4,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm"
 	crmcore "github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
@@ -21,6 +22,8 @@ import (
 // while others are delegated to specialized sub-adapters (see below).
 // These sub-adapters will be consolidated as the migration completes under "crm.Adapter".
 type Connector struct {
+	*components.ProxyResolver
+
 	Client *common.JSONHTTPClient
 
 	providerInfo *providers.ProviderInfo
@@ -82,11 +85,15 @@ func NewConnector(opts ...Option) (*Connector, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		conn.ProxyResolver = conn.pardotAdapter.Connector.ProxyResolver
 	} else {
 		conn.crmAdapter, err = crm.NewAdapter(connectorParams, conn.provider)
 		if err != nil {
 			return nil, err
 		}
+
+		conn.ProxyResolver = conn.crmAdapter.Connector.ProxyResolver
 	}
 
 	return conn, nil

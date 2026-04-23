@@ -2,10 +2,10 @@ package salesforce
 
 import (
 	"net/http"
-	"reflect"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -248,21 +248,35 @@ func TestGetBulkQueryResults(t *testing.T) { // nolint:dupl
 	}
 }
 
-func statusCodeComparator(serverURL string, actual, expected *http.Response) bool {
-	return actual.StatusCode == expected.StatusCode
+func statusCodeComparator(serverURL string, actual, expected *http.Response) *mockutils.CompareResult {
+	result := mockutils.NewCompareResult()
+
+	result.Assert("StatusCode", expected.StatusCode, actual.StatusCode)
+
+	return result
 }
 
-func testJobResultsComparator(serverURL string, actual, expected *JobResults) bool {
+func testJobResultsComparator(serverURL string, actual, expected *JobResults) *mockutils.CompareResult {
 	actual.JobInfo = nil // ignore JobInfo when comparing
 
-	return reflect.DeepEqual(actual, expected)
+	result := mockutils.NewCompareResult()
+
+	result.Assert("JobResults", expected, actual)
+
+	return result
 }
 
-func testConciseJobInfoComparator(serverURL string, actual *GetJobInfoResult, expected *GetJobInfoResult) bool {
-	return actual.Id == expected.Id &&
-		actual.Object == expected.Object &&
-		actual.State == expected.State &&
-		actual.CreatedDate == expected.CreatedDate
+func testConciseJobInfoComparator(
+	serverURL string, actual *GetJobInfoResult, expected *GetJobInfoResult,
+) *mockutils.CompareResult {
+	result := mockutils.NewCompareResult()
+
+	result.Assert("Id", expected.Id, actual.Id)
+	result.Assert("Object", expected.Object, actual.Object)
+	result.Assert("State", expected.State, actual.State)
+	result.Assert("CreatedDate", expected.CreatedDate, actual.CreatedDate)
+
+	return result
 }
 
 type (

@@ -71,7 +71,7 @@ func main() {
 					DisplayName:  fieldNameConvertToDisplayName(field.Name),
 					ValueType:    providerTypeConvertToValueType(field.Type),
 					ProviderType: field.Type,
-					ReadOnly:     goutils.Pointer(false),
+					ReadOnly:     new(false),
 					Values:       nil,
 				},
 			}

@@ -1,7 +1,7 @@
 package mockutils
 
 import (
-	"reflect"
+	"fmt"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -12,27 +12,29 @@ type writeResultComparator struct{}
 
 // SubsetData checks that expected WriteResult.Data is a subset of actual WriteResult.Data
 // other fields are strictly compared.
-func (writeResultComparator) SubsetData(actual, expected *common.WriteResult) bool {
+func (writeResultComparator) SubsetData(actual, expected *common.WriteResult) *CompareResult {
+	result := NewCompareResult()
 	// We are expecting more fields than there in the existence.
 	if len(actual.Data) < len(expected.Data) {
-		return false
+		result.AddDiff(fmt.Sprintf("expected at least %d data fields, got %d", len(expected.Data), len(actual.Data)))
+		return result
 	}
 
 	// At least one field should be mentioned.
 	if len(actual.Data) > 0 && len(expected.Data) == 0 {
-		return false
+		result.AddDiff("expected some data fields, but none were specified in expected")
+		return result
 	}
 
-	for k, expectedValue := range expected.Data {
-		actualValue, ok := actual.Data[k]
+	for key, expectedValue := range expected.Data {
+		actualValue, ok := actual.Data[key]
 		if !ok {
-			return false
+			result.AddDiff(fmt.Sprintf("Data[%s] missing", key))
+			continue
 		}
 
-		if !reflect.DeepEqual(actualValue, expectedValue) {
-			return false
-		}
+		result.Assert(fmt.Sprintf("Data[%s]", key), expectedValue, actualValue)
 	}
 
-	return true
+	return result
 }

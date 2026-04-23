@@ -9,7 +9,6 @@ import (
 	"syscall"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	connTest "github.com/amp-labs/connectors/test/salesforce"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -40,7 +39,7 @@ func main() {
 					Description: "Temporary field created by integration test. Safe to delete.",
 					ValueType:   common.FieldTypeBoolean,
 					StringOptions: &common.StringFieldOptions{
-						DefaultValue: goutils.Pointer("false"),
+						DefaultValue: new("false"),
 					},
 				},
 			},
