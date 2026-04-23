@@ -6,16 +6,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
 // DefaultPageSize is number of elements per page.
-const DefaultPageSize = 100
+const DefaultPageSize = "100"
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := c.buildReadURL(params)
@@ -45,17 +47,26 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node, "page_info").StrWithDefault("end_cursor", "")
 }
 
-func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	url, err := c.getReadURL(config.ObjectName)
+func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+	url, err := c.getReadURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	url.WithQueryParam("first", strconv.Itoa(DefaultPageSize))
+	url.WithQueryParam("first", readhelper.PageSizeWithDefaultStr(params, DefaultPageSize))
 
-	if len(config.NextPage) != 0 {
+	if len(params.NextPage) != 0 {
 		// Next page
-		url.WithQueryParam("after", config.NextPage.String())
+		url.WithQueryParam("after", params.NextPage.String())
+	}
+
+	// https://developers.pipelinersales.com/api-docs/core-api-concepts/api-parameters#filter-filter-op
+	if !params.Since.IsZero() && supportsFilterByTime(params.ObjectName) {
+		url.WithQueryParam("order-by", "-modified")
+		url.WithQueryParam("filter-op[modified]", "gte")
+
+		timestamp := datautils.Time.FormatRFC3339inUTC(params.Since)
+		url.WithQueryParam("filter[modified]", timestamp)
 	}
 
 	return url, nil
@@ -149,4 +160,19 @@ func (c *Connector) parseDeleteResponse(ctx context.Context, params common.Delet
 	return &common.DeleteResult{
 		Success: true,
 	}, nil
+}
+
+// Almost all object support filtering by modified field.
+// There are a select few that have no usable timestamp field.
+func supportsFilterByTime(objectName string) bool {
+	switch strings.ToLower(objectName) {
+	case "Activities":
+		fallthrough
+	case "LeadOppties":
+		fallthrough
+	case "Types":
+		return false
+	default:
+		return true
+	}
 }
