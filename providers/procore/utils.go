@@ -2,14 +2,6 @@ package procore
 
 import "github.com/amp-labs/connectors/internal/datautils"
 
-var supportedObjects = map[string]bool{
-	"companies":  true,
-	"projects":   true,
-	"offices":    true,
-	"operations": true,
-	"programs":   true,
-}
-
 var readResponseKey = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"schedule/resources":                    "resources",
 	"operations":                            "data",
