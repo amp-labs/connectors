@@ -14,7 +14,7 @@ func init() { //nolint:funlen
 	SetInfo(Clio, ProviderInfo{
 		DisplayName: "Clio",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.clio_api_domain}}",
+		BaseURL:     "https://{{if and .region (ne .region \"us\") (ne .region \"US\")}}{{.region}}.{{end}}{{.workspace}}",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType: AuthorizationCode,
 			// Integrations with Clio products are local to the regional instance.
@@ -27,10 +27,19 @@ func init() { //nolint:funlen
 			// Platform OAuth(US):
 			//   https://auth.api.clio.com/oauth/authorize
 			//   https://auth.api.clio.com/oauth/token
-			AuthURL:                   "https://{{.clio_oauth_domain}}/oauth/authorize",
-			TokenURL:                  "https://{{.clio_oauth_domain}}/oauth/token",
+			//
+			// Region is a hostname prefix (eu, ca, au). Some environments provide "us" for the US region;
+			// treat it as empty (no prefix).
+			//
+			// Manage OAuth uses the app host; Platform OAuth uses auth.api.clio.com (not api.clio.com).
+			AuthURL: "https://{{if and .region (ne .region \"us\") (ne .region \"US\")}}{{.region}}.{{end}}" +
+				"{{if eq .workspace \"api.clio.com\"}}auth.api.clio.com{{else}}{{.workspace}}{{end}}" +
+				"/oauth/authorize",
+			TokenURL: "https://{{if and .region (ne .region \"us\") (ne .region \"US\")}}{{.region}}.{{end}}" +
+				"{{if eq .workspace \"api.clio.com\"}}auth.api.clio.com{{else}}{{.workspace}}{{end}}" +
+				"/oauth/token",
 			ExplicitScopesRequired:    false,
-			ExplicitWorkspaceRequired: false,
+			ExplicitWorkspaceRequired: true,
 			DocsURL: "https://docs.developers.clio.com/handbook/getting-started/" +
 				"get-a-developer-account",
 		},
@@ -66,7 +75,7 @@ func init() { //nolint:funlen
 		DefaultModule: ModuleClioManage,
 		Modules: &Modules{
 			ModuleClioGrow: {
-				BaseURL:     "https://{{.clio_api_domain}}",
+				BaseURL:     "https://{{if and .region (ne .region \"us\") (ne .region \"US\")}}{{.region}}.{{end}}api.clio.com",
 				DisplayName: "Clio Grow",
 				Support: Support{
 					BulkWrite: BulkWriteSupport{
@@ -82,7 +91,7 @@ func init() { //nolint:funlen
 				},
 			},
 			ModuleClioManage: {
-				BaseURL:     "https://{{.clio_api_domain}}",
+				BaseURL:     "https://{{if and .region (ne .region \"us\") (ne .region \"US\")}}{{.region}}.{{end}}app.clio.com",
 				DisplayName: "Clio Manage",
 				Support: Support{
 					BulkWrite: BulkWriteSupport{
@@ -100,31 +109,25 @@ func init() { //nolint:funlen
 		},
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
-				// Required for both Manage and Platform.
-				// Examples: Manage US app.clio.com, Platform US api.clio.com (see Clio regional docs).
 				{
-					Name:         "clio_api_domain",
-					DisplayName:  "Clio API domain",
-					DefaultValue: "app.clio.com",
+					Name:         "region",
+					DisplayName:  "Region",
+					DefaultValue: "",
 					DocsURL: "https://docs.developers.clio.com/handbook/getting-started/" +
 						"regions",
-					Prompt: "Provide the Clio regional API domain (Manage/Platform). " +
-						"For example, Manage US: app.clio.com, Platform US: api.clio.com",
+					Prompt: "Regional hostname prefix: eu, ca, or au. Leave empty for US.",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleClioGrow:   ModuleDependency{},
 						ModuleClioManage: ModuleDependency{},
 					},
 				},
-				// Platform uses a distinct auth host (e.g. US auth.api.clio.com).
-				// Manage uses the same host as the API.
 				{
-					Name:         "clio_oauth_domain",
-					DisplayName:  "Clio OAuth domain",
+					Name:         "workspace",
+					DisplayName:  "API host",
 					DefaultValue: "app.clio.com",
 					DocsURL: "https://docs.developers.clio.com/handbook/getting-started/" +
 						"regions",
-					Prompt: "Provide the Clio regional OAuth domain (Manage/Platform). " +
-						"For example, Manage US: app.clio.com, Platform US: auth.api.clio.com",
+					Prompt: "Clio Manage: app.clio.com. Clio Grow: api.clio.com.",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleClioGrow:   ModuleDependency{},
 						ModuleClioManage: ModuleDependency{},
