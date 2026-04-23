@@ -48,7 +48,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/crm/v3/objects/butterflies/search"),
+				If:    mockcond.Path("/crm/objects/2026-03/butterflies/search"),
 				Then:  mockserver.Response(http.StatusBadRequest, responseInvalidObject),
 			}.Server(),
 			ExpectedErrs: []error{
@@ -68,7 +68,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 				Cases: []mockserver.Case{{
 					If: mockcond.And{
 						mockcond.MethodPOST(),
-						mockcond.Path("/crm/v3/objects/contacts/search"),
+						mockcond.Path("/crm/objects/2026-03/contacts/search"),
 						mockcond.PermuteJSONBody(`{
 								"limit":200,
 								"filterGroups": [{
@@ -86,7 +86,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 				}, {
 					If: mockcond.And{
 						mockcond.MethodPOST(),
-						mockcond.Path("/crm/v4/associations/contacts/companies/batch/read"),
+						mockcond.Path("/crm/associations/2026-03/contacts/companies/batch/read"),
 						mockcond.Body(`{"inputs":[{"id":"501"}]}`), // contact ID
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsToCompanies),
@@ -105,9 +105,18 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 						"companies": {{
 							ObjectId:        "29022297485",
 							AssociationType: "category=HUBSPOT_DEFINED id=1 label=Primary",
+							ProviderAssociationMetadata: map[string]any{
+								"category": "HUBSPOT_DEFINED",
+								"typeId":   1,
+								"label":    "Primary",
+							},
 						}, {
 							ObjectId:        "29022297485",
 							AssociationType: "category=HUBSPOT_DEFINED id=279",
+							ProviderAssociationMetadata: map[string]any{
+								"category": "HUBSPOT_DEFINED",
+								"typeId":   279,
+							},
 						}},
 					},
 					Raw: map[string]any{
@@ -142,11 +151,11 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/crm/v3/objects/contacts/search"),
+					If:   mockcond.Path("/crm/objects/2026-03/contacts/search"),
 					Then: mockserver.Response(http.StatusOK, responseContactsLastPage),
 				}, {
 					If: mockcond.And{
-						mockcond.Path("/crm/v4/associations/contacts/companies/batch/read"),
+						mockcond.Path("/crm/associations/2026-03/contacts/companies/batch/read"),
 						mockcond.Body(`{"inputs":[{"id":"103107104018"}]}`), // contact ID
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsToCompanies),

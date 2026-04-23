@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/codec"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 var (
@@ -23,7 +22,7 @@ var (
 // decodes it into a concrete BatchInput structure.
 func ParseInput(input any) (*BatchInput, error) {
 	if input == nil {
-		return goutils.Pointer(make(BatchInput, 0)), nil
+		return new(make(BatchInput, 0)), nil
 	}
 
 	return codec.Parse[*BatchInput](input)
@@ -34,7 +33,7 @@ func ParseInput(input any) (*BatchInput, error) {
 // It represents a list of individual association definitions.
 //
 // See example of association payload used for Deals object:
-// https://developers.hubspot.com/docs/api-reference/crm-deals-v3/batch/post-crm-v3-objects-0-3-batch-create
+// https://developers.hubspot.com/docs/api-reference/latest/crm/objects/deals/batch/create-deals
 type BatchInput []InputDefinition
 
 type InputDefinition struct {
@@ -60,7 +59,7 @@ type Type struct {
 //
 // Reference:
 // nolint:lll
-// https://developers.hubspot.com/docs/api-reference/crm-associations-v4/batch/post-crm-v4-associations-fromObjectType-toObjectType-batch-create
+// https://developers.hubspot.com/docs/api-reference/latest/crm/associations/associate-records/batch/create-associations-labeled
 type BatchCreatePayload struct {
 	Inputs []CreateDefinition `json:"inputs"`
 }

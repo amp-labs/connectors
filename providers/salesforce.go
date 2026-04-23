@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 const Salesforce Provider = "salesforce"
@@ -53,12 +52,12 @@ func init() { // nolint:funlen
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
 						Create: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							DefaultRecordLimit: new(100), // nolint:mnd
 							ObjectRecordLimits: nil,
 							Supported:          true,
 						},
 						Update: BatchWriteSupportConfig{
-							DefaultRecordLimit: goutils.Pointer(100), // nolint:mnd
+							DefaultRecordLimit: new(100), // nolint:mnd
 							ObjectRecordLimits: nil,
 							Supported:          true,
 						},
@@ -166,6 +165,18 @@ func init() { // nolint:funlen
 					Name: "businessUnitId",
 					Prompt: "Business Unit ID is the 18-character ID that starts with 0Uv, " +
 						"found in Business Unit Setup within Salesforce Setup or Marketing Setup.",
+				},
+			},
+		},
+		ProviderAppMetadata: &ProviderAppMetadata{
+			ProviderParams: []MetadataItemInput{
+				{
+					Name:        "packageInstallURL",
+					DisplayName: "External Client App Install URL",
+					Prompt: "If you are using External Client Apps (instead of Connected Apps) to connect your " +
+						"Salesforce account, enter the package install URL that the UI library should show to " +
+						"your users to install your Salesforce managed package.",
+					DocsURL: "https://docs.withampersand.com/provider-guides/salesforce#6-build-the-package-install-url",
 				},
 			},
 		},

@@ -61,7 +61,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"call_review_page_url": "https://copilot.clari.com/call/7549847e-4e97-4650-a20d-87791520e529",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/calls?limit=100&skip=1", // nolint:lll
+				NextPage: testroutines.URLTestServer + "/calls?limit=25&skip=1", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,

@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -198,7 +197,7 @@ func (c *Connector) parseStandardOrCustomMetadata(
 			DisplayName:  apiSlug,
 			ValueType:    getFieldValueType(value.Type, value.IsMultiselect),
 			ProviderType: value.Type,
-			ReadOnly:     goutils.Pointer(!value.IsWritable),
+			ReadOnly:     new(!value.IsWritable),
 			Values:       defaultValues,
 		}
 	}

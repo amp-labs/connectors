@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/pipedrive/metadata"
 )
@@ -110,7 +109,7 @@ func parseMetadata(
 				ProviderType: fldRcd.FieldType,
 				ValueType:    nativeValueType(fldRcd.FieldType),
 				// All editable fields can be edited together in bulky edit dashboard.
-				ReadOnly: goutils.Pointer(!fldRcd.BulkEditAllowed),
+				ReadOnly: new(!fldRcd.BulkEditAllowed),
 			}
 
 			// process enums and sets fields

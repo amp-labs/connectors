@@ -10,7 +10,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/go-playground/validator"
 )
 
@@ -149,20 +148,13 @@ func (c *Connector) executeSubscribe(
 		sfRes.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
 	}
 
-	triggerParams := buildApexTriggerParams(params, req)
+	deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
 
-	if len(triggerParams) > 0 {
-		deployOut, err := c.deployApexTriggers(ctx, triggerParams)
+	progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
+	sfRes.ApexTriggers = toApexTriggers(deployOut)
 
-		// Track successfully deployed triggers for rollback regardless of error.
-		progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
-
-		// Always populate ApexTriggers so the caller can see per-object status.
-		sfRes.ApexTriggers = toApexTriggers(deployOut)
-
-		if err != nil {
-			return sfRes, progress, err
-		}
+	if err != nil {
+		return sfRes, progress, err
 	}
 
 	return sfRes, progress, nil
@@ -223,6 +215,9 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 			params.Result,
 		)
 	}
+
+	// Migrate old CheckboxField to IndicatorField for backwards compatibility.
+	migrateApexTriggers(sfRes.ApexTriggers)
 
 	// Delete apex triggers first — they reference the quota optimization fields,
 	// so they must be removed before the custom fields can be deleted.
@@ -287,6 +282,9 @@ func (c *Connector) UpdateSubscription(
 			previousResult.Result,
 		)
 	}
+
+	// Migrate old CheckboxField to IndicatorField for backwards compatibility.
+	migrateApexTriggers(prevState.ApexTriggers)
 
 	var req *SubscriptionRequest
 
@@ -588,7 +586,7 @@ func (c *Connector) upsertQuotaOptimizationFields(
 				Description: "THIS IS AUTOMATED FIELD. DO NOT EDIT THIS FIELD. " + //nolint:lll
 					"This field is used to track if the quota optimization is used for the object",
 				StringOptions: &common.StringFieldOptions{
-					DefaultValue: goutils.Pointer("false"),
+					DefaultValue: new("false"),
 				},
 			},
 		}

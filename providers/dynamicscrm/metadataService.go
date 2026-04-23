@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 // UnderscoreFieldFormat is used to format field names that will be present in Read response.
@@ -98,7 +97,7 @@ func combineAttributesMetadata(
 
 	for _, item := range attributes.Values {
 		name := item.getName()
-		modifiable := item.IsValidForCreate || item.IsValidForUpdate
+		modifiable := item.IsValidForCreate || item.IsValidForUpdate // nolint:staticcheck
 		valueType := item.getValueType()
 		values := attributeOptions[item.LogicalName]
 
@@ -106,7 +105,7 @@ func combineAttributesMetadata(
 			DisplayName:  item.getDisplayName(),
 			ValueType:    valueType,
 			ProviderType: item.AttributeTypeName.Value,
-			ReadOnly:     goutils.Pointer(!modifiable),
+			ReadOnly:     new(!modifiable),
 			Values:       values,
 		}
 	}

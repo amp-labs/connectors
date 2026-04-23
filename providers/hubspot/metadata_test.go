@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -43,12 +42,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				}, {
 					// Connector will make this API call, output is valid empty data.
 					// This is done to shrink the scope of a test. See tests below that focus on pipelines.
-					If:   mockcond.Path("/crm/v3/pipelines/contacts"),
+					If:   mockcond.Path("/crm/pipelines/2026-03/contacts"),
 					Then: mockserver.ResponseString(http.StatusOK, "{}"),
 				}, {
 					// Real-world scenario doesn't require any fields for contacts.
 					// For our mock unit test we require: "mobilephone".
-					If:   mockcond.Path("/crm-object-schemas/v3/schemas/contacts"),
+					If:   mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
 					Then: mockserver.ResponseString(http.StatusOK, `{"requiredProperties": ["mobilephone"]}`),
 				}},
 			}.Server(),
@@ -63,18 +62,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Street Address",
 								ValueType:    "string",
 								ProviderType: "string.text",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 							"mobilephone": {
 								DisplayName:  "Mobile Phone Number",
 								ValueType:    "string",
 								ProviderType: "string.phonenumber",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(true), // required as per mock response.
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(true), // required as per mock response.
 								Values:       nil,
 							},
 
@@ -83,18 +82,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Enrichment opt out",
 								ValueType:    "boolean",
 								ProviderType: "bool.booleancheckbox",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 							"autogen": {
 								DisplayName:  "autogen",
 								ValueType:    "boolean",
 								ProviderType: "enumeration.booleancheckbox",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(true),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(true),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 
@@ -103,27 +102,27 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Primary Associated Company ID",
 								ValueType:    "float",
 								ProviderType: "number.number",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 							"hubspotscore": {
 								DisplayName:  "HubSpot Score",
 								ValueType:    "float",
 								ProviderType: "number.calculation_score",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 							"hs_associated_target_accounts": {
 								DisplayName:  "Associated Target Accounts",
 								ValueType:    "float",
 								ProviderType: "number.calculation_rollup",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 
@@ -132,9 +131,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Status",
 								ValueType:    "singleSelect",
 								ProviderType: "enumeration.select",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values: []common.FieldValue{{
 									Value:        "active",
 									DisplayValue: "Active",
@@ -147,9 +146,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Lead Rating",
 								ValueType:    "singleSelect",
 								ProviderType: "enumeration.radio",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values: []common.FieldValue{{
 									Value:        "bucket_1",
 									DisplayValue: "1 Star",
@@ -168,9 +167,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Business units",
 								ValueType:    "multiSelect",
 								ProviderType: "enumeration.checkbox",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 
@@ -179,18 +178,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "First subscription create date",
 								ValueType:    "datetime",
 								ProviderType: "datetime.calculation_rollup",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 							"hs_date_entered_customer": {
 								DisplayName:  "Date entered 'Customer (Lifecycle Stage Pipeline)'",
 								ValueType:    "datetime",
 								ProviderType: "datetime.calculation_read_time",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 
@@ -199,9 +198,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Last Activity",
 								ValueType:    "other",
 								ProviderType: "object_coordinates.text",
-								ReadOnly:     goutils.Pointer(true),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values:       nil,
 							},
 						},
@@ -225,12 +224,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					If:   mockcond.Path("/crm/v3/properties/contacts"),
 					Then: mockserver.Response(http.StatusOK, metadataContactsProperties),
 				}, {
-					If:   mockcond.Path("/crm/v3/pipelines/contacts"),
+					If:   mockcond.Path("/crm/pipelines/2026-03/contacts"),
 					Then: mockserver.Response(http.StatusOK, metadataContactsPipelines),
 				}, {
 					// Required fields cannot be fetched. This is not a critical error.
 					// In this case each field will be set to null indicating this info cannot be known.
-					If:   mockcond.Path("/crm-object-schemas/v3/schemas/contacts"),
+					If:   mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
 					Then: mockserver.Response(http.StatusForbidden, metadataErrSchemaScopes),
 				}},
 			}.Server(),
@@ -245,8 +244,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Pipeline",
 								ValueType:    "singleSelect",
 								ProviderType: "enumeration.select",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
 								IsRequired:   nil,
 								Values: []common.FieldValue{{
 									Value:        "contacts-lifecycle-pipeline",
@@ -269,10 +268,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					If:   mockcond.Path("/crm/v3/properties/deals"),
 					Then: mockserver.Response(http.StatusOK, metadataDealsProperties),
 				}, {
-					If:   mockcond.Path("/crm/v3/pipelines/deals"),
+					If:   mockcond.Path("/crm/pipelines/2026-03/deals"),
 					Then: mockserver.Response(http.StatusOK, metadataDealsPipelines),
 				}, {
-					If:   mockcond.Path("/crm-object-schemas/v3/schemas/deals"),
+					If:   mockcond.Path("/crm-object-schemas/2026-03/schemas/deals"),
 					Then: mockserver.ResponseString(http.StatusOK, `{}`),
 				}},
 			}.Server(),
@@ -287,9 +286,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Pipeline",
 								ValueType:    "singleSelect",
 								ProviderType: "enumeration.select",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values: []common.FieldValue{{
 									Value:        "default",
 									DisplayValue: "Sales Pipeline",
@@ -299,9 +298,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Deal Stage",
 								ValueType:    "singleSelect",
 								ProviderType: "enumeration.radio",
-								ReadOnly:     goutils.Pointer(false),
-								IsCustom:     goutils.Pointer(false),
-								IsRequired:   goutils.Pointer(false),
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 								Values: []common.FieldValue{{
 									Value:        "default:appointmentscheduled",
 									DisplayValue: "Appointment Scheduled",

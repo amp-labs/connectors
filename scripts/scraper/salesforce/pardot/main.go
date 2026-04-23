@@ -180,7 +180,7 @@ func createField(objectName, fieldName, fieldType string,
 			DisplayName:  fieldName,
 			ValueType:    fieldVal,
 			ProviderType: fieldType,
-			ReadOnly:     goutils.Pointer(isReadOnly),
+			ReadOnly:     new(isReadOnly),
 			Values:       values,
 		},
 	}
@@ -263,13 +263,13 @@ func addHardcodedObjects(schemas *staticschema.Metadata[staticschema.FieldMetada
 	schemas.Add(providers.ModuleSalesforceAccountEngagement,
 		"imports", "Imports", "imports", "values",
 		loadFieldsFromFile(files.ImportsFields),
-		goutils.Pointer("https://developer.salesforce.com/docs/marketing/pardot/guide/import-v5.html"),
+		new("https://developer.salesforce.com/docs/marketing/pardot/guide/import-v5.html"),
 		nil,
 	)
 	schemas.Add(providers.ModuleSalesforceAccountEngagement,
 		"exports", "Exports", "exports", "values",
 		loadFieldsFromFile(files.ExportsFields),
-		goutils.Pointer("https://developer.salesforce.com/docs/marketing/pardot/guide/export-v5.html"),
+		new("https://developer.salesforce.com/docs/marketing/pardot/guide/export-v5.html"),
 		nil,
 	)
 }

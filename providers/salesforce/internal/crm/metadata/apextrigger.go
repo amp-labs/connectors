@@ -8,12 +8,14 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
 var (
 	errWatchFieldsEmpty  = errors.New("watchFields must not be empty")
-	errRequiredParamsMet = errors.New("objectName, triggerName, and checkboxFieldName are required")
+	errRequiredParamsMet = errors.New("objectName, triggerName, and indicatorFieldName are required")
+	errEmptyObjectName   = errors.New("objectName must not be empty")
 )
 
 // ApexTriggerParams contains the parameters for constructing and deploying an APEX trigger.
@@ -22,40 +24,50 @@ type ApexTriggerParams struct {
 	ObjectName string
 
 	// TriggerName is the name of the APEX trigger (e.g., "AmpersandTrack_Lead").
-	// Use GenerateApexTriggerName() to generate this.
+	// Use GenerateApexTriggerNameForCDC() or GenerateApexTriggerNameForRead() to generate this.
 	TriggerName string
 
-	// CheckboxFieldName is the API name of the boolean field that the trigger sets
-	// (e.g., "AmpTriggerSubscription__c").
-	CheckboxFieldName string
+	// IndicatorField is the field definition for the indicator field that the trigger sets
+	// when watched fields change. Supported types: boolean and datetime.
+	IndicatorField common.FieldDefinition
 
 	// WatchFields is the list of field API names to monitor for changes.
 	WatchFields []string
 }
 
-// GenerateApexTriggerName returns the standard APEX trigger name for a given Salesforce object.
-func GenerateApexTriggerName(objectName string) string {
-	return objectName
+// GenerateApexTriggerNameForCDC returns the APEX trigger name for CDC on a given Salesforce object.
+func GenerateApexTriggerNameForCDC(objectName string) (string, error) {
+	if objectName == "" {
+		return "", errEmptyObjectName
+	}
+
+	return "CDC_" + objectName, nil
 }
 
-// ConstructApexTrigger builds a zipped deployment package for an APEX trigger that sets
-// a boolean checkbox field to true when any of the specified watch fields change.
-//
-// The trigger handles both insert and update events:
-//   - On insert: sets checkbox to true if any watch field has a non-null/non-empty value.
-//   - On update: sets checkbox to true if any watch field's value differs from the old record.
-//
-// The returned zip bytes are ready for DeployMetadataZip.
-func ConstructApexTrigger(params ApexTriggerParams) ([]byte, error) {
+// GenerateApexTriggerNameForRead returns the APEX trigger name for filtered read on a given Salesforce object.
+func GenerateApexTriggerNameForRead(objectName string) (string, error) {
+	if objectName == "" {
+		return "", errEmptyObjectName
+	}
+
+	return "Read_" + objectName, nil
+}
+
+// ValidateApexTriggerParams checks that all required fields are present.
+func ValidateApexTriggerParams(params ApexTriggerParams, indicatorFieldName string) error {
 	if len(params.WatchFields) == 0 {
-		return nil, errWatchFieldsEmpty
+		return errWatchFieldsEmpty
 	}
 
-	if params.ObjectName == "" || params.TriggerName == "" || params.CheckboxFieldName == "" {
-		return nil, errRequiredParamsMet
+	if params.ObjectName == "" || params.TriggerName == "" || indicatorFieldName == "" {
+		return errRequiredParamsMet
 	}
 
-	triggerCode := generateTriggerCode(params)
+	return nil
+}
+
+// ConstructApexTrigger builds the zip deployment package from pre-generated trigger code.
+func ConstructApexTrigger(params ApexTriggerParams, triggerCode string) ([]byte, error) {
 	triggerMetaXML := generateTriggerMetaXML()
 
 	return createTriggerDeployZip(params.TriggerName, triggerCode, triggerMetaXML)
@@ -67,8 +79,27 @@ func ConstructDestructiveApexTrigger(triggerName string) ([]byte, error) {
 	return createTriggerDestructiveZip(triggerName)
 }
 
-// generateTriggerCode dynamically generates APEX trigger code.
-func generateTriggerCode(params ApexTriggerParams) string {
+// GenerateTriggerCodeForCDC generates APEX trigger code that sets a boolean checkbox
+// field to true/false based on whether any watched fields changed.
+func GenerateTriggerCodeForCDC(params ApexTriggerParams, checkboxFieldName string) string {
+	assignment := fmt.Sprintf("rec.%s = fieldChanged;", checkboxFieldName)
+
+	return generateTriggerCode(params, assignment)
+}
+
+// GenerateTriggerCodeForFilteredRead generates APEX trigger code that sets a datetime
+// field to System.now() when any watched fields change.
+func GenerateTriggerCodeForFilteredRead(params ApexTriggerParams, timestampFieldName string) string {
+	assignment := fmt.Sprintf(`if (fieldChanged) {
+                rec.%s = System.now();
+            }`, timestampFieldName)
+
+	return generateTriggerCode(params, assignment)
+}
+
+// generateTriggerCode is the shared implementation that builds the APEX trigger code
+// with a caller-provided indicator assignment snippet.
+func generateTriggerCode(params ApexTriggerParams, indicatorAssignment string) string {
 	// Build insert condition: field != null
 	// We only check != null (not != '') because the empty-string check is invalid
 	// for non-String Apex types (Boolean, Datetime, Number, etc.) and would cause
@@ -102,12 +133,12 @@ func generateTriggerCode(params ApexTriggerParams) string {
                 fieldChanged = %s;
             }
 
-            rec.%s = fieldChanged;
+            %s
         }
     }
 }
 `, params.TriggerName, params.ObjectName, params.ObjectName,
-		insertExpr, params.ObjectName, updateExpr, params.CheckboxFieldName)
+		insertExpr, params.ObjectName, updateExpr, indicatorAssignment)
 }
 
 func generateTriggerMetaXML() string {

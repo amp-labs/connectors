@@ -25,22 +25,23 @@ const (
 	sinceKey  = "since"
 )
 
-// Objects supporting incremental sync via lastUpdated filter.
-// Reference: https://developer.okta.com/docs/reference/api/users/#list-users
-// Reference: https://developer.okta.com/docs/reference/api/groups/#list-groups
+// Objects supporting incremental sync via provider-side lastUpdated filter.
+// Only users support the filter=lastUpdated gt "..." query parameter.
+// Reference: https://developer.okta.com/docs/reference/api/users/#list-users-with-a-filter
 //
-//nolint:gochecknoglobals
+// nolint:gochecknoglobals
 var objectsWithProviderSideFilter = datautils.NewStringSet(
 	"users",
-	"groups",
-	"apps",
 )
 
 // Objects that support connector-side filtering via lastUpdated field.
-// These objects don't support provider-side filtering but have lastUpdated timestamp.
+// These objects have a lastUpdated timestamp but don't support provider-side filtering.
+// Groups and apps return 400 "Invalid search criteria" when using lastUpdated filter.
 //
-//nolint:gochecknoglobals
+// nolint:gochecknoglobals
 var objectsWithConnectorSideFilter = datautils.NewStringSet(
+	"groups",
+	"apps",
 	"devices",
 	"idps",
 	"authorizationServers",
@@ -91,10 +92,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 			// Reference: https://developer.okta.com/docs/reference/api/system-log/#request-parameters
 			url.WithQueryParam(sinceKey, datautils.Time.FormatRFC3339inUTC(params.Since))
 		} else if objectsWithProviderSideFilter.Has(params.ObjectName) {
-			// Other objects use lastUpdated filter expression
+			// Users support the lastUpdated filter expression for incremental sync.
+			// Okta requires %20 for spaces in filter expressions, not +.
 			// Reference: https://developer.okta.com/docs/reference/api/users/#list-users-with-a-filter
-			filterValue := "lastUpdated gt \"" + datautils.Time.FormatRFC3339inUTC(params.Since) + "\""
+			filterValue := "lastUpdated gt \"" + datautils.Time.FormatRFC3339inUTCWithMilliseconds(params.Since) + "\""
 			url.WithQueryParam(filterKey, filterValue)
+			url.AddEncodingExceptions(map[string]string{"+": "%20"})
 		}
 	}
 
@@ -129,7 +132,7 @@ func (c *Connector) parseReadResponse(
 }
 
 // makeFilterFunc returns the appropriate filter function based on object type.
-// Objects with provider-side filtering (users, groups, apps, logs) don't need connector-side filtering.
+// Users and logs use provider-side filtering and don't need connector-side filtering.
 // Objects with lastUpdated field but no provider-side support use connector-side filtering.
 func makeFilterFunc(params common.ReadParams, headers http.Header) common.RecordsFilterFunc {
 	nextPageFunc := makeNextRecordsURL(headers)

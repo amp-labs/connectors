@@ -1,0 +1,14 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "Test Deal",
+      "status": "open",
+      "value": 1000
+    }
+  ],
+  "additional_data": {
+    "next_cursor": null
+  }
+}

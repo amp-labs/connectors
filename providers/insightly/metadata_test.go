@@ -6,7 +6,6 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -99,13 +98,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Hobby",
 								ValueType:    "string",
 								ProviderType: "TEXT",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 							},
 							"Interests__c": {
 								DisplayName:  "Interests",
 								ValueType:    "multiSelect",
 								ProviderType: "MULTISELECT",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: common.FieldValues{{
 									Value:        "3",
 									DisplayValue: "Art",
@@ -130,13 +129,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Newsletter Subscription",
 								ValueType:    "other",
 								ProviderType: "BIT",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 							},
 							"Preferred_Contact_Method__c": {
 								DisplayName:  "Preferred Contact Method",
 								ValueType:    "singleSelect",
 								ProviderType: "DROPDOWN",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 								Values: common.FieldValues{{
 									Value:        "1",
 									DisplayValue: "Email",
@@ -155,37 +154,37 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Date1",
 								ValueType:    "date",
 								ProviderType: "DATE",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 							},
 							"Date2__c": {
 								DisplayName:  "Date2",
 								ValueType:    "datetime",
 								ProviderType: "DATETIME",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 							},
 							"MultiText1__c": {
 								DisplayName:  "MultiText1",
 								ValueType:    "string",
 								ProviderType: "MULTILINETEXT",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 							},
 							"Number1__c": {
 								DisplayName:  "Number1",
 								ValueType:    "float",
 								ProviderType: "NUMERIC",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 							},
 							"Percent1__c": {
 								DisplayName:  "Percent1",
 								ValueType:    "float",
 								ProviderType: "PERCENT",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 							},
 							"AutoNumber1__c": {
 								DisplayName:  "AutoNumber1",
 								ValueType:    "other",
 								ProviderType: "AUTONUMBER",
-								ReadOnly:     goutils.Pointer(true),
+								ReadOnly:     new(true),
 							},
 						},
 					},
@@ -228,13 +227,13 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Weight",
 								ValueType:    common.ValueTypeFloat,
 								ProviderType: "NUMERIC",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 							},
 							"Color__c": {
 								DisplayName:  "Color",
 								ValueType:    common.ValueTypeString,
 								ProviderType: "TEXT",
-								ReadOnly:     goutils.Pointer(false),
+								ReadOnly:     new(false),
 							},
 						},
 					},

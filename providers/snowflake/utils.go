@@ -236,8 +236,3 @@ func convertNullTime(nt sql.NullTime) any {
 
 	return nil
 }
-
-// boolPtr returns a pointer to a bool.
-func boolPtr(b bool) *bool {
-	return &b
-}
