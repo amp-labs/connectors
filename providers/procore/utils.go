@@ -11,10 +11,12 @@ var supportedObjects = map[string]bool{
 }
 
 var readResponseKey = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-	"schedule/resources":          "resources",
-	"operations":                  "data",
-	"generic_tools/default_types": "data",
-	"settings/permissions":        "tools",
+	"schedule/resources":                    "resources",
+	"operations":                            "data",
+	"generic_tools/default_types":           "data",
+	"settings/permissions":                  "tools",
+	"change_order_change_reasons":           "data",
+	"currency_configuration/exchange_rates": "exchange_rates",
 },
 	func(objectName string) (fieldName string) {
 		return ""
@@ -96,6 +98,50 @@ func resolveAPIPath(objectName string, companyId string) string {
 
 	if objectName == "settings/permissions" {
 		return "rest/v1.0/settings/permissions" + "?company_id=" + companyId
+	}
+
+	if objectName == "change_types" {
+		return "rest/v1.0/change_types?company_id=" + companyId
+	}
+
+	if objectName == "change_order_change_reasons" {
+		return "rest/v2.0/companies/" + companyId + "/change_order_change_reasons" + "?company_id=" + companyId
+	}
+
+	if objectName == "change_order/statuses" {
+		return "rest/v1.0/change_order/statuses?company_id=" + companyId
+	}
+
+	if objectName == "currency_configuration/exchange_rates" {
+		return "rest/v1.0/companies/" + companyId + "/currency_configuration/exchange_rates"
+	}
+
+	if objectName == "payments/early_pay_programs" {
+		return "rest/v1.0/companies/" + companyId + "/payments/early_pay_programs"
+	}
+
+	if objectName == "payments/beneficiaries" {
+		return "rest/v1.0/companies/" + companyId + "/payments/beneficiaries"
+	}
+
+	if objectName == "payments/projects" {
+		return "rest/v1.0/companies/" + companyId + "/payments/projects"
+	}
+
+	if objectName == "tax_codes" {
+		return "rest/v1.0/tax_codes?company_id=" + companyId
+	}
+
+	if objectName == "tax_types" {
+		return "rest/v1.0/tax_types?company_id=" + companyId
+	}
+
+	if objectName == "uoms" {
+		return "rest/v1.0/companies/" + companyId + "/uoms"
+	}
+
+	if objectName == "uom_categories" {
+		return "rest/v1.0/companies/" + companyId + "/uom_categories"
 	}
 
 	return "rest/v1.0/" + objectName
