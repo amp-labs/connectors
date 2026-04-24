@@ -23,8 +23,8 @@ const (
 	// Pagination:
 	//   - Gusto default per-page is 25 (per docs), but no hard maximum is documented.
 	//   - 100 works reliably per live tests and is what we use as both default and cap.
-	//   - We cap because our "records < per" end-of-pages check would mis-detect the
-	//     last page if Gusto silently caps server-side below the requested value.
+	//   - We cap because our "records < per" end-of-pages check would incorrectly
+	//     stop paginating if Gusto silently caps server-side below the requested value.
 	defaultPageSize      = "100"
 	maxPageSize          = 100
 	pageParam            = "page"
@@ -251,21 +251,51 @@ func (c *Connector) parseEmployeeScopedResponse(
 		return nil, err
 	}
 
+	data, err := c.fetchChildrenForEmployees(ctx, extractUUIDs(nodes), params)
+	if err != nil {
+		return nil, err
+	}
+
+	nextPage, err := nextPageFromPageCounter(reqURL)(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &common.ReadResult{
+		Rows:     int64(len(data)),
+		Data:     data,
+		NextPage: common.NextPageToken(nextPage),
+		Done:     nextPage == "",
+	}, nil
+}
+
+// extractUUIDs returns the "uuid" string from each node, skipping nodes that
+// don't have one.
+func extractUUIDs(nodes []*ajson.Node) []string {
 	uuids := make([]string, 0, len(nodes))
 
 	for _, node := range nodes {
-		uuid, uuidErr := jsonquery.New(node).StringRequired("uuid")
-		if uuidErr != nil {
+		uuid, err := jsonquery.New(node).StringRequired("uuid")
+		if err != nil {
 			continue
 		}
 
 		uuids = append(uuids, uuid)
 	}
 
+	return uuids
+}
+
+// fetchChildrenForEmployees fans out one request per employee UUID to the
+// /v1/employees/{uuid}/{params.ObjectName} endpoint, preserves input order,
+// and returns the flattened records.
+func (c *Connector) fetchChildrenForEmployees(
+	ctx context.Context, uuids []string, params common.ReadParams,
+) ([]common.ReadResultRow, error) {
 	childSuffix := params.ObjectName
 	allRecords := make([][]common.ReadResultRow, len(uuids))
-
 	jobs := make([]simultaneously.Job, len(uuids))
+
 	for i, empUUID := range uuids {
 		idx, uuid := i, empUUID
 
@@ -281,7 +311,7 @@ func (c *Connector) parseEmployeeScopedResponse(
 		}
 	}
 
-	if err = simultaneously.DoCtx(ctx, maxConcurrentEmployeeFetch, jobs...); err != nil {
+	if err := simultaneously.DoCtx(ctx, maxConcurrentEmployeeFetch, jobs...); err != nil {
 		return nil, err
 	}
 
@@ -290,17 +320,7 @@ func (c *Connector) parseEmployeeScopedResponse(
 		data = append(data, rows...)
 	}
 
-	nextPage, err := nextPageFromPageCounter(reqURL)(body)
-	if err != nil {
-		return nil, err
-	}
-
-	return &common.ReadResult{
-		Rows:     int64(len(data)),
-		Data:     data,
-		NextPage: common.NextPageToken(nextPage),
-		Done:     nextPage == "",
-	}, nil
+	return data, nil
 }
 
 // fetchEmployeeChildren calls /v1/employees/{uuid}/{childSuffix} and returns all
@@ -352,26 +372,14 @@ func nextPageFromPageCounter(previousRequestURL *url.URL) common.NextPageFunc {
 			return "", err
 		}
 
-		per, err := strconv.Atoi(previousRequestURL.Query().Get(perParam))
-		if err != nil || per <= 0 {
-			per, _ = strconv.Atoi(defaultPageSize)
-		}
-
+		per := queryParamIntOrDefault(previousRequestURL, perParam, defaultPageSizeInt())
 		if len(records) < per {
 			return "", nil
 		}
 
-		currentPage, err := strconv.Atoi(previousRequestURL.Query().Get(pageParam))
-		if err != nil || currentPage <= 0 {
-			currentPage = 1
-		}
+		currentPage := queryParamIntOrDefault(previousRequestURL, pageParam, 1)
 
-		cloned, err := url.Parse(previousRequestURL.String())
-		if err != nil {
-			return "", err
-		}
-
-		next, err := urlbuilder.FromRawURL(cloned)
+		next, err := cloneURL(previousRequestURL)
 		if err != nil {
 			return "", err
 		}
@@ -380,4 +388,33 @@ func nextPageFromPageCounter(previousRequestURL *url.URL) common.NextPageFunc {
 
 		return next.String(), nil
 	}
+}
+
+// queryParamIntOrDefault returns the int value of the given query param,
+// falling back to defaultValue if the param is missing, unparsable, or <= 0.
+func queryParamIntOrDefault(u *url.URL, key string, defaultValue int) int {
+	v, err := strconv.Atoi(u.Query().Get(key))
+	if err != nil || v <= 0 {
+		return defaultValue
+	}
+
+	return v
+}
+
+// defaultPageSizeInt returns the defaultPageSize constant as an int.
+func defaultPageSizeInt() int {
+	n, _ := strconv.Atoi(defaultPageSize)
+
+	return n
+}
+
+// cloneURL returns a deep-copy urlbuilder.URL of u so the original is not
+// mutated when query params are modified.
+func cloneURL(u *url.URL) (*urlbuilder.URL, error) {
+	cloned, err := url.Parse(u.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return urlbuilder.FromRawURL(cloned)
 }
