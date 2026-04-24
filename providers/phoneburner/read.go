@@ -157,23 +157,29 @@ func parseReadResponse(
 		return res, err
 	}
 
+	if params.ObjectName == objectContacts {
+		return common.ParseResult(
+			response,
+			common.MakeRecordsFunc(objectContacts, objectContacts),
+			nextRecordsURL(url, params.ObjectName),
+			readhelper.MakeMarshaledDataFuncWithId(
+				readContactRecordTransformer,
+				readhelper.NewIdField("contact_user_id"),
+			),
+			params.Fields,
+		)
+	}
+
 	records, err := recordsFunc(params.ObjectName)
 	if err != nil {
 		return nil, err
-	}
-
-	marshalFunc := common.GetMarshaledData
-	if params.ObjectName == objectContacts {
-		// Contacts: custom fields are merged into Fields from a copy; Raw is a separate copy of the
-		// provider row (see getMarshaledDataContactsWithCustomFieldsPreservingRaw).
-		marshalFunc = getMarshaledDataContactsWithCustomFieldsPreservingRaw
 	}
 
 	return common.ParseResult(
 		response,
 		records,
 		nextRecordsURL(url, params.ObjectName),
-		marshalFunc,
+		common.GetMarshaledData,
 		params.Fields,
 	)
 }

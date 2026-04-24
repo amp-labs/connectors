@@ -2,9 +2,7 @@ package phoneburner
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"maps"
 	"strconv"
 	"strings"
 
@@ -133,9 +131,10 @@ func parseMemberCustomFieldDefinitionsPage(body *ajson.Node) ([]memberCustomFiel
 	return out, int(totalPages), nil
 }
 
-// flattenContactCustomFieldsInMap is only for the working copy used to build ReadResultRow.Fields.
-// It must never run on the map used for ReadResultRow.Raw: Raw stays the API shape with nested
-// "custom_fields" only; we do not put merged custom_* top-level keys on Raw.
+// flattenContactCustomFieldsInMap promotes contact custom_fields entries to top-level custom_*
+// keys for common.ExtractLowercaseFieldsFromRaw. Used only from readContactRecordTransformer;
+// readhelper.MakeMarshaledDataFuncWithId keeps provider-shaped Raw (separate ObjectToMap) and
+// extracts ReadResultRow.Id from raw.
 func flattenContactCustomFieldsInMap(record map[string]any) map[string]any {
 	raw, ok := record["custom_fields"]
 	if !ok || raw == nil {
@@ -171,43 +170,15 @@ func flattenContactCustomFieldsInMap(record map[string]any) map[string]any {
 	return record
 }
 
-// getMarshaledDataContactsWithCustomFieldsPreservingRaw builds each ReadResultRow from two separate
-// shallow copies of the contact map (same intent as copper's MakeMarshaledDataFunc(attachReadCustomFields)):
-// Raw is a clone of the row as returned by the provider (including "custom_fields" array only).
-// Fields are derived from a second clone that flattenContactCustomFieldsInMap mutates, promoting
-// custom values to top-level keys for ExtractLowercaseFieldsFromRaw. Merged custom keys exist only
-// in Fields, not in Raw, and the extracted []map from the response body is not mutated in place.
-func getMarshaledDataContactsWithCustomFieldsPreservingRaw(
-	records []map[string]any, fields []string,
-) ([]common.ReadResultRow, error) {
-	data := make([]common.ReadResultRow, len(records))
-
-	fields = append(fields, "id")
-
-	//nolint:varnamelen
-	for i, record := range records {
-		raw := maps.Clone(record)
-		working := maps.Clone(record)
-		flattenContactCustomFieldsInMap(working)
-
-		data[i] = common.ReadResultRow{
-			Fields: common.ExtractLowercaseFieldsFromRaw(fields, working),
-			Raw:    raw,
-		}
-
-		var id string
-
-		switch v := data[i].Fields["id"].(type) {
-		case string:
-			id = v
-		case float64:
-			id = strconv.FormatFloat(v, 'f', -1, 64)
-		case json.Number:
-			id = v.String()
-		}
-
-		data[i].Id = id
+// readContactRecordTransformer is the common.RecordTransformer passed to
+// readhelper.MakeMarshaledDataFuncWithId for contacts; it only shapes the map used for Fields.
+func readContactRecordTransformer(node *ajson.Node) (map[string]any, error) {
+	record, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
 	}
 
-	return data, nil
+	flattenContactCustomFieldsInMap(record)
+
+	return record, nil
 }
