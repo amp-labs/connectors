@@ -1,4 +1,4 @@
-package dynamicscrm
+package microsoft
 
 import (
 	"context"
