@@ -54,7 +54,7 @@ func nextPageNumber(linkHeader string) string {
 // When the registry declares a records key, unwrap that key; otherwise
 // treat the response body as the array itself.
 func extractRecords(response *common.JSONHTTPResponse, objectName string) ([]any, error) {
-	responseKey := resolveRecordsKey(objectName)
+	responseKey := objectRegistry[objectName].recordsKey
 
 	if responseKey != "" {
 		obj, err := common.UnmarshalJSON[map[string]any](response)

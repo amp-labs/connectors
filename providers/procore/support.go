@@ -1,5 +1,7 @@
 package procore
 
+import "github.com/amp-labs/connectors/internal/datautils"
+
 // objectConfig is the single source of truth for how a Procore object is fetched.
 // Both metadata and read operations consult this registry.
 type objectConfig struct {
@@ -19,7 +21,7 @@ const companyIDPlaceholder = "{companyId}"
 
 // objectRegistry maps object names to their endpoint + read metadata.
 // Grouped by URL shape for readability.
-var objectRegistry = map[string]objectConfig{ //nolint:gochecknoglobals
+var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglobals
 	// ---- v1.0, company-scoped path: rest/v1.0/companies/{companyId}/... ----
 	"projects":             {path: "rest/v1.0/companies/{companyId}/projects", incremental: true},
 	"programs":             {path: "rest/v1.0/companies/{companyId}/programs"},

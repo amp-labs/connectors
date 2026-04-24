@@ -87,7 +87,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	url.WithQueryParam(queryParamPage, page)
 	url.WithQueryParam(queryParamPerPage, strconv.Itoa(resolvePageSize(params.PageSize)))
 
-	if supportsIncrementalRead(params.ObjectName) {
+	if objectRegistry[params.ObjectName].incremental {
 		if filter := buildUpdatedAtFilter(params.Since, params.Until); filter != "" {
 			url.WithQueryParam(queryParamUpdatedAtFilter, filter)
 		}
@@ -107,7 +107,7 @@ func (c *Connector) parseReadResponse(
 
 	return common.ParseResult(
 		response,
-		common.ExtractRecordsFromPath(resolveRecordsKey(params.ObjectName)),
+		common.ExtractRecordsFromPath(objectRegistry[params.ObjectName].recordsKey),
 		nextPageFromLink(linkHeader),
 		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,

@@ -24,14 +24,6 @@ func resolveAPIPath(objectName, companyID string) string {
 	return strings.ReplaceAll(spec.path, companyIDPlaceholder, companyID)
 }
 
-func resolveRecordsKey(objectName string) string {
-	return objectRegistry[objectName].recordsKey
-}
-
-func supportsIncrementalRead(objectName string) bool {
-	return objectRegistry[objectName].incremental
-}
-
 func (c *Connector) newRequest(ctx context.Context, method string, url *urlbuilder.URL) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, method, url.String(), nil)
 	if err != nil {
