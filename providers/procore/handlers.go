@@ -5,11 +5,20 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"reflect"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/common/readhelper"
+)
+
+const (
+	defaultPageSize           = 100
+	headerProcoreCompanyID    = "Procore-Company-Id"
+	queryParamPage            = "page"
+	queryParamPerPage         = "per_page"
+	queryParamUpdatedAtFilter = "filters[updated_at]"
+	filterRangeSeparator      = "..."
 )
 
 var (
@@ -18,22 +27,14 @@ var (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-
-	fullObjectEndpoint := resolveAPIPath(objectName, c.companyId)
-
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, fullObjectEndpoint)
+	url, err := c.buildObjectURL(objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
-	if err != nil {
-		return nil, err
-	}
+	url.WithQueryParam(queryParamPerPage, "1")
 
-	req.Header.Set("Procore-Company-Id", c.companyId)
-
-	return req, nil
+	return c.newRequest(ctx, http.MethodGet, url)
 }
 
 func (c *Connector) parseSingleObjectMetadataResponse(
@@ -72,48 +73,43 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
-// extractRecords returns the list of records from a Procore response.
-// Procore returns either a bare array or an object with the array under a "data" key.
-func extractRecords(response *common.JSONHTTPResponse, objectName string) ([]any, error) {
-	responseKey := readResponseKey.Get(objectName)
-
-	if responseKey != "" {
-		obj, err := common.UnmarshalJSON[map[string]any](response)
-		if err != nil || obj == nil {
-			return nil, common.ErrFailedToUnmarshalBody
-		}
-
-		data, ok := (*obj)[responseKey].([]any)
-		if !ok {
-			return nil, fmt.Errorf("%w: response object missing array under \"%s\" key", common.ErrMissingExpectedValues, responseKey)
-		}
-
-		return data, nil
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	url, err := c.buildObjectURL(params.ObjectName)
+	if err != nil {
+		return nil, err
 	}
 
-	arr, err := common.UnmarshalJSON[[]any](response)
-	if err == nil {
-		return *arr, nil
+	page := "1"
+	if params.NextPage != "" {
+		page = params.NextPage.String()
 	}
 
-	return nil, fmt.Errorf("response body is not in an expected format: %w", common.ErrMissingExpectedValues)
+	url.WithQueryParam(queryParamPage, page)
+	url.WithQueryParam(queryParamPerPage, strconv.Itoa(resolvePageSize(params.PageSize)))
+
+	if supportsIncrementalRead(params.ObjectName) {
+		if filter := buildUpdatedAtFilter(params.Since, params.Until); filter != "" {
+			url.WithQueryParam(queryParamUpdatedAtFilter, filter)
+		}
+	}
+
+	return c.newRequest(ctx, http.MethodGet, url)
 }
 
-func analyzeValue(value any) common.ValueType {
-	v := reflect.ValueOf(value)
+func (c *Connector) parseReadResponse(
+	ctx context.Context,
+	params common.ReadParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ReadResult, error) {
+	// Procore paginates with a Link header, so we extract the next page token from there.
+	linkHeader := response.Headers.Get("Link")
 
-	switch v.Kind() { //nolint: exhaustive
-	case reflect.String:
-		return common.ValueTypeString
-	case reflect.Float64:
-		return common.ValueTypeFloat
-	case reflect.Bool:
-		return common.ValueTypeBoolean
-	case reflect.Slice:
-		return common.ValueTypeOther
-	case reflect.Map:
-		return common.ValueTypeOther
-	default:
-		return common.ValueTypeOther
-	}
+	return common.ParseResult(
+		response,
+		common.ExtractRecordsFromPath(resolveRecordsKey(params.ObjectName)),
+		nextPageFromLink(linkHeader),
+		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
+		params.Fields,
+	)
 }
