@@ -20,7 +20,8 @@ type Connector struct {
 	// Supported operations
 	components.SchemaProvider
 	components.Reader
-	//companyId represents the Procore company that user wants to connect to.
+
+	// companyId represents the Procore company that user wants to connect to.
 	// It is required for all operations.
 	companyId string
 }

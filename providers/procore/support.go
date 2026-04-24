@@ -21,7 +21,7 @@ const companyIDPlaceholder = "{companyId}"
 
 // objectRegistry maps object names to their endpoint + read metadata.
 // Grouped by URL shape for readability.
-var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglobals
+var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglobals,lll
 	// ---- v1.0, company-scoped path: rest/v1.0/companies/{companyId}/... ----
 	"projects":             {path: "rest/v1.0/companies/{companyId}/projects", incremental: true},
 	"programs":             {path: "rest/v1.0/companies/{companyId}/programs"},
@@ -59,40 +59,42 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"timecard_time_types":         {path: "rest/v1.0/companies/{companyId}/timecard_time_types"},
 	"timesheets/filters/crews":    {path: "rest/v1.0/companies/{companyId}/timesheets/filters/crews"},
 
-	"recycle_bin/action_plans/plan_template_item_assignees":       {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_item_assignees"},
-	"recycle_bin/action_plans/plan_template_items":                {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_items", incremental: true},
-	"recycle_bin/action_plans/plan_template_references":           {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_references", incremental: true},
-	"recycle_bin/action_plans/plan_template_sections":             {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_sections", incremental: true},
-	"recycle_bin/action_plans/plan_template_test_record_requests": {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_test_record_requests", incremental: true},
-	"recycle_bin/action_plans/plan_templates":                     {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_templates", incremental: true},
-	"recycle_bin/checklist/list_templates":                        {path: "rest/v1.0/companies/{companyId}/recycle_bin/checklist/list_templates"},
+	"recycle_bin/action_plans/plan_template_item_assignees": {
+		path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_item_assignees",
+	}, //nolint:lll
+	"recycle_bin/action_plans/plan_template_items":                {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_items", incremental: true},                //nolint:lll
+	"recycle_bin/action_plans/plan_template_references":           {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_references", incremental: true},           //nolint:lll
+	"recycle_bin/action_plans/plan_template_sections":             {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_sections", incremental: true},             //nolint:lll
+	"recycle_bin/action_plans/plan_template_test_record_requests": {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_test_record_requests", incremental: true}, //nolint:lll
+	"recycle_bin/action_plans/plan_templates":                     {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_templates", incremental: true},                     //nolint:lll
+	"recycle_bin/checklist/list_templates":                        {path: "rest/v1.0/companies/{companyId}/recycle_bin/checklist/list_templates"},                                           //nolint:lll
 
-	"incidents/action_types":              {path: "rest/v1.0/companies/{companyId}/incidents/action_types", incremental: true},
-	"incidents/affliction_types":          {path: "rest/v1.0/companies/{companyId}/incidents/affliction_types", incremental: true},
-	"incidents/body_parts":                {path: "rest/v1.0/companies/{companyId}/incidents/body_parts", incremental: true},
-	"incidents/environmental_types":       {path: "rest/v1.0/companies/{companyId}/incidents/environmental_types", incremental: true},
-	"incidents/injury_filing_types":       {path: "rest/v1.0/companies/{companyId}/incidents/injury_filing_types", incremental: true},
-	"incidents/harm_sources":              {path: "rest/v1.0/companies/{companyId}/incidents/harm_sources", incremental: true},
+	"incidents/action_types":              {path: "rest/v1.0/companies/{companyId}/incidents/action_types", incremental: true},        //nolint:lll
+	"incidents/affliction_types":          {path: "rest/v1.0/companies/{companyId}/incidents/affliction_types", incremental: true},    //nolint:lll
+	"incidents/body_parts":                {path: "rest/v1.0/companies/{companyId}/incidents/body_parts", incremental: true},          //nolint:lll
+	"incidents/environmental_types":       {path: "rest/v1.0/companies/{companyId}/incidents/environmental_types", incremental: true}, //nolint:lll
+	"incidents/injury_filing_types":       {path: "rest/v1.0/companies/{companyId}/incidents/injury_filing_types", incremental: true}, //nolint:lll
+	"incidents/harm_sources":              {path: "rest/v1.0/companies/{companyId}/incidents/harm_sources", incremental: true},        //nolint:lll
 	"incidents/statuses":                  {path: "rest/v1.0/companies/{companyId}/incidents/statuses"},
 	"incidents/severity_levels":           {path: "rest/v1.0/companies/{companyId}/incidents/severity_levels"},
-	"incidents/work_activities":           {path: "rest/v1.0/companies/{companyId}/incidents/work_activities", incremental: true},
+	"incidents/work_activities":           {path: "rest/v1.0/companies/{companyId}/incidents/work_activities", incremental: true}, //nolint:lll
 	"contributing_behaviors":              {path: "rest/v1.0/companies/{companyId}/contributing_behaviors"},
-	"contributing_conditions":             {path: "rest/v1.0/companies/{companyId}/contributing_conditions", incremental: true},
-	"hazards":                             {path: "rest/v1.0/companies/{companyId}/hazards", incremental: true},
+	"contributing_conditions":             {path: "rest/v1.0/companies/{companyId}/contributing_conditions", incremental: true}, //nolint:lll
+	"hazards":                             {path: "rest/v1.0/companies/{companyId}/hazards", incremental: true},                 //nolint:lll
 	"checklist/alternative_response_sets": {path: "rest/v1.0/companies/{companyId}/checklist/alternative_response_sets"},
-	"checklist/list_templates":            {path: "rest/v1.0/companies/{companyId}/checklist/list_templates", incremental: true},
-	"checklist/item/response_sets":        {path: "rest/v1.0/companies/{companyId}/checklist/item/response_sets", incremental: true},
+	"checklist/list_templates":            {path: "rest/v1.0/companies/{companyId}/checklist/list_templates", incremental: true},     //nolint:lll
+	"checklist/item/response_sets":        {path: "rest/v1.0/companies/{companyId}/checklist/item/response_sets", incremental: true}, //nolint:lll
 	"checklist/responses":                 {path: "rest/v1.0/companies/{companyId}/checklist/responses"},
 	"inspection_types":                    {path: "rest/v1.0/companies/{companyId}/inspection_types"},
 	"meeting_templates":                   {path: "rest/v1.0/companies/{companyId}/meeting_templates"},
 	"observation_types":                   {path: "rest/v1.0/companies/{companyId}/observation_types"},
-	"action_plans/verification_methods":   {path: "rest/v1.0/companies/{companyId}/action_plans/verification_methods", incremental: true},
+	"action_plans/verification_methods":   {path: "rest/v1.0/companies/{companyId}/action_plans/verification_methods", incremental: true}, //nolint:lll
 	"gps_positions":                       {path: "rest/v1.0/companies/{companyId}/gps_positions", incremental: true},
 
 	// ---- v1.0, workforce-planning namespace ----
 	"custom-fields":         {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/custom_fields"},
 	"groups":                {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/groups"},
-	"notification-profiles": {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/notification-profiles", recordsKey: "data"},
+	"notification-profiles": {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/notification-profiles", recordsKey: "data"}, //nolint:lll
 	"tags":                  {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/tags"},
 
 	// ---- v1.0, top-level path with company_id query param ----
@@ -101,7 +103,7 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"departments":           {path: "rest/v1.0/departments?company_id={companyId}"},
 	"project_templates":     {path: "rest/v1.0/project_templates?company_id={companyId}"},
 	"workflow_instances":    {path: "rest/v1.0/workflow_instances?company_id={companyId}"},
-	"settings/permissions":  {path: "rest/v1.0/settings/permissions?company_id={companyId}", recordsKey: "tools"},
+	"settings/permissions":  {path: "rest/v1.0/settings/permissions?company_id={companyId}", recordsKey: "tools"}, //nolint:lll
 	"change_types":          {path: "rest/v1.0/change_types?company_id={companyId}"},
 	"change_order/statuses": {path: "rest/v1.0/change_order/statuses?company_id={companyId}"},
 	"tax_codes":             {path: "rest/v1.0/tax_codes?company_id={companyId}"},
@@ -109,11 +111,11 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 
 	// ---- v2.0, company-scoped ----
 	"operations":                      {path: "rest/v2.0/companies/{companyId}/async_operations", recordsKey: "data"},
-	"generic_tools/default_types":     {path: "rest/v2.0/companies/{companyId}/generic_tools/default_types", recordsKey: "data"},
+	"generic_tools/default_types":     {path: "rest/v2.0/companies/{companyId}/generic_tools/default_types", recordsKey: "data"}, //nolint:lll
 	"workflows/tools":                 {path: "rest/v2.0/companies/{companyId}/workflows/tools", recordsKey: "data"},
-	"change_order_change_reasons":     {path: "rest/v2.0/companies/{companyId}/change_order_change_reasons", recordsKey: "data"},
-	"workflows/bulk_replace_requests": {path: "rest/v2.0/companies/{companyId}/workflows/bulk_replace_requests", recordsKey: "data"},
-	"estimating/bid_board_projects":   {path: "rest/v2.0/companies/{companyId}/estimating/bid_board_projects", recordsKey: "data"},
+	"change_order_change_reasons":     {path: "rest/v2.0/companies/{companyId}/change_order_change_reasons", recordsKey: "data"},     //nolint:lll
+	"workflows/bulk_replace_requests": {path: "rest/v2.0/companies/{companyId}/workflows/bulk_replace_requests", recordsKey: "data"}, //nolint:lll
+	"estimating/bid_board_projects":   {path: "rest/v2.0/companies/{companyId}/estimating/bid_board_projects", recordsKey: "data"},   //nolint:lll
 	"estimating/catalogs":             {path: "rest/v2.0/companies/{companyId}/estimating/catalogs", recordsKey: "data"},
 	"equipment_register":              {path: "rest/v2.0/companies/{companyId}/equipment_register", recordsKey: "data"},
 }

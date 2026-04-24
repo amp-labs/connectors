@@ -12,7 +12,10 @@ import (
 // nextPageFromLink returns a NextPageFunc that extracts the next page number
 // from a Procore Link header via `Link: <...page=N>; rel="next"`.
 // The returned token is the bare page number.
-// Example Link header: `<https://api.procore.com/rest/v1.0/companies/12345/objects?page=2&per_page=100>; rel="next", <https://api.procore.com/rest/v1.0/companies/12345/objects?page=50&per_page=100>; rel="last"`
+// Example Link header: `<https://api.procore.com/rest/v1.0/companies/12345/objects?page=2&per_page=100>; rel="next",
+//
+//	<https://api.procore.com/rest/v1.0/companies/12345/objects?page=50&per_page=100>; rel="last"`
+//
 // Ref: https://developers.procore.com/reference/rest/docs/pagination
 func nextPageFromLink(linkHeader string) common.NextPageFunc {
 	next := nextPageNumber(linkHeader)
@@ -34,6 +37,7 @@ func nextPageNumber(linkHeader string) string {
 		}
 
 		start := strings.Index(part, "<")
+
 		end := strings.Index(part, ">")
 		if start < 0 || end <= start {
 			continue
@@ -64,7 +68,8 @@ func extractRecords(response *common.JSONHTTPResponse, objectName string) ([]any
 
 		data, ok := (*obj)[responseKey].([]any)
 		if !ok {
-			return nil, fmt.Errorf("%w: response object missing array under \"%s\" key", common.ErrMissingExpectedValues, responseKey)
+			return nil, fmt.Errorf("%w: response object missing array under \"%s\" key",
+				common.ErrMissingExpectedValues, responseKey)
 		}
 
 		return data, nil
