@@ -48,7 +48,7 @@ func resolvePageSize(requested int) int {
 }
 
 // buildUpdatedAtFilter encodes since/until as Procore's filters[updated_at] range.
-// Procore accepts a half-open form like `<since>...<until>` where either side can be empty.
+// Procore accepts a half-open form like `<since>...<until>`.
 func buildUpdatedAtFilter(since, until time.Time) string {
 	if since.IsZero() && until.IsZero() {
 		return ""
