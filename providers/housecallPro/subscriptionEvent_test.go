@@ -211,7 +211,7 @@ func TestSubscriptionEvent_ParsingWeirdSamples(t *testing.T) {
 			expectObjectError: true,
 		},
 		{
-			name:           "estimate",
+			name:           "estimate option",
 			event:          "estimate.option.approval_status_changed",
 			payloadKey:     "estimate",
 			payloadID:      "estimate_option_1a2b3c4d5e",
