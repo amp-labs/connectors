@@ -229,6 +229,22 @@ func TestSubscriptionEvent_ParsingWeirdSamples(t *testing.T) {
 			wantEventType:     common.SubscriptionEventTypeOther,
 			expectObjectError: true,
 		},
+		{
+			name:           "estimate",
+			event:          "estimate.option.approval_status_changed",
+			payloadKey:     "estimate",
+			payloadID:      "estimate_option_1a2b3c4d5e",
+			wantEventType:  common.SubscriptionEventTypeOther,
+			wantObjectName: "estimates",
+		},
+		{
+			name:           "job appointment",
+			event:          "job.appointment.appointment_discarded",
+			payloadKey:     "appointment",
+			payloadID:      "job_appointment_1a2b3c4d5e",
+			wantEventType:  common.SubscriptionEventTypeOther,
+			wantObjectName: "job.appointments",
+		},
 	}
 
 	for _, tt := range tests {
