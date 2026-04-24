@@ -103,19 +103,19 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 					},
 					Associations: map[string][]common.Association{
 						"companies": {{
-							ObjectId:        "29022297485",
-							AssociationType: "category=HUBSPOT_DEFINED id=1 label=Primary",
+							ObjectId: "29022297485",
 							ProviderAssociationMetadata: map[string]any{
-								"category": "HUBSPOT_DEFINED",
-								"typeId":   1,
-								"label":    "Primary",
-							},
-						}, {
-							ObjectId:        "29022297485",
-							AssociationType: "category=HUBSPOT_DEFINED id=279",
-							ProviderAssociationMetadata: map[string]any{
-								"category": "HUBSPOT_DEFINED",
-								"typeId":   279,
+								"associationTypes": []map[string]any{
+									{
+										"category": "HUBSPOT_DEFINED",
+										"typeId":   1,
+										"label":    "Primary",
+									},
+									{
+										"category": "HUBSPOT_DEFINED",
+										"typeId":   279,
+									},
+								},
 							},
 						}},
 					},

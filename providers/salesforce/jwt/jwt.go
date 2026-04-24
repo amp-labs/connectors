@@ -337,7 +337,7 @@ func newUnauthorizedHandler(rts *retryingTokenSource) func(
 
 		tok, err := rts.forceRefresh(req.Context())
 		if err != nil {
-			return nil, fmt.Errorf("refreshing salesforce JWT token after 401: %w", err)
+			return nil, fmt.Errorf("error refreshing salesforce JWT token after 401: %w", err)
 		}
 
 		// Clone the original request so we don't mutate it; replace the
