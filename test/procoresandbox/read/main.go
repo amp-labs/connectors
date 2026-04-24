@@ -40,7 +40,7 @@ func main() {
 		slog.Error(err.Error())
 	}
 
-	if err := testRead(ctx, conn, "people", []string{"id", "first_name", "user_id"}, 1000); err != nil {
+	if err := testRead(ctx, conn, "vendors", []string{"id", "name", "is_active"}, 1000); err != nil {
 		slog.Error(err.Error())
 	}
 
@@ -50,7 +50,8 @@ func testRead(ctx context.Context, conn *pd.Connector, objectName string, fields
 	params := common.ReadParams{
 		ObjectName: objectName,
 		Fields:     connectors.Fields(fields...),
-		Since:      time.Now().Add(-10000 * time.Hour),
+		Since:      time.Now().AddDate(0, 0, -1), // 1 month ago
+		Until:      time.Now(),
 		PageSize:   pageSize,
 	}
 

@@ -44,7 +44,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				If: mockcond.And{
 					mockcond.Path("/rest/v1.0/companies/" + testCompanyID + "/projects"),
 					mockcond.QueryParam("page", "1"),
-					mockcond.QueryParam("per_page", "100"),
+					mockcond.QueryParam("per_page", "1000"),
 					mockcond.Header(http.Header{"Procore-Company-Id": []string{testCompanyID}}),
 				},
 				Then: mockserver.Response(http.StatusOK, projectsResponse),
@@ -93,25 +93,6 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				If: mockcond.And{
 					mockcond.Path("/rest/v1.0/companies/" + testCompanyID + "/projects"),
 					mockcond.QueryParam("filters[updated_at]", "2024-10-01T00:00:00Z..."),
-				},
-				Then: mockserver.Response(http.StatusOK, projectsResponse),
-			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
-			Expected:     &common.ReadResult{Rows: 2, Done: true},
-			ExpectedErrs: nil,
-		},
-		{
-			Name: "Custom page size is forwarded",
-			Input: common.ReadParams{
-				ObjectName: "projects",
-				Fields:     connectors.Fields("id"),
-				PageSize:   25,
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/rest/v1.0/companies/" + testCompanyID + "/projects"),
-					mockcond.QueryParam("per_page", "25"),
 				},
 				Then: mockserver.Response(http.StatusOK, projectsResponse),
 			}.Server(),

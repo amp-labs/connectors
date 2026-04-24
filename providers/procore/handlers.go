@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	defaultPageSize           = 100
+	defaultPageSize           = 1000
 	headerProcoreCompanyID    = "Procore-Company-Id"
 	queryParamPage            = "page"
 	queryParamPerPage         = "per_page"
@@ -45,7 +45,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
 		Fields:      make(map[string]common.FieldMetadata),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
+		DisplayName: naming.CapitalizeFirstLetterEveryWord(naming.SeparateUnderscoreWords(objectName)),
 	}
 
 	records, err := extractRecords(response, objectName)
