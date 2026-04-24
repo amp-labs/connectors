@@ -86,8 +86,12 @@ func (readResultComparator) SubsetAssociationsRaw(actual, expected *common.ReadR
 			for j := range expectedAssociations {
 				result.Assert(fmt.Sprintf("Data[%d].Associations[%s][%d].ObjectId", i, key, j),
 					expectedAssociations[j].ObjectId, actualAssociations[j].ObjectId)
-				result.Assert(fmt.Sprintf("Data[%d].Associations[%s][%d].ObjectId", i, key, j),
-					expectedAssociations[j].AssociationType, actualAssociations[j].AssociationType)
+
+				for metaKey, exp := range expectedAssociations[j].ProviderAssociationMetadata {
+					got := actualAssociations[j].ProviderAssociationMetadata[metaKey]
+					message := fmt.Sprintf("Data[%d].Associations[%s][%d].ProviderAssociationMetadata[%s]", i, key, j, metaKey)
+					result.Assert(message, exp, got)
+				}
 
 				// Check if expected Raw is a subset of actual Raw
 				for field := range expectedAssociations[j].Raw {

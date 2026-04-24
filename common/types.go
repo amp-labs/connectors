@@ -332,14 +332,11 @@ type ReadResultRow struct {
 
 // Association is a struct that represents an association between two objects.
 // If you think of an association as a directed edge between two nodes, then
-// the ObjectID is the target node, and the AssociationType is the type of edge.
-// The source node is represented by ReadResultRow.
+// the ObjectID is the target node. The source node is represented by ReadResultRow.
 type Association struct {
 	// ObjectID is the ID of the associated object.
-	ObjectId string `json:"objectId"`
-	// AssociationType is the type of association.
-	AssociationType string         `json:"associationType,omitempty"`
-	Raw             map[string]any `json:"raw,omitempty"`
+	ObjectId string         `json:"objectId"`
+	Raw      map[string]any `json:"raw,omitempty"`
 	// ProviderAssociationMetadata holds provider-specific metadata about the association type.
 	// For HubSpot, this includes category, typeId, and label from the associations API.
 	ProviderAssociationMetadata map[string]any `json:"providerAssociationMetadata,omitempty"`
