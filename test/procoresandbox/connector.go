@@ -22,7 +22,7 @@ func NewConnector(ctx context.Context) (*procore.Connector, error) {
 		common.WithOAuthToken(reader.GetOauthToken()),
 	)
 	if err != nil {
-		utils.Fail("error creating connector", "error", err)
+		return nil, err
 	}
 
 	return procore.NewSandboxConnector(common.ConnectorParams{

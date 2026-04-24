@@ -67,7 +67,15 @@ func buildUpdatedAtFilter(since, until time.Time) string {
 }
 
 func analyzeValue(value any) common.ValueType {
+	if value == nil {
+		return common.ValueTypeOther
+	}
+
 	v := reflect.ValueOf(value)
+
+	if !v.IsValid() {
+		return common.ValueTypeOther
+	}
 
 	switch v.Kind() { //nolint: exhaustive
 	case reflect.String:

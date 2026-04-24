@@ -50,7 +50,7 @@ func testRead(ctx context.Context, conn *pd.Connector, objectName string, fields
 	params := common.ReadParams{
 		ObjectName: objectName,
 		Fields:     connectors.Fields(fields...),
-		Since:      time.Now().AddDate(0, 0, -1), // 1 month ago
+		Since:      time.Now().AddDate(0, 0, -1), // 1 day ago
 		Until:      time.Now(),
 		PageSize:   pageSize,
 	}
