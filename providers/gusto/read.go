@@ -20,7 +20,13 @@ import (
 )
 
 const (
+	// Pagination:
+	//   - Gusto default per-page is 25 (per docs), but no hard maximum is documented.
+	//   - 100 works reliably per live tests and is what we use as both default and cap.
+	//   - We cap because our "records < per" end-of-pages check would mis-detect the
+	//     last page if Gusto silently caps server-side below the requested value.
 	defaultPageSize      = "100"
+	maxPageSize          = 100
 	pageParam            = "page"
 	perParam             = "per"
 	companyIDPlaceholder = "{company_id}"
@@ -60,7 +66,8 @@ var ErrMissingCompanyID = errors.New("gusto: companyId metadata is required")
 
 // employeeScopedObjects are objects whose URL paths contain {employee_id}.
 // Reading them requires first listing all employees in the company, then
-// fanning out one request per employee to the child endpoint.
+// fanning out one request per employee to the child endpoint. The object
+// name itself is used as the URL segment appended after /v1/employees/{uuid}/.
 var employeeScopedObjects = datautils.NewSet( //nolint:gochecknoglobals
 	objectEmployeeBenefits,
 	objectGarnishments,
@@ -69,17 +76,6 @@ var employeeScopedObjects = datautils.NewSet( //nolint:gochecknoglobals
 	objectTimeOffActivities,
 	objectWorkAddresses,
 )
-
-// employeeScopedPath maps each employee-scoped object to the URL segment
-// appended after /v1/employees/{uuid}/.
-var employeeScopedPath = map[string]string{ //nolint:gochecknoglobals
-	objectEmployeeBenefits:  "employee_benefits",
-	objectGarnishments:      "garnishments",
-	objectHomeAddresses:     "home_addresses",
-	objectJobs:              "jobs",
-	objectTimeOffActivities: "time_off_activities",
-	objectWorkAddresses:     "work_addresses",
-}
 
 // supportedReadObjects is the complete set of objects this connector can read.
 // compensations is excluded: it requires /jobs/{job_id}/compensations, a two-level
@@ -159,7 +155,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	apiURL.WithQueryParam(perParam, readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
+	apiURL.WithQueryParam(perParam, pageSize(params))
 	apiURL.WithQueryParam(pageParam, "1")
 
 	return apiURL, nil
@@ -184,7 +180,7 @@ func (c *Connector) buildEmployeeListURL(params common.ReadParams) (*urlbuilder.
 		return nil, err
 	}
 
-	apiURL.WithQueryParam(perParam, readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
+	apiURL.WithQueryParam(perParam, pageSize(params))
 	apiURL.WithQueryParam(pageParam, "1")
 
 	return apiURL, nil
@@ -203,10 +199,35 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResultFiltered(
 		params,
 		resp,
-		rootArrayRecords,
+		c.recordsFunc(params.ObjectName),
 		readhelper.MakeIdentityFilterFunc(nextPageFromPageCounter(request.URL)),
 		common.MakeMarshaledDataFunc(nil),
 		params.Fields,
+	)
+}
+
+// pageSize returns the page size to request, respecting the user's
+// params.PageSize but capping at maxPageSize. Capping protects the
+// completion check in nextPageFromPageCounter: if Gusto silently
+// caps the page size server-side below what we requested, the
+// returned record count would be less than per and we would
+// incorrectly stop paginating.
+func pageSize(params common.ReadParams) string {
+	if params.PageSize <= 0 || params.PageSize > maxPageSize {
+		return strconv.Itoa(maxPageSize)
+	}
+
+	return strconv.Itoa(params.PageSize)
+}
+
+// recordsFunc returns the records extractor for the given object.
+// All Gusto list endpoints return a bare JSON array at the root (no
+// wrapper object), so schemas.json uses "responseKey": "" for every
+// object. common.MakeRecordsFunc("") handles this via jsonquery's
+// SelfReference semantics — the empty key means "the node itself".
+func (c *Connector) recordsFunc(objectName string) common.NodeRecordsFunc {
+	return common.MakeRecordsFunc(
+		metadata.Schemas.LookupArrayFieldName(c.ProviderContext.Module(), objectName),
 	)
 }
 
@@ -225,7 +246,7 @@ func (c *Connector) parseEmployeeScopedResponse(
 		return &common.ReadResult{Done: true}, nil
 	}
 
-	nodes, err := rootArrayRecords(body)
+	nodes, err := c.recordsFunc(objectEmployees)(body)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +262,7 @@ func (c *Connector) parseEmployeeScopedResponse(
 		uuids = append(uuids, uuid)
 	}
 
-	childSuffix := employeeScopedPath[params.ObjectName]
+	childSuffix := params.ObjectName
 	allRecords := make([][]common.ReadResultRow, len(uuids))
 
 	jobs := make([]simultaneously.Job, len(uuids))
@@ -306,7 +327,7 @@ func (c *Connector) fetchEmployeeChildren(
 
 	result, err := common.ParseResultFiltered(
 		params, resp,
-		rootArrayRecords,
+		c.recordsFunc(params.ObjectName),
 		readhelper.MakeIdentityFilterFunc(nextPageFromPageCounter(nil)),
 		common.MakeMarshaledDataFunc(nil),
 		params.Fields,
@@ -316,20 +337,6 @@ func (c *Connector) fetchEmployeeChildren(
 	}
 
 	return result.Data, nil
-}
-
-// rootArrayRecords extracts records when the response body is a bare JSON array.
-// Most Gusto list endpoints return [{...}, {...}] at the root (no wrapper object).
-func rootArrayRecords(node *ajson.Node) ([]*ajson.Node, error) {
-	if node == nil {
-		return nil, nil
-	}
-
-	if !node.IsArray() {
-		return nil, jsonquery.ErrNotArray
-	}
-
-	return node.GetArray()
 }
 
 // nextPageFromPageCounter increments the page query param when the current page

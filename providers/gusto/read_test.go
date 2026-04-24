@@ -88,9 +88,36 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows:     2,
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"uuid":       "emp_001",
+						"first_name": "Alice",
+						"last_name":  "Anderson",
+					},
+					// Raw must include "email" even though it wasn't requested in Fields,
+					// proving the raw response is preserved as-is.
+					Raw: map[string]any{
+						"uuid":       "emp_001",
+						"first_name": "Alice",
+						"last_name":  "Anderson",
+						"email":      "alice@example.com",
+					},
+				}, {
+					Fields: map[string]any{
+						"uuid":       "emp_002",
+						"first_name": "Bob",
+						"last_name":  "Brown",
+					},
+					Raw: map[string]any{
+						"uuid":       "emp_002",
+						"first_name": "Bob",
+						"last_name":  "Brown",
+						"email":      "bob@example.com",
+					},
+				}},
 				NextPage: testroutines.URLTestServer + "/v1/companies/" + testCompanyID + "/employees?page=2&per=2",
 				Done:     false,
 			},
@@ -221,10 +248,28 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				// 2 jobs from emp_001 + 1 job from emp_002 = 3 total
 				Rows: 3,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"uuid":          "job_001",
+						"title":         "Software Engineer",
+						"employee_uuid": "emp_001",
+					},
+					// Raw must include "rate", "payment_unit", "primary" even though
+					// they weren't requested — proves the child-fetch response is
+					// preserved intact through the fan-out.
+					Raw: map[string]any{
+						"uuid":          "job_001",
+						"employee_uuid": "emp_001",
+						"title":         "Software Engineer",
+						"rate":          "80000.00",
+						"payment_unit":  "Year",
+						"primary":       true,
+					},
+				}},
 				// Employee list had exactly 2 rows (== per=2), so there may be more employees.
 				NextPage: testroutines.URLTestServer + "/v1/companies/" + testCompanyID + "/employees?page=2&per=2",
 				Done:     false,
