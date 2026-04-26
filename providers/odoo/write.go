@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -13,6 +14,8 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
+
+var errEmptyID = errors.New("response returned empty id list")
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	record, err := common.RecordDataToMap(params.RecordData)
@@ -32,7 +35,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 		id, convErr := strconv.Atoi(strings.TrimSpace(params.RecordId))
 		if convErr != nil {
-			return nil, fmt.Errorf("odoo: record id must be numeric, got %q: %w", params.RecordId, convErr)
+			return nil, fmt.Errorf("record id must be numeric, got %q: %w", params.RecordId, convErr)
 		}
 
 		body["ids"] = []int{id}
@@ -46,12 +49,12 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	jsonData, err := json.Marshal(body)
 	if err != nil {
-		return nil, fmt.Errorf("marshal odoo write body: %w", err)
+		return nil, fmt.Errorf("marshal write body: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, urlStr, bytes.NewReader(jsonData))
 	if err != nil {
-		return nil, fmt.Errorf("create odoo write request: %w", err)
+		return nil, fmt.Errorf("create write request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -96,11 +99,11 @@ func (c *Connector) parseWriteResponse(
 func odooCreateFirstID(body *ajson.Node) (string, error) {
 	arr, err := jsonquery.New(body).ArrayRequired("")
 	if err != nil {
-		return "", fmt.Errorf("odoo create response: %w", err)
+		return "", fmt.Errorf("create response: %w", err)
 	}
 
 	if len(arr) == 0 {
-		return "", fmt.Errorf("odoo: create returned empty id list")
+		return "", errEmptyID
 	}
 
 	return jsonquery.New(arr[0]).TextWithDefault("", "")
