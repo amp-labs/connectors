@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "display_name": "Ceo",
+        "name": "CEO",
+        "create_date": "2026-04-14 14:33:31"
+    },
+    {
+        "id": 2,
+        "display_name": "Communications",
+        "name": "Communications",
+        "create_date": "2026-04-14 14:33:31"
+    },
+    {
+        "id": 3,
+        "display_name": "Consulting",
+        "name": "Consulting",
+        "create_date": "2026-04-14 14:33:31"
+    }
+]
