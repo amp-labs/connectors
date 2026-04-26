@@ -95,6 +95,7 @@ import (
 	"github.com/amp-labs/connectors/providers/netsuite"
 	netsuitem2m "github.com/amp-labs/connectors/providers/netsuite/m2m"
 	"github.com/amp-labs/connectors/providers/nutshell"
+	"github.com/amp-labs/connectors/providers/odoo"
 	"github.com/amp-labs/connectors/providers/okta"
 	"github.com/amp-labs/connectors/providers/outplay"
 	"github.com/amp-labs/connectors/providers/outreach"
@@ -239,6 +240,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Netsuite:                   wrapper(newNetsuiteConnector),
 	providers.NetsuiteM2M:                wrapper(newNetsuiteM2MConnector),
 	providers.Nutshell:                   wrapper(newNutshellConnector),
+	providers.Odoo:                       wrapper(newOdooConnector),
 	providers.Okta:                       wrapper(newOktaConnector),
 	providers.Outplay:                    wrapper(newOutplayConnector),
 	providers.Outreach:                   wrapper(newOutreachConnector),
@@ -661,6 +663,12 @@ func newOktaConnector(
 	params common.ConnectorParams,
 ) (*okta.Connector, error) {
 	return okta.NewConnector(params)
+}
+
+func newOdooConnector(
+	params common.ConnectorParams,
+) (*odoo.Connector, error) {
+	return odoo.NewConnector(params)
 }
 
 func newHeyReachConnector(
