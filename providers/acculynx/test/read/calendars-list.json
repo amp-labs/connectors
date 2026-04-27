@@ -1,0 +1,11 @@
+{
+  "count": 1,
+  "pageSize": 100,
+  "pageStartIndex": 0,
+  "items": [
+    {
+      "id": "cal-001",
+      "name": "Default Calendar"
+    }
+  ]
+}
