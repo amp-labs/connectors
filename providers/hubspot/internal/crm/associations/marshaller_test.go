@@ -251,8 +251,10 @@ func TestGetDataMarshaller(t *testing.T) { //nolint:funlen
 				},
 				Associations: map[string][]common.Association{
 					"deals": {{
-						ObjectId:        "assoc-356",
-						AssociationType: "test-type",
+						ObjectId: "assoc-356",
+						ProviderAssociationMetadata: map[string]any{
+							"foo": "bar",
+						},
 					}},
 				},
 			}, {
@@ -268,8 +270,10 @@ func TestGetDataMarshaller(t *testing.T) { //nolint:funlen
 				},
 				Associations: map[string][]common.Association{
 					"deals": {{
-						ObjectId:        "assoc-772",
-						AssociationType: "test-type",
+						ObjectId: "assoc-772",
+						ProviderAssociationMetadata: map[string]any{
+							"foo": "bar",
+						},
 					}},
 				},
 			}},
@@ -335,8 +339,10 @@ func (testFiller) FillAssociations(
 
 		for _, toObj := range toAssociatedObjects {
 			data[index].Associations[toObj] = []common.Association{{
-				ObjectId:        "assoc-" + row.Id,
-				AssociationType: "test-type",
+				ObjectId: "assoc-" + row.Id,
+				ProviderAssociationMetadata: map[string]any{
+					"foo": "bar",
+				},
 			}}
 		}
 	}

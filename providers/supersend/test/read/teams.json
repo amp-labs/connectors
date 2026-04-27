@@ -1,0 +1,33 @@
+{
+  "teams": [
+    {
+      "id": "team-001",
+      "name": "Engineering Team",
+      "domain": "engineering.example.com",
+      "logo": "https://example.com/logo.png",
+      "about": "Product engineering team",
+      "isDefault": true,
+      "deleted": false,
+      "tags": ["tech", "product"],
+      "OrgId": "org-001",
+      "createdAt": "2024-01-15T10:00:00.000Z",
+      "updatedAt": "2024-03-20T15:30:00.000Z"
+    },
+    {
+      "id": "team-002",
+      "name": "Sales Team",
+      "domain": "sales.example.com",
+      "logo": "https://example.com/sales-logo.png",
+      "about": "Sales and outreach team",
+      "isDefault": false,
+      "deleted": false,
+      "tags": ["sales", "outreach"],
+      "OrgId": "org-001",
+      "createdAt": "2024-02-01T09:00:00.000Z",
+      "updatedAt": "2024-03-18T12:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "has_more": false
+  }
+}

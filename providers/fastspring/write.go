@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"maps"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
@@ -132,9 +133,7 @@ func marshalOrdersWriteBody(params common.WriteParams, record map[string]any) ([
 	}
 
 	order := map[string]any{}
-	for k, v := range record {
-		order[k] = v
-	}
+	maps.Copy(order, record)
 
 	// API uses the JSON key "order" for the order id (not e.g. "id"); see payload shape:
 	// https://developer.fastspring.com/reference/update-order-tags-and-attributes
