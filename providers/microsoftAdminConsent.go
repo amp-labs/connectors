@@ -19,7 +19,7 @@ const MicrosoftAdminConsent Provider = "microsoftAdminConsent"
 
 func init() {
 	SetInfo(MicrosoftAdminConsent, ProviderInfo{
-		DisplayName: "Microsoft",
+		DisplayName: "Microsoft (Admin consent)",
 		AuthType:    Oauth2,
 		BaseURL:     "https://graph.microsoft.com",
 		AuthHealthCheck: &AuthHealthCheck{
@@ -35,7 +35,7 @@ func init() {
 			// the connection uses client_credentials for token acquisition
 			// (AUTH_SCHEME_OAUTH2_CLIENT is set explicitly in the callback).
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://login.microsoftonline.com/common/v2.0/adminconsent",
+			AuthURL:                   "https://login.microsoftonline.com/organizations/v2.0/adminconsent",
 			TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false, // workspace (tenant ID) comes from the admin consent redirect
