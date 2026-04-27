@@ -55,7 +55,7 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"people":                      {path: "rest/v1.0/companies/{companyId}/people", write: true},
 	"people/inactive":             {path: "rest/v1.0/companies/{companyId}/people/inactive"},
 	"users/inactive":              {path: "rest/v1.0/companies/{companyId}/users/inactive"},
-	"users":                       {path: "/rest/v1.3/companies/{companyId}/users", incremental: true, write: true},
+	"users":                       {path: "rest/v1.3/companies/{companyId}/users", incremental: true, write: true},
 	"vendors/inactive":            {path: "rest/v1.0/companies/{companyId}/vendors/inactive"},
 	"insurances":                  {path: "rest/v1.0/companies/{companyId}/insurances", write: true},
 	"permission_templates":        {path: "rest/v1.0/companies/{companyId}/permission_templates", write: true},

@@ -166,14 +166,14 @@ func (c *Connector) parseWriteResponse(
 		return &common.WriteResult{Success: true}, nil //nolint:nilerr
 	}
 
-	recordID, err := jsonquery.New(root).IntegerWithDefault("id", 0)
-	if err != nil || recordID == 0 {
+	recordID, err := jsonquery.New(root).TextWithDefault("id", "")
+	if err != nil || recordID == "" {
 		return &common.WriteResult{Success: true, Data: data}, nil //nolint:nilerr
 	}
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: strconv.FormatInt(recordID, 10),
+		RecordId: recordID,
 		Data:     data,
 	}, nil
 }
