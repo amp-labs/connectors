@@ -83,15 +83,21 @@ func buildReadBody(config common.ReadParams) map[string]any {
 	}
 
 	if config.ObjectName == objectNameCalls {
-		// https://app.gong.io/settings/api/documentation#post-/v2/calls/extensive
-		body["contentSelector"] = map[string]any{
-			"context": "Extended",
-			"exposedFields": map[string]any{
-				"parties": true,
-				"media":   true,
-			},
-		}
+		body["contentSelector"] = callContentSelector()
 	}
 
 	return body
+}
+
+// callContentSelector returns the contentSelector used for POST /v2/calls/extensive, which
+// adds parties + media to the response.
+// https://app.gong.io/settings/api/documentation#post-/v2/calls/extensive
+func callContentSelector() map[string]any {
+	return map[string]any{
+		"context": "Extended",
+		"exposedFields": map[string]any{
+			"parties": true,
+			"media":   true,
+		},
+	}
 }
