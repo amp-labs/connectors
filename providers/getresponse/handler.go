@@ -60,8 +60,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	url.WithQueryParam(pageSizeKey, strconv.Itoa(requestedPageSize))
 	url.WithQueryParam(pageKey, "1")
 
+	fieldNames := params.Fields.List()
+	if params.ObjectName == objectContacts {
+		fieldNames = contactReadFieldsQueryForAPI(fieldNames)
+	}
+
 	// Add field selection
-	url.WithQueryParam("fields", strings.Join(params.Fields.List(), ","))
+	url.WithQueryParam("fields", strings.Join(fieldNames, ","))
 
 	// Parse GetResponse-specific filter and sort from params.Filter
 	// Format: "query[name]=value&query[isDefault]=true&sort[name]=ASC&sort[createdOn]=DESC"
@@ -124,12 +129,17 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	// GetResponse returns arrays directly, not wrapped in an object
 	// Use ParseResultFiltered to support connector-side filtering for objects that don't support provider-side filtering
+	marshalFromNode := common.MakeMarshaledDataFunc(nil)
+	if params.ObjectName == objectContacts {
+		marshalFromNode = common.MakeMarshaledDataFunc(contactReadRecordTransformer)
+	}
+
 	return common.ParseResultFiltered(
 		params,
 		response,
 		common.MakeRecordsFunc(""),
 		makeFilterFunc(params, request.URL),
-		common.MakeMarshaledDataFunc(nil),
+		marshalFromNode,
 		params.Fields,
 	)
 }
@@ -198,7 +208,17 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		url.AddPath(params.RecordId)
 	}
 
-	jsonData, err := json.Marshal(params.RecordData)
+	recordData := params.RecordData
+	if params.ObjectName == objectContacts {
+		rec, err := params.GetRecord()
+		if err != nil {
+			return nil, err
+		}
+
+		recordData = mergeContactCustomFieldValuesIntoBody(map[string]any(rec))
+	}
+
+	jsonData, err := json.Marshal(recordData)
 	if err != nil {
 		return nil, err
 	}
