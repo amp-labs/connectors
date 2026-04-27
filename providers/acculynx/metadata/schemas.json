@@ -1,0 +1,1692 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "acculynx/countries": {
+          "displayName": "AccuLynx Countries",
+          "path": "/acculynx/countries",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "abbreviation": {
+              "displayName": "abbreviation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "acculynx/units-of-measure": {
+          "displayName": "AccuLynx Units of Measure",
+          "path": "/acculynx/units-of-measure",
+          "responseKey": "unitsOfMeasure",
+          "fields": {
+            "friendlyName": {
+              "displayName": "friendlyName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "calendars": {
+          "displayName": "Calendars",
+          "path": "/calendars",
+          "responseKey": "items",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "calendars/appointments": {
+          "displayName": "Calendar Appointments",
+          "path": "/calendars/{calendarId}/appointments",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allDay": {
+              "displayName": "allDay",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "end": {
+              "displayName": "end",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventType": {
+              "displayName": "eventType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Personal",
+                  "displayValue": "Personal"
+                },
+                {
+                  "value": "Initial Appointment",
+                  "displayValue": "Initial Appointment"
+                },
+                {
+                  "value": "Material Order",
+                  "displayValue": "Material Order"
+                },
+                {
+                  "value": "Labor Order",
+                  "displayValue": "Labor Order"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "jobId": {
+              "displayName": "jobId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "jobName": {
+              "displayName": "jobName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start": {
+              "displayName": "start",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "company-settings/custom-fields": {
+          "displayName": "Company Custom Fields",
+          "path": "/company-settings/custom-fields",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entityType": {
+              "displayName": "entityType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "contact",
+                  "displayValue": "contact"
+                },
+                {
+                  "value": "job",
+                  "displayValue": "job"
+                }
+              ]
+            },
+            "fieldType": {
+              "displayName": "fieldType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Text",
+                  "displayValue": "Text"
+                },
+                {
+                  "value": "Number",
+                  "displayValue": "Number"
+                },
+                {
+                  "value": "Date",
+                  "displayValue": "Date"
+                },
+                {
+                  "value": "Boolean",
+                  "displayValue": "Boolean"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isActive": {
+              "displayName": "isActive",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "label": {
+              "displayName": "label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modifiedBy": {
+              "displayName": "modifiedBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "modifiedDate": {
+              "displayName": "modifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "options": {
+              "displayName": "options",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "company-settings/job-file-settings/document-folders": {
+          "displayName": "Document Folders",
+          "path": "/company-settings/job-file-settings/document-folders",
+          "responseKey": "items",
+          "fields": {
+            "companyId": {
+              "displayName": "companyId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "documentFolderId": {
+              "displayName": "documentFolderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "company-settings/job-file-settings/insurance-companies": {
+          "displayName": "Insurance Companies",
+          "path": "/company-settings/job-file-settings/insurance-companies",
+          "responseKey": "items",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isActive": {
+              "displayName": "isActive",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "company-settings/job-file-settings/job-categories": {
+          "displayName": "Job Categories",
+          "path": "/company-settings/job-file-settings/job-categories",
+          "responseKey": "items",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "company-settings/job-file-settings/photo-video-tags": {
+          "displayName": "Photo and Video Tags",
+          "path": "/company-settings/job-file-settings/photo-video-tags",
+          "responseKey": "items",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "company-settings/job-file-settings/trade-types": {
+          "displayName": "Trade Types",
+          "path": "/company-settings/job-file-settings/trade-types",
+          "responseKey": "items",
+          "fields": {
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tradeId": {
+              "displayName": "tradeId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "company-settings/job-file-settings/work-types": {
+          "displayName": "Work Types",
+          "path": "/company-settings/job-file-settings/work-types",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "systemDefault": {
+              "displayName": "systemDefault",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "company-settings/job-file-settings/workflow-milestones": {
+          "displayName": "Workflow Milestones",
+          "path": "/company-settings/job-file-settings/workflow-milestones",
+          "responseKey": "items",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Lead",
+                  "displayValue": "Lead"
+                },
+                {
+                  "value": "Prospect",
+                  "displayValue": "Prospect"
+                },
+                {
+                  "value": "Approved",
+                  "displayValue": "Approved"
+                },
+                {
+                  "value": "Completed",
+                  "displayValue": "Completed"
+                },
+                {
+                  "value": "Invoiced",
+                  "displayValue": "Invoiced"
+                },
+                {
+                  "value": "Closed",
+                  "displayValue": "Closed"
+                },
+                {
+                  "value": "Dead",
+                  "displayValue": "Dead"
+                },
+                {
+                  "value": "Deleted",
+                  "displayValue": "Deleted"
+                }
+              ]
+            },
+            "statuses": {
+              "displayName": "statuses",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "company-settings/leads/lead-sources": {
+          "displayName": "Lead Sources",
+          "path": "/company-settings/leads/lead-sources",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "children": {
+              "displayName": "children",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "company-settings/location-settings/account-types": {
+          "displayName": "Account Types",
+          "path": "/company-settings/location-settings/account-types",
+          "responseKey": "items",
+          "fields": {
+            "IsActive": {
+              "displayName": "IsActive",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "billingAddress": {
+              "displayName": "billingAddress",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyName": {
+              "displayName": "companyName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "crossReference": {
+              "displayName": "crossReference",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailAddresses": {
+              "displayName": "emailAddresses",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "firstName": {
+              "displayName": "firstName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastName": {
+              "displayName": "lastName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mailingAddress": {
+              "displayName": "mailingAddress",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "phoneNumbers": {
+              "displayName": "phoneNumbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "salutation": {
+              "displayName": "salutation",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contacts/contact-types": {
+          "displayName": "Contact Types",
+          "path": "/contacts/contact-types",
+          "responseKey": "items",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isDefault": {
+              "displayName": "isDefault",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contacts/custom-fields": {
+          "displayName": "Contact Custom Fields",
+          "path": "/contacts/{contactId}/custom-fields",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customFieldDefinition": {
+              "displayName": "customFieldDefinition",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "fieldType": {
+              "displayName": "fieldType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Text",
+                  "displayValue": "Text"
+                },
+                {
+                  "value": "Number",
+                  "displayValue": "Number"
+                },
+                {
+                  "value": "Date",
+                  "displayValue": "Date"
+                },
+                {
+                  "value": "Boolean",
+                  "displayValue": "Boolean"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "label": {
+              "displayName": "label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modifiedBy": {
+              "displayName": "modifiedBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "modifiedDate": {
+              "displayName": "modifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "values": {
+              "displayName": "values",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "contacts/email-addresses": {
+          "displayName": "Contact Email Addresses",
+          "path": "/contacts/{contactId}/email-addresses",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address": {
+              "displayName": "address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary": {
+              "displayName": "primary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "contacts/phone-numbers": {
+          "displayName": "Contact Phone Numbers",
+          "path": "/contacts/{contactId}/phone-numbers",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ext": {
+              "displayName": "ext",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number": {
+              "displayName": "number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary": {
+              "displayName": "primary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "smsOptOut": {
+              "displayName": "smsOptOut",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Home",
+                  "displayValue": "Home"
+                },
+                {
+                  "value": "Mobile",
+                  "displayValue": "Mobile"
+                },
+                {
+                  "value": "Work",
+                  "displayValue": "Work"
+                }
+              ]
+            }
+          }
+        },
+        "estimates": {
+          "displayName": "Estimates",
+          "path": "/estimates",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isPrimary": {
+              "displayName": "isPrimary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "job": {
+              "displayName": "job",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "estimates/sections": {
+          "displayName": "Estimate Sections",
+          "path": "/estimates/{estimateId}/sections",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "createdBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "items": {
+              "displayName": "items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "modifiedBy": {
+              "displayName": "modifiedBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "modifiedDate": {
+              "displayName": "modifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "profitMarginRate": {
+              "displayName": "profitMarginRate",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "profitMarginTotal": {
+              "displayName": "profitMarginTotal",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "sectionFinancials": {
+              "displayName": "sectionFinancials",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "jobs": {
+          "displayName": "Jobs",
+          "path": "/jobs",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contacts": {
+              "displayName": "contacts",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currentMilestone": {
+              "displayName": "currentMilestone",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Lead",
+                  "displayValue": "Lead"
+                },
+                {
+                  "value": "Prospect",
+                  "displayValue": "Prospect"
+                },
+                {
+                  "value": "Approved",
+                  "displayValue": "Approved"
+                },
+                {
+                  "value": "Completed",
+                  "displayValue": "Completed"
+                },
+                {
+                  "value": "Invoiced",
+                  "displayValue": "Invoiced"
+                },
+                {
+                  "value": "Closed",
+                  "displayValue": "Closed"
+                },
+                {
+                  "value": "Cancelled",
+                  "displayValue": "Cancelled"
+                }
+              ]
+            },
+            "geoLocation": {
+              "displayName": "geoLocation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "initialAppointment": {
+              "displayName": "initialAppointment",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "jobCategory": {
+              "displayName": "jobCategory",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "jobName": {
+              "displayName": "jobName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "jobNumber": {
+              "displayName": "jobNumber",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "leadDeadReason": {
+              "displayName": "leadDeadReason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "leadSource": {
+              "displayName": "leadSource",
+              "valueType": "other"
+            },
+            "locationAddress": {
+              "displayName": "locationAddress",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "milestoneDate": {
+              "displayName": "milestoneDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modifiedDate": {
+              "displayName": "modifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "priority": {
+              "displayName": "priority",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Normal",
+                  "displayValue": "Normal"
+                },
+                {
+                  "value": "High",
+                  "displayValue": "High"
+                },
+                {
+                  "value": "Urgent",
+                  "displayValue": "Urgent"
+                }
+              ]
+            },
+            "tradeTypes": {
+              "displayName": "tradeTypes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "workType": {
+              "displayName": "workType",
+              "valueType": "other"
+            }
+          }
+        },
+        "jobs/contacts": {
+          "displayName": "Job Contacts",
+          "path": "/jobs/{jobId}/contacts",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact": {
+              "displayName": "contact",
+              "valueType": "other"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isPrimary": {
+              "displayName": "isPrimary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "relationToPrimary": {
+              "displayName": "relationToPrimary",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "jobs/custom-fields": {
+          "displayName": "Job Custom Fields",
+          "path": "/jobs/{jobId}/custom-fields",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customFieldDefinition": {
+              "displayName": "customFieldDefinition",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "fieldType": {
+              "displayName": "fieldType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Text",
+                  "displayValue": "Text"
+                },
+                {
+                  "value": "Number",
+                  "displayValue": "Number"
+                },
+                {
+                  "value": "Date",
+                  "displayValue": "Date"
+                },
+                {
+                  "value": "Boolean",
+                  "displayValue": "Boolean"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "label": {
+              "displayName": "label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "modifiedBy": {
+              "displayName": "modifiedBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "modifiedDate": {
+              "displayName": "modifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "values": {
+              "displayName": "values",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "jobs/estimates": {
+          "displayName": "Job Estimates",
+          "path": "/jobs/{jobId}/estimates",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isPrimary": {
+              "displayName": "isPrimary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "job": {
+              "displayName": "job",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "jobs/history": {
+          "displayName": "Job History",
+          "path": "/jobs/{jobId}/history",
+          "responseKey": "items",
+          "fields": {
+            "action": {
+              "displayName": "action",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "createdBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "date": {
+              "displayName": "date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Customer",
+                  "displayValue": "Customer"
+                },
+                {
+                  "value": "Job",
+                  "displayValue": "Job"
+                },
+                {
+                  "value": "Lead",
+                  "displayValue": "Lead"
+                },
+                {
+                  "value": "Measurement",
+                  "displayValue": "Measurement"
+                },
+                {
+                  "value": "Estimate",
+                  "displayValue": "Estimate"
+                },
+                {
+                  "value": "Order",
+                  "displayValue": "Order"
+                },
+                {
+                  "value": "Permit",
+                  "displayValue": "Permit"
+                },
+                {
+                  "value": "Payments",
+                  "displayValue": "Payments"
+                },
+                {
+                  "value": "Commission",
+                  "displayValue": "Commission"
+                },
+                {
+                  "value": "Precommission",
+                  "displayValue": "Precommission"
+                },
+                {
+                  "value": "ContractWorksheet",
+                  "displayValue": "ContractWorksheet"
+                },
+                {
+                  "value": "Supplement",
+                  "displayValue": "Supplement"
+                },
+                {
+                  "value": "File",
+                  "displayValue": "File"
+                },
+                {
+                  "value": "Unspecified",
+                  "displayValue": "Unspecified"
+                },
+                {
+                  "value": "CommunicationHistory",
+                  "displayValue": "CommunicationHistory"
+                },
+                {
+                  "value": "ContactNote",
+                  "displayValue": "ContactNote"
+                },
+                {
+                  "value": "JobContact",
+                  "displayValue": "JobContact"
+                },
+                {
+                  "value": "Contact",
+                  "displayValue": "Contact"
+                },
+                {
+                  "value": "JobMessage",
+                  "displayValue": "JobMessage"
+                },
+                {
+                  "value": "ContractWorksheetStatus",
+                  "displayValue": "ContractWorksheetStatus"
+                },
+                {
+                  "value": "MortgageCheck",
+                  "displayValue": "MortgageCheck"
+                },
+                {
+                  "value": "Measurements",
+                  "displayValue": "Measurements"
+                },
+                {
+                  "value": "Appointment",
+                  "displayValue": "Appointment"
+                },
+                {
+                  "value": "JobEmail",
+                  "displayValue": "JobEmail"
+                },
+                {
+                  "value": "JobPacket",
+                  "displayValue": "JobPacket"
+                },
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Company",
+                  "displayValue": "Company"
+                },
+                {
+                  "value": "User",
+                  "displayValue": "User"
+                },
+                {
+                  "value": "FeatureManager",
+                  "displayValue": "FeatureManager"
+                },
+                {
+                  "value": "PermissionSettings",
+                  "displayValue": "PermissionSettings"
+                },
+                {
+                  "value": "LaborContact",
+                  "displayValue": "LaborContact"
+                },
+                {
+                  "value": "LaborOrder",
+                  "displayValue": "LaborOrder"
+                },
+                {
+                  "value": "Financing",
+                  "displayValue": "Financing"
+                },
+                {
+                  "value": "JobSignatureEmail",
+                  "displayValue": "JobSignatureEmail"
+                },
+                {
+                  "value": "JobPaymentRequest",
+                  "displayValue": "JobPaymentRequest"
+                },
+                {
+                  "value": "TextMessage",
+                  "displayValue": "TextMessage"
+                }
+              ]
+            }
+          }
+        },
+        "jobs/invoices": {
+          "displayName": "Job Invoices",
+          "path": "/jobs/{jobId}/invoices",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "balanceDue": {
+              "displayName": "balanceDue",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currentInvoiceState": {
+              "displayName": "currentInvoiceState",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Paid",
+                  "displayValue": "Paid"
+                },
+                {
+                  "value": "Unpaid",
+                  "displayValue": "Unpaid"
+                },
+                {
+                  "value": "Void",
+                  "displayValue": "Void"
+                },
+                {
+                  "value": "Draft",
+                  "displayValue": "Draft"
+                }
+              ]
+            },
+            "dueDate": {
+              "displayName": "dueDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoiceDate": {
+              "displayName": "invoiceDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoiceName": {
+              "displayName": "invoiceName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoiceNumber": {
+              "displayName": "invoiceNumber",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoiceSequence": {
+              "displayName": "invoiceSequence",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "jobId": {
+              "displayName": "jobId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recordingClassification": {
+              "displayName": "recordingClassification",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recordingStatus": {
+              "displayName": "recordingStatus",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sections": {
+              "displayName": "sections",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "sortIndex": {
+              "displayName": "sortIndex",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "totalPrice": {
+              "displayName": "totalPrice",
+              "valueType": "other",
+              "providerType": "number"
+            }
+          }
+        },
+        "jobs/milestone-history": {
+          "displayName": "Job Milestone History",
+          "path": "/jobs/{jobId}/milestone-history",
+          "responseKey": "items",
+          "fields": {
+            "date": {
+              "displayName": "date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "jobs/representatives": {
+          "displayName": "Job Representatives",
+          "path": "/jobs/{jobId}/representatives",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "CompanyRepresentative",
+                  "displayValue": "CompanyRepresentative"
+                },
+                {
+                  "value": "SalesOwner",
+                  "displayValue": "SalesOwner"
+                },
+                {
+                  "value": "AROwner",
+                  "displayValue": "AROwner"
+                },
+                {
+                  "value": "Additional",
+                  "displayValue": "Additional"
+                }
+              ]
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "supplements": {
+          "displayName": "Supplements",
+          "path": "/supplements",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "appliedBy": {
+              "displayName": "appliedBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "appliedDate": {
+              "displayName": "appliedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "assignedSupplementer": {
+              "displayName": "assignedSupplementer",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "closedBy": {
+              "displayName": "closedBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "closedDate": {
+              "displayName": "closedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "createdBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "editedBy": {
+              "displayName": "editedBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "editedDate": {
+              "displayName": "editedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "itemsToSupplement": {
+              "displayName": "itemsToSupplement",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "job": {
+              "displayName": "job",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notations": {
+              "displayName": "notations",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "supplements/items": {
+          "displayName": "Supplement Items",
+          "path": "/supplements/{supplementId}/items",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "appliedAmount": {
+              "displayName": "appliedAmount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "approvedAmount": {
+              "displayName": "approvedAmount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "originalClaimAmount": {
+              "displayName": "originalClaimAmount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "requestedAmount": {
+              "displayName": "requestedAmount",
+              "valueType": "other",
+              "providerType": "number"
+            }
+          }
+        },
+        "supplements/notations": {
+          "displayName": "Supplement Notations",
+          "path": "/supplements/{supplementId}/notations",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdBy": {
+              "displayName": "createdBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailRecipients": {
+              "displayName": "emailRecipients",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "extension": {
+              "displayName": "extension",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fax": {
+              "displayName": "fax",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spokeWith": {
+              "displayName": "spokeWith",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "items",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "firstName": {
+              "displayName": "firstName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "initials": {
+              "displayName": "initials",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastName": {
+              "displayName": "lastName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mobilePhone": {
+              "displayName": "mobilePhone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "role": {
+              "displayName": "role",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "Inactive",
+                  "displayValue": "Inactive"
+                },
+                {
+                  "value": "Archived",
+                  "displayValue": "Archived"
+                },
+                {
+                  "value": "Deleted",
+                  "displayValue": "Deleted"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
