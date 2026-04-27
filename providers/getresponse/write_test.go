@@ -101,6 +101,34 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Create contact maps cf_* keys into customFieldValues body",
+			Input: common.WriteParams{
+				ObjectName: "contacts",
+				RecordData: map[string]any{
+					"email":    "new@example.com",
+					"campaign": map[string]any{"campaignId": "C"},
+					CustomFieldKey("f1"): "gold",
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/v3/contacts"),
+					mockcond.Body(`{"campaign":{"campaignId":"C"},"customFieldValues":[{"customFieldId":"f1","value":["gold"]}],"email":"new@example.com"}`),
+				},
+				Then: mockserver.Response(http.StatusAccepted, nil),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "",
+				Errors:   nil,
+				Data:     nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name:  "Update contact via POST with RecordId (200 OK, with body)",
 			Input: common.WriteParams{ObjectName: "contacts", RecordId: "pV3r", RecordData: map[string]any{"name": "John Doe Updated", "email": "john.doe.updated@example.com"}},
 			Server: mockserver.Conditional{
