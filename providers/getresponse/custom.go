@@ -35,12 +35,14 @@ func CustomFieldKey(customFieldID string) string {
 
 func (d getResponseCustomField) fieldMetadata() common.FieldMetadata {
 	vt := d.mapValueType()
+	isCustom := true
 
 	return common.FieldMetadata{
 		DisplayName:  d.Name,
 		ValueType:    vt,
 		ProviderType: d.ValueType,
 		Values:       d.selectValues(),
+		IsCustom:     &isCustom,
 	}
 }
 
@@ -192,20 +194,31 @@ func normalizeCustomFieldAPIValue(v any) any {
 	return arr
 }
 
-// ensureContactReadIncludesCustomFieldValues adds the API field that carries
-// per-contact custom values when the caller requested a non-empty field list.
-func ensureContactReadIncludesCustomFieldValues(fieldNames []string) []string {
+// contactReadFieldsQueryForAPI builds the `fields` query parameter for GET contacts.
+// GetResponse only returns customFieldValues when that property is requested; callers
+// asking for cf_<customFieldId> need it present or flattening has no source data.
+func contactReadFieldsQueryForAPI(fieldNames []string) []string {
 	if len(fieldNames) == 0 {
 		return fieldNames
 	}
 
 	for _, f := range fieldNames {
-		if f == "customFieldValues" {
+		if strings.EqualFold(f, "customFieldValues") {
 			return fieldNames
 		}
 	}
 
-	return append(append([]string{}, fieldNames...), "customFieldValues")
+	for _, f := range fieldNames {
+		if strings.HasPrefix(f, customFieldKeyPrefix) {
+			out := make([]string, 0, len(fieldNames)+1)
+			out = append(out, fieldNames...)
+			out = append(out, "customFieldValues")
+
+			return out
+		}
+	}
+
+	return fieldNames
 }
 
 // mergeContactCustomFieldValuesIntoBody moves keys prefixed with cf_ into
