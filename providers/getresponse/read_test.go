@@ -92,6 +92,18 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	// Empty response for pagination test
 	emptyResponse := `[]`
 
+	contactsWithCustomFieldsResponse := `[
+		{
+			"contactId": "pV3r",
+			"name": "John Doe",
+			"email": "john.doe@example.com",
+			"createdOn": "2024-01-15T10:00:00+0000",
+			"customFieldValues": [
+				{"customFieldId": "f1", "value": ["gold"]}
+			]
+		}
+	]`
+
 	tests := []testroutines.Read{
 		{
 			Name:         "Read object must be included",
@@ -164,6 +176,51 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"href":            "https://api.getresponse.com/v3/contacts/pV4s",
 							"note":            "Another note",
 							"ipAddress":       "5.6.7.8",
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read contacts flattens cf_* from customFieldValues",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email", CustomFieldKey("f1")),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/v3/contacts"),
+						},
+						Then: mockserver.Response(http.StatusOK, []byte(contactsWithCustomFieldsResponse)),
+					},
+				},
+			}.Server(),
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"email": "john.doe@example.com",
+							"cf_f1": "gold",
+						},
+						Raw: map[string]any{
+							"contactId":       "pV3r",
+							"name":            "John Doe",
+							"email":           "john.doe@example.com",
+							"createdOn":       "2024-01-15T10:00:00+0000",
+							"customFieldValues": []any{
+								map[string]any{
+									"customFieldId": "f1",
+									"value":         []any{"gold"},
+								},
+							},
 						},
 					},
 				},
