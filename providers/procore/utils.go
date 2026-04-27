@@ -25,7 +25,9 @@ func resolveAPIPath(objectName, companyID string) string {
 	return strings.ReplaceAll(spec.path, companyIDPlaceholder, companyID)
 }
 
-func (c *Connector) newRequest(ctx context.Context, method string, url *urlbuilder.URL, body io.Reader) (*http.Request, error) {
+func (c *Connector) newRequest(
+	ctx context.Context, method string, url *urlbuilder.URL, body io.Reader,
+) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, method, url.String(), body)
 	if err != nil {
 		return nil, err
