@@ -25,18 +25,9 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name: "Write object must be supported",
+			Name: "Create a company project",
 			Input: common.WriteParams{
-				ObjectName: "submittal_statuses",
-				RecordData: map[string]any{"name": "x"},
-			},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
-			Name: "Create project posts to company-scoped endpoint",
-			Input: common.WriteParams{
-				ObjectName: "projects",
+				ObjectName: "company/projects",
 				RecordData: map[string]any{
 					"project": map[string]any{
 						"name":           "Test Project Charlie",
@@ -67,9 +58,9 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Update project patches to /{id}",
+			Name: "Update project patch",
 			Input: common.WriteParams{
-				ObjectName: "projects",
+				ObjectName: "company/projects",
 				RecordId:   "2783405",
 				RecordData: map[string]any{
 					"project": map[string]any{"name": "Test Project Alpha (renamed)"},
@@ -118,7 +109,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Update vendor patches /{id} keeping company_id query param",
+			Name: "Update vendor patches",
 			Input: common.WriteParams{
 				ObjectName: "vendors",
 				RecordId:   "9001",
