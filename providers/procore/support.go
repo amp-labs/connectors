@@ -63,7 +63,7 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"pdf_template_configs":        {path: "rest/v1.0/companies/{companyId}/pdf_template_configs", write: true},
 	"app_configurations":          {path: "rest/v1.0/companies/{companyId}/app_configurations", write: true},
 	"bid_packages":                {path: "rest/v1.0/companies/{companyId}/bid_packages", recordsKey: "bidPackages"},
-	"action_plans/plan_types":     {path: "rest/v1.0/companies/{companyId}/action_plans/plan_types", incremental: true},
+	"action_plans/plan_types":     {path: "rest/v1.0/companies/{companyId}/action_plans/plan_types", incremental: true, write: true},
 	"timecard_time_types":         {path: "rest/v1.0/companies/{companyId}/timecard_time_types"},
 	"timesheets/filters/crews":    {path: "rest/v1.0/companies/{companyId}/timesheets/filters/crews"},
 	"form_templates":              {path: "rest/v1.0/companies/{companyId}/form_templates", incremental: true, write: true},
@@ -71,42 +71,44 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"custom_field_definitions":    {path: "rest/v1.0/companies/{companyId}/custom_field_definitions"},
 
 	"recycle_bin/action_plans/plan_template_item_assignees": {
-		path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_item_assignees",
+		path:        "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_item_assignees",
+		incremental: true,
+		write:       true,
 	}, //nolint:lll
-	"recycle_bin/action_plans/plan_template_items":                {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_items", incremental: true},                //nolint:lll
-	"recycle_bin/action_plans/plan_template_references":           {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_references", incremental: true},           //nolint:lll
-	"recycle_bin/action_plans/plan_template_sections":             {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_sections", incremental: true},             //nolint:lll
-	"recycle_bin/action_plans/plan_template_test_record_requests": {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_test_record_requests", incremental: true}, //nolint:lll
-	"recycle_bin/action_plans/plan_templates":                     {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_templates", incremental: true},                     //nolint:lll
-	"recycle_bin/checklist/list_templates":                        {path: "rest/v1.0/companies/{companyId}/recycle_bin/checklist/list_templates"},                                           //nolint:lll
+	"recycle_bin/action_plans/plan_template_items":                {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_items", incremental: true, write: true},                //nolint:lll
+	"recycle_bin/action_plans/plan_template_references":           {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_references", incremental: true, write: true},           //nolint:lll
+	"recycle_bin/action_plans/plan_template_sections":             {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_sections", incremental: true, write: true},             //nolint:lll
+	"recycle_bin/action_plans/plan_template_test_record_requests": {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_test_record_requests", incremental: true, write: true}, //nolint:lll
+	"recycle_bin/action_plans/plan_templates":                     {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_templates", incremental: true, write: true},                     //nolint:lll
+	"recycle_bin/checklist/list_templates":                        {path: "rest/v1.0/companies/{companyId}/recycle_bin/checklist/list_templates"},                                                        //nolint:lll
 
-	"incidents/action_types":              {path: "rest/v1.0/companies/{companyId}/incidents/action_types", incremental: true},        //nolint:lll
-	"incidents/affliction_types":          {path: "rest/v1.0/companies/{companyId}/incidents/affliction_types", incremental: true},    //nolint:lll
-	"incidents/body_parts":                {path: "rest/v1.0/companies/{companyId}/incidents/body_parts", incremental: true},          //nolint:lll
-	"incidents/environmental_types":       {path: "rest/v1.0/companies/{companyId}/incidents/environmental_types", incremental: true}, //nolint:lll
-	"incidents/injury_filing_types":       {path: "rest/v1.0/companies/{companyId}/incidents/injury_filing_types", incremental: true}, //nolint:lll
-	"incidents/harm_sources":              {path: "rest/v1.0/companies/{companyId}/incidents/harm_sources", incremental: true},        //nolint:lll
+	"incidents/action_types":              {path: "rest/v1.0/companies/{companyId}/incidents/action_types", incremental: true, write: true},     //nolint:lll
+	"incidents/affliction_types":          {path: "rest/v1.0/companies/{companyId}/incidents/affliction_types", incremental: true, write: true}, //nolint:lll
+	"incidents/body_parts":                {path: "rest/v1.0/companies/{companyId}/incidents/body_parts", incremental: true},                    //nolint:lll
+	"incidents/environmental_types":       {path: "rest/v1.0/companies/{companyId}/incidents/environmental_types", incremental: true},           //nolint:lll
+	"incidents/injury_filing_types":       {path: "rest/v1.0/companies/{companyId}/incidents/injury_filing_types", incremental: true},           //nolint:lll
+	"incidents/harm_sources":              {path: "rest/v1.0/companies/{companyId}/incidents/harm_sources", incremental: true, write: true},     //nolint:lll
 	"incidents/statuses":                  {path: "rest/v1.0/companies/{companyId}/incidents/statuses"},
 	"incidents/severity_levels":           {path: "rest/v1.0/companies/{companyId}/incidents/severity_levels"},
-	"incidents/work_activities":           {path: "rest/v1.0/companies/{companyId}/incidents/work_activities", incremental: true}, //nolint:lll
-	"contributing_behaviors":              {path: "rest/v1.0/companies/{companyId}/contributing_behaviors"},
-	"contributing_conditions":             {path: "rest/v1.0/companies/{companyId}/contributing_conditions", incremental: true}, //nolint:lll
-	"hazards":                             {path: "rest/v1.0/companies/{companyId}/hazards", incremental: true},                 //nolint:lll
+	"incidents/work_activities":           {path: "rest/v1.0/companies/{companyId}/incidents/work_activities", incremental: true, write: true}, //nolint:lll
+	"contributing_behaviors":              {path: "rest/v1.0/companies/{companyId}/contributing_behaviors", write: true, incremental: true},
+	"contributing_conditions":             {path: "rest/v1.0/companies/{companyId}/contributing_conditions", incremental: true, write: true}, //nolint:lll
+	"hazards":                             {path: "rest/v1.0/companies/{companyId}/hazards", incremental: true, write: true},                 //nolint:lll
 	"checklist/alternative_response_sets": {path: "rest/v1.0/companies/{companyId}/checklist/alternative_response_sets"},
-	"checklist/list_templates":            {path: "rest/v1.0/companies/{companyId}/checklist/list_templates", incremental: true},     //nolint:lll
-	"checklist/item/response_sets":        {path: "rest/v1.0/companies/{companyId}/checklist/item/response_sets", incremental: true}, //nolint:lll
-	"checklist/responses":                 {path: "rest/v1.0/companies/{companyId}/checklist/responses"},
-	"inspection_types":                    {path: "rest/v1.0/companies/{companyId}/inspection_types"},
+	"checklist/list_templates":            {path: "rest/v1.0/companies/{companyId}/checklist/list_templates", incremental: true, write: true},     //nolint:lll
+	"checklist/item/response_sets":        {path: "rest/v1.0/companies/{companyId}/checklist/item/response_sets", incremental: true, write: true}, //nolint:lll
+	"checklist/responses":                 {path: "rest/v1.0/companies/{companyId}/checklist/responses", write: true},
+	"inspection_types":                    {path: "rest/v1.0/companies/{companyId}/inspection_types", write: true},
 	"meeting_templates":                   {path: "rest/v1.0/companies/{companyId}/meeting_templates"},
 	"observation_types":                   {path: "rest/v1.0/companies/{companyId}/observation_types"},
-	"action_plans/verification_methods":   {path: "rest/v1.0/companies/{companyId}/action_plans/verification_methods", incremental: true}, //nolint:lll
-	"gps_positions":                       {path: "rest/v1.0/companies/{companyId}/gps_positions", incremental: true},
+	"action_plans/verification_methods":   {path: "rest/v1.0/companies/{companyId}/action_plans/verification_methods", incremental: true, write: true}, //nolint:lll
+	"gps_positions":                       {path: "rest/v1.0/companies/{companyId}/gps_positions", incremental: true, write: true},
 
 	// ---- v1.0, workforce-planning namespace ----
 	"custom-fields":         {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/custom_fields", write: true},
-	"groups":                {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/groups"},
+	"groups":                {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/groups", write: true},
 	"notification-profiles": {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/notification-profiles", recordsKey: "data"}, //nolint:lll
-	"tags":                  {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/tags"},
+	"tags":                  {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/tags", write: true},
 
 	// ---- v1.0, top-level path with company_id query param ----
 	"offices":                {path: "rest/v1.0/offices?company_id={companyId}", write: true},
@@ -131,30 +133,50 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"workflows/bulk_replace_requests": {path: "rest/v2.0/companies/{companyId}/workflows/bulk_replace_requests", recordsKey: "data", write: true}, //nolint:lll
 	"estimating/bid_board_projects":   {path: "rest/v2.0/companies/{companyId}/estimating/bid_board_projects", recordsKey: "data"},                //nolint:lll
 	"estimating/catalogs":             {path: "rest/v2.0/companies/{companyId}/estimating/catalogs", recordsKey: "data", write: true},             //nolint:lll
-	"equipment_register":              {path: "rest/v2.0/companies/{companyId}/equipment_register", recordsKey: "data"},
+	"equipment_register":              {path: "rest/v2.0/companies/{companyId}/equipment_register", recordsKey: "data", write: true},
 	"roles":                           {path: "rest/v2.0/companies/{companyId}/roles", recordsKey: "data", write: true},
 	"webhooks/hooks":                  {path: "rest/v2.0/companies/{companyId}/webhooks/hooks", recordsKey: "data", write: true},
 
 	// --- Write Only Endpoints ---
-	"support_pins":                        {path: "rest/v2.0/companies/{companyId}/support_pins", recordsKey: "data", write: true},
-	"budget_view_snapshots":               {path: "rest/v1.0/budget_view_snapshots", write: true},
-	"currency_configuration":              {path: "rest/v2.0/companies/{companyId}/currency_configuration", write: true},
-	"files":                               {path: "rest/v1.0/companies/{companyId}/files", write: true},
-	"uploads":                             {path: "rest/v1.1/companies/{companyId}/uploads", write: true},
-	"installation_requests":               {path: "rest/v1.0/installation_requests", write: true},
-	"bim_levels/batch":                    {path: "rest/v1.0/bim_levels/batch", write: true},
-	"bim_levels":                          {path: "rest/v1.0/bim_levels", write: true},
-	"bim_mint_tokens":                     {path: "rest/v1.0/bim_mint_tokens", write: true},
-	"bim_model_revision_plans/batch":      {path: "rest/v1.0/bim_model_revision_plans/batch", write: true},
-	"bim_model_revision_plans":            {path: "rest/v1.0/bim_model_revision_plans", write: true},
-	"bim_model_revision_viewpoints/batch": {path: "rest/v1.0/bim_model_revision_viewpoints/batch", write: true},
-	"bim_model_revisions":                 {path: "rest/v1.0/bim_model_revisions", write: true},
-	"bim_models":                          {path: "rest/v1.0/bim_models", write: true},
-	"bim_plans/batch":                     {path: "rest/v1.0/bim_plans/batch", write: true},
-	"bim_plans":                           {path: "rest/v1.0/bim_plans", write: true},
-	"bim_view_folders":                    {path: "rest/v1.0/bim_view_folders", write: true},
-	"bim_viewpoints/batch":                {path: "rest/v1.0/bim_viewpoints/batch", write: true},
-	"bim_viewpoints":                      {path: "rest/v1.0/bim_viewpoints", write: true},
-	"nested_bim_view_folders/batch":       {path: "rest/v1.0/nested_bim_view_folders/batch", write: true},
-	"nested_bim_view_folders":             {path: "rest/v1.0/nested_bim_view_folders", write: true},
+	"support_pins":                                 {path: "rest/v2.0/companies/{companyId}/support_pins", recordsKey: "data", write: true},
+	"budget_view_snapshots":                        {path: "rest/v1.0/budget_view_snapshots", write: true},
+	"currency_configuration":                       {path: "rest/v2.0/companies/{companyId}/currency_configuration", write: true},
+	"files":                                        {path: "rest/v1.0/companies/{companyId}/files", write: true},
+	"uploads":                                      {path: "rest/v1.1/companies/{companyId}/uploads", write: true},
+	"installation_requests":                        {path: "rest/v1.0/installation_requests", write: true},
+	"bim_levels/batch":                             {path: "rest/v1.0/bim_levels/batch", write: true},
+	"bim_levels":                                   {path: "rest/v1.0/bim_levels", write: true},
+	"bim_mint_tokens":                              {path: "rest/v1.0/bim_mint_tokens", write: true},
+	"bim_model_revision_plans/batch":               {path: "rest/v1.0/bim_model_revision_plans/batch", write: true},
+	"bim_model_revision_plans":                     {path: "rest/v1.0/bim_model_revision_plans", write: true},
+	"bim_model_revision_viewpoints/batch":          {path: "rest/v1.0/bim_model_revision_viewpoints/batch", write: true},
+	"bim_model_revisions":                          {path: "rest/v1.0/bim_model_revisions", write: true},
+	"bim_models":                                   {path: "rest/v1.0/bim_models", write: true},
+	"bim_plans/batch":                              {path: "rest/v1.0/bim_plans/batch", write: true},
+	"bim_plans":                                    {path: "rest/v1.0/bim_plans", write: true},
+	"bim_view_folders":                             {path: "rest/v1.0/bim_view_folders", write: true},
+	"bim_viewpoints/batch":                         {path: "rest/v1.0/bim_viewpoints/batch", write: true},
+	"bim_viewpoints":                               {path: "rest/v1.0/bim_viewpoints", write: true},
+	"nested_bim_view_folders/batch":                {path: "rest/v1.0/nested_bim_view_folders/batch", write: true},
+	"nested_bim_view_folders":                      {path: "rest/v1.0/nested_bim_view_folders", write: true},
+	"coordination_issues/bulk_delete":              {path: "rest/v1.0/coordination_issues/bulk_delete", write: true},
+	"coordination_issues":                          {path: "rest/v1.0/coordination_issues", write: true},
+	"contexts":                                     {path: "rest/v2.0/companies/{companyId}/contexts", write: true},
+	"contexts/get_or_create":                       {path: "rest/v2.0/companies/{companyId}/contexts/get_or_create", write: true},
+	"rounding_configuration":                       {path: "rest/v1.0/companies/{companyId}/rounding_configuration", write: true},
+	"timecard_entries":                             {path: "rest/v1.0/companies/{companyId}/timecard_entries", write: true},
+	"timesheets/timesheet_to_budget_configuration": {path: "rest/v1.0/companies/{companyId}/timesheets/timesheet_to_budget_configuration", write: true},
+	"meeting_categories":                           {path: "rest/v1.0/meeting_categories", write: true},
+	"observations/items":                           {path: "rest/v1.0/observations/items", write: true},
+	"punch_item_types":                             {path: "rest/v1.0/punch_item_types", write: true},
+	"punch_items":                                  {path: "rest/v1.0/punch_items", write: true},
+	"equipment_register_categories":                {path: "rest/v2.0/companies/{companyId}/equipment_register_categories", write: true},
+	"equipment_register_makes":                     {path: "rest/v2.0/companies/{companyId}/equipment_register_makes", write: true},
+	"equipment_register_models":                    {path: "rest/v2.0/companies/{companyId}/equipment_register_models", write: true},
+	"equipment_register/associate":                 {path: "rest/v2.0/companies/{companyId}/equipment_register/associate", write: true},
+	"equipment_register/statuses":                  {path: "rest/v2.0/companies/{companyId}/equipment_register/statuses", write: true},
+	"equipment_register_types":                     {path: "rest/v2.0/companies/{companyId}/equipment_register_types", write: true},
+	"job-titles":                                   {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/job-titles", write: true},
+
+	"recycle_bin/action_plans/plan_template_references/bulk_create": {path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_references/bulk_create", write: true},
 }

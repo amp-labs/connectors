@@ -150,8 +150,11 @@ func (c *Connector) parseWriteResponse(
 
 	// v2.0 endpoints wrap the record under a "data" key; v1.0 endpoints return it at the root.
 	root := body
-	if recordsKey := objectRegistry[params.ObjectName].recordsKey; recordsKey != "" {
-		if obj, err := jsonquery.New(body).ObjectOptional(recordsKey); err == nil && obj != nil {
+	recordsKey := objectRegistry[params.ObjectName].recordsKey
+
+	if recordsKey != "" {
+		obj, err := jsonquery.New(body).ObjectOptional(recordsKey)
+		if err == nil && obj != nil {
 			root = obj
 		}
 	}
