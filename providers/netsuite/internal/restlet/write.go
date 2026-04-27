@@ -84,8 +84,14 @@ func (a *Adapter) parseWriteResponse(
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	return &common.WriteResult{
+	result := &common.WriteResult{
 		Success:  true,
 		RecordId: rawID,
-	}, nil
+	}
+
+	if data, err := jsonquery.Convertor.ObjectToMap(node); err == nil {
+		result.Data = data
+	}
+
+	return result, nil
 }

@@ -52,6 +52,57 @@ func TestParseWriteResponse_RecordId(t *testing.T) {
 	}
 }
 
+// TestParseWriteResponse_Data ensures response body fields beyond recordId
+// (e.g. linesAdded from returnLineDetails) flow through to WriteResult.Data so
+// callers can access them.
+func TestParseWriteResponse_Data(t *testing.T) {
+	t.Parallel()
+
+	body := `{"header":{"status":"SUCCESS"},"body":{"recordId":144727,"type":"salesOrder",` +
+		`"linesAdded":{"item":[{"index":0,"lineId":"95859"},{"index":1,"lineId":"95860"}]}}}`
+
+	resp := newJSONResponse(t, body)
+
+	adapter := &Adapter{}
+
+	result, err := adapter.parseWriteResponse(context.Background(), common.WriteParams{}, nil, resp)
+	if err != nil {
+		t.Fatalf("parseWriteResponse() unexpected error: %v", err)
+	}
+
+	if result.RecordId != "144727" {
+		t.Fatalf("RecordId = %q, want %q", result.RecordId, "144727")
+	}
+
+	if result.Data == nil {
+		t.Fatal("Data is nil, want map with linesAdded")
+	}
+
+	linesAdded, ok := result.Data["linesAdded"]
+	if !ok {
+		t.Fatalf("Data missing 'linesAdded'; got keys: %v", keys(result.Data))
+	}
+
+	m, ok := linesAdded.(map[string]any)
+	if !ok {
+		t.Fatalf("linesAdded = %T, want map[string]any", linesAdded)
+	}
+
+	items, ok := m["item"].([]any)
+	if !ok || len(items) != 2 {
+		t.Fatalf("linesAdded.item = %v, want 2-element array", m["item"])
+	}
+}
+
+func keys(m map[string]any) []string {
+	ks := make([]string, 0, len(m))
+	for k := range m {
+		ks = append(ks, k)
+	}
+
+	return ks
+}
+
 func newJSONResponse(t *testing.T, body string) *common.JSONHTTPResponse {
 	t.Helper()
 
