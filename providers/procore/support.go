@@ -1,6 +1,8 @@
 package procore
 
-import "github.com/amp-labs/connectors/internal/datautils"
+import (
+	"github.com/amp-labs/connectors/internal/datautils"
+)
 
 // objectConfig is the single source of truth for how a Procore object is fetched.
 // Both metadata and read operations consult this registry.
@@ -15,6 +17,9 @@ type objectConfig struct {
 
 	// incremental is true when the object accepts Procore's filters[updated_at]
 	incremental bool
+
+	// write is true when the object supports POST (create) and PATCH (update).
+	write bool
 }
 
 const companyIDPlaceholder = "{companyId}"
@@ -23,41 +28,47 @@ const companyIDPlaceholder = "{companyId}"
 // Grouped by URL shape for readability.
 var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglobals,lll
 	// ---- v1.0, company-scoped path: rest/v1.0/companies/{companyId}/... ----
-	"projects":             {path: "rest/v1.0/companies/{companyId}/projects", incremental: true},
-	"programs":             {path: "rest/v1.0/companies/{companyId}/programs"},
+
+	"company/projects":     {path: "rest/v1.0/companies/{companyId}/projects", incremental: true, write: true},
+	"programs":             {path: "rest/v1.0/companies/{companyId}/programs", write: true},
 	"schedule/resources":   {path: "rest/v1.0/companies/{companyId}/schedule/resources", recordsKey: "resources"},
-	"project_bid_types":    {path: "rest/v1.0/companies/{companyId}/project_bid_types"},
-	"project_owner_types":  {path: "rest/v1.0/companies/{companyId}/project_owner_types"},
-	"project_regions":      {path: "rest/v1.0/companies/{companyId}/project_regions"},
-	"project_stages":       {path: "rest/v1.0/companies/{companyId}/project_stages"},
-	"project_types":        {path: "rest/v1.0/companies/{companyId}/project_types"},
-	"roles":                {path: "rest/v1.0/companies/{companyId}/roles"},
+	"project_bid_types":    {path: "rest/v1.0/companies/{companyId}/project_bid_types", write: true},
+	"project_owner_types":  {path: "rest/v1.0/companies/{companyId}/project_owner_types", write: true},
+	"project_regions":      {path: "rest/v1.0/companies/{companyId}/project_regions", write: true},
+	"project_stages":       {path: "rest/v1.0/companies/{companyId}/project_stages", write: true},
+	"project_types":        {path: "rest/v1.0/companies/{companyId}/project_types", write: true},
 	"submittal_statuses":   {path: "rest/v1.0/companies/{companyId}/submittal_statuses"},
 	"submittal_types":      {path: "rest/v1.0/companies/{companyId}/submittal_types"},
-	"trades":               {path: "rest/v1.0/companies/{companyId}/trades", incremental: true},
-	"work_classifications": {path: "rest/v1.0/companies/{companyId}/work_classifications"},
+	"trades":               {path: "rest/v1.0/companies/{companyId}/trades", incremental: true, write: true},
+	"work_classifications": {path: "rest/v1.0/companies/{companyId}/work_classifications", write: true},
 	"currency_configuration/exchange_rates": {
 		path:       "rest/v1.0/companies/{companyId}/currency_configuration/exchange_rates",
 		recordsKey: "exchange_rates",
+		write:      true,
 	},
-	"payments/early_pay_programs": {path: "rest/v1.0/companies/{companyId}/payments/early_pay_programs"},
+	"configurable_field_sets":     {path: "rest/v1.0/companies/{companyId}/configurable_field_sets", write: true},
+	"payments/early_pay_programs": {path: "rest/v1.0/companies/{companyId}/payments/early_pay_programs", write: true},
 	"payments/beneficiaries":      {path: "rest/v1.0/companies/{companyId}/payments/beneficiaries"},
 	"payments/projects":           {path: "rest/v1.0/companies/{companyId}/payments/projects"},
-	"uoms":                        {path: "rest/v1.0/companies/{companyId}/uoms"},
+	"uoms":                        {path: "rest/v1.0/companies/{companyId}/uoms", write: true},
 	"uom_categories":              {path: "rest/v1.0/companies/{companyId}/uom_categories"},
-	"people":                      {path: "rest/v1.0/companies/{companyId}/people"},
+	"people":                      {path: "rest/v1.0/companies/{companyId}/people", write: true},
 	"people/inactive":             {path: "rest/v1.0/companies/{companyId}/people/inactive"},
 	"users/inactive":              {path: "rest/v1.0/companies/{companyId}/users/inactive"},
+	"users":                       {path: "/rest/v1.3/companies/{companyId}/users", incremental: true, write: true},
 	"vendors/inactive":            {path: "rest/v1.0/companies/{companyId}/vendors/inactive"},
-	"insurances":                  {path: "rest/v1.0/companies/{companyId}/insurances"},
-	"permission_templates":        {path: "rest/v1.0/companies/{companyId}/permission_templates"},
+	"insurances":                  {path: "rest/v1.0/companies/{companyId}/insurances", write: true},
+	"permission_templates":        {path: "rest/v1.0/companies/{companyId}/permission_templates", write: true},
 	"distribution_groups":         {path: "rest/v1.0/companies/{companyId}/distribution_groups"},
-	"pdf_template_configs":        {path: "rest/v1.0/companies/{companyId}/pdf_template_configs"},
-	"app_configurations":          {path: "rest/v1.0/companies/{companyId}/app_configurations"},
+	"pdf_template_configs":        {path: "rest/v1.0/companies/{companyId}/pdf_template_configs", write: true},
+	"app_configurations":          {path: "rest/v1.0/companies/{companyId}/app_configurations", write: true},
 	"bid_packages":                {path: "rest/v1.0/companies/{companyId}/bid_packages", recordsKey: "bidPackages"},
 	"action_plans/plan_types":     {path: "rest/v1.0/companies/{companyId}/action_plans/plan_types", incremental: true},
 	"timecard_time_types":         {path: "rest/v1.0/companies/{companyId}/timecard_time_types"},
 	"timesheets/filters/crews":    {path: "rest/v1.0/companies/{companyId}/timesheets/filters/crews"},
+	"form_templates":              {path: "rest/v1.0/companies/{companyId}/form_templates", incremental: true, write: true},
+	"generic_tools":               {path: "rest/v1.0/companies/{companyId}/generic_tools", write: true},
+	"custom_field_definitions":    {path: "rest/v1.0/companies/{companyId}/custom_field_definitions"},
 
 	"recycle_bin/action_plans/plan_template_item_assignees": {
 		path: "rest/v1.0/companies/{companyId}/recycle_bin/action_plans/plan_template_item_assignees",
@@ -92,30 +103,58 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"gps_positions":                       {path: "rest/v1.0/companies/{companyId}/gps_positions", incremental: true},
 
 	// ---- v1.0, workforce-planning namespace ----
-	"custom-fields":         {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/custom_fields"},
+	"custom-fields":         {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/custom_fields", write: true},
 	"groups":                {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/groups"},
 	"notification-profiles": {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/notification-profiles", recordsKey: "data"}, //nolint:lll
 	"tags":                  {path: "rest/v1.0/workforce-planning/v2/companies/{companyId}/tags"},
 
 	// ---- v1.0, top-level path with company_id query param ----
-	"offices":               {path: "rest/v1.0/offices?company_id={companyId}"},
-	"vendors":               {path: "rest/v1.0/vendors?company_id={companyId}", incremental: true},
-	"departments":           {path: "rest/v1.0/departments?company_id={companyId}"},
-	"project_templates":     {path: "rest/v1.0/project_templates?company_id={companyId}"},
-	"workflow_instances":    {path: "rest/v1.0/workflow_instances?company_id={companyId}"},
-	"settings/permissions":  {path: "rest/v1.0/settings/permissions?company_id={companyId}", recordsKey: "tools"}, //nolint:lll
-	"change_types":          {path: "rest/v1.0/change_types?company_id={companyId}"},
-	"change_order/statuses": {path: "rest/v1.0/change_order/statuses?company_id={companyId}"},
-	"tax_codes":             {path: "rest/v1.0/tax_codes?company_id={companyId}"},
-	"tax_types":             {path: "rest/v1.0/tax_types?company_id={companyId}"},
+	"offices":                {path: "rest/v1.0/offices?company_id={companyId}", write: true},
+	"vendors":                {path: "rest/v1.0/vendors?company_id={companyId}", incremental: true, write: true},
+	"departments":            {path: "rest/v1.0/departments?company_id={companyId}", write: true},
+	"project_templates":      {path: "rest/v1.0/project_templates?company_id={companyId}"},
+	"workflow_instances":     {path: "rest/v1.0/workflow_instances?company_id={companyId}"},
+	"settings/permissions":   {path: "rest/v1.0/settings/permissions?company_id={companyId}", recordsKey: "tools"}, //nolint:lll
+	"change_types":           {path: "rest/v1.0/change_types?company_id={companyId}"},
+	"change_order/statuses":  {path: "rest/v1.0/change_order/statuses?company_id={companyId}"},
+	"tax_codes":              {path: "rest/v1.0/tax_codes?company_id={companyId}", write: true},
+	"tax_types":              {path: "rest/v1.0/tax_types?company_id={companyId}", write: true},
+	"custom_field_metadata":  {path: "rest/v1.0/custom_field_metadata?company_id={companyId}", write: true},
+	"custom_fields_sections": {path: "rest/v1.0/custom_fields_sections?company_id={companyId}", write: true},
+	"projects":               {path: "rest/v1.1/projects?company_id={companyId}", incremental: true, write: true},
 
 	// ---- v2.0, company-scoped ----
 	"operations":                      {path: "rest/v2.0/companies/{companyId}/async_operations", recordsKey: "data"},
 	"generic_tools/default_types":     {path: "rest/v2.0/companies/{companyId}/generic_tools/default_types", recordsKey: "data"}, //nolint:lll
 	"workflows/tools":                 {path: "rest/v2.0/companies/{companyId}/workflows/tools", recordsKey: "data"},
-	"change_order_change_reasons":     {path: "rest/v2.0/companies/{companyId}/change_order_change_reasons", recordsKey: "data"},     //nolint:lll
-	"workflows/bulk_replace_requests": {path: "rest/v2.0/companies/{companyId}/workflows/bulk_replace_requests", recordsKey: "data"}, //nolint:lll
-	"estimating/bid_board_projects":   {path: "rest/v2.0/companies/{companyId}/estimating/bid_board_projects", recordsKey: "data"},   //nolint:lll
-	"estimating/catalogs":             {path: "rest/v2.0/companies/{companyId}/estimating/catalogs", recordsKey: "data"},
+	"change_order_change_reasons":     {path: "rest/v2.0/companies/{companyId}/change_order_change_reasons", recordsKey: "data", write: true},     //nolint:lll
+	"workflows/bulk_replace_requests": {path: "rest/v2.0/companies/{companyId}/workflows/bulk_replace_requests", recordsKey: "data", write: true}, //nolint:lll
+	"estimating/bid_board_projects":   {path: "rest/v2.0/companies/{companyId}/estimating/bid_board_projects", recordsKey: "data"},                //nolint:lll
+	"estimating/catalogs":             {path: "rest/v2.0/companies/{companyId}/estimating/catalogs", recordsKey: "data", write: true},             //nolint:lll
 	"equipment_register":              {path: "rest/v2.0/companies/{companyId}/equipment_register", recordsKey: "data"},
+	"roles":                           {path: "rest/v2.0/companies/{companyId}/roles", recordsKey: "data", write: true},
+	"webhooks/hooks":                  {path: "rest/v2.0/companies/{companyId}/webhooks/hooks", recordsKey: "data", write: true},
+
+	// --- Write Only Endpoints ---
+	"support_pins":                        {path: "rest/v2.0/companies/{companyId}/support_pins", recordsKey: "data", write: true},
+	"budget_view_snapshots":               {path: "rest/v1.0/budget_view_snapshots", write: true},
+	"currency_configuration":              {path: "rest/v2.0/companies/{companyId}/currency_configuration", write: true},
+	"files":                               {path: "rest/v1.0/companies/{companyId}/files", write: true},
+	"uploads":                             {path: "rest/v1.1/companies/{companyId}/uploads", write: true},
+	"installation_requests":               {path: "rest/v1.0/installation_requests", write: true},
+	"bim_levels/batch":                    {path: "rest/v1.0/bim_levels/batch", write: true},
+	"bim_levels":                          {path: "rest/v1.0/bim_levels", write: true},
+	"bim_mint_tokens":                     {path: "rest/v1.0/bim_mint_tokens", write: true},
+	"bim_model_revision_plans/batch":      {path: "rest/v1.0/bim_model_revision_plans/batch", write: true},
+	"bim_model_revision_plans":            {path: "rest/v1.0/bim_model_revision_plans", write: true},
+	"bim_model_revision_viewpoints/batch": {path: "rest/v1.0/bim_model_revision_viewpoints/batch", write: true},
+	"bim_model_revisions":                 {path: "rest/v1.0/bim_model_revisions", write: true},
+	"bim_models":                          {path: "rest/v1.0/bim_models", write: true},
+	"bim_plans/batch":                     {path: "rest/v1.0/bim_plans/batch", write: true},
+	"bim_plans":                           {path: "rest/v1.0/bim_plans", write: true},
+	"bim_view_folders":                    {path: "rest/v1.0/bim_view_folders", write: true},
+	"bim_viewpoints/batch":                {path: "rest/v1.0/bim_viewpoints/batch", write: true},
+	"bim_viewpoints":                      {path: "rest/v1.0/bim_viewpoints", write: true},
+	"nested_bim_view_folders/batch":       {path: "rest/v1.0/nested_bim_view_folders/batch", write: true},
+	"nested_bim_view_folders":             {path: "rest/v1.0/nested_bim_view_folders", write: true},
 }

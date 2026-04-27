@@ -1,7 +1,9 @@
 package procore
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -10,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/readhelper"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
@@ -34,7 +37,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 
 	url.WithQueryParam(queryParamPerPage, "1")
 
-	return c.newRequest(ctx, http.MethodGet, url)
+	return c.newRequest(ctx, http.MethodGet, url, nil)
 }
 
 func (c *Connector) parseSingleObjectMetadataResponse(
@@ -93,7 +96,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		}
 	}
 
-	return c.newRequest(ctx, http.MethodGet, url)
+	return c.newRequest(ctx, http.MethodGet, url, nil)
 }
 
 func (c *Connector) parseReadResponse(
@@ -112,4 +115,60 @@ func (c *Connector) parseReadResponse(
 		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,
 	)
+}
+
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	url, err := c.buildObjectURL(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	method := http.MethodPost
+	if params.RecordId != "" {
+		url.AddPath(params.RecordId)
+		method = http.MethodPatch
+	}
+
+	body, err := json.Marshal(params.RecordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal write payload: %w", err)
+	}
+
+	return c.newRequest(ctx, method, url, bytes.NewReader(body))
+}
+
+func (c *Connector) parseWriteResponse(
+	ctx context.Context,
+	params common.WriteParams,
+	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.WriteResult, error) {
+	body, ok := response.Body()
+	if !ok {
+		return &common.WriteResult{Success: true}, nil
+	}
+
+	// v2.0 endpoints wrap the record under a "data" key; v1.0 endpoints return it at the root.
+	root := body
+	if recordsKey := objectRegistry[params.ObjectName].recordsKey; recordsKey != "" {
+		if obj, err := jsonquery.New(body).ObjectOptional(recordsKey); err == nil && obj != nil {
+			root = obj
+		}
+	}
+
+	data, err := jsonquery.Convertor.ObjectToMap(root)
+	if err != nil {
+		return &common.WriteResult{Success: true}, nil //nolint:nilerr
+	}
+
+	recordID, err := jsonquery.New(root).IntegerWithDefault("id", 0)
+	if err != nil || recordID == 0 {
+		return &common.WriteResult{Success: true, Data: data}, nil //nolint:nilerr
+	}
+
+	return &common.WriteResult{
+		Success:  true,
+		RecordId: strconv.FormatInt(recordID, 10),
+		Data:     data,
+	}, nil
 }
