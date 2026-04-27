@@ -36,7 +36,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		{
 			Name: "Read projects with default pagination",
 			Input: common.ReadParams{
-				ObjectName: "projects",
+				ObjectName: "company/projects",
 				Fields:     connectors.Fields("id", "name", "active"),
 			},
 			Server: mockserver.Conditional{
@@ -84,7 +84,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		{
 			Name: "Incremental read of projects sends filters[updated_at]",
 			Input: common.ReadParams{
-				ObjectName: "projects",
+				ObjectName: "company/projects",
 				Fields:     connectors.Fields("id", "name"),
 				Since:      since,
 			},
@@ -103,7 +103,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		{
 			Name: "Link header advances NextPage",
 			Input: common.ReadParams{
-				ObjectName: "projects",
+				ObjectName: "company/projects",
 				Fields:     connectors.Fields("id"),
 			},
 			Server: mockserver.Fixed{
@@ -120,7 +120,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		{
 			Name: "NextPage token is forwarded to the page query param",
 			Input: common.ReadParams{
-				ObjectName: "projects",
+				ObjectName: "company/projects",
 				Fields:     connectors.Fields("id"),
 				NextPage:   "3",
 			},
