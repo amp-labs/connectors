@@ -234,7 +234,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Loxo:                       wrapper(newLoxoConnector),
 	providers.Marketo:                    wrapper(newMarketoConnector),
 	providers.Microsoft:                  wrapper(newMicrosoftConnector),
-	providers.MicrosoftClientCredentials: wrapper(newMicrosoftClientCredentialsConnector),
+	providers.MicrosoftAdminConsent: wrapper(newMicrosoftAdminConsentConnector),
 	providers.Mixmax:                     wrapper(newMixmaxConnector),
 	providers.Monday:                     wrapper(newMondayConnector),
 	providers.Netsuite:                   wrapper(newNetsuiteConnector),
@@ -434,10 +434,10 @@ func newMicrosoftConnector(
 	return microsoft.NewConnector(params)
 }
 
-func newMicrosoftClientCredentialsConnector(
+func newMicrosoftAdminConsentConnector(
 	params common.ConnectorParams,
 ) (*microsoft.Connector, error) {
-	return microsoft.NewConnectorForProvider(providers.MicrosoftClientCredentials, params)
+	return microsoft.NewConnectorForProvider(providers.MicrosoftAdminConsent, params)
 }
 
 func newInstantlyConnector(
