@@ -105,6 +105,7 @@ import (
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
+	"github.com/amp-labs/connectors/providers/procore"
 	"github.com/amp-labs/connectors/providers/pylon"
 	"github.com/amp-labs/connectors/providers/quickbooks"
 	"github.com/amp-labs/connectors/providers/recurly"
@@ -250,6 +251,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pipedrive:                  wrapper(newPipedriveConnector),
 	providers.Pipeliner:                  wrapper(newPipelinerConnector),
 	providers.Podium:                     wrapper(newPodiumConnector),
+	providers.Procore:                    wrapper(newProcoreConnector),
+	providers.ProcoreSandbox:             wrapper(newProcoreSandboxConnector),
 	providers.Pylon:                      wrapper(newPylonConnector),
 	providers.QuickBooks:                 wrapper(newQuickbooksConnector),
 	providers.QuickbooksSandbox:          wrapper(newQuickbooksSandboxConnector),
@@ -1146,4 +1149,12 @@ func newFourFourConnector(params common.ConnectorParams) (*fourfour.Connector, e
 
 func newChargeOver(params common.ConnectorParams) (*chargeover.Connector, error) {
 	return chargeover.NewConnector(params)
+}
+
+func newProcoreConnector(params common.ConnectorParams) (*procore.Connector, error) {
+	return procore.NewConnector(params)
+}
+
+func newProcoreSandboxConnector(params common.ConnectorParams) (*procore.Connector, error) {
+	return procore.NewSandboxConnector(params)
 }
