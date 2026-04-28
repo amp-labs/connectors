@@ -35,10 +35,10 @@ func init() {
 			// the connection uses client_credentials for token acquisition
 			// (AUTH_SCHEME_OAUTH2_CLIENT is set explicitly in the callback).
 			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://login.microsoftonline.com/organizations/v2.0/adminconsent",
+			AuthURL:                   "https://login.microsoftonline.com/{{.workspace}}/v2.0/adminconsent",
 			TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
 			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false, // workspace (tenant ID) comes from the admin consent redirect
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -51,6 +51,16 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Tenant ID",
+					Prompt:      "The Azure AD tenant GUID (e.g. `ab43fdf9-0387-4660-b0dc-00deacc7c3af`). Find it in Azure portal > Microsoft Entra ID > Overview.",
+					DocsURL:     "https://docs.withampersand.com/customer-guides/microsoft-admin-consent",
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
