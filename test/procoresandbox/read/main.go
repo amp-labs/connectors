@@ -26,6 +26,8 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
+	// We are using the Procore sandbox environment because we don't have access to a real Procore instance.
+	// The sandbox provides a realistic environment for testing our connector without risking any real data.
 	conn, err := procoresandbox.NewConnector(ctx)
 	if err != nil {
 		slog.Error("Failed to create connector", slog.Any("error", err))
