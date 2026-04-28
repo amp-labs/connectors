@@ -25,6 +25,9 @@ func nextPageFromLink(linkHeader string) common.NextPageFunc {
 	}
 }
 
+// nextPageFromResponse returns a NextPageFunc that extracts the next page number
+// Example of Link header: `<https://api.procore.com/rest/v1.0/companies/12345/objects?page=2&per_page=100>; rel="next",
+// Example of paginated url: `https://api.procore.com/rest/v1.0/companies/12345/objects?page=2&per_page=100`
 func nextPageNumber(linkHeader string) string {
 	// If there is no Link header, we assume there are no more pages to fetch and return an empty token.
 	if linkHeader == "" {

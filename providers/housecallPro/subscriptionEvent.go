@@ -41,7 +41,8 @@ type SubscriptionEvent map[string]any
 type CollapsedSubscriptionEvent map[string]any
 
 //nolint:gochecknoglobals // Static allowlist of webhook objects we support.
-var supportedEventObjects = datautils.NewSetFromList([]string{"jobs", "customers", "estimates", "invoices", "leads"})
+var supportedEventObjects = datautils.NewSetFromList([]string{"jobs", "customers",
+	"estimates", "invoices", "leads", "employees"})
 
 // VerifyWebhookMessage implements connectors.WebhookVerifierConnector.
 func (*Connector) VerifyWebhookMessage(
@@ -228,9 +229,9 @@ func resourceRecord(evt SubscriptionEvent) (objectName string, record map[string
 }
 
 func resolveEventObject(resource string) (payloadObject string, connectorObject string, err error) {
-	// job appointment and estimate option are not supported.
-	if resource == "job.appointment" || resource == "estimate.option" {
-		return "", "", fmt.Errorf("%w: %q", errUnsupportedWebhookResource, resource)
+	// job appointment is an object supported by subscribe but not read.
+	if resource == "job.appointment" {
+		return "appointment", "job.appointments", nil
 	}
 
 	// event name can be object.action or object.subtype.action.

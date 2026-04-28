@@ -5,8 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -102,6 +104,11 @@ func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (
 
 // fetchMessage returns a concurrently executable job that fetches a single message
 // by ID and sends the fully decoded MessageRecord to messagesChannel.
+//
+// A 404 on a single message is treated as a skip rather than a batch failure: the
+// missing message is debug-logged and the job returns nil so simultaneously.DoCtx
+// does not cancel the other in-flight fetches. Callers therefore receive the
+// partial set of messages that did resolve.
 func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId string,
 ) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
@@ -112,6 +119,16 @@ func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId str
 
 		resp, err := a.JSONHTTPClient().Get(ctx, url.String())
 		if err != nil {
+			var httpErr *common.HTTPError
+			if errors.As(err, &httpErr) && httpErr.Status == http.StatusNotFound {
+				logging.Logger(ctx).Debug(
+					"gmail: message not found, skipping",
+					"messageId", messageId,
+				)
+
+				return nil
+			}
+
 			return err
 		}
 

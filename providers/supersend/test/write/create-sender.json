@@ -1,0 +1,12 @@
+{
+  "data": {
+    "id": "sender-789",
+    "email": "sender@example.com",
+    "name": "Test Sender",
+    "verified": false,
+    "OrgId": "org-001",
+    "createdAt": "2025-01-22T10:00:00.000Z",
+    "updatedAt": "2025-01-22T10:00:00.000Z"
+  },
+  "success": true
+}

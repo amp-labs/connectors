@@ -48,6 +48,7 @@ import (
 	"github.com/amp-labs/connectors/providers/dropboxsign"
 	"github.com/amp-labs/connectors/providers/dynamicsbusiness"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
+	"github.com/amp-labs/connectors/providers/fastspring"
 	"github.com/amp-labs/connectors/providers/fathom"
 	"github.com/amp-labs/connectors/providers/fireflies"
 	"github.com/amp-labs/connectors/providers/flatfile"
@@ -94,6 +95,7 @@ import (
 	"github.com/amp-labs/connectors/providers/netsuite"
 	netsuitem2m "github.com/amp-labs/connectors/providers/netsuite/m2m"
 	"github.com/amp-labs/connectors/providers/nutshell"
+	"github.com/amp-labs/connectors/providers/odoo"
 	"github.com/amp-labs/connectors/providers/okta"
 	"github.com/amp-labs/connectors/providers/outplay"
 	"github.com/amp-labs/connectors/providers/outreach"
@@ -123,6 +125,7 @@ import (
 	"github.com/amp-labs/connectors/providers/snowflake"
 	"github.com/amp-labs/connectors/providers/solarwinds"
 	"github.com/amp-labs/connectors/providers/stripe"
+	"github.com/amp-labs/connectors/providers/supersend"
 	"github.com/amp-labs/connectors/providers/talkdesk"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/teamwork"
@@ -188,6 +191,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.DropboxSign:                wrapper(newDropboxSignConnector),
 	providers.DynamicsBusinessCentral:    wrapper(newDynamicsBusinessCentral),
 	providers.DynamicsCRM:                wrapper(newDynamicsCRMConnector),
+	providers.FastSpring:                 wrapper(newFastSpringConnector),
 	providers.Fathom:                     wrapper(newFathomConnector),
 	providers.Fireflies:                  wrapper(newFirefliesConnector),
 	providers.Flatfile:                   wrapper(newFlatfileConnector),
@@ -236,6 +240,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Netsuite:                   wrapper(newNetsuiteConnector),
 	providers.NetsuiteM2M:                wrapper(newNetsuiteM2MConnector),
 	providers.Nutshell:                   wrapper(newNutshellConnector),
+	providers.Odoo:                       wrapper(newOdooConnector),
 	providers.Okta:                       wrapper(newOktaConnector),
 	providers.Outplay:                    wrapper(newOutplayConnector),
 	providers.Outreach:                   wrapper(newOutreachConnector),
@@ -267,6 +272,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Snowflake:                  wrapper(newSnowflakeConnector),
 	providers.SolarWindsServiceDesk:      wrapper(newSolarWindsConnector),
 	providers.Stripe:                     wrapper(newStripeConnector),
+	providers.SuperSend:                  wrapper(newSuperSendConnector),
 	providers.Talkdesk:                   wrapper(newTalkdeskConnector),
 	providers.Teamleader:                 wrapper(newTeamleaderConnector),
 	providers.Teamwork:                   wrapper(newTeamworkConnector),
@@ -659,6 +665,12 @@ func newOktaConnector(
 	return okta.NewConnector(params)
 }
 
+func newOdooConnector(
+	params common.ConnectorParams,
+) (*odoo.Connector, error) {
+	return odoo.NewConnector(params)
+}
+
 func newHeyReachConnector(
 	params common.ConnectorParams,
 ) (*heyreach.Connector, error) {
@@ -858,6 +870,10 @@ func newBrazeConnector(
 	params common.ConnectorParams,
 ) (*braze.Connector, error) {
 	return braze.NewConnector(params)
+}
+
+func newFastSpringConnector(params common.ConnectorParams) (*fastspring.Connector, error) {
+	return fastspring.NewConnector(params)
 }
 
 func newFathomConnector(
@@ -1086,6 +1102,10 @@ func newQuickbooksSandboxConnector(params common.ConnectorParams) (*quickbooks.C
 
 func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connector, error) {
 	return dropboxsign.NewConnector(params)
+}
+
+func newSuperSendConnector(params common.ConnectorParams) (*supersend.Connector, error) {
+	return supersend.NewConnector(params)
 }
 
 func newCallRail(params common.ConnectorParams) (*callrail.Connector, error) {

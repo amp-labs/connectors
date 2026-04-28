@@ -13,6 +13,14 @@ import (
 
 // Type definitions for HubSpot associations API.
 
+// Result from https://developers.hubspot.com/docs/guides/api/crm/associations/associations-v4#retrieve-associated-records
+//
+//nolint:lll
+type assocOutput struct {
+	Status  string        `json:"status"`
+	Results []assocResult `json:"results"`
+}
+
 type assocInputs struct {
 	Inputs []assocId `json:"inputs"`
 }
@@ -35,20 +43,6 @@ type assocObject struct {
 type assocResult struct {
 	From assocId       `json:"from"`
 	To   []assocObject `json:"to"`
-}
-
-type assocOutput struct {
-	Status  string        `json:"status"`
-	Results []assocResult `json:"results"`
-}
-
-// String returns a string representation of the association type.
-func (t *assocType) String() string {
-	if t.Label != nil && len(*t.Label) > 0 {
-		return fmt.Sprintf("category=%s id=%d label=%s", t.Category, t.TypeId, *t.Label)
-	}
-
-	return fmt.Sprintf("category=%s id=%d", t.Category, t.TypeId)
 }
 
 // getUniqueIDs returns a slice of unsorted unique IDs from the given data.
@@ -157,21 +151,21 @@ func (s Strategy) fetchObjectAssociations( //nolint:cyclop,funlen
 		var assocs []common.Association
 
 		for _, assoc := range result.To {
-			for _, assocType := range assoc.AssociationTypes {
-				metadata := map[string]any{
+			assocTypes := make([]map[string]any, len(assoc.AssociationTypes))
+			for i, assocType := range assoc.AssociationTypes {
+				assocTypes[i] = map[string]any{
 					"category": assocType.Category,
 					"typeId":   assocType.TypeId,
 				}
 				if assocType.Label != nil {
-					metadata["label"] = *assocType.Label
+					assocTypes[i]["label"] = *assocType.Label
 				}
-
-				assocs = append(assocs, common.Association{
-					ObjectId:                    strconv.FormatInt(assoc.ToObjectId, 10),
-					AssociationType:             assocType.String(),
-					ProviderAssociationMetadata: metadata,
-				})
 			}
+
+			assocs = append(assocs, common.Association{
+				ObjectId:                    strconv.FormatInt(assoc.ToObjectId, 10),
+				ProviderAssociationMetadata: map[string]any{"associationTypes": assocTypes},
+			})
 		}
 
 		if len(assocs) > 0 {
