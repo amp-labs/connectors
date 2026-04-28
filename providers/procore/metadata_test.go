@@ -32,7 +32,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 		},
 		{
 			Name:  "Company-scoped v1.0 endpoint returns bare array",
-			Input: []string{"projects"},
+			Input: []string{"company/projects"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -45,8 +45,8 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"projects": {
-						DisplayName: "Projects",
+					"company/projects": {
+						DisplayName: "Company/Projects",
 						Fields: map[string]common.FieldMetadata{
 							"id":             {DisplayName: "id", ValueType: common.ValueTypeFloat, ProviderType: "float"},
 							"name":           {DisplayName: "name", ValueType: common.ValueTypeString, ProviderType: "string"},
