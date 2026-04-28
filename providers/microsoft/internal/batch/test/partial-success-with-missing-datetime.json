@@ -1,0 +1,70 @@
+{
+  "responses": [
+    {
+      "id": "users/id/messages",
+      "status": 400,
+      "headers": {
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "error": {
+          "code": "InvalidRequest",
+          "message": "Could not process subscription creation payload. Are all property names spelled and camelCased properly?Also are the dateTimeOffest properties in a valid Internet Date and Time format?",
+          "innerError": {
+            "date": "2026-04-23T17:14:41",
+            "request-id": "368f0834-d0ec-4b77-bf1f-1634361c4484",
+            "client-request-id": "368f0834-d0ec-4b77-bf1f-1634361c4484"
+          }
+        }
+      }
+    },
+    {
+      "id": "butterfly",
+      "status": 404,
+      "headers": {
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "error": {
+          "code": "ExtensionError",
+          "message": "Operation: Create; Exception: [Status Code: NotFound; Reason: Not Found; Message : Resource not found.]",
+          "innerError": {
+            "date": "2026-04-23T17:19:16",
+            "request-id": "f34667cf-5b74-40da-abd3-708fcf60d43c",
+            "client-request-id": "f34667cf-5b74-40da-abd3-708fcf60d43c"
+          }
+        }
+      }
+    },
+    {
+      "id": "me/messages",
+      "status": 201,
+      "headers": {
+        "Location": "https://subscriptionstore.windows.net/1.0/NA/subscriptions('5dd5dc5d-39d8-4795-a247-c61134e83115')",
+        "Cache-Control": "no-cache",
+        "OData-Version": "4.0",
+        "Content-Type": "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8"
+      },
+      "body": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#subscriptions/$entity",
+        "id": "5dd5dc5d-39d8-4795-a247-c61134e83115",
+        "resource": "me/messages",
+        "applicationId": "39d7eec8-2032-4dd3-959f-d92d8a4e2ad3",
+        "changeType": "created,updated,deleted",
+        "clientState": null,
+        "notificationUrl": "https://4a4e-46-150-81-5.ngrok-free.app",
+        "notificationQueryOptions": null,
+        "lifecycleNotificationUrl": null,
+        "expirationDateTime": "2026-04-23T18:19:14Z",
+        "creatorId": "ae87552f-48fc-4dec-9322-65040bf9fdfd",
+        "includeResourceData": null,
+        "latestSupportedTlsVersion": "v1_2",
+        "encryptionCertificate": null,
+        "encryptionCertificateId": null,
+        "notificationUrlAppId": null
+      }
+    }
+  ]
+}
