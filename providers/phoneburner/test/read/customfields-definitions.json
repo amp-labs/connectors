@@ -1,0 +1,24 @@
+{
+  "http_status": 200,
+  "status": "success",
+  "customfields": {
+    "customfields": [
+      {
+        "custom_field_id": "215",
+        "display_name": "Lead Score",
+        "type_id": "7",
+        "type_name": "Numeric",
+        "display_order": "0",
+        "_link": {
+          "self": {
+            "href": "rest/1/customfields/215"
+          }
+        }
+      }
+    ],
+    "page_size": 100,
+    "total_results": "1",
+    "page": 1,
+    "total_pages": 1
+  }
+}
