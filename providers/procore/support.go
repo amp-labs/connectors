@@ -29,7 +29,7 @@ const companyIDPlaceholder = "{companyId}"
 var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglobals,lll
 	// ---- v1.0, company-scoped path: rest/v1.0/companies/{companyId}/... ----
 
-	"company/projects":     {path: "rest/v1.0/companies/{companyId}/projects", incremental: true, write: true},
+	"company/projects":     {path: "rest/v1.0/companies/{companyId}/projects", incremental: true},
 	"programs":             {path: "rest/v1.0/companies/{companyId}/programs", write: true},
 	"schedule/resources":   {path: "rest/v1.0/companies/{companyId}/schedule/resources", recordsKey: "resources"},
 	"project_bid_types":    {path: "rest/v1.0/companies/{companyId}/project_bid_types", write: true},
