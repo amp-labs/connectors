@@ -38,11 +38,8 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return components.Initialize(providers.PayPal, params, constructor)
 }
 
-// NewConnectorForProvider allows twin providers to reuse this implementation
-// with a different provider identity. The provider constant controls which
-// base URL and token URL are resolved from the provider registry.
-func NewConnectorForProvider(provider providers.Provider, params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(provider, params, constructor)
+func NewSandboxConnector(params common.ConnectorParams) (*Connector, error) {
+	return components.Initialize(providers.PayPalSandBox, params, constructor)
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
