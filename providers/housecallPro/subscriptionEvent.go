@@ -107,6 +107,12 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 		return common.SubscriptionEventTypeOther, nil
 	}
 
+	// Employee events are marked as "other" and routed through passthrough
+	// because there is no employee get-by-id endpoint.
+	if strings.HasPrefix(strings.ToLower(eventType), "employee.") {
+		return common.SubscriptionEventTypeOther, nil
+	}
+
 	parts := strings.Split(eventType, ".")
 
 	action := strings.ToLower(parts[len(parts)-1])
