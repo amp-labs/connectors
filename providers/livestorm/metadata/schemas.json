@@ -1,0 +1,185 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "events": {
+          "displayName": "Events",
+          "path": "/v1/events",
+          "responseKey": "data",
+          "docs": "https://developers.livestorm.co/reference/get_events",
+          "fields": {
+            "id": {
+              "displayName": "Event Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scheduling_status": {
+              "displayName": "Scheduling Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "everyone_can_speak": {
+              "displayName": "Everyone Can Speak",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "people": {
+          "displayName": "People",
+          "path": "/v1/people",
+          "responseKey": "data",
+          "docs": "https://developers.livestorm.co/reference/get_people",
+          "fields": {
+            "id": {
+              "displayName": "Person Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "role": {
+              "displayName": "Role",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "people_attributes": {
+          "displayName": "People Attributes",
+          "path": "/v1/people_attributes",
+          "responseKey": "data",
+          "docs": "https://developers.livestorm.co/reference/get_people-attributes",
+          "fields": {
+            "id": {
+              "displayName": "People Attribute Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "slug": {
+              "displayName": "Slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "builtin": {
+              "displayName": "Builtin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "jobs": {
+          "displayName": "Jobs",
+          "path": "/v1/jobs",
+          "responseKey": "data",
+          "docs": "https://developers.livestorm.co/reference/get_jobs-id",
+          "fields": {
+            "id": {
+              "displayName": "Job Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "session_chat_messages": {
+          "displayName": "Session Chat Messages",
+          "path": "/v1/sessions/chat_messages",
+          "responseKey": "data",
+          "docs": "https://developers.livestorm.co/reference/get_sessions-id-chat-messages",
+          "fields": {
+            "id": {
+              "displayName": "Chat Message Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "text": {
+              "displayName": "Text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "session_id": {
+              "displayName": "Session Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "person_id": {
+              "displayName": "Person Id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
