@@ -61,7 +61,7 @@ func buildUpdatedAtFilter(since, until time.Time) string {
 		return ""
 	}
 
-	var s, u string
+	var s, u string //nolint:varnamelen
 	if !since.IsZero() {
 		s = since.UTC().Format(time.RFC3339)
 	}
