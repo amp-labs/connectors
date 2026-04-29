@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/tools/fileconv"
@@ -35,6 +36,7 @@ type Connector struct {
 	// Supported operations
 	components.SchemaProvider
 	components.Reader
+	components.Writer
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -50,13 +52,29 @@ func constructor(base *components.Connector) (*Connector, error) {
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(common.ModuleRoot, schemas)
 
+	registry, err := components.NewEndpointRegistry(supportedOperations())
+	if err != nil {
+		return nil, err
+	}
+
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
-		components.NewEmptyEndpointRegistry(),
+		registry,
 		common.ModuleRoot,
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		registry,
+		common.ModuleRoot,
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
 			ErrorHandler:  common.InterpretError,
 		},
 	)
