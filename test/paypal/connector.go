@@ -23,7 +23,7 @@ func GetPayPalConnector(ctx context.Context) *paypal.Connector {
 		utils.Fail(err.Error())
 	}
 
-	conn, err := paypal.NewConnector(common.ConnectorParams{
+	conn, err := paypal.NewSandboxConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
 	})
 	if err != nil {
