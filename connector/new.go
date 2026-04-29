@@ -87,6 +87,7 @@ import (
 	"github.com/amp-labs/connectors/providers/lever"
 	"github.com/amp-labs/connectors/providers/linear"
 	"github.com/amp-labs/connectors/providers/linkedin"
+	"github.com/amp-labs/connectors/providers/livestorm"
 	"github.com/amp-labs/connectors/providers/loxo"
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/microsoft"
@@ -232,6 +233,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Lever:                      wrapper(newLeverConnector),
 	providers.Linear:                     wrapper(newLinearConnector),
 	providers.LinkedIn:                   wrapper(newLinkedInConnector),
+	providers.Livestorm:                  wrapper(newLivestormConnector),
 	providers.Loxo:                       wrapper(newLoxoConnector),
 	providers.Marketo:                    wrapper(newMarketoConnector),
 	providers.Microsoft:                  wrapper(newMicrosoftConnector),
@@ -973,6 +975,12 @@ func newLinkedInConnector(
 	params common.ConnectorParams,
 ) (*linkedin.Connector, error) {
 	return linkedin.NewConnector(params)
+}
+
+func newLivestormConnector(
+	params common.ConnectorParams,
+) (*livestorm.Connector, error) {
+	return livestorm.NewConnector(params)
 }
 
 func newBitBucketConnector(params common.ConnectorParams,
