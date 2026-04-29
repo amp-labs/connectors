@@ -68,6 +68,10 @@ func buildUpdatedAtFilter(since, until time.Time) string {
 
 	if !until.IsZero() {
 		u = until.UTC().Format(time.RFC3339)
+	} else {
+		// Procore's API requires a value on the right side of the range,
+		// so if until is not provided, we use the current time as a default.
+		u = time.Now().UTC().Format(time.RFC3339)
 	}
 
 	return s + filterRangeSeparator + u
