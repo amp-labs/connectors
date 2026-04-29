@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/readhelper"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -77,17 +78,22 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+
+	if params.NextPage != "" {
+		nextURL, err := urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+
+		return c.newRequest(ctx, http.MethodGet, nextURL, nil)
+	}
+
 	url, err := c.buildObjectURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	page := "1"
-	if params.NextPage != "" {
-		page = params.NextPage.String()
-	}
-
-	url.WithQueryParam(queryParamPage, page)
+	url.WithQueryParam(queryParamPage, "1")
 	url.WithQueryParam(queryParamPerPage, strconv.Itoa(resolvePageSize(params.PageSize)))
 
 	if objectRegistry[params.ObjectName].incremental {
