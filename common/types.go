@@ -145,6 +145,9 @@ var (
 
 	// ErrProxyNotApplicable indicates that a proxy cannot be used in the given context.
 	ErrProxyNotApplicable = errors.New("proxy is not applicable in this context")
+
+	// ErrSubscriptionEventList is returned by CollapsedSubscriptionEvent.SubscriptionEventList.
+	ErrSubscriptionEventList = errors.New("failed creating []common.SubscriptionEvent")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
