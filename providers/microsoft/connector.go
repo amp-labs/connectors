@@ -13,9 +13,14 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/batch"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/metadata"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/webhook"
 )
 
 const apiVersion = "v1.0"
+
+type (
+	EventCollection = webhook.EventCollection
+)
 
 type Connector struct {
 	// Basic connector
