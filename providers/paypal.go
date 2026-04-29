@@ -32,7 +32,7 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     false,
-			Read:      true,
+			Read:      false,
 			Subscribe: false,
 			Write:     false,
 		},
