@@ -25,14 +25,16 @@ import (
 //   - Per-user budget:  15,000 units/min / 60 = 250 units/sec
 //   - Max sustainable:  250 units/sec / 5 units per get = 50 GETs/sec/user
 //   - For cap = C and avg Gmail latency L ~= 200ms, sustained RPS ~= C / L:
-//       C = 5  -> 25 RPS -> 125 units/sec -> 7,500/min  (50% of budget)
-//       C = 10 -> 50 RPS -> 250 units/sec -> 15,000/min (100% -- no headroom)
+//     C = 5  -> 25 RPS -> 125 units/sec -> 7,500/min  (50% of budget)
+//     C = 10 -> 50 RPS -> 250 units/sec -> 15,000/min (100% -- no headroom)
 //   - C = 5 stays under the concurrent-request wall AND keeps half the quota-unit
 //     budget free for retries and other API traffic on the same token.
 //
 // Refs:
-//   - Concurrent-request guidance: https://developers.google.com/workspace/gmail/api/guides/handle-errors#concurrent-requests
-//   - Per-user/per-project quota units: https://developers.google.com/workspace/gmail/api/reference/quota
+//   - Concurrent-request guidance:
+//     https://developers.google.com/workspace/gmail/api/guides/handle-errors#concurrent-requests
+//   - Per-user/per-project quota units:
+//     https://developers.google.com/workspace/gmail/api/reference/quota
 const gmailMaxConcurrentFetches = 5
 
 // fetchMessages retrieves the full message payloads for all message IDs found
