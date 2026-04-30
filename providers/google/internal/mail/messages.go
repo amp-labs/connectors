@@ -16,6 +16,14 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+// gmailMaxConcurrentFetches caps the number of in-flight messages.get requests per call.
+// Gmail enforces a per-user concurrent-request limit (returns 429 "Too many concurrent
+// requests for user" when exceeded) and a 250 quota-units/sec/user budget where
+// messages.get costs 5 units each. A cap of 5 keeps us under the concurrency wall and
+// uses ~half the quota-unit budget at typical latencies, leaving headroom for retries
+// and other API traffic on the same token.
+const gmailMaxConcurrentFetches = 5
+
 // fetchMessages retrieves the full message payloads for all message IDs found
 // in the provided collection response.
 //
@@ -44,8 +52,9 @@ func (a *Adapter) fetchMessages(
 		callbacks = append(callbacks, a.fetchMessage(messagesChannel, messageID))
 	}
 
-	// Run all jobs concurrently. If any job fails, context is expected to cancel.
-	if err = simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+	// Run jobs with bounded concurrency to avoid Gmail per-user 429s. If any job fails,
+	// context is expected to cancel.
+	if err = simultaneously.DoCtx(ctx, gmailMaxConcurrentFetches, callbacks...); err != nil {
 		return nil, err
 	}
 
@@ -82,7 +91,7 @@ func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (
 		callbacks = append(callbacks, a.fetchMessage(messagesChannel, messageID))
 	}
 
-	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+	if err := simultaneously.DoCtx(ctx, gmailMaxConcurrentFetches, callbacks...); err != nil {
 		return nil, err
 	}
 
