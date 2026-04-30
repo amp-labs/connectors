@@ -1,0 +1,19 @@
+{
+    "_embedded": {
+        "sessions": [
+            {
+                "webinarKey": "7878787878787878",
+                "sessionKey": "9999999999999999",
+                "startTime": "2024-10-15T14:00:00Z",
+                "endTime": "2024-10-15T15:00:00Z",
+                "registrantsAttended": 38
+            }
+        ]
+    },
+    "page": {
+        "size": 1,
+        "totalElements": 5,
+        "totalPages": 5,
+        "number": 0
+    }
+}
