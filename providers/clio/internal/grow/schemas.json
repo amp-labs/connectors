@@ -1,0 +1,339 @@
+{
+  "modules": {
+    "grow": {
+      "id": "grow",
+      "path": "",
+      "objects": {
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "data",
+          "fields": {
+            "addresses": {
+              "displayName": "addresses",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "clio_id": {
+              "displayName": "clio_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emails": {
+              "displayName": "emails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "global_id": {
+              "displayName": "global_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "matters": {
+              "displayName": "matters",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_numbers": {
+              "displayName": "phone_numbers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Person",
+                  "displayValue": "Person"
+                },
+                {
+                  "value": "Company",
+                  "displayValue": "Company"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "custom_actions": {
+          "displayName": "Custom Actions",
+          "path": "/custom_actions",
+          "responseKey": "data",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "label": {
+              "displayName": "label",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "target_url": {
+              "displayName": "target_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ui_reference": {
+              "displayName": "ui_reference",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "matters/show",
+                  "displayValue": "matters/show"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "inbox_leads": {
+          "displayName": "Inbox Leads",
+          "path": "/inbox_leads",
+          "responseKey": "data",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_number": {
+              "displayName": "phone_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "matters": {
+          "displayName": "Matters",
+          "path": "/matters",
+          "responseKey": "data",
+          "fields": {
+            "client": {
+              "displayName": "client",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "clio_id": {
+              "displayName": "clio_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_appointment_created_at": {
+              "displayName": "first_appointment_created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_letter_sent_date": {
+              "displayName": "first_letter_sent_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "global_id": {
+              "displayName": "global_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hired_date": {
+              "displayName": "hired_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "inbox_lead_id": {
+              "displayName": "inbox_lead_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "is_locked": {
+              "displayName": "is_locked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary_contact": {
+              "displayName": "primary_contact",
+              "valueType": "other"
+            },
+            "projected_value": {
+              "displayName": "projected_value",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status_category": {
+              "displayName": "status_category",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "intake",
+                  "displayValue": "intake"
+                },
+                {
+                  "value": "hired",
+                  "displayValue": "hired"
+                },
+                {
+                  "value": "declined",
+                  "displayValue": "declined"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "data",
+          "fields": {
+            "account": {
+              "displayName": "account",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

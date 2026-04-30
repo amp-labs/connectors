@@ -1,0 +1,1690 @@
+---
+openapi: 3.0.3
+info:
+  title: Clio Grow API Documentation
+  version: v2
+  description: |
+    # Developer Support and Feedback
+    * Clio takes the availability and stability of our API seriously; please report any **degradations** or **breakages** to Clio Grow's API Support team at [api@clio.com](mailto:api@clio.com).
+    * For business and partnership inquiries, contact our API Partnerships team at [api.partnerships@clio.com](mailto:api.partnerships@clio.com).
+    * For best practices and tips from the Clio development community, join the conversation in the [Clio Developer Slack Channel](https://join.slack.com/t/clio-public/shared_invite/zt-36i0eqgo1-7POORPtMJpp2N0~_auL2IQ).
+
+    # Getting Started
+    > **Note:** The API is available at region specific URLs for the [Australia](https://au.api.clio.com/grow), [EU](https://eu.api.clio.com/grow), [Canada](https://ca.api.clio.com/grow) and [US](https://api.clio.com/grow) regions.
+    >
+    > The developer portal is available at region-specific links for the [Australia](https://au.developers.api.clio.com), [EU](https://eu.developers.api.clio.com), [Canada](https://ca.developers.api.clio.com) and [US](https://developers.api.clio.com) regions.
+  contact:
+    name: Clio Grow API Support
+    email: api@clio.com
+  x-logo:
+    url: https://www.clio.com/wp-content/uploads/2015/05/Container-5-Logo.png
+  license:
+    name: Proprietary
+    url: https://www.clio.com/terms/
+servers:
+- url: https://api.clio.com/grow
+  description: US region Production Server
+- url: https://eu.api.clio.com/grow
+  description: Europe region Production Server
+- url: https://au.api.clio.com/grow
+  description: Australia region Production Server
+- url: https://ca.api.clio.com/grow
+  description: Canada region Production Server
+tags:
+- name: Contacts
+  description: Operations for managing contacts and contact notes
+- name: Custom Actions
+  description: |
+    Custom Actions are a mechanism to add a link to certain dropdowns in the Clio Grow user interface.
+    When this link is clicked by a Grow user, a new tab opens in their browser and they are sent to the URL
+    provided during that Custom Action's creation. Clio will attach contextual parameters to the URL to
+    enable the integration that created the custom action to call the API afterward.
+
+
+    ## Security
+
+
+    ### Confirming a User's Action
+
+
+    Because custom actions require an unauthorized GET request made from a user's browser, it's important to
+    validate that a user has actually performed an action within Clio.
+
+
+    When a request is sent to the URL specified on the custom action, Clio includes a unique `custom_action_nonce`
+    parameter. If you send the `custom_action_nonce` in your next request to the API as a query parameter,
+    Clio will use it to validate that the user who clicked the custom action matches your oauth token request.
+    If the nonce does not match, a 403 Forbidden error will be returned.
+
+
+    The nonce value is a single-use code and has an expiry of 60 seconds.
+- name: Inbox Leads
+  description: Operations for managing inbox leads
+- name: Matters
+  description: Operations for managing matters and matter notes
+- name: Users
+  description: Operations for managing users
+paths:
+  "/contacts":
+    get:
+      operationId: listContacts
+      summary: List contacts
+      description: Returns a paginated list of contacts
+      tags:
+      - Contacts
+      parameters:
+      - name: query
+        in: query
+        description: Search across contact names, emails, and phone numbers
+        schema:
+          type: string
+      - "$ref": "#/components/parameters/PageTokenParam"
+      - "$ref": "#/components/parameters/CreatedSinceParam"
+      - "$ref": "#/components/parameters/UpdatedSinceParam"
+      - "$ref": "#/components/parameters/IdsFilterParam"
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/contact"
+                  meta:
+                    "$ref": "#/components/schemas/ListMeta"
+        '400':
+          "$ref": "#/components/responses/BadRequestResponse"
+        '401':
+          "$ref": "#/components/responses/UnauthorizedResponse"
+        '403':
+          "$ref": "#/components/responses/ForbiddenResponse"
+        '429':
+          "$ref": "#/components/responses/TooManyRequestsResponse"
+  "/contacts/{id}":
+    get:
+      operationId: getContact
+      summary: Get a contact
+      description: Returns a single contact by ID
+      tags:
+      - Contacts
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The unique identifier for the Contact
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/contact"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          "$ref": "#/components/responses/NotFoundResponse"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+  "/contacts/{contact_id}/notes":
+    get:
+      operationId: listContactNotes
+      summary: List notes for a contact
+      description: Returns a paginated list of notes for a contact
+      tags:
+      - Contacts
+      parameters:
+      - name: contact_id
+        in: path
+        required: true
+        description: The unique identifier for the Contact
+        schema:
+          type: integer
+          format: int64
+      - "$ref": "#/components/parameters/PageTokenParam"
+      - "$ref": "#/components/parameters/CreatedSinceParam"
+      - "$ref": "#/components/parameters/UpdatedSinceParam"
+      - "$ref": "#/components/parameters/IdsFilterParam"
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Note"
+                  meta:
+                    "$ref": "#/components/schemas/ListMeta"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          "$ref": "#/components/responses/NotFoundResponse"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+    post:
+      operationId: createContactNote
+      summary: Create a note for a contact
+      description: Creates a new note for a contact
+      tags:
+      - Contacts
+      parameters:
+      - name: contact_id
+        in: path
+        required: true
+        description: The unique identifier for the Contact
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  type: object
+                  required:
+                  - subject
+                  - body
+                  properties:
+                    subject:
+                      type: string
+                      maxLength: 255
+                      description: Subject line of the note
+                      example: Follow-up call
+                    body:
+                      type: string
+                      maxLength: 65535
+                      description: Body content of the note
+                      example: Discussed project timeline and next steps.
+                  additionalProperties: false
+              additionalProperties: false
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/Note"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          "$ref": "#/components/responses/NotFoundResponse"
+        '422':
+          "$ref": "#/components/responses/UnprocessableEntityResponse"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+  "/users":
+    get:
+      operationId: listUsers
+      summary: List users
+      description: Returns a paginated list of users in the current account
+      tags:
+      - Users
+      parameters:
+      - "$ref": "#/components/parameters/PageTokenParam"
+      - "$ref": "#/components/parameters/CreatedSinceParam"
+      - "$ref": "#/components/parameters/UpdatedSinceParam"
+      - "$ref": "#/components/parameters/IdsFilterParam"
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/user"
+                  meta:
+                    "$ref": "#/components/schemas/ListMeta"
+        '400':
+          "$ref": "#/components/responses/BadRequestResponse"
+        '401':
+          "$ref": "#/components/responses/UnauthorizedResponse"
+        '403':
+          "$ref": "#/components/responses/ForbiddenResponse"
+        '429':
+          "$ref": "#/components/responses/TooManyRequestsResponse"
+  "/users/who_am_i":
+    get:
+      operationId: whoAmI
+      summary: Get current user
+      description: Returns the currently authenticated user
+      tags:
+      - Users
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/user"
+        '401':
+          "$ref": "#/components/responses/UnauthorizedResponse"
+        '403':
+          "$ref": "#/components/responses/ForbiddenResponse"
+        '429':
+          "$ref": "#/components/responses/TooManyRequestsResponse"
+  "/matters":
+    get:
+      operationId: listMatters
+      summary: List matters
+      description: Returns a paginated list of matters
+      tags:
+      - Matters
+      parameters:
+      - "$ref": "#/components/parameters/PageTokenParam"
+      - "$ref": "#/components/parameters/CreatedSinceParam"
+      - "$ref": "#/components/parameters/UpdatedSinceParam"
+      - "$ref": "#/components/parameters/IdsFilterParam"
+      - name: inbox_lead_id
+        in: query
+        description: Filter matters by inbox lead ID
+        schema:
+          type: integer
+          format: int64
+      - name: submitted_only
+        in: query
+        description: Filter to only matters submitted by the current application
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/matter"
+                  meta:
+                    "$ref": "#/components/schemas/ListMeta"
+        '400':
+          "$ref": "#/components/responses/BadRequestResponse"
+        '401':
+          "$ref": "#/components/responses/UnauthorizedResponse"
+        '403':
+          "$ref": "#/components/responses/ForbiddenResponse"
+        '429':
+          "$ref": "#/components/responses/TooManyRequestsResponse"
+  "/matters/{id}":
+    get:
+      operationId: getMatter
+      summary: Get a matter
+      description: Returns a single matter by ID
+      tags:
+      - Matters
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The unique identifier for the Matter
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/matter"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          "$ref": "#/components/responses/NotFoundResponse"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+  "/matters/{matter_id}/notes":
+    get:
+      operationId: listMatterNotes
+      summary: List matter notes
+      description: Returns a paginated list of notes for a matter
+      tags:
+      - Matters
+      parameters:
+      - name: matter_id
+        in: path
+        required: true
+        description: The unique identifier for the Matter
+        schema:
+          type: integer
+          format: int64
+      - "$ref": "#/components/parameters/PageTokenParam"
+      - "$ref": "#/components/parameters/CreatedSinceParam"
+      - "$ref": "#/components/parameters/UpdatedSinceParam"
+      - "$ref": "#/components/parameters/IdsFilterParam"
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Note"
+                  meta:
+                    "$ref": "#/components/schemas/ListMeta"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          "$ref": "#/components/responses/NotFoundResponse"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+    post:
+      operationId: createMatterNote
+      summary: Create a matter note
+      description: Creates a new note for a matter
+      tags:
+      - Matters
+      parameters:
+      - name: matter_id
+        in: path
+        required: true
+        description: The unique identifier for the Matter
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - data
+              properties:
+                data:
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - subject
+                  - body
+                  properties:
+                    subject:
+                      type: string
+                      maxLength: 255
+                      description: Subject line of the note
+                      example: API request
+                    body:
+                      type: string
+                      maxLength: 65535
+                      description: Body content of the note
+                      example: Making a matter note from the API
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/Note"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          "$ref": "#/components/responses/NotFoundResponse"
+        '422':
+          "$ref": "#/components/responses/UnprocessableEntityResponse"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+  "/custom_actions":
+    get:
+      operationId: listCustomActions
+      summary: List custom actions
+      description: Returns a paginated list of custom actions
+      tags:
+      - Custom Actions
+      parameters:
+      - name: page_token
+        in: query
+        description: Opaque token for cursor-based pagination
+        schema:
+          type: string
+      - name: created_since
+        in: query
+        description: Filter custom actions created on or after this time (ISO-8601
+          timestamp)
+        schema:
+          type: string
+          format: date-time
+      - name: updated_since
+        in: query
+        description: Filter custom actions updated on or after this time (ISO-8601
+          timestamp)
+        schema:
+          type: string
+          format: date-time
+      - name: ids[]
+        in: query
+        description: Filter by custom action IDs (max 50)
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+          maxItems: 50
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/custom_action"
+                  meta:
+                    type: object
+                    properties:
+                      paging:
+                        "$ref": "#/components/schemas/Paging"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+    post:
+      operationId: createCustomAction
+      summary: Create a custom action
+      description: Creates a new custom action
+      tags:
+      - Custom Actions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - data
+              properties:
+                data:
+                  type: object
+                  required:
+                  - label
+                  - target_url
+                  - ui_reference
+                  properties:
+                    label:
+                      type: string
+                      minLength: 6
+                      maxLength: 32
+                      description: The label of the custom action
+                      example: Send Email
+                    target_url:
+                      type: string
+                      description: The target URL of the custom action
+                      format: uri
+                      pattern: "^https://.+"
+                      example: https://www.clio.com/api/v2/custom_actions/123/execute
+                    ui_reference:
+                      "$ref": "#/components/schemas/CustomActionUIReference"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/custom_action"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+  "/custom_actions/{id}":
+    delete:
+      operationId: deleteCustomAction
+      summary: Delete a custom action
+      description: Deletes a single custom action by ID
+      tags:
+      - Custom Actions
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The unique identifier for the Custom Action
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+  "/inbox_leads":
+    get:
+      operationId: listInboxLeads
+      summary: List inbox leads
+      description: Returns a paginated list of inbox leads filtered by state
+      tags:
+      - Inbox Leads
+      parameters:
+      - name: state
+        in: query
+        required: true
+        description: Filter leads by state
+        schema:
+          type: string
+          enum:
+          - untriaged
+          - ignored
+      - name: query
+        in: query
+        description: Search string for filtering leads
+        schema:
+          type: string
+      - "$ref": "#/components/parameters/PageTokenParam"
+      - "$ref": "#/components/parameters/CreatedSinceParam"
+      - "$ref": "#/components/parameters/UpdatedSinceParam"
+      - "$ref": "#/components/parameters/IdsFilterParam"
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/inbox_lead"
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      paging:
+                        "$ref": "#/components/schemas/Paging"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+    post:
+      operationId: createInboxLead
+      summary: Create an inbox lead
+      description: Creates a new inbox lead
+      tags:
+      - Inbox Leads
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - data
+              properties:
+                data:
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - first_name
+                  - last_name
+                  - from_message
+                  - referring_url
+                  - from_source
+                  properties:
+                    first_name:
+                      type: string
+                      description: First name of the lead
+                      example: Jane
+                    last_name:
+                      type: string
+                      description: Last name of the lead
+                      example: Smith
+                    from_message:
+                      type: string
+                      description: Message content from the lead
+                      example: I'm interested in your services
+                    referring_url:
+                      type: string
+                      format: uri
+                      description: URL the lead came from
+                      example: https://example.com/contact
+                    from_source:
+                      type: string
+                      description: Source of the lead
+                      example: website_chat
+                    email:
+                      type: string
+                      format: email
+                      description: Email address of the lead (optional)
+                      example: jane@example.com
+                    phone_number:
+                      type: string
+                      description: Phone number of the lead (optional)
+                      example: "+15551234567"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - data
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/inbox_lead_create_response"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+  "/inbox_leads/{id}":
+    get:
+      operationId: getInboxLead
+      summary: Get an inbox lead
+      description: Returns a single inbox lead by ID
+      tags:
+      - Inbox Leads
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The unique identifier for the Inbox Lead
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - data
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/inbox_lead"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+components:
+  parameters:
+    PageTokenParam:
+      name: page_token
+      in: query
+      description: Opaque token for cursor-based pagination
+      schema:
+        type: string
+    CreatedSinceParam:
+      name: created_since
+      in: query
+      description: Filter results created on or after this time (ISO-8601 timestamp)
+      schema:
+        type: string
+        format: date-time
+    UpdatedSinceParam:
+      name: updated_since
+      in: query
+      description: Filter results updated on or after this time (ISO-8601 timestamp)
+      schema:
+        type: string
+        format: date-time
+    IdsFilterParam:
+      name: ids[]
+      in: query
+      description: Filter by resource IDs (max 50)
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          type: integer
+          format: int64
+        minItems: 1
+        maxItems: 50
+  schemas:
+    address:
+      type: object
+      properties:
+        street:
+          type: string
+          nullable: true
+          description: Street address
+          example: 123 Main St
+        city:
+          type: string
+          nullable: true
+          description: City
+          example: San Francisco
+        province:
+          type: string
+          nullable: true
+          description: State or province
+          example: CA
+        postal_code:
+          type: string
+          nullable: true
+          description: Postal or ZIP code
+          example: '94102'
+        country:
+          type: string
+          nullable: true
+          description: Country
+          example: USA
+    contact:
+      type: object
+      required:
+      - id
+      - global_id
+      - name
+      - type
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the contact
+          example: 123
+        global_id:
+          type: string
+          description: Global ULID identifier for the contact
+          example: 01ARZ3NDEKTSV4RRFFQ69G5FAV
+        clio_id:
+          type: integer
+          format: int64
+          nullable: true
+          description: Clio Manage ID if synced
+          example: 456
+        name:
+          type: string
+          description: Full name of the contact
+          example: John Doe
+        first_name:
+          type: string
+          nullable: true
+          description: First name (for Person type contacts)
+          example: John
+        last_name:
+          type: string
+          nullable: true
+          description: Last name (for Person type contacts)
+          example: Doe
+        emails:
+          type: array
+          items:
+            type: string
+            format: email
+          description: List of email addresses
+          example:
+          - john@example.com
+        phone_numbers:
+          type: array
+          items:
+            type: string
+          description: List of phone numbers
+          example:
+          - "+15551234567"
+        type:
+          type: string
+          enum:
+          - Person
+          - Company
+          description: Type of contact
+          example: Person
+        status:
+          type: string
+          nullable: true
+          description: The status of the contact. Default values are Unassigned, Intake,
+            Hired, Did Not Hire, but accounts can define custom statuses.
+          example: Hired
+        matters:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            properties:
+              id:
+                type: integer
+                format: int64
+                description: Unique identifier for the Matter
+          description: The matters associated with the contact
+        addresses:
+          type: array
+          items:
+            "$ref": "#/components/schemas/address"
+          description: List of addresses
+        created_at:
+          type: string
+          format: date-time
+          description: The time the contact was created (ISO-8601 timestamp)
+          example: '2024-01-15T10:30:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The time the contact was last updated (ISO-8601 timestamp)
+          example: '2024-02-20T14:45:00Z'
+    Paging:
+      type: object
+      properties:
+        next:
+          type: string
+          format: uri
+          nullable: true
+          description: URL for the next page of results
+          example: https://grow.clio.com/api/v2/contacts?page_token=abc123
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          description: URL for the previous page of results
+    ListMeta:
+      type: object
+      required:
+      - paging
+      properties:
+        paging:
+          "$ref": "#/components/schemas/Paging"
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - status
+          - message
+          properties:
+            status:
+              type: string
+              description: Error status code
+            message:
+              type: string
+              description: Human-readable error message
+    Note:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - subject
+      - body
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the note
+          example: 123
+        subject:
+          type: string
+          maxLength: 255
+          description: Subject line of the note
+          example: API request
+        body:
+          type: string
+          maxLength: 65535
+          description: Body content of the note
+          example: Making a matter note from the API
+        created_at:
+          type: string
+          format: date-time
+          description: The time the note was created (ISO-8601 timestamp)
+          example: '2024-01-15T10:30:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The time the note was last updated (ISO-8601 timestamp)
+          example: '2024-02-20T14:45:00Z'
+    user:
+      type: object
+      required:
+      - id
+      - email
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the user
+          example: 123
+        first_name:
+          type: string
+          nullable: true
+          description: First name of the user
+          example: Jane
+        last_name:
+          type: string
+          nullable: true
+          description: Last name of the user
+          example: Doe
+        email:
+          type: string
+          format: email
+          description: Email address of the user
+          example: jane.doe@example.com
+        created_at:
+          type: string
+          format: date-time
+          description: The time the user was created (ISO-8601 timestamp)
+          example: '2024-01-15T10:30:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The time the user was last updated (ISO-8601 timestamp)
+          example: '2024-02-20T14:45:00Z'
+        account:
+          type: object
+          description: The account the user belongs to
+          required:
+          - id
+          - firm_name
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Unique identifier for the account
+              example: 456
+            firm_name:
+              type: string
+              description: Name of the firm
+              example: Doe & Associates
+    client_summary:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the contact
+          example: 123
+        full_name:
+          type: string
+          description: Full name of the contact
+          example: Jane Doe
+        phone_number:
+          type: string
+          nullable: true
+          description: Default phone number
+          example: "+15551234567"
+        primary_email:
+          type: string
+          format: email
+          nullable: true
+          description: Primary email address
+          example: jane@example.com
+        address:
+          type: object
+          nullable: true
+          allOf:
+          - "$ref": "#/components/schemas/address"
+    matter:
+      type: object
+      required:
+      - id
+      - global_id
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the matter
+          example: 789
+        description:
+          type: string
+          nullable: true
+          description: Description of the matter
+          example: Personal injury case
+        created_at:
+          type: string
+          format: date-time
+          description: The time the matter was created (ISO-8601 timestamp)
+          example: '2024-01-15T10:30:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The time the matter was last updated (ISO-8601 timestamp)
+          example: '2024-02-20T14:45:00Z'
+        clio_id:
+          type: integer
+          format: int64
+          nullable: true
+          description: Clio Manage ID if synced
+          example: 456
+        global_id:
+          type: string
+          description: Global ULID identifier for the matter
+          example: 01ARZ3NDEKTSV4RRFFQ69G5FAV
+        projected_value:
+          type: integer
+          nullable: true
+          description: Estimated monetary value of the matter (in cents). May be redacted.
+          example: 500000
+        first_letter_sent_date:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp of the first letter sent for this matter. May be
+            redacted.
+          example: '2024-03-01T09:00:00Z'
+        first_appointment_created_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp of the first consultation created for this matter.
+            May be redacted.
+          example: '2024-02-15T14:00:00Z'
+        inbox_lead_id:
+          type: integer
+          format: int64
+          nullable: true
+          description: ID of the associated inbox lead. May be redacted.
+          example: 321
+        is_locked:
+          type: boolean
+          description: Whether the matter is locked. Locked matters are read-only.
+          example: true
+        hired_date:
+          type: string
+          format: date
+          nullable: true
+          description: The date the client was hired. May be redacted.
+          example: '2024-04-01'
+        location:
+          type: string
+          nullable: true
+          description: Name of the office location associated with the matter
+          example: Main Office
+        type:
+          type: string
+          nullable: true
+          description: Name of the matter type
+          example: Personal Injury
+        status:
+          type: string
+          nullable: true
+          description: Current status of the matter
+          example: Open
+        status_category:
+          type: string
+          nullable: true
+          description: Category of the matter status
+          enum:
+          - intake
+          - hired
+          - declined
+        client:
+          "$ref": "#/components/schemas/client_summary"
+        primary_contact:
+          nullable: true
+          description: The primary contact associated with the matter. Use `client`
+            for new integrations.
+          allOf:
+          - "$ref": "#/components/schemas/client_summary"
+    CustomActionUIReference:
+      type: string
+      enum:
+      - matters/show
+      description: The UI reference of the custom action. Currently only "matters/show"
+        is supported.
+      example: matters/show
+    custom_action:
+      type: object
+      required:
+      - id
+      - label
+      - target_url
+      - ui_reference
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the custom action
+          example: 123
+        label:
+          type: string
+          minLength: 6
+          maxLength: 32
+          description: The label of the custom action
+          example: Send Email
+        target_url:
+          type: string
+          format: uri
+          pattern: "^https://.+"
+          description: The target URL of the custom action
+          example: https://www.clio.com/api/v2/custom_actions/123/execute
+        ui_reference:
+          "$ref": "#/components/schemas/CustomActionUIReference"
+        created_at:
+          type: string
+          format: date-time
+          description: The time the custom action was created (ISO-8601 timestamp)
+          example: '2024-01-15T10:30:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The time the custom action was last updated (ISO-8601 timestamp)
+          example: '2024-02-20T14:45:00Z'
+    inbox_lead:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - first_name
+      - last_name
+      - email
+      - phone_number
+      - state
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the inbox lead
+          example: 123
+        first_name:
+          type: string
+          nullable: true
+          description: First name of the lead
+          example: Jane
+        last_name:
+          type: string
+          nullable: true
+          description: Last name of the lead
+          example: Smith
+        email:
+          type: string
+          format: email
+          nullable: true
+          description: Email address of the lead
+          example: jane@example.com
+        phone_number:
+          type: string
+          nullable: true
+          description: Phone number of the lead
+          example: "+15551234567"
+        state:
+          type: string
+          description: Current state of the lead
+          example: untriaged
+        created_at:
+          type: string
+          format: date-time
+          description: The time the lead was created (ISO-8601 timestamp)
+          example: '2024-01-15T10:30:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The time the lead was last updated (ISO-8601 timestamp)
+          example: '2024-02-20T14:45:00Z'
+    inbox_lead_create_response:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - first_name
+      - last_name
+      - email
+      - phone_number
+      - state
+      - created_at
+      - updated_at
+      - from_message
+      - from_source
+      - referring_url
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the inbox lead
+          example: 123
+        first_name:
+          type: string
+          nullable: true
+          description: First name of the lead
+          example: Jane
+        last_name:
+          type: string
+          nullable: true
+          description: Last name of the lead
+          example: Smith
+        email:
+          type: string
+          format: email
+          nullable: true
+          description: Email address of the lead
+          example: jane@example.com
+        phone_number:
+          type: string
+          nullable: true
+          description: Phone number of the lead
+          example: "+15551234567"
+        state:
+          type: string
+          description: Current state of the lead
+          example: untriaged
+        created_at:
+          type: string
+          format: date-time
+          description: The time the lead was created (ISO-8601 timestamp)
+          example: '2024-01-15T10:30:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: The time the lead was last updated (ISO-8601 timestamp)
+          example: '2024-02-20T14:45:00Z'
+        from_message:
+          type: string
+          description: Message content from the lead
+          example: I'm interested in your services
+        from_source:
+          type: string
+          description: Source of the lead
+          example: website_chat
+        referring_url:
+          type: string
+          format: uri
+          description: URL the lead came from
+          example: https://example.com/contact
+  responses:
+    BadRequestResponse:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    UnauthorizedResponse:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    ForbiddenResponse:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    TooManyRequestsResponse:
+      description: Too Many Requests
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    NotFoundResponse:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    UnprocessableEntityResponse:
+      description: Unprocessable Entity
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+x-tagGroups:
+- name: Contacts
+  tags:
+  - Contacts
+- name: Custom Actions
+  tags:
+  - Custom Actions
+- name: Inbox Leads
+  tags:
+  - Inbox Leads
+- name: Matters
+  tags:
+  - Matters
+- name: Users
+  tags:
+  - Users
