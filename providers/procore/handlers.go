@@ -78,7 +78,6 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-
 	if params.NextPage != "" {
 		nextURL, err := urlbuilder.New(params.NextPage.String())
 		if err != nil {
