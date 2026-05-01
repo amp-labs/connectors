@@ -14,6 +14,10 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 		return nil, err
 	}
 
+	if accountKey == "" {
+		return nil, common.ErrMissingExpectedValues
+	}
+
 	c.accountKey = accountKey
 
 	catalogVars := map[string]string{

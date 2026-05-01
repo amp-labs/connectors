@@ -11,6 +11,7 @@ const (
 	ModuleGoToConnect common.ModuleID = "goToConnect"
 )
 
+// nolint: funlen
 func init() {
 	SetInfo(GoTo, ProviderInfo{
 		DisplayName: "GoTo",
@@ -53,6 +54,10 @@ func init() {
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "accountKey",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleGoTo:        ModuleDependency{},
+						ModuleGoToConnect: ModuleDependency{},
+					},
 				},
 			},
 		},
