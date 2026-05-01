@@ -3,93 +3,137 @@ package hubspot
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors/common"
-	"gotest.tools/v3/assert"
+	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestExtractObjectNameFromSubscriptionEvent(t *testing.T) {
+func TestSubscriptionEvent(t *testing.T) {
 	t.Parallel()
 
-	validEvent := SubscriptionEvent{
-		"subscriptionType": "contact.creation",
+	for _, tt := range []testroutines.SubscriptionEventTestCase{
+		{
+			Name: "Unsupported event",
+			Input: SubscriptionEvent{
+				"subscriptionType": "someObject.creation",
+			},
+			Expected: []testroutines.SubscriptionEventExpected{{
+				Data: testroutines.SubscriptionEventExpectedData{
+					RawEventName: "someObject.creation",
+					EventType:    "create",
+				},
+				Err: testroutines.SubscriptionEventExpectedErr{
+					EventType:          nil,
+					RawEventName:       nil,
+					ObjectName:         testutils.StringError("subscription is not supported for the object 'someObject'"),
+					Workspace:          testutils.StringError("key not found"),
+					RecordId:           testutils.StringError("key not found"),
+					EventTimeStampNano: testutils.StringError("key not found"),
+				},
+			}},
+		},
+		{
+			Name: "Empty object name of the event",
+			Input: SubscriptionEvent{
+				"subscriptionType": "",
+			},
+			Expected: []testroutines.SubscriptionEventExpected{{
+				Data: testroutines.SubscriptionEventExpectedData{
+					EventType: "other",
+				},
+				Err: testroutines.SubscriptionEventExpectedErr{
+					EventType:          testutils.StringError("unexpected subscription event type: ''"),
+					RawEventName:       nil,
+					ObjectName:         testutils.StringError("subscription is not supported for the object ''"),
+					Workspace:          testutils.StringError("key not found"),
+					RecordId:           testutils.StringError("key not found"),
+					EventTimeStampNano: testutils.StringError("key not found"),
+				},
+			}},
+		},
+		{
+			Name: "Hubspot object type id is mapped to human readable object name",
+			Input: SubscriptionEvent{
+				"objectTypeId":     "0-1",
+				"subscriptionType": "importantContacts.creation",
+			},
+			Expected: []testroutines.SubscriptionEventExpected{{
+				Data: testroutines.SubscriptionEventExpectedData{
+					EventType:    "create",
+					RawEventName: "importantContacts.creation",
+					ObjectName:   "contact",
+				},
+				Err: testroutines.SubscriptionEventExpectedErr{
+					EventType:          nil,
+					RawEventName:       nil,
+					ObjectName:         nil,
+					Workspace:          testutils.StringError("key not found"),
+					RecordId:           testutils.StringError("key not found"),
+					EventTimeStampNano: testutils.StringError("key not found"),
+				},
+			}},
+		},
+		{
+			Name: "Contact creation event",
+			Input: SubscriptionEvent{
+				"subscriptionType": "contact.creation",
+				"objectId":         123,
+				"occurredAt":       1625097600000,
+				"portalId":         101,
+			},
+			Expected: []testroutines.SubscriptionEventExpected{{
+				Data: testroutines.SubscriptionEventExpectedData{
+					EventType:          "create",
+					RawEventName:       "contact.creation",
+					ObjectName:         "contact",
+					RecordId:           "123",
+					Workspace:          "101",
+					EventTimeStampNano: 1625097600000000000,
+				},
+			}},
+		},
+		{
+			Name: "Contact property change event",
+			Input: SubscriptionEvent{
+				"subscriptionType": "contact.propertyChange",
+				"objectId":         456,
+				"propertyName":     "email",
+				"portalId":         101,
+				"occurredAt":       1625097600000,
+			},
+			Expected: []testroutines.SubscriptionEventExpected{{
+				Data: testroutines.SubscriptionEventExpectedData{
+					EventType:          "update",
+					RawEventName:       "contact.propertyChange",
+					ObjectName:         "contact",
+					RecordId:           "456",
+					Workspace:          "101",
+					UpdatedFields:      []string{"email"},
+					EventTimeStampNano: 1625097600000000000,
+				},
+			}},
+		},
+		{
+			Name: "Contact deletion event",
+			Input: SubscriptionEvent{
+				"subscriptionType": "contact.deletion",
+				"objectId":         789,
+				"portalId":         101,
+				"occurredAt":       1625097600000,
+			},
+			Expected: []testroutines.SubscriptionEventExpected{{
+				Data: testroutines.SubscriptionEventExpectedData{
+					EventType:          "delete",
+					RawEventName:       "contact.deletion",
+					ObjectName:         "contact",
+					Workspace:          "101",
+					RecordId:           "789",
+					EventTimeStampNano: 1625097600000000000,
+				},
+			}},
+		},
+	} {
+		t.Run(tt.Name, func(t *testing.T) {
+			tt.Run(t)
+		})
 	}
-
-	objectName, err := validEvent.ObjectName()
-	if err != nil {
-		t.Fatalf("error extracting object name from subscription event: %s", err)
-	}
-
-	assert.Equal(t, objectName, "contact", "object name should be parsedCorrectly")
-
-	unsupportedEvent := SubscriptionEvent{
-		"subscriptionType": "someObject.creation",
-	}
-
-	_, err = unsupportedEvent.ObjectName()
-	assert.ErrorContains(t, err, "subscription is not supported for the object 'someObject'")
-
-	emptyObjectEvent := &SubscriptionEvent{
-		"subscriptionType": "",
-	}
-
-	_, err = emptyObjectEvent.ObjectName()
-	assert.ErrorContains(t, err, "subscription is not supported for the object ''")
-
-	withObjectTypeId := SubscriptionEvent{
-		"objectTypeId": "0-1",
-	}
-
-	objectName, err = withObjectTypeId.ObjectName()
-	assert.NilError(t, err, "error should be nil")
-	assert.Equal(t, objectName, "contact", "object name should be parsed correctly")
-}
-
-//nolint:funlen
-func TestExtractEventTypeFromSubscriptionEvent(t *testing.T) {
-	t.Parallel()
-
-	createEvent := SubscriptionEvent{
-		"subscriptionType": "contact.creation",
-	}
-
-	evtTypeCreate, err := createEvent.EventType()
-	if err != nil {
-		t.Fatalf("error extracting object name from subscription  event: %s", err)
-	}
-
-	assert.Equal(t, evtTypeCreate, common.SubscriptionEventTypeCreate, "event type should be parsed Correctly")
-
-	deleteMessage := SubscriptionEvent{
-		"subscriptionType": "contact.deletion",
-	}
-
-	evtTypeDelete, err := deleteMessage.EventType()
-	if err != nil {
-		t.Fatalf("error extracting eventType from subscription event: %s", err)
-	}
-
-	assert.Equal(t, evtTypeDelete, common.SubscriptionEventTypeDelete, "event type should be parsed correctly")
-
-	updateMessage := SubscriptionEvent{
-		"subscriptionType": "contact.propertyChange",
-	}
-
-	evtTypeUpdate, err := updateMessage.EventType()
-	if err != nil {
-		t.Fatalf("error extracting eventType from subscription event: %s", err)
-	}
-
-	assert.Equal(t, evtTypeUpdate, common.SubscriptionEventTypeUpdate, "event type should be parsed correctly")
-
-	emptyObjectEvent := SubscriptionEvent{
-		"subscriptionType": "",
-	}
-
-	_, err = emptyObjectEvent.EventType()
-	assert.ErrorIs(
-		t,
-		err,
-		errUnexpectedSubscriptionEventType,
-		"error should be of type errUnexpectedSubscriptionEventType",
-	)
 }
