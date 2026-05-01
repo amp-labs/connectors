@@ -740,17 +740,34 @@ type SubscriptionEventPreLoadData struct {
 	RequestHeaders *http.Header
 }
 
+// Event represents a raw webhook payload and serves as the common abstraction across all event types in the system.
+// Implementations are expected to provide access to the underlying payload in a normalized map form.
+//
+// The following higher-level event interfaces build on top of Event
+// and should be considered during implementation:
+//   - SubscriptionEvent: core interface for all subscription-related events
+//   - SubscriptionUpdateEvent: specialization for update/change events
+//   - CollapsedSubscriptionEvent: for payloads containing multiple events
+//
+// A concrete provider event type may implement one or more of these
+// interfaces depending on the structure of the incoming webhook payload.
+type Event interface {
+	RawMap() (map[string]any, error)
+}
+
 // SubscriptionEvent is an interface for webhook events coming from the provider.
 // This interface defines methods to extract information from the webhook event.
 type SubscriptionEvent interface {
+	Event
+
 	EventType() (SubscriptionEventType, error)
 	RawEventName() (string, error)
 	ObjectName() (string, error)
 	Workspace() (string, error)
 	RecordId() (string, error)
 	EventTimeStampNano() (int64, error)
-	RawMap() (map[string]any, error)
-	// PreLoadData is used to pre-load data into the subscription event.
+
+	// PreLoadData is used to preload data into the subscription event.
 	// Assume that the data will include the entire request body in case it is needed for the event processing.
 	// This method will be called for every event as the first step in the event processing.
 	PreLoadData(data *SubscriptionEventPreLoadData) error
@@ -758,7 +775,8 @@ type SubscriptionEvent interface {
 
 type SubscriptionUpdateEvent interface {
 	SubscriptionEvent
-	// GetUpdatedFields returns the fields that were updated in the event.
+
+	// UpdatedFields returns the fields that were updated in the event.
 	UpdatedFields() ([]string, error)
 }
 
@@ -766,8 +784,11 @@ type SubscriptionUpdateEvent interface {
 // This interface is used to extract individual events to SubscriptionEvent type
 // from a collapsed event for webhook parsing and processing.
 type CollapsedSubscriptionEvent interface {
+	Event
+
+	// SubscriptionEventList collapses the event response into the list of messages.
+	// In case of an error returns ErrSubscriptionEventList.
 	SubscriptionEventList() ([]SubscriptionEvent, error)
-	RawMap() (map[string]any, error)
 }
 
 // WebhookRequest is a struct that contains the request parameters for a webhook.
