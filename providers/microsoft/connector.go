@@ -34,6 +34,7 @@ type Connector struct {
 	components.Reader
 	components.Writer
 	components.Deleter
+	webhook.Verifier
 
 	// Dependent services.
 	batchStrategy *batch.Strategy
