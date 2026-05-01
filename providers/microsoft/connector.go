@@ -13,13 +13,16 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/batch"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/metadata"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/subscriber"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/webhook"
 )
 
 const apiVersion = "v1.0"
 
 type (
-	EventCollection = webhook.EventCollection
+	EventCollection   = webhook.EventCollection
+	SubscribeRequest  = subscriber.Input
+	SubscribeResponse = subscriber.Output
 )
 
 type Connector struct {
@@ -35,6 +38,7 @@ type Connector struct {
 	components.Writer
 	components.Deleter
 	webhook.Verifier
+	subscriber.Strategy
 
 	// Dependent services.
 	batchStrategy *batch.Strategy
@@ -59,8 +63,7 @@ func NewConnectorForProvider(provider providers.Provider, params common.Connecto
 // nolint:funlen
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
-		Connector:     base,
-		batchStrategy: batch.NewStrategy(base.JSONHTTPClient(), base.ProviderInfo()),
+		Connector: base,
 	}
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
@@ -106,6 +109,9 @@ func constructor(base *components.Connector) (*Connector, error) {
 			ErrorHandler:  errorHandler,
 		},
 	)
+
+	connector.batchStrategy = batch.NewStrategy(base.JSONHTTPClient(), base.ProviderInfo())
+	connector.Strategy = *subscriber.NewStrategy(base.JSONHTTPClient(), base.ProviderInfo(), connector.batchStrategy)
 
 	return connector, nil
 }

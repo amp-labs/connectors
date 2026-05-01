@@ -1,0 +1,22 @@
+{
+  "responses": [
+    {
+      "id": "38ca43fa-4602-43ef-a865-aca8a3ddc1ce",
+      "status": 400,
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "error": {
+          "code": "BadRequest",
+          "message": "Resource not found for the segment 'path'.",
+          "innerError": {
+            "date": "2026-04-24T00:48:24",
+            "request-id": "a7c222d4-ae41-4d62-8887-58cb858ebad9",
+            "client-request-id": "a7c222d4-ae41-4d62-8887-58cb858ebad9"
+          }
+        }
+      }
+    }
+  ]
+}

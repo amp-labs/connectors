@@ -910,6 +910,10 @@ type SubscriptionResult struct { // this corresponds to each API call.
 	// provider specific events ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
 }
 
+func (r SubscriptionResult) ObjectNames() []ObjectName {
+	return datautils.FromMap(r.ObjectEvents).Keys()
+}
+
 type SubscriptionStatus string
 
 const (
