@@ -2,6 +2,7 @@
 package common
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -257,6 +258,15 @@ func (p WriteParams) IsUpdate() bool {
 	return p.RecordId != ""
 }
 
+func (p WriteParams) GetRecordReader() (*bytes.Reader, error) {
+	jsonData, err := json.Marshal(p.RecordData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal record data: %w", err)
+	}
+
+	return bytes.NewReader(jsonData), nil
+}
+
 // RecordDataToMap converts WriteParams.RecordData into a map[string]any.
 //
 // When possible use WriteParams.GetRecord instead.
@@ -279,6 +289,20 @@ func RecordDataToMap(recordData any) (map[string]any, error) {
 	}
 
 	return object, nil
+}
+
+func RecordDataToStruct[S any](params WriteParams) (payload S, err error) {
+	var data []byte
+	data, err = json.Marshal(params.RecordData)
+	if err != nil {
+		return payload, err
+	}
+
+	if err = json.Unmarshal(data, &payload); err != nil {
+		return payload, err
+	}
+
+	return payload, nil
 }
 
 // DeleteParams defines how we are deleting data in SaaS API.
