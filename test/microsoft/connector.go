@@ -1,4 +1,4 @@
-package dynamicscrm
+package microsoft
 
 import (
 	"context"
@@ -30,6 +30,9 @@ func GetMicrosoftGraphConnector(ctx context.Context) *microsoft.Connector {
 
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 	workspace := reader.Get(credscanning.Fields.Workspace)
+	if workspace == "" {
+		workspace = "common"
+	}
 
 	return &oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),

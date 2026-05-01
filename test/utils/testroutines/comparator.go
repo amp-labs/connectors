@@ -36,6 +36,21 @@ func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult)
 	return result
 }
 
+// ComparatorSubsetReadByIds compares two slices of ReadResultRow as a subset,
+// ignoring order and focusing only on relevant fields, raw data, associations, and identifiers.
+func ComparatorSubsetReadByIds(serverURL string, actual, expected []common.ReadResultRow) *testutils.CompareResult {
+	return ComparatorSubsetRead(serverURL,
+		&common.ReadResult{
+			Rows: int64(len(actual)),
+			Data: actual,
+		},
+		&common.ReadResult{
+			Rows: int64(len(expected)),
+			Data: expected,
+		},
+	)
+}
+
 // ComparatorPagination will check pagination related fields.
 // Note: you may use an alias for Mock-Server-URL which will be dynamically resolved at runtime.
 // Example:
