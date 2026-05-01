@@ -41,8 +41,10 @@ type SubscriptionEvent map[string]any
 type CollapsedSubscriptionEvent map[string]any
 
 //nolint:gochecknoglobals // Static allowlist of webhook objects we support.
-var supportedEventObjects = datautils.NewSetFromList([]string{"jobs", "customers",
-	"estimates", "invoices", "leads", "employees"})
+var supportedEventObjects = datautils.NewSetFromList([]string{
+	"jobs", "customers",
+	"estimates", "invoices", "leads", "employees",
+})
 
 // VerifyWebhookMessage implements connectors.WebhookVerifierConnector.
 func (*Connector) VerifyWebhookMessage(

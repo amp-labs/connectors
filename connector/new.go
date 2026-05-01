@@ -38,6 +38,7 @@ import (
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
 	"github.com/amp-labs/connectors/providers/cloudtalk"
+	"github.com/amp-labs/connectors/providers/connectwise"
 	"github.com/amp-labs/connectors/providers/constantcontact"
 	"github.com/amp-labs/connectors/providers/copper"
 	"github.com/amp-labs/connectors/providers/customerapp"
@@ -161,8 +162,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Atlassian:                  wrapper(newAtlassianConnector),
 	providers.Attio:                      wrapper(newAttioConnector),
 	providers.Avoma:                      wrapper(newAvomaConnector),
-	providers.BigQuery:                   wrapper(newBigQueryConnector),
 	providers.Bentley:                    wrapper(newBentleyConnector),
+	providers.BigQuery:                   wrapper(newBigQueryConnector),
 	providers.Bitbucket:                  wrapper(newBitBucketConnector),
 	providers.Blackbaud:                  wrapper(newBlackbaudConnector),
 	providers.Blueshift:                  wrapper(newBlueshiftConnector),
@@ -174,14 +175,15 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.CallRail:                   wrapper(newCallRail),
 	providers.CampaignMonitor:            wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                    wrapper(newCapsuleConnector),
-	providers.Chargebee:                  wrapper(newChargebeeConnector),
 	providers.ChargeOver:                 wrapper(newChargeOver),
+	providers.Chargebee:                  wrapper(newChargebeeConnector),
 	providers.ChiliPiper:                 wrapper(newChiliPiperConnector),
 	providers.Chorus:                     wrapper(newChorusConnector),
 	providers.ClariCopilot:               wrapper(newClariCopilotConnector),
 	providers.ClickUp:                    wrapper(newClickUpConnector),
 	providers.Close:                      wrapper(newCloseConnector),
 	providers.CloudTalk:                  wrapper(newCloudTalkConnector),
+	providers.ConnectWise:                wrapper(newConnectWiseConnector),
 	providers.ConstantContact:            wrapper(newConstantContactConnector),
 	providers.Copper:                     wrapper(newCopperConnector),
 	providers.CustomerJourneysApp:        wrapper(newCustomerJourneysAppConnector),
@@ -212,9 +214,9 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.HappyFox:                   wrapper(newHappyFoxConnector),
 	providers.HelpScoutMailbox:           wrapper(newHelpScoutMailboxConnector),
 	providers.HeyReach:                   wrapper(newHeyReachConnector),
-	providers.HousecallPro:               wrapper(newHousecallProConnector),
 	providers.HighLevelStandard:          wrapper(newHighLevelStandardConnector),
 	providers.HighLevelWhiteLabel:        wrapper(newHighLevelWhiteLabelConnector),
+	providers.HousecallPro:               wrapper(newHousecallProConnector),
 	providers.Hubspot:                    wrapper(newHubspotConnector),
 	providers.Hunter:                     wrapper(newHunterConnector),
 	providers.Insightly:                  wrapper(newInsightlyConnector),
@@ -534,6 +536,12 @@ func newCloudTalkConnector(
 	params common.ConnectorParams,
 ) (*cloudtalk.Connector, error) {
 	return cloudtalk.NewConnector(params)
+}
+
+func newConnectWiseConnector(
+	params common.ConnectorParams,
+) (*connectwise.Connector, error) {
+	return connectwise.NewConnector(params)
 }
 
 func newKlaviyoConnector(
@@ -975,7 +983,8 @@ func newLinkedInConnector(
 	return linkedin.NewConnector(params)
 }
 
-func newBitBucketConnector(params common.ConnectorParams,
+func newBitBucketConnector(
+	params common.ConnectorParams,
 ) (*bitbucket.Connector, error) {
 	return bitbucket.NewConnector(params)
 }
@@ -986,67 +995,80 @@ func newAmplitudeConnector(
 	return amplitude.NewConnector(params)
 }
 
-func newCalendlyConnector(params common.ConnectorParams,
+func newCalendlyConnector(
+	params common.ConnectorParams,
 ) (*calendly.Connector, error) {
 	return calendly.NewConnector(params)
 }
 
-func newPaddleConnector(params common.ConnectorParams,
+func newPaddleConnector(
+	params common.ConnectorParams,
 ) (*paddle.Connector, error) {
 	return paddle.NewConnector(params)
 }
 
-func newJobberConnector(params common.ConnectorParams,
+func newJobberConnector(
+	params common.ConnectorParams,
 ) (*jobber.Connector, error) {
 	return jobber.NewConnector(params)
 }
 
-func newJustCallConnector(params common.ConnectorParams,
+func newJustCallConnector(
+	params common.ConnectorParams,
 ) (*justcall.Connector, error) {
 	return justcall.NewConnector(params)
 }
 
-func newChorusConnector(params common.ConnectorParams,
+func newChorusConnector(
+	params common.ConnectorParams,
 ) (*chorus.Connector, error) {
 	return chorus.NewConnector(params)
 }
 
-func newWebexConnector(params common.ConnectorParams,
+func newWebexConnector(
+	params common.ConnectorParams,
 ) (*webex.Connector, error) {
 	return webex.NewConnector(params)
 }
 
-func newChargebeeConnector(params common.ConnectorParams,
+func newChargebeeConnector(
+	params common.ConnectorParams,
 ) (*chargebee.Connector, error) {
 	return chargebee.NewConnector(params)
 }
 
-func newLoxoConnector(params common.ConnectorParams,
+func newLoxoConnector(
+	params common.ConnectorParams,
 ) (*loxo.Connector, error) {
 	return loxo.NewConnector(params)
 }
 
-func newSnapchatAdsConnector(params common.ConnectorParams,
+func newSnapchatAdsConnector(
+	params common.ConnectorParams,
 ) (*snapchatads.Connector, error) {
 	return snapchatads.NewConnector(params)
 }
 
-func newOutplayConnector(params common.ConnectorParams,
+func newOutplayConnector(
+	params common.ConnectorParams,
 ) (*outplay.Connector, error) {
 	return outplay.NewConnector(params)
 }
 
-func newHappyFoxConnector(params common.ConnectorParams,
+func newHappyFoxConnector(
+	params common.ConnectorParams,
 ) (*happyfox.Connector, error) {
 	return happyfox.NewConnector(params)
 }
 
-func newSnowflakeConnector(params common.ConnectorParams,
+func newSnowflakeConnector(
+	params common.ConnectorParams,
 ) (*snowflake.Connector, error) {
 	return snowflake.NewConnector(params)
 }
 
-func newBigQueryConnector(params common.ConnectorParams,
+func newBigQueryConnector(
+	params common.ConnectorParams,
 ) (*bigquery.Connector, error) {
 	return bigquery.NewConnector(params)
 }
