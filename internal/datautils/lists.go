@@ -20,6 +20,32 @@ func (l IndexedLists[ID, V]) Add(bucket ID, objects ...V) {
 	l[bucket] = append(l[bucket], objects...)
 }
 
+// Remove will remove all elements in the list under the bucket matching the filter.
+// A bucket may have a list with no items. If you need to remove the bucket itself, do it explicitly.
+func (l IndexedLists[ID, V]) Remove(bucket ID, filter func(V) bool) {
+	items, exists := l[bucket]
+	if !exists || len(items) == 0 {
+		return
+	}
+
+	// Reuse underlying array to avoid allocations
+	filtered := items[:0]
+
+	for _, item := range items {
+		if !filter(item) {
+			filtered = append(filtered, item)
+		}
+	}
+
+	// Clear trailing references.
+	var zero V
+	for i := len(filtered); i < len(items); i++ {
+		items[i] = zero
+	}
+
+	l[bucket] = filtered
+}
+
 func (l NamedLists[V]) Add(bucket string, objects ...V) {
 	IndexedLists[string, V](l).Add(bucket, objects...)
 }
