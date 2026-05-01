@@ -2,9 +2,12 @@ package subscriber
 
 import (
 	"context"
+	"maps"
+	"sort"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/webhook"
 )
 
 type (
@@ -20,6 +23,17 @@ type (
 	// with State, and the connector returns the same type reflecting what actually
 	// happened (which may differ on failure or rollback).
 	State map[ObjectName]common.ObjectEvents
+
+	// ReconciliationPlan describes the actions to take on each object to align RemoteSubscriptions
+	// with EffectiveState (desired state).
+	ReconciliationPlan struct {
+		Create  map[common.ObjectName]common.ObjectEvents
+		Refresh map[common.ObjectName]SubscriptionID
+		Delete  []common.ObjectName
+		// Extra is unique to the Microsoft Graph API. Single resource may have too many subscriptions.
+		// Any excess should be cleaned up.
+		Extra []SubscriptionID
+	}
 )
 
 func newState(objectNames []ObjectName) State {
@@ -29,6 +43,90 @@ func newState(objectNames []ObjectName) State {
 	}
 
 	return events
+}
+
+// Add copies the object events of the other to current.
+func (s State) Add(other State) {
+	maps.Copy(s, other)
+}
+
+// Equals reports if the subscription configuration matches between both states for the given object.
+func (s State) Equals(other State, objectName ObjectName) bool {
+	return webhook.NewChangeType(s[objectName].Events) == webhook.NewChangeType(other[objectName].Events)
+}
+
+// ReconcileTo partitions objects into three disjoint sets by comparing desired (effective)
+// and actual (remote) state:
+//
+// - objectsToRemove: present remotely but not desired → DELETE all subscriptions for the object
+// - objectsToCreate: desired but not present remotely → CREATE subscriptions for the object
+// - objectsToUpdate: present in both → UPDATE existing subscriptions
+//
+// For Microsoft Graph, intersecting objects are always updated.
+// Subscription.ExpirationDateTime must be continuously renewed,
+// so there is no no-op path—every existing subscription requires an update.
+//
+// TODO The subscription may disappear under the hood as Microsoft auto cleans. Need to create a handler for this case.
+func (r RemoteSubscriptions) ReconcileTo(state State) ReconciliationPlan {
+	remoteObjects := datautils.NewSetFromList(RemoteSubsType(r).GetBuckets())
+	desiredObjects := datautils.FromMap(state).KeySet()
+
+	objectsToCreate := desiredObjects.Subtract(remoteObjects)
+	objectsToRemove := remoteObjects.Subtract(desiredObjects)
+	objectsToUpdate := remoteObjects.Intersection(desiredObjects)
+
+	plan := ReconciliationPlan{
+		Create:  make(map[common.ObjectName]common.ObjectEvents),
+		Refresh: make(map[common.ObjectName]SubscriptionID),
+		Delete:  objectsToRemove,
+		Extra:   make([]SubscriptionID, 0),
+	}
+
+	for _, name := range objectsToCreate {
+		plan.Create[name] = state[name]
+	}
+
+	remoteState := r.toState()
+	for _, name := range objectsToUpdate {
+		subscriptions := r[name]
+
+		if len(subscriptions) == 0 {
+			// Impossible. Remote state by definition must have at least one subscription for an object.
+			continue
+		}
+
+		if len(subscriptions) > 1 {
+			sort.Slice(subscriptions, func(i, j int) bool {
+				return subscriptions[i].ExpirationDateTime.After(subscriptions[j].ExpirationDateTime)
+			})
+		}
+
+		// Keep the first
+		subscription := subscriptions[0]
+
+		// Remove the rest
+		for _, extra := range subscriptions[1:] {
+			// There are multiple subscriptions associated with this object.
+			// Keep only one of them, others must be removed.
+			// This could happen due to user manually altering subscriptions
+			// or any invalid state the connector has put the provider in.
+			// This is highly unlikely but such possibility is left open.
+			// Too many subscriptions for a single object. Remove the excess.
+			plan.Extra = append(plan.Extra, extra.ID)
+		}
+
+		// Replace subscription with a more desired version.
+		if remoteState.Equals(state, name) {
+			plan.Refresh[name] = subscription.ID
+		} else {
+			// Create a new subscription which is different from the original.
+			plan.Create[name] = state[name]
+			// Mark old subscription for a cleanup.
+			plan.Extra = append(plan.Extra, subscription.ID)
+		}
+	}
+
+	return plan
 }
 
 func (r RemoteSubscriptions) toState() State {

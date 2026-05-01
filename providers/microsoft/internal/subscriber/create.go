@@ -222,3 +222,18 @@ func newPayloadCreateSubscription(
 
 	return body
 }
+
+// Update is only relevant for extending the subscription expiration.
+// > Updates a subscription expiration time for renewal and/or updates the notificationUrl for delivery.
+// https://learn.microsoft.com/en-us/graph/api/resources/subscription?view=graph-rest-1.0#methods
+func newPayloadRefreshSubscription(
+	clock components.Clock,
+) SubscriptionResource {
+	fiveHoursFromNow := clock.Now().Add(subscriptionExpirationWindow)
+	body := SubscriptionResource{
+		ExpirationDateTime:  fiveHoursFromNow,
+		IncludeResourceData: false,
+	}
+
+	return body
+}
