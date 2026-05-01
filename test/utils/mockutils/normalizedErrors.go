@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 // ErrorNormalizedComparator provides helper methods to compare error values
@@ -27,8 +29,8 @@ type errorNormalizedComparator struct{}
 //  4. Fallback: string comparison via fmt.Sprintf("%v").
 //
 // It returns true if the two values are considered equivalent under these rules.
-func (errorNormalizedComparator) ErrorEquals(actualErr, expectedErr any) *CompareResult {
-	result := NewCompareResult()
+func (errorNormalizedComparator) ErrorEquals(actualErr, expectedErr any) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
 	// 1. Direct equality first.
 	if reflect.DeepEqual(actualErr, expectedErr) {
 		return result // good
@@ -51,7 +53,7 @@ func (errorNormalizedComparator) ErrorEquals(actualErr, expectedErr any) *Compar
 	if expectedJSON, ok := expectedErr.(JSONErrorWrapper); ok {
 		aJSON, err := json.Marshal(actualErr)
 		if err != nil {
-			result.AddDiff(fmt.Sprintf("failed to marshal actual error to JSON: %v", err))
+			result.AddDiff("failed to marshal actual error to JSON: %v", err)
 			return result
 		}
 
@@ -77,10 +79,10 @@ func (errorNormalizedComparator) ErrorEquals(actualErr, expectedErr any) *Compar
 // according to ErrorEquals.
 //
 // Order and slice length must match exactly.
-func (c errorNormalizedComparator) EachErrorEquals(actual, expected []any) *CompareResult {
-	result := NewCompareResult()
+func (c errorNormalizedComparator) EachErrorEquals(actual, expected []any) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
 	if len(actual) != len(expected) {
-		result.AddDiff(fmt.Sprintf("expected %d errors, got %d", len(expected), len(actual)))
+		result.AddDiff("expected %d errors, got %d", len(expected), len(actual))
 		return result
 	}
 
@@ -88,7 +90,7 @@ func (c errorNormalizedComparator) EachErrorEquals(actual, expected []any) *Comp
 		res := c.ErrorEquals(actual[i], expected[i])
 
 		for _, diff := range res.Diff {
-			result.AddDiff(fmt.Sprintf("Errors[%d] %s", i, diff))
+			result.AddDiff("Errors[%d] %s", i, diff)
 		}
 	}
 

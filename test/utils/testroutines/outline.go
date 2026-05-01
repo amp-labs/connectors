@@ -1,12 +1,10 @@
 package testroutines
 
 import (
-	"fmt"
 	"net/http/httptest"
 	"reflect"
 	"testing"
 
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
@@ -47,7 +45,7 @@ func (c TestCase[Input, Output]) checkError(t *testing.T, err error) {
 
 func (c TestCase[Input, Output]) checkValue(t *testing.T, output Output) {
 	// compare desired output
-	var result *mockutils.CompareResult
+	var result *testutils.CompareResult
 	if c.Comparator == nil {
 		// default comparison is concerned about all fields
 		result = c.defaultDeepCompare(output, c.Expected)
@@ -55,22 +53,15 @@ func (c TestCase[Input, Output]) checkValue(t *testing.T, output Output) {
 		result = c.Comparator(c.Server.URL, output, c.Expected)
 	}
 
-	if !result.OK {
-		message := fmt.Sprintf("[%s] some expectations were not satisfied:\n", c.Name)
-		for index, text := range result.Diff {
-			message += fmt.Sprintf("(%v) %v\n", index+1, text)
-		}
-
-		t.Fatal(message)
-	}
+	result.Validate(t, c.Name)
 }
 
-func (c TestCase[Input, Output]) defaultDeepCompare(actual, expected Output) *mockutils.CompareResult {
-	result := mockutils.NewCompareResult()
+func (c TestCase[Input, Output]) defaultDeepCompare(actual, expected Output) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
 
 	if !reflect.DeepEqual(actual, expected) {
 		for _, diff := range deep.Equal(actual, expected) {
-			result.AddDiff(diff)
+			result.AddDifference(diff)
 		}
 	}
 
