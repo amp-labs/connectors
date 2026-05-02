@@ -108,45 +108,6 @@ func (e Oauth2OptsGrantType) Valid() bool {
 	}
 }
 
-// Defines values for SubscribeOptsRegistrationTiming.
-const (
-	SubscribeOptsRegistrationTimingInstallation SubscribeOptsRegistrationTiming = "installation"
-	SubscribeOptsRegistrationTimingIntegration  SubscribeOptsRegistrationTiming = "integration"
-	SubscribeOptsRegistrationTimingProviderApp  SubscribeOptsRegistrationTiming = "providerApp"
-)
-
-// Valid indicates whether the value is a known member of the SubscribeOptsRegistrationTiming enum.
-func (e SubscribeOptsRegistrationTiming) Valid() bool {
-	switch e {
-	case SubscribeOptsRegistrationTimingInstallation:
-		return true
-	case SubscribeOptsRegistrationTimingIntegration:
-		return true
-	case SubscribeOptsRegistrationTimingProviderApp:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for SubscribeOptsSubscriptionScope.
-const (
-	SubscribeOptsSubscriptionScopeInstallation SubscribeOptsSubscriptionScope = "installation"
-	SubscribeOptsSubscriptionScopeIntegration  SubscribeOptsSubscriptionScope = "integration"
-)
-
-// Valid indicates whether the value is a known member of the SubscribeOptsSubscriptionScope enum.
-func (e SubscribeOptsSubscriptionScope) Valid() bool {
-	switch e {
-	case SubscribeOptsSubscriptionScopeInstallation:
-		return true
-	case SubscribeOptsSubscriptionScopeIntegration:
-		return true
-	default:
-		return false
-	}
-}
-
 // AccessTokenOpts Configuration that defines how an OAuth 2.0 access token is attached to
 // outbound API requests. When provided, this configuration overrides the
 // default access-token handling behavior for the connector.
@@ -400,6 +361,9 @@ type ModuleInfo struct {
 	BaseURL     string `json:"baseURL"`
 	DisplayName string `json:"displayName"`
 
+	// SubscribeRequirements Declares which auxiliary steps a provider requires to support subscriptions, beyond the per-object subscribe call itself.
+	SubscribeRequirements *SubscribeRequirements `json:"subscribeRequirements,omitempty"`
+
 	// Support The supported features for the provider.
 	Support Support `json:"support" validate:"required"`
 }
@@ -498,9 +462,8 @@ type ProviderInfo struct {
 	// ProviderAppMetadata Describes the provider-app-level fields that the Ampersand dashboard should collect from the builder when creating a ProviderApp for this provider. These descriptors tell the dashboard which form fields to render; the submitted values are stored in ProviderApp.metadata.
 	ProviderAppMetadata *ProviderAppMetadata `json:"providerAppMetadata,omitempty"`
 
-	// ProviderOpts Additional provider-specific metadata.
-	ProviderOpts  ProviderOpts   `json:"providerOpts"`
-	SubscribeOpts *SubscribeOpts `json:"subscribeOpts,omitempty"`
+	// SubscribeRequirements Declares which auxiliary steps a provider requires to support subscriptions, beyond the per-object subscribe call itself.
+	SubscribeRequirements *SubscribeRequirements `json:"subscribeRequirements,omitempty"`
 
 	// Support The supported features for the provider.
 	Support Support `json:"support" validate:"required"`
@@ -515,9 +478,6 @@ type ProviderMetadata struct {
 	PostAuthentication []MetadataItemPostAuthentication `json:"postAuthentication,omitempty"`
 }
 
-// ProviderOpts Additional provider-specific metadata.
-type ProviderOpts map[string]string
-
 // SearchOperators defines model for SearchOperators.
 type SearchOperators struct {
 	Equals bool `json:"equals"`
@@ -528,23 +488,17 @@ type SearchSupport struct {
 	Operators SearchOperators `json:"operators"`
 }
 
-// SubscribeOpts defines model for SubscribeOpts.
-type SubscribeOpts struct {
-	// RegistrationTiming The timing of the registration.
-	RegistrationTiming SubscribeOptsRegistrationTiming `json:"registrationTiming"`
+// SubscribeRequirements Declares which auxiliary steps a provider requires to support subscriptions, beyond the per-object subscribe call itself.
+type SubscribeRequirements struct {
+	// Maintenance Whether the subscription requires periodic maintenance. Some providers expire subscriptions/watches after a fixed TTL, so the subscription must be renewed on a schedule to remain active.
+	Maintenance *bool `json:"maintenance,omitempty"`
 
-	// SubscriptionScope The scope of the subscription.
-	SubscriptionScope SubscribeOptsSubscriptionScope `json:"subscriptionScope"`
+	// PostProcess Whether subscribing requires a third-party setup step that the connector instance itself cannot perform. Examples: Salesforce requires AWS EventBridge configuration; Gmail requires a Google Pub/Sub topic to be configured. Any configuration that must happen outside the connector falls into post-process.
+	PostProcess *bool `json:"postProcess,omitempty"`
 
-	// TargetURLScope The scope of the target URL.
-	TargetURLScope interface{} `json:"targetURLScope"`
+	// Registration Whether the provider requires a one-time registration step that is shared across all subscribed objects. The subscribe method is object-scoped, so if a separate API call is needed beyond per-object configuration (e.g., registering a single webhook/endpoint that all object subscriptions hang off of), registration is required.
+	Registration *bool `json:"registration,omitempty"`
 }
-
-// SubscribeOptsRegistrationTiming The timing of the registration.
-type SubscribeOptsRegistrationTiming string
-
-// SubscribeOptsSubscriptionScope The scope of the subscription.
-type SubscribeOptsSubscriptionScope string
 
 // SubscribeSupport defines model for SubscribeSupport.
 type SubscribeSupport struct {
