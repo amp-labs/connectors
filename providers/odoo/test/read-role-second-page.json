@@ -1,0 +1,62 @@
+[
+    {
+        "id": 11,
+        "display_name": "Information Technology",
+        "name": "Information Technology",
+        "create_date": "2026-04-14 14:33:31"
+    },
+    {
+        "id": 12,
+        "display_name": "Legal",
+        "name": "Legal",
+        "create_date": "2026-04-14 14:33:31"
+    },
+    {
+        "id": 13,
+        "display_name": "Marketing",
+        "name": "Marketing",
+        "create_date": "2026-04-14 14:33:31"
+    },
+    {
+        "id": 14,
+        "display_name": "Operations",
+        "name": "Operations",
+        "create_date": "2026-04-14 14:33:31"
+    },
+    {
+        "id": 15,
+        "display_name": "Owner",
+        "name": "Owner",
+        "create_date": "2026-04-14 14:33:31"
+    },
+    {
+        "id": 16,
+        "display_name": "President",
+        "name": "President",
+        "create_date": "2026-04-14 14:33:31"
+    },
+    {
+        "id": 17,
+        "display_name": "Product",
+        "name": "Product",
+        "create_date": "2026-04-14 14:33:31"
+    },
+    {
+        "id": 18,
+        "display_name": "Public Relations",
+        "name": "Public Relations",
+        "create_date": "2026-04-14 14:33:31"
+    },
+    {
+        "id": 19,
+        "display_name": "Real Estate",
+        "name": "Real Estate",
+        "create_date": "2026-04-14 14:33:31"
+    },
+    {
+        "id": 20,
+        "display_name": "Recruiting",
+        "name": "Recruiting",
+        "create_date": "2026-04-14 14:33:31"
+    }
+]
