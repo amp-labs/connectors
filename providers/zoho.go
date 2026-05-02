@@ -50,7 +50,7 @@ func init() {
 			},
 			Proxy:     true,
 			Read:      true,
-			Subscribe: false,
+			Subscribe: true,
 			Write:     true,
 		},
 		Media: &Media{
@@ -70,8 +70,11 @@ func init() {
 				DisplayName: "Zoho CRM",
 				Support: Support{
 					Read:      true,
-					Subscribe: false,
+					Subscribe: true,
 					Write:     true,
+				},
+				SubscribeRequirements: &SubscribeRequirements{
+					Maintenance: new(true),
 				},
 			},
 			ModuleZohoDesk: {
