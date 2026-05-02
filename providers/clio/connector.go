@@ -65,3 +65,18 @@ func (c *Connector) ListObjectMetadata(
 
 	return nil, common.ErrNotImplemented
 }
+
+func (c *Connector) Read(
+	ctx context.Context,
+	params connectors.ReadParams,
+) (*connectors.ReadResult, error) {
+	if c.Grow != nil {
+		return c.Grow.Read(ctx, params)
+	}
+
+	if c.Manage != nil {
+		return c.Manage.Read(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
