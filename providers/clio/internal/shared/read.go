@@ -14,7 +14,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const MaxPageSize = "200" // Docs: https://docs.developers.clio.com/api-docs/clio-manage/paging
+const defaultPageSize = "200" // Docs: https://docs.developers.clio.com/api-docs/clio-manage/paging
 
 type BuildReadParams struct {
 	BaseURL     string
@@ -46,19 +46,21 @@ func BuildReadRequest(ctx context.Context, buildParams BuildReadParams) (*http.R
 		return nil, err
 	}
 
-	pageSize := readhelper.PageSizeWithDefaultStr(params, MaxPageSize)
+	pageSize := readhelper.PageSizeWithDefaultStr(params, defaultPageSize)
 
 	url.WithQueryParam("limit", pageSize)
 
 	// Cursor mode requires order=id(asc), Docs: https://docs.developers.clio.com/api-docs/clio-manage/paging
 	url.WithQueryParam("order", "id(asc)")
 
-	if buildParams.ObjectsNoUpdatedSince.Has(params.ObjectName) && !params.Fields.Has("updated_at") {
-		params.Fields.AddOne("updated_at")
+	fields := params.Fields.List()
+	if buildParams.ObjectsNoUpdatedSince.Has(params.ObjectName) &&
+		!params.Fields.Has("updated_at") {
+		fields = append(fields, "updated_at")
 	}
 	// fields selects which record fields to return if omitted only defaults like id and etag are returned
 	// Docs: https://docs.developers.clio.com/api-docs/clio-manage/fields
-	if fld := strings.Join(params.Fields.List(), ","); fld != "" {
+	if fld := strings.Join(fields, ","); fld != "" {
 		url.WithUnencodedQueryParam("fields", fld)
 	}
 
@@ -98,6 +100,10 @@ func makeFilterFunc(
 	nextPageFunc := makeNextRecordsURL()
 
 	if !objectsNoUpdatedSince.Has(params.ObjectName) {
+		return readhelper.MakeIdentityFilterFunc(nextPageFunc)
+	}
+
+	if params.Since.IsZero() && params.Until.IsZero() {
 		return readhelper.MakeIdentityFilterFunc(nextPageFunc)
 	}
 

@@ -155,6 +155,55 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Read lauk_civil_controlled_rates without Since returns all rows and omits updated_since",
+			Input: common.ReadParams{
+				ObjectName: "lauk_civil_controlled_rates",
+				Fields:     connectors.Fields("id", "etag"),
+				PageSize:   50,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v4/lauk_civil_controlled_rates.json"),
+					mockcond.QueryParam("limit", "50"),
+					mockcond.QueryParam("order", "id(asc)"),
+					mockcond.QueryParamsMissing("updated_since"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseLaukCivil),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":   float64(1),
+							"etag": "e1",
+						},
+						Raw: map[string]any{
+							"id":         float64(1),
+							"etag":       "e1",
+							"updated_at": "2026-03-01T00:00:00Z",
+						},
+					},
+					{
+						Fields: map[string]any{
+							"id":   float64(2),
+							"etag": "e2",
+						},
+						Raw: map[string]any{
+							"id":         float64(2),
+							"etag":       "e2",
+							"updated_at": "2026-05-01T00:00:00Z",
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name: "Read activities next page via NextPage",
 			Input: common.ReadParams{
 				ObjectName: "activities",
