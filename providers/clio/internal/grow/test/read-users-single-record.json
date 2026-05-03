@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "id": 123,
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "email": "jane.doe@example.com"
+    }
+  ],
+  "meta": {
+    "paging": {
+      "next": "",
+      "previous": "http://example.com"
+    }
+  }
+}

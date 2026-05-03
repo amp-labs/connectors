@@ -1,0 +1,26 @@
+{
+  "data": [
+    {
+      "id": 123,
+      "global_id": "01ARZ3NDEKTSV4RRFFQ69G5FAV",
+      "clio_id": 456,
+      "name": "John Doe",
+      "first_name": "John",
+      "last_name": "Doe",
+      "emails": [],
+      "phone_numbers": [],
+      "type": "Person",
+      "status": "Hired",
+      "matters": [],
+      "addresses": [],
+      "created_at": "2024-01-15T10:30:00Z",
+      "updated_at": "2024-02-20T14:45:00Z"
+    }
+  ],
+  "meta": {
+    "paging": {
+      "next": "",
+      "previous": "http://example.com"
+    }
+  }
+}

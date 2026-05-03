@@ -1,0 +1,14 @@
+{
+  "data": [
+    {
+      "id": 125565935,
+      "etag": "\"77bfbef69f3e1596a68f6d0d2c363349\""
+    }
+  ],
+  "meta": {
+    "paging": {
+      "next": "https://eu.app.clio.com/api/v4/activities.json?limit=1&order=id%28asc%29&page_token=xyx"
+    },
+    "records": 2
+  }
+}
