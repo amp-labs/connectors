@@ -79,6 +79,11 @@ func init() { // nolint:funlen
 						},
 					},
 				},
+				SubscribeRequirements: &SubscribeRequirements{
+					Registration:   new(true),
+					PostProcess:    new(true),
+					SubscribeByAPI: new(true),
+				},
 			},
 			ModuleSalesforceAccountEngagement: {
 				BaseURL:     "https://pi.pardot.com",

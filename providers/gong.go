@@ -37,8 +37,11 @@ func init() {
 			},
 			Proxy:     true,
 			Read:      true,
-			Subscribe: false,
+			Subscribe: true,
 			Write:     true,
+		},
+		SubscribeRequirements: &SubscribeRequirements{
+			SubscribeByAPI: new(false),
 		},
 	})
 }
