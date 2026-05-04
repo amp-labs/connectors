@@ -1,4 +1,4 @@
-package goTo
+package gotoconn
 
 import (
 	"testing"
@@ -100,7 +100,9 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
-		Workspace:           testOrganizerKey,
+		Metadata: map[string]string{
+			"accountKey": testOrganizerKey,
+		},
 	})
 	if err != nil {
 		return nil, err

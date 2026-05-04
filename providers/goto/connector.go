@@ -6,9 +6,13 @@
 package gotoconn
 
 import (
+	"context"
+
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/goto/internal/gotocore"
 )
 
 type Connector struct {
@@ -19,22 +23,73 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 	common.PostAuthInfo
 
+	// gotoCore handles api.getgo.com endpoints (Webinar, etc).
+	gotoCore    *gotocore.Adapter
+	gotoConnect *gotocore.Adapter
+
 	accountKey string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	conn, err := components.Initialize(providers.GoTo, params, constructor)
+	if params.Module == "" {
+		params.Module = providers.ModuleGoTo
+	}
+
+	conn, err := components.Initialize(providers.GoTo, params,
+		func(base *components.Connector) (*Connector, error) {
+			return &Connector{Connector: base}, nil
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
 
 	authMetadata := NewAuthMetadataVars(params.Metadata)
-
 	conn.accountKey = authMetadata.AccountKey
+
+	if err := initModuleAdapters(conn, params); err != nil {
+		return nil, err
+	}
 
 	return conn, nil
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
-	return &Connector{Connector: base}, nil
+func initModuleAdapters(conn *Connector, params common.ConnectorParams) error {
+	switch conn.Module() { //nolint:exhaustive
+	case providers.ModuleGoTo:
+		adapter, err := gotocore.NewAdapter(params, conn.accountKey)
+		if err != nil {
+			return err
+		}
+
+		conn.gotoCore = adapter
+	case providers.ModuleGoToConnect:
+		// No adapter implemented yet for goToConnect. Endpoints under
+		// api.goto.com will live in their own internal package once added.
+	default:
+		return common.ErrUnsupportedModule
+	}
+
+	return nil
+}
+
+// SetBaseURL fans the override out to any active module adapter so that
+// unit tests pointing at a mock server reach the same host the top-level
+// connector now uses.
+func (c *Connector) SetBaseURL(newURL string) {
+	c.Connector.SetBaseURL(newURL)
+
+	if c.gotoCore != nil {
+		c.gotoCore.SetBaseURL(newURL)
+	}
+}
+
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context, objectNames []string,
+) (*connectors.ListObjectMetadataResult, error) {
+	if c.gotoCore != nil {
+		return c.gotoCore.ListObjectMetadata(ctx, objectNames)
+	}
+
+	return nil, common.ErrNotImplemented
 }

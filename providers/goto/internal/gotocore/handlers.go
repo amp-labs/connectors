@@ -1,8 +1,9 @@
-package goTo
+package gotocore
 
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -15,8 +16,8 @@ const (
 	sampleSize     = "1"
 )
 
-func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := c.buildObjectURL(objectName)
+func (a *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
+	url, err := a.buildObjectURL(objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -25,16 +26,31 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	url.WithQueryParam(queryParamSize, sampleSize)
 
 	if objectName == "historicalMeetings" {
-		startDate := time.Now().AddDate(0, 0, -60).Format(time.RFC3339) // set the start date to 2 months ago to ensure we get at least 1 record, as historical meetings are only available for the past 90 days
-		endDate := time.Now().Format(time.RFC3339)
+		// Historical meetings are only available for the past 90 days, so we
+		// query the last 120 days to ensure at least one record is returned.
+		now := time.Now().UTC()
+		startDate := now.AddDate(0, 0, -120).Format(time.RFC3339)
+		endDate := now.Format(time.RFC3339)
 		url.WithQueryParam("startDate", startDate)
 		url.WithQueryParam("endDate", endDate)
 	}
 
+	if objectName == "webinars" {
+		// webinars are only available for the past 90 days, so we
+		// query the last 120 days to ensure at least one record is returned.
+		now := time.Now().UTC()
+		startDate := now.AddDate(0, 0, -120).Format(time.RFC3339)
+		endDate := now.AddDate(0, 0, 120).Format(time.RFC3339)
+		url.WithQueryParam("fromTime", startDate)
+		url.WithQueryParam("toTime", endDate)
+	}
+
+	log.Printf("Building request for object %s with URL: %s", objectName, url.String())
+
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
-func (c *Connector) parseSingleObjectMetadataResponse(
+func (a *Adapter) parseSingleObjectMetadataResponse(
 	ctx context.Context,
 	objectName string,
 	request *http.Request,

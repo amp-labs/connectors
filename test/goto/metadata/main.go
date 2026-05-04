@@ -7,7 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	connTest "github.com/amp-labs/connectors/test/goTo"
+	"github.com/amp-labs/connectors/providers"
+	connTest "github.com/amp-labs/connectors/test/goto"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -18,9 +19,9 @@ func main() {
 
 	utils.SetupLogging()
 
-	conn := connTest.GetGoToConnector(ctx)
+	conn := connTest.GetGoToConnector(ctx, providers.ModuleGoTo)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"webinars", "sessions"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"historicalMeetings", "webinars"})
 	if err != nil {
 		utils.Fail("error listing metadata for GoTo", "error", err)
 	}

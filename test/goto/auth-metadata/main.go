@@ -6,7 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/providers/goto"
+	"github.com/amp-labs/connectors/providers"
+	gotoconn "github.com/amp-labs/connectors/providers/goto"
 	connTest "github.com/amp-labs/connectors/test/goto"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -19,7 +20,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetGoToConnector(ctx)
+	conn := connTest.GetGoToConnector(ctx, providers.ModuleGoTo)
 
 	info, err := conn.GetPostAuthInfo(ctx)
 	if err != nil || info.CatalogVars == nil {

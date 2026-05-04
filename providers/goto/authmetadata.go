@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/providers"
 )
 
 func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) {
@@ -19,6 +20,9 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	}
 
 	c.accountKey = accountKey
+	if c.gotoCore != nil {
+		c.gotoCore.SetAccountKey(accountKey)
+	}
 
 	catalogVars := map[string]string{
 		"accountKey": accountKey,
@@ -65,5 +69,10 @@ func (c *Connector) retrieveAccountKey(ctx context.Context) (string, error) {
 }
 
 func (c *Connector) getMeURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, "/admin/rest/v1/me")
+	// /me lives on the goTo (api.getgo.com) module, so we resolve that
+	// module's BaseURL explicitly — even when the connector was created
+	// with the goToConnect module selected.
+	baseURL := c.ProviderInfo().ReadModuleInfo(providers.ModuleGoTo).BaseURL
+
+	return urlbuilder.New(baseURL, "/admin/rest/v1/me")
 }

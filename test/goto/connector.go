@@ -7,12 +7,12 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/goto"
+	gotoconn "github.com/amp-labs/connectors/providers/goto"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
-func GetGoToConnector(ctx context.Context) *gotoconn.Connector {
+func GetGoToConnector(ctx context.Context, module common.ModuleID) *gotoconn.Connector {
 	filePath := credscanning.LoadPath(providers.GoTo)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
@@ -27,6 +27,10 @@ func GetGoToConnector(ctx context.Context) *gotoconn.Connector {
 
 	conn, err := gotoconn.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
+		Module:              module,
+		Metadata: map[string]string{
+			"accountKey": "5276072959790856388",
+		},
 	})
 	if err != nil {
 		utils.Fail("create goto connector", "error: ", err)
