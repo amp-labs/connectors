@@ -211,8 +211,8 @@ func (c batchCreateTestCase) Run(t *testing.T, builder testroutines.ConnectorBui
 	testCaseTypeBatchCreate(c).Validate(t, err, output)
 }
 
-func batchCreateComparator(_ string, actual, expected *BatchCreateResult) *mockutils.CompareResult {
-	result := mockutils.NewCompareResult()
+func batchCreateComparator(_ string, actual, expected *BatchCreateResult) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
 	result.Assert("Success", expected.Success, actual.Success)
 	result.Merge(mockutils.ErrorNormalizedComparator.EachErrorEquals(
 		goutils.ToAnySlice(expected.Errors),
