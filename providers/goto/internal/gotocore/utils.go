@@ -17,6 +17,13 @@ func (a *Adapter) buildObjectURL(objectName string) (*urlbuilder.URL, error) {
 
 	path := strings.ReplaceAll(spec.path, accountKeyPlaceholder, a.accountKey)
 
+	url, err := urlbuilder.New(a.ModuleInfo().BaseURL, path)
+	if err != nil {
+		return nil, fmt.Errorf("error building URL for object %s: %w", objectName, err)
+	}
+
+	url.WithQueryParam(queryParamSize, sampleSize)
+
 	return urlbuilder.New(a.ModuleInfo().BaseURL, path)
 }
 
@@ -33,19 +40,35 @@ func extractRecords(response *common.JSONHTTPResponse, objectName string) ([]any
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
+	objectConfig, ok := objectRegistry[objectName]
+	if !ok {
+		return nil, fmt.Errorf("%w: no object config for %s", common.ErrMissingExpectedValues, objectName)
+	}
+
+	if objectConfig.service == serviceSCIM {
+		records, ok := (*body)["resources"].([]any) // per SCIM spec, the array of records is always under the "Resources" key
+		if !ok {
+			return nil, fmt.Errorf("%w: SCIM response is missing Resources key", common.ErrMissingExpectedValues)
+		}
+		return records, nil
+	}
+
+	if objectConfig.service == serviceAdmin {
+		records, ok := (*body)["results"].([]any) // per Admin API docs, the array of records is always under the "results" key
+		if !ok {
+			return nil, fmt.Errorf("%w: Admin API response is missing results key", common.ErrMissingExpectedValues)
+		}
+		return records, nil
+	}
+
 	embedded, ok := (*body)["_embedded"].(map[string]any)
 	if !ok {
 		return nil, fmt.Errorf("%w: response is missing _embedded key", common.ErrMissingExpectedValues)
 	}
 
-	recordsKey := objectRegistry[objectName].recordsKey
-	if recordsKey == "" {
-		recordsKey = objectName
-	}
-
-	records, ok := embedded[recordsKey].([]any)
+	records, ok := embedded[objectName].([]any)
 	if !ok {
-		return nil, fmt.Errorf("%w: _embedded.%s is not an array", common.ErrMissingExpectedValues, recordsKey)
+		return nil, fmt.Errorf("%w: _embedded.%s is not an array", common.ErrMissingExpectedValues, objectName)
 	}
 
 	return records, nil

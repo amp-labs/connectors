@@ -3,7 +3,6 @@ package gotocore
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -23,7 +22,6 @@ func (a *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectNa
 	}
 
 	// Sample a single record to infer the object's schema.
-	url.WithQueryParam(queryParamSize, sampleSize)
 
 	if objectName == "historicalMeetings" {
 		// Historical meetings are only available for the past 90 days, so we
@@ -45,7 +43,14 @@ func (a *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectNa
 		url.WithQueryParam("toTime", endDate)
 	}
 
-	log.Printf("Building request for object %s with URL: %s", objectName, url.String())
+	if objectName == "sessions" {
+		// sessions are only available for the past 90 days, so we query the last 120 days to ensure at least one record is returned.
+		now := time.Now().UTC()
+		startDate := now.AddDate(0, 0, -120).Format(time.RFC3339)
+		endDate := now.Format(time.RFC3339)
+		url.WithQueryParam("fromTime", startDate)
+		url.WithQueryParam("toTime", endDate)
+	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
