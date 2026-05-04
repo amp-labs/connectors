@@ -40,5 +40,8 @@ func init() {
 			Subscribe: true,
 			Write:     true,
 		},
+		SubscribeRequirements: &SubscribeRequirements{
+			SubscribeByAPI: new(true),
+		},
 	})
 }

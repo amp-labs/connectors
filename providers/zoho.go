@@ -74,7 +74,8 @@ func init() {
 					Write:     true,
 				},
 				SubscribeRequirements: &SubscribeRequirements{
-					Maintenance: new(true),
+					Maintenance:    new(true),
+					SubscribeByAPI: new(true),
 				},
 			},
 			ModuleZohoDesk: {
