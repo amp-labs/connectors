@@ -498,6 +498,9 @@ type SubscribeRequirements struct {
 
 	// Registration Whether the provider requires a one-time registration step that is shared across all subscribed objects. The subscribe method is object-scoped, so if a separate API call is needed beyond per-object configuration (e.g., registering a single webhook/endpoint that all object subscriptions hang off of), registration is required.
 	Registration *bool `json:"registration,omitempty"`
+
+	// SubscribeByAPI Whether the provider supports programmatic subscription via API. If false, provider may still support webhooks via manual configuration in UI.
+	SubscribeByAPI *bool `json:"subscribeByAPI,omitempty"`
 }
 
 // SubscribeSupport defines model for SubscribeSupport.
