@@ -141,6 +141,42 @@
             }
           }
         },
+        "session_people_bulk": {
+          "displayName": "Session People Bulk (job)",
+          "path": "/v1/sessions/{session_id}/people/bulk",
+          "responseKey": "data",
+          "docs": "https://developers.livestorm.co/reference/post_sessions-id-people-bulk",
+          "fields": {
+            "id": {
+              "displayName": "Job Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/v1/users",
+          "responseKey": "data",
+          "docs": "https://developers.livestorm.co/reference/post_users",
+          "fields": {
+            "id": {
+              "displayName": "User Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "session_chat_messages": {
           "displayName": "Session Chat Messages",
           "path": "/sessions/chat_messages",
