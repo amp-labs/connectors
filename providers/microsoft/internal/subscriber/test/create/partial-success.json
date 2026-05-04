@@ -1,0 +1,50 @@
+{
+  "responses": [
+    {
+      "id": "movies",
+      "status": 400,
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "error": {
+          "code": "BadRequest",
+          "message": "Resource not found for the segment 'movies'.",
+          "innerError": {
+            "date": "2026-04-23T18:08:47",
+            "request-id": "2863d3ab-64cd-42be-89c6-a7e58ae5545a",
+            "client-request-id": "2863d3ab-64cd-42be-89c6-a7e58ae5545a"
+          }
+        }
+      }
+    },
+    {
+      "id": "me/messages",
+      "status": 201,
+      "headers": {
+        "Location": "https://subscriptionstore.windows.net/1.0/NA/subscriptions('38ca43fa-4602-43ef-a865-aca8a3ddc1ce')",
+        "Cache-Control": "no-cache",
+        "OData-Version": "4.0",
+        "Content-Type": "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8"
+      },
+      "body": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#subscriptions/$entity",
+        "id": "38ca43fa-4602-43ef-a865-aca8a3ddc1ce",
+        "resource": "me/messages",
+        "applicationId": "39d7eec8-2032-4dd3-959f-d92d8a4e2ad3",
+        "changeType": "created,updated,deleted",
+        "clientState": "me/messages",
+        "notificationUrl": "https://4a4e-46-150-81-5.ngrok-free.app",
+        "notificationQueryOptions": null,
+        "lifecycleNotificationUrl": null,
+        "expirationDateTime": "2026-04-23T19:08:46Z",
+        "creatorId": "ae87552f-48fc-4dec-9322-65040bf9fdfd",
+        "includeResourceData": null,
+        "latestSupportedTlsVersion": "v1_2",
+        "encryptionCertificate": null,
+        "encryptionCertificateId": null,
+        "notificationUrlAppId": null
+      }
+    }
+  ]
+}

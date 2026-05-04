@@ -230,6 +230,24 @@ func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMet
 	return result
 }
 
+func ComparatorSubscriptionWithResult(
+	resultComparator func(expectedResult, actualResult any) *testutils.CompareResult,
+) Comparator[*common.SubscriptionResult] {
+	return func(_ string, actual, expected *common.SubscriptionResult) *testutils.CompareResult {
+		result := testutils.NewCompareResult()
+		result.Merge(mockutils.SubscriptionResultComparator.CompareWithoutResultArg(actual, expected))
+		result.Merge(resultComparator(expected.Result, actual.Result))
+
+		return result
+	}
+}
+
+func ComparatorSubscriptionWithoutResult(
+	_ string, actual, expected *common.SubscriptionResult,
+) *testutils.CompareResult {
+	return mockutils.SubscriptionResultComparator.CompareWithoutResultArg(actual, expected)
+}
+
 func mapIsSubsetMap(subset, superset map[string]any) bool {
 	for key, expected := range subset {
 		actual, ok := superset[key]

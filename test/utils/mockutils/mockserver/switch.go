@@ -1,6 +1,9 @@
 package mockserver
 
 import (
+	"bytes"
+	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 
@@ -43,9 +46,21 @@ func (c Switch) Server() *httptest.Server {
 			return
 		}
 
-		// Default fail behaviour.
+		reader := r.Body
+		body, _ := io.ReadAll(reader)
+		_ = r.Body.Close()
+		r.Body = io.NopCloser(bytes.NewBuffer(body))
+
+		// Default fail behavior.
 		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte(`{"error": {"message": "condition failed"}}`))
+		_, _ = w.Write([]byte(fmt.Sprintf("MOCK_SERVER: no condition matched request"+
+			"\nURL: %v"+
+			"\nHeaders: %v"+
+			"\nBody: %v",
+			r.URL.String(),
+			string(body),
+			r.Header,
+		)))
 	})
 }
 
