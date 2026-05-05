@@ -24,8 +24,11 @@ type Connector struct {
 	common.PostAuthInfo
 
 	// gotoCore handles api.getgo.com endpoints (Webinar, etc).
-	gotoCore    *gotocore.Adapter
-	gotoConnect *gotocore.Adapter
+	gotoCore *gotocore.Adapter
+
+	// TODO: We don't have sandbox access to api.goto.com,
+	// so the gotoconnect is not implemented yet.
+	// gotoConnect *gotocore.Adapter
 
 	accountKey string
 }
@@ -64,12 +67,14 @@ func initModuleAdapters(conn *Connector, params common.ConnectorParams) error {
 
 		conn.gotoCore = adapter
 	case providers.ModuleGoToConnect:
-		adapter, err := gotocore.NewAdapter(params, conn.accountKey)
-		if err != nil {
-			return err
-		}
 
-		conn.gotoConnect = adapter
+		return common.ErrUnsupportedModule
+		// adapter, err := gotocore.NewAdapter(params, conn.accountKey)
+		// if err != nil {
+		// 	return err
+		// }
+
+		// conn.gotoConnect = adapter
 	default:
 		return common.ErrUnsupportedModule
 	}
