@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -12,7 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-const testOrganizerKey = "8967235839898"
+const testAccountKey = "8967235839898"
 
 func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 	t.Parallel()
@@ -33,7 +34,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/G2W/rest/v2/organizers/" + testOrganizerKey + "/webinars"),
+					mockcond.Path("/G2W/rest/v2/organizers/" + testAccountKey + "/webinars"),
 					mockcond.QueryParam("size", "1"),
 				},
 				Then: mockserver.Response(200, webinarsResponse),
@@ -57,12 +58,12 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Sessions metadata is sampled from organizer-scoped endpoint",
+			Name:  "Sessions metadata is sampled from GoToAssist extended sessions endpoint",
 			Input: []string{"sessions"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/G2W/rest/v2/organizers/" + testOrganizerKey + "/sessions"),
+					mockcond.Path("/G2A/rest/v1/extendedsessions"),
 					mockcond.QueryParam("size", "1"),
 				},
 				Then: mockserver.Response(200, sessionsResponse),
@@ -73,9 +74,10 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 					"sessions": {
 						DisplayName: "Sessions",
 						Fields: map[string]common.FieldMetadata{
-							"sessionKey":          {DisplayName: "sessionKey", ValueType: common.ValueTypeString, ProviderType: "string"},
-							"webinarKey":          {DisplayName: "webinarKey", ValueType: common.ValueTypeString, ProviderType: "string"},
-							"registrantsAttended": {DisplayName: "registrantsAttended", ValueType: common.ValueTypeFloat, ProviderType: "float"},
+							"sessionId":   {DisplayName: "sessionId", ValueType: common.ValueTypeString, ProviderType: "string"},
+							"sessionType": {DisplayName: "sessionType", ValueType: common.ValueTypeString, ProviderType: "string"},
+							"status":      {DisplayName: "status", ValueType: common.ValueTypeString, ProviderType: "string"},
+							"expertName":  {DisplayName: "expertName", ValueType: common.ValueTypeString, ProviderType: "string"},
 						},
 					},
 				},
@@ -101,8 +103,9 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
 		Metadata: map[string]string{
-			"accountKey": testOrganizerKey,
+			"accountKey": testAccountKey,
 		},
+		Module: providers.ModuleGoTo,
 	})
 	if err != nil {
 		return nil, err

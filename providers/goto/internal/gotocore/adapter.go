@@ -30,9 +30,6 @@ func NewAdapter(params common.ConnectorParams, accountKey string) (*Adapter, err
 	return adapter, nil
 }
 
-// SetAccountKey updates the adapter's account key. The top-level connector
-// calls this after GetPostAuthInfo so the adapter can build URLs that
-// substitute the {organizerKey} placeholder.
 func (a *Adapter) SetAccountKey(accountKey string) {
 	a.accountKey = accountKey
 }

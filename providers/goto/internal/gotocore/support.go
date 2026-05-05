@@ -47,7 +47,8 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 
 	// GoToWebinar API
 	"webinars": {path: "G2W/rest/v2/organizers/{accountKey}/webinars", service: serviceWebinar},
-	// For webhooks and userSubscriptions, the productType query parameter is required and must be set to "g2w" to retrieve webinar webhooks.
+	// For webhooks and userSubscriptions, the productType query parameter is required
+	// and must be set to "g2w" to retrieve webinar webhooks.
 	// Ref: https://developer.goto.com/GoToWebinarV2#tag/Webhooks/operation/getWebhooks
 	"webhooks":          {path: "G2W/rest/v2/webhooks?productType=g2w", service: serviceWebinar},
 	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar},
@@ -59,11 +60,11 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 
 	// GoToAssist Remote Support API
 	"companies": {path: "G2A/rest/v1/companies", service: serviceAssist},
-	// we are using sessions as object name for extended sessions because
-	// this is just an extended version of the normal sessions endpoint.
-	// normal sessions endpoint has a constraint that it requires us to sepciriy the type of sessions and only returns that type.
-	// extended sessions endpoint on the other hand returns all types of sessions without requiring us to specify the type.
-	//  Hence we are using sessions as object name for extended sessions.
+	// We use "sessions" as the object name for extended sessions because this is
+	// just an extended version of the normal sessions endpoint. The normal sessions
+	// endpoint requires us to specify the type of sessions and only returns that
+	// type, while the extended sessions endpoint returns all types of sessions
+	// without requiring us to specify the type.
 	"sessions": {path: "G2A/rest/v1/extendedsessions", service: serviceAssist},
 
 	// Admin API

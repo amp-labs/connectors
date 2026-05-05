@@ -24,12 +24,13 @@ func (a *Adapter) buildObjectURL(objectName string) (*urlbuilder.URL, error) {
 
 	url.WithQueryParam(queryParamSize, sampleSize)
 
-	return urlbuilder.New(a.ModuleInfo().BaseURL, path)
+	return url, nil
 }
 
-// extractRecords pulls the records array out of a GoTo response. Some
-// endpoints (e.g. G2W) wrap results as {"_embedded": {"<recordsKey>": [...]}},
-// while others (e.g. G2M historicalMeetings) return a top-level JSON array.
+// extractRecords pulls the records array out of a GoTo response. Response
+// shapes vary by service: SCIM wraps under "resources", Admin under
+// "results", G2W under "_embedded.<objectName>", and some endpoints (e.g.
+// G2M historicalMeetings) return a bare top-level JSON array.
 func extractRecords(response *common.JSONHTTPResponse, objectName string) ([]any, error) {
 	if records, err := common.UnmarshalJSON[[]any](response); err == nil && records != nil {
 		return *records, nil
@@ -40,35 +41,40 @@ func extractRecords(response *common.JSONHTTPResponse, objectName string) ([]any
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	objectConfig, ok := objectRegistry[objectName]
+	cfg, ok := objectRegistry[objectName]
 	if !ok {
 		return nil, fmt.Errorf("%w: no object config for %s", common.ErrMissingExpectedValues, objectName)
 	}
 
-	if objectConfig.service == serviceSCIM {
-		records, ok := (*body)["resources"].([]any) // per SCIM spec, the array of records is always under the "Resources" key
+	return extractRecordsByService(*body, cfg.service, objectName)
+}
+
+func extractRecordsByService(body map[string]any, service objectService, objectName string) ([]any, error) {
+	switch service { //nolint:exhaustive // _embedded shape is the default; remaining services fall through.
+	case serviceSCIM:
+		return readArrayKey(body, "resources", objectName)
+	case serviceAdmin:
+		return readArrayKey(body, "results", objectName)
+	case serviceAssist:
+		return readArrayKey(body, objectName, objectName)
+	default:
+		// Webinar or any future GoTo services that
+		// share the standard HAL-style envelope return records under
+		// _embedded.<objectName>.
+		embedded, ok := body["_embedded"].(map[string]any)
 		if !ok {
-			return nil, fmt.Errorf("%w: SCIM response is missing Resources key", common.ErrMissingExpectedValues)
+			return nil, fmt.Errorf("%w: unrecognized response shape for object %s",
+				common.ErrMissingExpectedValues, objectName)
 		}
-		return records, nil
-	}
 
-	if objectConfig.service == serviceAdmin {
-		records, ok := (*body)["results"].([]any) // per Admin API docs, the array of records is always under the "results" key
-		if !ok {
-			return nil, fmt.Errorf("%w: Admin API response is missing results key", common.ErrMissingExpectedValues)
-		}
-		return records, nil
+		return readArrayKey(embedded, objectName, objectName)
 	}
+}
 
-	embedded, ok := (*body)["_embedded"].(map[string]any)
+func readArrayKey(m map[string]any, key, objectName string) ([]any, error) {
+	records, ok := m[key].([]any)
 	if !ok {
-		return nil, fmt.Errorf("%w: response is missing _embedded key", common.ErrMissingExpectedValues)
-	}
-
-	records, ok := embedded[objectName].([]any)
-	if !ok {
-		return nil, fmt.Errorf("%w: _embedded.%s is not an array", common.ErrMissingExpectedValues, objectName)
+		return nil, fmt.Errorf("%w: %s response is missing %q key", common.ErrMissingExpectedValues, objectName, key)
 	}
 
 	return records, nil

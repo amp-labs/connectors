@@ -64,8 +64,12 @@ func initModuleAdapters(conn *Connector, params common.ConnectorParams) error {
 
 		conn.gotoCore = adapter
 	case providers.ModuleGoToConnect:
-		// No adapter implemented yet for goToConnect. Endpoints under
-		// api.goto.com will live in their own internal package once added.
+		adapter, err := gotocore.NewAdapter(params, conn.accountKey)
+		if err != nil {
+			return err
+		}
+
+		conn.gotoConnect = adapter
 	default:
 		return common.ErrUnsupportedModule
 	}

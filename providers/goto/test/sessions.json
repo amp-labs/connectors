@@ -1,19 +1,24 @@
 {
-    "_embedded": {
-        "sessions": [
-            {
-                "webinarKey": "7878787878787878",
-                "sessionKey": "9999999999999999",
-                "startTime": "2024-10-15T14:00:00Z",
-                "endTime": "2024-10-15T15:00:00Z",
-                "registrantsAttended": 38
-            }
-        ]
-    },
-    "page": {
-        "size": 1,
-        "totalElements": 5,
-        "totalPages": 5,
-        "number": 0
+  "totalNumSessions": 500,
+  "sessions": [
+    {
+      "sessionId": "SS-87555",
+      "sessionType": "screen_sharing",
+      "sessionStartToken": 8555444,
+      "customerJoinUrl": "https://logmein.com/join",
+      "partnerObject": 7559966,
+      "partnerObjectUrl": "https://logmein.com/partners/view",
+      "status": "complete",
+      "startedAt": "2021-04-30T06:00:00Z",
+      "customerJoinedAt": "2021-04-30T06:01:00Z",
+      "endedAt": "2021-04-30T06:05:00Z",
+      "expertName": "John Doe",
+      "expertEmail": "john.doe@logmein.com",
+      "expertUserKey": "31416",
+      "customerName": "Jane Doe",
+      "customerEmail": "jane.doe@logmein.com",
+      "accountKey": 741599,
+      "sessionRecordingUrl": "https://logmein.com/session"
     }
+  ]
 }

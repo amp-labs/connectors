@@ -8,11 +8,18 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 const (
 	queryParamSize = "size"
 	sampleSize     = "1"
+
+	// metadataSampleWindowDays is the size in days of the time-range filter
+	// applied when sampling records for schema. Wide enough to
+	// catch at least one record on endpoints that mandate a
+	// time-range filter.
+	metadataSampleWindowDays = 120
 )
 
 func (a *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -21,38 +28,31 @@ func (a *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectNa
 		return nil, err
 	}
 
-	// Sample a single record to infer the object's schema.
-
-	if objectName == "historicalMeetings" {
-		// Historical meetings are only available for the past 90 days, so we
-		// query the last 120 days to ensure at least one record is returned.
-		now := time.Now().UTC()
-		startDate := now.AddDate(0, 0, -120).Format(time.RFC3339)
-		endDate := now.Format(time.RFC3339)
-		url.WithQueryParam("startDate", startDate)
-		url.WithQueryParam("endDate", endDate)
-	}
-
-	if objectName == "webinars" {
-		// webinars are only available for the past 90 days, so we
-		// query the last 120 days to ensure at least one record is returned.
-		now := time.Now().UTC()
-		startDate := now.AddDate(0, 0, -120).Format(time.RFC3339)
-		endDate := now.AddDate(0, 0, 120).Format(time.RFC3339)
-		url.WithQueryParam("fromTime", startDate)
-		url.WithQueryParam("toTime", endDate)
-	}
-
-	if objectName == "sessions" {
-		// sessions are only available for the past 90 days, so we query the last 120 days to ensure at least one record is returned.
-		now := time.Now().UTC()
-		startDate := now.AddDate(0, 0, -120).Format(time.RFC3339)
-		endDate := now.Format(time.RFC3339)
-		url.WithQueryParam("fromTime", startDate)
-		url.WithQueryParam("toTime", endDate)
-	}
+	applyMetadataTimeFilter(url, objectName)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+// applyMetadataTimeFilter adds the mandatory time-range query params for
+// endpoints that require them. The window is wide enough (past 120 days,
+// plus 120 days into the future for endpoints that accept upcoming records)
+// to maximize the chance of sampling at least one record for schema
+// inference.
+func applyMetadataTimeFilter(url *urlbuilder.URL, objectName string) {
+	setWindow := func(startParam, endParam string, pastDays, futureDays int) {
+		now := time.Now().UTC()
+		url.WithQueryParam(startParam, now.AddDate(0, 0, -pastDays).Format(time.RFC3339))
+		url.WithQueryParam(endParam, now.AddDate(0, 0, futureDays).Format(time.RFC3339))
+	}
+
+	switch objectName {
+	case "historicalMeetings":
+		setWindow("startDate", "endDate", metadataSampleWindowDays, 0)
+	case "webinars":
+		setWindow("fromTime", "toTime", metadataSampleWindowDays, metadataSampleWindowDays)
+	case "sessions":
+		setWindow("fromTime", "toTime", metadataSampleWindowDays, 0)
+	}
 }
 
 func (a *Adapter) parseSingleObjectMetadataResponse(
