@@ -18,7 +18,6 @@ func GetMicrosoftGraphConnector(ctx context.Context) *microsoft.Connector {
 	conn, err := microsoft.NewConnector(
 		common.ConnectorParams{
 			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
-			Workspace:           reader.Get(credscanning.Fields.Workspace),
 		},
 	)
 	if err != nil {
@@ -29,15 +28,13 @@ func GetMicrosoftGraphConnector(ctx context.Context) *microsoft.Connector {
 }
 
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
-	workspace := reader.Get(credscanning.Fields.Workspace)
-
 	return &oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
 		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   "https://login.microsoftonline.com/" + workspace + "/oauth2/v2.0/authorize",
-			TokenURL:  "https://login.microsoftonline.com/" + workspace + "/oauth2/v2.0/token",
+			AuthURL:   "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL:  "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
 		Scopes: []string{

@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 // URLTestServer is an alias to mock server BaseURL.
@@ -19,13 +20,13 @@ const URLTestServer = "{{testServerURL}}"
 //
 // This package provides the most commonly used comparators like ComparatorSubsetRead, ComparatorPagination,
 // ComparatorSubsetWrite, ComparatorSubsetMetadata for partial field matching in large API responses.
-type Comparator[Output any] func(serverURL string, actual, expected Output) *mockutils.CompareResult
+type Comparator[Output any] func(serverURL string, actual, expected Output) *testutils.CompareResult
 
 // ComparatorSubsetRead ensures that a subset of fields or raw data is present in the response.
 // This is convenient for cases where the returned data is large,
 // allowing for a more concise test that still validates the desired behavior.
-func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult) *mockutils.CompareResult {
-	result := mockutils.NewCompareResult()
+func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
 	result.Merge(mockutils.ReadResultComparator.SubsetFields(actual, expected))
 	result.Merge(mockutils.ReadResultComparator.SubsetRaw(actual, expected))
 	result.Merge(mockutils.ReadResultComparator.SubsetAssociationsRaw(actual, expected))
@@ -48,8 +49,8 @@ func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult)
 // the check will conclude that pagination matches.
 func ComparatorPagination(
 	serverURL string, actual *common.ReadResult, expected *common.ReadResult,
-) *mockutils.CompareResult {
-	result := mockutils.NewCompareResult()
+) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
 	expectedNextPage := resolveTestServerURL(expected.NextPage.String(), serverURL)
 
 	if !compareNextPageToken(actual.NextPage.String(), expectedNextPage) {
@@ -98,8 +99,8 @@ func compareNextPageToken(actual, expected string) bool {
 //
 // This comparator is typically used when only a subset of Data fields
 // needs verification rather than a full equality check.
-func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) *mockutils.CompareResult {
-	result := mockutils.NewCompareResult()
+func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
 	result.Assert(fmt.Sprintf("Success mismatch"), expected.Success, actual.Success)
 	result.Assert(fmt.Sprintf("RecordId mismatch"), expected.RecordId, actual.RecordId)
 	result.Merge(mockutils.WriteResultComparator.SubsetData(actual, expected))
@@ -118,8 +119,8 @@ func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) *mock
 //
 // This enables expressive, stable tests that verify meaningful fields
 // without enforcing strict structural equality across the entire batch.
-func ComparatorSubsetBatchWrite(_ string, actual, expected *common.BatchWriteResult) *mockutils.CompareResult {
-	result := mockutils.NewCompareResult()
+func ComparatorSubsetBatchWrite(_ string, actual, expected *common.BatchWriteResult) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
 	result.Assert(fmt.Sprintf("Status mismatch"), expected.Status, actual.Status)
 	result.Assert(fmt.Sprintf("SuccessCount mismatch"), expected.SuccessCount, actual.SuccessCount)
 	result.Assert(fmt.Sprintf("FailureCount mismatch"), expected.FailureCount, actual.FailureCount)
@@ -144,12 +145,12 @@ func ComparatorSubsetBatchWrite(_ string, actual, expected *common.BatchWriteRes
 //		"arsenal": common.NewHTTPError(http.StatusBadRequest,		// Is doing exact match.
 //			headers, body, fmt.Errorf("%w: %s", common.ErrCaller, string(unsupportedResponse))),
 //	},
-func ComparatorSubsetMetadata(_ string, actual, expected *common.ListObjectMetadataResult) *mockutils.CompareResult {
+func ComparatorSubsetMetadata(_ string, actual, expected *common.ListObjectMetadataResult) *testutils.CompareResult {
 	if len(expected.Result)+len(expected.Errors) == 0 {
 		panic("please specify expected Result or Errors in Metadata response")
 	}
 
-	result := mockutils.NewCompareResult()
+	result := testutils.NewCompareResult()
 	result.Merge(mockutils.MetadataResultComparator.SubsetFields(actual, expected))
 	result.Merge(mockutils.MetadataResultComparator.SubsetErrors(actual, expected))
 
@@ -175,8 +176,8 @@ func resolveTestServerURL(urlTemplate string, serverURL string) string {
 //   - Metadata is compared using subset semantics — all key/value
 //     pairs defined in expected.Metadata must be present in
 //     actual.Metadata, but actual may contain additional entries.
-func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMetadataResult) *mockutils.CompareResult {
-	result := mockutils.NewCompareResult()
+func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMetadataResult) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
 	result.Assert(fmt.Sprintf("Success mismatch"), expected.Success, actual.Success)
 	result.Assert(fmt.Sprintf("Fields length mismatch"), len(expected.Fields), len(actual.Fields))
 
@@ -185,13 +186,13 @@ func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMet
 		for fieldName, expectedField := range property {
 			actualProperty, ok := actual.Fields[propertyName]
 			if !ok {
-				result.AddDiff(fmt.Sprintf("Fields[%s] missing", propertyName))
+				result.AddDiff("Fields[%s] missing", propertyName)
 				continue
 			}
 
 			actualField, ok := actualProperty[fieldName]
 			if !ok {
-				result.AddDiff(fmt.Sprintf("Fields[%s][%s] missing", propertyName, fieldName))
+				result.AddDiff("Fields[%s][%s] missing", propertyName, fieldName)
 				continue
 			}
 

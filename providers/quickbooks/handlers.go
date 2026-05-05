@@ -15,7 +15,7 @@ import (
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, c.realmId, "query")
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, c.Workspace, "query")
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, c.realmId, "query")
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, c.Workspace, "query")
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func (c *Connector) parseReadResponse(
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, c.realmId, strings.ToLower(params.ObjectName))
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, c.Workspace, strings.ToLower(params.ObjectName))
 	if err != nil {
 		return nil, err
 	}

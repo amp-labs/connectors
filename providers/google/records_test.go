@@ -114,7 +114,7 @@ func TestMailGetRecordsByIds(t *testing.T) { //nolint:funlen
 			ids:    []string{idOK1, idMissing},
 			server: func() *mockserver.Switch {
 				return &mockserver.Switch{
-					Setup: mockserver.ContentJSON(),
+					Setup:   mockserver.ContentJSON(),
 					Default: mockserver.Response(http.StatusNotFound, errorNotFound),
 				}
 			},
