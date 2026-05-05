@@ -10442,7 +10442,7 @@
             }
           }
         },
-        "finance/agreementrecap/": {
+        "finance/agreementrecap": {
           "displayName": "Finance Agreementrecap",
           "path": "/finance/agreementrecap/",
           "responseKey": "",
@@ -11191,7 +11191,7 @@
             }
           }
         },
-        "finance/companyFinance/": {
+        "finance/companyFinance": {
           "displayName": "Finance Company Finance",
           "path": "/finance/companyFinance/",
           "responseKey": "",
@@ -15827,203 +15827,6 @@
             }
           }
         },
-        "opportunities": {
-          "displayName": "Opportunities",
-          "path": "/sales/opportunities",
-          "responseKey": "",
-          "fields": {
-            "_info": {
-              "displayName": "_info",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "billToCompany": {
-              "displayName": "billToCompany",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "billToContact": {
-              "displayName": "billToContact",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "billToSite": {
-              "displayName": "billToSite",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "billingTerms": {
-              "displayName": "billingTerms",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "businessUnitId": {
-              "displayName": "businessUnitId",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "campaign": {
-              "displayName": "campaign",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "closedBy": {
-              "displayName": "closedBy",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "closedDate": {
-              "displayName": "closedDate",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "company": {
-              "displayName": "company",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "companyLocationId": {
-              "displayName": "companyLocationId",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "contact": {
-              "displayName": "contact",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "currency": {
-              "displayName": "currency",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "customFields": {
-              "displayName": "customFields",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "customerPO": {
-              "displayName": "customerPO",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "dateBecameLead": {
-              "displayName": "dateBecameLead",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "expectedCloseDate": {
-              "displayName": "expectedCloseDate",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "locationId": {
-              "displayName": "locationId",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "name": {
-              "displayName": "name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "notes": {
-              "displayName": "notes",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "pipelineChangeDate": {
-              "displayName": "pipelineChangeDate",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "primarySalesRep": {
-              "displayName": "primarySalesRep",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "priority": {
-              "displayName": "priority",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "probability": {
-              "displayName": "probability",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "rating": {
-              "displayName": "rating",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "secondarySalesRep": {
-              "displayName": "secondarySalesRep",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "shipToCompany": {
-              "displayName": "shipToCompany",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "shipToContact": {
-              "displayName": "shipToContact",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "shipToSite": {
-              "displayName": "shipToSite",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "site": {
-              "displayName": "site",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "source": {
-              "displayName": "source",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "stage": {
-              "displayName": "stage",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "status": {
-              "displayName": "status",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "taxCode": {
-              "displayName": "taxCode",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "technicalContact": {
-              "displayName": "technicalContact",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "totalSalesTax": {
-              "displayName": "totalSalesTax",
-              "valueType": "other",
-              "providerType": "number"
-            },
-            "type": {
-              "displayName": "type",
-              "valueType": "other",
-              "providerType": "object"
-            }
-          }
-        },
         "orders": {
           "displayName": "Orders",
           "path": "/sales/orders",
@@ -17780,7 +17583,7 @@
             }
           }
         },
-        "procurement/subcategories/": {
+        "procurement/subcategories": {
           "displayName": "Procurement Subcategories",
           "path": "/procurement/subcategories/",
           "responseKey": "",
@@ -17827,7 +17630,7 @@
             }
           }
         },
-        "procurement/subcategories/info/": {
+        "procurement/subcategories/info": {
           "displayName": "Procurement Subcategories Info",
           "path": "/procurement/subcategories/info/",
           "responseKey": "",
@@ -18528,7 +18331,7 @@
             }
           }
         },
-        "project/projectTemplates/": {
+        "project/projectTemplates": {
           "displayName": "Project Project Templates",
           "path": "/project/projectTemplates/",
           "responseKey": "",
@@ -21499,6 +21302,203 @@
               "displayName": "points",
               "valueType": "int",
               "providerType": "integer"
+            }
+          }
+        },
+        "sales/opportunities": {
+          "displayName": "Opportunities",
+          "path": "/sales/opportunities",
+          "responseKey": "",
+          "fields": {
+            "_info": {
+              "displayName": "_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "billToCompany": {
+              "displayName": "billToCompany",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "billToContact": {
+              "displayName": "billToContact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "billToSite": {
+              "displayName": "billToSite",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "billingTerms": {
+              "displayName": "billingTerms",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "businessUnitId": {
+              "displayName": "businessUnitId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "campaign": {
+              "displayName": "campaign",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "closedBy": {
+              "displayName": "closedBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "closedDate": {
+              "displayName": "closedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company": {
+              "displayName": "company",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "companyLocationId": {
+              "displayName": "companyLocationId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "contact": {
+              "displayName": "contact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "currency": {
+              "displayName": "currency",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "customFields": {
+              "displayName": "customFields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customerPO": {
+              "displayName": "customerPO",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateBecameLead": {
+              "displayName": "dateBecameLead",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expectedCloseDate": {
+              "displayName": "expectedCloseDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "locationId": {
+              "displayName": "locationId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pipelineChangeDate": {
+              "displayName": "pipelineChangeDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primarySalesRep": {
+              "displayName": "primarySalesRep",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "priority": {
+              "displayName": "priority",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "probability": {
+              "displayName": "probability",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "rating": {
+              "displayName": "rating",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "secondarySalesRep": {
+              "displayName": "secondarySalesRep",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "shipToCompany": {
+              "displayName": "shipToCompany",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "shipToContact": {
+              "displayName": "shipToContact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "shipToSite": {
+              "displayName": "shipToSite",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "site": {
+              "displayName": "site",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "source": {
+              "displayName": "source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "stage": {
+              "displayName": "stage",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "taxCode": {
+              "displayName": "taxCode",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "technicalContact": {
+              "displayName": "technicalContact",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "totalSalesTax": {
+              "displayName": "totalSalesTax",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "providerType": "object"
             }
           }
         },
@@ -25632,7 +25632,7 @@
             }
           }
         },
-        "system/allowedfiletypes/": {
+        "system/allowedfiletypes": {
           "displayName": "System Allowedfiletypes",
           "path": "/system/allowedfiletypes/",
           "responseKey": "",
@@ -25889,7 +25889,7 @@
             }
           }
         },
-        "system/fileuploadsettings/": {
+        "system/fileuploadsettings": {
           "displayName": "System Fileuploadsettings",
           "path": "/system/fileuploadsettings/",
           "responseKey": "",
@@ -25921,7 +25921,7 @@
             }
           }
         },
-        "system/googleemailsetup/": {
+        "system/googleemailsetup": {
           "displayName": "System Googleemailsetup",
           "path": "/system/googleemailsetup/",
           "responseKey": "",
@@ -27364,7 +27364,7 @@
             }
           }
         },
-        "system/membertemplates/": {
+        "system/membertemplates": {
           "displayName": "System Membertemplates",
           "path": "/system/membertemplates/",
           "responseKey": "",
@@ -27996,7 +27996,7 @@
             }
           }
         },
-        "system/mySecurity/customizeItems/": {
+        "system/mySecurity/customizeItems": {
           "displayName": "System My Security Customize Items",
           "path": "/system/mySecurity/customizeItems/",
           "responseKey": "",
@@ -28316,7 +28316,7 @@
             }
           }
         },
-        "system/onPremiseSearchSetting/": {
+        "system/onPremiseSearchSetting": {
           "displayName": "System On Premise Search Setting",
           "path": "/system/onPremiseSearchSetting/",
           "responseKey": "",
