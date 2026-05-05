@@ -20,9 +20,6 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	}
 
 	c.accountKey = accountKey
-	if c.gotoCore != nil {
-		c.gotoCore.SetAccountKey(accountKey)
-	}
 
 	catalogVars := map[string]string{
 		"accountKey": accountKey,

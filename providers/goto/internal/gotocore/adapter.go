@@ -30,10 +30,6 @@ func NewAdapter(params common.ConnectorParams, accountKey string) (*Adapter, err
 	return adapter, nil
 }
 
-func (a *Adapter) SetAccountKey(accountKey string) {
-	a.accountKey = accountKey
-}
-
 func constructor(base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{Connector: base}
 

@@ -18,7 +18,6 @@ func GetConnector(ctx context.Context) *granola.Connector {
 
 	conn, err := granola.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
-		Module:              providers.ModuleGoTo,
 	})
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
