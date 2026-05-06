@@ -38,6 +38,11 @@ func (c *Connector) GetRecordsByIds(
 	fields []string,
 	associationsList []string,
 ) ([]common.ReadResultRow, error) {
+	if c.crmAdapter == nil {
+		// This functionality is only supported by CRM.
+		return nil, common.ErrNotImplemented
+	}
+
 	ctx = logging.With(ctx, "connector", "hubspot")
 
 	objectName = strings.ToLower(objectName)
@@ -66,7 +71,7 @@ func (c *Connector) GetRecordsByIds(
 		"properties": fields,
 	}
 
-	resp, err := c.Client.Post(ctx, u, body)
+	resp, err := c.JSONHTTPClient().Post(ctx, u, body)
 	if err != nil {
 		return nil, err
 	}

@@ -22,6 +22,11 @@ type writeResponse struct {
 }
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	if c.crmAdapter == nil {
+		// This functionality is only supported by CRM.
+		return nil, common.ErrNotImplemented
+	}
+
 	ctx = logging.With(ctx, "connector", "hubspot")
 
 	if err := config.ValidateParams(); err != nil {
@@ -38,10 +43,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	if config.RecordId != "" {
-		write = c.Client.Patch
+		write = c.JSONHTTPClient().Patch
 		url = fmt.Sprintf("%s/%s", url, config.RecordId)
 	} else {
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 	}
 
 	// Hubspot requires everything to be wrapped in a "properties" object.
@@ -74,11 +79,17 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func (c *Connector) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
-	// Delegated.
-	return c.crmAdapter.BatchWrite(ctx, params)
+	if c.crmAdapter != nil {
+		return c.crmAdapter.BatchWrite(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
 }
 
 func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
-	// Delegated.
-	return c.crmAdapter.Delete(ctx, params)
+	if c.crmAdapter != nil {
+		return c.crmAdapter.Delete(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
 }

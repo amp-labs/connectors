@@ -17,7 +17,15 @@ var errMissingValue = errors.New("missing value for query parameter")
 // getURL is a helper to return the full URL considering the base URL & module.
 // TODO: replace queryArgs with urlbuilder.New().WithQueryParam().
 func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
-	urlBase := c.moduleInfo.BaseURL + "/" + path.Join(core.APIVersion3, arg)
+	baseURL := c.ModuleInfo().BaseURL
+
+	ok := true
+	for ok {
+		// This is to satisfy the unit test, which states that trailing slashes should be removed.
+		baseURL, ok = strings.CutSuffix(baseURL, "/")
+	}
+
+	urlBase := baseURL + "/" + path.Join(core.APIVersion3, arg)
 
 	if len(queryArgs) > 0 {
 		vals := url.Values{}
@@ -64,7 +72,7 @@ func (c *Connector) getCRMSearchURL(config searchCRMParams) (string, error) {
 // https://developers.hubspot.com/docs/api-reference/latest/crm/properties/get-properties
 // Note: Version APIVersion2026March is NOT FOUND at the moment for this endpoint. Using older V3.
 func (c *Connector) getPropertiesURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "/")
+	return urlbuilder.New(c.ModuleInfo().BaseURL, core.APIVersion3, "properties", objectName, "/")
 }
 
 // https://developers.hubspot.com/docs/api-reference/latest/crm/objects/schemas/get-schema
@@ -83,5 +91,5 @@ func (c *Connector) getURLFromRoot(relativePath string) string {
 
 // Returns module agnostic Hubspot URL.
 func (c *Connector) getRootProviderURL() string {
-	return c.providerInfo.BaseURL
+	return c.ProviderInfo().BaseURL
 }

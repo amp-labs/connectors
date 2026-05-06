@@ -17,6 +17,11 @@ import (
 // In case Deleted objects won’t appear in any search results.
 // Deleted objects can only be read by using this endpoint.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { //nolint:funlen
+	if c.crmAdapter == nil {
+		// This functionality is only supported by CRM.
+		return nil, common.ErrNotImplemented
+	}
+
 	ctx = logging.With(ctx, "connector", "hubspot")
 
 	if err := config.ValidateParams(true); err != nil {
@@ -73,7 +78,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url)
+	rsp, err := c.JSONHTTPClient().Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}

@@ -341,10 +341,7 @@ func newSalesforceJWTConnector(params common.ConnectorParams) (*salesforce.Conne
 }
 
 func newHubspotConnector(params common.ConnectorParams) (*hubspot.Connector, error) {
-	return hubspot.NewConnector(
-		hubspot.WithAuthenticatedClient(params.AuthenticatedClient),
-		hubspot.WithModule(params.Module),
-	)
+	return hubspot.NewConnector(params)
 }
 
 func newDocusignConnector(

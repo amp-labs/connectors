@@ -386,17 +386,20 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(mockutils.NewClient()),
-		WithModule(providers.ModuleHubspotCRM),
+		common.ConnectorParams{
+			Module:              providers.ModuleHubspotCRM,
+			AuthenticatedClient: mockutils.NewClient(),
+		},
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.providerInfo.BaseURL = mockutils.ReplaceURLOrigin(connector.providerInfo.BaseURL, serverURL)
-	connector.moduleInfo.BaseURL = mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL)
-	connector.crmAdapter.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL))
+	connector.SetUnitTestMockServerBaseURL(serverURL)
+	if connector.crmAdapter != nil {
+		connector.crmAdapter.SetUnitTestMockServerBaseURL(serverURL)
+	}
 
 	return connector, nil
 }

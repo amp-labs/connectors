@@ -21,6 +21,11 @@ func (c *Connector) GetRecordCount(
 	ctx context.Context,
 	params *common.RecordCountParams,
 ) (*common.RecordCountResult, error) {
+	if c.crmAdapter == nil {
+		// This functionality is only supported by CRM.
+		return nil, common.ErrNotImplemented
+	}
+
 	// Build search URL
 	url, err := c.getCRMObjectsSearchURL(SearchParams{
 		ObjectName: params.ObjectName,
@@ -61,7 +66,7 @@ func (c *Connector) GetRecordCount(
 	}
 
 	// Execute the search request
-	response, err := c.Client.Post(ctx, url, filterBody)
+	response, err := c.JSONHTTPClient().Post(ctx, url, filterBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute search request: %w", err)
 	}

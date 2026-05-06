@@ -31,6 +31,11 @@ const (
 // Archived results do not appear in search results.
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
 func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
+	if c.crmAdapter == nil {
+		// This functionality is only supported by CRM.
+		return nil, common.ErrNotImplemented
+	}
+
 	ctx = logging.With(ctx, "connector", "hubspot")
 
 	if err := config.ValidateParams(); err != nil {
@@ -62,7 +67,7 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams)
 		return nil, err
 	}
 
-	rsp, err := c.Client.Post(ctx, url, makeFilterBody(config))
+	rsp, err := c.JSONHTTPClient().Post(ctx, url, makeFilterBody(config))
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +102,7 @@ func (c *Connector) searchCRM(
 		return nil, err
 	}
 
-	rsp, err := c.Client.Post(ctx, url, payload)
+	rsp, err := c.JSONHTTPClient().Post(ctx, url, payload)
 	if err != nil {
 		return nil, err
 	}
