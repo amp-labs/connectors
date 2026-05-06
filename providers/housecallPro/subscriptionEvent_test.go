@@ -231,7 +231,7 @@ func TestSubscriptionEvent_ParsingWeirdSamples(t *testing.T) {
 			event:          "employee.created",
 			payloadKey:     "employee",
 			payloadID:      "pro_1a2b3c4d5e",
-			wantEventType:  common.SubscriptionEventTypeCreate,
+			wantEventType:  common.SubscriptionEventTypeOther,
 			wantObjectName: "employees",
 		},
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 var MetadataResultComparator = metadataResultComparator{}
@@ -12,12 +13,14 @@ var MetadataResultComparator = metadataResultComparator{}
 type metadataResultComparator struct{}
 
 // SubsetFields checks that expected ListObjectMetadataResult fields are a subset of actual metadata result.
-func (metadataResultComparator) SubsetFields(actual, expected *common.ListObjectMetadataResult) *CompareResult {
-	result := NewCompareResult()
+func (metadataResultComparator) SubsetFields(
+	actual, expected *common.ListObjectMetadataResult,
+) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
 	for objectName, expectedMetadata := range expected.Result {
 		actualMetadata, ok := actual.Result[objectName]
 		if !ok {
-			result.AddDiff(fmt.Sprintf("Result[%s] missing", objectName))
+			result.AddDiff("Result[%s] missing", objectName)
 			continue
 		}
 
@@ -27,7 +30,7 @@ func (metadataResultComparator) SubsetFields(actual, expected *common.ListObject
 		for k, expectedValue := range expectedMetadata.Fields {
 			actualValue, ok := actualMetadata.Fields[k]
 			if !ok {
-				result.AddDiff(fmt.Sprintf("Result[%s].Fields[%s] missing", objectName, k))
+				result.AddDiff("Result[%s].Fields[%s] missing", objectName, k)
 				continue
 			}
 
@@ -39,7 +42,7 @@ func (metadataResultComparator) SubsetFields(actual, expected *common.ListObject
 		for k, expectedValue := range expectedMetadata.FieldsMap {
 			actualValue, ok := actualMetadata.FieldsMap[k]
 			if !ok {
-				result.AddDiff(fmt.Sprintf("Result[%s].FieldsMap[%s] missing", objectName, k))
+				result.AddDiff("Result[%s].FieldsMap[%s] missing", objectName, k)
 				continue
 			}
 
@@ -51,12 +54,14 @@ func (metadataResultComparator) SubsetFields(actual, expected *common.ListObject
 	return result
 }
 
-func (metadataResultComparator) SubsetErrors(actual, expected *common.ListObjectMetadataResult) *CompareResult {
-	result := NewCompareResult()
+func (metadataResultComparator) SubsetErrors(
+	actual, expected *common.ListObjectMetadataResult,
+) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
 	for objectName, expectedError := range expected.Errors {
 		actualError, ok := actual.Errors[objectName]
 		if !ok {
-			result.AddDiff(fmt.Sprintf("Errors[%s] missing", objectName))
+			result.AddDiff("Errors[%s] missing", objectName)
 			continue
 		}
 
