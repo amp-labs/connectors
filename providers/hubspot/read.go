@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/shared"
 )
 
 // Read reads data from Hubspot. If Since is set, it will use the
@@ -17,6 +17,10 @@ import (
 // In case Deleted objects won’t appear in any search results.
 // Deleted objects can only be read by using this endpoint.
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { //nolint:funlen
+	if c.marketingAdapter != nil {
+		return c.marketingAdapter.Read(ctx, config)
+	}
+
 	if c.crmAdapter == nil {
 		// This functionality is only supported by CRM.
 		return nil, common.ErrNotImplemented
@@ -28,7 +32,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if core.ObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
+	if shared.ObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
 		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
 		// For instance Lists are fully returned only via Search endpoint.
 		return c.searchCRM(ctx, searchCRMParams{
@@ -85,8 +89,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	return common.ParseResult(
 		rsp,
-		core.GetRecords,
-		core.GetNextRecordsURL,
+		shared.GetRecords,
+		shared.GetNextRecordsURL,
 		associations.CreateDataMarshallerWithAssociations(
 			ctx, c.crmAdapter.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
@@ -120,7 +124,7 @@ func makeCRMObjectsQueryValues(config common.ReadParams) []string {
 		out = append(out, "archived", "true")
 	}
 
-	out = append(out, "limit", core.DefaultPageSize)
+	out = append(out, "limit", shared.DefaultPageSize)
 
 	return out
 }

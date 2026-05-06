@@ -1,0 +1,9 @@
+{
+  "modules": {
+    "marketing": {
+      "id": "marketing",
+      "path": "",
+      "objects": {}
+    }
+  }
+}

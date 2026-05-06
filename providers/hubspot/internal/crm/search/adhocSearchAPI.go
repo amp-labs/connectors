@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/shared"
 )
 
 // searchCRM is intended for objects outside HubSpot's ObjectAPI.
@@ -41,7 +41,7 @@ func (s Strategy) searchViaNonstandardSearchAPI(
 	return common.ParseResult(
 		rsp,
 		common.ExtractOptionalRecordsFromPath(params.ObjectName),
-		core.GetNextRecordsURLCRM,
+		shared.GetNextRecordsURLCRM,
 		common.GetMarshaledData,
 		params.Fields,
 	)
@@ -59,7 +59,7 @@ func makeNonstandardSearchPayload(params *common.SearchParams) (nonstandardSearc
 		}
 	}
 
-	pageSize := core.DefaultPageSizeInt
+	pageSize := shared.DefaultPageSizeInt
 	if params.Limit != 0 {
 		pageSize = params.Limit
 	}

@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/shared"
 )
 
 const (
@@ -54,7 +54,7 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams)
 		)
 	}
 
-	if core.ObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
+	if shared.ObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
 		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
 		// For instance such object is Lists.
 		return c.searchCRM(ctx, searchCRMParams{
@@ -74,8 +74,8 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams)
 
 	return common.ParseResult(
 		rsp,
-		core.GetRecords,
-		core.GetNextRecordsAfter,
+		shared.GetRecords,
+		shared.GetNextRecordsAfter,
 		associations.CreateDataMarshallerWithAssociations(
 			ctx, c.crmAdapter.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
@@ -110,7 +110,7 @@ func (c *Connector) searchCRM(
 	return common.ParseResult(
 		rsp,
 		common.ExtractOptionalRecordsFromPath(config.ObjectName),
-		core.GetNextRecordsURLCRM,
+		shared.GetNextRecordsURLCRM,
 		common.GetMarshaledData,
 		config.Fields,
 	)

@@ -5,7 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/shared"
 )
 
 // https://developers.hubspot.com/docs/api/crm/search
@@ -26,8 +26,8 @@ func (s Strategy) searchViaObjectAPI(ctx context.Context, params *common.SearchP
 
 	return common.ParseResult(
 		rsp,
-		core.GetRecords,
-		core.GetNextRecordsAfter,
+		shared.GetRecords,
+		shared.GetNextRecordsAfter,
 		associations.CreateDataMarshallerWithAssociations(
 			ctx, s.associationsFiller, params.ObjectName, params.AssociatedObjects,
 		),

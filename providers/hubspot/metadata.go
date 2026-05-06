@@ -13,8 +13,8 @@ import (
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/metadata"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/shared"
 )
 
 type objectMetadataResult struct {
@@ -42,6 +42,10 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 	ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
+	if c.marketingAdapter != nil {
+		return c.marketingAdapter.ListObjectMetadata(ctx, objectNames)
+	}
+
 	if c.crmAdapter == nil {
 		// This functionality is only supported by CRM.
 		return nil, common.ErrNotImplemented
@@ -119,7 +123,7 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 
 // getObjectMetadata returns object metadata for the given object name.
 func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
-	if core.ObjectsWithoutPropertiesAPISupport.Has(objectName) {
+	if shared.ObjectsWithoutPropertiesAPISupport.Has(objectName) {
 		return c.getObjectMetadataFromCRMSearch(ctx, objectName)
 	}
 
@@ -371,7 +375,7 @@ var objectsWithExternalMetadataFields = datautils.Map[string, []externalFieldDis
 		{
 			FieldNames: []string{"hs_pipeline"},
 			// https://developers.hubspot.com/docs/api-reference/latest/crm/pipelines/guide#retrieve-pipelines
-			EndpointPath:      fmt.Sprintf("/crm/pipelines/%v/contacts", core.APIVersion2026March),
+			EndpointPath:      fmt.Sprintf("/crm/pipelines/%v/contacts", shared.APIVersion2026March),
 			ResponseProcessor: parsePipelineFieldValues,
 		},
 	},
@@ -379,7 +383,7 @@ var objectsWithExternalMetadataFields = datautils.Map[string, []externalFieldDis
 		{
 			FieldNames: []string{"pipeline", "dealstage"},
 			// https://developers.hubspot.com/docs/api-reference/latest/crm/pipelines/guide#retrieve-pipelines
-			EndpointPath:      fmt.Sprintf("/crm/pipelines/%v/deals", core.APIVersion2026March),
+			EndpointPath:      fmt.Sprintf("/crm/pipelines/%v/deals", shared.APIVersion2026March),
 			ResponseProcessor: parsePipelineFieldValuesWithStages,
 		},
 	},

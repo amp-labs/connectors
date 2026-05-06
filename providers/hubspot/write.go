@@ -22,6 +22,10 @@ type writeResponse struct {
 }
 
 func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*common.WriteResult, error) {
+	if c.marketingAdapter != nil {
+		return c.marketingAdapter.Write(ctx, config)
+	}
+
 	if c.crmAdapter == nil {
 		// This functionality is only supported by CRM.
 		return nil, common.ErrNotImplemented
@@ -89,6 +93,10 @@ func (c *Connector) BatchWrite(ctx context.Context, params *common.BatchWritePar
 func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
 	if c.crmAdapter != nil {
 		return c.crmAdapter.Delete(ctx, params)
+	}
+
+	if c.marketingAdapter != nil {
+		return c.marketingAdapter.Delete(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented

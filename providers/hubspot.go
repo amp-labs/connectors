@@ -11,6 +11,8 @@ const Hubspot Provider = "hubspot"
 const (
 	// ModuleHubspotCRM is the module used for accessing standard CRM objects.
 	ModuleHubspotCRM common.ModuleID = "crm"
+	// ModuleHubspotMarketing is the module used for Marketing Hub product.
+	ModuleHubspotMarketing common.ModuleID = "marketing"
 )
 
 func init() { //nolint:funlen
@@ -78,6 +80,16 @@ func init() { //nolint:funlen
 					},
 				},
 			},
+			ModuleHubspotMarketing: {
+				BaseURL:     "https://api.hubapi.com",
+				DisplayName: "HubSpot Marketing",
+				Support: Support{
+					Delete:    false,
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -101,7 +113,8 @@ func init() { //nolint:funlen
 				{
 					Name: "ownerId",
 					ModuleDependencies: &ModuleDependencies{
-						ModuleHubspotCRM: ModuleDependency{},
+						ModuleHubspotCRM:       ModuleDependency{},
+						ModuleHubspotMarketing: ModuleDependency{},
 					},
 				},
 			},

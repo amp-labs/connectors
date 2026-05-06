@@ -11,9 +11,14 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// GetHubspotConnector returns a Hubspot CRM connector.
-func GetHubspotConnector(ctx context.Context) *hubspot.Connector {
+// GetHubspotCRMConnector returns a Hubspot CRM connector.
+func GetHubspotCRMConnector(ctx context.Context) *hubspot.Connector {
 	return getHubspotConnector(ctx, providers.ModuleHubspotCRM)
+}
+
+// GetHubspotMarketingConnector returns a Hubspot Marketing connector.
+func GetHubspotMarketingConnector(ctx context.Context) *hubspot.Connector {
+	return getHubspotConnector(ctx, providers.ModuleHubspotMarketing)
 }
 
 func getHubspotConnector(ctx context.Context, moduleID common.ModuleID) *hubspot.Connector {

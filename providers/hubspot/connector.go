@@ -8,7 +8,8 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/marketing"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/shared"
 )
 
 // Connector provides integration with Hubspot provider.
@@ -26,6 +27,8 @@ type Connector struct {
 	// crmAdapter handles the core Hubspot CRM module.
 	// It provides dedicated support for HubspotCRM-specific functionality.
 	crmAdapter *crm.Adapter
+	// marketingAdapter handles Hubspot's Marketing Hub product.
+	marketingAdapter *marketing.Adapter
 }
 
 var _ connectors.WebhookVerifierConnector = &Connector{}
@@ -45,11 +48,18 @@ func constructor(base *components.Connector, params *common.ConnectorParams) (*C
 
 	// Note: error handler must return common.HTTPError.
 	// Check method in the internal package "custom", method "readGroupName" which relies on error casting.
-	connector.SetErrorHandler(core.InterpretJSONError)
+	connector.SetErrorHandler(shared.InterpretJSONError)
 
 	var err error
 	if connector.Module() == providers.ModuleHubspotCRM {
 		connector.crmAdapter, err = crm.NewAdapter(params)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if connector.Module() == providers.ModuleHubspotMarketing {
+		connector.marketingAdapter, err = marketing.NewAdapter(params)
 		if err != nil {
 			return nil, err
 		}

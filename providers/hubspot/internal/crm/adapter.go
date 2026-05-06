@@ -11,9 +11,9 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/batch"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/custom"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/search"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/shared"
 )
 
 // Adapter handles CRUD operations (at the moment: delete only) against HubSpot's REST API.
@@ -52,11 +52,11 @@ func constructor(base *components.Connector) (*Adapter, error) {
 		operations.DeleteHandlers{
 			BuildRequest:  adapter.buildDeleteRequest,
 			ParseResponse: adapter.parseDeleteResponse,
-			ErrorHandler:  core.InterpretJSONError,
+			ErrorHandler:  shared.InterpretJSONError,
 		},
 	)
 
-	adapter.SetErrorHandler(core.InterpretJSONError)
+	adapter.SetErrorHandler(shared.InterpretJSONError)
 	adapter.customAdapter = custom.NewAdapter(adapter.JSONHTTPClient(), adapter.ModuleInfo())
 	associationsStrategy := associations.NewStrategy(adapter.JSONHTTPClient(),
 		adapter.ModuleInfo(), adapter.ProviderInfo())
@@ -91,5 +91,5 @@ func (a *Adapter) getModuleURL() string {
 
 // https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/delete-contact
 func (a *Adapter) getDeleteURL(objectName, recordID string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), "objects", core.APIVersion2026March, objectName, recordID)
+	return urlbuilder.New(a.getModuleURL(), "objects", shared.APIVersion2026March, objectName, recordID)
 }

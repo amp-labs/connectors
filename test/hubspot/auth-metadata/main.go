@@ -19,7 +19,7 @@ func main() {
 	utils.SetupLogging()
 
 	// Get the Hubspot connector.
-	conn := connTest.GetHubspotConnector(ctx)
+	conn := connTest.GetHubspotCRMConnector(ctx)
 
 	postAuthInfo, err := conn.GetPostAuthInfo(ctx)
 	if err != nil {

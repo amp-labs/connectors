@@ -400,6 +400,9 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	if connector.crmAdapter != nil {
 		connector.crmAdapter.SetUnitTestMockServerBaseURL(serverURL)
 	}
+	if connector.marketingAdapter != nil {
+		connector.marketingAdapter.SetUnitTestMockServerBaseURL(serverURL)
+	}
 
 	return connector, nil
 }

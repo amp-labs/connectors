@@ -9,7 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/shared"
 )
 
 var errMissingValue = errors.New("missing value for query parameter")
@@ -25,7 +25,7 @@ func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
 		baseURL, ok = strings.CutSuffix(baseURL, "/")
 	}
 
-	urlBase := baseURL + "/" + path.Join(core.APIVersion3, arg)
+	urlBase := baseURL + "/" + path.Join(shared.APIVersion3, arg)
 
 	if len(queryArgs) > 0 {
 		vals := url.Values{}
@@ -72,17 +72,17 @@ func (c *Connector) getCRMSearchURL(config searchCRMParams) (string, error) {
 // https://developers.hubspot.com/docs/api-reference/latest/crm/properties/get-properties
 // Note: Version APIVersion2026March is NOT FOUND at the moment for this endpoint. Using older V3.
 func (c *Connector) getPropertiesURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ModuleInfo().BaseURL, core.APIVersion3, "properties", objectName, "/")
+	return urlbuilder.New(c.ModuleInfo().BaseURL, shared.APIVersion3, "properties", objectName, "/")
 }
 
 // https://developers.hubspot.com/docs/api-reference/latest/crm/objects/schemas/get-schema
 func (c *Connector) getObjectSchemaURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.getRootProviderURL(), "crm-object-schemas", core.APIVersion2026March, "schemas", objectName)
+	return urlbuilder.New(c.getRootProviderURL(), "crm-object-schemas", shared.APIVersion2026March, "schemas", objectName)
 }
 
 // https://developers.hubspot.com/docs/api-reference/latest/account/account-information/get-account-details
 func (c *Connector) getAccountDetailsURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.getRootProviderURL(), "account-info", core.APIVersion2026March, "details")
+	return urlbuilder.New(c.getRootProviderURL(), "account-info", shared.APIVersion2026March, "details")
 }
 
 func (c *Connector) getURLFromRoot(relativePath string) string {

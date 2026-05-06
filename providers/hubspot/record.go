@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/shared"
 )
 
 //nolint:gochecknoglobals
@@ -81,7 +81,7 @@ func (c *Connector) GetRecordsByIds(
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
-	records, err := core.GetRecords(resBody)
+	records, err := shared.GetRecords(resBody)
 	if err != nil {
 		return nil, err
 	}

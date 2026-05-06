@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/shared"
 )
 
 type Strategy struct {
@@ -34,14 +34,14 @@ func (s Strategy) getModuleURL(paths ...string) (*urlbuilder.URL, error) {
 
 // https://developers.hubspot.com/docs/api-reference/latest/crm/search-the-crm#make-a-search-request
 func (s Strategy) getObjectsAPISearchURL(objectName string) (*urlbuilder.URL, error) {
-	return s.getModuleURL("objects", core.APIVersion2026March, objectName, "search")
+	return s.getModuleURL("objects", shared.APIVersion2026March, objectName, "search")
 }
 
 func (s Strategy) getSearchURL(objectName string) (*urlbuilder.URL, error) {
 	switch objectName {
 	case "lists":
 		// https://developers.hubspot.com/docs/api-reference/latest/crm/lists/guide#retrieve-by-searching-list-details
-		return s.getModuleURL("lists", core.APIVersion2026March, "search")
+		return s.getModuleURL("lists", shared.APIVersion2026March, "search")
 	default:
 		return nil, fmt.Errorf("%w: search not supported for %v", common.ErrObjectNotSupported, objectName)
 	}
