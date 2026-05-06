@@ -2,6 +2,7 @@ package marketing
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
@@ -10,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/shared"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
 // Adapter handles CRUD operations against HubSpot's Marketing Hub product.
@@ -69,6 +71,31 @@ func constructor(base *components.Connector) (*Adapter, error) {
 			ErrorHandler:  shared.InterpretJSONError,
 		},
 	)
+
+	return adapter, nil
+}
+
+func (a *Adapter) getURL(objectName string) (*urlbuilder.URL, error) {
+	path, err := Schemas.FindURLPath(a.Module(), objectName)
+	if err != nil {
+		return nil, common.ErrOperationNotSupportedForObject
+	}
+
+	return urlbuilder.New(a.ModuleInfo().BaseURL, path, shared.APIVersion2026March)
+}
+
+func constructTestAdapter(serverURL string) (*Adapter, error) {
+	adapter, err := NewAdapter(
+		&common.ConnectorParams{
+			AuthenticatedClient: mockutils.NewClient(),
+			Module:              providers.ModuleHubspotMarketing,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	adapter.SetUnitTestMockServerBaseURL(serverURL)
 
 	return adapter, nil
 }

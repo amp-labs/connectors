@@ -5,6 +5,12 @@ import "github.com/amp-labs/connectors/internal/datautils"
 const (
 	// DefaultPageSize is the default page size for paginated requests.
 	// HubSpot's read endpoints support max 100 records per page.
+	//
+	// Reference for CRM module:
+	// https://developers.hubspot.com/docs/api-reference/latest/crm/search-the-crm#limits
+	//
+	// Reference for Marketing module:
+	// https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/guide#search-for-campaigns
 	DefaultPageSize    = "100"
 	DefaultPageSizeInt = int64(100)
 )

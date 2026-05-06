@@ -1,0 +1,5 @@
+{
+  "status": "error",
+  "message": "Campaign create request must include 'hs_name' property.",
+  "correlationId": "019dfa5f-dced-7935-a29f-8d4c3e826f24"
+}
