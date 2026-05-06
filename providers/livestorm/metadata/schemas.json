@@ -6,7 +6,7 @@
       "objects": {
         "events": {
           "displayName": "Events",
-          "path": "/v1/events",
+          "path": "/events",
           "responseKey": "data",
           "docs": "https://developers.livestorm.co/reference/get_events",
           "fields": {
@@ -44,7 +44,7 @@
         },
         "people": {
           "displayName": "People",
-          "path": "/v1/people",
+          "path": "/people",
           "responseKey": "data",
           "docs": "https://developers.livestorm.co/reference/get_people",
           "fields": {
@@ -82,7 +82,7 @@
         },
         "people_attributes": {
           "displayName": "People Attributes",
-          "path": "/v1/people_attributes",
+          "path": "/people_attributes",
           "responseKey": "data",
           "docs": "https://developers.livestorm.co/reference/get_people-attributes",
           "fields": {
@@ -115,7 +115,7 @@
         },
         "jobs": {
           "displayName": "Jobs",
-          "path": "/v1/jobs",
+          "path": "/jobs",
           "responseKey": "data",
           "docs": "https://developers.livestorm.co/reference/get_jobs-id",
           "fields": {
@@ -143,7 +143,7 @@
         },
         "session_chat_messages": {
           "displayName": "Session Chat Messages",
-          "path": "/v1/sessions/chat_messages",
+          "path": "/sessions/chat_messages",
           "responseKey": "data",
           "docs": "https://developers.livestorm.co/reference/get_sessions-id-chat-messages",
           "fields": {
