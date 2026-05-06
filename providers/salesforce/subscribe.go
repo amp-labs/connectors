@@ -23,6 +23,13 @@ type SubscribeResult struct {
 	// We need to return this field and will be read by the DeleteSubscription method to delete the custom fields.
 	QuotaOptimizationObjectFields map[common.ObjectName]string
 	ApexTriggers                  map[common.ObjectName]*ApexTrigger
+	// UseExistingQuotaOptimizationFields indicates the quota optimization fields were
+	// supplied by the caller rather than created by the connector. When true,
+	// DeleteSubscription must not delete them.
+	UseExistingQuotaOptimizationFields bool
+	// ManualApexTriggerDeployment indicates the apex triggers were deployed by the
+	// caller rather than the connector. When true, DeleteSubscription must not delete them.
+	ManualApexTriggerDeployment bool
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -41,6 +48,16 @@ type SubscriptionRequest struct {
 	// The checkbox field is also used to build a CDC filter expression that allows all non-UPDATE
 	// events through and only passes UPDATE events where the checkbox is true.
 	QuotaOptimizationObjectFields map[common.ObjectName]string
+
+	// UseExistingQuotaOptimizationFields is a flag to indicate that the existing quota optimization fields
+	// should be used instead of creating new ones.
+	UseExistingQuotaOptimizationFields bool
+	// ExistingQuotaOptimizationFields is a map of object names to custom checkbox field names that are
+	// already created on the object in Salesforce.
+	ExistingQuotaOptimizationFields map[common.ObjectName]string
+	// ManualApexTriggerDeployment is a flag to indicate that the apex triggers should be deployed manually
+	// instead of automatically.
+	ManualApexTriggerDeployment bool
 }
 
 // subscribeProgress tracks which reversible operations completed during executeSubscribe,
@@ -119,6 +136,8 @@ func (c *Connector) Subscribe(
 
 // executeSubscribe performs the forward-path logic of Subscribe.
 // It returns partial results and progress on error, without performing any rollback.
+//
+//nolint:cyclop
 func (c *Connector) executeSubscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -134,18 +153,31 @@ func (c *Connector) executeSubscribe(
 		createdMembers: sfRes.EventChannelMembers,
 	}
 
-	if err := c.upsertQuotaOptimizationFields(ctx, params, req); err != nil {
-		return sfRes, progress, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
-	}
+	if req != nil && req.UseExistingQuotaOptimizationFields {
+		sfRes.QuotaOptimizationObjectFields = req.ExistingQuotaOptimizationFields
+	} else {
+		if err := c.upsertQuotaOptimizationFields(ctx, params, req); err != nil {
+			return sfRes, progress, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
+		}
 
-	progress.quotaFieldsUpserted = true
+		progress.quotaFieldsUpserted = true
+	}
 
 	if err := c.createEventChannelMembers(ctx, params, registrationParams, req, sfRes); err != nil {
 		return sfRes, progress, err
 	}
 
-	if req != nil && req.QuotaOptimizationObjectFields != nil {
+	if req != nil && !req.UseExistingQuotaOptimizationFields && req.QuotaOptimizationObjectFields != nil {
 		sfRes.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
+	}
+
+	if req != nil {
+		sfRes.UseExistingQuotaOptimizationFields = req.UseExistingQuotaOptimizationFields
+		sfRes.ManualApexTriggerDeployment = req.ManualApexTriggerDeployment
+	}
+
+	if req != nil && req.ManualApexTriggerDeployment {
+		return sfRes, progress, nil
 	}
 
 	deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
@@ -201,6 +233,8 @@ func (c *Connector) createEventChannelMembers(
 
 // DeleteSubscription deletes the subscription by deleting all the event channel members.
 // If any of the event channel members fail to be deleted, it will return an error.
+//
+//nolint:cyclop
 func (c *Connector) DeleteSubscription(ctx context.Context, params common.SubscriptionResult) error {
 	if params.Result == nil {
 		return fmt.Errorf("%w: missing SubscriptionResult.Result", errMissingParams)
@@ -221,9 +255,12 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 
 	// Delete apex triggers first — they reference the quota optimization fields,
 	// so they must be removed before the custom fields can be deleted.
-	for objName, trigger := range sfRes.ApexTriggers {
-		if err := c.rollbackApexTrigger(ctx, trigger.TriggerName); err != nil {
-			return fmt.Errorf("failed to delete apex trigger for object '%s': %w", objName, err)
+	// Skip when the caller deployed the triggers manually.
+	if !sfRes.ManualApexTriggerDeployment {
+		for objName, trigger := range sfRes.ApexTriggers {
+			if err := c.rollbackApexTrigger(ctx, trigger.TriggerName); err != nil {
+				return fmt.Errorf("failed to delete apex trigger for object '%s': %w", objName, err)
+			}
 		}
 	}
 
@@ -233,7 +270,7 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 		}
 	}
 
-	if len(sfRes.QuotaOptimizationObjectFields) > 0 {
+	if !sfRes.UseExistingQuotaOptimizationFields && len(sfRes.QuotaOptimizationObjectFields) > 0 {
 		deleteFields := make(map[common.ObjectName][]string)
 
 		for objectName, fieldName := range sfRes.QuotaOptimizationObjectFields {
@@ -323,15 +360,17 @@ func (c *Connector) executeUpdateSubscription(
 ) (*common.SubscriptionResult, *updateSubscriptionProgress, error) {
 	progress := &updateSubscriptionProgress{}
 
-	if err := c.upsertQuotaOptimizationFields(ctx, params, req); err != nil {
-		return nil, progress, err
+	if req == nil || !req.UseExistingQuotaOptimizationFields {
+		if err := c.upsertQuotaOptimizationFields(ctx, params, req); err != nil {
+			return nil, progress, err
+		}
+
+		progress.quotaFieldsUpserted = true
+
+		// Identify truly new quota fields and filter prevState so DeleteSubscription
+		// only removes fields for objects being removed.
+		progress.newQuotaFields = prepareQuotaOptimizationObjectFieldsForUpdate(req, prevState)
 	}
-
-	progress.quotaFieldsUpserted = true
-
-	// Identify truly new quota fields and filter prevState so DeleteSubscription
-	// only removes fields for objects being removed.
-	progress.newQuotaFields = prepareQuotaOptimizationObjectFieldsForUpdate(req, prevState)
 
 	diff := computeSubscriptionDiff(params, prevState)
 
@@ -474,8 +513,17 @@ func buildUpdatedSubscribeResult(
 		delete(newState.ApexTriggers, objName)
 	}
 
-	if req != nil && req.QuotaOptimizationObjectFields != nil {
+	if req != nil && !req.UseExistingQuotaOptimizationFields && req.QuotaOptimizationObjectFields != nil {
 		newState.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
+	}
+
+	if req != nil {
+		newState.UseExistingQuotaOptimizationFields = req.UseExistingQuotaOptimizationFields
+		newState.ManualApexTriggerDeployment = req.ManualApexTriggerDeployment
+
+		if req.UseExistingQuotaOptimizationFields {
+			newState.QuotaOptimizationObjectFields = req.ExistingQuotaOptimizationFields
+		}
 	}
 
 	return newState
@@ -647,6 +695,10 @@ func (c *Connector) updateKeptSubscriptions(
 
 	if err := c.recreateKeptChannelMembers(ctx, req, diff); err != nil {
 		return err
+	}
+
+	if req.ManualApexTriggerDeployment {
+		return nil
 	}
 
 	return c.redeployKeptApexTriggers(ctx, req, diff)
