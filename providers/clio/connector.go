@@ -65,3 +65,33 @@ func (c *Connector) ListObjectMetadata(
 
 	return nil, common.ErrNotImplemented
 }
+
+func (c *Connector) Delete(
+	ctx context.Context,
+	params connectors.DeleteParams,
+) (*connectors.DeleteResult, error) {
+	if c.Grow != nil {
+		return c.Grow.Delete(ctx, params)
+	}
+
+	if c.Manage != nil {
+		return c.Manage.Delete(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) Write(
+	ctx context.Context,
+	params connectors.WriteParams,
+) (*connectors.WriteResult, error) {
+	if c.Grow != nil {
+		return c.Grow.Write(ctx, params)
+	}
+
+	if c.Manage != nil {
+		return c.Manage.Write(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
