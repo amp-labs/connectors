@@ -22,8 +22,8 @@ const (
 )
 
 // objectConfig describes how to fetch a sample record for a GoTo object on
-// the api.getgo.com host. Both metadata and (eventually) read operations
-// consult this registry.
+// the api.getgo.com host. Metadata, read, and write operations all consult
+// this registry.
 type objectConfig struct {
 	// path is the URL template under the BaseURL. The literal {accountKey}
 	// is substituted with the connector's account key at resolve time.
@@ -35,6 +35,12 @@ type objectConfig struct {
 	// and return their records under different response keys, so request
 	// building and pagination depend on this value.
 	service objectService
+
+	// writable indicates whether the object accepts create/update via the
+	// generic write handler. Defaults to false; flip on once the endpoint
+	// has been verified end-to-end so we don't accidentally surface an
+	// endpoint that returns 405 to callers.
+	writable bool
 }
 
 const accountKeyPlaceholder = "{accountKey}"
@@ -46,7 +52,7 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"upcomingMeetings":   {path: "G2M/rest/upcomingMeetings", service: serviceMeetings},
 
 	// GoToWebinar API
-	"webinars": {path: "G2W/rest/v2/organizers/{accountKey}/webinars", service: serviceWebinar},
+	"webinars": {path: "G2W/rest/v2/organizers/{accountKey}/webinars", service: serviceWebinar, writable: true},
 	// For webhooks and userSubscriptions, the productType query parameter is required
 	// and must be set to "g2w" to retrieve webinar webhooks.
 	// Ref: https://developer.goto.com/GoToWebinarV2#tag/Webhooks/operation/getWebhooks
@@ -72,10 +78,10 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"licenses":     {path: "admin/rest/v1/accounts/{accountKey}/licenses", service: serviceAdmin},
 	"rolesets":     {path: "admin/rest/v1/accounts/{accountKey}/rolesets", service: serviceAdmin},
 	"templates":    {path: "admin/rest/v1/accounts/{accountKey}/templates", service: serviceAdmin},
-	"admin/users":  {path: "admin/rest/v1/accounts/{accountKey}/users", service: serviceAdmin},
-	"admin/groups": {path: "admin/rest/v1/accounts/{accountKey}/groups", service: serviceAdmin},
+	"admin/users":  {path: "admin/rest/v1/accounts/{accountKey}/users", service: serviceAdmin, writable: true},
+	"admin/groups": {path: "admin/rest/v1/accounts/{accountKey}/groups", service: serviceAdmin, writable: true},
 
 	// SCIM API
-	"users":  {path: "identity/v1/Users", service: serviceSCIM},
-	"groups": {path: "identity/v1/Groups", service: serviceSCIM},
+	"users":  {path: "identity/v1/Users", service: serviceSCIM, writable: true},
+	"groups": {path: "identity/v1/Groups", service: serviceSCIM, writable: true},
 }
