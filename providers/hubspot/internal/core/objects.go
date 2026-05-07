@@ -9,13 +9,22 @@ const (
 	DefaultPageSizeInt = int64(100)
 )
 
-// ObjectsWithoutPropertiesAPISupport is a list of objectsNames that are part of Hubspot CRM Module
-// but exist outside Object Properties APIs.
-//
-// These objects cannot be accessed via `~/crm/v3/objects/{objectTypeId}/...`
-//
-// On the contrary those objects that are part of Object Properties APIs can be found
-// in the table here https://developers.hubspot.com/docs/guides/api/crm/understanding-the-crm#object-type-ids
-var ObjectsWithoutPropertiesAPISupport = datautils.NewSet( //nolint:gochecknoglobals
-	"lists",
+//nolint:gochecknoglobals
+var (
+
+	// ObjectsWithoutPropertiesAPISupport is a list of objectsNames that are part of Hubspot CRM API namespace,
+	// but exist outside Hubspot Object Properties APIs.
+	//
+	// These objects cannot be accessed via `~/crm/v3/objects/{objectTypeId}/...`
+	//
+	// On the contrary those objects that are part of Object Properties APIs can be found
+	// in the table here https://developers.hubspot.com/docs/guides/api/crm/understanding-the-crm#object-type-ids
+	ObjectsWithoutPropertiesAPISupport = datautils.NewSet( //nolint:gochecknoglobals
+		"lists",
+	)
+
+	// ObjectsMarketingAPI is a list of objectNames that are part of Hubspot Marketing API.
+	ObjectsMarketingAPI = datautils.NewSet(
+		"campaigns",
+	)
 )
