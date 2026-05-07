@@ -37,6 +37,21 @@ var calendarsListResponse []byte
 //go:embed test/read/units-of-measure.json
 var unitsOfMeasureResponse []byte
 
+//go:embed test/read/custom-fields/definitions.json
+var customFieldDefinitionsFixture []byte
+
+//go:embed test/read/custom-fields/definitions-empty.json
+var customFieldDefinitionsEmptyResponse []byte
+
+//go:embed test/read/custom-fields/contacts-list.json
+var customFieldsContactsListResponse []byte
+
+//go:embed test/read/custom-fields/contact-001-values.json
+var customFieldsContact001ValuesResponse []byte
+
+//go:embed test/read/custom-fields/contact-002-values.json
+var customFieldsContact002ValuesResponse []byte
+
 func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	t.Parallel()
 
@@ -152,12 +167,109 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						},
 						Then: mockserver.Response(http.StatusOK, jobsListResponse),
 					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/company-settings/custom-fields"),
+						},
+						Then: mockserver.Response(http.StatusOK, customFieldDefinitionsEmptyResponse),
+					},
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 2,
+				Done: true,
+			},
+		},
+		{
+			Name: "Read contacts flattens custom field values onto each row",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields: connectors.Fields(
+					"id", "firstName", "customer_preference", "preferred_contact_method",
+				),
+				PageSize: 100,
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/contacts"),
+						},
+						Then: mockserver.Response(http.StatusOK, customFieldsContactsListResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/company-settings/custom-fields"),
+						},
+						Then: mockserver.Response(http.StatusOK, customFieldDefinitionsFixture),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/contacts/ctc_001/custom-fields"),
+						},
+						Then: mockserver.Response(http.StatusOK, customFieldsContact001ValuesResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/contacts/ctc_002/custom-fields"),
+						},
+						Then: mockserver.Response(http.StatusOK, customFieldsContact002ValuesResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":        "ctc_001",
+							"firstname": "Carol",
+							// customer_preference is a custom field — single-value
+							// arrays are unwrapped to scalars. Slug derives from
+							// the definition label lowercased, spaces→underscores.
+							"customer_preference": "White Roof",
+							// preferred_contact_method is a custom field with
+							// multiple values — preserved as a slice.
+							"preferred_contact_method": []string{"Phone", "Email"},
+						},
+						// Raw must remain the untouched API response: custom
+						// field values must NOT bleed into Raw, and
+						// provider-returned fields like _link must NOT be
+						// stripped (paranoia check).
+						Raw: map[string]any{
+							"id":           "ctc_001",
+							"_link":        "https://api.acculynx.com/api/v2/contacts/ctc_001",
+							"firstName":    "Carol",
+							"lastName":     "Customer",
+							"modifiedDate": "2026-04-10T12:00:00Z",
+						},
+					},
+					{
+						// ctc_002 has no custom-field values — built-in fields
+						// only.
+						Fields: map[string]any{
+							"id":        "ctc_002",
+							"firstname": "Dave",
+						},
+						Raw: map[string]any{
+							"id":           "ctc_002",
+							"_link":        "https://api.acculynx.com/api/v2/contacts/ctc_002",
+							"firstName":    "Dave",
+							"lastName":     "Donor",
+							"modifiedDate": "2026-04-11T12:00:00Z",
+						},
+					},
+				},
 				Done: true,
 			},
 		},

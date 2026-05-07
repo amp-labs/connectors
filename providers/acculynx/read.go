@@ -171,14 +171,62 @@ func (c *Connector) parseReadResponse(
 		return nil, err
 	}
 
+	var transformer common.RecordTransformer
+
+	if usesCustomFields(params.ObjectName) {
+		transformer, err = c.buildCustomFieldsTransformer(ctx, params, resp)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return common.ParseResultFiltered(
 		params,
 		resp,
 		c.recordsFunc(params.ObjectName),
 		c.makeFilterFunc(params, reqURL),
-		common.MakeMarshaledDataFunc(nil),
+		common.MakeMarshaledDataFunc(transformer),
 		params.Fields,
 	)
+}
+
+// buildCustomFieldsTransformer fetches custom-field definitions and per-record
+// values, returning a transformer that flattens those values onto the
+// marshalled record. Caller must guarantee usesCustomFields(params.ObjectName)
+// is true. When there is nothing to attach (empty body or no definitions for
+// this entity), the returned transformer carries an empty map and short-
+// circuits per record without touching the value-fan-out path.
+func (c *Connector) buildCustomFieldsTransformer(
+	ctx context.Context,
+	params common.ReadParams,
+	resp *common.JSONHTTPResponse,
+) (common.RecordTransformer, error) {
+	body, hasBody := resp.Body()
+	if !hasBody {
+		return attachReadCustomFields(nil), nil
+	}
+
+	defs, err := c.fetchCustomFieldDefinitions(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	entity, hasEntity := customFieldEntityByObject[params.ObjectName]
+	if !hasEntity || len(defs[entity]) == 0 {
+		return attachReadCustomFields(nil), nil
+	}
+
+	parentIDs, err := c.extractParentIDsFromBody(params.ObjectName, body)
+	if err != nil {
+		return nil, err
+	}
+
+	values, err := c.fetchCustomFieldValuesForRecords(ctx, params.ObjectName, parentIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	return attachReadCustomFields(values), nil
 }
 
 // recordsFunc resolves the records-array key from the schema's responseKey.
