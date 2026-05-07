@@ -98,3 +98,10 @@ func (c *Connector) getRootProviderURL() string {
 func (c *Connector) getDeleteURL(objectName, recordID string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.ModuleInfo().BaseURL, "objects", core.APIVersion2026March, objectName, recordID)
 }
+
+func (c *Connector) crmURL(paths ...string) (*urlbuilder.URL, error) {
+	parts := append([]string{"crm"}, paths...)
+
+	// URL: "https://api.hubapi.com/crm"
+	return urlbuilder.New(c.ProviderInfo().BaseURL, parts...)
+}
