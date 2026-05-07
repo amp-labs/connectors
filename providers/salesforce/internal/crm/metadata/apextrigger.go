@@ -99,10 +99,21 @@ func ConstructApexTrigger(params ApexTriggerParams, triggerCode string) ([]byte,
 	)
 }
 
-// ConstructDestructiveApexTrigger builds a zipped destructive changes package to delete
-// an APEX trigger from Salesforce. The returned zip bytes are ready for DeployMetadataZip.
+// ConstructDestructiveApexTrigger builds a zipped destructive changes package to
+// delete both the APEX trigger and its companion Test_<TriggerName> Apex class from
+// Salesforce. The returned zip bytes are ready for DeployMetadataZip.
+//
+// The companion test class is removed alongside the trigger so the org is left
+// clean after rollback. Because the destructive deploy can no longer point
+// RunSpecifiedTests at a now-deleted class, callers should use testLevel=
+// RunLocalTests (or NoTestRun in sandbox) for the rollback deploy.
 func ConstructDestructiveApexTrigger(triggerName string) ([]byte, error) {
-	return createTriggerDestructiveZip(triggerName)
+	testClassName, err := GenerateApexTestClassName(triggerName)
+	if err != nil {
+		return nil, err
+	}
+
+	return createTriggerDestructiveZip(triggerName, testClassName)
 }
 
 // GenerateTriggerCodeForCDC generates APEX trigger code that sets a boolean checkbox
@@ -366,7 +377,7 @@ func createTriggerDeployZip(
 	return buf.Bytes(), nil
 }
 
-func createTriggerDestructiveZip(triggerName string) ([]byte, error) {
+func createTriggerDestructiveZip(triggerName, testClassName string) ([]byte, error) {
 	emptyPkg := triggerPackageXML{
 		Xmlns:   "http://soap.sforce.com/2006/04/metadata",
 		Version: core.APIVersion,
@@ -385,6 +396,10 @@ func createTriggerDestructiveZip(triggerName string) ([]byte, error) {
 			{
 				Members: []string{triggerName},
 				Name:    "ApexTrigger",
+			},
+			{
+				Members: []string{testClassName},
+				Name:    "ApexClass",
 			},
 		},
 	}

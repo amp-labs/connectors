@@ -570,7 +570,8 @@ func TestConstructApexTriggerBundlesTestClass(t *testing.T) {
 func TestConstructDestructiveApexTrigger(t *testing.T) {
 	t.Parallel()
 
-	triggerName := "Lead"
+	triggerName := "CDC_Lead"
+	expectedTestClassName := "Test_CDC_Lead"
 
 	zipData, err := ConstructDestructiveApexTrigger(triggerName)
 	if err != nil {
@@ -585,7 +586,7 @@ func TestConstructDestructiveApexTrigger(t *testing.T) {
 
 	files := readZipFiles(t, zipData)
 
-	// The destructiveChanges.xml must reference the trigger.
+	// The destructiveChanges.xml must reference the trigger and the companion test class.
 	destructiveXML, ok := files["destructiveChanges.xml"]
 	if !ok {
 		t.Fatal("destructiveChanges.xml not found in zip")
@@ -599,6 +600,14 @@ func TestConstructDestructiveApexTrigger(t *testing.T) {
 		t.Error("destructiveChanges.xml missing ApexTrigger type")
 	}
 
+	if !strings.Contains(destructiveXML, expectedTestClassName) {
+		t.Error("destructiveChanges.xml missing companion test class name")
+	}
+
+	if !strings.Contains(destructiveXML, "ApexClass") {
+		t.Error("destructiveChanges.xml missing ApexClass type")
+	}
+
 	// The package.xml should be empty (no types with members).
 	packageXML, ok := files["package.xml"]
 	if !ok {
@@ -607,6 +616,10 @@ func TestConstructDestructiveApexTrigger(t *testing.T) {
 
 	if strings.Contains(packageXML, triggerName) {
 		t.Error("package.xml should not contain the trigger name for destructive changes")
+	}
+
+	if strings.Contains(packageXML, expectedTestClassName) {
+		t.Error("package.xml should not contain the test class name for destructive changes")
 	}
 }
 

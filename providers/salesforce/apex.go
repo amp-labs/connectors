@@ -389,25 +389,20 @@ func isVariableNotExistError(result *DeployResult) bool {
 	return false
 }
 
-// rollbackApexTrigger deploys a destructive changes package to remove an apex trigger.
+// rollbackApexTrigger deploys a destructive changes package that removes both the
+// apex trigger and its companion Test_<TriggerName> class so the org is left clean.
 //
-// The destructive package only deletes the trigger, not the companion Test_<TriggerName>
-// Apex class. Salesforce processes destructiveChanges before running specified tests, so
-// retaining the test class lets the rollback deploy keep testLevel=RunSpecifiedTests
-// with that class as a runnable target. A future redeploy of the trigger overwrites
-// the test class via standard idempotent metadata deploy semantics.
+// Because the test class is being deleted in the same deploy, RunSpecifiedTests
+// against that class would fail (Salesforce processes destructiveChanges before
+// running tests). The rollback therefore uses RunLocalTests, which Salesforce also
+// permits in production and which doesn't require any runTests entry.
 func (c *Connector) rollbackApexTrigger(ctx context.Context, triggerName string) error {
 	zipData, err := ConstructDestructiveApexTriggerZip(triggerName)
 	if err != nil {
 		return fmt.Errorf("failed to construct destructive apex trigger zip for %s: %w", triggerName, err)
 	}
 
-	testClassName, err := metadata.GenerateApexTestClassName(triggerName)
-	if err != nil {
-		return fmt.Errorf("failed to derive test class name for %s: %w", triggerName, err)
-	}
-
-	deployID, err := c.DeployMetadataZipWithTests(ctx, zipData, apexDeployTestLevel, []string{testClassName})
+	deployID, err := c.DeployMetadataZipWithTests(ctx, zipData, metadata.TestLevelRunLocalTests, nil)
 	if err != nil {
 		return fmt.Errorf("failed to deploy destructive apex trigger for %s: %w", triggerName, err)
 	}
