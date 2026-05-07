@@ -225,6 +225,8 @@ func TestConstructApexTriggerZip(t *testing.T) {
 		"package.xml",
 		"triggers/Lead.trigger",
 		"triggers/Lead.trigger-meta.xml",
+		"classes/Test_Lead.cls",
+		"classes/Test_Lead.cls-meta.xml",
 	})
 }
 
@@ -299,6 +301,10 @@ func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
     <types>
         <members>Lead</members>
         <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>Test_Lead</members>
+        <name>ApexClass</name>
     </types>
     <version>%s</version>
 </Package>`, core.APIVersion)
@@ -467,6 +473,97 @@ func TestGenerateTriggerCodeForFilteredReadSingleField(t *testing.T) {
 
 	if !strings.Contains(got, "(rec.Name != null)") {
 		t.Errorf("expected insert condition for Name, got:\n%s", got)
+	}
+}
+
+func TestGenerateApexTestClassName(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name      string
+		trigger   string
+		expected  string
+		expectErr bool
+	}{
+		{name: "CDC trigger", trigger: "CDC_Lead", expected: "Test_CDC_Lead"},
+		{name: "Read trigger", trigger: "Read_Account", expected: "Test_Read_Account"},
+		{name: "Empty returns error", trigger: "", expectErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := GenerateApexTestClassName(tt.trigger)
+			if tt.expectErr {
+				if err == nil {
+					t.Fatal("expected error, got nil")
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if got != tt.expected {
+				t.Errorf("GenerateApexTestClassName(%q) = %q, want %q", tt.trigger, got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestConstructApexTriggerBundlesTestClass(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "CDC_Lead",
+		WatchFields: []string{"Email", "Phone"},
+	}
+
+	triggerCode := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
+
+	zipData, err := ConstructApexTrigger(params, triggerCode)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	files := readZipFiles(t, zipData)
+
+	classCode, ok := files["classes/Test_CDC_Lead.cls"]
+	if !ok {
+		t.Fatal("expected classes/Test_CDC_Lead.cls in zip")
+	}
+
+	for _, want := range []string{
+		"@isTest",
+		"private class Test_CDC_Lead",
+		"Schema.getGlobalDescribe().get('Lead')",
+		"'Email'",
+		"'Phone'",
+		"Database.insert(rec, false)",
+		"Database.update(rec, false)",
+	} {
+		if !strings.Contains(classCode, want) {
+			t.Errorf("test class missing %q\nGot:\n%s", want, classCode)
+		}
+	}
+
+	classMeta, ok := files["classes/Test_CDC_Lead.cls-meta.xml"]
+	if !ok {
+		t.Fatal("expected classes/Test_CDC_Lead.cls-meta.xml in zip")
+	}
+
+	expectedClassMeta := fmt.Sprintf(`<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>%s</apiVersion>
+    <status>Active</status>
+</ApexClass>
+`, core.APIVersion)
+	if classMeta != expectedClassMeta {
+		t.Errorf("class meta mismatch.\nGot:\n%s\nWant:\n%s", classMeta, expectedClassMeta)
 	}
 }
 

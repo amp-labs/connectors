@@ -18,6 +18,23 @@ import (
 // because the metadata package is internal.
 type ApexTriggerParams = metadata.ApexTriggerParams
 
+// TestLevel mirrors metadata.TestLevel for callers outside the internal package.
+type TestLevel = metadata.TestLevel
+
+// Re-exported testLevel constants matching Salesforce Metadata API DeployOptions.testLevel.
+const (
+	TestLevelNoTestRun         = metadata.TestLevelNoTestRun
+	TestLevelRunSpecifiedTests = metadata.TestLevelRunSpecifiedTests
+	TestLevelRunLocalTests     = metadata.TestLevelRunLocalTests
+	TestLevelRunAllTestsInOrg  = metadata.TestLevelRunAllTestsInOrg
+)
+
+// apexDeployTestLevel is the testLevel used for Apex trigger deploys (CDC/filtered
+// read) and their rollbacks. RunSpecifiedTests is the minimum level Salesforce
+// permits in production for new Apex code, and ConstructApexTrigger bundles a
+// generated companion test class so this level always has a runnable target.
+const apexDeployTestLevel = metadata.TestLevelRunSpecifiedTests
+
 // ApexTrigger represents a deployed apex trigger in the SubscribeResult.
 type ApexTrigger struct {
 	ObjectName     common.ObjectName
@@ -169,11 +186,26 @@ func (c *Connector) deployApexTriggersForCDC(
 }
 
 // DeployMetadataZip initiates a deploy of a zip package to the connected Salesforce org
-// via the Metadata API. Returns the async deployment ID for status polling.
-// Use CheckDeployStatus to poll for completion.
+// via the Metadata API with testLevel=NoTestRun. Returns the async deployment ID for
+// status polling. Use CheckDeployStatus to poll for completion.
 func (c *Connector) DeployMetadataZip(ctx context.Context, zipData []byte) (string, error) {
 	if c.crmAdapter != nil {
 		return c.crmAdapter.DeployMetadataZip(ctx, zipData)
+	}
+
+	return "", common.ErrNotImplemented
+}
+
+// DeployMetadataZipWithTests initiates a deploy of a zip package using the supplied
+// Salesforce Metadata API testLevel. When testLevel is RunSpecifiedTests, runTests
+// must list at least one Apex test class to execute. Production deploys must use
+// RunSpecifiedTests, RunLocalTests, or RunAllTestsInOrg per the Salesforce Metadata
+// API DeployOptions documentation.
+func (c *Connector) DeployMetadataZipWithTests(
+	ctx context.Context, zipData []byte, testLevel metadata.TestLevel, runTests []string,
+) (string, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.DeployMetadataZipWithTests(ctx, zipData, testLevel, runTests)
 	}
 
 	return "", common.ErrNotImplemented
@@ -289,8 +321,15 @@ func (c *Connector) deployApexTrigger(
 ) (*ApexTriggerResult, error) {
 	var lastDeployResult *DeployResult
 
+	testClassName, err := metadata.GenerateApexTestClassName(params.TriggerName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to derive test class name for %s: %w", params.ObjectName, err)
+	}
+
+	runTests := []string{testClassName}
+
 	for attempt := range apexDeployMaxAttempts {
-		deployID, err := c.DeployMetadataZip(ctx, zipData)
+		deployID, err := c.DeployMetadataZipWithTests(ctx, zipData, apexDeployTestLevel, runTests)
 		if err != nil {
 			return nil, fmt.Errorf("failed to deploy apex trigger for %s: %w", params.ObjectName, err)
 		}
@@ -348,13 +387,24 @@ func isVariableNotExistError(result *DeployResult) bool {
 }
 
 // rollbackApexTrigger deploys a destructive changes package to remove an apex trigger.
+//
+// The destructive package only deletes the trigger, not the companion Test_<TriggerName>
+// Apex class. Salesforce processes destructiveChanges before running specified tests, so
+// retaining the test class lets the rollback deploy continue to use testLevel=
+// RunSpecifiedTests with that class as a runnable target. A future redeploy of the
+// trigger overwrites the test class via the standard idempotent metadata deploy.
 func (c *Connector) rollbackApexTrigger(ctx context.Context, triggerName string) error {
 	zipData, err := ConstructDestructiveApexTriggerZip(triggerName)
 	if err != nil {
 		return fmt.Errorf("failed to construct destructive apex trigger zip for %s: %w", triggerName, err)
 	}
 
-	deployID, err := c.DeployMetadataZip(ctx, zipData)
+	testClassName, err := metadata.GenerateApexTestClassName(triggerName)
+	if err != nil {
+		return fmt.Errorf("failed to derive test class name for %s: %w", triggerName, err)
+	}
+
+	deployID, err := c.DeployMetadataZipWithTests(ctx, zipData, apexDeployTestLevel, []string{testClassName})
 	if err != nil {
 		return fmt.Errorf("failed to deploy destructive apex trigger for %s: %w", triggerName, err)
 	}
