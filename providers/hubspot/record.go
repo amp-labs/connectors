@@ -89,7 +89,7 @@ func (c *Connector) GetRecordsByIds(
 }
 
 func (c *Connector) buildBatchRecordsURL(objectName string, associations []string) (string, error) {
-	url, err := c.getBatchReadURL(objectName)
+	url, err := c.getCRMObjectsBatchReadURL(objectName)
 	if err != nil {
 		return "", err
 	}
