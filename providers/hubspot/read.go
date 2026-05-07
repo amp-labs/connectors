@@ -73,7 +73,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url)
+	rsp, err := c.JSONHTTPClient().Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		core.GetRecords,
 		core.GetNextRecordsURL,
 		associations.CreateDataMarshallerWithAssociations(
-			ctx, c.crmAdapter.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
+			ctx, c.delegate.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }

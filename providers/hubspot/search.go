@@ -62,7 +62,7 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams)
 		return nil, err
 	}
 
-	rsp, err := c.Client.Post(ctx, url, makeFilterBody(config))
+	rsp, err := c.JSONHTTPClient().Post(ctx, url, makeFilterBody(config))
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams)
 		core.GetRecords,
 		core.GetNextRecordsAfter,
 		associations.CreateDataMarshallerWithAssociations(
-			ctx, c.crmAdapter.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
+			ctx, c.delegate.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }
@@ -97,7 +97,7 @@ func (c *Connector) searchCRM(
 		return nil, err
 	}
 
-	rsp, err := c.Client.Post(ctx, url, payload)
+	rsp, err := c.JSONHTTPClient().Post(ctx, url, payload)
 	if err != nil {
 		return nil, err
 	}

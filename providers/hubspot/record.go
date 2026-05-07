@@ -66,7 +66,7 @@ func (c *Connector) GetRecordsByIds(
 		"properties": fields,
 	}
 
-	resp, err := c.Client.Post(ctx, u, body)
+	resp, err := c.JSONHTTPClient().Post(ctx, u, body)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (c *Connector) GetRecordsByIds(
 	}
 
 	marshaller := associations.CreateDataMarshallerWithAssociations(
-		ctx, c.crmAdapter.AssociationsFiller, objectName, associationsList,
+		ctx, c.delegate.AssociationsFiller, objectName, associationsList,
 	)
 
 	return marshaller(records, fields)

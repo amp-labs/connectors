@@ -38,10 +38,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	}
 
 	if config.RecordId != "" {
-		write = c.Client.Patch
+		write = c.JSONHTTPClient().Patch
 		url = fmt.Sprintf("%s/%s", url, config.RecordId)
 	} else {
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 	}
 
 	// Hubspot requires everything to be wrapped in a "properties" object.
@@ -74,11 +74,9 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func (c *Connector) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
-	// Delegated.
-	return c.crmAdapter.BatchWrite(ctx, params)
+	return c.delegate.BatchWrite(ctx, params)
 }
 
 func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
-	// Delegated.
-	return c.crmAdapter.Delete(ctx, params)
+	return c.delegate.Delete(ctx, params)
 }
