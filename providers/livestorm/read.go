@@ -90,19 +90,19 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 			return nil, err
 		}
 
-		u, err := buildURLWithVersion(c.ProviderInfo().BaseURL, path)
+		endpointURL, err := buildURLWithVersion(c.ProviderInfo().BaseURL, path)
 		if err != nil {
 			return nil, err
 		}
 
-		u.WithQueryParam("page[number]", "0")
-		u.WithQueryParam("page[size]", readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
+		endpointURL.WithQueryParam("page[number]", "0")
+		endpointURL.WithQueryParam("page[size]", readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
 
 		if params.ObjectName == objectEvents {
-			applyEventTimeFilters(u, params)
+			applyEventTimeFilters(endpointURL, params)
 		}
 
-		return u, nil
+		return endpointURL, nil
 	}
 }
 
@@ -130,9 +130,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		resp,
-		func(root *ajson.Node) ([]map[string]any, error) {
-			return extractJSONAPIDataRecords(root)
-		},
+		extractJSONAPIDataRecords,
 		nextPageLivestorm(request),
 		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,

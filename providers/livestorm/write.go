@@ -176,7 +176,8 @@ func marshalUsersWriteBody(record map[string]any) ([]byte, error) {
 }
 
 // marshalSessionPeopleBulkBody builds POST /sessions/{id}/people/bulk JSON:API body.
-// Pass session_id alongside attributes or a full document per https://developers.livestorm.co/reference/post_sessions-id-people-bulk
+// Pass session_id alongside attributes or a full document.
+// Ref: https://developers.livestorm.co/reference/post_sessions-id-people-bulk
 func marshalSessionPeopleBulkBody(record map[string]any) ([]byte, error) {
 	record = maps.Clone(record)
 	delete(record, "session_id")
