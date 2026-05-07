@@ -67,7 +67,6 @@ func initModuleAdapters(conn *Connector, params common.ConnectorParams) error {
 
 		conn.gotoCore = adapter
 	case providers.ModuleGoToConnect:
-
 		return common.ErrUnsupportedModule
 		// adapter, err := gotocore.NewAdapter(params, conn.accountKey)
 		// if err != nil {
@@ -98,6 +97,14 @@ func (c *Connector) ListObjectMetadata(
 ) (*connectors.ListObjectMetadataResult, error) {
 	if c.gotoCore != nil {
 		return c.gotoCore.ListObjectMetadata(ctx, objectNames)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if c.gotoCore != nil {
+		return c.gotoCore.Read(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented

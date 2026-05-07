@@ -10,6 +10,19 @@ import (
 )
 
 func (a *Adapter) buildObjectURL(objectName string) (*urlbuilder.URL, error) {
+	url, err := a.buildObjectBaseURL(objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam(queryParamSize, sampleSize)
+
+	return url, nil
+}
+
+// buildObjectBaseURL resolves the object path against the module BaseURL,
+// substituting the account key. It does not attach any query params.
+func (a *Adapter) buildObjectBaseURL(objectName string) (*urlbuilder.URL, error) {
 	spec, ok := objectRegistry[objectName]
 	if !ok || spec.path == "" {
 		spec.path = objectName
@@ -21,8 +34,6 @@ func (a *Adapter) buildObjectURL(objectName string) (*urlbuilder.URL, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error building URL for object %s: %w", objectName, err)
 	}
-
-	url.WithQueryParam(queryParamSize, sampleSize)
 
 	return url, nil
 }

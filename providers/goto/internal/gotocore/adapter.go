@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -15,6 +16,7 @@ import (
 type Adapter struct {
 	*components.Connector
 	components.SchemaProvider
+	components.Reader
 
 	accountKey string
 }
@@ -39,6 +41,16 @@ func constructor(base *components.Connector) (*Adapter, error) {
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  adapter.buildSingleObjectMetadataRequest,
 			ParseResponse: adapter.parseSingleObjectMetadataResponse,
+		},
+	)
+
+	adapter.Reader = reader.NewHTTPReader(
+		adapter.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		adapter.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  adapter.buildReadRequest,
+			ParseResponse: adapter.parseReadResponse,
 		},
 	)
 
