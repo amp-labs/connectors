@@ -88,34 +88,30 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 	)
 }
 
-func (c *Connector) buildReadURL(config common.ReadParams) (string, error) {
-	if len(config.NextPage) != 0 {
+func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
+	if len(params.NextPage) != 0 {
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the NextPage URL, the fields are ignored.
-		return config.NextPage.String(), nil
+		return params.NextPage.String(), nil
 	}
 
 	// If NextPage is not set, then we're reading the first page of results.
 	// We need to construct the query and then make the request.
-	// NB: The final slash is just to emulate prior behavior in earlier versions
-	// of this code. If it turns out to be unnecessary, remove it.
-	return c.getCRMObjectsReadURL(config)
-}
+	url, err := c.getCRMObjectsReadURL(params.ObjectName)
+	if err != nil {
+		return "", err
+	}
 
-// makeCRMObjectsQueryValues returns the query for the desired read operation.
-func makeCRMObjectsQueryValues(config common.ReadParams) []string {
-	var out []string
-
-	fields := config.Fields.List()
+	fields := params.Fields.List()
 	if len(fields) != 0 {
-		out = append(out, "properties", strings.Join(fields, ","))
+		url.WithQueryParam("properties", strings.Join(fields, ","))
 	}
 
-	if config.Deleted {
-		out = append(out, "archived", "true")
+	if params.Deleted {
+		url.WithQueryParam("archived", "true")
 	}
 
-	out = append(out, "limit", core.DefaultPageSize)
+	url.WithQueryParam("limit", core.DefaultPageSize)
 
-	return out
+	return url.String(), nil
 }
