@@ -29,21 +29,16 @@ func (c *Connector) getPropertiesURL(objectName string) (*urlbuilder.URL, error)
 
 // https://developers.hubspot.com/docs/api-reference/latest/crm/objects/schemas/get-schema
 func (c *Connector) getObjectSchemaURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.getRootProviderURL(), "crm-object-schemas", core.APIVersion2026March, "schemas", objectName)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, "crm-object-schemas", core.APIVersion2026March, "schemas", objectName)
 }
 
 // https://developers.hubspot.com/docs/api-reference/latest/account/account-information/get-account-details
 func (c *Connector) getAccountDetailsURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.getRootProviderURL(), "account-info", core.APIVersion2026March, "details")
+	return urlbuilder.New(c.ProviderInfo().BaseURL, "account-info", core.APIVersion2026March, "details")
 }
 
 func (c *Connector) getURLFromRoot(relativePath string) string {
-	return c.getRootProviderURL() + relativePath
-}
-
-// Returns module agnostic Hubspot URL.
-func (c *Connector) getRootProviderURL() string {
-	return c.ProviderInfo().BaseURL
+	return c.ProviderInfo().BaseURL + relativePath
 }
 
 // https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/delete-contact
