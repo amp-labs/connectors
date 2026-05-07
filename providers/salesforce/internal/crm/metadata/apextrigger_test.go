@@ -225,6 +225,8 @@ func TestConstructApexTriggerZip(t *testing.T) {
 		"package.xml",
 		"triggers/Lead.trigger",
 		"triggers/Lead.trigger-meta.xml",
+		"classes/Test_Lead.cls",
+		"classes/Test_Lead.cls-meta.xml",
 	})
 }
 
@@ -299,6 +301,10 @@ func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
     <types>
         <members>Lead</members>
         <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>Test_Lead</members>
+        <name>ApexClass</name>
     </types>
     <version>%s</version>
 </Package>`, core.APIVersion)
@@ -470,10 +476,102 @@ func TestGenerateTriggerCodeForFilteredReadSingleField(t *testing.T) {
 	}
 }
 
+func TestGenerateApexTestClassName(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name      string
+		trigger   string
+		expected  string
+		expectErr bool
+	}{
+		{name: "CDC trigger", trigger: "CDC_Lead", expected: "Test_CDC_Lead"},
+		{name: "Read trigger", trigger: "Read_Account", expected: "Test_Read_Account"},
+		{name: "Empty returns error", trigger: "", expectErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := GenerateApexTestClassName(tt.trigger)
+			if tt.expectErr {
+				if err == nil {
+					t.Fatal("expected error, got nil")
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if got != tt.expected {
+				t.Errorf("GenerateApexTestClassName(%q) = %q, want %q", tt.trigger, got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestConstructApexTriggerBundlesTestClass(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "CDC_Lead",
+		WatchFields: []string{"Email", "Phone"},
+	}
+
+	triggerCode := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
+
+	zipData, err := ConstructApexTrigger(params, triggerCode)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	files := readZipFiles(t, zipData)
+
+	classCode, ok := files["classes/Test_CDC_Lead.cls"]
+	if !ok {
+		t.Fatal("expected classes/Test_CDC_Lead.cls in zip")
+	}
+
+	for _, want := range []string{
+		"@isTest",
+		"private class Test_CDC_Lead",
+		"Schema.getGlobalDescribe().get('Lead')",
+		"'Email'",
+		"'Phone'",
+		"Database.insert(rec, false)",
+		"Database.update(rec, false)",
+	} {
+		if !strings.Contains(classCode, want) {
+			t.Errorf("test class missing %q\nGot:\n%s", want, classCode)
+		}
+	}
+
+	classMeta, ok := files["classes/Test_CDC_Lead.cls-meta.xml"]
+	if !ok {
+		t.Fatal("expected classes/Test_CDC_Lead.cls-meta.xml in zip")
+	}
+
+	expectedClassMeta := fmt.Sprintf(`<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>%s</apiVersion>
+    <status>Active</status>
+</ApexClass>
+`, core.APIVersion)
+	if classMeta != expectedClassMeta {
+		t.Errorf("class meta mismatch.\nGot:\n%s\nWant:\n%s", classMeta, expectedClassMeta)
+	}
+}
+
 func TestConstructDestructiveApexTrigger(t *testing.T) {
 	t.Parallel()
 
-	triggerName := "Lead"
+	triggerName := "CDC_Lead"
+	expectedTestClassName := "Test_CDC_Lead"
 
 	zipData, err := ConstructDestructiveApexTrigger(triggerName)
 	if err != nil {
@@ -488,7 +586,7 @@ func TestConstructDestructiveApexTrigger(t *testing.T) {
 
 	files := readZipFiles(t, zipData)
 
-	// The destructiveChanges.xml must reference the trigger.
+	// The destructiveChanges.xml must reference the trigger and the companion test class.
 	destructiveXML, ok := files["destructiveChanges.xml"]
 	if !ok {
 		t.Fatal("destructiveChanges.xml not found in zip")
@@ -502,6 +600,14 @@ func TestConstructDestructiveApexTrigger(t *testing.T) {
 		t.Error("destructiveChanges.xml missing ApexTrigger type")
 	}
 
+	if !strings.Contains(destructiveXML, expectedTestClassName) {
+		t.Error("destructiveChanges.xml missing companion test class name")
+	}
+
+	if !strings.Contains(destructiveXML, "ApexClass") {
+		t.Error("destructiveChanges.xml missing ApexClass type")
+	}
+
 	// The package.xml should be empty (no types with members).
 	packageXML, ok := files["package.xml"]
 	if !ok {
@@ -510,6 +616,10 @@ func TestConstructDestructiveApexTrigger(t *testing.T) {
 
 	if strings.Contains(packageXML, triggerName) {
 		t.Error("package.xml should not contain the trigger name for destructive changes")
+	}
+
+	if strings.Contains(packageXML, expectedTestClassName) {
+		t.Error("package.xml should not contain the test class name for destructive changes")
 	}
 }
 

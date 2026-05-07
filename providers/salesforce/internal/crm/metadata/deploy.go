@@ -5,8 +5,25 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
+)
+
+// TestLevel maps to Salesforce Metadata API DeployOptions.testLevel.
+// See: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy.htm
+type TestLevel string
+
+const (
+	// TestLevelNoTestRun runs no tests. Default; only valid for non-production deploys.
+	TestLevelNoTestRun TestLevel = "NoTestRun"
+	// TestLevelRunSpecifiedTests runs the test classes named in DeployOptions.runTests.
+	// At least one runTests entry is required when this level is selected.
+	TestLevelRunSpecifiedTests TestLevel = "RunSpecifiedTests"
+	// TestLevelRunLocalTests runs all non-managed tests in the org.
+	TestLevelRunLocalTests TestLevel = "RunLocalTests"
+	// TestLevelRunAllTestsInOrg runs every test in the org including managed packages.
+	TestLevelRunAllTestsInOrg TestLevel = "RunAllTestsInOrg"
 )
 
 var ErrDeployFailed = errors.New("metadata: deploy failed")
@@ -30,10 +47,23 @@ type ComponentFailure struct {
 }
 
 // DeployMetadataZip initiates a deploy of a zip package to Salesforce via the Metadata API
-// SOAP deploy operation. Returns the async deployment ID for status polling.
-// Use CheckDeployStatus to poll for completion.
+// SOAP deploy operation with testLevel=NoTestRun. Returns the async deployment ID for
+// status polling. Use CheckDeployStatus to poll for completion.
 func (a *Adapter) DeployMetadataZip(ctx context.Context, zipData []byte) (string, error) {
-	deployID, err := a.deploy(ctx, zipData)
+	return a.DeployMetadataZipWithTests(ctx, zipData, TestLevelNoTestRun, nil)
+}
+
+// DeployMetadataZipWithTests initiates a deploy of a zip package to Salesforce via the
+// Metadata API SOAP deploy operation with the supplied testLevel. When testLevel is
+// RunSpecifiedTests, runTests must contain at least one Apex test class name that
+// exists in the org (or is included in the same zip).
+//
+// Salesforce requires testLevel=RunSpecifiedTests, RunLocalTests, or RunAllTestsInOrg
+// for deploys to production orgs; sandbox/dev deploys may use NoTestRun.
+func (a *Adapter) DeployMetadataZipWithTests(
+	ctx context.Context, zipData []byte, testLevel TestLevel, runTests []string,
+) (string, error) {
+	deployID, err := a.deploy(ctx, zipData, testLevel, runTests)
 	if err != nil {
 		return "", fmt.Errorf("%w: %w", ErrDeployFailed, err)
 	}
@@ -78,8 +108,28 @@ func (a *Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*Depl
 
 // deploy sends a SOAP deploy request with the base64-encoded zip to the Metadata API.
 // Returns the async deployment ID for status polling.
-func (a *Adapter) deploy(ctx context.Context, zipData []byte) (string, error) {
+//
+// When testLevel is RunSpecifiedTests, the SOAP body emits one <md:runTests> element
+// per entry in runTests. The Salesforce SOAP API requires this element to appear once
+// per test class to run; ordering of DeployOptions sub-elements follows the WSDL.
+func (a *Adapter) deploy(
+	ctx context.Context, zipData []byte, testLevel TestLevel, runTests []string,
+) (string, error) {
 	encodedZip := base64.StdEncoding.EncodeToString(zipData)
+
+	if testLevel == "" {
+		testLevel = TestLevelNoTestRun
+	}
+
+	var runTestsXML strings.Builder
+
+	if testLevel == TestLevelRunSpecifiedTests {
+		for _, name := range runTests {
+			runTestsXML.WriteString("    <md:runTests>")
+			runTestsXML.WriteString(name)
+			runTestsXML.WriteString("</md:runTests>\n")
+		}
+	}
 
 	payload := fmt.Sprintf(`<md:deploy xmlns:md="http://soap.sforce.com/2006/04/metadata">
   <md:ZipFile>%s</md:ZipFile>
@@ -91,10 +141,10 @@ func (a *Adapter) deploy(ctx context.Context, zipData []byte) (string, error) {
     <md:performRetrieve>false</md:performRetrieve>
     <md:purgeOnDelete>false</md:purgeOnDelete>
     <md:rollbackOnError>true</md:rollbackOnError>
-    <md:singlePackage>true</md:singlePackage>
-    <md:testLevel>NoTestRun</md:testLevel>
+%s    <md:singlePackage>true</md:singlePackage>
+    <md:testLevel>%s</md:testLevel>
   </md:DeployOptions>
-</md:deploy>`, encodedZip)
+</md:deploy>`, encodedZip, runTestsXML.String(), testLevel)
 
 	resp, err := performDeploySOAPRequest[deployResponse](ctx, a, payload)
 	if err != nil {
