@@ -8,37 +8,37 @@ import (
 )
 
 type Adapter struct {
-	Client     *common.JSONHTTPClient
-	moduleInfo *providers.ModuleInfo
+	Client       *common.JSONHTTPClient
+	providerInfo *providers.ProviderInfo
 }
 
-func NewAdapter(client *common.JSONHTTPClient, moduleInfo *providers.ModuleInfo) *Adapter {
+func NewAdapter(client *common.JSONHTTPClient, providerInfo *providers.ProviderInfo) *Adapter {
 	return &Adapter{
-		Client:     client,
-		moduleInfo: moduleInfo,
+		Client:       client,
+		providerInfo: providerInfo,
 	}
 }
 
 // https://developers.hubspot.com/docs/api-reference/latest/crm/properties/batch/create-properties
 // Note: Version APIVersion2026March is NOT FOUND at the moment for this endpoint. Using older V3.
 func (a *Adapter) getPropertyBatchCreateURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "/batch/create")
+	return urlbuilder.New(a.providerInfo.BaseURL, "crm", core.APIVersion3, "properties", objectName, "/batch/create")
 }
 
 // https://developers.hubspot.com/docs/api-reference/latest/crm/properties/update-property
 // Note: Version APIVersion2026March is NOT FOUND at the moment for this endpoint. Using older V3.
 func (a *Adapter) getPropertyUpdateURL(objectName, propertyName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, propertyName)
+	return urlbuilder.New(a.providerInfo.BaseURL, "crm", core.APIVersion3, "properties", objectName, propertyName)
 }
 
 // https://developers.hubspot.com/docs/api-reference/latest/crm/properties/property-groups/get-property
 // Note: Version APIVersion2026March is NOT FOUND at the moment for this endpoint. Using older V3.
 func (a *Adapter) getPropertyGroupNameURL(objectName, groupName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "groups", groupName)
+	return urlbuilder.New(a.providerInfo.BaseURL, "crm", core.APIVersion3, "properties", objectName, "groups", groupName)
 }
 
 // https://developers.hubspot.com/docs/api-reference/latest/crm/properties/property-groups/create-property
 // Note: Version APIVersion2026March is NOT FOUND at the moment for this endpoint. Using older V3.
 func (a *Adapter) getPropertyGroupNameCreationURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.moduleInfo.BaseURL, core.APIVersion3, "properties", objectName, "groups")
+	return urlbuilder.New(a.providerInfo.BaseURL, "crm", core.APIVersion3, "properties", objectName, "groups")
 }
