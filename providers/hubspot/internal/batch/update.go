@@ -5,7 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/httpkit"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/associations"
 )
 
 func (a *Adapter) batchUpdate(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
