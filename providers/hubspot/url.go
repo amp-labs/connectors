@@ -1,57 +1,12 @@
 package hubspot
 
 import (
-	"errors"
-	"fmt"
-	"net/url"
-	"path"
-	"strings"
-
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
 )
 
-var errMissingValue = errors.New("missing value for query parameter")
-
-// getURL is a helper to return the full URL considering the base URL & module.
-// TODO: replace queryArgs with urlbuilder.New().WithQueryParam().
-func (c *Connector) getURL(arg string, queryArgs ...string) (string, error) {
-	//
-	//
-	// THIS is the same as
-	//		==> "c.crmURL(core.APIVersion3)"
-	// 		==> plus, it adds query params
-	//
-	//
-	baseURL := c.ModuleInfo().BaseURL
-
-	ok := true
-	for ok {
-		// This is to satisfy the unit test, which states that trailing slashes should be removed.
-		baseURL, ok = strings.CutSuffix(baseURL, "/")
-	}
-
-	urlBase := baseURL + "/" + path.Join(core.APIVersion3, arg)
-
-	if len(queryArgs) > 0 {
-		vals := url.Values{}
-
-		for i := 0; i < len(queryArgs); i += 2 {
-			key := queryArgs[i]
-
-			if i+1 >= len(queryArgs) {
-				return "", fmt.Errorf("%w %q", errMissingValue, key)
-			}
-
-			val := queryArgs[i+1]
-
-			vals.Add(key, val)
-		}
-
-		urlBase += "?" + vals.Encode()
-	}
-
-	return urlBase, nil
+func (c *Connector) getBatchReadURL(objectName string) (*urlbuilder.URL, error) {
+	return c.crmURL(core.APIVersion3, "objects", objectName, "batch", "read")
 }
 
 func (c *Connector) getCRMObjectsReadURL(objectName string) (*urlbuilder.URL, error) {
