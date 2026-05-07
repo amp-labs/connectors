@@ -244,8 +244,19 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				BaseURL:     "https://api.hubapi.com",
 				DisplayName: "HubSpot",
 				Support: Support{
+					BatchWrite: &BatchWriteSupport{
+						Create: BatchWriteSupportConfig{
+							DefaultRecordLimit: new(100), // nolint:mnd
+							ObjectRecordLimits: nil,
+							Supported:          true,
+						},
+						Update: BatchWriteSupportConfig{
+							DefaultRecordLimit: new(100), // nolint:mnd
+							ObjectRecordLimits: nil,
+							Supported:          true,
+						},
+					},
 					Delete:    true,
-					Proxy:     true,
 					Read:      true,
 					Subscribe: true,
 					Write:     true,
@@ -349,8 +360,8 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com/crm",
-				DisplayName: "HubSpot CRM",
+				BaseURL:     "https://api.hubapi.com",
+				DisplayName: "HubSpot",
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
 						Create: BatchWriteSupportConfig{
@@ -380,11 +391,10 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 			name: "Hubspot CRM module",
 			input: inType{
 				provider: Hubspot,
-				moduleID: ModuleHubspotCRM,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com/crm",
-				DisplayName: "HubSpot CRM",
+				BaseURL:     "https://api.hubapi.com",
+				DisplayName: "HubSpot",
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
 						Create: BatchWriteSupportConfig{
