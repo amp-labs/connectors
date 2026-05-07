@@ -30,9 +30,12 @@ const (
 )
 
 // apexDeployTestLevel is the testLevel used for Apex trigger deploys (CDC/filtered
-// read) and their rollbacks. RunSpecifiedTests is the minimum level Salesforce
-// permits in production for new Apex code, and ConstructApexTrigger bundles a
-// generated companion test class so this level always has a runnable target.
+// read) and their rollbacks. RunSpecifiedTests keeps the deploy hermetic: only the
+// bundled Test_<TriggerName> class runs, so a flaky pre-existing test in the
+// customer org cannot fail our deploy. Salesforce permits this level for production
+// deploys provided each deployed Apex class is covered to >=75% by the specified
+// tests, which the generated companion class satisfies for the trigger and for
+// itself (per the Metadata API DeployOptions docs).
 const apexDeployTestLevel = metadata.TestLevelRunSpecifiedTests
 
 // ApexTrigger represents a deployed apex trigger in the SubscribeResult.
@@ -390,9 +393,9 @@ func isVariableNotExistError(result *DeployResult) bool {
 //
 // The destructive package only deletes the trigger, not the companion Test_<TriggerName>
 // Apex class. Salesforce processes destructiveChanges before running specified tests, so
-// retaining the test class lets the rollback deploy continue to use testLevel=
-// RunSpecifiedTests with that class as a runnable target. A future redeploy of the
-// trigger overwrites the test class via the standard idempotent metadata deploy.
+// retaining the test class lets the rollback deploy keep testLevel=RunSpecifiedTests
+// with that class as a runnable target. A future redeploy of the trigger overwrites
+// the test class via standard idempotent metadata deploy semantics.
 func (c *Connector) rollbackApexTrigger(ctx context.Context, triggerName string) error {
 	zipData, err := ConstructDestructiveApexTriggerZip(triggerName)
 	if err != nil {
