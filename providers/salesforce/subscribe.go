@@ -52,9 +52,6 @@ type SubscriptionRequest struct {
 	// UseExistingQuotaOptimizationFields is a flag to indicate that the existing quota optimization fields
 	// should be used instead of creating new ones.
 	UseExistingQuotaOptimizationFields bool
-	// ExistingQuotaOptimizationFields is a map of object names to custom checkbox field names that are
-	// already created on the object in Salesforce.
-	ExistingQuotaOptimizationFields map[common.ObjectName]string
 	// ManualApexTriggerDeployment is a flag to indicate that the apex triggers should be deployed manually
 	// instead of automatically.
 	ManualApexTriggerDeployment bool
@@ -153,9 +150,7 @@ func (c *Connector) executeSubscribe(
 		createdMembers: sfRes.EventChannelMembers,
 	}
 
-	if req != nil && req.UseExistingQuotaOptimizationFields {
-		sfRes.QuotaOptimizationObjectFields = req.ExistingQuotaOptimizationFields
-	} else {
+	if req != nil && !req.UseExistingQuotaOptimizationFields {
 		if err := c.upsertQuotaOptimizationFields(ctx, params, req); err != nil {
 			return sfRes, progress, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
 		}
@@ -167,11 +162,8 @@ func (c *Connector) executeSubscribe(
 		return sfRes, progress, err
 	}
 
-	if req != nil && !req.UseExistingQuotaOptimizationFields && req.QuotaOptimizationObjectFields != nil {
-		sfRes.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
-	}
-
 	if req != nil {
+		sfRes.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
 		sfRes.UseExistingQuotaOptimizationFields = req.UseExistingQuotaOptimizationFields
 		sfRes.ManualApexTriggerDeployment = req.ManualApexTriggerDeployment
 	}
@@ -513,17 +505,10 @@ func buildUpdatedSubscribeResult(
 		delete(newState.ApexTriggers, objName)
 	}
 
-	if req != nil && !req.UseExistingQuotaOptimizationFields && req.QuotaOptimizationObjectFields != nil {
-		newState.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
-	}
-
 	if req != nil {
+		newState.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
 		newState.UseExistingQuotaOptimizationFields = req.UseExistingQuotaOptimizationFields
 		newState.ManualApexTriggerDeployment = req.ManualApexTriggerDeployment
-
-		if req.UseExistingQuotaOptimizationFields {
-			newState.QuotaOptimizationObjectFields = req.ExistingQuotaOptimizationFields
-		}
 	}
 
 	return newState

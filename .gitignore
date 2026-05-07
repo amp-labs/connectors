@@ -147,6 +147,8 @@ output/
 # Salesforce test binaries
 /apex
 test/salesforce/apex/apex
+test/salesforce/apex/output
 /subscribe
 subscriber
 test/salesforce/subscribe/subscribe
+test/salesforce/subscribe/subscriber
