@@ -1,4 +1,4 @@
-package crm
+package hubspot
 
 import (
 	"context"
@@ -9,8 +9,8 @@ import (
 	"github.com/amp-labs/connectors/internal/httpkit"
 )
 
-func (a *Adapter) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := a.getDeleteURL(params.ObjectName, params.RecordId)
+func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
+	url, err := c.getDeleteURL(params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (a *Adapter) buildDeleteRequest(ctx context.Context, params common.DeletePa
 	return req, nil
 }
 
-func (a *Adapter) parseDeleteResponse(
+func (c *Connector) parseDeleteResponse(
 	ctx context.Context,
 	params common.DeleteParams,
 	request *http.Request,

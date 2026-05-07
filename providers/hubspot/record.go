@@ -82,7 +82,7 @@ func (c *Connector) GetRecordsByIds(
 	}
 
 	marshaller := associations.CreateDataMarshallerWithAssociations(
-		ctx, c.delegate.AssociationsFiller, objectName, associationsList,
+		ctx, c.associationsFiller, objectName, associationsList,
 	)
 
 	return marshaller(records, fields)

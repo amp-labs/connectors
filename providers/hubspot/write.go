@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -74,9 +73,5 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 }
 
 func (c *Connector) BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error) {
-	return c.delegate.BatchWrite(ctx, params)
-}
-
-func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
-	return c.delegate.Delete(ctx, params)
+	return c.batchAdapter.BatchWrite(ctx, params)
 }

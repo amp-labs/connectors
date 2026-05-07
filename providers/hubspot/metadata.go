@@ -30,7 +30,7 @@ type objectMetadataError struct {
 func (c *Connector) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {
-	return c.delegate.UpsertMetadata(ctx, params)
+	return c.customAdapter.UpsertMetadata(ctx, params)
 }
 
 // ListObjectMetadata returns object metadata for each object name provided.

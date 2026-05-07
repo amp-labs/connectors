@@ -83,7 +83,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		core.GetRecords,
 		core.GetNextRecordsURL,
 		associations.CreateDataMarshallerWithAssociations(
-			ctx, c.delegate.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
+			ctx, c.associationsFiller, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }
