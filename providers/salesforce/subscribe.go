@@ -134,7 +134,7 @@ func (c *Connector) executeSubscribe(
 		createdMembers: sfRes.EventChannelMembers,
 	}
 
-	if err := c.upsertQuotaOptimizationFields(ctx, req); err != nil {
+	if err := c.upsertQuotaOptimizationFields(ctx, params, req); err != nil {
 		return sfRes, progress, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
 	}
 
@@ -323,7 +323,7 @@ func (c *Connector) executeUpdateSubscription(
 ) (*common.SubscriptionResult, *updateSubscriptionProgress, error) {
 	progress := &updateSubscriptionProgress{}
 
-	if err := c.upsertQuotaOptimizationFields(ctx, req); err != nil {
+	if err := c.upsertQuotaOptimizationFields(ctx, params, req); err != nil {
 		return nil, progress, err
 	}
 
@@ -568,8 +568,17 @@ func prepareQuotaOptimizationObjectFieldsForUpdate(
 	return newQuotaFields
 }
 
+// upsertQuotaOptimizationFields creates the quota-optimization checkbox custom field
+// for each object that the caller has both (a) subscribed to via params.SubscriptionEvents
+// and (b) configured a quota field for via req.QuotaOptimizationObjectFields.
+//
+// Quota-field entries that don't correspond to any subscribed object are dropped from
+// req.QuotaOptimizationObjectFields in place so the rest of the subscribe flow (state
+// persistence at sfRes.QuotaOptimizationObjectFields, rollback via progress.req,
+// prepareQuotaOptimizationObjectFieldsForUpdate) operates on the same filtered view
+// and never references fields that were never created in the org.
 func (c *Connector) upsertQuotaOptimizationFields(
-	ctx context.Context, req *SubscriptionRequest,
+	ctx context.Context, params common.SubscribeParams, req *SubscriptionRequest,
 ) error {
 	if req == nil || len(req.QuotaOptimizationObjectFields) == 0 {
 		return nil
@@ -578,6 +587,12 @@ func (c *Connector) upsertQuotaOptimizationFields(
 	fields := make(map[string][]common.FieldDefinition)
 
 	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
+		if !isObjectSubscribed(params.SubscriptionEvents, objectName) {
+			delete(req.QuotaOptimizationObjectFields, objectName)
+
+			continue
+		}
+
 		fields[string(objectName)] = []common.FieldDefinition{
 			{
 				FieldName:   customFieldAPIName(fieldName),
@@ -592,6 +607,10 @@ func (c *Connector) upsertQuotaOptimizationFields(
 		}
 	}
 
+	if len(fields) == 0 {
+		return nil
+	}
+
 	if _, err := c.UpsertMetadata(ctx, &common.UpsertMetadataParams{
 		Fields: fields,
 	}); err != nil {
@@ -599,6 +618,20 @@ func (c *Connector) upsertQuotaOptimizationFields(
 	}
 
 	return nil
+}
+
+// isObjectSubscribed reports whether objName matches any key in events using the
+// same case-and-plurality-insensitive comparison as lookupQuotaField.
+func isObjectSubscribed(
+	events map[common.ObjectName]common.ObjectEvents, objName common.ObjectName,
+) bool {
+	for key := range events {
+		if naming.PluralityAndCaseIgnoreEqual(string(key), string(objName)) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // updateKeptSubscriptions updates channel members and redeploys apex triggers for
