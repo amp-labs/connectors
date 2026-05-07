@@ -10,7 +10,7 @@ import (
 )
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := c.getDeleteURL(params.ObjectName, params.RecordId)
+	url, err := c.getCRMObjectsDeleteURL(params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err
 	}

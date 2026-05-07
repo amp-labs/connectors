@@ -27,7 +27,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 
 	var write common.WriteMethod
 
-	url, err := c.getCRMObjectsReadURL(config.ObjectName)
+	url, err := c.getCRMObjectsURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}

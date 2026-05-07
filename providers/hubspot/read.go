@@ -97,7 +97,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 
 	// If NextPage is not set, then we're reading the first page of results.
 	// We need to construct the query and then make the request.
-	url, err := c.getCRMObjectsReadURL(params.ObjectName)
+	url, err := c.getCRMObjectsURL(params.ObjectName)
 	if err != nil {
 		return "", err
 	}
