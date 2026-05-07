@@ -259,15 +259,52 @@ func TestUpsertQuotaOptimizationFieldsNilRequest(t *testing.T) {
 	}
 
 	// Nil request should be a no-op
-	err = conn.upsertQuotaOptimizationFields(t.Context(), nil)
+	err = conn.upsertQuotaOptimizationFields(t.Context(), common.SubscribeParams{}, nil)
 	if err != nil {
 		t.Errorf("expected nil error for nil request, got %v", err)
 	}
 
 	// Request with nil QuotaOptimizationObjectFields should be a no-op
-	err = conn.upsertQuotaOptimizationFields(t.Context(), &SubscriptionRequest{})
+	err = conn.upsertQuotaOptimizationFields(t.Context(), common.SubscribeParams{}, &SubscriptionRequest{})
 	if err != nil {
 		t.Errorf("expected nil error for empty request, got %v", err)
+	}
+}
+
+func TestUpsertQuotaOptimizationFieldsFiltersUnsubscribedObjects(t *testing.T) {
+	t.Parallel()
+
+	req := &SubscriptionRequest{
+		QuotaOptimizationObjectFields: map[common.ObjectName]string{
+			"Lead":    "amp_lead_field",
+			"Account": "amp_account_field",
+			"Contact": "amp_contact_field",
+		},
+	}
+
+	params := common.SubscribeParams{
+		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
+			"Lead":    {},
+			"contact": {},
+		},
+	}
+
+	for objectName := range req.QuotaOptimizationObjectFields {
+		if !isObjectSubscribed(params.SubscriptionEvents, objectName) {
+			delete(req.QuotaOptimizationObjectFields, objectName)
+		}
+	}
+
+	if _, ok := req.QuotaOptimizationObjectFields["Lead"]; !ok {
+		t.Error("expected Lead to remain (exact match)")
+	}
+
+	if _, ok := req.QuotaOptimizationObjectFields["Contact"]; !ok {
+		t.Error("expected Contact to remain (case-insensitive match)")
+	}
+
+	if _, ok := req.QuotaOptimizationObjectFields["Account"]; ok {
+		t.Error("expected Account to be removed (not in SubscriptionEvents)")
 	}
 }
 
