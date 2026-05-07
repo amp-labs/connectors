@@ -26,7 +26,7 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 	c.accountId = account
 
 	cv := map[string]string{
-		"account_id": account,
+		"accountId": account,
 	}
 
 	return &common.PostAuthInfo{
