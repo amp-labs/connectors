@@ -196,7 +196,7 @@ func constructTestStrategy(serverURL string) (*Strategy, error) {
 
 	transport.SetUnitTestMockServerBaseURL(serverURL)
 
-	return NewStrategy(transport.JSONHTTPClient(), transport.ModuleInfo(), transport.ProviderInfo()), nil
+	return NewStrategy(transport.JSONHTTPClient(), transport.ProviderInfo()), nil
 }
 
 type (

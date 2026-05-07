@@ -16,8 +16,8 @@ import (
 // It abstracts API endpoint construction, versioning, and JSON response processing
 // specific to the HubSpot Batch feature.
 type Adapter struct {
-	Client     *common.JSONHTTPClient
-	moduleInfo *providers.ModuleInfo
+	Client       *common.JSONHTTPClient
+	providerInfo *providers.ProviderInfo
 
 	// Batch updating objects does not support manipulating associations.
 	// associationsStrategy is used to create associations as a follow up.
@@ -26,7 +26,7 @@ type Adapter struct {
 
 // NewAdapter creates a new batch Adapter configured to work with Hubspot's APIs.
 func NewAdapter(
-	hubspotCRMClient *common.HTTPClient, moduleInfo *providers.ModuleInfo,
+	hubspotCRMClient *common.HTTPClient, providerInfo *providers.ProviderInfo,
 	associationsStrategy *associations.Strategy,
 ) *Adapter {
 	shouldHandleError := func(response *http.Response) bool {
@@ -50,13 +50,9 @@ func NewAdapter(
 
 	return &Adapter{
 		Client:               jsonHTTPClient,
-		moduleInfo:           moduleInfo,
+		providerInfo:         providerInfo,
 		associationsStrategy: associationsStrategy,
 	}
-}
-
-func (a *Adapter) getModuleURL() string {
-	return a.moduleInfo.BaseURL
 }
 
 // getCreateURL builds the HubSpot batch create endpoint for the given object type.
@@ -64,7 +60,7 @@ func (a *Adapter) getModuleURL() string {
 // nolint:lll
 // Contacts example: https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/batch/create-contacts
 func (a *Adapter) getCreateURL(objectName common.ObjectName) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), "objects", core.APIVersion2026March, objectName.String(), "batch/create")
+	return urlbuilder.New(a.providerInfo.BaseURL, "crm", "objects", core.APIVersion2026March, objectName.String(), "batch/create")
 }
 
 // getUpdateURL builds the HubSpot batch update endpoint for the given object type.
@@ -72,5 +68,5 @@ func (a *Adapter) getCreateURL(objectName common.ObjectName) (*urlbuilder.URL, e
 // nolint:lll
 // Contacts example: https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/batch/update-contacts
 func (a *Adapter) getUpdateURL(objectName common.ObjectName) (*urlbuilder.URL, error) {
-	return urlbuilder.New(a.getModuleURL(), "objects", core.APIVersion2026March, objectName.String(), "batch/update")
+	return urlbuilder.New(a.providerInfo.BaseURL, "crm", "objects", core.APIVersion2026March, objectName.String(), "batch/update")
 }

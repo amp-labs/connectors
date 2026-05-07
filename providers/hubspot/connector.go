@@ -70,14 +70,12 @@ func constructor(base *components.Connector) (*Connector, error) {
 		},
 	)
 
-	connector.customAdapter = custom.NewAdapter(connector.JSONHTTPClient(), connector.ModuleInfo())
-	associationsStrategy := associations.NewStrategy(
-		connector.JSONHTTPClient(), connector.ModuleInfo(), connector.ProviderInfo(),
-	)
+	connector.customAdapter = custom.NewAdapter(connector.JSONHTTPClient(), connector.ProviderInfo())
+	associationsStrategy := associations.NewStrategy(connector.JSONHTTPClient(), connector.ProviderInfo())
 	connector.associationsFiller = associationsStrategy
-	connector.batchAdapter = batch.NewAdapter(connector.HTTPClient(), connector.ModuleInfo(), associationsStrategy)
+	connector.batchAdapter = batch.NewAdapter(connector.HTTPClient(), connector.ProviderInfo(), associationsStrategy)
 	connector.searchStrategy = search.NewStrategy(
-		connector.JSONHTTPClient(), connector.ModuleInfo(), connector.associationsFiller,
+		connector.JSONHTTPClient(), connector.ProviderInfo(), connector.associationsFiller,
 	)
 
 	return connector, nil
