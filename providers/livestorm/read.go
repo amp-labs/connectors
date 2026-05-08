@@ -61,49 +61,62 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, common.ErrMissingObjects
 	}
 
-	switch params.ObjectName {
-	case objectSessionChatMessages:
-		sessionID := strings.TrimSpace(params.Filter)
-		if sessionID == "" {
-			return nil, ErrSessionIDRequired
-		}
-
-		u, err := urlbuilder.New(c.ProviderInfo().BaseURL, "v1", "sessions", sessionID, "chat_messages")
-		if err != nil {
-			return nil, err
-		}
-
-		u.WithQueryParam("page[number]", "0")
-		u.WithQueryParam("page[size]", readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
-
-		return u, nil
-	case objectJobs:
-		jobID := strings.TrimSpace(params.Filter)
-		if jobID == "" {
-			return nil, ErrJobIDRequired
-		}
-
-		return urlbuilder.New(c.ProviderInfo().BaseURL, "v1", "jobs", jobID)
-	default:
-		path, err := metadata.Schemas.FindURLPath(c.ProviderContext.Module(), params.ObjectName)
-		if err != nil {
-			return nil, err
-		}
-
-		u, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
-		if err != nil {
-			return nil, err
-		}
-
-		u.WithQueryParam("page[number]", "0")
-		u.WithQueryParam("page[size]", readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
-
-		if params.ObjectName == objectEvents {
-			applyEventTimeFilters(u, params)
-		}
-
-		return u, nil
+	if params.ObjectName == objectSessionChatMessages {
+		return c.buildSessionChatMessagesReadURL(params)
 	}
+
+	if params.ObjectName == objectJobs {
+		return c.buildJobReadURL(params)
+	}
+
+	return c.buildGenericReadURL(params)
+}
+
+func (c *Connector) buildSessionChatMessagesReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+	sessionID := strings.TrimSpace(params.Filter)
+	if sessionID == "" {
+		return nil, ErrSessionIDRequired
+	}
+
+	endpointURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, "v1", "sessions", sessionID, "chat_messages")
+	if err != nil {
+		return nil, err
+	}
+
+	endpointURL.WithQueryParam("page[number]", "0")
+	endpointURL.WithQueryParam("page[size]", readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
+
+	return endpointURL, nil
+}
+
+func (c *Connector) buildJobReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+	jobID := strings.TrimSpace(params.Filter)
+	if jobID == "" {
+		return nil, ErrJobIDRequired
+	}
+
+	return urlbuilder.New(c.ProviderInfo().BaseURL, "v1", "jobs", jobID)
+}
+
+func (c *Connector) buildGenericReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+	path, err := metadata.Schemas.FindURLPath(c.ProviderContext.Module(), params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	endpointURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	if err != nil {
+		return nil, err
+	}
+
+	endpointURL.WithQueryParam("page[number]", "0")
+	endpointURL.WithQueryParam("page[size]", readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
+
+	if params.ObjectName == objectEvents {
+		applyEventTimeFilters(endpointURL, params)
+	}
+
+	return endpointURL, nil
 }
 
 const (
@@ -130,9 +143,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		resp,
-		func(root *ajson.Node) ([]map[string]any, error) {
-			return extractJSONAPIDataRecords(root)
-		},
+		extractJSONAPIDataRecords,
 		nextPageLivestorm(request),
 		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,
@@ -145,48 +156,74 @@ func nextPageLivestorm(previous *http.Request) common.NextPageFunc {
 			return "", nil
 		}
 
-		nextStr, err := jsonquery.New(root, "meta").StringOptional("next_page")
+		nextPage, err := readNextPageFromMeta(root)
 		if err != nil {
 			return "", err
 		}
 
-		if nextStr != nil && *nextStr != "" {
-			return *nextStr, nil
+		if nextPage != "" {
+			return nextPage, nil
 		}
 
-		pageCount, err := jsonquery.New(root, "meta").IntegerOptional("page_count")
-		if err != nil {
-			return "", err
-		}
-
-		current, err := jsonquery.New(root, "meta").IntegerOptional("current_page")
-		if err != nil {
-			return "", err
-		}
-
-		if pageCount == nil || current == nil {
-			return "", nil
-		}
-
-		pc := *pageCount
-		cur := *current
-
-		if pc <= 0 || cur+1 >= pc {
-			return "", nil
-		}
-
-		cloned, err := url.Parse(previous.URL.String())
-		if err != nil {
-			return "", err
-		}
-
-		u, err := urlbuilder.FromRawURL(cloned)
-		if err != nil {
-			return "", err
-		}
-
-		u.WithQueryParam("page[number]", strconv.FormatInt(cur+1, 10))
-
-		return u.String(), nil
+		return buildNextPageFromCounters(previous, root)
 	}
+}
+
+func readNextPageFromMeta(root *ajson.Node) (string, error) {
+	nextStr, err := jsonquery.New(root, "meta").StringOptional("next_page")
+	if err != nil {
+		return "", err
+	}
+
+	if nextStr == nil || *nextStr == "" {
+		return "", nil
+	}
+
+	return *nextStr, nil
+}
+
+func buildNextPageFromCounters(previous *http.Request, root *ajson.Node) (string, error) {
+	pageCount, current, err := readPageCounters(root)
+	if err != nil {
+		return "", err
+	}
+
+	if pageCount == nil || current == nil {
+		return "", nil
+	}
+
+	pc := *pageCount
+	cur := *current
+
+	if pc <= 0 || cur+1 >= pc {
+		return "", nil
+	}
+
+	cloned, err := url.Parse(previous.URL.String())
+	if err != nil {
+		return "", err
+	}
+
+	u, err := urlbuilder.FromRawURL(cloned)
+	if err != nil {
+		return "", err
+	}
+
+	u.WithQueryParam("page[number]", strconv.FormatInt(cur+1, 10))
+
+	return u.String(), nil
+}
+
+func readPageCounters(root *ajson.Node) (*int64, *int64, error) {
+	pageCount, err := jsonquery.New(root, "meta").IntegerOptional("page_count")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	current, err := jsonquery.New(root, "meta").IntegerOptional("current_page")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return pageCount, current, nil
 }
