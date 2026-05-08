@@ -141,20 +141,26 @@ func (c *Connector) executeSubscribe(
 
 	progress.quotaFieldsUpserted = true
 
-	if err := c.createEventChannelMembers(ctx, params, registrationParams, req, sfRes); err != nil {
-		return sfRes, progress, err
-	}
-
 	if req != nil && req.QuotaOptimizationObjectFields != nil {
 		sfRes.QuotaOptimizationObjectFields = req.QuotaOptimizationObjectFields
 	}
 
+	// Deploy apex triggers before creating event channel members. Both reference
+	// the quota optimization field, but neither references the other, so the order
+	// is free. Doing triggers first means: (a) if the failure-prone trigger deploy
+	// fails, rollback only has to drop the custom field — no ECMs to tear down;
+	// (b) once ECMs go live, the trigger is already maintaining the indicator,
+	// so no UPDATE events get silently filtered out during the setup window.
 	deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
 
 	progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
 	sfRes.ApexTriggers = toApexTriggers(deployOut)
 
 	if err != nil {
+		return sfRes, progress, err
+	}
+
+	if err := c.createEventChannelMembers(ctx, params, registrationParams, req, sfRes); err != nil {
 		return sfRes, progress, err
 	}
 
@@ -220,17 +226,18 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 	// Migrate old CheckboxField to IndicatorField for backwards compatibility.
 	migrateApexTriggers(sfRes.ApexTriggers)
 
-	// Delete apex triggers first — they reference the quota optimization fields,
-	// so they must be removed before the custom fields can be deleted.
-	for objName, trigger := range sfRes.ApexTriggers {
-		if err := c.rollbackApexTrigger(ctx, trigger.TriggerName); err != nil {
-			return fmt.Errorf("failed to delete apex trigger for object '%s': %w", objName, err)
-		}
-	}
-
+	// Tear down in reverse of creation: event channel members first to stop CDC
+	// traffic, then apex triggers. Both reference the quota optimization fields
+	// and must be removed before the custom fields can be deleted.
 	for objectName, member := range sfRes.EventChannelMembers {
 		if _, err := c.DeleteEventChannelMember(ctx, member.Id); err != nil {
 			return fmt.Errorf("failed to delete event channel member '%s': %w", objectName, err)
+		}
+	}
+
+	for objName, trigger := range sfRes.ApexTriggers {
+		if err := c.rollbackApexTrigger(ctx, trigger.TriggerName); err != nil {
+			return fmt.Errorf("failed to delete apex trigger for object '%s': %w", objName, err)
 		}
 	}
 
@@ -652,11 +659,11 @@ func (c *Connector) updateKeptSubscriptions(
 		return nil
 	}
 
-	if err := c.recreateKeptChannelMembers(ctx, req, diff); err != nil {
+	if err := c.redeployKeptApexTriggers(ctx, req, diff); err != nil {
 		return err
 	}
 
-	return c.redeployKeptApexTriggers(ctx, req, diff)
+	return c.recreateKeptChannelMembers(ctx, req, diff)
 }
 
 // recreateKeptChannelMembers deletes and recreates channel members for kept objects

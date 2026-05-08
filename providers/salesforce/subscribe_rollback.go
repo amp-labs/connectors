@@ -18,19 +18,9 @@ func (c *Connector) rollbackSubscribe(
 ) (*common.SubscriptionResult, error) {
 	var rollbackErr error
 
-	// Reverse deployed apex triggers (last completed, first to rollback).
-	for objName, trigger := range progress.deployedTriggers {
-		if err := c.rollbackApexTrigger(ctx, trigger.TriggerName); err != nil {
-			rollbackErr = errors.Join(
-				rollbackErr,
-				fmt.Errorf("failed to rollback apex trigger for object %s: %w", objName, err),
-			)
-		} else {
-			delete(progress.deployedTriggers, objName)
-		}
-	}
-
-	// Reverse created event channel members.
+	// Reverse in the inverse of creation order (fields → triggers → members).
+	// Members are torn down first to stop CDC traffic, then triggers, then the
+	// custom fields they both reference.
 	for objName, member := range progress.createdMembers {
 		if _, err := c.DeleteEventChannelMember(ctx, member.Id); err != nil {
 			rollbackErr = errors.Join(
@@ -42,7 +32,17 @@ func (c *Connector) rollbackSubscribe(
 		}
 	}
 
-	// Reverse quota optimization fields.
+	for objName, trigger := range progress.deployedTriggers {
+		if err := c.rollbackApexTrigger(ctx, trigger.TriggerName); err != nil {
+			rollbackErr = errors.Join(
+				rollbackErr,
+				fmt.Errorf("failed to rollback apex trigger for object %s: %w", objName, err),
+			)
+		} else {
+			delete(progress.deployedTriggers, objName)
+		}
+	}
+
 	if progress.quotaFieldsUpserted {
 		if err := c.rollbackQuotaOptimizationFields(ctx, progress.req); err != nil {
 			rollbackErr = errors.Join(rollbackErr, err)
