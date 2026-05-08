@@ -39,7 +39,7 @@ func (s Strategy) Search(ctx context.Context, params *common.SearchParams) (*com
 	// Search has two execution paths:
 	// - ObjectAPI: for core CRM objects supported by the canonical ObjectAPI endpoint.
 	// - Non-ObjectAPI: for CRM objects not supported by ObjectAPI, which use separate endpoints (e.g., Lists).
-	if core.ObjectsWithoutPropertiesAPISupport.Has(params.ObjectName) {
+	if core.CRMObjectsWithoutPropertiesAPISupport.Has(params.ObjectName) {
 		return s.searchViaNonstandardSearchAPI(ctx, params)
 	}
 

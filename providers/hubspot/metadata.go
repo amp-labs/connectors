@@ -110,11 +110,17 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 
 // getObjectMetadata returns object metadata for the given object name.
 func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
-	if core.ObjectsWithoutPropertiesAPISupport.Has(objectName) {
+	switch {
+	case core.CRMObjectsWithoutPropertiesAPISupport.Has(objectName):
 		return c.getObjectMetadataFromCRMSearch(ctx, objectName)
+	case core.MarketingObjects.Has(objectName):
+		// Object is part of Hubspot Marketing API.
+		// There is no discovery endpoint. Using local file with schema definition.
+		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
+	default:
+		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
+		return c.getObjectMetadataFromPropertyAPI(ctx, objectName)
 	}
-
-	return c.getObjectMetadataFromPropertyAPI(ctx, objectName)
 }
 
 // This method describes objects that are part of Objects API using properties endpoint.
@@ -170,12 +176,12 @@ func (c *Connector) getObjectMetadataFromCRMSearch(
 	})
 	if err != nil {
 		// Ignore an error and fallback to static schema.
-		return metadata.Schemas.SelectOne(c.Module(), objectName)
+		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
 	}
 
 	if len(readResult.Data) == 0 {
 		// Read returned no rows.
-		return metadata.Schemas.SelectOne(c.Module(), objectName)
+		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
 	}
 
 	fields := make(map[string]common.FieldMetadata)

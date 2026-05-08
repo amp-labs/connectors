@@ -370,6 +370,49 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name:       "Successfully describe marketing campaigns",
+			Input:      []string{"campaigns"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"campaigns": {
+						DisplayName: "Campaigns",
+						Fields: map[string]common.FieldMetadata{
+							"hs_campaign_status": {
+								DisplayName:  "Campaign Status",
+								ValueType:    "singleSelect",
+								ProviderType: "Enumeration",
+								Values: common.FieldValues{{
+									Value:        "planned",
+									DisplayValue: "planned",
+								}, {
+									Value:        "in_progress",
+									DisplayValue: "in_progress",
+								}, {
+									Value:        "active",
+									DisplayValue: "active",
+								}, {
+									Value:        "paused",
+									DisplayValue: "paused",
+								}, {
+									Value:        "completed",
+									DisplayValue: "completed",
+								}},
+							},
+							"hs_name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "String",
+							},
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
