@@ -198,38 +198,57 @@ func generateClassMetaXML() string {
 
 // generateTestClassCode returns Apex test class source that exercises the trigger
 // via DML on the target object. It populates required fields using runtime describe
-// metadata, then performs an insert and (when insert succeeds) an update of a watched
-// field. This covers both the BEFORE INSERT and BEFORE UPDATE branches of the trigger
-// so Salesforce's 75% Apex code-coverage requirement is satisfied for production
-// deploys using testLevel=RunSpecifiedTests.
+// metadata, then performs an insert and an update of a watched field. This covers
+// both the BEFORE INSERT and BEFORE UPDATE branches of the trigger so Salesforce's
+// 75% Apex code-coverage requirement is satisfied for production deploys using
+// testLevel=RunSpecifiedTests.
 //
-// The class avoids assertions about indicator-field values so it remains valid both
-// when the trigger is present and when the trigger has been removed while the test
-// class is retained (the rollback path keeps test classes around so RunSpecifiedTests
-// continues to have a runnable target).
+// The class is annotated @isTest(SeeAllData=true) so it can fall back to updating
+// an existing record when insert is blocked by org validation rules or record-
+// triggered flows. All test DML is rolled back at the end of the transaction, so
+// touching production data is safe. The class avoids assertions about indicator-
+// field values so it remains valid both when the trigger is present and when the
+// trigger has been removed while the test class is retained (the rollback path
+// keeps test classes around so RunSpecifiedTests continues to have a runnable
+// target).
 func generateTestClassCode(testClassName, objectName string, watchFields []string) string {
 	quoted := make([]string, 0, len(watchFields))
 	for _, wf := range watchFields {
 		quoted = append(quoted, "'"+strings.ReplaceAll(wf, "'", `\'`)+"'")
 	}
 
-	return fmt.Sprintf(apexTestClassTemplate, testClassName, objectName, strings.Join(quoted, ", "))
+	return fmt.Sprintf(apexTestClassTemplate,
+		testClassName, objectName, objectName, strings.Join(quoted, ", "))
 }
 
 // apexTestClassTemplate is the Apex source for the generated companion test class.
-// Placeholders (in order): test class name, object API name, comma-joined quoted watch fields.
-const apexTestClassTemplate = `@isTest
+// Placeholders (in order): test class name, object API name (SOQL), object API name
+// (describe), comma-joined quoted watch fields.
+const apexTestClassTemplate = `@isTest(SeeAllData=true)
 private class %s {
     @isTest
     static void exerciseTrigger() {
         SObject rec = makeRec();
         Test.startTest();
         Database.SaveResult ins = Database.insert(rec, false);
-        if (ins.isSuccess()) {
-            mutateWatchField(rec);
-            Database.update(rec, false);
+        // Exercise the BEFORE UPDATE branch: prefer the just-inserted record;
+        // if insert was blocked by org validation rules / record-triggered flows,
+        // fall back to any existing record so the trigger still fires for update.
+        SObject target = ins.isSuccess() ? rec : findExistingRecord();
+        if (target != null) {
+            mutateWatchField(target);
+            Database.update(target, false);
         }
         Test.stopTest();
+    }
+
+    private static SObject findExistingRecord() {
+        try {
+            List<SObject> existing = Database.query('SELECT Id FROM %s LIMIT 1');
+            return existing.isEmpty() ? null : existing[0];
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private static SObject makeRec() {

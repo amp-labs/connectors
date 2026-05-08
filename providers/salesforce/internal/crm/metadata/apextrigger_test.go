@@ -538,13 +538,14 @@ func TestConstructApexTriggerBundlesTestClass(t *testing.T) {
 	}
 
 	for _, want := range []string{
-		"@isTest",
+		"@isTest(SeeAllData=true)",
 		"private class Test_CDC_Lead",
 		"Schema.getGlobalDescribe().get('Lead')",
+		"'SELECT Id FROM Lead LIMIT 1'",
 		"'Email'",
 		"'Phone'",
 		"Database.insert(rec, false)",
-		"Database.update(rec, false)",
+		"Database.update(target, false)",
 	} {
 		if !strings.Contains(classCode, want) {
 			t.Errorf("test class missing %q\nGot:\n%s", want, classCode)
