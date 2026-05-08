@@ -13,16 +13,11 @@ import (
 
 // GetHubspotConnector returns a Hubspot CRM connector.
 func GetHubspotConnector(ctx context.Context) *hubspot.Connector {
-	return getHubspotConnector(ctx, providers.ModuleHubspotCRM)
-}
-
-func getHubspotConnector(ctx context.Context, moduleID common.ModuleID) *hubspot.Connector {
 	reader := CredsReader()
 
 	conn, err := hubspot.NewConnector(
 		common.ConnectorParams{
 			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
-			Module:              moduleID,
 		},
 	)
 	if err != nil {

@@ -2,16 +2,9 @@ package providers
 
 import (
 	"net/http"
-
-	"github.com/amp-labs/connectors/common"
 )
 
 const Hubspot Provider = "hubspot"
-
-const (
-	// ModuleHubspotCRM is the module used for accessing standard CRM objects.
-	ModuleHubspotCRM common.ModuleID = "crm"
-)
 
 func init() { //nolint:funlen
 	// Hubspot configuration
@@ -32,50 +25,25 @@ func init() { //nolint:funlen
 			ExplicitWorkspaceRequired: false,
 		},
 		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
+			BatchWrite: &BatchWriteSupport{
+				Create: BatchWriteSupportConfig{
+					DefaultRecordLimit: new(100), // nolint:mnd
+					ObjectRecordLimits: nil,
+					Supported:          true,
+				},
+				Update: BatchWriteSupportConfig{
+					DefaultRecordLimit: new(100), // nolint:mnd
+					ObjectRecordLimits: nil,
+					Supported:          true,
+				},
 			},
 			Delete:    true,
-			Proxy:     true,
 			Read:      true,
 			Subscribe: true,
 			Write:     true,
 			Search: SearchSupport{
 				Operators: SearchOperators{
 					Equals: true,
-				},
-			},
-		},
-		DefaultModule: ModuleHubspotCRM,
-		Modules: &Modules{
-			ModuleHubspotCRM: {
-				BaseURL:     "https://api.hubapi.com/crm",
-				DisplayName: "HubSpot CRM",
-				Support: Support{
-					BatchWrite: &BatchWriteSupport{
-						Create: BatchWriteSupportConfig{
-							DefaultRecordLimit: new(100), // nolint:mnd
-							ObjectRecordLimits: nil,
-							Supported:          true,
-						},
-						Update: BatchWriteSupportConfig{
-							DefaultRecordLimit: new(100), // nolint:mnd
-							ObjectRecordLimits: nil,
-							Supported:          true,
-						},
-					},
-					Delete:    true,
-					Read:      true,
-					Subscribe: true,
-					Write:     true,
-					Search: SearchSupport{
-						Operators: SearchOperators{
-							Equals: true,
-						},
-					},
 				},
 			},
 		},
@@ -100,9 +68,6 @@ func init() { //nolint:funlen
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "ownerId",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleHubspotCRM: ModuleDependency{},
-					},
 				},
 			},
 		},

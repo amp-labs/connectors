@@ -187,7 +187,6 @@ func TestBatchCreate(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 func constructTestStrategy(serverURL string) (*Strategy, error) {
 	transport, err := components.NewTransport(providers.Hubspot, common.ConnectorParams{
-		Module:              providers.ModuleHubspotCRM,
 		AuthenticatedClient: mockutils.NewClient(),
 	})
 	if err != nil {
