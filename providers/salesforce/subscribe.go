@@ -150,6 +150,8 @@ func (c *Connector) executeSubscribe(
 		createdMembers: sfRes.EventChannelMembers,
 	}
 
+	dropUnsubscribedQuotaFields(params, req)
+
 	if req != nil && !req.UseExistingQuotaOptimizationFields {
 		if err := c.upsertQuotaOptimizationFields(ctx, params, req); err != nil {
 			return sfRes, progress, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
@@ -342,7 +344,7 @@ func (c *Connector) UpdateSubscription(
 // executeUpdateSubscription performs the forward-path logic of UpdateSubscription.
 // It returns partial progress on error, without performing any rollback.
 //
-//nolint:cyclop
+//nolint:cyclop,funlen
 func (c *Connector) executeUpdateSubscription(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -351,6 +353,8 @@ func (c *Connector) executeUpdateSubscription(
 	req *SubscriptionRequest,
 ) (*common.SubscriptionResult, *updateSubscriptionProgress, error) {
 	progress := &updateSubscriptionProgress{}
+
+	dropUnsubscribedQuotaFields(params, req)
 
 	if req == nil || !req.UseExistingQuotaOptimizationFields {
 		if err := c.upsertQuotaOptimizationFields(ctx, params, req); err != nil {
@@ -651,6 +655,23 @@ func (c *Connector) upsertQuotaOptimizationFields(
 	}
 
 	return nil
+}
+
+// dropUnsubscribedQuotaFields removes entries from req.QuotaOptimizationObjectFields
+// whose objects are not in params.SubscriptionEvents, mutating the map in place. This
+// guarantees sfRes.QuotaOptimizationObjectFields persists only fields tied to the
+// objects actually subscribed, regardless of whether the connector created them or
+// the caller supplied existing ones via UseExistingQuotaOptimizationFields.
+func dropUnsubscribedQuotaFields(params common.SubscribeParams, req *SubscriptionRequest) {
+	if req == nil {
+		return
+	}
+
+	for objectName := range req.QuotaOptimizationObjectFields {
+		if !isObjectSubscribed(params.SubscriptionEvents, objectName) {
+			delete(req.QuotaOptimizationObjectFields, objectName)
+		}
+	}
 }
 
 // isObjectSubscribed reports whether objName matches any key in events using the
