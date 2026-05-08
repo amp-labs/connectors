@@ -2,9 +2,11 @@ package salesforce
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
@@ -161,6 +163,10 @@ func (n *NamedCredential) DestinationResourceName() string {
 func (c *Connector) CreateEventChannel(ctx context.Context, channel *EventChannel) (*EventChannel, error) {
 	res, err := c.postToSFAPI(ctx, channel, "tooling/sobjects/PlatformEventChannel", "PlatformEventChannel")
 	if err != nil {
+		if isDuplicateDeveloperName(err) {
+			return recoverDuplicateByFullName[EventChannel](ctx, c, "PlatformEventChannel", channel.FullName)
+		}
+
 		return nil, err
 	}
 
@@ -182,6 +188,10 @@ func (c *Connector) CreateEventChannelMember(
 ) (*EventChannelMember, error) {
 	res, err := c.postToSFAPI(ctx, member, "tooling/sobjects/PlatformEventChannelMember", "EventChannelMember")
 	if err != nil {
+		if isDuplicateDeveloperName(err) {
+			return recoverDuplicateByFullName[EventChannelMember](ctx, c, "PlatformEventChannelMember", member.FullName)
+		}
+
 		return nil, err
 	}
 
@@ -222,6 +232,10 @@ func (c *Connector) CreateEventRelayConfig(
 ) (*EventRelayConfig, error) {
 	res, err := c.postToSFAPI(ctx, cfg, "/tooling/sobjects/EventRelayConfig", "EventRelayConfig")
 	if err != nil {
+		if isDuplicateDeveloperName(err) {
+			return recoverDuplicateByFullName[EventRelayConfig](ctx, c, "EventRelayConfig", cfg.FullName)
+		}
+
 		return nil, err
 	}
 
@@ -301,6 +315,10 @@ func GetRemoteResource(orgId, channelId string) string {
 func (c *Connector) CreateNamedCredential(ctx context.Context, creds *NamedCredential) (*NamedCredential, error) {
 	res, err := c.postToSFAPI(ctx, creds, "/tooling/sobjects/NamedCredential", "NamedCredential")
 	if err != nil {
+		if isDuplicateDeveloperName(err) {
+			return recoverDuplicateByFullName[NamedCredential](ctx, c, "NamedCredential", creds.FullName)
+		}
+
 		return nil, err
 	}
 
@@ -385,4 +403,150 @@ func (c *Connector) deleteToSFAPI(ctx context.Context, path string, entity strin
 	}
 
 	return resp, nil
+}
+
+const errCodeDuplicateDeveloperName = "DUPLICATE_DEVELOPER_NAME"
+
+var (
+	errToolingQueryNoRecordsField = errors.New("tooling/query response missing 'records' field")
+	errToolingEntityNotFound      = errors.New("no tooling entity found by FullName")
+	errToolingRecordMissingID     = errors.New("tooling/query record missing 'Id' field")
+)
+
+// sfAPIError is a single entry in a Salesforce API error response array.
+// nolint:tagliatelle
+type sfAPIError struct {
+	Message   string   `json:"message"`
+	ErrorCode string   `json:"errorCode"`
+	Fields    []string `json:"fields"`
+}
+
+// isDuplicateDeveloperName reports whether err is a 400 response whose body
+// contains the DUPLICATE_DEVELOPER_NAME Salesforce error code.
+func isDuplicateDeveloperName(err error) bool {
+	var httpErr *common.HTTPError
+	if !errors.As(err, &httpErr) || httpErr.Status != http.StatusBadRequest {
+		return false
+	}
+
+	var entries []sfAPIError
+	if jsonErr := json.Unmarshal(httpErr.Body, &entries); jsonErr != nil {
+		return false
+	}
+
+	for _, e := range entries {
+		if e.ErrorCode == errCodeDuplicateDeveloperName {
+			return true
+		}
+	}
+
+	return false
+}
+
+// recoverDuplicateByFullName looks up a tooling entity by FullName and returns
+// the full record. Used to make Create* idempotent when Salesforce reports
+// DUPLICATE_DEVELOPER_NAME — the SOQL query yields the existing Id, and the
+// follow-up GET returns the same shape a successful Create would have.
+func recoverDuplicateByFullName[T any](
+	ctx context.Context, conn *Connector, objectType, fullName string,
+) (*T, error) {
+	logging.Logger(ctx).Info("create returned duplicate, fetching existing record",
+		"objectType", objectType, "fullName", fullName)
+
+	id, err := conn.findToolingEntityIdByFullName(ctx, objectType, fullName)
+	if err != nil {
+		return nil, fmt.Errorf("%s duplicate detected, but SOQL lookup by FullName failed: %w",
+			objectType, err)
+	}
+
+	existing, err := getToolingEntityByID[T](ctx, conn, objectType, id)
+	if err != nil {
+		return nil, fmt.Errorf("%s duplicate detected, found id=%s but GET failed: %w",
+			objectType, id, err)
+	}
+
+	return existing, nil
+}
+
+// findToolingEntityIdByFullName runs a Tooling API SOQL query to find the Id
+// of the given object type by FullName.
+func (c *Connector) findToolingEntityIdByFullName(
+	ctx context.Context, objectType, fullName string,
+) (string, error) {
+	location, err := c.getRestApiURL("tooling/query")
+	if err != nil {
+		return "", err
+	}
+
+	soql := fmt.Sprintf("SELECT Id FROM %s WHERE FullName = '%s'",
+		objectType, escapeSOQLString(fullName))
+	location.WithQueryParam("q", soql)
+
+	resp, err := c.Client.Get(ctx, location.String())
+	if err != nil {
+		return "", err
+	}
+
+	body, ok := resp.Body()
+	if !ok {
+		return "", common.ErrEmptyJSONHTTPResponse
+	}
+
+	obj, err := body.GetObject()
+	if err != nil {
+		return "", err
+	}
+
+	recordsNode, exists := obj["records"]
+	if !exists {
+		return "", fmt.Errorf("%w: objectType=%s", errToolingQueryNoRecordsField, objectType)
+	}
+
+	records, err := recordsNode.GetArray()
+	if err != nil {
+		return "", err
+	}
+
+	if len(records) == 0 {
+		return "", fmt.Errorf("%w: objectType=%s, fullName=%s", errToolingEntityNotFound, objectType, fullName)
+	}
+
+	rec, err := records[0].GetObject()
+	if err != nil {
+		return "", err
+	}
+
+	idNode, exists := rec["Id"]
+	if !exists {
+		return "", fmt.Errorf("%w: objectType=%s", errToolingRecordMissingID, objectType)
+	}
+
+	return idNode.MustString(), nil
+}
+
+// getToolingEntityByID fetches an entity by Id from the Tooling API and
+// unmarshals into T.
+func getToolingEntityByID[T any](
+	ctx context.Context, conn *Connector, objectType, id string,
+) (*T, error) {
+	location, err := conn.getRestApiURL(fmt.Sprintf("tooling/sobjects/%s/%s", objectType, id))
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := conn.Client.Get(ctx, location.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return common.UnmarshalJSON[T](resp)
+}
+
+// escapeSOQLString escapes a value for safe inclusion in a SOQL string
+// literal. Backslashes must be escaped before single quotes.
+func escapeSOQLString(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
+	s = strings.ReplaceAll(s, `'`, `\'`)
+
+	return s
 }
