@@ -9,16 +9,12 @@ import (
 
 type Strategy struct {
 	clientCRM    *common.JSONHTTPClient
-	moduleInfo   *providers.ModuleInfo
 	providerInfo *providers.ProviderInfo
 }
 
-func NewStrategy(
-	hubspotCRMClient *common.JSONHTTPClient, moduleInfo *providers.ModuleInfo, providerInfo *providers.ProviderInfo,
-) *Strategy {
+func NewStrategy(hubspotCRMClient *common.JSONHTTPClient, providerInfo *providers.ProviderInfo) *Strategy {
 	return &Strategy{
 		clientCRM:    hubspotCRMClient,
-		moduleInfo:   moduleInfo,
 		providerInfo: providerInfo,
 	}
 }
@@ -28,7 +24,7 @@ func NewStrategy(
 // nolint:lll
 // https://developers.hubspot.com/docs/api-reference/latest/crm/associations/associate-records/batch/get-associations
 func (s Strategy) getReadAssociationsURL(fromObject, toObject string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(s.moduleInfo.BaseURL,
+	return urlbuilder.New(s.providerInfo.BaseURL, "crm",
 		"associations", core.APIVersion2026March, fromObject, toObject, "batch/read")
 }
 
@@ -37,7 +33,7 @@ func (s Strategy) getReadAssociationsURL(fromObject, toObject string) (*urlbuild
 // nolint:lll
 // https://developers.hubspot.com/docs/api-reference/latest/crm/associations/associate-records/batch/create-associations-labeled
 func (s Strategy) getCreateAssociationsURL(fromObject, toObject string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(s.moduleInfo.BaseURL,
+	return urlbuilder.New(s.providerInfo.BaseURL, "crm",
 		"associations", core.APIVersion2026March, fromObject, toObject, "batch/create")
 }
 

@@ -122,7 +122,7 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 func (c *Connector) getObjectMetadataFromPropertyAPI(
 	ctx context.Context, objectName string,
 ) (*common.ObjectMetadata, error) {
-	url, err := c.getPropertiesURL(objectName)
+	url, err := c.getCRMPropertiesURL(objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -519,7 +519,7 @@ type stage struct {
 func (c *Connector) fetchRequiredFieldsBestEffort(
 	ctx context.Context, objectName string, fields map[string]common.FieldMetadata,
 ) (map[string]common.FieldMetadata, error) {
-	url, err := c.getObjectSchemaURL(objectName)
+	url, err := c.getCRMSchemaURL(objectName)
 	if err != nil {
 		return nil, err
 	}

@@ -56,7 +56,7 @@ func (c *Connector) GetRecordsByIds(
 
 	pluralObjectName := naming.NewPluralString(objectName).String()
 
-	u, err := c.getBatchRecordsURL(pluralObjectName, associationsList)
+	u, err := c.buildBatchRecordsURL(pluralObjectName, associationsList)
 	if err != nil {
 		return nil, err
 	}
@@ -88,12 +88,15 @@ func (c *Connector) GetRecordsByIds(
 	return marshaller(records, fields)
 }
 
-func (c *Connector) getBatchRecordsURL(objectName string, associations []string) (string, error) {
-	relativePath := strings.Join([]string{"/objects", objectName, "batch", "read"}, "/")
+func (c *Connector) buildBatchRecordsURL(objectName string, associations []string) (string, error) {
+	url, err := c.getCRMObjectsBatchReadURL(objectName)
+	if err != nil {
+		return "", err
+	}
 
 	if len(associations) > 0 {
-		return c.getURL(relativePath, "associations", strings.Join(associations, ","))
-	} else {
-		return c.getURL(relativePath)
+		url.WithQueryParam("associations", strings.Join(associations, ","))
 	}
+
+	return url.String(), nil
 }

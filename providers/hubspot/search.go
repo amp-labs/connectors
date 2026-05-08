@@ -61,12 +61,12 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams)
 		})
 	}
 
-	url, err := c.getCRMObjectsSearchURL(config)
+	url, err := c.getCRMObjectsSearchURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.JSONHTTPClient().Post(ctx, url, makeFilterBody(config))
+	rsp, err := c.JSONHTTPClient().Post(ctx, url.String(), makeFilterBody(config))
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ func (c *Connector) searchCRM(
 		return nil, err
 	}
 
-	url, err := c.getCRMSearchURL(config)
+	url, err := c.getCRMSearchURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func (c *Connector) searchCRM(
 		return nil, err
 	}
 
-	rsp, err := c.JSONHTTPClient().Post(ctx, url, payload)
+	rsp, err := c.JSONHTTPClient().Post(ctx, url.String(), payload)
 	if err != nil {
 		return nil, err
 	}
