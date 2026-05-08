@@ -13,8 +13,8 @@ import (
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/metadata"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/metadata"
 )
 
 type objectMetadataResult struct {

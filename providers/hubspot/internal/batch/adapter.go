@@ -8,8 +8,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/associations"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
 )
 
 // Adapter handles batched record operations (create/update) against HubSpot's REST API.

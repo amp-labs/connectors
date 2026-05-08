@@ -7,11 +7,11 @@ import (
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/batch"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/custom"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/search"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/associations"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/batch"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/custom"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/search"
 )
 
 // Connector implements the HubSpot integration.

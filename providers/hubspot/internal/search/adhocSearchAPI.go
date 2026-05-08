@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
 )
 
 // searchCRM is intended for objects outside HubSpot's ObjectAPI.
