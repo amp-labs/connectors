@@ -20,9 +20,6 @@ func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	// Set up slog logging.
-	utils.SetupLogging()
-
 	// Turn on verbose logging
 	ctx = logging.WithLoggerEnabled(ctx, true)
 	ctx = logging.WithVerboseLogging(ctx, true)

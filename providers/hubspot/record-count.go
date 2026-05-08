@@ -61,7 +61,7 @@ func (c *Connector) GetRecordCount(
 	}
 
 	// Execute the search request
-	response, err := c.Client.Post(ctx, url, filterBody)
+	response, err := c.JSONHTTPClient().Post(ctx, url, filterBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute search request: %w", err)
 	}

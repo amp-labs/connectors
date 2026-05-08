@@ -30,8 +30,7 @@ type objectMetadataError struct {
 func (c *Connector) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {
-	// Delegated.
-	return c.crmAdapter.UpsertMetadata(ctx, params)
+	return c.delegate.UpsertMetadata(ctx, params)
 }
 
 // ListObjectMetadata returns object metadata for each object name provided.
@@ -128,7 +127,7 @@ func (c *Connector) getObjectMetadataFromPropertyAPI(
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url.String())
+	rsp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)
 	}
@@ -171,12 +170,12 @@ func (c *Connector) getObjectMetadataFromCRMSearch(
 	})
 	if err != nil {
 		// Ignore an error and fallback to static schema.
-		return metadata.Schemas.SelectOne(c.moduleID, objectName)
+		return metadata.Schemas.SelectOne(c.Module(), objectName)
 	}
 
 	if len(readResult.Data) == 0 {
 		// Read returned no rows.
-		return metadata.Schemas.SelectOne(c.moduleID, objectName)
+		return metadata.Schemas.SelectOne(c.Module(), objectName)
 	}
 
 	fields := make(map[string]common.FieldMetadata)
@@ -225,7 +224,7 @@ func (c *Connector) GetAccountInfo(ctx context.Context) (*AccountInfo, *common.J
 		return nil, nil, err
 	}
 
-	resp, err := c.Client.Get(ctx, url.String())
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, resp, fmt.Errorf("error fetching HubSpot token info: %w", err)
 	}
@@ -393,7 +392,7 @@ func (c *Connector) fetchExternalMetadataEnumValues(
 	// For each external field that we support make an API call to fetch enumeration options.
 	// Store this values for each field within each object.
 	for _, discovery := range externalFields {
-		rsp, err := c.Client.Get(ctx, c.getURLFromRoot(discovery.EndpointPath))
+		rsp, err := c.JSONHTTPClient().Get(ctx, c.getURLFromRoot(discovery.EndpointPath))
 		if err != nil {
 			return nil, fmt.Errorf("error resolving external metadata values for HubSpot: %w", err)
 		}
@@ -525,7 +524,7 @@ func (c *Connector) fetchRequiredFieldsBestEffort(
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url.String())
+	rsp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		if isMissingSchemasScope(err) {
 			// User does not have permission to access the schema endpoint.

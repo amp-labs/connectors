@@ -3,20 +3,14 @@ package hubspot
 import (
 	"testing"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
 // nolint:funlen
 func TestConnector_getURL_ModuleCRM(t *testing.T) {
 	t.Parallel()
-
-	providerInfo, err := providers.ReadInfo(providers.Hubspot)
-	if err != nil {
-		t.Fatalf("failed to get providerInfo: %v", err)
-	}
-
-	moduleInfo := providerInfo.ReadModuleInfo(providers.ModuleHubspotCRM)
-	defaultBaseURL := providerInfo.BaseURL
 
 	cases := []struct {
 		name      string
@@ -29,13 +23,13 @@ func TestConnector_getURL_ModuleCRM(t *testing.T) {
 		{
 			name:    "Read with default baseURL (trailing slash removed)",
 			arg:     "objects/contacts/",
-			wantURL: defaultBaseURL + "/crm/v3/objects/contacts",
+			wantURL: "https://api.hubapi.com/crm/v3/objects/contacts",
 		},
 		{
 			name:      "Read with query params (special chars)",
 			arg:       "objects/contacts",
 			queryArgs: []string{"properties", "email,first name", "archived", "true"},
-			wantURL:   defaultBaseURL + "/crm/v3/objects/contacts?archived=true&properties=email%2Cfirst+name",
+			wantURL:   "https://api.hubapi.com/crm/v3/objects/contacts?archived=true&properties=email%2Cfirst+name",
 		},
 		{
 			name:      "Error: missing query param value",
@@ -45,9 +39,9 @@ func TestConnector_getURL_ModuleCRM(t *testing.T) {
 		},
 		{
 			name:    "BaseURL with extra trailing slash",
-			baseURL: defaultBaseURL + "/", // add an extra slash
+			baseURL: "https://api.hubapi.com/crm/", // add an extra slash
 			arg:     "objects/contacts/",
-			wantURL: defaultBaseURL + "/crm/v3/objects/contacts",
+			wantURL: "https://api.hubapi.com/crm/v3/objects/contacts",
 		},
 	}
 
@@ -55,18 +49,15 @@ func TestConnector_getURL_ModuleCRM(t *testing.T) {
 		t.Run(ttc.name, func(t *testing.T) {
 			t.Parallel()
 
-			pi := *providerInfo // copy to avoid race
-			mi := *moduleInfo
+			c, err := NewConnector(
+				common.ConnectorParams{
+					Module:              providers.ModuleHubspotCRM,
+					AuthenticatedClient: mockutils.NewClient(),
+				},
+			)
 
 			if ttc.baseURL != "" {
-				pi.BaseURL = ttc.baseURL
-			} else {
-				pi.BaseURL = defaultBaseURL
-			}
-
-			c := &Connector{
-				providerInfo: &pi,
-				moduleInfo:   &mi,
+				c.ModuleInfo().BaseURL = ttc.baseURL
 			}
 
 			gotURL, err := c.getURL(ttc.arg, ttc.queryArgs...)

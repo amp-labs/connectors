@@ -18,9 +18,6 @@ func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	// Set up slog logging.
-	utils.SetupLogging()
-
 	conn := connTest.GetHubspotConnector(ctx)
 
 	res, err := conn.ReadUsingSearchAPI(ctx, hubspot.SearchParams{
