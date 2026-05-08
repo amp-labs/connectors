@@ -1,12 +1,12 @@
 {
   "modules": {
-    "CRM": {
-      "id": "CRM",
-      "path": "/crm/v3",
+    "root": {
+      "id": "root",
+      "path": "",
       "objects": {
         "lists": {
           "displayName": "Lists",
-          "path": "/lists/search",
+          "description": "This object lives outside of Hubspot Objects API: /crm/v3/lists/search",
           "responseKey": "data",
           "fields": {
             "additionalProperties": {
@@ -56,6 +56,105 @@
             "updatedById": {
               "displayName": "updatedById",
               "valueType": "other"
+            }
+          }
+        },
+        "campaigns": {
+          "displayName": "Campaigns",
+          "description": "Object does not belong to CRM: /marketing/campaigns",
+          "responseKey": "results",
+          "fields": {
+            "hs_name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "hs_start_date": {
+              "displayName": "Start Date",
+              "valueType": "date",
+              "providerType": "Date (YYYY-MM-DD)"
+            },
+            "hs_end_date": {
+              "displayName": "End Date",
+              "valueType": "date",
+              "providerType": "Date (YYYY-MM-DD)"
+            },
+            "hs_notes": {
+              "displayName": "Notes",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "hs_audience": {
+              "displayName": "Audience",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "hs_currency_code": {
+              "displayName": "Currency Code",
+              "valueType": "string",
+              "providerType": "ISO currency code"
+            },
+            "hs_campaign_status": {
+              "displayName": "Campaign Status",
+              "valueType": "singleSelect",
+              "providerType": "Enumeration",
+              "values": [
+                {
+                  "value": "planned",
+                  "displayValue": "planned"
+                },
+                {
+                  "value": "in_progress",
+                  "displayValue": "in_progress"
+                },
+                {
+                  "value": "active",
+                  "displayValue": "active"
+                },
+                {
+                  "value": "paused",
+                  "displayValue": "paused"
+                },
+                {
+                  "value": "completed",
+                  "displayValue": "completed"
+                }
+              ]
+            },
+            "hs_utm": {
+              "displayName": "UTM",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "hs_owner": {
+              "displayName": "Owner",
+              "valueType": "string",
+              "providerType": "User ID"
+            },
+            "hs_color_hex": {
+              "displayName": "Color Hex",
+              "valueType": "string",
+              "providerType": "Hex code"
+            },
+            "hs_created_by_user_id": {
+              "displayName": "Creator User ID",
+              "valueType": "string",
+              "providerType": "User ID"
+            },
+            "hs_object_id": {
+              "displayName": "Object ID",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "hs_budget_items_sum_amount": {
+              "displayName": "The sum of all budget items",
+              "valueType": "string",
+              "providerType": "Monetary value"
+            },
+            "hs_spend_items_sum_amount": {
+              "displayName": "The sum of all spend items",
+              "valueType": "string",
+              "providerType": "Monetary value"
             }
           }
         }

@@ -53,7 +53,7 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams)
 		)
 	}
 
-	if core.ObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
+	if core.CRMObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
 		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
 		// For instance such object is Lists.
 		return c.searchCRM(ctx, searchCRMParams{
