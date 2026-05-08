@@ -2,7 +2,9 @@ package salesforce
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
@@ -362,6 +364,19 @@ func (c *Connector) deleteToSFAPI(ctx context.Context, path string, entity strin
 	location, err := c.getRestApiURL(path)
 	if err != nil {
 		return nil, err
+	}
+
+	// Check the entity exists before deleting. If it's already gone (404),
+	// treat the delete as a no-op so callers can retry safely.
+	if _, err := c.Client.Get(ctx, location.String()); err != nil {
+		var httpErr *common.HTTPError
+		if errors.As(err, &httpErr) && httpErr.Status == http.StatusNotFound {
+			logging.Logger(ctx).Info("skipping delete, entity not found", "entity", entity)
+
+			return nil, nil //nolint:nilnil
+		}
+
+		return nil, fmt.Errorf("error checking %s before delete: %w", entity, err)
 	}
 
 	resp, err := c.Client.Delete(ctx, location.String())
