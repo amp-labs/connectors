@@ -148,7 +148,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 					r.Host,
 				)
 
-				_, _ = w.Write([]byte(body)) // nolint:errcheck
+				_, _ = w.Write([]byte(body)) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 			}),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
