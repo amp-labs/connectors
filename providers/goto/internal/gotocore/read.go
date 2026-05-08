@@ -11,7 +11,10 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const readPageSize = "100"
+const (
+	readPageSize   = "200"
+	queryParamPage = "page"
+)
 
 func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	cfg, ok := objectRegistry[params.ObjectName]
@@ -20,10 +23,35 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 			common.ErrOperationNotSupportedForObject, params.ObjectName)
 	}
 
-	// SCIM paginates by startIndex; for that service we encode the next
-	// startIndex as the opaque token rather than a full URL.
-	if cfg.service == serviceSCIM && params.NextPage != "" {
-		return a.buildSCIMReadRequest(ctx, params)
+	// SCIM endpoints (users, groups) don't support pagination on GoTo —
+	// fetch once and return everything in a single page.
+	if cfg.service == serviceSCIM {
+		url, err := a.buildObjectBaseURL(params.ObjectName)
+		if err != nil {
+			return nil, err
+		}
+
+		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	}
+
+	// Webinar responses don't include a next-page URL, so we rebuild the URL
+	// and pass the next page number as `?page=N`.
+	if cfg.service == serviceWebinar {
+		url, err := a.buildObjectBaseURL(params.ObjectName)
+		if err != nil {
+			return nil, err
+		}
+
+		url.WithQueryParam(queryParamSize, readPageSize)
+		if params.NextPage != "" {
+			url.WithQueryParam(queryParamPage, params.NextPage.String())
+		} else {
+			url.WithQueryParam(queryParamPage, "0")
+		}
+
+		applyTimeFilter(url, params.ObjectName, params.Since, params.Until)
+
+		return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	}
 
 	// Every other GoTo service returns a full HAL `_links.next.href`,
@@ -37,25 +65,9 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 		return nil, err
 	}
 
-	if cfg.service == serviceSCIM {
-		url.WithQueryParam("count", readPageSize)
-	} else {
-		url.WithQueryParam(queryParamSize, readPageSize)
-	}
+	url.WithQueryParam(queryParamSize, readPageSize)
 
 	applyTimeFilter(url, params.ObjectName, params.Since, params.Until)
-
-	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
-}
-
-func (a *Adapter) buildSCIMReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := a.buildObjectBaseURL(params.ObjectName)
-	if err != nil {
-		return nil, err
-	}
-
-	url.WithQueryParam("count", readPageSize)
-	url.WithQueryParam("startIndex", params.NextPage.String())
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
@@ -85,6 +97,9 @@ func (a *Adapter) parseReadResponse(
 // GoTo response according to the service's envelope.
 func recordsExtractor(service objectService, objectName string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
+
+		// Some objects ("historicalMeetings", "upcomingMeetings") are returned as a bare array at the root,
+		// This handles that case.
 		if node.IsArray() {
 			arr, err := node.GetArray()
 			if err != nil {
@@ -101,6 +116,9 @@ func recordsExtractor(service objectService, objectName string) common.RecordsFu
 			return readNodeArray(node, "results")
 		case serviceAssist:
 			return readNodeArray(node, objectName)
+			// Every other service wraps the records in an `_embedded` object, but the
+			// key for the records array varies, so we pass it as a parameter to the
+			// default reader.
 		default:
 			return readNodeArray(node, objectName, "_embedded")
 		}
@@ -121,14 +139,20 @@ func readNodeArray(node *ajson.Node, jsonPath string, nestedPath ...string) ([]m
 }
 
 // nextPageExtractor returns a NextPageFunc that resolves the next-page token
-// for the given service. SCIM uses startIndex+itemsPerPage; the rest expose
-// a HAL `_links.next.href` URL that the next request can use directly.
+// for the given service. SCIM endpoints don't paginate. Webinar uses a `page`
+// envelope (number/totalPages) and emits the next page number as the token.
+// The rest expose a HAL `_links.next.href` URL that the next request can use
+// directly.
 func nextPageExtractor(service objectService) common.NextPageFunc {
-	if service == serviceSCIM {
-		return scimNextPage
-	}
+	switch service { //nolint:exhaustive // HAL is the default.
+	case serviceSCIM, serviceCorporate:
+		return func(*ajson.Node) (string, error) { return "", nil }
+	case serviceWebinar:
+		return webinarNextPage
 
-	return halNextPage
+	default:
+		return halNextPage
+	}
 }
 
 func halNextPage(node *ajson.Node) (string, error) {
@@ -140,26 +164,31 @@ func halNextPage(node *ajson.Node) (string, error) {
 	return *href, nil
 }
 
-func scimNextPage(node *ajson.Node) (string, error) {
-	query := jsonquery.New(node)
+// webinarNextPage returns the next page number, or "" when there are no
+// more pages. Page numbers are 0-indexed.
+// if page object or its number/totalPages fields are missing,
+func webinarNextPage(node *ajson.Node) (string, error) {
+	page := jsonquery.New(node, "page")
 
-	startIndex, err := query.IntegerOptional("startIndex")
-	if err != nil || startIndex == nil {
+	// missing page object is normal.
+	// some objects (e.g. userSubscriptions,webhooks) don't return a page object at all.
+	// if the page object is missing or malformed, we assume there are no more pages.
+	if page == nil {
 		return "", nil //nolint:nilerr
 	}
 
-	itemsPerPage, err := query.IntegerOptional("itemsPerPage")
-	if err != nil || itemsPerPage == nil {
+	CurrPage, err := page.IntegerRequired("number")
+	if err != nil {
 		return "", nil //nolint:nilerr
 	}
 
-	totalResults, err := query.IntegerOptional("totalResults")
-	if err != nil || totalResults == nil {
+	totalPages, err := page.IntegerRequired("totalPages")
+	if err != nil {
 		return "", nil //nolint:nilerr
 	}
 
-	next := *startIndex + *itemsPerPage
-	if next > *totalResults {
+	next := CurrPage + 1
+	if next >= totalPages {
 		return "", nil
 	}
 
