@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 )
 
 // rollbackSubscribe reverses completed operations in reverse order based on progress.
@@ -72,17 +73,67 @@ func (c *Connector) rollbackSubscribe(
 }
 
 // rollbackUpdateSubscription reverses completed operations based on progress.
+//
+// Filter expressions on the recreated members are cleared FIRST so the new
+// members no longer hold a metadata reference to the new quota fields. The
+// quota field delete that follows is best-effort: if Salesforce still blocks
+// it (for example because a redeployed apex trigger references the field),
+// we log and continue rather than fail the rollback — leaving the orphan
+// custom field is acceptable.
 func (c *Connector) rollbackUpdateSubscription(
 	ctx context.Context,
 	progress *updateSubscriptionProgress,
 ) error {
-	if !progress.quotaFieldsUpserted || len(progress.newQuotaFields) == 0 {
+	var rollbackErr error
+
+	if err := c.clearRecreatedChannelMemberFilters(ctx, progress); err != nil {
+		rollbackErr = errors.Join(rollbackErr, err)
+	}
+
+	if progress.quotaFieldsUpserted && len(progress.newQuotaFields) > 0 {
+		req := &SubscriptionRequest{QuotaOptimizationObjectFields: progress.newQuotaFields}
+		if err := c.rollbackQuotaOptimizationFields(ctx, req); err != nil {
+			// Intentionally not joined into rollbackErr: leaving an orphan
+			// quota field is preferable to surfacing a rollback failure that
+			// the caller can't easily act on.
+			logging.Logger(ctx).Warn("rollback: leaving quota optimization fields undeleted",
+				"error", err)
+		}
+	}
+
+	return rollbackErr
+}
+
+// clearRecreatedChannelMemberFilters PATCHes each recreated channel member to
+// drop its FilterExpression and EnrichedFields. This releases the metadata
+// reference on the new quota fields so the field delete in the next rollback
+// step can succeed. Members are left in place with a no-op filter; the user
+// can re-run UpdateSubscription to restore quota optimization.
+func (c *Connector) clearRecreatedChannelMemberFilters(
+	ctx context.Context,
+	progress *updateSubscriptionProgress,
+) error {
+	if len(progress.recreatedMembers) == 0 {
 		return nil
 	}
 
-	req := &SubscriptionRequest{QuotaOptimizationObjectFields: progress.newQuotaFields}
+	var clearErr error
 
-	return c.rollbackQuotaOptimizationFields(ctx, req)
+	for objName, member := range progress.recreatedMembers {
+		member.Metadata.FilterExpression = ""
+		member.Metadata.EnrichedFields = nil
+
+		if _, err := c.UpdateEventChannelMember(ctx, member); err != nil {
+			clearErr = errors.Join(clearErr,
+				fmt.Errorf("failed to clear filter expression on channel member for object %s: %w", objName, err))
+
+			continue
+		}
+
+		delete(progress.recreatedMembers, objName)
+	}
+
+	return clearErr
 }
 
 func (c *Connector) rollbackQuotaOptimizationFields(ctx context.Context, req *SubscriptionRequest) error {

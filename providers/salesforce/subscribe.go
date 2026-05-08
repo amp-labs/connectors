@@ -257,6 +257,11 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 type updateSubscriptionProgress struct {
 	quotaFieldsUpserted bool
 	newQuotaFields      map[common.ObjectName]string
+	// recreatedMembers tracks PlatformEventChannelMembers freshly created by
+	// recreateKeptChannelMembers. On rollback we PATCH each to clear its
+	// FilterExpression and EnrichedFields so the new quota fields it would
+	// otherwise pin can be deleted.
+	recreatedMembers map[common.ObjectName]*EventChannelMember
 }
 
 // UpdateSubscription will update the subscription by:
@@ -321,7 +326,9 @@ func (c *Connector) executeUpdateSubscription(
 	prevState *SubscribeResult,
 	req *SubscriptionRequest,
 ) (*common.SubscriptionResult, *updateSubscriptionProgress, error) {
-	progress := &updateSubscriptionProgress{}
+	progress := &updateSubscriptionProgress{
+		recreatedMembers: make(map[common.ObjectName]*EventChannelMember),
+	}
 
 	if err := c.upsertQuotaOptimizationFields(ctx, params, req); err != nil {
 		return nil, progress, err
@@ -346,7 +353,7 @@ func (c *Connector) executeUpdateSubscription(
 	}
 
 	// Update channel members and redeploy apex triggers for kept objects.
-	if err := c.updateKeptSubscriptions(ctx, req, diff); err != nil {
+	if err := c.updateKeptSubscriptions(ctx, req, diff, progress); err != nil {
 		return nil, progress, err
 	}
 
@@ -640,12 +647,13 @@ func (c *Connector) updateKeptSubscriptions(
 	ctx context.Context,
 	req *SubscriptionRequest,
 	diff subscriptionDiff,
+	progress *updateSubscriptionProgress,
 ) error {
 	if req == nil {
 		return nil
 	}
 
-	if err := c.recreateKeptChannelMembers(ctx, req, diff); err != nil {
+	if err := c.recreateKeptChannelMembers(ctx, req, diff, progress); err != nil {
 		return err
 	}
 
@@ -655,10 +663,15 @@ func (c *Connector) updateKeptSubscriptions(
 // recreateKeptChannelMembers deletes and recreates channel members for kept objects
 // with updated filter expressions and enriched fields. Salesforce doesn't support
 // PATCH on selectedEntity, so delete+recreate is required.
+//
+// Each successful or partially successful delete+recreate cycle is recorded in
+// progress.recreatedMembers so rollbackUpdateSubscription can restore the
+// original members before deleting the quota fields the new ones reference.
 func (c *Connector) recreateKeptChannelMembers(
 	ctx context.Context,
 	req *SubscriptionRequest,
 	diff subscriptionDiff,
+	progress *updateSubscriptionProgress,
 ) error {
 	for objName, member := range diff.channelMembersToKeep {
 		filterExpr := buildQuotaFilterExpression(req.QuotaOptimizationObjectFields, objName)
@@ -679,6 +692,10 @@ func (c *Connector) recreateKeptChannelMembers(
 			return fmt.Errorf("failed to recreate event channel member for object %s: %w", objName, err)
 		}
 
+		// Track the new member so rollback can clear its FilterExpression and
+		// EnrichedFields, releasing the metadata reference that would otherwise
+		// pin the new quota fields.
+		progress.recreatedMembers[objName] = newMember
 		diff.channelMembersToKeep[objName] = newMember
 	}
 

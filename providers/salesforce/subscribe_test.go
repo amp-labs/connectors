@@ -329,14 +329,18 @@ func TestUpdateKeptSubscriptionsNilRequest(t *testing.T) {
 		apexTriggersToKeep: map[common.ObjectName]*ApexTrigger{},
 	}
 
+	progress := &updateSubscriptionProgress{
+		recreatedMembers: make(map[common.ObjectName]*EventChannelMember),
+	}
+
 	// Nil request should be a no-op
-	err = conn.updateKeptSubscriptions(t.Context(), nil, diff)
+	err = conn.updateKeptSubscriptions(t.Context(), nil, diff, progress)
 	if err != nil {
 		t.Errorf("expected nil error for nil request, got %v", err)
 	}
 
 	// Request with no quota fields should be a no-op
-	err = conn.updateKeptSubscriptions(t.Context(), &SubscriptionRequest{}, diff)
+	err = conn.updateKeptSubscriptions(t.Context(), &SubscriptionRequest{}, diff, progress)
 	if err != nil {
 		t.Errorf("expected nil error for empty request, got %v", err)
 	}
