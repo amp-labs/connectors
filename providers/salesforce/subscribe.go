@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"maps"
 	"strings"
 
@@ -242,10 +243,16 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 			)
 		}
 
+		// Best-effort: a quota-field delete can fail when the field is still referenced by
+		// other metadata (e.g. PlatformEventChannelMember filter expressions on channels we
+		// don't manage). Log and continue so the rest of the subscription teardown succeeds.
 		if _, err := c.DeleteMetadata(ctx, &common.DeleteMetadataParams{
 			Fields: deleteFields,
 		}); err != nil {
-			return fmt.Errorf("failed to delete quota optimization fields: %w", err)
+			slog.Warn("failed to delete quota optimization fields, continuing",
+				"error", err,
+				"fields", deleteFields,
+			)
 		}
 	}
 
