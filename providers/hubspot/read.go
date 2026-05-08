@@ -39,7 +39,7 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		})
 	case core.MarketingObjects.Has(params.ObjectName):
 		// Object is part of Hubspot Marketing API.
-		return c.readMarketing(ctx, params)
+		return c.readMarketing(ctx, params, core.MarketingObjects[params.ObjectName])
 	default:
 		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
 		return c.readCRMObjectsAPI(ctx, params)
@@ -130,8 +130,10 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 	return url.String(), nil
 }
 
-func (c *Connector) readMarketing(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
-	url, err := c.buildMarketingReadURL(params)
+func (c *Connector) readMarketing(ctx context.Context,
+	params common.ReadParams, object core.ObjectDescription,
+) (*common.ReadResult, error) {
+	url, err := c.buildMarketingReadURL(params, object.Path)
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +149,7 @@ func (c *Connector) readMarketing(ctx context.Context, params common.ReadParams)
 		common.MakeRecordsFunc("results"),
 		makeIncrementalFilterFunc(params),
 		readhelper.MakeMarshaledDataFuncWithId(
-			common.FlattenNestedFields("properties"),
+			object.RecordTransformer,
 			readhelper.IdFieldQuery{Field: "id"},
 		),
 		params.Fields,
@@ -161,14 +163,14 @@ func (c *Connector) readMarketing(ctx context.Context, params common.ReadParams)
 // https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/get-campaigns
 //   - Incremental reading is not available.
 //   - Sorting is applied using "updatedAt" field from newest to oldest.
-func (c *Connector) buildMarketingReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
+func (c *Connector) buildMarketingReadURL(params common.ReadParams, objectPath string) (*urlbuilder.URL, error) {
 	if len(params.NextPage) != 0 {
 		// Next page
 		return urlbuilder.New(params.NextPage.String())
 	}
 
 	// First page
-	url, err := c.getMarketingURL(params.ObjectName)
+	url, err := c.getMarketingURL(objectPath)
 	if err != nil {
 		return nil, err
 	}

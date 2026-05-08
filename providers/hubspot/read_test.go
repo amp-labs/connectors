@@ -24,6 +24,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseListsLast := testutils.DataFromFile(t, "read-lists-2-second-page.json")
 	responseCampaignsFirst := testutils.DataFromFile(t, "read/campaigns/1-first-page.json")
 	responseCampaignsLast := testutils.DataFromFile(t, "read/campaigns/2-last-page.json")
+	responseMarketingEmailFirst := testutils.DataFromFile(t, "read/marketing-emails/1-first-page.json")
+	responseMarketingEmailLast := testutils.DataFromFile(t, "read/marketing-emails/2-last-page.json")
 
 	tests := []testroutines.Read{
 		{
@@ -364,6 +366,88 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							"updatedAt": "2026-05-05T23:07:12.040Z",
 						},
 						Id: "5f7bff76-193f-43af-968b-f13c6576ca76",
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Read marketing emails first page",
+			Input: common.ReadParams{
+				ObjectName: "marketing/emails",
+				Fields:     connectors.Fields("subject"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/marketing/emails/2026-03"),
+					mockcond.QueryParam("sort", "-updatedAt"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseMarketingEmailFirst),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"subject": "Behold the latest version of our newsletter!",
+					},
+					Raw: map[string]any{
+						"createdAt":         "2026-05-07T22:59:00.597Z",
+						"createdById":       "82226790",
+						"emailTemplateMode": "DRAG_AND_DROP",
+					},
+					Id: "212476546342",
+				}, {
+					Fields: map[string]any{
+						"subject": "Product Launch",
+					},
+					Raw: map[string]any{
+						"createdAt":         "2024-05-29T22:37:35.474Z",
+						"createdById":       "62365053",
+						"emailTemplateMode": "DRAG_AND_DROP",
+					},
+					Id: "168871137104",
+				}},
+				NextPage: "https://api.hubapi.com/marketing/emails/2026-03?limit=3&sort=-updatedAt&after=Mw%3D%3D",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Read marketing emails last page",
+			Input: common.ReadParams{
+				ObjectName: "marketing/emails",
+				Fields:     connectors.Fields("subject"),
+				NextPage:   testroutines.URLTestServer + "/marketing/emails/2026-03?limit=3&sort=-updatedAt&after=Mw%3D%3D",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/marketing/emails/2026-03"),
+					mockcond.QueryParam("limit", "3"),
+					mockcond.QueryParam("after", "Mw=="),
+					mockcond.QueryParam("sort", "-updatedAt"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseMarketingEmailLast),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"subject": "Your ticket '{{ticket.subject}}' has been received",
+						},
+						Raw: map[string]any{
+							"createdAt":            "2023-12-08T17:47:58.334Z",
+							"createdById":          "100",
+							"emailCampaignGroupId": "285768335",
+							"emailTemplateMode":    "DRAG_AND_DROP",
+						},
+						Id: "149139108889",
 					},
 				},
 				NextPage: "",
