@@ -164,7 +164,10 @@ func (c *Connector) CreateEventChannel(ctx context.Context, channel *EventChanne
 	res, err := c.postToSFAPI(ctx, channel, "tooling/sobjects/PlatformEventChannel", "PlatformEventChannel")
 	if err != nil {
 		if isDuplicateDeveloperName(err) {
-			return recoverDuplicateByFullName[EventChannel](ctx, c, "PlatformEventChannel", channel.FullName)
+			// PlatformEventChannel.DeveloperName is FullName without the "__chn" suffix.
+			developerName := strings.TrimSuffix(channel.FullName, "__chn")
+
+			return recoverDuplicateByDeveloperName[EventChannel](ctx, c, "PlatformEventChannel", developerName)
 		}
 
 		return nil, err
@@ -189,7 +192,7 @@ func (c *Connector) CreateEventChannelMember(
 	res, err := c.postToSFAPI(ctx, member, "tooling/sobjects/PlatformEventChannelMember", "EventChannelMember")
 	if err != nil {
 		if isDuplicateDeveloperName(err) {
-			return recoverDuplicateByFullName[EventChannelMember](ctx, c, "PlatformEventChannelMember", member.FullName)
+			return recoverDuplicateByDeveloperName[EventChannelMember](ctx, c, "PlatformEventChannelMember", member.FullName)
 		}
 
 		return nil, err
@@ -233,7 +236,7 @@ func (c *Connector) CreateEventRelayConfig(
 	res, err := c.postToSFAPI(ctx, cfg, "/tooling/sobjects/EventRelayConfig", "EventRelayConfig")
 	if err != nil {
 		if isDuplicateDeveloperName(err) {
-			return recoverDuplicateByFullName[EventRelayConfig](ctx, c, "EventRelayConfig", cfg.FullName)
+			return recoverDuplicateByDeveloperName[EventRelayConfig](ctx, c, "EventRelayConfig", cfg.FullName)
 		}
 
 		return nil, err
@@ -316,7 +319,7 @@ func (c *Connector) CreateNamedCredential(ctx context.Context, creds *NamedCrede
 	res, err := c.postToSFAPI(ctx, creds, "/tooling/sobjects/NamedCredential", "NamedCredential")
 	if err != nil {
 		if isDuplicateDeveloperName(err) {
-			return recoverDuplicateByFullName[NamedCredential](ctx, c, "NamedCredential", creds.FullName)
+			return recoverDuplicateByDeveloperName[NamedCredential](ctx, c, "NamedCredential", creds.FullName)
 		}
 
 		return nil, err
@@ -443,19 +446,23 @@ func isDuplicateDeveloperName(err error) bool {
 	return false
 }
 
-// recoverDuplicateByFullName looks up a tooling entity by FullName and returns
-// the full record. Used to make Create* idempotent when Salesforce reports
-// DUPLICATE_DEVELOPER_NAME — the SOQL query yields the existing Id, and the
-// follow-up GET returns the same shape a successful Create would have.
-func recoverDuplicateByFullName[T any](
-	ctx context.Context, conn *Connector, objectType, fullName string,
+// recoverDuplicateByDeveloperName looks up a tooling entity by DeveloperName
+// and returns the full record. Used to make Create* idempotent when Salesforce
+// reports DUPLICATE_DEVELOPER_NAME — the SOQL query yields the existing Id,
+// and the follow-up GET returns the same shape a successful Create would have.
+//
+// Salesforce does not allow FullName in a SOQL WHERE clause for these metadata
+// objects, so callers must pass a DeveloperName. For most entities here that
+// equals the FullName, but PlatformEventChannel strips its "__chn" suffix.
+func recoverDuplicateByDeveloperName[T any](
+	ctx context.Context, conn *Connector, objectType, developerName string,
 ) (*T, error) {
 	logging.Logger(ctx).Info("create returned duplicate, fetching existing record",
-		"objectType", objectType, "fullName", fullName)
+		"objectType", objectType, "developerName", developerName)
 
-	id, err := conn.findToolingEntityIdByFullName(ctx, objectType, fullName)
+	id, err := conn.findToolingEntityIDByDeveloperName(ctx, objectType, developerName)
 	if err != nil {
-		return nil, fmt.Errorf("%s duplicate detected, but SOQL lookup by FullName failed: %w",
+		return nil, fmt.Errorf("%s duplicate detected, but SOQL lookup failed: %w",
 			objectType, err)
 	}
 
@@ -468,18 +475,18 @@ func recoverDuplicateByFullName[T any](
 	return existing, nil
 }
 
-// findToolingEntityIdByFullName runs a Tooling API SOQL query to find the Id
-// of the given object type by FullName.
-func (c *Connector) findToolingEntityIdByFullName(
-	ctx context.Context, objectType, fullName string,
+// findToolingEntityIDByDeveloperName runs a Tooling API SOQL query to find
+// the Id of the given object type by DeveloperName.
+func (c *Connector) findToolingEntityIDByDeveloperName(
+	ctx context.Context, objectType, developerName string,
 ) (string, error) {
 	location, err := c.getRestApiURL("tooling/query")
 	if err != nil {
 		return "", err
 	}
 
-	soql := fmt.Sprintf("SELECT Id FROM %s WHERE FullName = '%s'",
-		objectType, escapeSOQLString(fullName))
+	soql := fmt.Sprintf("SELECT Id FROM %s WHERE DeveloperName = '%s'",
+		objectType, escapeSOQLString(developerName))
 	location.WithQueryParam("q", soql)
 
 	resp, err := c.Client.Get(ctx, location.String())
@@ -508,7 +515,7 @@ func (c *Connector) findToolingEntityIdByFullName(
 	}
 
 	if len(records) == 0 {
-		return "", fmt.Errorf("%w: objectType=%s, fullName=%s", errToolingEntityNotFound, objectType, fullName)
+		return "", fmt.Errorf("%w: objectType=%s, developerName=%s", errToolingEntityNotFound, objectType, developerName)
 	}
 
 	rec, err := records[0].GetObject()
