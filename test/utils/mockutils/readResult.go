@@ -110,9 +110,16 @@ func (readResultComparator) SubsetAssociationsRaw(actual, expected *common.ReadR
 
 // Identifiers checks that actual rows have identifiers matching with expected.
 // NOTE: Empty strings signify nothing should be compared.
-func (c readResultComparator) Identifiers(actual *common.ReadResult, expected *common.ReadResult) *testutils.CompareResult {
+func (c readResultComparator) Identifiers(actual *common.ReadResult,
+	expected *common.ReadResult,
+) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
 	for index, datum := range expected.Data {
+		if index >= len(actual.Data) {
+			result.AddDiff("Data[%v] does not exist, cannot check Data[%v].Id", index, index)
+			break
+		}
+
 		expectedID := datum.Id
 		if expectedID != "" {
 			actualID := actual.Data[index].Id

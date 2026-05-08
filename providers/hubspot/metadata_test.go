@@ -371,8 +371,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			ExpectedErrs: nil,
 		},
 		{
-			Name:       "Successfully describe marketing campaigns",
-			Input:      []string{"campaigns"},
+			Name:       "Successfully describe marketing campaigns and emails",
+			Input:      []string{"campaigns", "marketing/emails"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -405,6 +405,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								DisplayName:  "Name",
 								ValueType:    "string",
 								ProviderType: "String",
+							},
+						},
+					},
+					"marketing/emails": {
+						DisplayName: "Marketing Emails",
+						Fields: map[string]common.FieldMetadata{
+							"campaignName": {
+								DisplayName:  "campaignName",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"subject": {
+								DisplayName:  "subject",
+								ValueType:    "string",
+								ProviderType: "string",
 							},
 						},
 					},

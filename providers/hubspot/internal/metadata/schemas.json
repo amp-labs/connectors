@@ -157,6 +157,528 @@
               "providerType": "Monetary value"
             }
           }
+        },
+        "marketing/emails": {
+          "displayName": "Marketing Emails",
+          "description": "/marketing/emails/2026-03",
+          "responseKey": "results",
+          "fields": {
+            "isAb": {
+              "displayName": "isAb",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "activeDomain": {
+              "displayName": "activeDomain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allEmailCampaignIds": {
+              "displayName": "allEmailCampaignIds",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "businessUnitId": {
+              "displayName": "businessUnitId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "campaign": {
+              "displayName": "campaign",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "campaignName": {
+              "displayName": "campaignName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "campaignUtm": {
+              "displayName": "campaignUtm",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "clonedFrom": {
+              "displayName": "clonedFrom",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "content": {
+              "displayName": "content",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedAt": {
+              "displayName": "deletedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "emailCampaignGroupId": {
+              "displayName": "emailCampaignGroupId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailTemplateMode": {
+              "displayName": "emailTemplateMode",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "DESIGN_MANAGER",
+                  "displayValue": "DESIGN_MANAGER"
+                },
+                {
+                  "value": "DRAG_AND_DROP",
+                  "displayValue": "DRAG_AND_DROP"
+                }
+              ]
+            },
+            "feedbackSurveyId": {
+              "displayName": "feedbackSurveyId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "int",
+              "providerType": "integer<int64>"
+            },
+            "folderIdV2": {
+              "displayName": "folderIdV2",
+              "valueType": "int",
+              "providerType": "integer<int64>"
+            },
+            "from": {
+              "displayName": "from",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isPublished": {
+              "displayName": "isPublished",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isTransactional": {
+              "displayName": "isTransactional",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "jitterSendTime": {
+              "displayName": "jitterSendTime",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "language": {
+              "displayName": "language",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "previewKey": {
+              "displayName": "previewKey",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primaryEmailCampaignId": {
+              "displayName": "primaryEmailCampaignId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "publishDate": {
+              "displayName": "publishDate",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "publishedAt": {
+              "displayName": "publishedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "publishedByEmail": {
+              "displayName": "publishedByEmail",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "publishedById": {
+              "displayName": "publishedById",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "publishedByName": {
+              "displayName": "publishedByName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "rssData": {
+              "displayName": "rssData",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sendOnPublish": {
+              "displayName": "sendOnPublish",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "AGENT_GENERATED",
+                  "displayValue": "AGENT_GENERATED"
+                },
+                {
+                  "value": "AUTOMATED",
+                  "displayValue": "AUTOMATED"
+                },
+                {
+                  "value": "AUTOMATED_AB",
+                  "displayValue": "AUTOMATED_AB"
+                },
+                {
+                  "value": "AUTOMATED_AB_VARIANT",
+                  "displayValue": "AUTOMATED_AB_VARIANT"
+                },
+                {
+                  "value": "AUTOMATED_DRAFT",
+                  "displayValue": "AUTOMATED_DRAFT"
+                },
+                {
+                  "value": "AUTOMATED_DRAFT_AB",
+                  "displayValue": "AUTOMATED_DRAFT_AB"
+                },
+                {
+                  "value": "AUTOMATED_DRAFT_ABVARIANT",
+                  "displayValue": "AUTOMATED_DRAFT_ABVARIANT"
+                },
+                {
+                  "value": "AUTOMATED_FOR_FORM",
+                  "displayValue": "AUTOMATED_FOR_FORM"
+                },
+                {
+                  "value": "AUTOMATED_FOR_FORM_BUFFER",
+                  "displayValue": "AUTOMATED_FOR_FORM_BUFFER"
+                },
+                {
+                  "value": "AUTOMATED_FOR_FORM_DRAFT",
+                  "displayValue": "AUTOMATED_FOR_FORM_DRAFT"
+                },
+                {
+                  "value": "AUTOMATED_FOR_FORM_LEGACY",
+                  "displayValue": "AUTOMATED_FOR_FORM_LEGACY"
+                },
+                {
+                  "value": "AUTOMATED_LOSER_ABVARIANT",
+                  "displayValue": "AUTOMATED_LOSER_ABVARIANT"
+                },
+                {
+                  "value": "AUTOMATED_SENDING",
+                  "displayValue": "AUTOMATED_SENDING"
+                },
+                {
+                  "value": "BLOG_EMAIL_DRAFT",
+                  "displayValue": "BLOG_EMAIL_DRAFT"
+                },
+                {
+                  "value": "BLOG_EMAIL_PUBLISHED",
+                  "displayValue": "BLOG_EMAIL_PUBLISHED"
+                },
+                {
+                  "value": "DRAFT",
+                  "displayValue": "DRAFT"
+                },
+                {
+                  "value": "DRAFT_AB",
+                  "displayValue": "DRAFT_AB"
+                },
+                {
+                  "value": "DRAFT_AB_VARIANT",
+                  "displayValue": "DRAFT_AB_VARIANT"
+                },
+                {
+                  "value": "ERROR",
+                  "displayValue": "ERROR"
+                },
+                {
+                  "value": "LOSER_AB_VARIANT",
+                  "displayValue": "LOSER_AB_VARIANT"
+                },
+                {
+                  "value": "PAGE_STUB",
+                  "displayValue": "PAGE_STUB"
+                },
+                {
+                  "value": "PRE_PROCESSING",
+                  "displayValue": "PRE_PROCESSING"
+                },
+                {
+                  "value": "PROCESSING",
+                  "displayValue": "PROCESSING"
+                },
+                {
+                  "value": "PUBLISHED",
+                  "displayValue": "PUBLISHED"
+                },
+                {
+                  "value": "PUBLISHED_AB",
+                  "displayValue": "PUBLISHED_AB"
+                },
+                {
+                  "value": "PUBLISHED_AB_VARIANT",
+                  "displayValue": "PUBLISHED_AB_VARIANT"
+                },
+                {
+                  "value": "PUBLISHED_OR_SCHEDULED",
+                  "displayValue": "PUBLISHED_OR_SCHEDULED"
+                },
+                {
+                  "value": "RSS_TO_EMAIL_DRAFT",
+                  "displayValue": "RSS_TO_EMAIL_DRAFT"
+                },
+                {
+                  "value": "RSS_TO_EMAIL_PUBLISHED",
+                  "displayValue": "RSS_TO_EMAIL_PUBLISHED"
+                },
+                {
+                  "value": "SCHEDULED",
+                  "displayValue": "SCHEDULED"
+                },
+                {
+                  "value": "SCHEDULED_AB",
+                  "displayValue": "SCHEDULED_AB"
+                },
+                {
+                  "value": "SCHEDULED_OR_PUBLISHED",
+                  "displayValue": "SCHEDULED_OR_PUBLISHED"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "AB_EMAIL",
+                  "displayValue": "AB_EMAIL"
+                },
+                {
+                  "value": "AUTOMATED_AB_EMAIL",
+                  "displayValue": "AUTOMATED_AB_EMAIL"
+                },
+                {
+                  "value": "AUTOMATED_EMAIL",
+                  "displayValue": "AUTOMATED_EMAIL"
+                },
+                {
+                  "value": "BATCH_EMAIL",
+                  "displayValue": "BATCH_EMAIL"
+                },
+                {
+                  "value": "BLOG_EMAIL",
+                  "displayValue": "BLOG_EMAIL"
+                },
+                {
+                  "value": "BLOG_EMAIL_CHILD",
+                  "displayValue": "BLOG_EMAIL_CHILD"
+                },
+                {
+                  "value": "FEEDBACK_CES_EMAIL",
+                  "displayValue": "FEEDBACK_CES_EMAIL"
+                },
+                {
+                  "value": "FEEDBACK_CUSTOM_EMAIL",
+                  "displayValue": "FEEDBACK_CUSTOM_EMAIL"
+                },
+                {
+                  "value": "FEEDBACK_CUSTOM_SURVEY_EMAIL",
+                  "displayValue": "FEEDBACK_CUSTOM_SURVEY_EMAIL"
+                },
+                {
+                  "value": "FEEDBACK_NPS_EMAIL",
+                  "displayValue": "FEEDBACK_NPS_EMAIL"
+                },
+                {
+                  "value": "FOLLOWUP_EMAIL",
+                  "displayValue": "FOLLOWUP_EMAIL"
+                },
+                {
+                  "value": "LEADFLOW_EMAIL",
+                  "displayValue": "LEADFLOW_EMAIL"
+                },
+                {
+                  "value": "LOCALTIME_EMAIL",
+                  "displayValue": "LOCALTIME_EMAIL"
+                },
+                {
+                  "value": "MANAGE_PREFERENCES_EMAIL",
+                  "displayValue": "MANAGE_PREFERENCES_EMAIL"
+                },
+                {
+                  "value": "MARKETING_SINGLE_SEND_API",
+                  "displayValue": "MARKETING_SINGLE_SEND_API"
+                },
+                {
+                  "value": "MEMBERSHIP_EMAIL_VERIFICATION_EMAIL",
+                  "displayValue": "MEMBERSHIP_EMAIL_VERIFICATION_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_FOLLOW_UP_EMAIL",
+                  "displayValue": "MEMBERSHIP_FOLLOW_UP_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_OTP_LOGIN_EMAIL",
+                  "displayValue": "MEMBERSHIP_OTP_LOGIN_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_PASSWORD_RESET_EMAIL",
+                  "displayValue": "MEMBERSHIP_PASSWORD_RESET_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_PASSWORD_SAVED_EMAIL",
+                  "displayValue": "MEMBERSHIP_PASSWORD_SAVED_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_PASSWORDLESS_AUTH_EMAIL",
+                  "displayValue": "MEMBERSHIP_PASSWORDLESS_AUTH_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_REGISTRATION_EMAIL",
+                  "displayValue": "MEMBERSHIP_REGISTRATION_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_REGISTRATION_FOLLOW_UP_EMAIL",
+                  "displayValue": "MEMBERSHIP_REGISTRATION_FOLLOW_UP_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_VERIFICATION_EMAIL",
+                  "displayValue": "MEMBERSHIP_VERIFICATION_EMAIL"
+                },
+                {
+                  "value": "OPTIN_EMAIL",
+                  "displayValue": "OPTIN_EMAIL"
+                },
+                {
+                  "value": "OPTIN_FOLLOWUP_EMAIL",
+                  "displayValue": "OPTIN_FOLLOWUP_EMAIL"
+                },
+                {
+                  "value": "RESUBSCRIBE_EMAIL",
+                  "displayValue": "RESUBSCRIBE_EMAIL"
+                },
+                {
+                  "value": "RSS_EMAIL",
+                  "displayValue": "RSS_EMAIL"
+                },
+                {
+                  "value": "RSS_EMAIL_CHILD",
+                  "displayValue": "RSS_EMAIL_CHILD"
+                },
+                {
+                  "value": "SINGLE_SEND_API",
+                  "displayValue": "SINGLE_SEND_API"
+                },
+                {
+                  "value": "SMTP_TOKEN",
+                  "displayValue": "SMTP_TOKEN"
+                },
+                {
+                  "value": "TICKET_EMAIL",
+                  "displayValue": "TICKET_EMAIL"
+                }
+              ]
+            },
+            "stats": {
+              "displayName": "stats",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "subcategory": {
+              "displayName": "subcategory",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscriptionDetails": {
+              "displayName": "subscriptionDetails",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "teamsWithAccess": {
+              "displayName": "teamsWithAccess",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "testing": {
+              "displayName": "testing",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "to": {
+              "displayName": "to",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "unpublishedAt": {
+              "displayName": "unpublishedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "usersWithAccess": {
+              "displayName": "usersWithAccess",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "webversion": {
+              "displayName": "webversion",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "workflowNames": {
+              "displayName": "workflowNames",
+              "valueType": "other",
+              "providerType": "string[]"
+            }
+          }
         }
       }
     }

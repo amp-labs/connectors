@@ -54,11 +54,11 @@ func ComparatorPagination(
 	expectedNextPage := resolveTestServerURL(expected.NextPage.String(), serverURL)
 
 	if !compareNextPageToken(actual.NextPage.String(), expectedNextPage) {
-		result.Assert(fmt.Sprintf("NextPage mismatch"), expectedNextPage, actual.NextPage.String())
+		result.Assert("NextPage", expectedNextPage, actual.NextPage.String())
 	}
 
-	result.Assert(fmt.Sprintf("Rows mismatch"), expected.Rows, actual.Rows)
-	result.Assert(fmt.Sprintf("Done mismatch"), expected.Done, actual.Done)
+	result.Assert("Rows", expected.Rows, actual.Rows)
+	result.Assert("Done", expected.Done, actual.Done)
 
 	return result
 }
@@ -101,8 +101,8 @@ func compareNextPageToken(actual, expected string) bool {
 // needs verification rather than a full equality check.
 func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
-	result.Assert(fmt.Sprintf("Success mismatch"), expected.Success, actual.Success)
-	result.Assert(fmt.Sprintf("RecordId mismatch"), expected.RecordId, actual.RecordId)
+	result.Assert("Success", expected.Success, actual.Success)
+	result.Assert("RecordId", expected.RecordId, actual.RecordId)
 	result.Merge(mockutils.WriteResultComparator.SubsetData(actual, expected))
 	result.Merge(mockutils.ErrorNormalizedComparator.EachErrorEquals(actual.Errors, expected.Errors))
 
@@ -121,9 +121,9 @@ func ComparatorSubsetWrite(_ string, actual, expected *common.WriteResult) *test
 // without enforcing strict structural equality across the entire batch.
 func ComparatorSubsetBatchWrite(_ string, actual, expected *common.BatchWriteResult) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
-	result.Assert(fmt.Sprintf("Status mismatch"), expected.Status, actual.Status)
-	result.Assert(fmt.Sprintf("SuccessCount mismatch"), expected.SuccessCount, actual.SuccessCount)
-	result.Assert(fmt.Sprintf("FailureCount mismatch"), expected.FailureCount, actual.FailureCount)
+	result.Assert("Status", expected.Status, actual.Status)
+	result.Assert("SuccessCount", expected.SuccessCount, actual.SuccessCount)
+	result.Assert("FailureCount", expected.FailureCount, actual.FailureCount)
 	result.Merge(mockutils.BatchWriteResultComparator.SubsetWriteResults(actual, expected))
 	result.Merge(mockutils.ErrorNormalizedComparator.EachErrorEquals(actual.Errors, expected.Errors))
 
@@ -197,16 +197,16 @@ func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMet
 			}
 
 			// Field properties should be the same. This is a hard comparison.
-			result.Assert(fmt.Sprintf("Fields[%s][%s].FieldName mismatch", propertyName, fieldName),
+			result.Assert(fmt.Sprintf("Fields[%s][%s].FieldName", propertyName, fieldName),
 				expectedField.FieldName, actualField.FieldName)
-			result.Assert(fmt.Sprintf("Fields[%s][%s].Action mismatch", propertyName, fieldName),
+			result.Assert(fmt.Sprintf("Fields[%s][%s].Action", propertyName, fieldName),
 				expectedField.Action, actualField.Action)
-			result.Assert(fmt.Sprintf("Fields[%s][%s].Warnings mismatch", propertyName, fieldName),
+			result.Assert(fmt.Sprintf("Fields[%s][%s].Warnings", propertyName, fieldName),
 				expectedField.Warnings, actualField.Warnings)
 
 			// A set of expected fields must be present
 			if !mapIsSubsetMap(expectedField.Metadata, actualField.Metadata) {
-				result.Assert(fmt.Sprintf("Fields[%s][%s].Metadata mismatch", propertyName, fieldName),
+				result.Assert(fmt.Sprintf("Fields[%s][%s].Metadata", propertyName, fieldName),
 					expectedField.Metadata, actualField.Metadata)
 			}
 		}

@@ -1,6 +1,9 @@
 package core
 
-import "github.com/amp-labs/connectors/internal/datautils"
+import (
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
+)
 
 const (
 	// DefaultPageSize is the default page size for paginated requests.
@@ -28,7 +31,33 @@ var (
 	// MarketingObjects contains object names that belong to the HubSpot Marketing API.
 	//
 	// The Marketing API is separate from the CRM API and is not related to the Objects API.
-	MarketingObjects = datautils.NewSet(
-		"campaigns",
-	)
+	MarketingObjects = datautils.Map[string, ObjectDescription]{
+		"campaigns": {
+			Path:              "campaigns",
+			RecordTransformer: common.FlattenNestedFields("properties"),
+		},
+		// "marketing/emails" refers to HubSpot marketing emails, which are distinct
+		// from the CRM email activity resource.
+		//
+		// The object name preserves the marketing-prefixed endpoint form to avoid a
+		// naming collision with CRM emails.
+		//
+		// Path is relative to the Marketing API base path.
+		//
+		// Marketing emails:
+		// https://developers.hubspot.com/docs/api-reference/latest/marketing/marketing-emails/get-emails
+		// CRM emails:
+		// https://developers.hubspot.com/docs/api-reference/latest/crm/activities/emails/guide
+		"marketing/emails": {
+			Path:              "emails",
+			RecordTransformer: nil, // None. Fields and Raw are the same.
+		},
+	}
 )
+
+type ObjectDescription struct {
+	// Path is URL path segment.
+	Path string
+	// RecordTransformer describes how to convert raw response and then extract selected fields by read operation.
+	RecordTransformer common.RecordTransformer
+}
