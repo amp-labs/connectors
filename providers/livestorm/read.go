@@ -81,7 +81,7 @@ func (c *Connector) buildSessionChatMessagesReadURL(params common.ReadParams) (*
 		return nil, ErrSessionIDRequired
 	}
 
-	endpointURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "sessions", sessionID, "chat_messages")
+	endpointURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, "v1", "sessions", sessionID, "chat_messages")
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func (c *Connector) buildJobReadURL(params common.ReadParams) (*urlbuilder.URL, 
 		return nil, ErrJobIDRequired
 	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "jobs", jobID)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, "v1", "jobs", jobID)
 }
 
 func (c *Connector) buildGenericReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
@@ -107,7 +107,7 @@ func (c *Connector) buildGenericReadURL(params common.ReadParams) (*urlbuilder.U
 		return nil, err
 	}
 
-	endpointURL, err := buildVersionedPathURL(c.ProviderInfo().BaseURL, path)
+	endpointURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
 	}
