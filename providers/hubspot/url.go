@@ -93,3 +93,8 @@ func (c *Connector) getURLFromRoot(relativePath string) string {
 func (c *Connector) getRootProviderURL() string {
 	return c.ProviderInfo().BaseURL
 }
+
+// https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/delete-contact
+func (c *Connector) getDeleteURL(objectName, recordID string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ModuleInfo().BaseURL, "objects", core.APIVersion2026March, objectName, recordID)
+}

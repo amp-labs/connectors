@@ -24,6 +24,10 @@ const (
 	searchPageSize = "200"
 )
 
+func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error) {
+	return c.searchStrategy.Search(ctx, params)
+}
+
 // ReadUsingSearchAPI uses the POST /search endpoint to filter object records and return the result.
 // This endpoint has a limit of 10,000 records. If the result has more than 10,000 records,
 // the caller should employ sorting to paginate through the result on the client side.
@@ -72,7 +76,7 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams)
 		core.GetRecords,
 		core.GetNextRecordsAfter,
 		associations.CreateDataMarshallerWithAssociations(
-			ctx, c.delegate.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
+			ctx, c.associationsFiller, config.ObjectName, config.AssociatedObjects),
 		config.Fields,
 	)
 }
