@@ -308,7 +308,7 @@ func TestUpsertQuotaOptimizationFieldsFiltersUnsubscribedObjects(t *testing.T) {
 	}
 }
 
-func TestUpdateKeptSubscriptionsNilRequest(t *testing.T) {
+func TestUpdateExistingSubscriptionsNoWork(t *testing.T) {
 	t.Parallel()
 
 	conn, err := constructTestConnector("http://example.com")
@@ -316,8 +316,10 @@ func TestUpdateKeptSubscriptionsNilRequest(t *testing.T) {
 		t.Fatalf("failed to construct test connector: %v", err)
 	}
 
-	diff := subscriptionDiff{
-		channelMembersToKeep: map[common.ObjectName]*EventChannelMember{
+	// Nil request short-circuits regardless of diff contents — the function
+	// returns nil before iterating any existing objects.
+	diffWithMember := subscriptionDiff{
+		channelMembersExisting: map[common.ObjectName]*EventChannelMember{
 			"Account": {
 				Id:       "member-1",
 				FullName: "test",
@@ -326,19 +328,26 @@ func TestUpdateKeptSubscriptionsNilRequest(t *testing.T) {
 				},
 			},
 		},
-		apexTriggersToKeep: map[common.ObjectName]*ApexTrigger{},
+		apexTriggersExisting: map[common.ObjectName]*ApexTrigger{},
 	}
 
-	// Nil request should be a no-op
-	err = conn.updateKeptSubscriptions(t.Context(), nil, diff)
-	if err != nil {
+	if err := conn.updateExistingSubscriptions(t.Context(), nil, diffWithMember); err != nil {
 		t.Errorf("expected nil error for nil request, got %v", err)
 	}
 
-	// Request with no quota fields should be a no-op
-	err = conn.updateKeptSubscriptions(t.Context(), &SubscriptionRequest{}, diff)
-	if err != nil {
-		t.Errorf("expected nil error for empty request, got %v", err)
+	// A non-nil request with an empty diff (no existing objects to reconcile)
+	// is also a no-op — the iteration loops have nothing to operate on. Note
+	// that a non-nil request with non-empty diff is NOT a no-op even if the
+	// request has no quota fields: the design unconditionally PATCHes existing
+	// channel members to converge their state to the desired config (which
+	// includes "no filter" when quota config has been removed).
+	emptyDiff := subscriptionDiff{
+		channelMembersExisting: map[common.ObjectName]*EventChannelMember{},
+		apexTriggersExisting:   map[common.ObjectName]*ApexTrigger{},
+	}
+
+	if err := conn.updateExistingSubscriptions(t.Context(), &SubscriptionRequest{}, emptyDiff); err != nil {
+		t.Errorf("expected nil error for empty request and empty diff, got %v", err)
 	}
 }
 

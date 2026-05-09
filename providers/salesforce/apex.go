@@ -38,15 +38,14 @@ const (
 // itself (per the Metadata API DeployOptions docs).
 const apexDeployTestLevel = metadata.TestLevelRunSpecifiedTests
 
-// ApexTrigger represents a deployed apex trigger in the SubscribeResult.
+// ApexTrigger represents a deployed apex trigger that exists in Salesforce.
+// Only successfully deployed triggers are recorded here; deploy failures are
+// surfaced through the error returned from Subscribe / UpdateSubscription.
 type ApexTrigger struct {
 	ObjectName     common.ObjectName
 	TriggerName    string
 	IndicatorField common.FieldDefinition
 	WatchFields    []string
-	// Errors contains deployment error messages for this trigger.
-	// Empty when deployment succeeded.
-	Errors []string
 
 	// Deprecated: CheckboxField is kept for backwards compatibility with
 	// previously serialized SubscribeResults. New code should use IndicatorField.
@@ -460,52 +459,97 @@ func filterSuccessfulTriggers(
 	return successful
 }
 
-// toApexTriggers converts deploy results to the ApexTrigger type stored in SubscribeResult,
-// including per-object error details for failed deployments.
+// toApexTriggers converts deploy results to the ApexTrigger type stored in
+// SubscribeResult. Only successfully deployed triggers (non-empty DeployID) are
+// emitted, so the returned map faithfully describes triggers that exist in
+// Salesforce. Per-object deploy errors are aggregated into out.Errors and
+// surfaced through the error chain returned from Subscribe / UpdateSubscription;
+// they are also logged here per object so that, even if the caller swallows the
+// aggregate error, a failed-deploy entry has a corresponding warn log keyed to
+// the object name.
 func toApexTriggers(
 	out *DeployApexTriggersResult,
 ) map[common.ObjectName]*ApexTrigger {
 	triggers := make(map[common.ObjectName]*ApexTrigger, len(out.Results))
 
 	for objName, result := range out.Results {
-		trigger := &ApexTrigger{
+		if result.DeployID == "" {
+			slog.Warn("apex trigger deploy failed; entry omitted from sfRes.ApexTriggers",
+				"object", objName,
+				"error", out.Errors[objName],
+			)
+
+			continue
+		}
+
+		triggers[objName] = &ApexTrigger{
 			ObjectName:     objName,
 			TriggerName:    result.TriggerName,
 			IndicatorField: result.IndicatorField,
 			WatchFields:    result.WatchFields,
 		}
-
-		if err, ok := out.Errors[objName]; ok {
-			trigger.Errors = []string{err.Error()}
-		}
-
-		triggers[objName] = trigger
 	}
 
 	return triggers
 }
 
-// redeployKeptApexTriggers deletes old apex triggers for kept objects and redeploys
-// them with updated watch fields from keptObjectEvents.
-func (c *Connector) redeployKeptApexTriggers(
+// redeployExistingApexTriggers updates apex triggers for existing objects in place via
+// Metadata API deploy, which is an upsert keyed by the trigger's fullName. No
+// destructive prelude is needed for objects that still have a quota field — the
+// new deploy atomically replaces the existing trigger and its companion test
+// class in a single transaction. Triggers whose object no longer has a quota
+// field configured (orphaned) are destructively deleted.
+//
+// Operates only on existing objects: anything in diff.objectsToAdd is excluded
+// because the inner Subscribe call in executeUpdateSubscription will deploy
+// triggers for new objects. Without this exclusion, each new-object trigger
+// would deploy twice (once here, once in inner Subscribe), doubling the
+// metadata-deploy time per added object.
+//
+//nolint:cyclop
+func (c *Connector) redeployExistingApexTriggers(
 	ctx context.Context,
 	req *SubscriptionRequest,
 	diff subscriptionDiff,
 ) error {
-	for objName, trigger := range diff.apexTriggersToKeep {
-		if err := c.rollbackApexTrigger(ctx, trigger.TriggerName); err != nil {
-			return fmt.Errorf("failed to delete old apex trigger for object %s: %w", objName, err)
-		}
+	existingParams := common.SubscribeParams{SubscriptionEvents: diff.allObjectEvents}
 
-		delete(diff.apexTriggersToKeep, objName)
-	}
-
-	// Build trigger params from the kept objects' events (saved before diff mutation).
-	keptParams := common.SubscribeParams{SubscriptionEvents: diff.keptObjectEvents}
-
-	triggerParams, err := buildApexTriggerParamsForSubscribe(keptParams, req)
+	triggerParams, err := buildApexTriggerParamsForSubscribe(existingParams, req)
 	if err != nil {
 		return err
+	}
+
+	// Filter out objects-to-add from triggerParams. diff.allObjectEvents
+	// contains all subscription events (kept and new), so triggerParams as
+	// returned by buildApexTriggerParamsForSubscribe includes new objects too.
+	// Inner Subscribe handles new-object trigger deployment; this function
+	// must restrict itself to existing objects only.
+	for _, addObj := range diff.objectsToAdd {
+		delete(triggerParams, addObj)
+	}
+
+	// Destructively remove triggers for objects that previously had a quota
+	// field but no longer do. Objects still in triggerParams are left alone —
+	// the deploy below will upsert them in place.
+	for objName, trigger := range diff.apexTriggersExisting {
+		if _, willRedeploy := triggerParams[objName]; willRedeploy {
+			continue
+		}
+
+		if trigger == nil {
+			slog.Warn("orphan apex trigger entry is nil, skipping delete",
+				"object", objName,
+			)
+
+			continue
+		}
+
+		// TODO: check existence before delete
+		if err := c.rollbackApexTrigger(ctx, trigger.TriggerName); err != nil {
+			return fmt.Errorf("failed to delete orphaned apex trigger for object %s: %w", objName, err)
+		}
+
+		delete(diff.apexTriggersExisting, objName)
 	}
 
 	triggerCodeMap := make(map[common.ObjectName]string, len(triggerParams))
@@ -524,7 +568,7 @@ func (c *Connector) redeployKeptApexTriggers(
 			return fmt.Errorf("failed to redeploy apex trigger for object %s: %w", objName, err)
 		}
 
-		diff.apexTriggersToKeep[objName] = &ApexTrigger{
+		diff.apexTriggersExisting[objName] = &ApexTrigger{
 			ObjectName:     objName,
 			TriggerName:    result.TriggerName,
 			IndicatorField: result.IndicatorField,
