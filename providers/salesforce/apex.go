@@ -462,8 +462,11 @@ func filterSuccessfulTriggers(
 // toApexTriggers converts deploy results to the ApexTrigger type stored in
 // SubscribeResult. Only successfully deployed triggers (non-empty DeployID) are
 // emitted, so the returned map faithfully describes triggers that exist in
-// Salesforce. Per-object deploy errors are conveyed via out.Errors and surfaced
-// through the error chain returned from Subscribe / UpdateSubscription.
+// Salesforce. Per-object deploy errors are aggregated into out.Errors and
+// surfaced through the error chain returned from Subscribe / UpdateSubscription;
+// they are also logged here per object so that, even if the caller swallows the
+// aggregate error, a failed-deploy entry has a corresponding warn log keyed to
+// the object name.
 func toApexTriggers(
 	out *DeployApexTriggersResult,
 ) map[common.ObjectName]*ApexTrigger {
@@ -471,6 +474,11 @@ func toApexTriggers(
 
 	for objName, result := range out.Results {
 		if result.DeployID == "" {
+			slog.Warn("apex trigger deploy failed; entry omitted from sfRes.ApexTriggers",
+				"object", objName,
+				"error", out.Errors[objName],
+			)
+
 			continue
 		}
 
