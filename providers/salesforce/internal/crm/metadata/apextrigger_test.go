@@ -4,10 +4,12 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
@@ -111,6 +113,82 @@ func TestGenerateApexTriggerNameForRead(t *testing.T) {
 	}
 }
 
+func TestGenerateApexTestClassName(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name      string
+		trigger   string
+		expected  string
+		expectErr bool
+	}{
+		{name: "CDC trigger", trigger: "CDC_Lead", expected: "Test_CDC_Lead"},
+		{name: "Read trigger", trigger: "Read_Account", expected: "Test_Read_Account"},
+		{name: "Empty returns error", trigger: "", expectErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := GenerateApexTestClassName(tt.trigger)
+			if tt.expectErr {
+				if err == nil {
+					t.Fatal("expected error, got nil")
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if got != tt.expected {
+				t.Errorf("GenerateApexTestClassName(%q) = %q, want %q", tt.trigger, got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestGenerateApexHandlerClassName(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name      string
+		trigger   string
+		expected  string
+		expectErr bool
+	}{
+		{name: "CDC trigger", trigger: "CDC_Lead", expected: "CDC_Lead_Handler"},
+		{name: "Read trigger", trigger: "Read_Account", expected: "Read_Account_Handler"},
+		{name: "Empty returns error", trigger: "", expectErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := GenerateApexHandlerClassName(tt.trigger)
+			if tt.expectErr {
+				if err == nil {
+					t.Fatal("expected error, got nil")
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if got != tt.expected {
+				t.Errorf("GenerateApexHandlerClassName(%q) = %q, want %q", tt.trigger, got, tt.expected)
+			}
+		})
+	}
+}
+
 func TestValidateApexTriggerParams(t *testing.T) { //nolint:funlen,cyclop
 	t.Parallel()
 
@@ -191,7 +269,7 @@ func TestValidateApexTriggerParams(t *testing.T) { //nolint:funlen,cyclop
 					t.Fatalf("expected error %v, got nil", tt.expectErr)
 				}
 
-				if err != tt.expectErr {
+				if !errors.Is(err, tt.expectErr) {
 					t.Fatalf("expected error %v, got %v", tt.expectErr, err)
 				}
 
@@ -205,28 +283,50 @@ func TestValidateApexTriggerParams(t *testing.T) { //nolint:funlen,cyclop
 	}
 }
 
-func TestConstructApexTriggerZip(t *testing.T) {
+func TestConstructApexTriggerUnsupportedIndicatorType(t *testing.T) {
 	t.Parallel()
 
 	params := ApexTriggerParams{
 		ObjectName:  "Lead",
-		TriggerName: "Lead",
+		TriggerName: "CDC_Lead",
+		IndicatorField: common.FieldDefinition{
+			FieldName: "AmpString__c",
+			ValueType: common.FieldTypeString,
+		},
 		WatchFields: []string{"Email"},
 	}
 
-	triggerCode := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
+	if _, err := ConstructApexTrigger(params); !errors.Is(err, errUnsupportedIndicatorTy) {
+		t.Errorf("expected errUnsupportedIndicatorTy, got %v", err)
+	}
+}
 
-	zipData, err := ConstructApexTrigger(params, triggerCode)
+func TestConstructApexTriggerZipFileList(t *testing.T) {
+	t.Parallel()
+
+	params := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "CDC_Lead",
+		IndicatorField: common.FieldDefinition{
+			FieldName: "AmpTriggerSubscription__c",
+			ValueType: common.FieldTypeBoolean,
+		},
+		WatchFields: []string{"Email"},
+	}
+
+	zipData, err := ConstructApexTrigger(params)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
 	assertZipContainsFiles(t, zipData, []string{
 		"package.xml",
-		"triggers/Lead.trigger",
-		"triggers/Lead.trigger-meta.xml",
-		"classes/Test_Lead.cls",
-		"classes/Test_Lead.cls-meta.xml",
+		"triggers/CDC_Lead.trigger",
+		"triggers/CDC_Lead.trigger-meta.xml",
+		"classes/CDC_Lead_Handler.cls",
+		"classes/CDC_Lead_Handler.cls-meta.xml",
+		"classes/Test_CDC_Lead.cls",
+		"classes/Test_CDC_Lead.cls-meta.xml",
 	})
 }
 
@@ -235,34 +335,42 @@ func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
 
 	params := ApexTriggerParams{
 		ObjectName:  "Lead",
-		TriggerName: "Lead",
+		TriggerName: "CDC_Lead",
+		IndicatorField: common.FieldDefinition{
+			FieldName: "AmpTriggerSubscription__c",
+			ValueType: common.FieldTypeBoolean,
+		},
 		WatchFields: []string{"Email", "Phone"},
 	}
 
-	triggerCode := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
-
-	zipData, err := ConstructApexTrigger(params, triggerCode)
+	zipData, err := ConstructApexTrigger(params)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
 	files := readZipFiles(t, zipData)
 
-	// Verify trigger code content.
-	triggerCode, ok := files["triggers/Lead.trigger"]
-	if !ok {
-		t.Fatal("trigger file not found in zip")
+	// 1. The trigger is now thin — it delegates to the handler.
+	expectedTrigger := `trigger CDC_Lead on Lead (before insert, before update) {
+    CDC_Lead_Handler.process(Trigger.new, Trigger.old, Trigger.isInsert);
+}
+`
+	if got := files["triggers/CDC_Lead.trigger"]; got != expectedTrigger {
+		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", got, expectedTrigger)
 	}
 
-	expectedTriggerCode := `trigger Lead on Lead (before insert, before update) {
-    if (Trigger.isBefore) {
-        for (Lead rec : Trigger.new) {
+	// 2. The handler holds the actual change-detection logic, with the boolean
+	//    assignment for the CDC variant (rec.<field> = fieldChanged unconditionally).
+	expectedHandler := `public class CDC_Lead_Handler {
+    public static void process(List<Lead> newRecs, List<Lead> oldRecs, Boolean isInsert) {
+        for (Integer i = 0; i < newRecs.size(); i++) {
+            Lead rec = newRecs[i];
             Boolean fieldChanged = false;
 
-            if (Trigger.isInsert) {
+            if (isInsert) {
                 fieldChanged = (rec.Email != null) || (rec.Phone != null);
-            } else if (Trigger.isUpdate) {
-                Lead oldRec = Trigger.oldMap.get(rec.Id);
+            } else {
+                Lead oldRec = oldRecs[i];
                 fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
             }
 
@@ -271,80 +379,81 @@ func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
     }
 }
 `
-	if triggerCode != expectedTriggerCode {
-		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", triggerCode, expectedTriggerCode)
+	if got := files["classes/CDC_Lead_Handler.cls"]; got != expectedHandler {
+		t.Errorf("handler code mismatch.\nGot:\n%s\nWant:\n%s", got, expectedHandler)
 	}
 
-	// Verify meta XML content.
-	metaXML, ok := files["triggers/Lead.trigger-meta.xml"]
-	if !ok {
-		t.Fatal("trigger meta XML file not found in zip")
-	}
-
+	// 3. Trigger meta XML.
 	expectedMetaXML := fmt.Sprintf(`<?xml version="1.0" encoding="UTF-8"?>
 <ApexTrigger xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>%s</apiVersion>
     <status>Active</status>
 </ApexTrigger>
 `, core.APIVersion)
-	if metaXML != expectedMetaXML {
-		t.Errorf("meta XML mismatch.\nGot:\n%s\nWant:\n%s", metaXML, expectedMetaXML)
+	if got := files["triggers/CDC_Lead.trigger-meta.xml"]; got != expectedMetaXML {
+		t.Errorf("trigger meta XML mismatch.\nGot:\n%s\nWant:\n%s", got, expectedMetaXML)
 	}
 
-	// Verify package.xml content.
-	packageXML, ok := files["package.xml"]
-	if !ok {
-		t.Fatal("package.xml not found in zip")
-	}
-
+	// 4. Package XML lists the trigger (1 ApexTrigger member) plus both Apex
+	//    classes (handler + test) under a single ApexClass type.
 	expectedPackageXML := xml.Header + fmt.Sprintf(`<Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>Lead</members>
+        <members>CDC_Lead</members>
         <name>ApexTrigger</name>
     </types>
     <types>
-        <members>Test_Lead</members>
+        <members>CDC_Lead_Handler</members>
+        <members>Test_CDC_Lead</members>
         <name>ApexClass</name>
     </types>
     <version>%s</version>
 </Package>`, core.APIVersion)
-	if packageXML != expectedPackageXML {
-		t.Errorf("package.xml mismatch.\nGot:\n%s\nWant:\n%s", packageXML, expectedPackageXML)
+	if got := files["package.xml"]; got != expectedPackageXML {
+		t.Errorf("package.xml mismatch.\nGot:\n%s\nWant:\n%s", got, expectedPackageXML)
 	}
 }
 
-func TestConstructApexTriggerForFilteredReadContent(t *testing.T) { //nolint:funlen
+func TestConstructApexTriggerForFilteredReadContent(t *testing.T) {
 	t.Parallel()
 
 	params := ApexTriggerParams{
 		ObjectName:  "Lead",
-		TriggerName: "Lead",
+		TriggerName: "Read_Lead",
+		IndicatorField: common.FieldDefinition{
+			FieldName: "AmpTimestamp__c",
+			ValueType: common.FieldTypeDateTime,
+		},
 		WatchFields: []string{"Email", "Phone"},
 	}
 
-	triggerCode := GenerateTriggerCodeForFilteredRead(params, "AmpTimestamp__c")
-
-	zipData, err := ConstructApexTrigger(params, triggerCode)
+	zipData, err := ConstructApexTrigger(params)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
 	files := readZipFiles(t, zipData)
 
-	triggerCode, ok := files["triggers/Lead.trigger"]
-	if !ok {
-		t.Fatal("trigger file not found in zip")
+	// Trigger is the same thin delegation regardless of CDC vs filtered-read variant.
+	expectedTrigger := `trigger Read_Lead on Lead (before insert, before update) {
+    Read_Lead_Handler.process(Trigger.new, Trigger.old, Trigger.isInsert);
+}
+`
+	if got := files["triggers/Read_Lead.trigger"]; got != expectedTrigger {
+		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", got, expectedTrigger)
 	}
 
-	expectedTriggerCode := `trigger Lead on Lead (before insert, before update) {
-    if (Trigger.isBefore) {
-        for (Lead rec : Trigger.new) {
+	// The handler differs from CDC: the indicator assignment is conditional on
+	// fieldChanged being true and writes System.now() instead of fieldChanged.
+	expectedHandler := `public class Read_Lead_Handler {
+    public static void process(List<Lead> newRecs, List<Lead> oldRecs, Boolean isInsert) {
+        for (Integer i = 0; i < newRecs.size(); i++) {
+            Lead rec = newRecs[i];
             Boolean fieldChanged = false;
 
-            if (Trigger.isInsert) {
+            if (isInsert) {
                 fieldChanged = (rec.Email != null) || (rec.Phone != null);
-            } else if (Trigger.isUpdate) {
-                Lead oldRec = Trigger.oldMap.get(rec.Id);
+            } else {
+                Lead oldRec = oldRecs[i];
                 fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
             }
 
@@ -355,177 +464,60 @@ func TestConstructApexTriggerForFilteredReadContent(t *testing.T) { //nolint:fun
     }
 }
 `
-	if triggerCode != expectedTriggerCode {
-		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", triggerCode, expectedTriggerCode)
+	if got := files["classes/Read_Lead_Handler.cls"]; got != expectedHandler {
+		t.Errorf("handler code mismatch.\nGot:\n%s\nWant:\n%s", got, expectedHandler)
 	}
 }
 
-func TestGenerateTriggerCodeForCDC(t *testing.T) {
-	t.Parallel()
-
-	params := ApexTriggerParams{
-		ObjectName:  "Lead",
-		TriggerName: "Lead",
-		WatchFields: []string{"Email", "Phone"},
-	}
-
-	got := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
-
-	expected := `trigger Lead on Lead (before insert, before update) {
-    if (Trigger.isBefore) {
-        for (Lead rec : Trigger.new) {
-            Boolean fieldChanged = false;
-
-            if (Trigger.isInsert) {
-                fieldChanged = (rec.Email != null) || (rec.Phone != null);
-            } else if (Trigger.isUpdate) {
-                Lead oldRec = Trigger.oldMap.get(rec.Id);
-                fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
-            }
-
-            rec.AmpTriggerSubscription__c = fieldChanged;
-        }
-    }
-}
-`
-	if got != expected {
-		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", got, expected)
-	}
-}
-
-func TestGenerateTriggerCodeForCDCSingleField(t *testing.T) {
+func TestConstructApexTriggerHandlerSingleField(t *testing.T) {
 	t.Parallel()
 
 	params := ApexTriggerParams{
 		ObjectName:  "Contact",
-		TriggerName: "Contact",
+		TriggerName: "CDC_Contact",
+		IndicatorField: common.FieldDefinition{
+			FieldName: "AmpChanged__c",
+			ValueType: common.FieldTypeBoolean,
+		},
 		WatchFields: []string{"LastName"},
 	}
 
-	got := GenerateTriggerCodeForCDC(params, "AmpChanged__c")
-
-	if !strings.Contains(got, "rec.AmpChanged__c = fieldChanged;") {
-		t.Errorf("expected boolean assignment, got:\n%s", got)
+	zipData, err := ConstructApexTrigger(params)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if !strings.Contains(got, "(rec.LastName != null)") {
-		t.Errorf("expected insert condition for LastName, got:\n%s", got)
-	}
+	files := readZipFiles(t, zipData)
+	handler := files["classes/CDC_Contact_Handler.cls"]
 
-	if !strings.Contains(got, "(rec.LastName != oldRec.LastName)") {
-		t.Errorf("expected update condition for LastName, got:\n%s", got)
-	}
-}
-
-func TestGenerateTriggerCodeForFilteredRead(t *testing.T) {
-	t.Parallel()
-
-	params := ApexTriggerParams{
-		ObjectName:  "Lead",
-		TriggerName: "Lead",
-		WatchFields: []string{"Email", "Phone"},
-	}
-
-	got := GenerateTriggerCodeForFilteredRead(params, "AmpTimestamp__c")
-
-	expected := `trigger Lead on Lead (before insert, before update) {
-    if (Trigger.isBefore) {
-        for (Lead rec : Trigger.new) {
-            Boolean fieldChanged = false;
-
-            if (Trigger.isInsert) {
-                fieldChanged = (rec.Email != null) || (rec.Phone != null);
-            } else if (Trigger.isUpdate) {
-                Lead oldRec = Trigger.oldMap.get(rec.Id);
-                fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
-            }
-
-            if (fieldChanged) {
-                rec.AmpTimestamp__c = System.now();
-            }
-        }
-    }
-}
-`
-	if got != expected {
-		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", got, expected)
+	for _, want := range []string{
+		"public class CDC_Contact_Handler",
+		"List<Contact> newRecs",
+		"List<Contact> oldRecs",
+		"(rec.LastName != null)",
+		"(rec.LastName != oldRec.LastName)",
+		"rec.AmpChanged__c = fieldChanged;",
+	} {
+		if !strings.Contains(handler, want) {
+			t.Errorf("handler missing %q\nGot:\n%s", want, handler)
+		}
 	}
 }
 
-func TestGenerateTriggerCodeForFilteredReadSingleField(t *testing.T) {
-	t.Parallel()
-
-	params := ApexTriggerParams{
-		ObjectName:  "Account",
-		TriggerName: "Account",
-		WatchFields: []string{"Name"},
-	}
-
-	got := GenerateTriggerCodeForFilteredRead(params, "AmpLastModified__c")
-
-	if !strings.Contains(got, "rec.AmpLastModified__c = System.now();") {
-		t.Errorf("expected timestamp assignment, got:\n%s", got)
-	}
-
-	if !strings.Contains(got, "if (fieldChanged)") {
-		t.Errorf("expected conditional guard, got:\n%s", got)
-	}
-
-	if !strings.Contains(got, "(rec.Name != null)") {
-		t.Errorf("expected insert condition for Name, got:\n%s", got)
-	}
-}
-
-func TestGenerateApexTestClassName(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name      string
-		trigger   string
-		expected  string
-		expectErr bool
-	}{
-		{name: "CDC trigger", trigger: "CDC_Lead", expected: "Test_CDC_Lead"},
-		{name: "Read trigger", trigger: "Read_Account", expected: "Test_Read_Account"},
-		{name: "Empty returns error", trigger: "", expectErr: true},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			got, err := GenerateApexTestClassName(tt.trigger)
-			if tt.expectErr {
-				if err == nil {
-					t.Fatal("expected error, got nil")
-				}
-
-				return
-			}
-
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
-
-			if got != tt.expected {
-				t.Errorf("GenerateApexTestClassName(%q) = %q, want %q", tt.trigger, got, tt.expected)
-			}
-		})
-	}
-}
-
-func TestConstructApexTriggerBundlesTestClass(t *testing.T) {
+func TestConstructApexTriggerBundlesTestClass(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	params := ApexTriggerParams{
 		ObjectName:  "Lead",
 		TriggerName: "CDC_Lead",
+		IndicatorField: common.FieldDefinition{
+			FieldName: "AmpTriggerSubscription__c",
+			ValueType: common.FieldTypeBoolean,
+		},
 		WatchFields: []string{"Email", "Phone"},
 	}
 
-	triggerCode := GenerateTriggerCodeForCDC(params, "AmpTriggerSubscription__c")
-
-	zipData, err := ConstructApexTrigger(params, triggerCode)
+	zipData, err := ConstructApexTrigger(params)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -537,14 +529,26 @@ func TestConstructApexTriggerBundlesTestClass(t *testing.T) {
 		t.Fatal("expected classes/Test_CDC_Lead.cls in zip")
 	}
 
+	// The test class must:
+	//   - Be marked @isTest so it's excluded from coverage requirements itself.
+	//   - Invoke the handler directly (in-memory) for both branches so handler
+	//     coverage doesn't depend on whether DML against the real object succeeds.
+	//   - Populate the first watch field on the in-memory record so the
+	//     change-detection condition evaluates true and the Read variant's
+	//     conditional indicator-assignment line is also covered.
+	//   - Do at least one DML so the trigger's delegation line is covered.
 	for _, want := range []string{
 		"@isTest",
 		"private class Test_CDC_Lead",
-		"Schema.getGlobalDescribe().get('Lead')",
-		"'Email'",
-		"'Phone'",
+		"static void exerciseHandlerInsertBranch",
+		"static void exerciseHandlerUpdateBranch",
+		"static void coverTriggerDelegation",
+		"setWatchFieldValueIfPossible(rec, 'Email')",
+		"setWatchFieldValueIfPossible(newRec, 'Email')",
+		"private static void setWatchFieldValueIfPossible(SObject rec, String fieldName)",
+		"CDC_Lead_Handler.process",
 		"Database.insert(rec, false)",
-		"Database.update(rec, false)",
+		"Schema.getGlobalDescribe().get('Lead')",
 	} {
 		if !strings.Contains(classCode, want) {
 			t.Errorf("test class missing %q\nGot:\n%s", want, classCode)
@@ -565,12 +569,23 @@ func TestConstructApexTriggerBundlesTestClass(t *testing.T) {
 	if classMeta != expectedClassMeta {
 		t.Errorf("class meta mismatch.\nGot:\n%s\nWant:\n%s", classMeta, expectedClassMeta)
 	}
+
+	// The handler class meta XML should use the same template as the test class.
+	handlerMeta, ok := files["classes/CDC_Lead_Handler.cls-meta.xml"]
+	if !ok {
+		t.Fatal("expected classes/CDC_Lead_Handler.cls-meta.xml in zip")
+	}
+
+	if handlerMeta != expectedClassMeta {
+		t.Errorf("handler meta mismatch.\nGot:\n%s\nWant:\n%s", handlerMeta, expectedClassMeta)
+	}
 }
 
-func TestConstructDestructiveApexTrigger(t *testing.T) {
+func TestConstructDestructiveApexTrigger(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	triggerName := "CDC_Lead"
+	expectedHandlerClassName := "CDC_Lead_Handler"
 	expectedTestClassName := "Test_CDC_Lead"
 
 	zipData, err := ConstructDestructiveApexTrigger(triggerName)
@@ -586,40 +601,39 @@ func TestConstructDestructiveApexTrigger(t *testing.T) {
 
 	files := readZipFiles(t, zipData)
 
-	// The destructiveChanges.xml must reference the trigger and the companion test class.
+	// destructiveChanges.xml must reference the trigger, the handler, and
+	// the companion test class.
 	destructiveXML, ok := files["destructiveChanges.xml"]
 	if !ok {
 		t.Fatal("destructiveChanges.xml not found in zip")
 	}
 
-	if !strings.Contains(destructiveXML, triggerName) {
-		t.Error("destructiveChanges.xml missing trigger name")
+	for _, want := range []string{
+		triggerName,
+		expectedHandlerClassName,
+		expectedTestClassName,
+		"ApexTrigger",
+		"ApexClass",
+	} {
+		if !strings.Contains(destructiveXML, want) {
+			t.Errorf("destructiveChanges.xml missing %q\nGot:\n%s", want, destructiveXML)
+		}
 	}
 
-	if !strings.Contains(destructiveXML, "ApexTrigger") {
-		t.Error("destructiveChanges.xml missing ApexTrigger type")
-	}
-
-	if !strings.Contains(destructiveXML, expectedTestClassName) {
-		t.Error("destructiveChanges.xml missing companion test class name")
-	}
-
-	if !strings.Contains(destructiveXML, "ApexClass") {
-		t.Error("destructiveChanges.xml missing ApexClass type")
-	}
-
-	// The package.xml should be empty (no types with members).
+	// package.xml must be empty (no types with members).
 	packageXML, ok := files["package.xml"]
 	if !ok {
 		t.Fatal("package.xml not found in zip")
 	}
 
-	if strings.Contains(packageXML, triggerName) {
-		t.Error("package.xml should not contain the trigger name for destructive changes")
-	}
-
-	if strings.Contains(packageXML, expectedTestClassName) {
-		t.Error("package.xml should not contain the test class name for destructive changes")
+	for _, unwanted := range []string{
+		triggerName,
+		expectedHandlerClassName,
+		expectedTestClassName,
+	} {
+		if strings.Contains(packageXML, unwanted) {
+			t.Errorf("package.xml should not contain %q for destructive changes", unwanted)
+		}
 	}
 }
 
