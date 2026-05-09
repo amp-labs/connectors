@@ -364,12 +364,12 @@ type updateSubscriptionProgress struct {
 //
 //  1. Upsert any quota optimization custom fields that the new request configures.
 //     Idempotent for fields that already exist.
-//  2. Update kept objects (those subscribed in both prevState and the new request):
+//  2. Update existing objects (those subscribed in both prevState and the new request):
 //     redeploy apex triggers via Metadata API upsert, and PATCH PlatformEventChannelMember
 //     filter expressions / enriched fields. Both operations are atomic from
 //     Salesforce's side, so per-object failure leaves the prior state intact.
 //  3. Delete objects that were in prevState but are not in the new request, via
-//     DeleteSubscription. Quota fields whose kept-object references were just
+//     DeleteSubscription. Quota fields whose existing-object references were just
 //     cleared in step 2 are also cleaned up here.
 //  4. Subscribe newly-added objects (in the new request but not in prevState),
 //     via an inner Subscribe call with a narrowed SubscribeParams.
@@ -382,7 +382,7 @@ type updateSubscriptionProgress struct {
 // the merged state (kept + new − removed). On failure, returns a partial result
 // representing what is currently in Salesforce, with Status = Failed (rollback
 // succeeded) or Status = FailedToRollback (rollback also errored). The rollback
-// only undoes truly-new quota fields; kept-object updates and removals are not
+// only undoes truly-new quota fields; existing-object updates and removals are not
 // undone, but their per-object atomicity means each artifact is in a consistent
 // state — a retry of the same UpdateSubscription is idempotent and converges.
 //
@@ -395,7 +395,7 @@ func (c *Connector) UpdateSubscription(
 	// Validate params up-front (mirrors Subscribe) so a malformed input is
 	// rejected before any Salesforce-side mutation happens. Without this, a
 	// missing or invalid params would only be caught later by the inner
-	// Subscribe call — after upsertQuotaOptimizationFields, updateKeptSubscriptions,
+	// Subscribe call — after upsertQuotaOptimizationFields, updateExistingSubscriptions,
 	// and DeleteSubscription have already run.
 	if params.RegistrationResult == nil {
 		return nil, fmt.Errorf("%w: missing RegistrationResult", errMissingParams)
@@ -500,13 +500,13 @@ func (c *Connector) executeUpdateSubscription(
 
 	diff := computeSubscriptionDiff(params, prevState)
 
-	// Update kept-object channel members and triggers FIRST so that any
+	// Update existing-object channel members and triggers FIRST so that any
 	// filter / enriched-field references to quota custom fields are either
 	// re-pointed (rename case) or cleared (quota-config-removed case) before
 	// DeleteSubscription tries to delete those fields. The dependency rule:
 	// the field is the dependency, the filter/enriched and trigger are
 	// dependents — dependents must be removed first when removing the field.
-	if err := c.updateKeptSubscriptions(ctx, req, diff); err != nil {
+	if err := c.updateExistingSubscriptions(ctx, req, diff); err != nil {
 		return buildPartialUpdateResult(prevState, &diff, nil, req, common.SubscriptionStatusFailed),
 			progress, err
 	}
@@ -517,8 +517,8 @@ func (c *Connector) executeUpdateSubscription(
 
 	// Delete objects selected for removal. Their ECMs and triggers come from
 	// prevState; prevState.QuotaOptimizationObjectFields includes (a) fields
-	// owned by objects-to-delete and (b) quota fields whose kept-object
-	// references were just cleared above by updateKeptSubscriptions, so the
+	// owned by objects-to-delete and (b) quota fields whose existing-object
+	// references were just cleared above by updateExistingSubscriptions, so the
 	// field deletion can now succeed for both classes.
 	if err := c.DeleteSubscription(ctx, deleteParams); err != nil {
 		return buildPartialUpdateResult(prevState, &diff, nil, req, common.SubscriptionStatusFailed),
@@ -533,7 +533,7 @@ func (c *Connector) executeUpdateSubscription(
 	//
 	// The Request is also a fresh SubscriptionRequest carrying only the new
 	// objects' quota field configuration, so upsertQuotaOptimizationFields
-	// inside Subscribe can prune without disturbing the outer req's kept-object
+	// inside Subscribe can prune without disturbing the outer req's existing-object
 	// entries. Salesforce's UpsertMetadata is idempotent, so re-upserting the
 	// new-object fields (already done at the outer level) is a wasted call but
 	// not a correctness issue.
@@ -621,10 +621,10 @@ func buildPartialUpdateResult(
 
 // subscriptionDiff holds the result of diffing current subscription events against previous state.
 type subscriptionDiff struct {
-	channelMembersToKeep map[common.ObjectName]*EventChannelMember
-	apexTriggersToKeep   map[common.ObjectName]*ApexTrigger
-	allObjectEvents      map[common.ObjectName]common.ObjectEvents
-	objectsToDelete      []common.ObjectName
+	channelMembersExisting map[common.ObjectName]*EventChannelMember
+	apexTriggersExisting   map[common.ObjectName]*ApexTrigger
+	allObjectEvents        map[common.ObjectName]common.ObjectEvents
+	objectsToDelete        []common.ObjectName
 	// objectsToAdd lists objects present in the new params but not in prevState.
 	// Tracked explicitly so callers can iterate the new-object set without
 	// relying on the side-effecting mutation of params.SubscriptionEvents that
@@ -648,11 +648,11 @@ func computeSubscriptionDiff(
 	allObjectEvents := make(map[common.ObjectName]common.ObjectEvents, len(params.SubscriptionEvents))
 	maps.Copy(allObjectEvents, params.SubscriptionEvents)
 
-	objectsExcludeFromDelete := []common.ObjectName{}
+	objectsExisting := []common.ObjectName{}
 
 	for objName := range prevState.EventChannelMembers {
 		if _, ok := params.SubscriptionEvents[objName]; ok {
-			objectsExcludeFromDelete = append(objectsExcludeFromDelete, objName)
+			objectsExisting = append(objectsExisting, objName)
 		}
 	}
 
@@ -663,15 +663,15 @@ func computeSubscriptionDiff(
 		}
 	}
 
-	channelMembersToKeep := make(map[common.ObjectName]*EventChannelMember)
-	apexTriggersToKeep := make(map[common.ObjectName]*ApexTrigger)
+	channelMembersExisting := make(map[common.ObjectName]*EventChannelMember)
+	apexTriggersExisting := make(map[common.ObjectName]*ApexTrigger)
 
-	for _, objName := range objectsExcludeFromDelete {
-		channelMembersToKeep[objName] = prevState.EventChannelMembers[objName]
+	for _, objName := range objectsExisting {
+		channelMembersExisting[objName] = prevState.EventChannelMembers[objName]
 		delete(prevState.EventChannelMembers, objName)
 
 		if trigger, ok := prevState.ApexTriggers[objName]; ok {
-			apexTriggersToKeep[objName] = trigger
+			apexTriggersExisting[objName] = trigger
 			delete(prevState.ApexTriggers, objName)
 		}
 	}
@@ -682,11 +682,11 @@ func computeSubscriptionDiff(
 	}
 
 	return subscriptionDiff{
-		channelMembersToKeep: channelMembersToKeep,
-		apexTriggersToKeep:   apexTriggersToKeep,
-		allObjectEvents:      allObjectEvents,
-		objectsToDelete:      objectsToDelete,
-		objectsToAdd:         objectsToAdd,
+		channelMembersExisting: channelMembersExisting,
+		apexTriggersExisting:   apexTriggersExisting,
+		allObjectEvents:        allObjectEvents,
+		objectsToDelete:        objectsToDelete,
+		objectsToAdd:           objectsToAdd,
 	}
 }
 
@@ -698,8 +698,8 @@ func computeSubscriptionDiff(
 //     The corruption-A fix in DeleteSubscription removes successfully-deleted
 //     entries from prevState as it goes, so what remains here is exactly what is
 //     still in Salesforce among the objects-to-delete set.
-//   - diff.channelMembersToKeep / diff.apexTriggersToKeep — kept objects in
-//     their post-update state (or pre-update if updateKeptSubscriptions failed
+//   - diff.channelMembersExisting / diff.apexTriggersExisting — existing objects in
+//     their post-update state (or pre-update if updateExistingSubscriptions failed
 //     before reaching them).
 //   - createRes from the inner Subscribe (when non-nil) — newly added objects,
 //     reflecting post-rollback state on Subscribe failure.
@@ -734,7 +734,7 @@ func buildUpdatedSubscribeResult(
 
 	newState.EventChannelMembers = make(map[common.ObjectName]*EventChannelMember)
 	maps.Copy(newState.EventChannelMembers, residualECMs)
-	maps.Copy(newState.EventChannelMembers, diff.channelMembersToKeep)
+	maps.Copy(newState.EventChannelMembers, diff.channelMembersExisting)
 
 	if newCreateRes != nil {
 		maps.Copy(newState.EventChannelMembers, newCreateRes.EventChannelMembers)
@@ -742,7 +742,7 @@ func buildUpdatedSubscribeResult(
 
 	newState.ApexTriggers = make(map[common.ObjectName]*ApexTrigger)
 	maps.Copy(newState.ApexTriggers, residualTriggers)
-	maps.Copy(newState.ApexTriggers, diff.apexTriggersToKeep)
+	maps.Copy(newState.ApexTriggers, diff.apexTriggersExisting)
 
 	if newCreateRes != nil && len(newCreateRes.ApexTriggers) > 0 {
 		maps.Copy(newState.ApexTriggers, newCreateRes.ApexTriggers)
@@ -922,9 +922,35 @@ func isObjectSubscribed(
 	return false
 }
 
-// updateKeptSubscriptions updates channel members and redeploys apex triggers for
-// objects that are kept across an UpdateSubscription call.
-func (c *Connector) updateKeptSubscriptions(
+// updateExistingSubscriptions reconciles the per-object Salesforce configuration
+// for objects that remain subscribed across an UpdateSubscription call (i.e. the
+// overlap of prevState and the new request — neither newly added nor being
+// removed). Even though the subscription itself isn't being added or removed,
+// the new request can change how that subscription is configured, and those
+// changes need to be pushed to Salesforce:
+//
+//   - WatchFields may differ from the previous request, which changes which
+//     record-field updates fire the apex trigger. The trigger code is generated
+//     from WatchFields, so a change here requires redeploying the trigger.
+//   - QuotaOptimizationObjectFields[obj] may be added, removed, or renamed.
+//     Adding requires deploying a trigger and setting the channel member's
+//     filter expression / enriched fields. Removing requires destructively
+//     deleting the trigger (handled by the orphan branch in
+//     redeployExistingApexTriggers) and clearing the filter / enriched fields.
+//     Renaming requires both: point trigger and filter at the new field name.
+//
+// We don't diff old vs new configuration before acting — both Metadata API
+// deploy (used for triggers) and Tooling API PATCH (used for channel members)
+// are idempotent on Salesforce, so unconditional reconciliation converges to
+// the desired state at the cost of one round trip per existing object when
+// nothing has changed. Diffing per-object config would be more complex than
+// that round trip is expensive.
+//
+// Order: triggers first, then channel members. Both reference the quota
+// custom field; the order between them is free, but doing triggers first
+// keeps the indicator field maintained while the new channel-member filter
+// goes live.
+func (c *Connector) updateExistingSubscriptions(
 	ctx context.Context,
 	req *SubscriptionRequest,
 	diff subscriptionDiff,
@@ -933,16 +959,16 @@ func (c *Connector) updateKeptSubscriptions(
 		return nil
 	}
 
-	if err := c.redeployKeptApexTriggers(ctx, req, diff); err != nil {
+	if err := c.redeployExistingApexTriggers(ctx, req, diff); err != nil {
 		return err
 	}
 
-	return c.updateKeptChannelMembers(ctx, req, diff)
+	return c.updateExistingChannelMembers(ctx, req, diff)
 }
 
-// updateKeptChannelMembers updates filter expressions and enriched fields on
+// updateExistingChannelMembers updates filter expressions and enriched fields on
 // existing PlatformEventChannelMember records via Tooling API PATCH. selectedEntity
-// is unchanged for kept objects (still <ObjectName>ChangeEvent), so PATCH suffices —
+// is unchanged for existing objects (still <ObjectName>ChangeEvent), so PATCH suffices —
 // no delete-and-recreate window where CDC traffic is interrupted, and the member's
 // Id is preserved. The PATCH is also atomic from Salesforce's side, so a failure
 // leaves the prior FilterExpression / EnrichedFields intact.
@@ -953,15 +979,15 @@ func (c *Connector) updateKeptSubscriptions(
 // quota custom field's reference so the subsequent DeleteSubscription can
 // successfully remove it (the dependency-removal ordering rule: filter and
 // enriched fields are removed before the field they reference).
-func (c *Connector) updateKeptChannelMembers(
+func (c *Connector) updateExistingChannelMembers(
 	ctx context.Context,
 	req *SubscriptionRequest,
 	diff subscriptionDiff,
 ) error {
-	for objName, member := range diff.channelMembersToKeep {
+	for objName, member := range diff.channelMembersExisting {
 		// Defensive: a malformed previousResult (e.g. corrupted by a storage
 		// roundtrip) could carry a nil member or nil Metadata. Skip and log so
-		// one bad entry doesn't crash the call for every other kept object.
+		// one bad entry doesn't crash the call for every other existing object.
 		if member == nil || member.Metadata == nil {
 			slog.Warn("kept channel member entry is malformed, skipping update",
 				"object", objName,
@@ -975,7 +1001,7 @@ func (c *Connector) updateKeptChannelMembers(
 		// Build the PATCH body in a fresh struct so the existing diff entry is
 		// not mutated until Salesforce has acknowledged the update. On PATCH
 		// failure the prior state is preserved both in Salesforce (PATCH is
-		// atomic) and in diff.channelMembersToKeep — the two stay in sync.
+		// atomic) and in diff.channelMembersExisting — the two stay in sync.
 		updated := &EventChannelMember{
 			Id:       member.Id,
 			FullName: member.FullName,
@@ -991,7 +1017,7 @@ func (c *Connector) updateKeptChannelMembers(
 			return fmt.Errorf("failed to update event channel member for object %s: %w", objName, err)
 		}
 
-		diff.channelMembersToKeep[objName] = updated
+		diff.channelMembersExisting[objName] = updated
 	}
 
 	return nil
