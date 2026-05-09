@@ -69,10 +69,15 @@ type EventChannelMember struct {
 }
 
 type EventChannelMemberMetadata struct {
-	EventChannel     string           `json:"eventChannel"`
-	SelectedEntity   string           `json:"selectedEntity,omitempty"`
-	EnrichedFields   []*EnrichedField `json:"enrichedFields,omitempty"`
-	FilterExpression string           `json:"filterExpression,omitempty"`
+	EventChannel   string `json:"eventChannel"`
+	SelectedEntity string `json:"selectedEntity,omitempty"`
+	// EnrichedFields is sent on the wire even when empty so PATCH can clear
+	// previously-configured enrichments (Salesforce treats an omitted field
+	// as "leave alone," but treats an explicit empty array as "clear").
+	EnrichedFields []*EnrichedField `json:"enrichedFields"`
+	// FilterExpression is sent on the wire even when empty for the same
+	// PATCH-clear reason as EnrichedFields above.
+	FilterExpression string `json:"filterExpression"`
 }
 
 type EnrichedField struct {
