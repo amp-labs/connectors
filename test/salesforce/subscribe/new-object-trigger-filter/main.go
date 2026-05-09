@@ -23,10 +23,6 @@ import (
 //  2. A non-empty EnrichedFields list on its PlatformEventChannelMember
 //  3. An entry in SubscribeResult.ApexTriggers
 //
-// Without all three, quota optimization for the newly-added object is broken
-// (the bug we called out as 🔴 #1 during the audit). This test would have
-// caught that bug at the time and now locks in the fix.
-//
 // Run with:
 //
 //	go run ./test/salesforce/subscribe/new-object-trigger-filter/main.go \

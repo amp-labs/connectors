@@ -28,8 +28,7 @@ import (
 //
 // Without these, the object would silently lose UPDATE events: the ECM filter
 // would still reference an indicator field that no trigger maintains, so the
-// filter always evaluates to false for UPDATE changeType. That's the bug we
-// called out as 🔴 #2 during the audit.
+// filter always evaluates to false for UPDATE changeType.
 //
 // Run with:
 //

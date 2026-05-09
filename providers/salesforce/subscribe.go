@@ -500,12 +500,8 @@ func (c *Connector) executeUpdateSubscription(
 
 	diff := computeSubscriptionDiff(params, prevState)
 
-	// Update existing-object channel members and triggers FIRST so that any
-	// filter / enriched-field references to quota custom fields are either
-	// re-pointed (rename case) or cleared (quota-config-removed case) before
-	// DeleteSubscription tries to delete those fields. The dependency rule:
-	// the field is the dependency, the filter/enriched and trigger are
-	// dependents — dependents must be removed first when removing the field.
+	// Try updating existing subscriptions with filter expressions and enriched fields.
+	// If this fails, we simply return so minimal state change is done.
 	if err := c.updateExistingSubscriptions(ctx, req, diff); err != nil {
 		return buildPartialUpdateResult(prevState, &diff, nil, req, common.SubscriptionStatusFailed),
 			progress, err
@@ -985,9 +981,6 @@ func (c *Connector) updateExistingChannelMembers(
 	diff subscriptionDiff,
 ) error {
 	for objName, member := range diff.channelMembersExisting {
-		// Defensive: a malformed previousResult (e.g. corrupted by a storage
-		// roundtrip) could carry a nil member or nil Metadata. Skip and log so
-		// one bad entry doesn't crash the call for every other existing object.
 		if member == nil || member.Metadata == nil {
 			slog.Warn("kept channel member entry is malformed, skipping update",
 				"object", objName,
