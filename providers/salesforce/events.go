@@ -208,18 +208,65 @@ func (c *Connector) CreateEventChannelMember(
 // UpdateEventChannelMember updates an existing PlatformEventChannelMember via PATCH.
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_platformeventchannelmember.htm
+//
+// Salesforce's Tooling API treats the PATCH body as a full Metadata replacement:
+// EventChannel and SelectedEntity are REQUIRED (a body without them returns
+// "Required field is missing: selectedEntity") but also IMMUTABLE (a body
+// whose value differs from what Salesforce has stored returns "Update is not
+// supported for the selectedEntity field on platform event channel members.").
+//
+// To avoid the case-mismatch hazard — Salesforce normalizes the stored
+// SelectedEntity / EventChannel (e.g. "account" → "Account__ChangeEvent")
+// while our locally-cached prevState may still hold the caller's original
+// casing — we first GET the live record to pick up its canonical immutable
+// fields, then PATCH using those values plus the caller-supplied mutable
+// fields (FilterExpression and EnrichedFields). The extra round trip is
+// worth it: passing a stale SelectedEntity tanks the whole UpdateSubscription
+// with a 400 even though the value didn't semantically change.
 func (c *Connector) UpdateEventChannelMember(
 	ctx context.Context,
 	member *EventChannelMember,
 ) (*EventChannelMember, error) {
-	// Salesforce Tooling API expects the Metadata wrapper and FullName in the PATCH body.
-	body := &EventChannelMember{FullName: member.FullName, Metadata: member.Metadata}
+	if member == nil || member.Metadata == nil {
+		return nil, errEventChannelMemberNilInput
+	}
 
-	_, err := c.patchToSFAPI(ctx, body,
+	current, err := getToolingEntityByID[EventChannelMember](
+		ctx, c, "PlatformEventChannelMember", member.Id,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch current EventChannelMember %s before PATCH: %w", member.Id, err)
+	}
+
+	if current == nil || current.Metadata == nil {
+		return nil, fmt.Errorf("%w: id=%s", errEventChannelMemberMissingMD, member.Id)
+	}
+
+	// Build the PATCH body using Salesforce's canonical immutable values for
+	// EventChannel and SelectedEntity, plus the caller's intended new values
+	// for the mutable fields.
+	body := &EventChannelMember{
+		FullName: current.FullName,
+		Metadata: &EventChannelMemberMetadata{
+			EventChannel:     current.Metadata.EventChannel,
+			SelectedEntity:   current.Metadata.SelectedEntity,
+			FilterExpression: member.Metadata.FilterExpression,
+			EnrichedFields:   member.Metadata.EnrichedFields,
+		},
+	}
+
+	_, err = c.patchToSFAPI(ctx, body,
 		"tooling/sobjects/PlatformEventChannelMember/"+member.Id, "EventChannelMember")
 	if err != nil {
 		return nil, err
 	}
+
+	// Reflect the canonical immutable values back into the caller's member so
+	// downstream consumers (e.g. diff.channelMembersExisting) see the
+	// authoritative casing.
+	member.FullName = current.FullName
+	member.Metadata.EventChannel = current.Metadata.EventChannel
+	member.Metadata.SelectedEntity = current.Metadata.SelectedEntity
 
 	return member, nil
 }
@@ -413,9 +460,11 @@ func (c *Connector) deleteToSFAPI(ctx context.Context, path string, entity strin
 const errCodeDuplicateDeveloperName = "DUPLICATE_DEVELOPER_NAME"
 
 var (
-	errToolingQueryNoRecordsField = errors.New("tooling/query response missing 'records' field")
-	errToolingEntityNotFound      = errors.New("no tooling entity found by FullName")
-	errToolingRecordMissingID     = errors.New("tooling/query record missing 'Id' field")
+	errToolingQueryNoRecordsField  = errors.New("tooling/query response missing 'records' field")
+	errToolingEntityNotFound       = errors.New("no tooling entity found by FullName")
+	errToolingRecordMissingID      = errors.New("tooling/query record missing 'Id' field")
+	errEventChannelMemberNilInput  = errors.New("UpdateEventChannelMember: member or metadata is nil")
+	errEventChannelMemberMissingMD = errors.New("UpdateEventChannelMember: GET returned empty metadata")
 )
 
 // sfAPIError is a single entry in a Salesforce API error response array.
