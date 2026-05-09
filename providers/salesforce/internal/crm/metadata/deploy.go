@@ -36,6 +36,12 @@ type DeployResult struct {
 	ID                string
 	ErrorMessage      string
 	ComponentFailures []ComponentFailure
+	// CodeCoverage holds per-Apex-artifact coverage entries produced when the
+	// deploy ran tests (testLevel != NoTestRun). Empty otherwise. Salesforce
+	// dev/sandbox orgs do NOT enforce the 75% production gate, so a successful
+	// deploy is not proof of coverage; callers must inspect this slice to
+	// confirm coverage thresholds.
+	CodeCoverage []CodeCoverage
 }
 
 // ComponentFailure describes a single component failure in a deployment.
@@ -44,6 +50,37 @@ type ComponentFailure struct {
 	FullName      string
 	Problem       string
 	ProblemType   string
+}
+
+// CodeCoverage describes Apex code coverage for a single class or trigger,
+// as reported by Salesforce in the runTestResult section of a checkDeployStatus
+// response.
+type CodeCoverage struct {
+	// Name is the Apex class or trigger name (e.g. "CDC_Account_Handler").
+	Name string
+	// Type is "Class" or "Trigger".
+	Type string
+	// NumLocations is the total number of executable Apex code locations
+	// (roughly statements) in the artifact.
+	NumLocations int
+	// NumLocationsNotCovered is the number of those locations that no test
+	// executed. Coverage = (NumLocations - NumLocationsNotCovered) / NumLocations.
+	NumLocationsNotCovered int
+}
+
+// percentScale converts a [0, 1] coverage ratio to a [0, 100] percentage.
+const percentScale = 100.0
+
+// Percent returns the code-coverage percentage as a float in [0, 100]. An
+// artifact with zero countable locations is reported as 100%.
+func (c CodeCoverage) Percent() float64 {
+	if c.NumLocations == 0 {
+		return percentScale
+	}
+
+	covered := c.NumLocations - c.NumLocationsNotCovered
+
+	return float64(covered) / float64(c.NumLocations) * percentScale
 }
 
 // DeployMetadataZip initiates a deploy of a zip package to Salesforce via the Metadata API
@@ -96,6 +133,16 @@ func (a *Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*Depl
 		}
 	}
 
+	coverage := make([]CodeCoverage, len(result.Details.RunTestResult.CodeCoverage))
+	for i, cc := range result.Details.RunTestResult.CodeCoverage {
+		coverage[i] = CodeCoverage{
+			Name:                   cc.Name,
+			Type:                   cc.Type,
+			NumLocations:           cc.NumLocations,
+			NumLocationsNotCovered: cc.NumLocationsNotCovered,
+		}
+	}
+
 	return &DeployResult{
 		Done:              result.Done,
 		Status:            result.Status,
@@ -103,6 +150,7 @@ func (a *Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*Depl
 		ID:                result.ID,
 		ErrorMessage:      result.ErrorMessage,
 		ComponentFailures: failures,
+		CodeCoverage:      coverage,
 	}, nil
 }
 
@@ -186,6 +234,14 @@ type checkDeployStatusResponse struct {
 					Problem       string `xml:"problem"`
 					ProblemType   string `xml:"problemType"`
 				} `xml:"componentFailures"`
+				RunTestResult struct {
+					CodeCoverage []struct {
+						Name                   string `xml:"name"`
+						Type                   string `xml:"type"`
+						NumLocations           int    `xml:"numLocations"`
+						NumLocationsNotCovered int    `xml:"numLocationsNotCovered"`
+					} `xml:"codeCoverage"`
+				} `xml:"runTestResult"`
 			} `xml:"details"`
 		} `xml:"result"`
 	} `xml:"checkDeployStatusResponse"`

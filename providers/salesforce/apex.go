@@ -109,9 +109,7 @@ func ConstructApexTriggerZipForCDC(params metadata.ApexTriggerParams, checkboxFi
 		return nil, err
 	}
 
-	triggerCode := metadata.GenerateTriggerCodeForCDC(params, checkboxFieldName)
-
-	return metadata.ConstructApexTrigger(params, triggerCode)
+	return metadata.ConstructApexTrigger(params)
 }
 
 // ConstructApexTriggerZipForFilteredRead builds a zipped deployment package for an APEX trigger
@@ -124,21 +122,20 @@ func ConstructApexTriggerZipForFilteredRead(
 		return nil, err
 	}
 
-	triggerCode := metadata.GenerateTriggerCodeForFilteredRead(params, timestampFieldName)
-
-	return metadata.ConstructApexTrigger(params, triggerCode)
+	return metadata.ConstructApexTrigger(params)
 }
 
-// buildApexTriggerZips constructs zip deployment packages from pre-generated trigger code.
-// The triggerCodeMap keys must match the triggerParams keys.
+// buildApexTriggerZips constructs zip deployment packages for each object's apex
+// trigger. The trigger + handler class + companion test class are all generated
+// internally by metadata.ConstructApexTrigger from the per-object params; the
+// variant (CDC vs filtered-read) is selected from params.IndicatorField.ValueType.
 func buildApexTriggerZips(
 	triggerParams map[common.ObjectName]*metadata.ApexTriggerParams,
-	triggerCodeMap map[common.ObjectName]string,
 ) (map[common.ObjectName][]byte, error) {
 	zipDataMap := make(map[common.ObjectName][]byte, len(triggerParams))
 
 	for objName, params := range triggerParams {
-		zipData, err := metadata.ConstructApexTrigger(*params, triggerCodeMap[objName])
+		zipData, err := metadata.ConstructApexTrigger(*params)
 		if err != nil {
 			return nil, fmt.Errorf("failed to construct apex trigger zip for %s: %w", objName, err)
 		}
@@ -174,12 +171,7 @@ func (c *Connector) deployApexTriggersForCDC(
 		}, nil
 	}
 
-	triggerCodeMap := make(map[common.ObjectName]string, len(triggerParams))
-	for objName, p := range triggerParams {
-		triggerCodeMap[objName] = metadata.GenerateTriggerCodeForCDC(*p, p.IndicatorField.FieldName)
-	}
-
-	zipDataMap, err := buildApexTriggerZips(triggerParams, triggerCodeMap)
+	zipDataMap, err := buildApexTriggerZips(triggerParams)
 	if err != nil {
 		return nil, err
 	}
@@ -429,6 +421,8 @@ func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*Dep
 		}
 
 		if deployResult.Done {
+			logApexCoverage(ctx, deployID, deployResult)
+
 			return deployResult, nil
 		}
 
@@ -440,6 +434,29 @@ func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*Dep
 		case <-time.After(deployPollInterval):
 			// continue polling
 		}
+	}
+}
+
+// logApexCoverage emits one info-level log entry per Apex artifact (class or
+// trigger) reporting the coverage Salesforce observed during the test run.
+// Salesforce's 75% production gate is org-tier dependent — sandbox/dev orgs
+// don't enforce it — so a successful deploy is NOT proof that coverage
+// cleared 75%. Logging the actual numbers makes the gate verifiable
+// independently of the deploy outcome.
+func logApexCoverage(ctx context.Context, deployID string, result *DeployResult) {
+	if result == nil || len(result.CodeCoverage) == 0 {
+		return
+	}
+
+	for _, cov := range result.CodeCoverage {
+		slog.InfoContext(ctx, "apex coverage",
+			"deployID", deployID,
+			"type", cov.Type,
+			"name", cov.Name,
+			"covered", cov.NumLocations-cov.NumLocationsNotCovered,
+			"total", cov.NumLocations,
+			"percent", cov.Percent(),
+		)
 	}
 }
 
@@ -552,12 +569,7 @@ func (c *Connector) redeployExistingApexTriggers(
 		delete(diff.apexTriggersExisting, objName)
 	}
 
-	triggerCodeMap := make(map[common.ObjectName]string, len(triggerParams))
-	for objName, p := range triggerParams {
-		triggerCodeMap[objName] = metadata.GenerateTriggerCodeForCDC(*p, p.IndicatorField.FieldName)
-	}
-
-	zipDataMap, err := buildApexTriggerZips(triggerParams, triggerCodeMap)
+	zipDataMap, err := buildApexTriggerZips(triggerParams)
 	if err != nil {
 		return err
 	}
