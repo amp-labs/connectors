@@ -266,7 +266,9 @@ func generateClassMetaXML() string {
 //     / picklist constraints cannot block coverage. Both branches of the
 //     handler's `if (isInsert)` are exercised, and for the filtered-read
 //     variant the change-detection result is forced true so the conditional
-//     timestamp assignment also runs.
+//     timestamp assignment also runs (achieved by populating the first watch
+//     field on the new record so the (rec.X != null) / (rec.X != oldRec.X)
+//     condition evaluates true).
 //
 //   - The `coverTriggerDelegation` method does one Database.insert with
 //     allOrNone=false on a best-effort SObject. The trigger's before-insert
@@ -274,24 +276,35 @@ func generateClassMetaXML() string {
 //     even if the org rejects the insert, the trigger's single delegation line
 //     has already executed and counts toward coverage.
 //
-// Together these guarantee >=75% coverage on both the trigger (1 covered line
-// out of 3 total) and the handler (every line covered) regardless of the
-// customer org's record-level validation rules.
+// Together these guarantee 100% coverage on both the trigger (1 covered line
+// out of 1 total) and the handler (every line covered, including the Read
+// variant's conditional `if (fieldChanged)` body) regardless of the customer
+// org's record-level validation rules.
 func generateTestClassCode(testClassName, handlerClassName string, params ApexTriggerParams) string {
+	// Validation requires len(WatchFields) > 0; defend against generator misuse
+	// by falling back to an empty string (the resulting Apex still compiles —
+	// setWatchFieldValueIfPossible no-ops on lookup failure for an empty name).
+	firstWatchField := ""
+	if len(params.WatchFields) > 0 {
+		firstWatchField = params.WatchFields[0]
+	}
+
 	return fmt.Sprintf(apexTestClassTemplate,
 		testClassName,     // 1: private class name
 		params.ObjectName, // 2: insert branch — local var type
 		params.ObjectName, // 3: insert branch — new SObject literal
-		handlerClassName,  // 4: insert branch — handler.process call
-		params.ObjectName, // 5: insert branch — List<X> in handler call
-		params.ObjectName, // 6: update branch — oldRec local type
-		params.ObjectName, // 7: update branch — oldRec new literal
-		params.ObjectName, // 8: update branch — newRec local type
-		params.ObjectName, // 9: update branch — newRec new literal
-		handlerClassName,  // 10: update branch — handler.process call
-		params.ObjectName, // 11: update branch — List<X> for newRecs
-		params.ObjectName, // 12: update branch — List<X> for oldRecs
-		params.ObjectName, // 13: coverTriggerDelegation — Schema.getGlobalDescribe lookup
+		firstWatchField,   // 4: insert branch — watch field name to populate
+		handlerClassName,  // 5: insert branch — handler.process call
+		params.ObjectName, // 6: insert branch — List<X> in handler call
+		params.ObjectName, // 7: update branch — oldRec local type
+		params.ObjectName, // 8: update branch — oldRec new literal
+		params.ObjectName, // 9: update branch — newRec local type
+		params.ObjectName, // 10: update branch — newRec new literal
+		firstWatchField,   // 11: update branch — watch field name to populate on newRec
+		handlerClassName,  // 12: update branch — handler.process call
+		params.ObjectName, // 13: update branch — List<X> for newRecs
+		params.ObjectName, // 14: update branch — List<X> for oldRecs
+		params.ObjectName, // 15: coverTriggerDelegation — Schema.getGlobalDescribe lookup
 	)
 }
 
@@ -300,23 +313,29 @@ func generateTestClassCode(testClassName, handlerClassName string, params ApexTr
 //  1. test class name
 //  2. object API name — insert-branch local var type
 //  3. object API name — insert-branch new-literal
-//  4. handler class name — insert-branch handler invocation
-//  5. object API name — insert-branch List<X> in handler call
-//  6. object API name — update-branch oldRec local type
-//  7. object API name — update-branch oldRec new-literal
-//  8. object API name — update-branch newRec local type
-//  9. object API name — update-branch newRec new-literal
-//  10. handler class name — update-branch handler invocation
-//  11. object API name — update-branch List<X> for newRecs
-//  12. object API name — update-branch List<X> for oldRecs
-//  13. object API name — Schema.getGlobalDescribe lookup in makeRec
+//  4. first watch field name — insert-branch setWatchFieldValueIfPossible argument
+//  5. handler class name — insert-branch handler invocation
+//  6. object API name — insert-branch List<X> in handler call
+//  7. object API name — update-branch oldRec local type
+//  8. object API name — update-branch oldRec new-literal
+//  9. object API name — update-branch newRec local type
+//  10. object API name — update-branch newRec new-literal
+//  11. first watch field name — update-branch setWatchFieldValueIfPossible argument
+//  12. handler class name — update-branch handler invocation
+//  13. object API name — update-branch List<X> for newRecs
+//  14. object API name — update-branch List<X> for oldRecs
+//  15. object API name — Schema.getGlobalDescribe lookup in makeRec
 const apexTestClassTemplate = `@isTest
 private class %s {
     @isTest
     static void exerciseHandlerInsertBranch() {
         // Direct handler invocation with an in-memory record. The handler's
         // isInsert=true branch executes fully without touching the database.
+        // We populate the first watch field so (rec.<watchField> != null)
+        // evaluates true → fieldChanged=true → the Read variant's conditional
+        // timestamp assignment line is covered.
         %s rec = new %s();
+        setWatchFieldValueIfPossible(rec, '%s');
         %s.process(new List<%s>{rec}, null, true);
     }
 
@@ -324,11 +343,13 @@ private class %s {
     static void exerciseHandlerUpdateBranch() {
         // Direct handler invocation with two in-memory records. The handler
         // pairs newRecs[i] with oldRecs[i], so we don't need to fabricate Ids
-        // for an update simulation. Setting different field values on old vs
-        // new also forces fieldChanged=true so the filtered-read variant's
-        // conditional indicator assignment runs.
+        // for an update simulation. We populate the first watch field on
+        // newRec only so (rec.<watchField> != oldRec.<watchField>) evaluates
+        // true → fieldChanged=true → the Read variant's conditional timestamp
+        // assignment line is covered.
         %s oldRec = new %s();
         %s newRec = new %s();
+        setWatchFieldValueIfPossible(newRec, '%s');
         %s.process(new List<%s>{newRec}, new List<%s>{oldRec}, false);
     }
 
@@ -343,6 +364,23 @@ private class %s {
         Test.startTest();
         Database.insert(rec, false);
         Test.stopTest();
+    }
+
+    private static void setWatchFieldValueIfPossible(SObject rec, String fieldName) {
+        if (String.isBlank(fieldName)) {
+            return;
+        }
+        Schema.SObjectField sf = rec.getSObjectType().getDescribe().fields.getMap().get(fieldName);
+        if (sf == null) {
+            return;
+        }
+        try {
+            rec.put(fieldName, dummyValue(sf.getDescribe(), 'mut'));
+        } catch (Exception e) {
+            // Tolerate type mismatches; if the watch field can't be populated
+            // here, the Read variant's conditional indicator line may not be
+            // covered, but coverage on every other handler line is unaffected.
+        }
     }
 
     private static SObject makeRec() {

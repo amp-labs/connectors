@@ -533,6 +533,9 @@ func TestConstructApexTriggerBundlesTestClass(t *testing.T) { //nolint:funlen
 	//   - Be marked @isTest so it's excluded from coverage requirements itself.
 	//   - Invoke the handler directly (in-memory) for both branches so handler
 	//     coverage doesn't depend on whether DML against the real object succeeds.
+	//   - Populate the first watch field on the in-memory record so the
+	//     change-detection condition evaluates true and the Read variant's
+	//     conditional indicator-assignment line is also covered.
 	//   - Do at least one DML so the trigger's delegation line is covered.
 	for _, want := range []string{
 		"@isTest",
@@ -540,6 +543,9 @@ func TestConstructApexTriggerBundlesTestClass(t *testing.T) { //nolint:funlen
 		"static void exerciseHandlerInsertBranch",
 		"static void exerciseHandlerUpdateBranch",
 		"static void coverTriggerDelegation",
+		"setWatchFieldValueIfPossible(rec, 'Email')",
+		"setWatchFieldValueIfPossible(newRec, 'Email')",
+		"private static void setWatchFieldValueIfPossible(SObject rec, String fieldName)",
 		"CDC_Lead_Handler.process",
 		"Database.insert(rec, false)",
 		"Schema.getGlobalDescribe().get('Lead')",
