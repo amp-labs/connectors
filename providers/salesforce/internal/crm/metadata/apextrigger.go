@@ -95,18 +95,21 @@ func ValidateApexTriggerParams(params ApexTriggerParams, indicatorFieldName stri
 
 // ConstructApexTrigger builds the zip deployment package containing three Apex artifacts:
 //
-//  1. The trigger itself (triggers/<TriggerName>.trigger) — a thin one-line delegation
-//     to the handler. Trigger files cannot be unit-tested directly, so we keep the
-//     trigger trivial and put all logic in the handler class.
-//  2. The handler class (classes/<TriggerName>_Handler.cls) — contains the actual
-//     change-detection logic. The handler can be invoked from the test class with
-//     synthesized in-memory records, so its code paths get covered without DML.
-//  3. The companion test class (classes/Test_<TriggerName>.cls) — exercises both
-//     branches of the handler in memory, plus does one minimal best-effort DML so
-//     the trigger's single delegation line is also counted as covered. The
-//     before-insert trigger fires before validation rules per Salesforce's order
-//     of execution, so the trigger line is covered even when the org rejects the
-//     insert with a validation rule.
+//  1. The trigger itself (triggers/<TriggerName>.trigger) — a thin one-line
+//     delegation to the handler, registered for both before-insert and
+//     before-update. The before-insert registration is kept solely so the
+//     companion test's Database.insert covers the trigger's single delegation
+//     line even when validation rules reject the insert (before-insert fires
+//     before validation per Salesforce's order of execution). The handler's
+//     insert path is a no-op (see generateHandlerClassCode for why).
+//  2. The handler class (classes/<TriggerName>_Handler.cls) — contains the
+//     change-detection logic for the update path; the insert path is an early
+//     return. The handler can be invoked from the test class with synthesized
+//     in-memory records, so its code paths get covered without DML.
+//  3. The companion test class (classes/Test_<TriggerName>.cls) — invokes the
+//     handler twice (once with oldRecs=null for the early return, once with
+//     two records for the update branch), plus does one minimal best-effort
+//     Database.insert to cover the trigger's delegation line.
 //
 // The variant (CDC vs filtered-read) is selected from params.IndicatorField.ValueType:
 //   - common.FieldTypeBoolean    → CDC (assign rec.<field> = fieldChanged)
@@ -185,31 +188,36 @@ func indicatorAssignmentForType(field common.FieldDefinition) (string, error) {
 	}
 }
 
-// generateThinTriggerCode returns the Apex source for the trigger file. The trigger
-// only delegates to the handler so its lines (3) are dominated by a single call;
-// any DML attempt against the target object covers the delegation line, regardless
-// of whether the DML ultimately succeeds.
+// generateThinTriggerCode returns the Apex source for the trigger file. The
+// trigger fires on before-insert and before-update so test coverage can be
+// driven by a single DML attempt against the target object — the before-insert
+// trigger fires before Salesforce's order-of-execution evaluates validation
+// rules, so the delegation line is covered even when validation rejects the
+// insert. The handler decides what to do per operation; for the CDC quota
+// optimization use case the insert path is intentionally a no-op (CREATE
+// events bypass the channel-member filter expression unconditionally, so the
+// indicator's value at insert time has no effect on event delivery).
 func generateThinTriggerCode(params ApexTriggerParams, handlerClassName string) string {
 	return fmt.Sprintf(`trigger %s on %s (before insert, before update) {
-    %s.process(Trigger.new, Trigger.old, Trigger.isInsert);
+    %s.process(Trigger.new, Trigger.old);
 }
 `, params.TriggerName, params.ObjectName, handlerClassName)
 }
 
-// generateHandlerClassCode returns the Apex source for the handler class. The class
-// exposes a single static `process` method that takes the parallel Trigger.new and
-// Trigger.old lists plus the isInsert flag. Trigger.new and Trigger.old are
-// guaranteed by Salesforce to be index-aligned for update operations, so the
-// handler pairs records by index without needing to fabricate Ids in tests.
+// generateHandlerClassCode returns the Apex source for the handler class. The
+// class exposes a single static `process` method that takes the parallel
+// Trigger.new and Trigger.old lists. Salesforce passes a null Trigger.old on
+// before-insert and a non-null index-aligned Trigger.old on before-update, so
+// the handler distinguishes the two by checking oldRecs == null without
+// needing a separate isInsert flag.
+//
+// The insert path is a deliberate no-op: the indicator field's value at insert
+// time is never read by the CDC channel-member filter expression (which passes
+// every non-UPDATE event through unconditionally), so any computation here
+// would only affect the indicator's stored value on the new record — which no
+// supported consumer reads. The handler returns immediately on insert; the
+// indicator stays at the field's DefaultValue ("false").
 func generateHandlerClassCode(params ApexTriggerParams, handlerClassName, indicatorAssignment string) string {
-	insertConditions := make([]string, 0, len(params.WatchFields))
-	for _, field := range params.WatchFields {
-		insertConditions = append(insertConditions,
-			fmt.Sprintf("(rec.%s != null)", field))
-	}
-
-	insertExpr := strings.Join(insertConditions, " || ")
-
 	updateConditions := make([]string, 0, len(params.WatchFields))
 	for _, field := range params.WatchFields {
 		updateConditions = append(updateConditions,
@@ -219,25 +227,25 @@ func generateHandlerClassCode(params ApexTriggerParams, handlerClassName, indica
 	updateExpr := strings.Join(updateConditions, " || ")
 
 	return fmt.Sprintf(`public class %s {
-    public static void process(List<%s> newRecs, List<%s> oldRecs, Boolean isInsert) {
+    public static void process(List<%s> newRecs, List<%s> oldRecs) {
+        if (oldRecs == null) {
+            // Insert: no-op for CDC purposes. CREATE events bypass the channel
+            // member's filter expression unconditionally, so the indicator's
+            // value at insert time has no effect on event delivery.
+            return;
+        }
         for (Integer i = 0; i < newRecs.size(); i++) {
             %s rec = newRecs[i];
-            Boolean fieldChanged = false;
-
-            if (isInsert) {
-                fieldChanged = %s;
-            } else {
-                %s oldRec = oldRecs[i];
-                fieldChanged = %s;
-            }
+            %s oldRec = oldRecs[i];
+            Boolean fieldChanged = %s;
 
             %s
         }
     }
 }
 `, handlerClassName,
-		params.ObjectName, params.ObjectName, params.ObjectName,
-		insertExpr, params.ObjectName, updateExpr, indicatorAssignment)
+		params.ObjectName, params.ObjectName,
+		params.ObjectName, params.ObjectName, updateExpr, indicatorAssignment)
 }
 
 func generateTriggerMetaXML() string {
@@ -261,25 +269,24 @@ func generateClassMetaXML() string {
 // generateTestClassCode returns Apex test class source that covers BOTH the
 // handler class and the trigger:
 //
-//   - The two `exerciseHandler*Branch` methods invoke the handler directly with
-//     in-memory synthesized records. No DML, so org-side validation rules / FLS
-//     / picklist constraints cannot block coverage. Both branches of the
-//     handler's `if (isInsert)` are exercised, and for the filtered-read
-//     variant the change-detection result is forced true so the conditional
-//     timestamp assignment also runs (achieved by populating the first watch
-//     field on the new record so the (rec.X != null) / (rec.X != oldRec.X)
-//     condition evaluates true).
+//   - `exerciseHandlerInsertNoop` invokes the handler with oldRecs=null,
+//     covering the early-return path that the trigger drives on before-insert.
 //
-//   - The `coverTriggerDelegation` method does one Database.insert with
-//     allOrNone=false on a best-effort SObject. The trigger's before-insert
-//     fires before validation rules per Salesforce's order of execution, so
-//     even if the org rejects the insert, the trigger's single delegation line
-//     has already executed and counts toward coverage.
+//   - `exerciseHandlerUpdateBranch` invokes the handler with two in-memory
+//     records, covering the per-record loop and (for the filtered-read variant)
+//     the conditional timestamp-assignment line. We populate the first watch
+//     field on newRec only so (rec.<f> != oldRec.<f>) evaluates true and
+//     fieldChanged=true.
 //
-// Together these guarantee 100% coverage on both the trigger (1 covered line
-// out of 1 total) and the handler (every line covered, including the Read
-// variant's conditional `if (fieldChanged)` body) regardless of the customer
-// org's record-level validation rules.
+//   - `coverTriggerDelegation` does one Database.insert with allOrNone=false
+//     on a best-effort SObject. The trigger's before-insert fires before
+//     validation rules per Salesforce's order of execution, so even if the
+//     org rejects the insert, the trigger's single delegation line has
+//     already executed and counts toward coverage.
+//
+// Together these guarantee 100% coverage on the trigger (1/1) and the
+// handler (every line including the early-return and the Read variant's
+// conditional body) regardless of the customer org's validation rules.
 func generateTestClassCode(testClassName, handlerClassName string, params ApexTriggerParams) string {
 	// Validation requires len(WatchFields) > 0; defend against generator misuse
 	// by falling back to an empty string (the resulting Apex still compiles —
@@ -291,52 +298,47 @@ func generateTestClassCode(testClassName, handlerClassName string, params ApexTr
 
 	return fmt.Sprintf(apexTestClassTemplate,
 		testClassName,     // 1: private class name
-		params.ObjectName, // 2: insert branch — local var type
-		params.ObjectName, // 3: insert branch — new SObject literal
-		firstWatchField,   // 4: insert branch — watch field name to populate
-		handlerClassName,  // 5: insert branch — handler.process call
-		params.ObjectName, // 6: insert branch — List<X> in handler call
-		params.ObjectName, // 7: update branch — oldRec local type
-		params.ObjectName, // 8: update branch — oldRec new literal
-		params.ObjectName, // 9: update branch — newRec local type
-		params.ObjectName, // 10: update branch — newRec new literal
-		firstWatchField,   // 11: update branch — watch field name to populate on newRec
-		handlerClassName,  // 12: update branch — handler.process call
-		params.ObjectName, // 13: update branch — List<X> for newRecs
-		params.ObjectName, // 14: update branch — List<X> for oldRecs
-		params.ObjectName, // 15: coverTriggerDelegation — Schema.getGlobalDescribe lookup
+		params.ObjectName, // 2: insert-noop — local var type
+		params.ObjectName, // 3: insert-noop — new SObject literal
+		handlerClassName,  // 4: insert-noop — handler.process call
+		params.ObjectName, // 5: insert-noop — List<X> in handler call
+		params.ObjectName, // 6: update branch — oldRec local type
+		params.ObjectName, // 7: update branch — oldRec new literal
+		params.ObjectName, // 8: update branch — newRec local type
+		params.ObjectName, // 9: update branch — newRec new literal
+		firstWatchField,   // 10: update branch — watch field name to populate on newRec
+		handlerClassName,  // 11: update branch — handler.process call
+		params.ObjectName, // 12: update branch — List<X> for newRecs
+		params.ObjectName, // 13: update branch — List<X> for oldRecs
+		params.ObjectName, // 14: coverTriggerDelegation — Schema.getGlobalDescribe lookup
 	)
 }
 
 // apexTestClassTemplate is the Apex source for the generated companion test class.
 // Placeholders (in order):
 //  1. test class name
-//  2. object API name — insert-branch local var type
-//  3. object API name — insert-branch new-literal
-//  4. first watch field name — insert-branch setWatchFieldValueIfPossible argument
-//  5. handler class name — insert-branch handler invocation
-//  6. object API name — insert-branch List<X> in handler call
-//  7. object API name — update-branch oldRec local type
-//  8. object API name — update-branch oldRec new-literal
-//  9. object API name — update-branch newRec local type
-//  10. object API name — update-branch newRec new-literal
-//  11. first watch field name — update-branch setWatchFieldValueIfPossible argument
-//  12. handler class name — update-branch handler invocation
-//  13. object API name — update-branch List<X> for newRecs
-//  14. object API name — update-branch List<X> for oldRecs
-//  15. object API name — Schema.getGlobalDescribe lookup in makeRec
+//  2. object API name — insert-noop local var type
+//  3. object API name — insert-noop new-literal
+//  4. handler class name — insert-noop handler invocation
+//  5. object API name — insert-noop List<X> in handler call
+//  6. object API name — update-branch oldRec local type
+//  7. object API name — update-branch oldRec new-literal
+//  8. object API name — update-branch newRec local type
+//  9. object API name — update-branch newRec new-literal
+//  10. first watch field name — update-branch setWatchFieldValueIfPossible argument
+//  11. handler class name — update-branch handler invocation
+//  12. object API name — update-branch List<X> for newRecs
+//  13. object API name — update-branch List<X> for oldRecs
+//  14. object API name — Schema.getGlobalDescribe lookup in makeRec
 const apexTestClassTemplate = `@isTest
 private class %s {
     @isTest
-    static void exerciseHandlerInsertBranch() {
-        // Direct handler invocation with an in-memory record. The handler's
-        // isInsert=true branch executes fully without touching the database.
-        // We populate the first watch field so (rec.<watchField> != null)
-        // evaluates true → fieldChanged=true → the Read variant's conditional
-        // timestamp assignment line is covered.
+    static void exerciseHandlerInsertNoop() {
+        // Direct handler invocation simulating the before-insert call shape
+        // (Trigger.old is null on insert). The handler's early-return path is
+        // covered without touching the database.
         %s rec = new %s();
-        setWatchFieldValueIfPossible(rec, '%s');
-        %s.process(new List<%s>{rec}, null, true);
+        %s.process(new List<%s>{rec}, null);
     }
 
     @isTest
@@ -350,7 +352,7 @@ private class %s {
         %s oldRec = new %s();
         %s newRec = new %s();
         setWatchFieldValueIfPossible(newRec, '%s');
-        %s.process(new List<%s>{newRec}, new List<%s>{oldRec}, false);
+        %s.process(new List<%s>{newRec}, new List<%s>{oldRec});
     }
 
     @isTest

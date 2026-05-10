@@ -350,29 +350,32 @@ func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
 
 	files := readZipFiles(t, zipData)
 
-	// 1. The trigger is now thin — it delegates to the handler.
+	// 1. The trigger is thin — it delegates to the handler. before-insert is
+	//    kept so the companion test's Database.insert covers the trigger's
+	//    delegation line; the handler's insert path is a no-op.
 	expectedTrigger := `trigger CDC_Lead on Lead (before insert, before update) {
-    CDC_Lead_Handler.process(Trigger.new, Trigger.old, Trigger.isInsert);
+    CDC_Lead_Handler.process(Trigger.new, Trigger.old);
 }
 `
 	if got := files["triggers/CDC_Lead.trigger"]; got != expectedTrigger {
 		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", got, expectedTrigger)
 	}
 
-	// 2. The handler holds the actual change-detection logic, with the boolean
-	//    assignment for the CDC variant (rec.<field> = fieldChanged unconditionally).
+	// 2. The handler holds the change-detection logic for the update path; the
+	//    insert path is an early return because CREATE CDC events bypass the
+	//    channel-member filter expression unconditionally.
 	expectedHandler := `public class CDC_Lead_Handler {
-    public static void process(List<Lead> newRecs, List<Lead> oldRecs, Boolean isInsert) {
+    public static void process(List<Lead> newRecs, List<Lead> oldRecs) {
+        if (oldRecs == null) {
+            // Insert: no-op for CDC purposes. CREATE events bypass the channel
+            // member's filter expression unconditionally, so the indicator's
+            // value at insert time has no effect on event delivery.
+            return;
+        }
         for (Integer i = 0; i < newRecs.size(); i++) {
             Lead rec = newRecs[i];
-            Boolean fieldChanged = false;
-
-            if (isInsert) {
-                fieldChanged = (rec.Email != null) || (rec.Phone != null);
-            } else {
-                Lead oldRec = oldRecs[i];
-                fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
-            }
+            Lead oldRec = oldRecs[i];
+            Boolean fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
 
             rec.AmpTriggerSubscription__c = fieldChanged;
         }
@@ -435,7 +438,7 @@ func TestConstructApexTriggerForFilteredReadContent(t *testing.T) {
 
 	// Trigger is the same thin delegation regardless of CDC vs filtered-read variant.
 	expectedTrigger := `trigger Read_Lead on Lead (before insert, before update) {
-    Read_Lead_Handler.process(Trigger.new, Trigger.old, Trigger.isInsert);
+    Read_Lead_Handler.process(Trigger.new, Trigger.old);
 }
 `
 	if got := files["triggers/Read_Lead.trigger"]; got != expectedTrigger {
@@ -445,17 +448,17 @@ func TestConstructApexTriggerForFilteredReadContent(t *testing.T) {
 	// The handler differs from CDC: the indicator assignment is conditional on
 	// fieldChanged being true and writes System.now() instead of fieldChanged.
 	expectedHandler := `public class Read_Lead_Handler {
-    public static void process(List<Lead> newRecs, List<Lead> oldRecs, Boolean isInsert) {
+    public static void process(List<Lead> newRecs, List<Lead> oldRecs) {
+        if (oldRecs == null) {
+            // Insert: no-op for CDC purposes. CREATE events bypass the channel
+            // member's filter expression unconditionally, so the indicator's
+            // value at insert time has no effect on event delivery.
+            return;
+        }
         for (Integer i = 0; i < newRecs.size(); i++) {
             Lead rec = newRecs[i];
-            Boolean fieldChanged = false;
-
-            if (isInsert) {
-                fieldChanged = (rec.Email != null) || (rec.Phone != null);
-            } else {
-                Lead oldRec = oldRecs[i];
-                fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
-            }
+            Lead oldRec = oldRecs[i];
+            Boolean fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
 
             if (fieldChanged) {
                 rec.AmpTimestamp__c = System.now();
@@ -494,7 +497,7 @@ func TestConstructApexTriggerHandlerSingleField(t *testing.T) {
 		"public class CDC_Contact_Handler",
 		"List<Contact> newRecs",
 		"List<Contact> oldRecs",
-		"(rec.LastName != null)",
+		"if (oldRecs == null)",
 		"(rec.LastName != oldRec.LastName)",
 		"rec.AmpChanged__c = fieldChanged;",
 	} {
@@ -531,19 +534,19 @@ func TestConstructApexTriggerBundlesTestClass(t *testing.T) { //nolint:funlen
 
 	// The test class must:
 	//   - Be marked @isTest so it's excluded from coverage requirements itself.
-	//   - Invoke the handler directly (in-memory) for both branches so handler
-	//     coverage doesn't depend on whether DML against the real object succeeds.
-	//   - Populate the first watch field on the in-memory record so the
-	//     change-detection condition evaluates true and the Read variant's
-	//     conditional indicator-assignment line is also covered.
+	//   - Invoke the handler directly (in-memory) for both the insert no-op
+	//     and the update branch so handler coverage doesn't depend on whether
+	//     DML against the real object succeeds.
+	//   - Populate the first watch field on the in-memory newRec for the
+	//     update branch so the change-detection condition evaluates true and
+	//     the Read variant's conditional indicator-assignment line is covered.
 	//   - Do at least one DML so the trigger's delegation line is covered.
 	for _, want := range []string{
 		"@isTest",
 		"private class Test_CDC_Lead",
-		"static void exerciseHandlerInsertBranch",
+		"static void exerciseHandlerInsertNoop",
 		"static void exerciseHandlerUpdateBranch",
 		"static void coverTriggerDelegation",
-		"setWatchFieldValueIfPossible(rec, 'Email')",
 		"setWatchFieldValueIfPossible(newRec, 'Email')",
 		"private static void setWatchFieldValueIfPossible(SObject rec, String fieldName)",
 		"CDC_Lead_Handler.process",
