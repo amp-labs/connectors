@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -571,6 +572,51 @@ func createTriggerDestructiveZip(triggerName, handlerClassName, testClassName st
 	}
 
 	return buf.Bytes(), nil
+}
+
+// ZipContainsApexTrigger reports whether a deploy zip contains an Apex
+// trigger artifact, either as a constructive deploy (a triggers/<Name>.trigger
+// entry) or as a destructive deploy (a destructiveChanges.xml referencing the
+// ApexTrigger metadata type).
+//
+// Used by deploy() to decide whether to upgrade testLevel=NoTestRun to
+// RunLocalTests: NoTestRun would silently bypass Salesforce's 75% Apex
+// production-coverage gate, which is unsafe for trigger deploys. A malformed
+// or unreadable zip returns false rather than an error so the actual deploy
+// surfaces the more specific Salesforce error instead of being short-circuited
+// here.
+func ZipContainsApexTrigger(zipData []byte) bool {
+	reader, err := zip.NewReader(bytes.NewReader(zipData), int64(len(zipData)))
+	if err != nil {
+		return false
+	}
+
+	for _, f := range reader.File {
+		if strings.HasPrefix(f.Name, "triggers/") && strings.HasSuffix(f.Name, ".trigger") {
+			return true
+		}
+
+		if f.Name == "destructiveChanges.xml" && zipEntryContains(f, "<name>ApexTrigger</name>") {
+			return true
+		}
+	}
+
+	return false
+}
+
+func zipEntryContains(f *zip.File, needle string) bool {
+	rc, err := f.Open()
+	if err != nil {
+		return false
+	}
+	defer rc.Close()
+
+	data, err := io.ReadAll(rc)
+	if err != nil {
+		return false
+	}
+
+	return strings.Contains(string(data), needle)
 }
 
 func addTriggerToZip(zw *zip.Writer, name string, content []byte) error {

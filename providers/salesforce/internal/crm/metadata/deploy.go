@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -167,6 +168,17 @@ func (a *Adapter) deploy(
 
 	if testLevel == "" {
 		testLevel = TestLevelNoTestRun
+	}
+
+	// Apex trigger deploys must run tests so production deploys can clear
+	// Salesforce's 75% Apex coverage gate. NoTestRun would silently bypass
+	// that gate, so upgrade to RunLocalTests when the zip carries trigger
+	// metadata. RunLocalTests doesn't consume runTests, so clear it.
+	if testLevel == TestLevelNoTestRun && ZipContainsApexTrigger(zipData) {
+		slog.WarnContext(ctx, "apex trigger deploy: testLevel NoTestRun upgraded to RunLocalTests")
+
+		testLevel = TestLevelRunLocalTests
+		runTests = nil
 	}
 
 	var runTestsXML strings.Builder

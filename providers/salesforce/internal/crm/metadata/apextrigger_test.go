@@ -637,6 +637,112 @@ func TestConstructDestructiveApexTrigger(t *testing.T) { //nolint:funlen
 	}
 }
 
+func TestZipContainsApexTrigger(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	constructiveParams := ApexTriggerParams{
+		ObjectName:  "Lead",
+		TriggerName: "CDC_Lead",
+		IndicatorField: common.FieldDefinition{
+			FieldName: "AmpTriggerSubscription__c",
+			ValueType: common.FieldTypeBoolean,
+		},
+		WatchFields: []string{"Email"},
+	}
+
+	constructiveZip, err := ConstructApexTrigger(constructiveParams)
+	if err != nil {
+		t.Fatalf("unexpected error building constructive zip: %v", err)
+	}
+
+	destructiveZip, err := ConstructDestructiveApexTrigger("CDC_Lead")
+	if err != nil {
+		t.Fatalf("unexpected error building destructive zip: %v", err)
+	}
+
+	tests := []struct {
+		name     string
+		zipData  []byte
+		expected bool
+	}{
+		{
+			name:     "constructive deploy zip with trigger file is detected",
+			zipData:  constructiveZip,
+			expected: true,
+		},
+		{
+			name:     "destructive deploy zip referencing ApexTrigger is detected",
+			zipData:  destructiveZip,
+			expected: true,
+		},
+		{
+			name:     "zip with only ApexClass entries is not detected",
+			zipData:  buildZip(t, map[string]string{"classes/MyClass.cls": "public class MyClass {}"}),
+			expected: false,
+		},
+		{
+			name: "destructiveChanges.xml referencing only ApexClass is not detected",
+			zipData: buildZip(t, map[string]string{
+				"destructiveChanges.xml": `<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+  <types><members>MyClass</members><name>ApexClass</name></types>
+</Package>`,
+			}),
+			expected: false,
+		},
+		{
+			name:     "empty zip is not detected",
+			zipData:  buildZip(t, map[string]string{}),
+			expected: false,
+		},
+		{
+			name:     "malformed bytes are not detected",
+			zipData:  []byte("not a zip"),
+			expected: false,
+		},
+		{
+			name:     "nil bytes are not detected",
+			zipData:  nil,
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			if got := ZipContainsApexTrigger(tt.zipData); got != tt.expected {
+				t.Errorf("ZipContainsApexTrigger() = %v, want %v", got, tt.expected)
+			}
+		})
+	}
+}
+
+// buildZip writes the given file map into an in-memory zip and returns its bytes.
+func buildZip(t *testing.T, files map[string]string) []byte {
+	t.Helper()
+
+	var buf bytes.Buffer
+
+	zw := zip.NewWriter(&buf)
+	for name, content := range files {
+		w, err := zw.Create(name)
+		if err != nil {
+			t.Fatalf("failed to create zip entry %s: %v", name, err)
+		}
+
+		if _, err := w.Write([]byte(content)); err != nil {
+			t.Fatalf("failed to write zip entry %s: %v", name, err)
+		}
+	}
+
+	if err := zw.Close(); err != nil {
+		t.Fatalf("failed to close zip writer: %v", err)
+	}
+
+	return buf.Bytes()
+}
+
 // assertZipContainsFiles verifies that the zip data contains exactly the expected files.
 func assertZipContainsFiles(t *testing.T, zipData []byte, expectedFiles []string) {
 	t.Helper()

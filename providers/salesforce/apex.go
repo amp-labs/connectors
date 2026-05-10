@@ -205,6 +205,27 @@ func (c *Connector) DeployMetadataZipWithTests(
 	return "", common.ErrNotImplemented
 }
 
+// deployApexTriggerZipWithTests is the entry point for every apex-trigger deploy
+// (constructive and destructive). It enforces the invariant that apex-trigger
+// deploys never run with testLevel=NoTestRun: NoTestRun would silently bypass
+// Salesforce's 75% Apex production coverage gate. If the caller passes
+// NoTestRun, upgrade to RunLocalTests and clear runTests (RunLocalTests does
+// not consume it). The same upgrade is also performed in metadata.deploy()
+// based on zip introspection so external callers of DeployMetadataZip* get the
+// same protection.
+func (c *Connector) deployApexTriggerZipWithTests(
+	ctx context.Context, zipData []byte, testLevel metadata.TestLevel, runTests []string,
+) (string, error) {
+	if testLevel == metadata.TestLevelNoTestRun {
+		slog.WarnContext(ctx, "apex trigger deploy: testLevel NoTestRun upgraded to RunLocalTests")
+
+		testLevel = metadata.TestLevelRunLocalTests
+		runTests = nil
+	}
+
+	return c.DeployMetadataZipWithTests(ctx, zipData, testLevel, runTests)
+}
+
 // CheckDeployStatus checks the status of an async deployment once and returns the result.
 // The caller is responsible for polling in a loop until DeployResult.Done is true.
 func (c *Connector) CheckDeployStatus(ctx context.Context, deployID string) (*DeployResult, error) {
@@ -323,7 +344,7 @@ func (c *Connector) deployApexTrigger(
 	runTests := []string{testClassName}
 
 	for attempt := range apexDeployMaxAttempts {
-		deployID, err := c.DeployMetadataZipWithTests(ctx, zipData, apexDeployTestLevel, runTests)
+		deployID, err := c.deployApexTriggerZipWithTests(ctx, zipData, apexDeployTestLevel, runTests)
 		if err != nil {
 			return nil, fmt.Errorf("failed to deploy apex trigger for %s: %w", params.ObjectName, err)
 		}
@@ -393,7 +414,7 @@ func (c *Connector) rollbackApexTrigger(ctx context.Context, triggerName string)
 		return fmt.Errorf("failed to construct destructive apex trigger zip for %s: %w", triggerName, err)
 	}
 
-	deployID, err := c.DeployMetadataZipWithTests(ctx, zipData, metadata.TestLevelRunLocalTests, nil)
+	deployID, err := c.deployApexTriggerZipWithTests(ctx, zipData, metadata.TestLevelRunLocalTests, nil)
 	if err != nil {
 		return fmt.Errorf("failed to deploy destructive apex trigger for %s: %w", triggerName, err)
 	}
