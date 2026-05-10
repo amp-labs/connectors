@@ -17,6 +17,12 @@ var (
 	errDeployFailed            = errors.New("apex trigger deployment failed")
 	errDeployPollTimeout       = errors.New("deploy poll timeout")
 	errDestructiveDeployFailed = errors.New("destructive apex trigger deployment failed")
+	// Returned by upsertQuotaOptimizationFields when ManualCheckboxCreation is set
+	// but one or more declared checkbox fields are not present in Salesforce.
+	errManualCheckboxFieldMissing = errors.New("manual checkbox custom field does not exist in Salesforce")
+	// Returned by the verify-only apex trigger paths when ManualApexTriggerCreation
+	// is set but one or more expected triggers are not present in Salesforce.
+	errManualApexTriggerMissing = errors.New("manual apex trigger does not exist in Salesforce")
 )
 
 type RegistrationParams struct {
