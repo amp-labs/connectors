@@ -192,7 +192,7 @@ func (c *Connector) deployApexTriggersForCDC(
 }
 
 // verifyApexTriggersForCDC takes the verify-only path used when
-// SubscriptionRequest.ManualApexTriggerCreation is true. It builds the same
+// SubscriptionRequest.ManualApexTriggerManagement is true. It builds the same
 // apex trigger params as deployApexTriggersForCDC (so trigger names match what
 // the deploy path would have generated), best-effort checks each trigger is
 // visible in Salesforce, and returns the corresponding ApexTrigger entries
@@ -634,7 +634,7 @@ func (c *Connector) redeployExistingApexTriggers(
 	// kept triggers and we don't destructively delete orphans. Best-effort
 	// warn per missing trigger (visibility-or-existence — same warn-and-continue
 	// contract as Subscribe's manual path) and move on.
-	if req != nil && req.ManualApexTriggerCreation {
+	if req != nil && req.ManualApexTriggerManagement {
 		c.warnIfExistingApexTriggersMissing(ctx, triggerParams, diff)
 
 		return nil

@@ -25,16 +25,16 @@ type SubscribeResult struct {
 	QuotaOptimizationObjectFields map[common.ObjectName]string
 	ApexTriggers                  map[common.ObjectName]*ApexTrigger
 
-	// ManualCheckboxCreation mirrors SubscriptionRequest.ManualCheckboxCreation
+	// ManualCheckboxManagement mirrors SubscriptionRequest.ManualCheckboxManagement
 	// so DeleteSubscription (which only sees the result) can honor the caller-
 	// owns-lifecycle contract. See SubscriptionRequest's "Manual-mode contract"
 	// for the full semantics, including what happens when the flag is toggled
 	// across calls.
-	ManualCheckboxCreation bool
+	ManualCheckboxManagement bool
 
-	// ManualApexTriggerCreation mirrors SubscriptionRequest.ManualApexTriggerCreation.
+	// ManualApexTriggerManagement mirrors SubscriptionRequest.ManualApexTriggerManagement.
 	// See SubscriptionRequest's "Manual-mode contract" for the full semantics.
-	ManualApexTriggerCreation bool
+	ManualApexTriggerManagement bool
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -90,11 +90,11 @@ type SubscriptionRequest struct {
 	// Callers needing stricter ownership semantics (per-artifact tagging,
 	// reject-on-toggle, etc.) should layer that on top of this contract.
 
-	// ManualCheckboxCreation: see "Manual-mode contract" above.
-	ManualCheckboxCreation bool
+	// ManualCheckboxManagement: see "Manual-mode contract" above.
+	ManualCheckboxManagement bool
 
-	// ManualApexTriggerCreation: see "Manual-mode contract" above.
-	ManualApexTriggerCreation bool
+	// ManualApexTriggerManagement: see "Manual-mode contract" above.
+	ManualApexTriggerManagement bool
 }
 
 // subscribeProgress tracks which reversible operations completed during executeSubscribe,
@@ -200,8 +200,8 @@ func (c *Connector) executeSubscribe(
 	}
 
 	if req != nil {
-		sfRes.ManualCheckboxCreation = req.ManualCheckboxCreation
-		sfRes.ManualApexTriggerCreation = req.ManualApexTriggerCreation
+		sfRes.ManualCheckboxManagement = req.ManualCheckboxManagement
+		sfRes.ManualApexTriggerManagement = req.ManualApexTriggerManagement
 	}
 
 	progress := &subscribeProgress{
@@ -215,7 +215,7 @@ func (c *Connector) executeSubscribe(
 
 	// Skip the upsert flag in manual mode: no Metadata API write occurred, so
 	// rollback must not attempt to delete the (caller-managed) fields.
-	if req == nil || !req.ManualCheckboxCreation {
+	if req == nil || !req.ManualCheckboxManagement {
 		progress.quotaFieldsUpserted = true
 	}
 
@@ -233,12 +233,12 @@ func (c *Connector) executeSubscribe(
 	// (b) once ECMs go live, the trigger is already maintaining the indicator,
 	// so no UPDATE events get silently filtered out during the setup window.
 	//
-	// In ManualApexTriggerCreation mode the deploy is skipped: we best-effort
+	// In ManualApexTriggerManagement mode the deploy is skipped: we best-effort
 	// warn for any trigger the connector can't see and continue.
 	// progress.deployedTriggers stays nil so the rollback path leaves the
 	// caller's triggers alone. The Tooling API SOQL itself can still error
 	// (e.g. params build), so we propagate any error from verifyApexTriggersForCDC.
-	if req != nil && req.ManualApexTriggerCreation {
+	if req != nil && req.ManualApexTriggerManagement {
 		triggers, err := c.verifyApexTriggersForCDC(ctx, params, req)
 		sfRes.ApexTriggers = triggers
 
@@ -379,7 +379,7 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 
 	// In manual mode the caller manages trigger lifecycle: leave sfRes.ApexTriggers
 	// populated (they still exist in Salesforce) and do not destructively deploy.
-	if !sfRes.ManualApexTriggerCreation {
+	if !sfRes.ManualApexTriggerManagement {
 		for objName, trigger := range sfRes.ApexTriggers {
 			if trigger == nil {
 				slog.Warn("apex trigger entry is nil, skipping delete",
@@ -409,7 +409,7 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 
 	// In manual mode the caller manages checkbox field lifecycle: leave the
 	// QuotaOptimizationObjectFields map populated and do not call DeleteMetadata.
-	if !sfRes.ManualCheckboxCreation && len(sfRes.QuotaOptimizationObjectFields) > 0 {
+	if !sfRes.ManualCheckboxManagement && len(sfRes.QuotaOptimizationObjectFields) > 0 {
 		deleteFields := make(map[common.ObjectName][]string)
 
 		for objectName, fieldName := range sfRes.QuotaOptimizationObjectFields {
@@ -581,7 +581,7 @@ func (c *Connector) executeUpdateSubscription(
 
 	// Skip the upsert flag in manual mode: no Metadata API write occurred, so
 	// rollback must not attempt to delete the (caller-managed) fields.
-	if req == nil || !req.ManualCheckboxCreation {
+	if req == nil || !req.ManualCheckboxManagement {
 		progress.quotaFieldsUpserted = true
 	}
 
@@ -646,8 +646,8 @@ func (c *Connector) executeUpdateSubscription(
 
 		innerParams.Request = &SubscriptionRequest{
 			QuotaOptimizationObjectFields: innerFields,
-			ManualCheckboxCreation:        req.ManualCheckboxCreation,
-			ManualApexTriggerCreation:     req.ManualApexTriggerCreation,
+			ManualCheckboxManagement:      req.ManualCheckboxManagement,
+			ManualApexTriggerManagement:   req.ManualApexTriggerManagement,
 		}
 	}
 
@@ -846,8 +846,8 @@ func buildUpdatedSubscribeResult(
 	}
 
 	if req != nil {
-		newState.ManualCheckboxCreation = req.ManualCheckboxCreation
-		newState.ManualApexTriggerCreation = req.ManualApexTriggerCreation
+		newState.ManualCheckboxManagement = req.ManualCheckboxManagement
+		newState.ManualApexTriggerManagement = req.ManualApexTriggerManagement
 	}
 
 	return newState
@@ -962,7 +962,7 @@ func prepareQuotaOptimizationObjectFieldsForUpdate(
 // map is silently shrunk; callers that reuse the same req pointer across multiple
 // calls should construct a fresh req per call to avoid observing the mutation.
 //
-// When req.ManualCheckboxCreation is true the function takes a verify-only path:
+// When req.ManualCheckboxManagement is true the function takes a verify-only path:
 // it skips the UpsertMetadata call and instead checks each (now post-pruning)
 // field exists in Salesforce, returning errManualCheckboxFieldMissing for any
 // that don't. The phantom-pruning still runs so downstream consumers see the
@@ -1001,7 +1001,7 @@ func (c *Connector) upsertQuotaOptimizationFields(
 		return nil
 	}
 
-	if req.ManualCheckboxCreation {
+	if req.ManualCheckboxManagement {
 		c.warnIfQuotaOptimizationFieldsMissing(ctx, req)
 
 		return nil
@@ -1018,7 +1018,7 @@ func (c *Connector) upsertQuotaOptimizationFields(
 
 // warnIfQuotaOptimizationFieldsMissing best-effort checks that each declared
 // quota-optimization field is visible to the connector in Salesforce. Used by
-// the ManualCheckboxCreation path of upsertQuotaOptimizationFields.
+// the ManualCheckboxManagement path of upsertQuotaOptimizationFields.
 //
 // Visibility — not strict existence — is what we can observe: the Tooling API
 // SOQL against CustomField may return zero rows because the field genuinely
