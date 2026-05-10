@@ -150,3 +150,8 @@ test/salesforce/apex/apex
 /subscribe
 subscriber
 test/salesforce/subscribe/subscribe
+
+# apex-trigger-gen script default output dir
+apex-deploy/
+# apex-trigger-gen built binary (if `go build` runs from the script dir)
+/apex-trigger-gen
