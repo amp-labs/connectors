@@ -198,9 +198,11 @@ func (c *Connector) executeSubscribe(
 	// (b) once ECMs go live, the trigger is already maintaining the indicator,
 	// so no UPDATE events get silently filtered out during the setup window.
 	//
-	// In ManualApexTriggerCreation mode the deploy is skipped: we only verify the
-	// caller-managed triggers exist. progress.deployedTriggers stays nil so the
-	// rollback path leaves the caller's triggers alone.
+	// In ManualApexTriggerCreation mode the deploy is skipped: we best-effort
+	// warn for any trigger the connector can't see and continue.
+	// progress.deployedTriggers stays nil so the rollback path leaves the
+	// caller's triggers alone. The Tooling API SOQL itself can still error
+	// (e.g. params build), so we propagate any error from verifyApexTriggersForCDC.
 	if req != nil && req.ManualApexTriggerCreation {
 		triggers, err := c.verifyApexTriggersForCDC(ctx, params, req)
 		sfRes.ApexTriggers = triggers
@@ -965,7 +967,9 @@ func (c *Connector) upsertQuotaOptimizationFields(
 	}
 
 	if req.ManualCheckboxCreation {
-		return c.verifyQuotaOptimizationFieldsExist(ctx, req)
+		c.warnIfQuotaOptimizationFieldsMissing(ctx, req)
+
+		return nil
 	}
 
 	if _, err := c.UpsertMetadata(ctx, &common.UpsertMetadataParams{
@@ -977,38 +981,45 @@ func (c *Connector) upsertQuotaOptimizationFields(
 	return nil
 }
 
-// verifyQuotaOptimizationFieldsExist checks that every quota-optimization field
-// declared in req.QuotaOptimizationObjectFields already exists in Salesforce.
-// Used by the ManualCheckboxCreation path of upsertQuotaOptimizationFields where
-// the caller is responsible for creating the fields outside this connector.
+// warnIfQuotaOptimizationFieldsMissing best-effort checks that each declared
+// quota-optimization field is visible to the connector in Salesforce. Used by
+// the ManualCheckboxCreation path of upsertQuotaOptimizationFields.
 //
-// Returns errManualCheckboxFieldMissing wrapping the list of missing fields if
-// any are absent so the caller learns about every missing field in one round
-// rather than fixing them one at a time.
-func (c *Connector) verifyQuotaOptimizationFieldsExist(
+// Visibility — not strict existence — is what we can observe: the Tooling API
+// SOQL against CustomField may return zero rows because the field genuinely
+// doesn't exist OR because the connector's user lacks visibility/permission.
+// Either way we surface a warn and proceed; if the field truly isn't there,
+// CreateEventChannelMember will reject the filter expression downstream with
+// a clearer "No such column" error than we could produce here, so an early
+// hard-fail would only convert a precise downstream error into a vague
+// upstream one and would also block legitimate-but-permission-restricted setups.
+func (c *Connector) warnIfQuotaOptimizationFieldsMissing(
 	ctx context.Context, req *SubscriptionRequest,
-) error {
-	missing := make([]string, 0)
-
+) {
 	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
 		apiName := customFieldAPIName(fieldName)
 
 		exists, err := c.CustomCheckboxFieldExists(ctx, string(objectName), apiName)
 		if err != nil {
-			return fmt.Errorf("failed to check checkbox field existence for %s.%s: %w",
-				objectName, apiName, err)
+			slog.WarnContext(ctx,
+				"manual checkbox field existence check errored; assuming caller-managed and continuing",
+				"object", objectName,
+				"field", apiName,
+				"error", err,
+			)
+
+			continue
 		}
 
 		if !exists {
-			missing = append(missing, fmt.Sprintf("%s.%s", objectName, apiName))
+			slog.WarnContext(ctx,
+				"manual checkbox field not visible to connector; if it really is missing, "+
+					"CreateEventChannelMember will fail filter validation downstream",
+				"object", objectName,
+				"field", apiName,
+			)
 		}
 	}
-
-	if len(missing) > 0 {
-		return fmt.Errorf("%w: %s", errManualCheckboxFieldMissing, strings.Join(missing, ", "))
-	}
-
-	return nil
 }
 
 // isObjectSubscribed reports whether objName matches any key in events using the

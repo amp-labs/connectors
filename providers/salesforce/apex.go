@@ -194,11 +194,18 @@ func (c *Connector) deployApexTriggersForCDC(
 // verifyApexTriggersForCDC takes the verify-only path used when
 // SubscriptionRequest.ManualApexTriggerCreation is true. It builds the same
 // apex trigger params as deployApexTriggersForCDC (so trigger names match what
-// the deploy path would have generated), checks each trigger exists in
-// Salesforce, and returns the corresponding ApexTrigger entries for storage in
-// SubscribeResult.ApexTriggers. Returns errManualApexTriggerMissing wrapping
-// the list of missing triggers if any are absent so the caller learns about
-// every missing trigger in one round.
+// the deploy path would have generated), best-effort checks each trigger is
+// visible in Salesforce, and returns the corresponding ApexTrigger entries
+// for storage in SubscribeResult.ApexTriggers.
+//
+// Visibility — not strict existence — is what we can observe: the Tooling API
+// SOQL against ApexTrigger may return zero rows because the trigger genuinely
+// doesn't exist OR because the connector's user lacks visibility/permission.
+// Either way we surface a warn and continue; the caller opted into manual
+// trigger lifecycle. The runtime tell that the trigger truly is missing is a
+// soft one — UPDATE events will silently fail the channel-member filter
+// because the indicator field never flips to true — so this branch records a
+// warning per missing trigger rather than failing Subscribe upfront.
 func (c *Connector) verifyApexTriggersForCDC(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -210,21 +217,13 @@ func (c *Connector) verifyApexTriggersForCDC(
 	}
 
 	triggers := make(map[common.ObjectName]*ApexTrigger, len(triggerParams))
-	missing := make([]string, 0)
 
 	for objName, tParams := range triggerParams {
-		exists, err := c.ApexTriggerExists(ctx, tParams.TriggerName)
-		if err != nil {
-			return nil, fmt.Errorf("failed to check apex trigger existence for object %s: %w",
-				objName, err)
-		}
+		warnIfApexTriggerMissing(ctx, c, tParams.TriggerName, objName)
 
-		if !exists {
-			missing = append(missing, fmt.Sprintf("%s (object=%s)", tParams.TriggerName, objName))
-
-			continue
-		}
-
+		// Always emit the trigger entry so sfRes.ApexTriggers describes what
+		// the caller intended; a missing trigger is a runtime concern (silent
+		// drop of UPDATE events), not a setup-time failure.
 		triggers[objName] = &ApexTrigger{
 			ObjectName:     objName,
 			TriggerName:    tParams.TriggerName,
@@ -233,11 +232,36 @@ func (c *Connector) verifyApexTriggersForCDC(
 		}
 	}
 
-	if len(missing) > 0 {
-		return triggers, fmt.Errorf("%w: %s", errManualApexTriggerMissing, strings.Join(missing, ", "))
+	return triggers, nil
+}
+
+// warnIfApexTriggerMissing logs a per-trigger warning when the existence check
+// either errors (e.g. permission/visibility) or returns false. Shared by the
+// Subscribe and UpdateSubscription manual-mode paths.
+func warnIfApexTriggerMissing(
+	ctx context.Context, c *Connector, triggerName string, objName common.ObjectName,
+) {
+	exists, err := c.ApexTriggerExists(ctx, triggerName)
+	if err != nil {
+		slog.WarnContext(ctx,
+			"manual apex trigger existence check errored; assuming caller-managed and continuing",
+			"object", objName,
+			"trigger", triggerName,
+			"error", err,
+		)
+
+		return
 	}
 
-	return triggers, nil
+	if !exists {
+		slog.WarnContext(ctx,
+			"manual apex trigger not visible to connector; if it really is missing, "+
+				"UPDATE CDC events will be silently dropped at runtime because the "+
+				"indicator field will never flip to true",
+			"object", objName,
+			"trigger", triggerName,
+		)
+	}
 }
 
 // DeployMetadataZip initiates a deploy of a zip package to the connected Salesforce org
@@ -584,7 +608,7 @@ func toApexTriggers(
 // would deploy twice (once here, once in inner Subscribe), doubling the
 // metadata-deploy time per added object.
 //
-//nolint:cyclop
+//nolint:cyclop,funlen
 func (c *Connector) redeployExistingApexTriggers(
 	ctx context.Context,
 	req *SubscriptionRequest,
@@ -607,10 +631,13 @@ func (c *Connector) redeployExistingApexTriggers(
 	}
 
 	// In manual mode the caller manages trigger lifecycle: we don't redeploy
-	// kept triggers and we don't destructively delete orphans. Just verify the
-	// triggers we expect to exist still exist.
+	// kept triggers and we don't destructively delete orphans. Best-effort
+	// warn per missing trigger (visibility-or-existence — same warn-and-continue
+	// contract as Subscribe's manual path) and move on.
 	if req != nil && req.ManualApexTriggerCreation {
-		return c.verifyExistingApexTriggers(ctx, triggerParams, diff)
+		c.warnIfExistingApexTriggersMissing(ctx, triggerParams, diff)
+
+		return nil
 	}
 
 	// Destructively remove triggers for objects that previously had a quota
@@ -659,32 +686,21 @@ func (c *Connector) redeployExistingApexTriggers(
 	return nil
 }
 
-// verifyExistingApexTriggers is the manual-mode counterpart to
-// redeployExistingApexTriggers's deploy/orphan-delete loop. It checks that
-// every existing-object trigger the caller declared still exists in Salesforce
-// and refreshes diff.apexTriggersExisting with the verified entries (mirroring
-// the bookkeeping the deploy path performs). Orphan triggers — those present
-// in diff.apexTriggersExisting but no longer in triggerParams — are left
+// warnIfExistingApexTriggersMissing is the manual-mode counterpart to
+// redeployExistingApexTriggers's deploy/orphan-delete loop. It best-effort
+// warns per kept-object trigger that is not visible to the connector and
+// refreshes diff.apexTriggersExisting with the declared entries (mirroring
+// the bookkeeping the deploy path performs) so the merged result describes
+// what the caller intended. Orphan triggers — present in
+// diff.apexTriggersExisting but no longer in triggerParams — are left
 // untouched because the caller owns trigger lifecycle.
-func (c *Connector) verifyExistingApexTriggers(
+func (c *Connector) warnIfExistingApexTriggersMissing(
 	ctx context.Context,
 	triggerParams map[common.ObjectName]*metadata.ApexTriggerParams,
 	diff subscriptionDiff,
-) error {
-	missing := make([]string, 0)
-
+) {
 	for objName, tParams := range triggerParams {
-		exists, err := c.ApexTriggerExists(ctx, tParams.TriggerName)
-		if err != nil {
-			return fmt.Errorf("failed to check apex trigger existence for object %s: %w",
-				objName, err)
-		}
-
-		if !exists {
-			missing = append(missing, fmt.Sprintf("%s (object=%s)", tParams.TriggerName, objName))
-
-			continue
-		}
+		warnIfApexTriggerMissing(ctx, c, tParams.TriggerName, objName)
 
 		diff.apexTriggersExisting[objName] = &ApexTrigger{
 			ObjectName:     objName,
@@ -693,12 +709,6 @@ func (c *Connector) verifyExistingApexTriggers(
 			WatchFields:    tParams.WatchFields,
 		}
 	}
-
-	if len(missing) > 0 {
-		return fmt.Errorf("%w: %s", errManualApexTriggerMissing, strings.Join(missing, ", "))
-	}
-
-	return nil
 }
 
 func formatDeployFailureDetails(result *DeployResult) string {
