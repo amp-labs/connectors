@@ -25,16 +25,15 @@ type SubscribeResult struct {
 	QuotaOptimizationObjectFields map[common.ObjectName]string
 	ApexTriggers                  map[common.ObjectName]*ApexTrigger
 
-	// ManualCheckboxCreation mirrors SubscriptionRequest.ManualCheckboxCreation.
-	// When true, the connector skipped creating quota-optimization checkbox fields
-	// at subscribe time (after verifying they already existed) and DeleteSubscription
-	// must skip deleting them so the caller-managed artifacts are not touched.
+	// ManualCheckboxCreation mirrors SubscriptionRequest.ManualCheckboxCreation
+	// so DeleteSubscription (which only sees the result) can honor the caller-
+	// owns-lifecycle contract. See SubscriptionRequest's "Manual-mode contract"
+	// for the full semantics, including what happens when the flag is toggled
+	// across calls.
 	ManualCheckboxCreation bool
 
 	// ManualApexTriggerCreation mirrors SubscriptionRequest.ManualApexTriggerCreation.
-	// When true, the connector skipped deploying apex triggers at subscribe time
-	// (after verifying they already existed) and DeleteSubscription must skip
-	// destructive deletes so the caller-managed triggers are not touched.
+	// See SubscriptionRequest's "Manual-mode contract" for the full semantics.
 	ManualApexTriggerCreation bool
 }
 
@@ -55,10 +54,46 @@ type SubscriptionRequest struct {
 	// events through and only passes UPDATE events where the checkbox is true.
 	QuotaOptimizationObjectFields map[common.ObjectName]string
 
-	// ManualCheckboxCreation indicates that the caller wants to create the checkbox field manually.
+	// Manual-mode contract for the two flags below.
+	//
+	// When set, the caller owns the corresponding artifact's lifecycle: the
+	// connector skips creation at subscribe time and skips destructive cleanup
+	// at delete time. Existence is best-effort verified via Tooling API SOQL —
+	// any miss (truly missing OR permission/visibility) is logged as a warn
+	// and the call continues. A truly-missing checkbox field surfaces as a
+	// downstream INVALID_FIELD error from CreateEventChannelMember; a
+	// truly-missing trigger silently drops UPDATE events at runtime, which
+	// the per-trigger warn flags.
+	//
+	// Two invariants make this safe even though the flag is global per
+	// subscription rather than per-artifact:
+	//
+	//  1. PlatformEventChannelMember (and its filter expression) is created
+	//     and deleted unconditionally — neither flag gates that path. The
+	//     filter expression's lifecycle is always correct regardless of who
+	//     manages the field/trigger it references.
+	//
+	//  2. Toggling the flag across calls (Subscribe → UpdateSubscription, or
+	//     prevState → DeleteSubscription) is treated as an ownership transfer
+	//     for ALL referenced artifacts, including pre-toggle ones:
+	//
+	//     - auto → manual: connector stops touching previously-auto-created
+	//       artifacts; subsequent DeleteSubscription leaves them as orphans
+	//       in Salesforce. Orphans are inert from a CDC standpoint (filter
+	//       expression is gone with the channel member) but the trigger keeps
+	//       firing on writes and the field still counts against the per-object
+	//       custom-field cap.
+	//     - manual → auto: connector takes over and may overwrite the caller's
+	//       trigger code via redeploy and the caller's field metadata via
+	//       upsert; subsequent DeleteSubscription destructively removes them.
+	//
+	// Callers needing stricter ownership semantics (per-artifact tagging,
+	// reject-on-toggle, etc.) should layer that on top of this contract.
+
+	// ManualCheckboxCreation: see "Manual-mode contract" above.
 	ManualCheckboxCreation bool
 
-	// ManualApexTriggerCreation indicates that the caller wants to create the apex trigger manually.
+	// ManualApexTriggerCreation: see "Manual-mode contract" above.
 	ManualApexTriggerCreation bool
 }
 
