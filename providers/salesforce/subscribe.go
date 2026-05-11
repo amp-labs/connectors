@@ -1034,7 +1034,7 @@ func (c *Connector) warnIfQuotaOptimizationFieldsMissing(
 	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
 		apiName := customFieldAPIName(fieldName)
 
-		exists, err := c.CustomCheckboxFieldExists(ctx, string(objectName), apiName)
+		exists, err := c.CustomFieldExists(ctx, string(objectName), apiName)
 		if err != nil {
 			slog.WarnContext(ctx,
 				"manual checkbox field existence check errored; assuming caller-managed and continuing",

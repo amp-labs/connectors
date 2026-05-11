@@ -467,13 +467,13 @@ var (
 	errEventChannelMemberMissingMD = errors.New("UpdateEventChannelMember: GET returned empty metadata")
 )
 
-// CustomCheckboxFieldExists reports whether a custom field with the given API
+// CustomFieldExists reports whether a custom field with the given API
 // name (must include the __c suffix) exists on the named Salesforce object.
 //
 // Implementation queries the Tooling API CustomField sobject by TableEnumOrId
 // and DeveloperName. CustomField.DeveloperName stores the suffix-less form, so
 // the trailing __c is stripped before the query.
-func (c *Connector) CustomCheckboxFieldExists(
+func (c *Connector) CustomFieldExists(
 	ctx context.Context, objectName, fieldAPIName string,
 ) (bool, error) {
 	developerName := strings.TrimSuffix(fieldAPIName, "__c")

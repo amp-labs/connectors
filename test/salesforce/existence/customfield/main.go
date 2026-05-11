@@ -1,13 +1,13 @@
-// Integration test for Connector.CustomCheckboxFieldExists.
+// Integration test for Connector.CustomFieldExists.
 //
 // Flow:
 //  1. Create a checkbox custom field on Account via UpsertMetadata.
-//  2. CustomCheckboxFieldExists should report true for the new field.
-//  3. CustomCheckboxFieldExists should report false for a guaranteed-missing
+//  2. CustomFieldExists should report true for the new field.
+//  3. CustomFieldExists should report false for a guaranteed-missing
 //     field name (negative case so we don't get a false positive that returns
 //     true for everything).
 //  4. Delete the field via DeleteMetadata.
-//  5. CustomCheckboxFieldExists should report false post-delete.
+//  5. CustomFieldExists should report false post-delete.
 //
 // On any failure the script aborts via utils.Fail (os.Exit(1)) and the field
 // may be left behind in Salesforce; re-running is idempotent because
@@ -48,11 +48,11 @@ func main() {
 	createCheckboxField(ctx, conn)
 
 	// Step 2: Existence check should return true.
-	fmt.Println("====== CustomCheckboxFieldExists (expect true) ======")
+	fmt.Println("====== CustomFieldExists (expect true) ======")
 	assertExists(ctx, conn, objectName, fieldAPIName, true)
 
 	// Step 3: Negative case — a fake field should return false.
-	fmt.Printf("====== CustomCheckboxFieldExists for fake %s (expect false) ======\n", fakeFieldAPIName)
+	fmt.Printf("====== CustomFieldExists for fake %s (expect false) ======\n", fakeFieldAPIName)
 	assertExists(ctx, conn, objectName, fakeFieldAPIName, false)
 
 	// Step 4: Delete the field.
@@ -64,7 +64,7 @@ func main() {
 	// flake bites the test, retry with backoff. For a freshly-deleted custom
 	// field the SOQL query hits authoritative metadata so it's typically
 	// immediate.
-	fmt.Println("====== CustomCheckboxFieldExists post-delete (expect false) ======")
+	fmt.Println("====== CustomFieldExists post-delete (expect false) ======")
 	assertExists(ctx, conn, objectName, fieldAPIName, false)
 
 	fmt.Println("====== Done ======")
@@ -77,7 +77,7 @@ func createCheckboxField(ctx context.Context, conn *salesforce.Connector) {
 				{
 					FieldName:   fieldAPIName,
 					DisplayName: fieldDisplayName,
-					Description: "Temporary field created by CustomCheckboxFieldExists integration test. Safe to delete.",
+					Description: "Temporary field created by CustomFieldExists integration test. Safe to delete.",
 					ValueType:   common.FieldTypeBoolean,
 					StringOptions: &common.StringFieldOptions{
 						DefaultValue: new("false"),
@@ -101,15 +101,15 @@ func deleteCheckboxField(ctx context.Context, conn *salesforce.Connector) {
 }
 
 func assertExists(ctx context.Context, conn *salesforce.Connector, obj, field string, want bool) {
-	got, err := conn.CustomCheckboxFieldExists(ctx, obj, field)
+	got, err := conn.CustomFieldExists(ctx, obj, field)
 	if err != nil {
-		utils.Fail("CustomCheckboxFieldExists returned error", "object", obj, "field", field, "error", err)
+		utils.Fail("CustomFieldExists returned error", "object", obj, "field", field, "error", err)
 	}
 
 	if got != want {
-		utils.Fail("CustomCheckboxFieldExists returned unexpected value",
+		utils.Fail("CustomFieldExists returned unexpected value",
 			"object", obj, "field", field, "want", want, "got", got)
 	}
 
-	fmt.Printf("OK: CustomCheckboxFieldExists(%s.%s) = %t\n", obj, field, got)
+	fmt.Printf("OK: CustomFieldExists(%s.%s) = %t\n", obj, field, got)
 }
