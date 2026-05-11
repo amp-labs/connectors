@@ -119,8 +119,8 @@ func (c *Connector) getCRMSearchURL(objectName string) (*urlbuilder.URL, error) 
 // https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/create-campaign
 // https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/update-campaign
 // https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/delete-campaign
-func (c *Connector) getMarketingURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, "marketing", objectName, core.APIVersion2026March)
+func (c *Connector) getMarketingURL(object *core.ObjectDescription) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ProviderInfo().BaseURL, "marketing", object.Path, object.Version)
 }
 
 func (c *Connector) crmURL(paths ...string) (*urlbuilder.URL, error) {

@@ -26,6 +26,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCampaignsLast := testutils.DataFromFile(t, "read/campaigns/2-last-page.json")
 	responseMarketingEmailFirst := testutils.DataFromFile(t, "read/marketing-emails/1-first-page.json")
 	responseMarketingEmailLast := testutils.DataFromFile(t, "read/marketing-emails/2-last-page.json")
+	responseMarketingForms := testutils.DataFromFile(t, "read/marketing-forms.json")
 
 	tests := []testroutines.Read{
 		{
@@ -452,6 +453,36 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				NextPage: "",
 				Done:     true,
+			},
+		}, {
+			Name: "Read marketing forms",
+			Input: common.ReadParams{
+				ObjectName: "forms",
+				Fields:     connectors.Fields("name", "updatedAt"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/marketing/forms/2026-09-beta"),
+				Then:  mockserver.Response(http.StatusOK, responseMarketingForms),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"name":      "Tell me about yourself",
+							"updatedat": "2026-05-11T17:30:51.442Z",
+						},
+						Raw: map[string]any{
+							"archived": false,
+							"formType": "hubspot",
+						},
+						Id: "591e2731-c869-445d-b422-26f43145e9d2",
+					},
+				},
+				NextPage: "https://api.hubapi.com/marketing/forms/2026-09-beta?limit=1&after=MQ%3D%3D",
+				Done:     false,
 			},
 		},
 	}

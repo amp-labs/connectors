@@ -12,6 +12,8 @@ const (
 	DefaultPageSizeInt = int64(100)
 )
 
+const ObjectMarketingForms = "forms"
+
 //nolint:gochecknoglobals
 var (
 
@@ -35,6 +37,7 @@ var (
 		"campaigns": {
 			Path:              "campaigns",
 			RecordTransformer: common.FlattenNestedFields("properties"),
+			Version:           APIVersion2026March,
 		},
 		// "marketing/emails" refers to HubSpot marketing emails, which are distinct
 		// from the CRM email activity resource.
@@ -51,6 +54,13 @@ var (
 		"marketing/emails": {
 			Path:              "emails",
 			RecordTransformer: nil, // None. Fields and Raw are the same.
+			Version:           APIVersion2026March,
+		},
+		// https://developers.hubspot.com/docs/api-reference/2026-09-beta/marketing/forms/get-forms
+		ObjectMarketingForms: {
+			Path:              "forms",
+			RecordTransformer: nil,
+			Version:           APIVersion2026Sep,
 		},
 	}
 )
@@ -60,4 +70,6 @@ type ObjectDescription struct {
 	Path string
 	// RecordTransformer describes how to convert raw response and then extract selected fields by read operation.
 	RecordTransformer common.RecordTransformer
+	// Hubspot API Version.
+	Version string
 }
