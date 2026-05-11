@@ -72,6 +72,12 @@ const objectCompensations = "compensations"
 var (
 	// companyScopedCreate creates under POST /v1/companies/{company_id}/{object}.
 	// company_id comes from the connector struct (set at construction time).
+	//
+	// objectCustomFields is intentionally absent: Gusto's public API exposes
+	// only GET endpoints for custom fields (definitions + per-employee values).
+	// Definitions are managed through Gusto's admin UI, not the API. Verified
+	// against the Gusto docs sitemap (App Integrations + Embedded Payroll
+	// tracks). See providers/gusto/custom.go for the read-side handling.
 	companyScopedCreate = datautils.NewStringSet(
 		objectEmployees,
 		objectLocations,
@@ -83,7 +89,6 @@ var (
 		objectCompanyBenefits,
 		objectAdmins,
 		objectContractorPayments,
-		objectCustomFields,
 	)
 
 	// employeeScopedCreate creates under POST /v1/employees/{employee_id}/{object}.
