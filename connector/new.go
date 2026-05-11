@@ -118,6 +118,7 @@ import (
 	"github.com/amp-labs/connectors/providers/procore"
 	"github.com/amp-labs/connectors/providers/pylon"
 	"github.com/amp-labs/connectors/providers/quickbooks"
+	"github.com/amp-labs/connectors/providers/ramp"
 	"github.com/amp-labs/connectors/providers/recurly"
 	"github.com/amp-labs/connectors/providers/revenuecat"
 	"github.com/amp-labs/connectors/providers/ringcentral"
@@ -285,6 +286,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pylon:                             wrapper(newPylonConnector),
 	providers.QuickBooks:                        wrapper(newQuickbooksConnector),
 	providers.QuickbooksSandbox:                 wrapper(newQuickbooksSandboxConnector),
+	providers.Ramp:                              wrapper(newRampConnector),
+	providers.RampDemo:                          wrapper(newRampDemoConnector),
 	providers.Recurly:                           wrapper(newRecurlyConnector),
 	providers.RevenueCat:                        wrapper(newRevenueCatConnector),
 	providers.RingCentral:                       wrapper(newRingCentral),
@@ -1267,6 +1270,14 @@ func newAircallConnector(
 
 func newSolarWindsConnector(params common.ConnectorParams) (*solarwinds.Connector, error) {
 	return solarwinds.NewConnector(params)
+}
+
+func newRampConnector(params common.ConnectorParams) (*ramp.Connector, error) {
+	return ramp.NewConnector(params)
+}
+
+func newRampDemoConnector(params common.ConnectorParams) (*ramp.Connector, error) {
+	return ramp.NewDemoConnector(params)
 }
 
 func newRecurlyConnector(params common.ConnectorParams) (*recurly.Connector, error) {
