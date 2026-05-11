@@ -7,6 +7,37 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+// Any represents a wildcard value used in response comparisons.
+//
+// When a field value in the expected response is set to Any{},
+// the comparator only checks that the field exists in the actual response,
+// without validating its concrete value.
+//
+// Example:
+//
+//	expected := &common.ReadResult{
+//		Data: []common.ReadResultData{
+//			{
+//				Raw: map[string]any{
+//					"id":        Any{},
+//					"createdAt": Any{},
+//					"status":    "active",
+//				},
+//			},
+//		},
+//	}
+//
+// In this example:
+//   - "id" and "createdAt" must be present in the response
+//   - their values can be anything
+//   - "status" must equal "active"
+//
+// Private field is used to make the type non-empty and prevent
+// accidental structural equivalence with other empty structs.
+type Any struct {
+	_ any
+}
+
 var ReadResultComparator = readResultComparator{}
 
 type readResultComparator struct{}
@@ -25,9 +56,19 @@ func (readResultComparator) SubsetRaw(actual, expected *common.ReadResult) *test
 
 	for i := range expected.Data {
 		for field := range expected.Data[i].Raw {
-			got := actual.Data[i].Raw[field]
+			got, ok := actual.Data[i].Raw[field]
 			exp := expected.Data[i].Raw[field]
+
+			if _, anyValue := exp.(Any); anyValue {
+				if !ok {
+					result.AddDiff("Data[%d].Raw[%s] is missing", i, field)
+				}
+				// As long as any value is present we are good.
+				continue
+			}
+
 			result.Assert(fmt.Sprintf("Data[%d].Raw[%s]", i, field), exp, got)
+
 		}
 	}
 
@@ -48,8 +89,17 @@ func (readResultComparator) SubsetFields(actual, expected *common.ReadResult) *t
 
 	for i := range expected.Data {
 		for field := range expected.Data[i].Fields {
-			got := actual.Data[i].Fields[field]
+			got, ok := actual.Data[i].Fields[field]
 			exp := expected.Data[i].Fields[field]
+
+			if _, anyValue := exp.(Any); anyValue {
+				if !ok {
+					result.AddDiff("Data[%d].Raw[%s] is missing", i, field)
+				}
+				// As long as any value is present we are good.
+				continue
+			}
+
 			result.Assert(fmt.Sprintf("Data[%d].Fields[%s]", i, field), exp, got)
 		}
 	}

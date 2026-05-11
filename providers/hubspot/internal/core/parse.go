@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -42,6 +43,10 @@ func GetRecords(node *ajson.Node) ([]*ajson.Node, error) {
 }
 
 func GetNextRecordsURLCRM(node *ajson.Node) (string, error) {
+	return offsetPagination(node)
+}
+
+func offsetPagination(node *ajson.Node) (string, error) {
 	hasMore, err := jsonquery.New(node).BoolWithDefault("hasMore", false)
 	if err != nil {
 		return "", err
@@ -58,6 +63,19 @@ func GetNextRecordsURLCRM(node *ajson.Node) (string, error) {
 	}
 
 	return strconv.FormatInt(offset, 10), nil
+}
+
+func NextPageTokenFromOffset(url *urlbuilder.URL) common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		offset, err := offsetPagination(node)
+		if err != nil || offset == "" {
+			return "", err
+		}
+
+		url.WithQueryParam("offset", offset)
+
+		return url.String(), nil
+	}
 }
 
 // GetDataMarshaller returns a function that accepts a list of records and fields

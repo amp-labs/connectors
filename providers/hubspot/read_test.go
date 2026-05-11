@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -27,6 +28,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseMarketingEmailFirst := testutils.DataFromFile(t, "read/marketing-emails/1-first-page.json")
 	responseMarketingEmailLast := testutils.DataFromFile(t, "read/marketing-emails/2-last-page.json")
 	responseMarketingForms := testutils.DataFromFile(t, "read/marketing-forms.json")
+	responseEngagements := testutils.DataFromFile(t, "read/engagements.json")
 
 	tests := []testroutines.Read{
 		{
@@ -482,6 +484,39 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 				},
 				NextPage: "https://api.hubapi.com/marketing/forms/2026-09-beta?limit=1&after=MQ%3D%3D",
+				Done:     false,
+			},
+		}, {
+			Name: "Read engagements",
+			Input: common.ReadParams{
+				ObjectName: "engagements-legacy",
+				Fields:     connectors.Fields("bodyPreview", "lastUpdated"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/engagements/v1/engagements/paged"),
+				Then:  mockserver.Response(http.StatusOK, responseEngagements),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"bodypreview": "Regarding meeting logged on Friday, December 22, 2023 10:11 AM",
+							"lastupdated": float64(1743307535349),
+						},
+						Raw: map[string]any{
+							"engagement":     mockutils.Any{},
+							"associations":   mockutils.Any{},
+							"attachments":    []any{},
+							"scheduledTasks": mockutils.Any{},
+							"metadata":       mockutils.Any{},
+						},
+						Id: "44699354671",
+					},
+				},
+				NextPage: testroutines.URLTestServer + "/engagements/v1/engagements/paged?limit=250&offset=44699354672",
 				Done:     false,
 			},
 		},

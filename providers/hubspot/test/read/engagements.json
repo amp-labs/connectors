@@ -1,0 +1,70 @@
+{
+  "results": [
+    {
+      "engagement": {
+        "id": 44699354671,
+        "portalId": 44623425,
+        "active": true,
+        "createdAt": 1703268683752,
+        "lastUpdated": 1743307535349,
+        "createdBy": 62365053,
+        "modifiedBy": 62365053,
+        "ownerId": 641085326,
+        "type": "TASK",
+        "timestamp": 1705512600000,
+        "source": "CRM_UI",
+        "allAccessibleTeamIds": [],
+        "bodyPreview": "Regarding meeting logged on Friday, December 22, 2023 10:11 AM",
+        "queueMembershipIds": [],
+        "bodyPreviewIsTruncated": false,
+        "bodyPreviewHtml": "<html>\n <head></head>\n <body>\n Regarding meeting logged on Friday, December 22, 2023 10:11 AM\n </body>\n</html>"
+      },
+      "associations": {
+        "contactIds": [
+          16352,
+          16301,
+          16351
+        ],
+        "companyIds": [
+          18497374840
+        ],
+        "dealIds": [],
+        "ownerIds": [],
+        "workflowIds": [],
+        "ticketIds": [],
+        "contentIds": [],
+        "quoteIds": [],
+        "marketingEventIds": [],
+        "partnerClientIds": [],
+        "orderIds": [],
+        "cartIds": []
+      },
+      "attachments": [],
+      "scheduledTasks": [
+        {
+          "engagementId": 44699354671,
+          "portalId": 44623425,
+          "engagementType": "TASK",
+          "taskType": "REMINDER",
+          "timestamp": 1705512600000,
+          "uuid": "TASK:c8b7782f-6010-4e70-87e7-9a6c62924bc5"
+        }
+      ],
+      "metadata": {
+        "body": "Regarding meeting logged on Friday, December 22, 2023 10:11 AM",
+        "status": "NOT_STARTED",
+        "forObjectType": "OWNER",
+        "subject": "Follow up with Clara",
+        "taskType": "TODO",
+        "reminders": [
+          1705512600000
+        ],
+        "priority": "NONE",
+        "isAllDay": false,
+        "calendarEventId": "6pij0cj469i3eb9g68p3eb9kc8pm2bb26goj8bb665h38dphc8q36d1pck"
+      }
+    }
+  ],
+  "hasMore": true,
+  "offset": 44699354672
+}

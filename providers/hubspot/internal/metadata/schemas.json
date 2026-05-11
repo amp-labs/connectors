@@ -747,6 +747,113 @@
               "providerType": "string<date-time>"
             }
           }
+        },
+        "engagements-legacy": {
+          "displayName": "Engagements",
+          "description": "/engagements/v1/engagements/paged",
+          "responseKey": "results",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "int"
+            },
+            "portalId": {
+              "displayName": "portalId",
+              "valueType": "int",
+              "providerType": "int"
+            },
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "createdBy": {
+              "displayName": "createdBy",
+              "valueType": "other",
+              "providerType": "int"
+            },
+            "modifiedBy": {
+              "displayName": "modifiedBy",
+              "valueType": "other",
+              "providerType": "int"
+            },
+            "ownerId": {
+              "displayName": "ownerId",
+              "valueType": "other",
+              "providerType": "int"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timestamp": {
+              "displayName": "timestamp",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "source": {
+              "displayName": "source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allAccessibleTeamIds": {
+              "displayName": "allAccessibleTeamIds",
+              "valueType": "array",
+              "providerType": "array"
+            },
+            "bodyPreview": {
+              "displayName": "bodyPreview",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "queueMembershipIds": {
+              "displayName": "queueMembershipIds",
+              "valueType": "array",
+              "providerType": "array"
+            },
+            "bodyPreviewIsTruncated": {
+              "displayName": "bodyPreviewIsTruncated",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "bodyPreviewHtml": {
+              "displayName": "bodyPreviewHtmls",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "associations": {
+              "displayName": "associations",
+              "valueType": "object",
+              "providerType": "object"
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "object",
+              "providerType": "object"
+            },
+            "attachments": {
+              "displayName": "attachments",
+              "valueType": "other",
+              "providerTyper": "array"
+            },
+            "scheduledTasks": {
+              "displayName": "scheduledTasks",
+              "valueType": "array",
+              "providerTyper": "array"
+            }
+          }
         }
       }
     }

@@ -40,6 +40,8 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	case core.MarketingObjects.Has(params.ObjectName):
 		// Object is part of Hubspot Marketing API.
 		return c.readMarketing(ctx, params, core.MarketingObjects[params.ObjectName])
+	case core.MiscellaneousObjects.Has(params.ObjectName):
+		return c.readMiscAPI(ctx, params, core.MiscellaneousObjects[params.ObjectName])
 	default:
 		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
 		return c.readCRMObjectsAPI(ctx, params)
@@ -177,7 +179,7 @@ func (c *Connector) buildMarketingReadURL(
 		return nil, err
 	}
 
-	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, core.DefaultPageSize))
+	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, object.PageSize))
 
 	if params.ObjectName == core.ObjectMarketingForms {
 		// This object does not have such query params. For consistency, it is reflected here.
@@ -208,4 +210,54 @@ func makeIncrementalFilterFunc(params common.ReadParams) common.RecordsFilterFun
 		"updatedAt", time.RFC3339,
 		core.GetNextRecordsURL,
 	)
+}
+
+func (c *Connector) readMiscAPI(ctx context.Context,
+	params common.ReadParams, object core.ObjectDescription,
+) (*common.ReadResult, error) {
+	url, err := c.buildMiscURL(params, &object)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResultFiltered(
+		params,
+		resp,
+		common.MakeRecordsFunc("results"),
+		readhelper.MakeTimeFilterFuncWithZoom(
+			readhelper.Unordered,
+			readhelper.NewTimeBoundary(),
+			[]string{"engagement"}, "lastUpdated", readhelper.TimestampFormatUnixMs,
+			core.NextPageTokenFromOffset(url),
+		),
+		readhelper.MakeMarshaledDataFuncWithId(
+			object.RecordTransformer,
+			readhelper.IdFieldQuery{Zoom: []string{"engagement"}, Field: "id"},
+		),
+		params.Fields,
+	)
+}
+
+func (c *Connector) buildMiscURL(
+	params common.ReadParams, object *core.ObjectDescription,
+) (*urlbuilder.URL, error) {
+	if len(params.NextPage) != 0 {
+		// Next page
+		return urlbuilder.New(params.NextPage.String())
+	}
+
+	// First page
+	url, err := c.rootURL(object.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, object.PageSize))
+
+	return url, nil
 }
