@@ -280,11 +280,8 @@ func writeZipEntry(entry *zip.File, absOutputDir string) error {
 func printDeployHint(outputDir, testClassName string) {
 	fmt.Fprintf(os.Stdout, "\nGenerated metadata-format deploy at: %s\n\n", outputDir)
 	fmt.Fprintln(os.Stdout, "Deploy with the Salesforce CLI:")
-	fmt.Fprintf(os.Stdout, `
-  sf project deploy start \
-    --metadata-dir %s \
-    --test-level RunSpecifiedTests \
-    --tests %s
-
-`, outputDir, testClassName)
+	fmt.Fprintf(os.Stdout,
+		"\n  sf project deploy start --metadata-dir %s --test-level RunSpecifiedTests --tests %s\n\n",
+		outputDir, testClassName,
+	)
 }
