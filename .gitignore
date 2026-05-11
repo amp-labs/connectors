@@ -150,3 +150,16 @@ test/salesforce/apex/apex
 /subscribe
 subscriber
 test/salesforce/subscribe/subscribe
+
+# apex-trigger-gen script default output dir
+apex-deploy/
+# apex-trigger-gen built binary (if `go build` runs from the script dir)
+/apex-trigger-gen
+
+# Salesforce CLI per-project state (auth cache, deploy results, etc.)
+.sf/
+.sfdx/
+
+# Local SFDX project scaffold (per the apex-deploy/DEPLOY.md prerequisite —
+# it's required to run `sf project deploy …` but doesn't belong in the repo).
+sfdx-project.json
