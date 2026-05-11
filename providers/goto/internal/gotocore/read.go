@@ -145,7 +145,7 @@ func readNodeArray(node *ajson.Node, jsonPath string, nestedPath ...string) ([]m
 // directly.
 func nextPageExtractor(service objectService) common.NextPageFunc {
 	switch service { //nolint:exhaustive // HAL is the default.
-	case serviceSCIM, serviceCorporate:
+	case serviceSCIM, serviceCorporate, serviceAssist:
 		return func(*ajson.Node) (string, error) { return "", nil }
 	case serviceWebinar:
 		return webinarNextPage
