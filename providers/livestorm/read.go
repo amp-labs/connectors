@@ -16,8 +16,15 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// Default page size for list endpoints (page[size]). https://developers.livestorm.co/
-const defaultPageSize = "100"
+const (
+	// Default page size for list endpoints (page[size]). https://developers.livestorm.co/
+	defaultPageSize = "100"
+
+	apiVersion                = "v1"
+	objectEvents              = "events"
+	objectSessionChatMessages = "session_chat_messages"
+	objectJobs                = "jobs"
+)
 
 // nolint:gochecknoglobals
 var readSupportedObjects = datautils.NewStringSet(
@@ -118,13 +125,6 @@ func (c *Connector) buildGenericReadURL(params common.ReadParams) (*urlbuilder.U
 
 	return endpointURL, nil
 }
-
-const (
-	apiVersion                = "v1"
-	objectEvents              = "events"
-	objectSessionChatMessages = "session_chat_messages"
-	objectJobs                = "jobs"
-)
 
 func buildVersionedPathURL(baseURL string, path string) (*urlbuilder.URL, error) {
 	path = strings.TrimSpace(path)
