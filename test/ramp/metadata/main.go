@@ -20,9 +20,13 @@ func main() {
 	conn := connTest.GetRampConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{
+		"transactions",
+		"users",
 		"cards",
 		"departments",
 		"vendors",
+		"limits",
+		"reimbursements",
 	})
 	if err != nil {
 		log.Fatal(err)
