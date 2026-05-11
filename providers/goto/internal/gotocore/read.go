@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -108,7 +109,7 @@ func (a *Adapter) parseReadResponse(
 		resp,
 		recordsExtractor(cfg.service, params.ObjectName),
 		nextPageExtractor(cfg.service),
-		common.GetMarshaledData,
+		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,
 	)
 }

@@ -44,4 +44,15 @@ func main() {
 	fmt.Println("Reading historical meetings..")
 	utils.DumpJSON(res, os.Stdout)
 
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "licenses",
+		Fields:     connectors.Fields("key", "seats"),
+	})
+	if err != nil {
+		utils.Fail("error reading from GoTo", "error", err)
+	}
+
+	fmt.Println("Reading licenses..")
+	utils.DumpJSON(res, os.Stdout)
+
 }
