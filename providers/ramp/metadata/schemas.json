@@ -1,0 +1,599 @@
+{
+  "modules": {
+    "root": {
+      "id": "",
+      "path": "",
+      "objects": {
+        "transactions": {
+          "displayName": "Transactions",
+          "path": "developer/v1/transactions",
+          "responseKey": "data",
+          "fields": {
+            "accounting_categories": "accounting_categories",
+            "accounting_date": "accounting_date",
+            "accounting_field_selections": "accounting_field_selections",
+            "amount": "amount",
+            "attendees": "attendees",
+            "card_holder": "card_holder",
+            "card_id": "card_id",
+            "card_present": "card_present",
+            "currency_code": "currency_code",
+            "decline_details": "decline_details",
+            "disputes": "disputes",
+            "entity_id": "entity_id",
+            "id": "id",
+            "limit_id": "limit_id",
+            "line_items": "line_items",
+            "memo": "memo",
+            "merchant_category_code": "merchant_category_code",
+            "merchant_category_code_description": "merchant_category_code_description",
+            "merchant_data": "merchant_data",
+            "merchant_descriptor": "merchant_descriptor",
+            "merchant_id": "merchant_id",
+            "merchant_location": "merchant_location",
+            "merchant_name": "merchant_name",
+            "minor_unit_conversion_rate": "minor_unit_conversion_rate",
+            "original_transaction_amount": "original_transaction_amount",
+            "policy_violations": "policy_violations",
+            "receipts": "receipts",
+            "requires_accounting_vendor_creation_to_sync": "requires_accounting_vendor_creation_to_sync",
+            "settlement_date": "settlement_date",
+            "sk_category_id": "sk_category_id",
+            "sk_category_name": "sk_category_name",
+            "spend_program_id": "spend_program_id",
+            "state": "state",
+            "statement_id": "statement_id",
+            "sync_status": "sync_status",
+            "synced_at": "synced_at",
+            "trip_id": "trip_id",
+            "trip_name": "trip_name",
+            "user_transaction_time": "user_transaction_time"
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "developer/v1/users",
+          "responseKey": "data",
+          "fields": {
+            "business_id": "business_id",
+            "custom_fields": "custom_fields",
+            "department_id": "department_id",
+            "email": "email",
+            "employee_id": "employee_id",
+            "entity_id": "entity_id",
+            "first_name": "first_name",
+            "id": "id",
+            "is_manager": "is_manager",
+            "last_name": "last_name",
+            "location_id": "location_id",
+            "manager_id": "manager_id",
+            "phone": "phone",
+            "role": "role",
+            "scheduled_deactivation_date": "scheduled_deactivation_date",
+            "scheduled_invitation_date": "scheduled_invitation_date",
+            "status": "status"
+          }
+        },
+        "cards": {
+          "displayName": "Cards",
+          "path": "developer/v1/cards",
+          "responseKey": "data",
+          "fields": {
+            "card_program_id": "card_program_id",
+            "cardholder_id": "cardholder_id",
+            "cardholder_name": "cardholder_name",
+            "created_at": "created_at",
+            "display_name": "display_name",
+            "entity_id": "entity_id",
+            "expiration": "expiration",
+            "fulfillment": "fulfillment",
+            "has_program_overridden": "has_program_overridden",
+            "id": "id",
+            "is_physical": "is_physical",
+            "last_four": "last_four",
+            "spending_restrictions": "spending_restrictions",
+            "state": "state"
+          }
+        },
+        "departments": {
+          "displayName": "Departments",
+          "path": "developer/v1/departments",
+          "responseKey": "data",
+          "fields": {
+            "id": "id",
+            "name": "name"
+          }
+        },
+        "locations": {
+          "displayName": "Locations",
+          "path": "developer/v1/locations",
+          "responseKey": "data",
+          "fields": {
+            "entity_id": "entity_id",
+            "id": "id",
+            "name": "name"
+          }
+        },
+        "vendors": {
+          "displayName": "Vendors",
+          "path": "developer/v1/vendors",
+          "responseKey": "data",
+          "fields": {
+            "accounting_vendor_remote_id": "accounting_vendor_remote_id",
+            "address": "address",
+            "billing_frequency": "billing_frequency",
+            "contacts": "contacts",
+            "country": "country",
+            "created_at": "created_at",
+            "default_entity_id": "default_entity_id",
+            "default_payment_method": "default_payment_method",
+            "description": "description",
+            "external_vendor_id": "external_vendor_id",
+            "federal_tax_classification": "federal_tax_classification",
+            "id": "id",
+            "is_active": "is_active",
+            "is_deletable": "is_deletable",
+            "merchant_id": "merchant_id",
+            "name": "name",
+            "name_legal": "name_legal",
+            "sk_category_id": "sk_category_id",
+            "sk_category_name": "sk_category_name",
+            "state": "state",
+            "subsidiary": "subsidiary",
+            "tax_address": "tax_address",
+            "total_spend_all_time": "total_spend_all_time",
+            "total_spend_last_30_days": "total_spend_last_30_days",
+            "total_spend_last_365_days": "total_spend_last_365_days",
+            "total_spend_ytd": "total_spend_ytd",
+            "vendor_owner_id": "vendor_owner_id",
+            "vendor_type": "vendor_type"
+          }
+        },
+        "limits": {
+          "displayName": "Limits",
+          "path": "developer/v1/limits",
+          "responseKey": "data",
+          "fields": {
+            "balance": "balance",
+            "cards": "cards",
+            "created_at": "created_at",
+            "display_name": "display_name",
+            "entity_id": "entity_id",
+            "has_program_overridden": "has_program_overridden",
+            "id": "id",
+            "is_exempt_from_policy_agent": "is_exempt_from_policy_agent",
+            "is_shareable": "is_shareable",
+            "permitted_spend_types": "permitted_spend_types",
+            "restrictions": "restrictions",
+            "spend_program_id": "spend_program_id",
+            "state": "state",
+            "suspension": "suspension",
+            "users": "users"
+          }
+        },
+        "reimbursements": {
+          "displayName": "Reimbursements",
+          "path": "developer/v1/reimbursements",
+          "responseKey": "data",
+          "fields": {
+            "accounting_date": "accounting_date",
+            "accounting_field_selections": "accounting_field_selections",
+            "amount": "amount",
+            "approved_at": "approved_at",
+            "attendees": "attendees",
+            "created_at": "created_at",
+            "currency": "currency",
+            "direction": "direction",
+            "distance": "distance",
+            "employee_id": "employee_id",
+            "end_location": "end_location",
+            "entity_id": "entity_id",
+            "id": "id",
+            "line_items": "line_items",
+            "memo": "memo",
+            "merchant": "merchant",
+            "merchant_id": "merchant_id",
+            "original_reimbursement_amount": "original_reimbursement_amount",
+            "payee_amount": "payee_amount",
+            "payment_batch_id": "payment_batch_id",
+            "payment_id": "payment_id",
+            "payment_processed_at": "payment_processed_at",
+            "receipts": "receipts",
+            "spend_limit_id": "spend_limit_id",
+            "start_location": "start_location",
+            "state": "state",
+            "submitted_at": "submitted_at",
+            "sync_status": "sync_status",
+            "synced_at": "synced_at",
+            "trace_id": "trace_id",
+            "transaction_date": "transaction_date",
+            "trip_id": "trip_id",
+            "type": "type",
+            "updated_at": "updated_at",
+            "user_email": "user_email",
+            "user_full_name": "user_full_name",
+            "user_id": "user_id",
+            "waypoints": "waypoints"
+          }
+        },
+        "bills": {
+          "displayName": "Bills",
+          "path": "developer/v1/bills",
+          "responseKey": "data",
+          "fields": {
+            "accounting_date": "accounting_date",
+            "accounting_field_selections": "accounting_field_selections",
+            "amount": "amount",
+            "applied_vendor_credits": "applied_vendor_credits",
+            "approval_status": "approval_status",
+            "archived_at": "archived_at",
+            "bill_owner": "bill_owner",
+            "created_at": "created_at",
+            "deep_link_url": "deep_link_url",
+            "draft_bill_created_at": "draft_bill_created_at",
+            "draft_bill_id": "draft_bill_id",
+            "due_at": "due_at",
+            "enable_accounting_sync": "enable_accounting_sync",
+            "entity_id": "entity_id",
+            "fx_conversion_rate": "fx_conversion_rate",
+            "id": "id",
+            "inventory_line_items": "inventory_line_items",
+            "invoice_number": "invoice_number",
+            "invoice_urls": "invoice_urls",
+            "issued_at": "issued_at",
+            "item_receipt_ids": "item_receipt_ids",
+            "line_items": "line_items",
+            "memo": "memo",
+            "paid_at": "paid_at",
+            "payment": "payment",
+            "posting_date": "posting_date",
+            "purchase_order_id": "purchase_order_id",
+            "remote_id": "remote_id",
+            "status": "status",
+            "status_summary": "status_summary",
+            "sync_status": "sync_status",
+            "vendor": "vendor",
+            "vendor_contact_id": "vendor_contact_id",
+            "vendor_memo": "vendor_memo"
+          }
+        },
+        "bills_drafts": {
+          "displayName": "Bill Drafts",
+          "path": "developer/v1/bills/drafts",
+          "responseKey": "data",
+          "fields": {
+            "accounting_date": "accounting_date",
+            "accounting_field_selections": "accounting_field_selections",
+            "amount": "amount",
+            "bill_owner": "bill_owner",
+            "created_at": "created_at",
+            "due_at": "due_at",
+            "entity_id": "entity_id",
+            "id": "id",
+            "inventory_line_items": "inventory_line_items",
+            "invoice_number": "invoice_number",
+            "invoice_urls": "invoice_urls",
+            "issued_at": "issued_at",
+            "line_items": "line_items",
+            "memo": "memo",
+            "posting_date": "posting_date",
+            "remote_id": "remote_id",
+            "status": "status",
+            "sync_status": "sync_status",
+            "vendor": "vendor",
+            "vendor_memo": "vendor_memo"
+          }
+        },
+        "receipts": {
+          "displayName": "Receipts",
+          "path": "developer/v1/receipts",
+          "responseKey": "data",
+          "fields": {
+            "created_at": "created_at",
+            "id": "id",
+            "receipt_url": "receipt_url",
+            "transaction_id": "transaction_id",
+            "user_id": "user_id"
+          }
+        },
+        "spend_programs": {
+          "displayName": "Spend Programs",
+          "path": "developer/v1/spend-programs",
+          "responseKey": "data",
+          "fields": {
+            "description": "description",
+            "display_name": "display_name",
+            "icon": "icon",
+            "id": "id",
+            "is_shareable": "is_shareable",
+            "issue_physical_card_if_needed": "issue_physical_card_if_needed",
+            "permitted_spend_types": "permitted_spend_types",
+            "restrictions": "restrictions"
+          }
+        },
+        "statements": {
+          "displayName": "Statements",
+          "path": "developer/v1/statements",
+          "responseKey": "data",
+          "fields": {
+            "balance_sections": "balance_sections",
+            "charges": "charges",
+            "credits": "credits",
+            "end_date": "end_date",
+            "ending_balance": "ending_balance",
+            "id": "id",
+            "opening_balance": "opening_balance",
+            "payments": "payments",
+            "preceding_statement_id": "preceding_statement_id",
+            "start_date": "start_date",
+            "statement_lines": "statement_lines",
+            "statement_url": "statement_url"
+          }
+        },
+        "transfers": {
+          "displayName": "Transfers",
+          "path": "developer/v1/transfers",
+          "responseKey": "data",
+          "fields": {
+            "amount": "amount",
+            "bank_account_id": "bank_account_id",
+            "created_at": "created_at",
+            "entity_id": "entity_id",
+            "id": "id",
+            "payment_id": "payment_id",
+            "status": "status",
+            "sync_status": "sync_status"
+          }
+        },
+        "cashbacks": {
+          "displayName": "Cashbacks",
+          "path": "developer/v1/cashbacks",
+          "responseKey": "data",
+          "fields": {
+            "amount": "amount",
+            "created_at": "created_at",
+            "entity_id": "entity_id",
+            "id": "id",
+            "sync_status": "sync_status"
+          }
+        },
+        "merchants": {
+          "displayName": "Merchants",
+          "path": "developer/v1/merchants",
+          "responseKey": "data",
+          "fields": {
+            "id": "id",
+            "is_auto_approved": "is_auto_approved",
+            "merchant_name": "merchant_name",
+            "sk_category_name": "sk_category_name"
+          }
+        },
+        "entities": {
+          "displayName": "Entities",
+          "path": "developer/v1/entities",
+          "responseKey": "data",
+          "fields": {
+            "accounts": "accounts",
+            "connected_subsidiary": "connected_subsidiary",
+            "currency": "currency",
+            "entity_name": "entity_name",
+            "id": "id",
+            "is_primary": "is_primary",
+            "location_ids": "location_ids",
+            "payment_accounts": "payment_accounts"
+          }
+        },
+        "bank_accounts": {
+          "displayName": "Bank Accounts",
+          "path": "developer/v1/bank-accounts",
+          "responseKey": "data",
+          "fields": {
+            "account_name": "account_name",
+            "account_number_last_four": "account_number_last_four",
+            "financial_institution_name": "financial_institution_name",
+            "id": "id"
+          }
+        },
+        "purchase_orders": {
+          "displayName": "Purchase Orders",
+          "path": "developer/v1/purchase-orders",
+          "responseKey": "data",
+          "fields": {
+            "accounting_field_selections": "accounting_field_selections",
+            "amount": "amount",
+            "archived_at": "archived_at",
+            "bill_ids": "bill_ids",
+            "billing_status": "billing_status",
+            "created_at": "created_at",
+            "creation_source": "creation_source",
+            "entity_id": "entity_id",
+            "external_id": "external_id",
+            "id": "id",
+            "item_receipt_ids": "item_receipt_ids",
+            "line_items": "line_items",
+            "memo": "memo",
+            "name": "name",
+            "net_payment_terms": "net_payment_terms",
+            "owner_id": "owner_id",
+            "promise_date": "promise_date",
+            "purchase_order_number": "purchase_order_number",
+            "ramp_url": "ramp_url",
+            "receipt_status": "receipt_status",
+            "remote_id": "remote_id",
+            "ship_to_address": "ship_to_address",
+            "ship_to_company_name": "ship_to_company_name",
+            "shipping_contact_email": "shipping_contact_email",
+            "shipping_contact_first_name": "shipping_contact_first_name",
+            "shipping_contact_last_name": "shipping_contact_last_name",
+            "shipping_contact_phone_number": "shipping_contact_phone_number",
+            "spend_end_date": "spend_end_date",
+            "spend_program_id": "spend_program_id",
+            "spend_request_id": "spend_request_id",
+            "spend_start_date": "spend_start_date",
+            "spend_total_amount": "spend_total_amount",
+            "three_way_match_enabled": "three_way_match_enabled",
+            "transaction_ids": "transaction_ids",
+            "user_id": "user_id",
+            "vendor_id": "vendor_id"
+          }
+        },
+        "item_receipts": {
+          "displayName": "Item Receipts",
+          "path": "developer/v1/item-receipts",
+          "responseKey": "data",
+          "fields": {
+            "archived_at": "archived_at",
+            "created_at": "created_at",
+            "documents": "documents",
+            "id": "id",
+            "item_receipt_number": "item_receipt_number",
+            "line_items": "line_items",
+            "memo": "memo",
+            "purchase_order_id": "purchase_order_id",
+            "received_at": "received_at",
+            "remote_id": "remote_id"
+          }
+        },
+        "repayments": {
+          "displayName": "Repayments",
+          "path": "developer/v1/repayments",
+          "responseKey": "data",
+          "fields": {
+            "entity_id": "entity_id",
+            "funding_method": "funding_method",
+            "id": "id",
+            "original_transaction_id": "original_transaction_id",
+            "repaid_at": "repaid_at",
+            "repayment_amount": "repayment_amount",
+            "status": "status",
+            "user_id": "user_id",
+            "user_signature": "user_signature"
+          }
+        },
+        "memos": {
+          "displayName": "Memos",
+          "path": "developer/v1/memos",
+          "responseKey": "data",
+          "fields": {
+            "id": "id",
+            "memo": "memo"
+          }
+        },
+        "trips": {
+          "displayName": "Trips",
+          "path": "developer/v1/trips",
+          "responseKey": "data",
+          "fields": {
+            "created_at": "created_at",
+            "description": "description",
+            "end_date": "end_date",
+            "id": "id",
+            "length_in_days": "length_in_days",
+            "locations": "locations",
+            "name": "name",
+            "spend_events": "spend_events",
+            "start_date": "start_date",
+            "status": "status",
+            "total_spend": "total_spend",
+            "travel_types": "travel_types",
+            "updated_at": "updated_at",
+            "user_id": "user_id"
+          }
+        },
+        "audit_logs": {
+          "displayName": "Audit Logs",
+          "path": "developer/v1/audit-logs/events",
+          "responseKey": "data",
+          "fields": {
+            "actor_details": "actor_details",
+            "actor_id": "actor_id",
+            "actor_type": "actor_type",
+            "additional_details": "additional_details",
+            "event_details": "event_details",
+            "event_time": "event_time",
+            "event_type": "event_type",
+            "id": "id",
+            "primary_reference": "primary_reference",
+            "user_details": "user_details"
+          }
+        },
+        "unified_requests": {
+          "displayName": "Unified Requests",
+          "path": "developer/v1/unified-requests",
+          "responseKey": "data",
+          "fields": {
+            "approval_instance_id": "approval_instance_id",
+            "approved_at": "approved_at",
+            "created_at": "created_at",
+            "created_by_user": "created_by_user",
+            "deleted_at": "deleted_at",
+            "entity": "entity",
+            "id": "id",
+            "name": "name",
+            "ramp_url": "ramp_url",
+            "reason": "reason",
+            "rejected_at": "rejected_at",
+            "request_duration": "request_duration",
+            "submitted_at": "submitted_at",
+            "wbp_info": "wbp_info"
+          }
+        },
+        "accounting_accounts": {
+          "displayName": "Accounting Accounts",
+          "path": "developer/v1/accounting/accounts",
+          "responseKey": "data",
+          "fields": {
+            "accounting_connection_id": "accounting_connection_id",
+            "classification": "classification",
+            "code": "code",
+            "created_at": "created_at",
+            "gl_account_category_info": "gl_account_category_info",
+            "id": "id",
+            "is_active": "is_active",
+            "name": "name",
+            "provider_name": "provider_name",
+            "ramp_id": "ramp_id",
+            "updated_at": "updated_at"
+          }
+        },
+        "accounting_vendors": {
+          "displayName": "Accounting Vendors",
+          "path": "developer/v1/accounting/vendors",
+          "responseKey": "data",
+          "fields": {
+            "accounting_connection_id": "accounting_connection_id",
+            "code": "code",
+            "created_at": "created_at",
+            "id": "id",
+            "is_active": "is_active",
+            "is_synced": "is_synced",
+            "name": "name",
+            "provider_name": "provider_name",
+            "ramp_id": "ramp_id",
+            "updated_at": "updated_at",
+            "vendor_category_info": "vendor_category_info"
+          }
+        },
+        "accounting_fields": {
+          "displayName": "Accounting Fields",
+          "path": "developer/v1/accounting/fields",
+          "responseKey": "data",
+          "fields": {
+            "accounting_connection_id": "accounting_connection_id",
+            "created_at": "created_at",
+            "display_name": "display_name",
+            "id": "id",
+            "input_type": "input_type",
+            "is_active": "is_active",
+            "is_required_for": "is_required_for",
+            "is_splittable": "is_splittable",
+            "name": "name",
+            "provider_name": "provider_name",
+            "ramp_id": "ramp_id",
+            "updated_at": "updated_at"
+          }
+        }
+      }
+    }
+  }
+}
