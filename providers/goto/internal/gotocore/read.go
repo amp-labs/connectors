@@ -61,7 +61,7 @@ func (a *Adapter) buildAdminReadRequest(ctx context.Context, params common.ReadP
 
 	applyTimeFilter(url, params.ObjectName, params.Since, params.Until)
 
-	url.WithQueryParam(queryParamPageSize, readPageSize)
+	url.WithQueryParam(queryParamPageSize, readhelper.PageSizeWithDefaultStr(params, readPageSize))
 
 	if params.NextPage != "" {
 		url.WithQueryParam(queryParamOffset, params.NextPage.String())
@@ -80,7 +80,7 @@ func (a *Adapter) buildPagedReadRequest(ctx context.Context, params common.ReadP
 		return nil, err
 	}
 
-	url.WithQueryParam(queryParamSize, readPageSize)
+	url.WithQueryParam(queryParamSize, readhelper.PageSizeWithDefaultStr(params, readPageSize))
 
 	if params.NextPage != "" {
 		url.WithQueryParam(queryParamPage, params.NextPage.String())
@@ -186,7 +186,7 @@ func webinarNextPage(node *ajson.Node) (string, error) {
 		return "", nil //nolint:nilerr
 	}
 
-	CurrPage, err := page.IntegerRequired("number")
+	currPage, err := page.IntegerRequired("number")
 	if err != nil {
 		return "", nil //nolint:nilerr
 	}
@@ -196,7 +196,7 @@ func webinarNextPage(node *ajson.Node) (string, error) {
 		return "", nil //nolint:nilerr
 	}
 
-	next := CurrPage + 1
+	next := currPage + 1
 	if next >= totalPages {
 		return "", nil
 	}
