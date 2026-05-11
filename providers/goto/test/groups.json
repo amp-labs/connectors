@@ -1,0 +1,19 @@
+{
+  "resources": [
+    {
+      "meta": {
+        "created": "2019-08-24T14:15:22Z",
+        "location": "string"
+      },
+      "id": "string",
+      "displayName": "string",
+      "members": [
+        {
+          "type": "group",
+          "value": "string"
+        }
+      ]
+    }
+  ],
+  "totalResults": 0
+}
