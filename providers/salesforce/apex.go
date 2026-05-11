@@ -96,6 +96,18 @@ func GenerateApexTriggerNameForCDC(objectName string) (string, error) {
 	return metadata.GenerateApexTriggerNameForCDC(objectName)
 }
 
+// ApexTriggerExists reports whether an apex trigger with the given Name exists
+// in Salesforce. Implementation queries the Tooling API ApexTrigger sobject by
+// Name (the same field metadata.GenerateApexTriggerNameForCDC produces).
+func (c *Connector) ApexTriggerExists(ctx context.Context, triggerName string) (bool, error) {
+	soql := fmt.Sprintf(
+		"SELECT Id FROM ApexTrigger WHERE Name = '%s'",
+		escapeSOQLString(triggerName),
+	)
+
+	return c.toolingEntityExists(ctx, soql)
+}
+
 // GenerateApexTriggerNameForRead returns the APEX trigger name for filtered read on a given Salesforce object.
 func GenerateApexTriggerNameForRead(objectName string) (string, error) {
 	return metadata.GenerateApexTriggerNameForRead(objectName)
@@ -177,6 +189,79 @@ func (c *Connector) deployApexTriggersForCDC(
 	}
 
 	return c.deployApexTriggers(ctx, triggerParams, zipDataMap)
+}
+
+// verifyApexTriggersForCDC takes the verify-only path used when
+// SubscriptionRequest.ManualApexTriggerManagement is true. It builds the same
+// apex trigger params as deployApexTriggersForCDC (so trigger names match what
+// the deploy path would have generated), best-effort checks each trigger is
+// visible in Salesforce, and returns the corresponding ApexTrigger entries
+// for storage in SubscribeResult.ApexTriggers.
+//
+// Visibility — not strict existence — is what we can observe: the Tooling API
+// SOQL against ApexTrigger may return zero rows because the trigger genuinely
+// doesn't exist OR because the connector's user lacks visibility/permission.
+// Either way we surface a warn and continue; the caller opted into manual
+// trigger lifecycle. The runtime tell that the trigger truly is missing is a
+// soft one — UPDATE events will silently fail the channel-member filter
+// because the indicator field never flips to true — so this branch records a
+// warning per missing trigger rather than failing Subscribe upfront.
+func (c *Connector) verifyApexTriggersForCDC(
+	ctx context.Context,
+	params common.SubscribeParams,
+	req *SubscriptionRequest,
+) (map[common.ObjectName]*ApexTrigger, error) {
+	triggerParams, err := buildApexTriggerParamsForSubscribe(params, req)
+	if err != nil {
+		return nil, err
+	}
+
+	triggers := make(map[common.ObjectName]*ApexTrigger, len(triggerParams))
+
+	for objName, tParams := range triggerParams {
+		warnIfApexTriggerMissing(ctx, c, tParams.TriggerName, objName)
+
+		// Always emit the trigger entry so sfRes.ApexTriggers describes what
+		// the caller intended; a missing trigger is a runtime concern (silent
+		// drop of UPDATE events), not a setup-time failure.
+		triggers[objName] = &ApexTrigger{
+			ObjectName:     objName,
+			TriggerName:    tParams.TriggerName,
+			IndicatorField: tParams.IndicatorField,
+			WatchFields:    tParams.WatchFields,
+		}
+	}
+
+	return triggers, nil
+}
+
+// warnIfApexTriggerMissing logs a per-trigger warning when the existence check
+// either errors (e.g. permission/visibility) or returns false. Shared by the
+// Subscribe and UpdateSubscription manual-mode paths.
+func warnIfApexTriggerMissing(
+	ctx context.Context, c *Connector, triggerName string, objName common.ObjectName,
+) {
+	exists, err := c.ApexTriggerExists(ctx, triggerName)
+	if err != nil {
+		slog.WarnContext(ctx,
+			"manual apex trigger existence check errored; assuming caller-managed and continuing",
+			"object", objName,
+			"trigger", triggerName,
+			"error", err,
+		)
+
+		return
+	}
+
+	if !exists {
+		slog.WarnContext(ctx,
+			"manual apex trigger not visible to connector; if it really is missing, "+
+				"UPDATE CDC events will be silently dropped at runtime because the "+
+				"indicator field will never flip to true",
+			"object", objName,
+			"trigger", triggerName,
+		)
+	}
 }
 
 // DeployMetadataZip initiates a deploy of a zip package to the connected Salesforce org
@@ -523,7 +608,7 @@ func toApexTriggers(
 // would deploy twice (once here, once in inner Subscribe), doubling the
 // metadata-deploy time per added object.
 //
-//nolint:cyclop
+//nolint:cyclop,funlen
 func (c *Connector) redeployExistingApexTriggers(
 	ctx context.Context,
 	req *SubscriptionRequest,
@@ -543,6 +628,16 @@ func (c *Connector) redeployExistingApexTriggers(
 	// must restrict itself to existing objects only.
 	for _, addObj := range diff.objectsToAdd {
 		delete(triggerParams, addObj)
+	}
+
+	// In manual mode the caller manages trigger lifecycle: we don't redeploy
+	// kept triggers and we don't destructively delete orphans. Best-effort
+	// warn per missing trigger (visibility-or-existence — same warn-and-continue
+	// contract as Subscribe's manual path) and move on.
+	if req != nil && req.ManualApexTriggerManagement {
+		c.warnIfExistingApexTriggersMissing(ctx, triggerParams, diff)
+
+		return nil
 	}
 
 	// Destructively remove triggers for objects that previously had a quota
@@ -589,6 +684,31 @@ func (c *Connector) redeployExistingApexTriggers(
 	}
 
 	return nil
+}
+
+// warnIfExistingApexTriggersMissing is the manual-mode counterpart to
+// redeployExistingApexTriggers's deploy/orphan-delete loop. It best-effort
+// warns per kept-object trigger that is not visible to the connector and
+// refreshes diff.apexTriggersExisting with the declared entries (mirroring
+// the bookkeeping the deploy path performs) so the merged result describes
+// what the caller intended. Orphan triggers — present in
+// diff.apexTriggersExisting but no longer in triggerParams — are left
+// untouched because the caller owns trigger lifecycle.
+func (c *Connector) warnIfExistingApexTriggersMissing(
+	ctx context.Context,
+	triggerParams map[common.ObjectName]*metadata.ApexTriggerParams,
+	diff subscriptionDiff,
+) {
+	for objName, tParams := range triggerParams {
+		warnIfApexTriggerMissing(ctx, c, tParams.TriggerName, objName)
+
+		diff.apexTriggersExisting[objName] = &ApexTrigger{
+			ObjectName:     objName,
+			TriggerName:    tParams.TriggerName,
+			IndicatorField: tParams.IndicatorField,
+			WatchFields:    tParams.WatchFields,
+		}
+	}
 }
 
 func formatDeployFailureDetails(result *DeployResult) string {

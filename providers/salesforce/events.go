@@ -467,6 +467,63 @@ var (
 	errEventChannelMemberMissingMD = errors.New("UpdateEventChannelMember: GET returned empty metadata")
 )
 
+// CustomFieldExists reports whether a custom field with the given API
+// name (must include the __c suffix) exists on the named Salesforce object.
+//
+// Implementation queries the Tooling API CustomField sobject by TableEnumOrId
+// and DeveloperName. CustomField.DeveloperName stores the suffix-less form, so
+// the trailing __c is stripped before the query.
+func (c *Connector) CustomFieldExists(
+	ctx context.Context, objectName, fieldAPIName string,
+) (bool, error) {
+	developerName := strings.TrimSuffix(fieldAPIName, "__c")
+	soql := fmt.Sprintf(
+		"SELECT Id FROM CustomField WHERE TableEnumOrId = '%s' AND DeveloperName = '%s'",
+		escapeSOQLString(objectName), escapeSOQLString(developerName),
+	)
+
+	return c.toolingEntityExists(ctx, soql)
+}
+
+// toolingEntityExists runs the given Tooling API SOQL query and reports whether
+// it returned at least one record. Used by the existence-check helpers to power
+// the manual-creation flow.
+func (c *Connector) toolingEntityExists(ctx context.Context, soql string) (bool, error) {
+	location, err := c.getRestApiURL("tooling/query")
+	if err != nil {
+		return false, err
+	}
+
+	location.WithQueryParam("q", soql)
+
+	resp, err := c.Client.Get(ctx, location.String())
+	if err != nil {
+		return false, err
+	}
+
+	body, ok := resp.Body()
+	if !ok {
+		return false, common.ErrEmptyJSONHTTPResponse
+	}
+
+	obj, err := body.GetObject()
+	if err != nil {
+		return false, err
+	}
+
+	recordsNode, exists := obj["records"]
+	if !exists {
+		return false, fmt.Errorf("%w: soql=%q", errToolingQueryNoRecordsField, soql)
+	}
+
+	records, err := recordsNode.GetArray()
+	if err != nil {
+		return false, err
+	}
+
+	return len(records) > 0, nil
+}
+
 // sfAPIError is a single entry in a Salesforce API error response array.
 // nolint:tagliatelle
 type sfAPIError struct {

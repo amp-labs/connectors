@@ -24,6 +24,17 @@ type SubscribeResult struct {
 	// We need to return this field and will be read by the DeleteSubscription method to delete the custom fields.
 	QuotaOptimizationObjectFields map[common.ObjectName]string
 	ApexTriggers                  map[common.ObjectName]*ApexTrigger
+
+	// ManualCheckboxManagement mirrors SubscriptionRequest.ManualCheckboxManagement
+	// so DeleteSubscription (which only sees the result) can honor the caller-
+	// owns-lifecycle contract. See SubscriptionRequest's "Manual-mode contract"
+	// for the full semantics, including what happens when the flag is toggled
+	// across calls.
+	ManualCheckboxManagement bool
+
+	// ManualApexTriggerManagement mirrors SubscriptionRequest.ManualApexTriggerManagement.
+	// See SubscriptionRequest's "Manual-mode contract" for the full semantics.
+	ManualApexTriggerManagement bool
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -42,6 +53,48 @@ type SubscriptionRequest struct {
 	// The checkbox field is also used to build a CDC filter expression that allows all non-UPDATE
 	// events through and only passes UPDATE events where the checkbox is true.
 	QuotaOptimizationObjectFields map[common.ObjectName]string
+
+	// Manual-mode contract for the two flags below.
+	//
+	// When set, the caller owns the corresponding artifact's lifecycle: the
+	// connector skips creation at subscribe time and skips destructive cleanup
+	// at delete time. Existence is best-effort verified via Tooling API SOQL —
+	// any miss (truly missing OR permission/visibility) is logged as a warn
+	// and the call continues. A truly-missing checkbox field surfaces as a
+	// downstream INVALID_FIELD error from CreateEventChannelMember; a
+	// truly-missing trigger silently drops UPDATE events at runtime, which
+	// the per-trigger warn flags.
+	//
+	// Two invariants make this safe even though the flag is global per
+	// subscription rather than per-artifact:
+	//
+	//  1. PlatformEventChannelMember (and its filter expression) is created
+	//     and deleted unconditionally — neither flag gates that path. The
+	//     filter expression's lifecycle is always correct regardless of who
+	//     manages the field/trigger it references.
+	//
+	//  2. Toggling the flag across calls (Subscribe → UpdateSubscription, or
+	//     prevState → DeleteSubscription) is treated as an ownership transfer
+	//     for ALL referenced artifacts, including pre-toggle ones:
+	//
+	//     - auto → manual: connector stops touching previously-auto-created
+	//       artifacts; subsequent DeleteSubscription leaves them as orphans
+	//       in Salesforce. Orphans are inert from a CDC standpoint (filter
+	//       expression is gone with the channel member) but the trigger keeps
+	//       firing on writes and the field still counts against the per-object
+	//       custom-field cap.
+	//     - manual → auto: connector takes over and may overwrite the caller's
+	//       trigger code via redeploy and the caller's field metadata via
+	//       upsert; subsequent DeleteSubscription destructively removes them.
+	//
+	// Callers needing stricter ownership semantics (per-artifact tagging,
+	// reject-on-toggle, etc.) should layer that on top of this contract.
+
+	// ManualCheckboxManagement: see "Manual-mode contract" above.
+	ManualCheckboxManagement bool
+
+	// ManualApexTriggerManagement: see "Manual-mode contract" above.
+	ManualApexTriggerManagement bool
 }
 
 // subscribeProgress tracks which reversible operations completed during executeSubscribe,
@@ -134,6 +187,8 @@ func (c *Connector) Subscribe(
 
 // executeSubscribe performs the forward-path logic of Subscribe.
 // It returns partial results and progress on error, without performing any rollback.
+//
+//nolint:cyclop
 func (c *Connector) executeSubscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
@@ -142,6 +197,11 @@ func (c *Connector) executeSubscribe(
 ) (*SubscribeResult, *subscribeProgress, error) {
 	sfRes := &SubscribeResult{
 		EventChannelMembers: make(map[common.ObjectName]*EventChannelMember),
+	}
+
+	if req != nil {
+		sfRes.ManualCheckboxManagement = req.ManualCheckboxManagement
+		sfRes.ManualApexTriggerManagement = req.ManualApexTriggerManagement
 	}
 
 	progress := &subscribeProgress{
@@ -153,7 +213,11 @@ func (c *Connector) executeSubscribe(
 		return sfRes, progress, fmt.Errorf("failed to upsert quota optimization fields: %w", err)
 	}
 
-	progress.quotaFieldsUpserted = true
+	// Skip the upsert flag in manual mode: no Metadata API write occurred, so
+	// rollback must not attempt to delete the (caller-managed) fields.
+	if req == nil || !req.ManualCheckboxManagement {
+		progress.quotaFieldsUpserted = true
+	}
 
 	// Clone instead of aliasing so subsequent mutations of
 	// sfRes.QuotaOptimizationObjectFields (e.g. clear() in DeleteSubscription
@@ -168,13 +232,28 @@ func (c *Connector) executeSubscribe(
 	// fails, rollback only has to drop the custom field — no ECMs to tear down;
 	// (b) once ECMs go live, the trigger is already maintaining the indicator,
 	// so no UPDATE events get silently filtered out during the setup window.
-	deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
+	//
+	// In ManualApexTriggerManagement mode the deploy is skipped: we best-effort
+	// warn for any trigger the connector can't see and continue.
+	// progress.deployedTriggers stays nil so the rollback path leaves the
+	// caller's triggers alone. The Tooling API SOQL itself can still error
+	// (e.g. params build), so we propagate any error from verifyApexTriggersForCDC.
+	if req != nil && req.ManualApexTriggerManagement {
+		triggers, err := c.verifyApexTriggersForCDC(ctx, params, req)
+		sfRes.ApexTriggers = triggers
 
-	progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
-	sfRes.ApexTriggers = toApexTriggers(deployOut)
+		if err != nil {
+			return sfRes, progress, err
+		}
+	} else {
+		deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
 
-	if err != nil {
-		return sfRes, progress, err
+		progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
+		sfRes.ApexTriggers = toApexTriggers(deployOut)
+
+		if err != nil {
+			return sfRes, progress, err
+		}
 	}
 
 	if err := c.createEventChannelMembers(ctx, params, registrationParams, req, sfRes); err != nil {
@@ -298,31 +377,39 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 		delete(sfRes.EventChannelMembers, objectName)
 	}
 
-	for objName, trigger := range sfRes.ApexTriggers {
-		if trigger == nil {
-			slog.Warn("apex trigger entry is nil, skipping delete",
-				"object", objName,
-			)
+	// In manual mode the caller manages trigger lifecycle: leave sfRes.ApexTriggers
+	// populated (they still exist in Salesforce) and do not destructively deploy.
+	if !sfRes.ManualApexTriggerManagement {
+		for objName, trigger := range sfRes.ApexTriggers {
+			if trigger == nil {
+				slog.Warn("apex trigger entry is nil, skipping delete",
+					"object", objName,
+				)
 
-			continue
+				continue
+			}
+
+			// TODO: check existence before delete
+			if err := c.rollbackApexTrigger(ctx, trigger.TriggerName); err != nil {
+				slog.Warn(
+					"apex trigger delete failed mid-teardown; aborting before "+
+						"remaining triggers and quota fields are touched",
+					"failedObject", objName,
+					"error", err,
+					"remainingApexTriggers", datautils.FromMap(sfRes.ApexTriggers).Keys(),
+					"remainingQuotaFields", datautils.FromMap(sfRes.QuotaOptimizationObjectFields).Keys(),
+				)
+
+				return fmt.Errorf("failed to delete apex trigger for object '%s': %w", objName, err)
+			}
+
+			delete(sfRes.ApexTriggers, objName)
 		}
-
-		// TODO: check existence before delete
-		if err := c.rollbackApexTrigger(ctx, trigger.TriggerName); err != nil {
-			slog.Warn("apex trigger delete failed mid-teardown; aborting before remaining triggers and quota fields are touched",
-				"failedObject", objName,
-				"error", err,
-				"remainingApexTriggers", datautils.FromMap(sfRes.ApexTriggers).Keys(),
-				"remainingQuotaFields", datautils.FromMap(sfRes.QuotaOptimizationObjectFields).Keys(),
-			)
-
-			return fmt.Errorf("failed to delete apex trigger for object '%s': %w", objName, err)
-		}
-
-		delete(sfRes.ApexTriggers, objName)
 	}
 
-	if len(sfRes.QuotaOptimizationObjectFields) > 0 {
+	// In manual mode the caller manages checkbox field lifecycle: leave the
+	// QuotaOptimizationObjectFields map populated and do not call DeleteMetadata.
+	if !sfRes.ManualCheckboxManagement && len(sfRes.QuotaOptimizationObjectFields) > 0 {
 		deleteFields := make(map[common.ObjectName][]string)
 
 		for objectName, fieldName := range sfRes.QuotaOptimizationObjectFields {
@@ -492,7 +579,11 @@ func (c *Connector) executeUpdateSubscription(
 			progress, err
 	}
 
-	progress.quotaFieldsUpserted = true
+	// Skip the upsert flag in manual mode: no Metadata API write occurred, so
+	// rollback must not attempt to delete the (caller-managed) fields.
+	if req == nil || !req.ManualCheckboxManagement {
+		progress.quotaFieldsUpserted = true
+	}
 
 	// Identify truly new quota fields and filter prevState so DeleteSubscription
 	// only removes fields for objects being removed.
@@ -553,7 +644,11 @@ func (c *Connector) executeUpdateSubscription(
 			}
 		}
 
-		innerParams.Request = &SubscriptionRequest{QuotaOptimizationObjectFields: innerFields}
+		innerParams.Request = &SubscriptionRequest{
+			QuotaOptimizationObjectFields: innerFields,
+			ManualCheckboxManagement:      req.ManualCheckboxManagement,
+			ManualApexTriggerManagement:   req.ManualApexTriggerManagement,
+		}
 	}
 
 	createRes, subscribeErr := c.Subscribe(ctx, innerParams)
@@ -750,6 +845,11 @@ func buildUpdatedSubscribeResult(
 		newState.QuotaOptimizationObjectFields = maps.Clone(req.QuotaOptimizationObjectFields)
 	}
 
+	if req != nil {
+		newState.ManualCheckboxManagement = req.ManualCheckboxManagement
+		newState.ManualApexTriggerManagement = req.ManualApexTriggerManagement
+	}
+
 	return newState
 }
 
@@ -861,6 +961,12 @@ func prepareQuotaOptimizationObjectFieldsForUpdate(
 // only observable effect on callers is that their req.QuotaOptimizationObjectFields
 // map is silently shrunk; callers that reuse the same req pointer across multiple
 // calls should construct a fresh req per call to avoid observing the mutation.
+//
+// When req.ManualCheckboxManagement is true the function takes a verify-only path:
+// it skips the UpsertMetadata call and instead checks each (now post-pruning)
+// field exists in Salesforce, returning errManualCheckboxFieldMissing for any
+// that don't. The phantom-pruning still runs so downstream consumers see the
+// same post-mutation view.
 func (c *Connector) upsertQuotaOptimizationFields(
 	ctx context.Context, params common.SubscribeParams, req *SubscriptionRequest,
 ) error {
@@ -895,6 +1001,12 @@ func (c *Connector) upsertQuotaOptimizationFields(
 		return nil
 	}
 
+	if req.ManualCheckboxManagement {
+		c.warnIfQuotaOptimizationFieldsMissing(ctx, req)
+
+		return nil
+	}
+
 	if _, err := c.UpsertMetadata(ctx, &common.UpsertMetadataParams{
 		Fields: fields,
 	}); err != nil {
@@ -902,6 +1014,47 @@ func (c *Connector) upsertQuotaOptimizationFields(
 	}
 
 	return nil
+}
+
+// warnIfQuotaOptimizationFieldsMissing best-effort checks that each declared
+// quota-optimization field is visible to the connector in Salesforce. Used by
+// the ManualCheckboxManagement path of upsertQuotaOptimizationFields.
+//
+// Visibility — not strict existence — is what we can observe: the Tooling API
+// SOQL against CustomField may return zero rows because the field genuinely
+// doesn't exist OR because the connector's user lacks visibility/permission.
+// Either way we surface a warn and proceed; if the field truly isn't there,
+// CreateEventChannelMember will reject the filter expression downstream with
+// a clearer "No such column" error than we could produce here, so an early
+// hard-fail would only convert a precise downstream error into a vague
+// upstream one and would also block legitimate-but-permission-restricted setups.
+func (c *Connector) warnIfQuotaOptimizationFieldsMissing(
+	ctx context.Context, req *SubscriptionRequest,
+) {
+	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
+		apiName := customFieldAPIName(fieldName)
+
+		exists, err := c.CustomFieldExists(ctx, string(objectName), apiName)
+		if err != nil {
+			slog.WarnContext(ctx,
+				"manual checkbox field existence check errored; assuming caller-managed and continuing",
+				"object", objectName,
+				"field", apiName,
+				"error", err,
+			)
+
+			continue
+		}
+
+		if !exists {
+			slog.WarnContext(ctx,
+				"manual checkbox field not visible to connector; if it really is missing, "+
+					"CreateEventChannelMember will fail filter validation downstream",
+				"object", objectName,
+				"field", apiName,
+			)
+		}
+	}
 }
 
 // isObjectSubscribed reports whether objName matches any key in events using the
