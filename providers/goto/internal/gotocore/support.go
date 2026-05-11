@@ -13,12 +13,12 @@ import (
 type objectService string
 
 const (
-	serviceSCIM      objectService = "scim"
-	serviceAdmin     objectService = "admin"
-	serviceWebinar   objectService = "webinar"
-	serviceMeetings  objectService = "meetings"
-	serviceAssist    objectService = "assistRemoteSupport"
-	serviceCorporate objectService = "assistCorporate"
+	serviceSCIM          objectService = "scim"
+	serviceAdmin         objectService = "admin"
+	serviceWebinar       objectService = "webinar"
+	serviceMeetings      objectService = "meetings"
+	serviceRemoteSupport objectService = "assistRemoteSupport"
+	serviceCorporate     objectService = "assistCorporate"
 )
 
 // objectConfig describes how to fetch a sample record for a GoTo object on
@@ -64,7 +64,7 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	// endpoint requires us to specify the type of sessions and only returns that
 	// type, while the extended sessions endpoint returns all types of sessions
 	// without requiring us to specify the type.
-	"sessions": {path: "G2A/rest/v1/extendedsessions", service: serviceAssist},
+	"sessions": {path: "G2A/rest/v1/extendedsessions", service: serviceRemoteSupport},
 
 	// Admin API
 	"attributes":   {path: "admin/rest/v1/accounts/{accountKey}/attributes", service: serviceAdmin},
