@@ -11,56 +11,21 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestRead(t *testing.T) { //nolint:funlen
+func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	since := time.Unix(1735689600, 0).UTC()
 	until := time.Unix(1735776000, 0).UTC()
 
-	eventsResponse := []byte(`{
-		"data": [
-			{
-				"id": "evt_1",
-				"type": "events",
-				"attributes": {
-					"title": "Launch Webinar",
-					"updated_at": "2025-01-01T12:00:00Z"
-				}
-			}
-		],
-		"meta": {
-			"current_page": 0,
-			"page_count": 2
-		}
-	}`)
-
-	chatMessagesResponse := []byte(`{
-		"data": [
-			{
-				"id": "chat_1",
-				"type": "session_chat_messages",
-				"attributes": {
-					"text": "hello"
-				}
-			}
-		],
-		"meta": {
-			"current_page": 0,
-			"page_count": 1
-		}
-	}`)
-
-	jobResponse := []byte(`{
-		"data": {
-			"id": "job_1",
-			"type": "jobs",
-			"attributes": {
-				"status": "done"
-			}
-		}
-	}`)
+	eventsBody := testutils.DataFromFile(t, "read-events.json")
+	eventsMultipageBody := testutils.DataFromFile(t, "read-events-multipage.json")
+	peopleFirstPageBody := testutils.DataFromFile(t, "read-people-first-page.json")
+	chatMessagesBody := testutils.DataFromFile(t, "read-session-chat-messages.json")
+	jobBody := testutils.DataFromFile(t, "read-job.json")
+	peopleAttributesBody := testutils.DataFromFile(t, "read-people-attributes.json")
 
 	tests := []testroutines.Read{
 		{
@@ -111,7 +76,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 					mockcond.QueryParam("filter[updated_since]", fmt.Sprintf("%d", since.Unix())),
 					mockcond.QueryParam("filter[updated_until]", fmt.Sprintf("%d", until.Unix())),
 				},
-				Then: mockserver.Response(http.StatusOK, eventsResponse),
+				Then: mockserver.Response(http.StatusOK, eventsBody),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -127,6 +92,78 @@ func TestRead(t *testing.T) { //nolint:funlen
 							"id":         "evt_1",
 							"title":      "Launch Webinar",
 							"updated_at": "2025-01-01T12:00:00Z",
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "Read events advances page from meta when next_page absent",
+			Input: common.ReadParams{
+				ObjectName: objectEvents,
+				Fields:     connectors.Fields("title"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v1/events"),
+					mockcond.QueryParam("page[number]", "0"),
+					mockcond.QueryParam("page[size]", "100"),
+					mockcond.QueryParamsMissing("filter[updated_since]", "filter[updated_until]"),
+				},
+				Then: mockserver.Response(http.StatusOK, eventsMultipageBody),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				Done:     false,
+				NextPage: testroutines.URLTestServer + "/v1/events?page[number]=1&page[size]=100",
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"title": "Paged Event",
+						},
+						Raw: map[string]any{
+							"id":         "evt_1",
+							"title":      "Paged Event",
+							"updated_at": "2025-01-02T12:00:00Z",
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "Read people first page",
+			Input: common.ReadParams{
+				ObjectName: "people",
+				Fields:     connectors.Fields("email", "first_name"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v1/people"),
+					mockcond.QueryParam("page[number]", "0"),
+					mockcond.QueryParam("page[size]", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, peopleFirstPageBody),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Done: true,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"email":      "alpha@example.com",
+							"first_name": "Alpha",
+						},
+						Raw: map[string]any{
+							"id":         "person_a",
+							"email":      "alpha@example.com",
+							"first_name": "Alpha",
+							"last_name":  "User",
 						},
 					},
 				},
@@ -183,7 +220,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 					mockcond.QueryParam("page[number]", "0"),
 					mockcond.QueryParam("page[size]", "100"),
 				},
-				Then: mockserver.Response(http.StatusOK, chatMessagesResponse),
+				Then: mockserver.Response(http.StatusOK, chatMessagesBody),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -215,7 +252,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 					mockcond.MethodGET(),
 					mockcond.Path("/v1/jobs/job_1"),
 				},
-				Then: mockserver.Response(http.StatusOK, jobResponse),
+				Then: mockserver.Response(http.StatusOK, jobBody),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -248,19 +285,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 					mockcond.QueryParam("page[number]", "0"),
 					mockcond.QueryParam("page[size]", "100"),
 				},
-				Then: mockserver.ResponseString(http.StatusOK, `{
-					"data": [{
-						"id": "attr_1",
-						"type": "people_attributes",
-						"attributes": {
-							"slug": "company"
-						}
-					}],
-					"meta": {
-						"current_page": 0,
-						"page_count": 1
-					}
-				}`),
+				Then: mockserver.Response(http.StatusOK, peopleAttributesBody),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -294,7 +319,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 					mockcond.QueryParam("page[number]", "5"),
 					mockcond.QueryParam("page[size]", "100"),
 				},
-				Then: mockserver.Response(http.StatusOK, eventsResponse),
+				Then: mockserver.Response(http.StatusOK, eventsBody),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
@@ -309,6 +334,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		tt := tt
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
+
 			tt.Run(t, func() (connectors.ReadConnector, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
