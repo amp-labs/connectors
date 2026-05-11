@@ -59,7 +59,6 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"portals":         {path: "G2AC/rest/v1/portals/pages", service: serviceCorporate},
 
 	// GoToAssist Remote Support API
-	"companies": {path: "G2A/rest/v1/companies", service: serviceAssist},
 	// We use "sessions" as the object name for extended sessions because this is
 	// just an extended version of the normal sessions endpoint. The normal sessions
 	// endpoint requires us to specify the type of sessions and only returns that
