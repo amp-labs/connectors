@@ -28,6 +28,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseMarketingEmailLast := testutils.DataFromFile(t, "read/marketing-emails/2-last-page.json")
 	responseMarketingForms := testutils.DataFromFile(t, "read/marketing-forms.json")
 	responseMarketingEvents := testutils.DataFromFile(t, "read/marketing-events.json")
+	responseMeetingLinks := testutils.DataFromFile(t, "read/meeting-links.json")
 
 	tests := []testroutines.Read{
 		{
@@ -515,6 +516,36 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 				},
 				NextPage: "https://api.hubapi.com/marketing/marketing-events/2026-03?after=NTU1NDQyMTk2ODQw",
+				Done:     false,
+			},
+		}, {
+			Name: "Read meeting-links",
+			Input: common.ReadParams{
+				ObjectName: "meeting-links",
+				Fields:     connectors.Fields("name", "slug"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/scheduler/2026-03/meetings/meeting-links"),
+				Then:  mockserver.Response(http.StatusOK, responseMeetingLinks),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"slug": "int/public-gathering",
+							"name": "Public Gathering",
+						},
+						Raw: map[string]any{
+							"link": "https://meetings.hubspot.com/int/public-gathering",
+							"type": "PERSONAL_LINK",
+						},
+						Id: "12428962",
+					},
+				},
+				NextPage: "https://api.hubapi.com/scheduler/2026-03/meetings/meeting-links?limit=1&after=MQ%3D%3D",
 				Done:     false,
 			},
 		},

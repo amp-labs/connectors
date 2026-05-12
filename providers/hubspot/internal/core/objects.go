@@ -15,6 +15,7 @@ const (
 const (
 	ObjectMarketingForms  = "forms"
 	ObjectMarketingEvents = "marketing-events"
+	ObjectMeetingLinks    = "meeting-links"
 )
 
 //nolint:gochecknoglobals,lll
@@ -74,6 +75,17 @@ var (
 			Path:              "marketing-events",
 			RecordTransformer: nil,
 			Version:           APIVersion2026March,
+			PageSize:          DefaultPageSize,
+		},
+	}
+
+	// MiscellaneousObjects are objects outside the CRM and Marketing APIs.
+	MiscellaneousObjects = datautils.Map[string, ObjectDescription]{
+		// https://api.hubapi.com/scheduler/2026-03/meetings/meeting-links
+		ObjectMeetingLinks: {
+			Path:              "/scheduler/2026-03/meetings/meeting-links",
+			RecordTransformer: nil,
+			Version:           "", // part of path.
 			PageSize:          DefaultPageSize,
 		},
 	}

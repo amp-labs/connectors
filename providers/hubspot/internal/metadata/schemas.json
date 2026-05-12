@@ -859,6 +859,77 @@
               "providerType": "string<date-time>"
             }
           }
+        },
+        "meeting-links": {
+          "displayName": "Meeting Links",
+          "description": "/scheduler/2026-03/meetings/meeting-links",
+          "responseKey": "results",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "defaultLink": {
+              "displayName": "defaultLink",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "link": {
+              "displayName": "link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organizerUserId": {
+              "displayName": "organizerUserId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "slug": {
+              "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "GROUP_CALENDAR",
+                  "displayValue": "GROUP_CALENDAR"
+                },
+                {
+                  "value": "PERSONAL_LINK",
+                  "displayValue": "PERSONAL_LINK"
+                },
+                {
+                  "value": "ROUND_ROBIN_CALENDAR",
+                  "displayValue": "ROUND_ROBIN_CALENDAR"
+                }
+              ]
+            },
+            "userIdsOfLinkMembers": {
+              "displayName": "userIdsOfLinkMembers",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            }
+          }
         }
       }
     }
