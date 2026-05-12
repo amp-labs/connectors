@@ -17,6 +17,8 @@ func TestRead(t *testing.T) { //nolint:funlen
 
 	webinarsResponse := testutils.DataFromFile(t, "webinars.json")
 	sessionsResponse := testutils.DataFromFile(t, "sessions.json")
+	groupsResponse := testutils.DataFromFile(t, "groups.json")
+	licensesResponse := testutils.DataFromFile(t, "licenses.json")
 
 	tests := []testroutines.Read{
 		{
@@ -40,7 +42,8 @@ func TestRead(t *testing.T) { //nolint:funlen
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/G2W/rest/v2/organizers/" + testAccountKey + "/webinars"),
-					mockcond.QueryParam("size", "100"),
+					mockcond.QueryParam("size", "200"),
+					mockcond.QueryParam("page", "0"),
 				},
 				Then: mockserver.Response(http.StatusOK, webinarsResponse),
 			}.Server(),
@@ -58,8 +61,8 @@ func TestRead(t *testing.T) { //nolint:funlen
 						"subject":    "Introduction to GoToWebinar",
 					},
 				}},
-				NextPage: "",
-				Done:     true,
+				NextPage: "1",
+				Done:     false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -73,7 +76,6 @@ func TestRead(t *testing.T) { //nolint:funlen
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/G2A/rest/v1/extendedsessions"),
-					mockcond.QueryParam("size", "100"),
 				},
 				Then: mockserver.Response(http.StatusOK, sessionsResponse),
 			}.Server(),
@@ -90,6 +92,72 @@ func TestRead(t *testing.T) { //nolint:funlen
 						"sessionId":  "SS-87555",
 						"status":     "complete",
 						"expertName": "John Doe",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Groups (SCIM) read pulls records from resources envelope without pagination params",
+			Input: common.ReadParams{
+				ObjectName: "groups",
+				Fields:     connectors.Fields("id", "displayName"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/identity/v1/Groups"),
+				},
+				Then: mockserver.Response(http.StatusOK, groupsResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":          "string",
+						"displayname": "string",
+					},
+					Raw: map[string]any{
+						"id":          "string",
+						"displayName": "string",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Licenses (Admin) read pulls records from results envelope with offset+pageSize pagination",
+			Input: common.ReadParams{
+				ObjectName: "licenses",
+				Fields:     connectors.Fields("key", "type", "enabled"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/admin/rest/v1/accounts/" + testAccountKey + "/licenses"),
+					mockcond.QueryParam("pageSize", "200"),
+					mockcond.QueryParam("offset", "0"),
+				},
+				Then: mockserver.Response(http.StatusOK, licensesResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"key":     float64(0),
+						"type":    "string",
+						"enabled": true,
+					},
+					Raw: map[string]any{
+						"key":     float64(0),
+						"type":    "string",
+						"enabled": true,
 					},
 				}},
 				NextPage: "",

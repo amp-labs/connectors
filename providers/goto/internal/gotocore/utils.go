@@ -66,7 +66,7 @@ func extractRecordsByService(body map[string]any, service objectService, objectN
 		return readArrayKey(body, "resources", objectName)
 	case serviceAdmin:
 		return readArrayKey(body, "results", objectName)
-	case serviceAssist:
+	case serviceRemoteSupport:
 		return readArrayKey(body, objectName, objectName)
 	default:
 		// Webinar or any future GoTo services that

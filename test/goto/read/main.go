@@ -24,7 +24,7 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "webinars",
-		Fields:     connectors.Fields("webinarKey", "subject", "numberOfRegistrants"),
+		Fields:     connectors.Fields("accountKey", "omid"),
 	})
 	if err != nil {
 		utils.Fail("error reading from GoTo", "error", err)
@@ -32,4 +32,27 @@ func main() {
 
 	fmt.Println("Reading webinars..")
 	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "historicalMeetings",
+		Fields:     connectors.Fields("accountKey", "meetingId"),
+	})
+	if err != nil {
+		utils.Fail("error reading from GoTo", "error", err)
+	}
+
+	fmt.Println("Reading historical meetings..")
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "licenses",
+		Fields:     connectors.Fields("key", "seats"),
+	})
+	if err != nil {
+		utils.Fail("error reading from GoTo", "error", err)
+	}
+
+	fmt.Println("Reading licenses..")
+	utils.DumpJSON(res, os.Stdout)
+
 }
