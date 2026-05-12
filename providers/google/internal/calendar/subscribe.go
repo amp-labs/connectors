@@ -236,25 +236,27 @@ func (a *Adapter) UpdateSubscription( //nolint: cyclop,funlen
 		baseID = uuid.New().String()
 	}
 
-	newChannels := make(map[common.ObjectName]*WatchResponse)
+	// justAdded tracks objects successfully watched in this call so they can be
+	// rolled back if a later watch in the same loop fails.
+	var justAdded []common.ObjectName
 
 	for _, obj := range sortedKeys(toAdd) {
 		resp, watchErr := a.watchObject(ctx, obj, baseID, watchReq)
 		if watchErr != nil {
-			if len(newChannels) > 0 {
-				rollbackErr := a.stopAllChannels(ctx, newChannels)
-				if rollbackErr != nil {
-					return &common.SubscriptionResult{
-						Status: common.SubscriptionStatusFailedToRollback,
-						Result: &CalendarSubscriptionResult{Channels: updatedChannels},
-					}, fmt.Errorf("update: watching %q failed: %w; rollback also failed: %w", obj, watchErr, rollbackErr)
-				}
-
-				// Rollback succeeded — prune the stopped channels from the result
-				// so it accurately reflects what is still active in Google Calendar.
-				for o := range newChannels {
+			var rollbackErr error
+			for _, o := range justAdded {
+				if err := a.stopChannel(ctx, updatedChannels[o].ID, updatedChannels[o].ResourceID); err != nil {
+					rollbackErr = errors.Join(rollbackErr, fmt.Errorf("stopping channel for %q: %w", o, err))
+				} else {
 					delete(updatedChannels, o)
 				}
+			}
+
+			if rollbackErr != nil {
+				return &common.SubscriptionResult{
+					Status: common.SubscriptionStatusFailedToRollback,
+					Result: &CalendarSubscriptionResult{Channels: updatedChannels},
+				}, fmt.Errorf("update: watching %q failed: %w; rollback also failed: %w", obj, watchErr, rollbackErr)
 			}
 
 			return &common.SubscriptionResult{
@@ -263,7 +265,7 @@ func (a *Adapter) UpdateSubscription( //nolint: cyclop,funlen
 			}, fmt.Errorf("update: watching %q: %w", obj, watchErr)
 		}
 
-		newChannels[obj] = resp
+		justAdded = append(justAdded, obj)
 		updatedChannels[obj] = resp
 	}
 
