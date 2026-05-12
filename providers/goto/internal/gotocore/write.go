@@ -157,7 +157,7 @@ func extractWriteResponse(body *ajson.Node, cfg objectConfig, objectName string)
 		return extractWebinarWriteRecord(body, objectName)
 	}
 
-	return extractGenericWriteRecord(body, "")
+	return extractGenericWriteRecord(body)
 }
 
 // extractWebinarWriteRecord pulls the first record out of `_embedded.<objectName>`,
@@ -176,20 +176,21 @@ func extractWebinarWriteRecord(body *ajson.Node, objectName string) (map[string]
 	return data, "", nil
 }
 
-// extractGenericWriteRecord reads the record from the configured writeResponseKey,
-// falling back to a single-element array when present (e.g. meetings create).
-func extractGenericWriteRecord(body *ajson.Node, responseKey string) (map[string]any, string, error) {
-	resp, err := jsonquery.New(body).ObjectOptional(responseKey)
-	if err != nil || resp == nil {
-		arr, arrErr := jsonquery.New(body).ArrayOptional(responseKey)
-		if arrErr != nil || len(arr) == 0 {
-			return nil, "", fmt.Errorf("error extracting write response data: %w", err)
+// extractGenericWriteRecord reads the record from the response body. Most
+// endpoints return a plain object; a few (e.g. meetings create) return a
+// single-element array.
+func extractGenericWriteRecord(body *ajson.Node) (map[string]any, string, error) {
+	node := body
+	if body.IsArray() {
+		arr, err := body.GetArray()
+		if err != nil || len(arr) == 0 {
+			return nil, "", fmt.Errorf("empty array in write response: %w", err)
 		}
 
-		resp = arr[0]
+		node = arr[0]
 	}
 
-	data, err := jsonquery.Convertor.ObjectToMap(resp)
+	data, err := jsonquery.Convertor.ObjectToMap(node)
 	if err != nil {
 		return nil, "", fmt.Errorf("error converting write response to map: %w", err)
 	}
