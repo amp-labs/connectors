@@ -52,15 +52,15 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"upcomingMeetings":   {path: "G2M/rest/upcomingMeetings", service: serviceMeetings},
 
 	// GoToWebinar API
-	"webinars": {path: "G2W/rest/v2/organizers/{accountKey}/webinars", service: serviceWebinar, writable: true},
+	"webinars": {path: "G2W/rest/v2/organizers/{accountKey}/webinars", service: serviceWebinar},
 	// For webhooks and userSubscriptions, the productType query parameter is required
 	// and must be set to "g2w" to retrieve webinar webhooks.
 	// Ref: https://developer.goto.com/GoToWebinarV2#tag/Webhooks/operation/getWebhooks
-	"webhooks":          {path: "G2W/rest/v2/webhooks?productType=g2w", service: serviceWebinar},
-	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar},
+	"webhooks":          {path: "G2W/rest/v2/webhooks?productType=g2w", service: serviceWebinar, writable: true},
+	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar, writable: true},
 
 	// GoToAssist Corporate API
-	"representatives": {path: "G2AC/rest/v1/representatives", service: serviceCorporate},
+	"representatives": {path: "G2AC/rest/v1/representatives", service: serviceCorporate, writable: true},
 	"teams":           {path: "G2AC/rest/v1/teams/pages", service: serviceCorporate},
 	"portals":         {path: "G2AC/rest/v1/portals/pages", service: serviceCorporate},
 
@@ -83,4 +83,7 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	// SCIM API
 	"users":  {path: "identity/v1/Users", service: serviceSCIM, writable: true},
 	"groups": {path: "identity/v1/Groups", service: serviceSCIM, writable: true},
+
+	//Only Write - these objects don't have a read endpoint, but we want to be able to write to them via the generic write handler
+	"meetings": {path: "G2M/rest/meetings", service: serviceMeetings, writable: true},
 }
