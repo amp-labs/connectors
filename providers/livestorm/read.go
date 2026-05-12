@@ -129,8 +129,6 @@ func buildVersionedPathURL(baseURL string, path string) (*urlbuilder.URL, error)
 		return urlbuilder.New(baseURL, apiVersion)
 	}
 
-	path = strings.TrimPrefix(path, "/")
-
 	return urlbuilder.New(baseURL, apiVersion, path)
 }
 
