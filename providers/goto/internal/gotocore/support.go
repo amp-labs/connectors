@@ -84,7 +84,8 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"users":  {path: "identity/v1/Users", service: serviceSCIM, writable: true},
 	"groups": {path: "identity/v1/Groups", service: serviceSCIM, writable: true},
 
-	//Only Write - these objects don't have a read endpoint, but we want to be able to write to them via the generic write handler
+	// Only Write - these objects don't have a read endpoint,
+	//  but we want to be able to write to them via the generic write handler
 	"meetings": {path: "G2M/rest/meetings", service: serviceMeetings, writable: true},
 	"tickets":  {path: "G2M/rest/tickets", service: serviceRemoteSupport, writable: true},
 }

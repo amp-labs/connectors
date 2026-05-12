@@ -86,13 +86,14 @@ func (a *Adapter) buildWriteObjectURL(objectName string) (*urlbuilder.URL, error
 	if spec.service == serviceCorporate {
 		path := strings.ReplaceAll(spec.path, accountKeyPlaceholder, a.accountKey)
 
-		//remove the "pages" suffix for corporate write endpoints for write operations
+		// remove the "pages" suffix for corporate write endpoints for write operations
 		path = strings.TrimSuffix(path, "/pages")
 
 		url, err := urlbuilder.New(a.ModuleInfo().BaseURL, path)
 		if err != nil {
 			return nil, fmt.Errorf("error building URL for object %s: %w", objectName, err)
 		}
+
 		return url, nil
 	}
 
@@ -164,7 +165,7 @@ func extractWriteResponse(body *ajson.Node, cfg objectConfig, objectName string)
 func extractWebinarWriteRecord(body *ajson.Node, objectName string) (map[string]any, string, error) {
 	arr, err := jsonquery.New(body, "_embedded").ArrayOptional(objectName)
 	if err != nil || len(arr) == 0 {
-		return nil, "", fmt.Errorf("error extracting webinar write response: missing _embedded.%s", objectName)
+		return nil, "", fmt.Errorf("error extracting webinar write response: missing _embedded.%s", objectName) //nolint:err113,lll
 	}
 
 	data, err := jsonquery.Convertor.ObjectToMap(arr[0])
