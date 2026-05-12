@@ -3,6 +3,8 @@ package livestorm
 import (
 	"fmt"
 	"net/http"
+	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -12,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
+	"github.com/go-test/deep"
 )
 
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
@@ -360,5 +363,73 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
+	}
+}
+
+// TestRead_fieldsFlattenedRawPreservesJSONAPI asserts the read contract: Fields holds a flat map
+// suitable for field projection (id + attributes merged for extraction only), while Raw is the
+// full JSON:API resource object. Full equality (not subset matching) shows the two shapes differ
+// and Raw is not flattened to match Fields.
+func TestRead_fieldsFlattenedRawPreservesJSONAPI(t *testing.T) {
+	t.Parallel()
+
+	body := testutils.DataFromFile(t, "read-people-first-page.json")
+
+	srv := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If: mockcond.And{
+			mockcond.MethodGET(),
+			mockcond.Path("/v1/people"),
+			mockcond.QueryParam("page[number]", "0"),
+			mockcond.QueryParam("page[size]", "100"),
+		},
+		Then: mockserver.Response(http.StatusOK, body),
+	}.Server()
+	t.Cleanup(srv.Close)
+
+	conn, err := constructTestConnector(srv.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := conn.Read(t.Context(), common.ReadParams{
+		ObjectName: "people",
+		Fields:     connectors.Fields("email", "first_name"),
+	})
+	if err != nil {
+		t.Fatalf("Read: %v", err)
+	}
+
+	want := &common.ReadResult{
+		Rows:     1,
+		Done:     true,
+		NextPage: "",
+		Data: []common.ReadResultRow{
+			{
+				Fields: map[string]any{
+					"email":      "alpha@example.com",
+					"first_name": "Alpha",
+				},
+				Raw: map[string]any{
+					"id":   "person_a",
+					"type": "people",
+					"attributes": map[string]any{
+						"email":      "alpha@example.com",
+						"first_name": "Alpha",
+						"last_name":  "User",
+					},
+				},
+				Id: "person_a",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(want, got) {
+		t.Fatalf("ReadResult not equal to expected (full match, not subset):\n%s",
+			strings.Join(deep.Equal(want, got), "\n"))
+	}
+
+	if _, has := got.Data[0].Fields["attributes"]; has {
+		t.Fatal("Fields must be flat for projection; must not include JSON:API \"attributes\" object")
 	}
 }
