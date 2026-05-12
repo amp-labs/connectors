@@ -26,8 +26,12 @@ const (
 	queryParamPageSize = "pageSize"
 	sampleSize         = "1"
 	readPageSize       = "200"
-	queryParamPage     = "page"
-	queryParamOffset   = "offset"
+	// corporatePageSize caps Corporate API page size at 100 (its documented
+	// maximum) and lets corporateNextPage detect the last page by counting
+	// returned records.
+	corporatePageSize = 100
+	queryParamPage    = "page"
+	queryParamOffset  = "offset"
 
 	// metadataSampleWindowDays is the size in days of the time-range filter
 	// applied when sampling records for schema. Wide enough to

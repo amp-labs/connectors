@@ -17,6 +17,12 @@ func (a *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectNa
 		return nil, err
 	}
 
+	if spec, ok := objectRegistry[objectName]; ok && spec.service == serviceAdmin {
+		url.WithQueryParam(queryParamPageSize, sampleSize)
+	} else {
+		url.WithQueryParam(queryParamSize, sampleSize)
+	}
+
 	applyTimeFilter(url, objectName, time.Time{}, time.Time{})
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
