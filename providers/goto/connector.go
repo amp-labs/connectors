@@ -67,7 +67,6 @@ func initModuleAdapters(conn *Connector, params common.ConnectorParams) error {
 
 		conn.gotoCore = adapter
 	case providers.ModuleGoToConnect:
-
 		return common.ErrUnsupportedModule
 		// adapter, err := gotocore.NewAdapter(params, conn.accountKey)
 		// if err != nil {
