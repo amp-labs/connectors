@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "created": "2019-08-24T14:15:22Z",
+    "location": "string"
+  },
+  "id": "dfoahofadso",
+  "displayName": "group test",
+  "members": [
+    {
+      "type": "group",
+      "value": "test"
+    }
+  ]
+}
