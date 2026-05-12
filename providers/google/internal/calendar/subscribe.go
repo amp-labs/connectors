@@ -238,7 +238,7 @@ func (a *Adapter) UpdateSubscription( //nolint: cyclop,funlen
 
 	// justAdded tracks objects successfully watched in this call so they can be
 	// rolled back if a later watch in the same loop fails.
-	var justAdded []common.ObjectName
+	justAdded := make([]common.ObjectName, 0, len(toAdd))
 
 	for _, obj := range sortedKeys(toAdd) {
 		resp, watchErr := a.watchObject(ctx, obj, baseID, watchReq)
