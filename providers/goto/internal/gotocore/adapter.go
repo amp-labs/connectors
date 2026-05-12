@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -17,6 +18,7 @@ type Adapter struct {
 	*components.Connector
 	components.SchemaProvider
 	components.Reader
+	components.Writer
 
 	accountKey string
 }
@@ -70,6 +72,16 @@ func constructor(base *components.Connector) (*Adapter, error) {
 		operations.ReadHandlers{
 			BuildRequest:  adapter.buildReadRequest,
 			ParseResponse: adapter.parseReadResponse,
+		},
+	)
+
+	adapter.Writer = writer.NewHTTPWriter(
+		adapter.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		adapter.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  adapter.buildWriteRequest,
+			ParseResponse: adapter.parseWriteResponse,
 		},
 	)
 
