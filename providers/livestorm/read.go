@@ -155,9 +155,9 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		resp,
-		extractJSONAPIDataRecords,
+		extractJSONAPIResourceNodes,
 		nextPageLivestorm(request),
-		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
+		readhelper.MakeMarshaledDataFuncWithId(flattenJSONAPIResourceForFields, readhelper.NewIdField("id")),
 		params.Fields,
 	)
 }

@@ -89,9 +89,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							"title": "Launch Webinar",
 						},
 						Raw: map[string]any{
-							"id":         "evt_1",
-							"title":      "Launch Webinar",
-							"updated_at": "2025-01-01T12:00:00Z",
+							"id":   "evt_1",
+							"type": "events",
+							"attributes": map[string]any{
+								"title":      "Launch Webinar",
+								"updated_at": "2025-01-01T12:00:00Z",
+							},
 						},
 					},
 				},
@@ -125,9 +128,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							"title": "Paged Event",
 						},
 						Raw: map[string]any{
-							"id":         "evt_1",
-							"title":      "Paged Event",
-							"updated_at": "2025-01-02T12:00:00Z",
+							"id":   "evt_1",
+							"type": "events",
+							"attributes": map[string]any{
+								"title":      "Paged Event",
+								"updated_at": "2025-01-02T12:00:00Z",
+							},
 						},
 					},
 				},
@@ -160,10 +166,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							"first_name": "Alpha",
 						},
 						Raw: map[string]any{
-							"id":         "person_a",
-							"email":      "alpha@example.com",
-							"first_name": "Alpha",
-							"last_name":  "User",
+							"id":   "person_a",
+							"type": "people",
+							"attributes": map[string]any{
+								"email":      "alpha@example.com",
+								"first_name": "Alpha",
+								"last_name":  "User",
+							},
 						},
 					},
 				},
@@ -198,8 +207,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							"email": "a@example.com",
 						},
 						Raw: map[string]any{
-							"id":    "person_1",
-							"email": "a@example.com",
+							"id":   "person_1",
+							"type": "people",
+							"attributes": map[string]any{
+								"email": "a@example.com",
+							},
 						},
 					},
 				},
@@ -233,7 +245,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						},
 						Raw: map[string]any{
 							"id":   "chat_1",
-							"text": "hello",
+							"type": "session_chat_messages",
+							"attributes": map[string]any{
+								"text": "hello",
+							},
 						},
 					},
 				},
@@ -264,8 +279,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							"status": "done",
 						},
 						Raw: map[string]any{
-							"id":     "job_1",
-							"status": "done",
+							"id":   "job_1",
+							"type": "jobs",
+							"attributes": map[string]any{
+								"status": "done",
+							},
 						},
 					},
 				},
@@ -298,7 +316,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						},
 						Raw: map[string]any{
 							"id":   "attr_1",
-							"slug": "company",
+							"type": "people_attributes",
+							"attributes": map[string]any{
+								"slug": "company",
+							},
 						},
 					},
 				},
