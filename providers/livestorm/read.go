@@ -3,7 +3,6 @@ package livestorm
 import (
 	"context"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 
@@ -206,12 +205,7 @@ func buildNextPageFromCounters(previous *http.Request, root *ajson.Node) (string
 		return "", nil
 	}
 
-	cloned, err := url.Parse(previous.URL.String())
-	if err != nil {
-		return "", err
-	}
-
-	u, err := urlbuilder.FromRawURL(cloned)
+	u, err := urlbuilder.FromRawURL(previous.URL)
 	if err != nil {
 		return "", err
 	}

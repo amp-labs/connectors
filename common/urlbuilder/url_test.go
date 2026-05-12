@@ -295,6 +295,74 @@ func TestFromRawURL(t *testing.T) { // nolint:funlen
 	}
 }
 
+func TestFromRawURLDoesNotMutateInput(t *testing.T) {
+	t.Parallel()
+
+	original, err := url.Parse("https://api.example.com/v1/items?page[number]=0&page[size]=100")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	before := original.String()
+	beforeRawQuery := original.RawQuery
+
+	wrapped, err := FromRawURL(original)
+	if err != nil {
+		t.Fatalf("FromRawURL: %v", err)
+	}
+
+	wrapped.WithQueryParam("page[number]", "5")
+	_ = wrapped.String()
+
+	if got := original.String(); got != before {
+		t.Fatalf("source URL changed after builder.String(): before %q after %q", before, got)
+	}
+
+	if original.RawQuery != beforeRawQuery {
+		t.Fatalf("source RawQuery changed: before %q after %q", beforeRawQuery, original.RawQuery)
+	}
+}
+
+func TestFromRawURLIndependentOfLaterSourceMutation(t *testing.T) {
+	t.Parallel()
+
+	original, err := url.Parse("https://example.com/path?keep=1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wrapped, err := FromRawURL(original)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	original.RawQuery = "tampered=1"
+
+	wrapped.WithQueryParam("keep", "2")
+	out := wrapped.String()
+
+	if strings.Contains(out, "tampered") {
+		t.Fatalf("output should not reflect post-wrap mutation of source URL: %q", out)
+	}
+
+	if !strings.Contains(out, "keep=2") {
+		t.Fatalf("expected keep=2 in %q", out)
+	}
+}
+
+func TestFromRawURLNilInput(t *testing.T) {
+	t.Parallel()
+
+	_, err := FromRawURL(nil)
+	if err == nil {
+		t.Fatal("expected error for nil *url.URL")
+	}
+
+	if !errors.Is(err, ErrInvalidURL) {
+		t.Fatalf("expected ErrInvalidURL, got %v", err)
+	}
+}
+
 func TestEquality(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
