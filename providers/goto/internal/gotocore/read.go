@@ -12,13 +12,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const (
-	readPageSize       = "200"
-	queryParamPage     = "page"
-	queryParamPageSize = "pageSize"
-	queryParamOffset   = "offset"
-)
-
 func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	cfg, ok := objectRegistry[params.ObjectName]
 	if !ok {
