@@ -234,6 +234,10 @@ func (c *Connector) VerifyWebhookMessage(
 	request *common.WebhookRequest,
 	params *common.VerificationParams,
 ) (bool, error) {
+	if c.Calendar != nil {
+		return c.Calendar.VerifyWebhookMessage(ctx, request, params)
+	}
+
 	if c.Mail != nil {
 		return c.Mail.VerifyWebhookMessage(ctx, request, params)
 	}
@@ -247,6 +251,10 @@ func (c *Connector) GetRecordsByIds(ctx context.Context, // nolint: revive
 	fields []string,
 	associations []string,
 ) ([]common.ReadResultRow, error) {
+	if c.Calendar != nil {
+		return c.Calendar.GetRecordsByIds(ctx, objectName, recordIds, fields, associations)
+	}
+
 	if c.Mail != nil {
 		return c.Mail.GetRecordsByIds(ctx, objectName, recordIds, fields, associations)
 	}

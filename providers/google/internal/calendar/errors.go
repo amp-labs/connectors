@@ -18,6 +18,12 @@ var (
 	errUnsupportedSubscribeObject = errors.New("unsupported subscribe object")
 )
 
+var (
+	errMissingParams              = errors.New("missing required parameters")
+	errInvalidRequestType         = errors.New("invalid request type")
+	errUnsupportedSubscribeObject = errors.New("unsupported subscribe object")
+)
+
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	[]interpreter.FormatTemplate{
 		{
