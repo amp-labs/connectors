@@ -1,0 +1,32 @@
+{
+    "_embedded": {
+        "webinars": [
+            {
+                "webinarKey": "7878787878787878",
+                "webinarID": "123456789012345678",
+                "subject": "Introduction to GoToWebinar",
+                "description": "Learn how to use GoToWebinar",
+                "organizerKey": "8967235839898",
+                "registrationUrl": "https://attendee.gotowebinar.com/register/7878787878787878",
+                "inSession": false,
+                "numberOfRegistrants": 42,
+                "type": "single_session",
+                "locale": "en_US",
+                "approvalType": "automatic",
+                "isOndemand": false,
+                "times": [
+                    {
+                        "startTime": "2024-10-15T14:00:00Z",
+                        "endTime": "2024-10-15T15:00:00Z"
+                    }
+                ]
+            }
+        ]
+    },
+    "page": {
+        "size": 1,
+        "totalElements": 12,
+        "totalPages": 12,
+        "number": 0
+    }
+}
