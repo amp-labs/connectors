@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"net/http"
 	"net/url"
 	"slices"
@@ -27,7 +28,7 @@ var objectWatchPaths = map[common.ObjectName]string{
 	objectNameEvents:       "calendars/primary/events/watch",
 	objectNameCalendarList: "users/me/calendarList/watch",
 	objectNameSettings:     "users/me/settings/watch",
-	objectNameAcl:          "calendars/primary/acl/watch",
+	objectNameACL:          "calendars/primary/acl/watch",
 }
 
 // WatchRequest is the caller-provided config for creating watch channels.
@@ -178,7 +179,7 @@ func (a *Adapter) Subscribe(
 // Objects present in prev but absent from params are stopped. Objects in params
 // but absent from prev are newly watched. Objects present in both are left untouched
 // (Google Calendar does not support mutating an existing channel).
-func (a *Adapter) UpdateSubscription(
+func (a *Adapter) UpdateSubscription( //nolint: cyclop,funlen
 	ctx context.Context,
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
@@ -207,9 +208,7 @@ func (a *Adapter) UpdateSubscription(
 
 	// Start from a copy of the previous channels; we'll mutate it below.
 	updatedChannels := make(map[common.ObjectName]*WatchResponse, len(prevChannels))
-	for obj, ch := range prevChannels {
-		updatedChannels[obj] = ch
-	}
+	maps.Copy(updatedChannels, prevChannels)
 
 	// Stop removed channels.
 	var stopErr error
@@ -280,6 +279,7 @@ func (a *Adapter) DeleteSubscription(
 	result common.SubscriptionResult,
 ) error {
 	channels := extractChannels(&result)
+
 	return a.stopAllChannels(ctx, channels)
 }
 
@@ -388,7 +388,7 @@ func (a *Adapter) stopChannel(ctx context.Context, id, resourceID string) error 
 
 	// channels/stop returns 204 No Content on success with no body.
 	if response.Code != http.StatusNoContent && response.Code != http.StatusOK {
-		return fmt.Errorf("stopChannel: unexpected status %d", response.Code)
+		return fmt.Errorf("stopChannel: unexpected status %d", response.Code) //nolint: err113
 	}
 
 	return nil

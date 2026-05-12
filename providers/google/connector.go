@@ -273,9 +273,9 @@ func (c *Connector) RunScheduledMaintenance(
 // Re-exports of Google Calendar subscribe types so external callers can use them
 // without importing the internal calendar package.
 type (
-	CalendarWatchRequest        = calendar.WatchRequest
-	CalendarWatchResponse       = calendar.WatchResponse
-	CalendarSubscriptionResult  = calendar.CalendarSubscriptionResult
+	CalendarWatchRequest       = calendar.WatchRequest
+	CalendarWatchResponse      = calendar.WatchResponse
+	CalendarSubscriptionResult = calendar.CalendarSubscriptionResult
 )
 
 // Re-exports of Gmail history.list types so external callers can use them

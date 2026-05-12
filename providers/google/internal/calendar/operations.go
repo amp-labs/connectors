@@ -19,7 +19,7 @@ const (
 	objectNameCalendarList = "calendarList"
 	objectNameEvents       = "events"
 	objectNameSettings     = "settings"
-	objectNameAcl          = "acl"
+	objectNameACL          = "acl"
 
 	// Page size references:
 	// https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/list
