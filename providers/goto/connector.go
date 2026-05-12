@@ -101,3 +101,11 @@ func (c *Connector) ListObjectMetadata(
 
 	return nil, common.ErrNotImplemented
 }
+
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if c.gotoCore != nil {
+		return c.gotoCore.Read(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}

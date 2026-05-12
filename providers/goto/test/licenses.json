@@ -1,0 +1,53 @@
+{
+  "results": [
+    {
+      "key": 0,
+      "concurrentLicenseKey": 0,
+      "seats": 0,
+      "userCount": 0,
+      "enabled": true,
+      "description": "string",
+      "type": "string",
+      "channel": "string",
+      "userKeys": [
+        0
+      ],
+      "invitedUserKeys": [
+        0
+      ],
+      "deviceKeys": [
+        0
+      ],
+      "deviceCount": 0,
+      "products": [
+        "G2M"
+      ],
+      "childLicenseKeys": [
+        0
+      ],
+      "entitlements": {
+        "g2m": {
+          "dialOutProvisioned": true,
+          "roomSystemProvisioned": true,
+          "onlineRecordingProvisioned": true,
+          "onlineRecordingTranscriptsProvisioned": true,
+          "calendarLinkProvisioned": true,
+          "standaloneAudioProvisioned": true,
+          "tollFreeProvisioned": true,
+          "openMeetingsProvisioned": true,
+          "chromaCamProvisioned": true,
+          "messengerProvisioned": true,
+          "chatProvisioned": true,
+          "recordingProvisioned": true,
+          "coOrganizerProvisioned": true
+        }
+      },
+      "devicesOnly": true,
+      "devicesAllowed": true,
+      "externallyManaged": true
+    }
+  ],
+  "fromIndex": 0,
+  "toIndex": 0,
+  "total": 0
+}

@@ -9,6 +9,8 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+// buildObjectURL resolves the object path against the module BaseURL,
+// substituting the account key. Callers attach their own query params.
 func (a *Adapter) buildObjectURL(objectName string) (*urlbuilder.URL, error) {
 	spec, ok := objectRegistry[objectName]
 	if !ok || spec.path == "" {
@@ -20,13 +22,6 @@ func (a *Adapter) buildObjectURL(objectName string) (*urlbuilder.URL, error) {
 	url, err := urlbuilder.New(a.ModuleInfo().BaseURL, path)
 	if err != nil {
 		return nil, fmt.Errorf("error building URL for object %s: %w", objectName, err)
-	}
-
-	if spec.service == serviceAdmin {
-		// Admin API uses "pageSize" for pagination, while other services use "size".
-		url.WithQueryParam(queryParamPageSize, sampleSize)
-	} else {
-		url.WithQueryParam(queryParamSize, sampleSize)
 	}
 
 	return url, nil

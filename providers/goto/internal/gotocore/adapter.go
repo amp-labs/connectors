@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -15,9 +16,29 @@ import (
 type Adapter struct {
 	*components.Connector
 	components.SchemaProvider
+	components.Reader
 
 	accountKey string
 }
+
+const (
+	queryParamSize     = "size"
+	queryParamPageSize = "pageSize"
+	sampleSize         = "1"
+	readPageSize       = "200"
+	// corporatePageSize caps Corporate API page size at 100 (its documented
+	// maximum) and lets corporateNextPage detect the last page by counting
+	// returned records.
+	corporatePageSize = 100
+	queryParamPage    = "page"
+	queryParamOffset  = "offset"
+
+	// metadataSampleWindowDays is the size in days of the time-range filter
+	// applied when sampling records for schema. Wide enough to
+	// catch at least one record on endpoints that mandate a
+	// time-range filter.
+	metadataSampleWindowDays = 120
+)
 
 func NewAdapter(params common.ConnectorParams, accountKey string) (*Adapter, error) {
 	adapter, err := components.Initialize(providers.GoTo, params, constructor)
@@ -39,6 +60,16 @@ func constructor(base *components.Connector) (*Adapter, error) {
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  adapter.buildSingleObjectMetadataRequest,
 			ParseResponse: adapter.parseSingleObjectMetadataResponse,
+		},
+	)
+
+	adapter.Reader = reader.NewHTTPReader(
+		adapter.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		adapter.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  adapter.buildReadRequest,
+			ParseResponse: adapter.parseReadResponse,
 		},
 	)
 
