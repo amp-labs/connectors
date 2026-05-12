@@ -151,12 +151,14 @@ func (a *Adapter) Subscribe(
 	for _, obj := range objects {
 		resp, err := a.watchObject(ctx, obj, baseID, watchReq)
 		if err != nil {
-			rollbackErr := a.stopAllChannels(ctx, result.Channels)
-			if rollbackErr != nil {
-				return &common.SubscriptionResult{
-					Status: common.SubscriptionStatusFailedToRollback,
-					Result: result,
-				}, fmt.Errorf("subscribe: watching %q failed: %w; rollback also failed: %w", obj, err, rollbackErr)
+			if len(result.Channels) > 0 {
+				rollbackErr := a.stopAllChannels(ctx, result.Channels)
+				if rollbackErr != nil {
+					return &common.SubscriptionResult{
+						Status: common.SubscriptionStatusFailedToRollback,
+						Result: result,
+					}, fmt.Errorf("subscribe: watching %q failed: %w; rollback also failed: %w", obj, err, rollbackErr)
+				}
 			}
 
 			return &common.SubscriptionResult{
@@ -239,18 +241,20 @@ func (a *Adapter) UpdateSubscription( //nolint: cyclop,funlen
 	for _, obj := range sortedKeys(toAdd) {
 		resp, watchErr := a.watchObject(ctx, obj, baseID, watchReq)
 		if watchErr != nil {
-			rollbackErr := a.stopAllChannels(ctx, newChannels)
-			if rollbackErr != nil {
-				return &common.SubscriptionResult{
-					Status: common.SubscriptionStatusFailedToRollback,
-					Result: &CalendarSubscriptionResult{Channels: updatedChannels},
-				}, fmt.Errorf("update: watching %q failed: %w; rollback also failed: %w", obj, watchErr, rollbackErr)
-			}
+			if len(newChannels) > 0 {
+				rollbackErr := a.stopAllChannels(ctx, newChannels)
+				if rollbackErr != nil {
+					return &common.SubscriptionResult{
+						Status: common.SubscriptionStatusFailedToRollback,
+						Result: &CalendarSubscriptionResult{Channels: updatedChannels},
+					}, fmt.Errorf("update: watching %q failed: %w; rollback also failed: %w", obj, watchErr, rollbackErr)
+				}
 
-			// Rollback succeeded — prune the stopped channels from the result
-			// so it accurately reflects what is still active in Google Calendar.
-			for o := range newChannels {
-				delete(updatedChannels, o)
+				// Rollback succeeded — prune the stopped channels from the result
+				// so it accurately reflects what is still active in Google Calendar.
+				for o := range newChannels {
+					delete(updatedChannels, o)
+				}
 			}
 
 			return &common.SubscriptionResult{
