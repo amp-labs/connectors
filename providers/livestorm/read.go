@@ -64,19 +64,16 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	if params.ObjectName == "" {
+	switch params.ObjectName {
+	case "":
 		return nil, common.ErrMissingObjects
-	}
-
-	if params.ObjectName == objectSessionChatMessages {
+	case objectSessionChatMessages:
 		return c.buildSessionChatMessagesReadURL(params)
-	}
-
-	if params.ObjectName == objectJobs {
+	case objectJobs:
 		return c.buildJobReadURL(params)
+	default:
+		return c.buildGenericReadURL(params)
 	}
-
-	return c.buildGenericReadURL(params)
 }
 
 func (c *Connector) buildSessionChatMessagesReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
