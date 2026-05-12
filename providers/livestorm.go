@@ -5,19 +5,20 @@ const (
 )
 
 func init() {
+	// API token auth is used for development and integration tests until OAuth2 client
+	// credentials are available from Livestorm support; then restore AuthType Oauth2 and
+	// Oauth2Opts. https://developers.livestorm.co/docs/api-token-authentication
 	SetInfo(Livestorm, ProviderInfo{
 		DisplayName: "Livestorm",
-		AuthType:    Oauth2,
+		AuthType:    ApiKey,
 		BaseURL:     "https://api.livestorm.co",
-		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://app.livestorm.co/oauth/authorize",
-			TokenURL:                  "https://app.livestorm.co/oauth/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: false,
-			TokenMetadataFields: TokenMetadataFields{
-				ScopesField: "scope",
+		ApiKeyOpts: &ApiKeyOpts{
+			AttachmentType: Header,
+			Header: &ApiKeyOptsHeader{
+				Name: "Authorization",
+				// Livestorm sends the API token as the full Authorization header value (no Bearer prefix).
 			},
+			DocsURL: "https://developers.livestorm.co/docs/api-token-authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
