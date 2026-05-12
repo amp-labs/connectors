@@ -32,18 +32,10 @@ func main() {
 		},
 		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 			"events": {
-				Events: []common.SubscriptionEventType{
-					common.SubscriptionEventTypeCreate,
-					common.SubscriptionEventTypeUpdate,
-					common.SubscriptionEventTypeDelete,
-				},
+				Events: []common.SubscriptionEventType{},
 			},
 			"calendarList": {
-				Events: []common.SubscriptionEventType{
-					common.SubscriptionEventTypeCreate,
-					common.SubscriptionEventTypeUpdate,
-					common.SubscriptionEventTypeDelete,
-				},
+				Events: []common.SubscriptionEventType{},
 			},
 		},
 	})
