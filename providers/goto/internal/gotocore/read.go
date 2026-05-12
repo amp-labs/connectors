@@ -12,13 +12,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const (
-	readPageSize       = "200"
-	queryParamPage     = "page"
-	queryParamPageSize = "pageSize"
-	queryParamOffset   = "offset"
-)
-
 func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	cfg, ok := objectRegistry[params.ObjectName]
 	if !ok {
@@ -28,7 +21,7 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 
 	//nolint:exhaustive
 	switch cfg.service {
-	case serviceSCIM, serviceRemoteSupport, serviceCorporate, serviceMeetings:
+	case serviceSCIM, serviceRemoteSupport, serviceMeetings:
 		return a.buildUnpaginatedReadRequest(ctx, params)
 	case serviceAdmin:
 		return a.buildAdminReadRequest(ctx, params)
@@ -39,9 +32,9 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 
 // buildUnpaginatedReadRequest fetches the endpoint once with no pagination
 // params. Used for services that don't support pagination at all
-// (SCIM, Remote Support, Corporate).
+// (SCIM, Remote Support).
 func (a *Adapter) buildUnpaginatedReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := a.buildObjectBaseURL(params.ObjectName)
+	url, err := a.buildObjectURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +47,7 @@ func (a *Adapter) buildUnpaginatedReadRequest(ctx context.Context, params common
 // buildAdminReadRequest paginates with `offset` + `pageSize`. The next-page
 // token is the offset of the next record to fetch.
 func (a *Adapter) buildAdminReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := a.buildObjectBaseURL(params.ObjectName)
+	url, err := a.buildObjectURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +68,7 @@ func (a *Adapter) buildAdminReadRequest(ctx context.Context, params common.ReadP
 // buildPagedReadRequest is the default GoTo pagination: `size` + `page`.
 // The next-page token is the next page number (0-indexed).
 func (a *Adapter) buildPagedReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	url, err := a.buildObjectBaseURL(params.ObjectName)
+	url, err := a.buildObjectURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +101,7 @@ func (a *Adapter) parseReadResponse(
 	return common.ParseResult(
 		resp,
 		recordsExtractor(cfg.service, params.ObjectName),
-		nextPageExtractor(cfg.service),
+		nextPageExtractor(cfg.service, params.ObjectName, request),
 		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,
 	)
@@ -159,17 +152,45 @@ func readNodeArray(node *ajson.Node, jsonPath string, nestedPath ...string) ([]m
 }
 
 // nextPageExtractor returns a NextPageFunc that resolves the next-page token
-// for the given service. SCIM, Corporate, and Remote Support don't paginate.
-// Admin uses an offset+pageSize scheme. Everything else uses the default
+// for the given service. SCIM and Remote Support don't paginate. Admin uses
+// an offset+pageSize scheme. Corporate sends no pagination metadata, so we
+// detect the last page by counting records. Everything else uses the default
 // `page` envelope (number/totalPages).
-func nextPageExtractor(service objectService) common.NextPageFunc {
+func nextPageExtractor(service objectService, objectName string, req *http.Request) common.NextPageFunc {
 	switch service { //nolint:exhaustive // page envelope is the default.
-	case serviceSCIM, serviceCorporate, serviceRemoteSupport:
+	case serviceSCIM, serviceRemoteSupport:
 		return func(*ajson.Node) (string, error) { return "", nil }
 	case serviceAdmin:
 		return adminNextPage
+	case serviceCorporate:
+		return corporateNextPage(service, objectName, req)
 	default:
 		return webinarNextPage
+	}
+}
+
+// corporateNextPage advances the `page` query param when a full page of
+// records was returned. The response carries no pagination metadata, so a
+// short page means we've reached the end.
+func corporateNextPage(service objectService, objectName string, req *http.Request) common.NextPageFunc {
+	extract := recordsExtractor(service, objectName)
+
+	return func(node *ajson.Node) (string, error) {
+		records, err := extract(node)
+		if err != nil {
+			return "", nil //nolint:nilerr
+		}
+
+		if len(records) < corporatePageSize {
+			return "", nil
+		}
+
+		currentPage, err := strconv.ParseInt(req.URL.Query().Get(queryParamPage), 10, 64)
+		if err != nil {
+			return "", nil //nolint:nilerr
+		}
+
+		return strconv.FormatInt(currentPage+1, 10), nil
 	}
 }
 

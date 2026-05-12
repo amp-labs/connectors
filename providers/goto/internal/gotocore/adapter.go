@@ -23,6 +23,25 @@ type Adapter struct {
 	accountKey string
 }
 
+const (
+	queryParamSize     = "size"
+	queryParamPageSize = "pageSize"
+	sampleSize         = "1"
+	readPageSize       = "200"
+	// corporatePageSize caps Corporate API page size at 100 (its documented
+	// maximum) and lets corporateNextPage detect the last page by counting
+	// returned records.
+	corporatePageSize = 100
+	queryParamPage    = "page"
+	queryParamOffset  = "offset"
+
+	// metadataSampleWindowDays is the size in days of the time-range filter
+	// applied when sampling records for schema. Wide enough to
+	// catch at least one record on endpoints that mandate a
+	// time-range filter.
+	metadataSampleWindowDays = 120
+)
+
 func NewAdapter(params common.ConnectorParams, accountKey string) (*Adapter, error) {
 	adapter, err := components.Initialize(providers.GoTo, params, constructor)
 	if err != nil {

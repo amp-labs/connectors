@@ -60,7 +60,7 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar, writable: true},
 
 	// GoToAssist Corporate API
-	"representatives": {path: "G2AC/rest/v1/representatives", service: serviceCorporate, writable: true},
+	"representatives": {path: "G2AC/rest/v1/representatives/pages", service: serviceCorporate},
 	"teams":           {path: "G2AC/rest/v1/teams/pages", service: serviceCorporate},
 	"portals":         {path: "G2AC/rest/v1/portals/pages", service: serviceCorporate},
 

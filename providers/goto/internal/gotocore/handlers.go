@@ -11,21 +11,16 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-const (
-	queryParamSize = "size"
-	sampleSize     = "1"
-
-	// metadataSampleWindowDays is the size in days of the time-range filter
-	// applied when sampling records for schema. Wide enough to
-	// catch at least one record on endpoints that mandate a
-	// time-range filter.
-	metadataSampleWindowDays = 120
-)
-
 func (a *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := a.buildObjectURL(objectName)
 	if err != nil {
 		return nil, err
+	}
+
+	if spec, ok := objectRegistry[objectName]; ok && spec.service == serviceAdmin {
+		url.WithQueryParam(queryParamPageSize, sampleSize)
+	} else {
+		url.WithQueryParam(queryParamSize, sampleSize)
 	}
 
 	applyTimeFilter(url, objectName, time.Time{}, time.Time{})
