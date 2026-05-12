@@ -18,6 +18,8 @@ import (
 const (
 	objectNameCalendarList = "calendarList"
 	objectNameEvents       = "events"
+	objectNameSettings     = "settings"
+	objectNameAcl          = "acl"
 
 	// Page size references:
 	// https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/list
