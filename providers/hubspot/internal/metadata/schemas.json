@@ -930,6 +930,68 @@
               "providerType": "string<date-time>"
             }
           }
+        },
+        "communication-preferences": {
+          "displayName": "Definitions of communication preferences",
+          "description": "/communication-preferences/2026-03/definitions",
+          "responseKey": "results",
+          "fields": {
+            "businessUnitId": {
+              "displayName": "businessUnitId",
+              "valueType": "int",
+              "providerType": "int"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "int"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "purpose": {
+              "displayName": "purpose",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "communicationMethod": {
+              "displayName": "communicationMethod",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isActive": {
+              "displayName": "isActive",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isDefault": {
+              "displayName": "isDefault",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isInternal": {
+              "displayName": "isInternal",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
         }
       }
     }

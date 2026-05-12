@@ -88,6 +88,15 @@ var (
 			Version:           "", // part of path.
 			PageSize:          DefaultPageSize,
 		},
+		// https://developers.hubspot.com/docs/api-reference/latest/communication-preferences/guide?search=communication-preferences#get-all-subscription-types
+		// Incremental read is not supported and even the page limit has no impact.
+		// This endpoint is not well documented.
+		"communication-preferences": {
+			Path:              "/communication-preferences/2026-03/definitions",
+			RecordTransformer: nil,
+			Version:           "", // part of path.
+			PageSize:          DefaultPageSize,
+		},
 	}
 )
 
