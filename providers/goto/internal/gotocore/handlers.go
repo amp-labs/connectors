@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	queryParamSize = "size"
-	sampleSize     = "1"
+	queryParamSize     = "size"
+	queryParamPageSize = "pageSize"
+	sampleSize         = "1"
 
 	// metadataSampleWindowDays is the size in days of the time-range filter
 	// applied when sampling records for schema. Wide enough to
