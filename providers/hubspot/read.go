@@ -143,6 +143,11 @@ func (c *Connector) readMarketing(ctx context.Context,
 		return nil, err
 	}
 
+	identifier := "id"
+	if params.ObjectName == core.ObjectMarketingEvents {
+		identifier = "objectId"
+	}
+
 	return common.ParseResultFiltered(
 		params,
 		resp,
@@ -150,7 +155,7 @@ func (c *Connector) readMarketing(ctx context.Context,
 		makeIncrementalFilterFunc(params),
 		readhelper.MakeMarshaledDataFuncWithId(
 			object.RecordTransformer,
-			readhelper.IdFieldQuery{Field: "id"},
+			readhelper.IdFieldQuery{Field: identifier},
 		),
 		params.Fields,
 	)

@@ -747,6 +747,118 @@
               "providerType": "string<date-time>"
             }
           }
+        },
+        "marketing-events": {
+          "displayName": "Marketing Events",
+          "description": "/marketing/marketing-events/2026-03",
+          "responseKey": "results",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "customProperties": {
+              "displayName": "customProperties",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "eventName": {
+              "displayName": "eventName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "objectId": {
+              "displayName": "objectId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "appInfo": {
+              "displayName": "appInfo",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "attendees": {
+              "displayName": "attendees",
+              "valueType": "int",
+              "providerType": "integer<int32>"
+            },
+            "cancellations": {
+              "displayName": "cancellations",
+              "valueType": "int",
+              "providerType": "integer<int32>"
+            },
+            "endDateTime": {
+              "displayName": "endDateTime",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "eventCancelled": {
+              "displayName": "eventCancelled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "eventCompleted": {
+              "displayName": "eventCompleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "eventDescription": {
+              "displayName": "eventDescription",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventOrganizer": {
+              "displayName": "eventOrganizer",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventStatus": {
+              "displayName": "eventStatus",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventStatusV2": {
+              "displayName": "eventStatusV2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventType": {
+              "displayName": "eventType",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventUrl": {
+              "displayName": "eventUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "externalEventId": {
+              "displayName": "externalEventId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "noShows": {
+              "displayName": "noShows",
+              "valueType": "int",
+              "providerType": "integer<int32>"
+            },
+            "registrants": {
+              "displayName": "registrants",
+              "valueType": "int",
+              "providerType": "integer<int32>"
+            },
+            "startDateTime": {
+              "displayName": "startDateTime",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            }
+          }
         }
       }
     }
