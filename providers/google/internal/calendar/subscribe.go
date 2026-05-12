@@ -310,9 +310,9 @@ func (a *Adapter) RunScheduledMaintenance(
 // Callers should verify the X-Goog-Channel-Token header against their stored token
 // if they set one in WatchRequest.Token.
 func (a *Adapter) VerifyWebhookMessage(
-	_ context.Context,
-	_ *common.WebhookRequest,
-	_ *common.VerificationParams,
+	ctx context.Context,
+	request *common.WebhookRequest,
+	params *common.VerificationParams,
 ) (bool, error) {
 	return true, nil
 }
@@ -322,11 +322,11 @@ func (a *Adapter) VerifyWebhookMessage(
 // X-Goog-Resource-ID, etc.). There is no record payload to enrich from; callers must issue
 // a follow-up API read (e.g. events.list) to fetch what actually changed.
 func (a *Adapter) GetRecordsByIds( //nolint:revive
-	_ context.Context,
-	_ string,
-	_ []string,
-	_ []string,
-	_ []string,
+	ctx context.Context,
+	objectName string,
+	recordIds []string, //nolint:revive
+	fields []string,
+	associations []string,
 ) ([]common.ReadResultRow, error) {
 	return nil, common.ErrGetRecordNotSupportedForObject
 }
