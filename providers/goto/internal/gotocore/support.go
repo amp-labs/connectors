@@ -60,9 +60,9 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar, writable: true},
 
 	// GoToAssist Corporate API
-	"representatives": {path: "G2AC/rest/v1/representatives/pages", service: serviceCorporate},
-	"teams":           {path: "G2AC/rest/v1/teams/pages", service: serviceCorporate},
-	"portals":         {path: "G2AC/rest/v1/portals/pages", service: serviceCorporate},
+	"representatives": {path: "G2AC/rest/v1/representatives/pages", service: serviceCorporate, writable: true},
+	"teams":           {path: "G2AC/rest/v1/teams/pages", service: serviceCorporate, writable: true},
+	"portals":         {path: "G2AC/rest/v1/portals/pages", service: serviceCorporate, writable: true},
 
 	// GoToAssist Remote Support API
 	// We use "sessions" as the object name for extended sessions because this is
@@ -73,10 +73,10 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	"sessions": {path: "G2A/rest/v1/extendedsessions", service: serviceRemoteSupport},
 
 	// Admin API
-	"attributes":   {path: "admin/rest/v1/accounts/{accountKey}/attributes", service: serviceAdmin},
+	"attributes":   {path: "admin/rest/v1/accounts/{accountKey}/attributes", service: serviceAdmin, writable: true},
 	"licenses":     {path: "admin/rest/v1/accounts/{accountKey}/licenses", service: serviceAdmin},
-	"rolesets":     {path: "admin/rest/v1/accounts/{accountKey}/rolesets", service: serviceAdmin},
-	"templates":    {path: "admin/rest/v1/accounts/{accountKey}/templates", service: serviceAdmin},
+	"rolesets":     {path: "admin/rest/v1/accounts/{accountKey}/rolesets", service: serviceAdmin, writable: true},
+	"templates":    {path: "admin/rest/v1/accounts/{accountKey}/templates", service: serviceAdmin, writable: true},
 	"admin/users":  {path: "admin/rest/v1/accounts/{accountKey}/users", service: serviceAdmin, writable: true},
 	"admin/groups": {path: "admin/rest/v1/accounts/{accountKey}/groups", service: serviceAdmin, writable: true},
 
@@ -86,4 +86,5 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 
 	//Only Write - these objects don't have a read endpoint, but we want to be able to write to them via the generic write handler
 	"meetings": {path: "G2M/rest/meetings", service: serviceMeetings, writable: true},
+	"tickets":  {path: "G2M/rest/tickets", service: serviceRemoteSupport, writable: true},
 }

@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 // recordIDCandidates lists the response keys we'll try, in order, when
@@ -29,7 +31,7 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 			common.ErrOperationNotSupportedForObject, params.ObjectName)
 	}
 
-	url, err := a.buildObjectBaseURL(params.ObjectName)
+	url, err := a.buildWriteObjectURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -39,9 +41,9 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 	if params.IsUpdate() {
 		url.AddPath(params.RecordId)
 
-		method = http.MethodPatch
+		method = http.MethodPut
 		if cfg.service == serviceSCIM {
-			method = http.MethodPut
+			method = http.MethodPatch
 		}
 	}
 
@@ -56,6 +58,37 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 	}
 
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+// buildWriteObjectURL resolves the object path against the module BaseURL,
+// substituting the account key. Callers attach their own query params.
+func (a *Adapter) buildWriteObjectURL(objectName string) (*urlbuilder.URL, error) {
+	spec, ok := objectRegistry[objectName]
+	if !ok || spec.path == "" {
+		spec.path = objectName
+	}
+
+	if spec.service == serviceCorporate {
+		path := strings.ReplaceAll(spec.path, accountKeyPlaceholder, a.accountKey)
+
+		//remove the "pages" suffix for corporate write endpoints for write operations
+		path = strings.TrimSuffix(path, "/pages")
+
+		url, err := urlbuilder.New(a.ModuleInfo().BaseURL, path)
+		if err != nil {
+			return nil, fmt.Errorf("error building URL for object %s: %w", objectName, err)
+		}
+		return url, nil
+	}
+
+	path := strings.ReplaceAll(spec.path, accountKeyPlaceholder, a.accountKey)
+
+	url, err := urlbuilder.New(a.ModuleInfo().BaseURL, path)
+	if err != nil {
+		return nil, fmt.Errorf("error building URL for object %s: %w", objectName, err)
+	}
+
+	return url, nil
 }
 
 func (a *Adapter) parseWriteResponse(
