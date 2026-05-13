@@ -123,12 +123,7 @@ func (c *Connector) buildGenericReadURL(params common.ReadParams) (*urlbuilder.U
 }
 
 func buildVersionedPathURL(baseURL string, path string) (*urlbuilder.URL, error) {
-	path = strings.TrimSpace(path)
-	if path == "" {
-		return urlbuilder.New(baseURL, apiVersion)
-	}
-
-	return urlbuilder.New(baseURL, apiVersion, path)
+	return urlbuilder.New(baseURL, apiVersion, strings.TrimSpace(path))
 }
 
 func applyEventTimeFilters(u *urlbuilder.URL, params common.ReadParams) {
