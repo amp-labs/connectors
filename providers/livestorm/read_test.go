@@ -182,7 +182,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 		},
 		{
-			Name: "Read people uses next_page token from response",
+			Name: "Read people offset pagination via meta.next_page absolute URL",
 			Input: common.ReadParams{
 				ObjectName: "people",
 				NextPage:   testroutines.URLTestServer + "/v1/people?page[number]=2&page[size]=100",
@@ -192,6 +192,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 
+				// Connector path: readNextPageFromMeta reads meta.next_page and returns it as the next
+				// page token (offset-style pagination with an absolute URL). The mock must use r.Host so
+				// that URL matches the httptest origin expected after {{testServerURL}} resolution.
 				body := fmt.Sprintf(
 					`{"data":[{"id":"person_1","type":"people","attributes":{"email":"a@example.com"}}],"meta":{"next_page":"http://%s/v1/people?page[number]=3&page[size]=100"}}`,
 					r.Host,
