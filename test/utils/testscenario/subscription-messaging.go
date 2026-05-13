@@ -42,6 +42,10 @@ type SubscribeReceiveEventsSuite struct {
 	// script cancellation.
 	WebhookRouter      WebhookRouter
 	VerificationParams *common.VerificationParams
+	// AutoRemoveSubscription, if true, removes at the end of script execution any subscriptions
+	// that were created as part of this test run. If false, subscriptions are left in place
+	// and must be cleaned up manually.
+	AutoRemoveSubscription bool
 }
 
 type ConnectorMethod string
@@ -129,6 +133,9 @@ func ValidateSubscribeReceiveEvents(
 		return
 	}
 
+	// Register a defer function to clean up the successful subscription at the end of the script.
+	defer cleanupSubscription(ctx, conn, suite, subscriptionResult)()
+
 	fmt.Println("============== Invoking connector.Write/Delete() ==================")
 	for _, trigger := range suite.Operations {
 		switch trigger.Method {
@@ -214,4 +221,34 @@ func searchForRecord(
 	objectID := object.getRecordIdentifierValue(procedure.RecordIdentifierKey)
 
 	return objectID, true
+}
+
+func cleanupSubscription(ctx context.Context,
+	conn ConnectorWebhookSubscriber, suite SubscribeReceiveEventsSuite,
+	subscriptionResult *common.SubscriptionResult,
+) func() {
+	return func() {
+		if !suite.AutoRemoveSubscription {
+			fmt.Println(
+				"REMINDER: subscription is still active and must be removed manually.\n" +
+					"To automate cleanup in the future, enable the `AutoRemoveSubscription` option.",
+			)
+			return
+		}
+
+		remover, ok := conn.(components.SubscriptionRemover)
+		if !ok {
+			fmt.Println(
+				"REMINDER: subscription is still active and must be removed manually.\n" +
+					"The connector does not yet implement `components.SubscriptionRemover`.",
+			)
+			return
+		}
+
+		fmt.Println("[CLEANUP] Removing subscription.")
+		err := remover.DeleteSubscription(ctx, *subscriptionResult)
+		if !printError(err) {
+			fmt.Println("[CLEANUP] Subscription removed.")
+		}
+	}
 }
