@@ -306,13 +306,13 @@ func TestFromRawURLDoesNotMutateInput(t *testing.T) {
 	before := original.String()
 	beforeRawQuery := original.RawQuery
 
-	wrapped, err := FromRawURL(original)
+	built, err := FromRawURL(original)
 	if err != nil {
 		t.Fatalf("FromRawURL: %v", err)
 	}
 
-	wrapped.WithQueryParam("page[number]", "5")
-	_ = wrapped.String()
+	built.WithQueryParam("page[number]", "5")
+	_ = built.String()
 
 	if got := original.String(); got != before {
 		t.Fatalf("source URL changed after builder.String(): before %q after %q", before, got)
@@ -331,18 +331,18 @@ func TestFromRawURLIndependentOfLaterSourceMutation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	wrapped, err := FromRawURL(original)
+	built, err := FromRawURL(original)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	original.RawQuery = "tampered=1"
 
-	wrapped.WithQueryParam("keep", "2")
-	out := wrapped.String()
+	built.WithQueryParam("keep", "2")
+	out := built.String()
 
 	if strings.Contains(out, "tampered") {
-		t.Fatalf("output should not reflect post-wrap mutation of source URL: %q", out)
+		t.Fatalf("output should not reflect mutation of source *url.URL after FromRawURL: %q", out)
 	}
 
 	if !strings.Contains(out, "keep=2") {
