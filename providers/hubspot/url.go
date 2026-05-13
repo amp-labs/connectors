@@ -35,7 +35,7 @@ import (
 // Used by GetPostAuthInfo.
 // https://developers.hubspot.com/docs/api-reference/latest/account/account-information/get-account-details
 func (c *Connector) getAccountDetailsURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, "account-info", core.APIVersion2026March, "details")
+	return c.rootURL("account-info", core.APIVersion2026March, "details")
 }
 
 // Returns the schema endpoint for an object definition.
@@ -45,7 +45,7 @@ func (c *Connector) getAccountDetailsURL() (*urlbuilder.URL, error) {
 //
 // https://developers.hubspot.com/docs/api-reference/latest/crm/objects/schemas/get-schema
 func (c *Connector) getCRMSchemaURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, "crm-object-schemas", core.APIVersion2026March, "schemas", objectName)
+	return c.rootURL("crm-object-schemas", core.APIVersion2026March, "schemas", objectName)
 }
 
 // Returns the properties endpoint for an object.
@@ -120,16 +120,20 @@ func (c *Connector) getCRMSearchURL(objectName string) (*urlbuilder.URL, error) 
 // https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/update-campaign
 // https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/delete-campaign
 func (c *Connector) getMarketingURL(object *core.ObjectDescription) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, "marketing", object.Path, object.Version)
+	return c.rootURL("marketing", object.Path, object.Version)
 }
 
 func (c *Connector) crmURL(paths ...string) (*urlbuilder.URL, error) {
 	parts := append([]string{"crm"}, paths...)
 
 	// URL: "https://api.hubapi.com/crm"
-	return urlbuilder.New(c.ProviderInfo().BaseURL, parts...)
+	return c.rootURL(parts...)
 }
 
 func (c *Connector) getURLFromRoot(relativePath string) string {
 	return c.ProviderInfo().BaseURL + relativePath
+}
+
+func (c *Connector) rootURL(paths ...string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ProviderInfo().BaseURL, paths...)
 }
