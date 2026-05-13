@@ -1,0 +1,12 @@
+{
+  "responses": [
+    {
+      "id": "38ca43fa-4602-43ef-a865-aca8a3ddc1ce",
+      "status": 204,
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "body": null
+    }
+  ]
+}
