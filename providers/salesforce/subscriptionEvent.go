@@ -10,6 +10,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
+	"github.com/amp-labs/connectors/providers/salesforce/compoundfields"
 )
 
 const (
@@ -312,6 +313,12 @@ func isStandardCompoundField(obj, field string) bool {
 	return ok
 }
 
+// FlattenedCompoundSubField delegates to the compound field schema; see
+// providers/salesforce/compoundfields.
+func FlattenedCompoundSubField(object, compound, subField string) (string, bool) {
+	return compoundfields.FlattenedCompoundSubField(object, compound, subField)
+}
+
 func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error) { // nolint:funcorder
 	if !strings.Contains(name, ".") {
 		return name, nil
@@ -320,8 +327,8 @@ func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error
 	// Compound fields look like "Field.Subfield". Salesforce CDC reports compound
 	// sub-component changes using this dot notation (e.g. "MailingAddress.Street"),
 	// but selectedFieldMappings and requiredWatchFields are keyed by the flattened
-	// column name (e.g. "MailingStreet"). We translate the dot notation into the
-	// flattened form using the per-object mapping in compoundFieldMapping.go so
+	// column name (e.g. "mailingstreet"). We translate the dot notation into the
+	// flattened form using the compound field schema in providers/salesforce/compoundfields so
 	// downstream matching against subscriptions works.
 	parts := strings.SplitN(name, ".", 2) //nolint:mnd
 	if len(parts) < 2 {                   //nolint:mnd
