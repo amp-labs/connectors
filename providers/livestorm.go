@@ -4,6 +4,7 @@ const (
 	Livestorm Provider = "livestorm"
 )
 
+//nolint:funlen // init keeps a commented OAuth2 SetInfo next to the active API key registration for revert.
 func init() {
 	// OAuth2 (restore when client id/secret are available from Livestorm support):
 	/*
