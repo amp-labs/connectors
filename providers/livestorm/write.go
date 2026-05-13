@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -17,15 +15,15 @@ import (
 // Livestorm write API references:
 // - Create event: https://developers.livestorm.co/reference/post_events
 // - Update event: https://developers.livestorm.co/reference/patch_events-id
-// - Bulk session registrants (job): https://developers.livestorm.co/reference/post_sessions-id-people-bulk
 // - Create user (team member): https://developers.livestorm.co/reference/post_users
+//
+// Session bulk registrants (POST …/sessions/{id}/people/bulk) are not implemented on Write;
+// that flow belongs with a future Bulk API surface (see e.g. providers/salesforce/bulk-write.go).
 const (
 	objectUsers               = "users"
-	objectSessionPeopleBulk   = "session_people_bulk"
 	jsonAPIContentType        = "application/vnd.api+json"
 	jsonAPIResourceTypeEvents = "events"
 	jsonAPIResourceTypeUsers  = "users"
-	jsonAPIResourceTypeJobs   = "jobs"
 )
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
@@ -38,12 +36,12 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	u, method, err := c.buildWriteURL(params)
+	body, err := buildLivestormWriteBody(params, record)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := buildLivestormWriteBody(params, record)
+	u, method, err := c.buildWriteURL(params)
 	if err != nil {
 		return nil, err
 	}
@@ -73,12 +71,6 @@ func validateLivestormWrite(params common.WriteParams) error {
 		}
 
 		return nil
-	case objectSessionPeopleBulk:
-		if params.IsUpdate() {
-			return common.ErrOperationNotSupportedForObject
-		}
-
-		return nil
 	default:
 		return common.ErrOperationNotSupportedForObject
 	}
@@ -102,20 +94,6 @@ func (c *Connector) buildWriteURL(params common.WriteParams) (*urlbuilder.URL, s
 		u, err := urlbuilder.New(base, apiVersion, objectUsers)
 
 		return u, http.MethodPost, err
-	case objectSessionPeopleBulk:
-		record, err := common.RecordDataToMap(params.RecordData)
-		if err != nil {
-			return nil, "", err
-		}
-
-		sessionID, err := stringField(record, "session_id")
-		if err != nil || sessionID == "" {
-			return nil, "", ErrSessionIDForWriteRequired
-		}
-
-		u, err := urlbuilder.New(base, apiVersion, "sessions", sessionID, "people", "bulk")
-
-		return u, http.MethodPost, err
 	default:
 		return nil, "", common.ErrOperationNotSupportedForObject
 	}
@@ -127,8 +105,6 @@ func buildLivestormWriteBody(params common.WriteParams, record map[string]any) (
 		return marshalEventsWriteBody(params, record)
 	case objectUsers:
 		return marshalUsersWriteBody(record)
-	case objectSessionPeopleBulk:
-		return marshalSessionPeopleBulkBody(record)
 	default:
 		return nil, common.ErrOperationNotSupportedForObject
 	}
@@ -168,24 +144,6 @@ func marshalUsersWriteBody(record map[string]any) ([]byte, error) {
 	return json.Marshal(map[string]any{
 		"data": map[string]any{
 			"type":       jsonAPIResourceTypeUsers,
-			"attributes": record,
-		},
-	})
-}
-
-// marshalSessionPeopleBulkBody builds POST /sessions/{id}/people/bulk JSON:API body.
-// Pass session_id alongside attributes or a full document; see
-// https://developers.livestorm.co/reference/post_sessions-id-people-bulk
-func marshalSessionPeopleBulkBody(record map[string]any) ([]byte, error) {
-	delete(record, "session_id")
-
-	if _, has := record["data"]; has {
-		return json.Marshal(record)
-	}
-
-	return json.Marshal(map[string]any{
-		"data": map[string]any{
-			"type":       jsonAPIResourceTypeJobs,
 			"attributes": record,
 		},
 	})
@@ -241,24 +199,4 @@ func extractJSONAPIResourceID(body *ajson.Node) string {
 	}
 
 	return ""
-}
-
-func stringField(m map[string]any, key string) (string, error) {
-	v, ok := m[key]
-	if !ok || v == nil {
-		return "", fmt.Errorf("missing %s", key) //nolint:err113
-	}
-
-	switch t := v.(type) {
-	case string:
-		return t, nil
-	case float64:
-		return strconv.FormatInt(int64(t), 10), nil
-	case int:
-		return strconv.Itoa(t), nil
-	case int64:
-		return strconv.FormatInt(t, 10), nil
-	default:
-		return fmt.Sprint(t), nil
-	}
 }

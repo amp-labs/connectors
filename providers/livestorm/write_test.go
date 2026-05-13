@@ -17,7 +17,6 @@ func TestWrite(t *testing.T) { //nolint:funlen
 	eventCreateResp := []byte(`{"data":{"id":"evt_new","type":"events","attributes":{"title":"Webinar"}}}`)
 	eventUpdateResp := []byte(`{"data":{"id":"evt_1","type":"events","attributes":{"title":"Updated"}}}`)
 	userCreateResp := []byte(`{"data":{"id":"usr_1","type":"users","attributes":{"email":"new@example.com"}}}`)
-	bulkJobResp := []byte(`{"data":{"id":"job_1","type":"jobs","attributes":{"status":"queued"}}}`)
 
 	tests := []testroutines.Write{
 		{
@@ -42,18 +41,6 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			Input:        common.WriteParams{ObjectName: objectUsers, RecordId: "usr_1", RecordData: map[string]any{"email": "x@y.com"}},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
-			Name:         "Session people bulk update is not supported",
-			Input:        common.WriteParams{ObjectName: objectSessionPeopleBulk, RecordId: "x", RecordData: map[string]any{"session_id": "s1"}},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
-			Name:         "Session people bulk requires session_id",
-			Input:        common.WriteParams{ObjectName: objectSessionPeopleBulk, RecordData: map[string]any{"import_id": "imp_1"}},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{ErrSessionIDForWriteRequired},
 		},
 		{
 			Name: "Create event",
@@ -136,34 +123,6 @@ func TestWrite(t *testing.T) { //nolint:funlen
 						"id":         "usr_1",
 						"type":       "users",
 						"attributes": map[string]any{"email": "new@example.com"},
-					},
-				},
-			},
-		},
-		{
-			Name: "Session people bulk job",
-			Input: common.WriteParams{
-				ObjectName: objectSessionPeopleBulk,
-				RecordData: map[string]any{"session_id": "sess_1", "import_id": "imp_1"},
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/v1/sessions/sess_1/people/bulk"),
-					mockcond.Body(`{"data":{"attributes":{"import_id":"imp_1"},"type":"jobs"}}`),
-				},
-				Then: mockserver.Response(http.StatusAccepted, bulkJobResp),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "job_1",
-				Data: map[string]any{
-					"data": map[string]any{
-						"id":         "job_1",
-						"type":       "jobs",
-						"attributes": map[string]any{"status": "queued"},
 					},
 				},
 			},
