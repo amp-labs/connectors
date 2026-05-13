@@ -36,15 +36,6 @@ func (p SearchParams) ValidateParams() error {
 	return nil
 }
 
-func (p SearchParams) ToReadParams() common.ReadParams {
-	return common.ReadParams{
-		ObjectName:        p.ObjectName,
-		Fields:            p.Fields,
-		NextPage:          p.NextPage,
-		AssociatedObjects: p.AssociatedObjects,
-	}
-}
-
 type searchCRMParams struct {
 	SearchParams
 
@@ -96,6 +87,9 @@ type Filter struct {
 	FieldName string             `json:"propertyName,omitempty"`
 	Operator  FilterOperatorType `json:"operator,omitempty"`
 	Value     string             `json:"value,omitempty"`
+
+	isSince bool
+	isUntil bool
 }
 
 type (

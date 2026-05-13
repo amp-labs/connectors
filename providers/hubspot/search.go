@@ -34,7 +34,9 @@ func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*c
 // This endpoint paginates using paging.next.after which is to be used as an offset.
 // Archived results do not appear in search results.
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
-func (c *Connector) ReadUsingSearchAPI(ctx context.Context, params SearchParams) (*common.ReadResult, error) {
+func (c *Connector) ReadUsingSearchAPI( // nolint:cyclop
+	ctx context.Context, params SearchParams,
+) (*common.ReadResult, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
 	if err := params.ValidateParams(); err != nil {
@@ -56,6 +58,7 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, params SearchParams)
 	//
 	// Read using POST endpoints intended for Search.
 	//
+
 	switch {
 	case core.CRMObjectsWithoutPropertiesAPISupport.Has(params.ObjectName):
 		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
@@ -64,14 +67,26 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, params SearchParams)
 			SearchParams: params,
 		})
 	case core.MarketingObjects.Has(params.ObjectName):
+		readParams, err := makeReadParamsFromSearchParams(params)
+		if err != nil {
+			return nil, err
+		}
 		// Search for marketing is not implemented, using simple read.
-		return c.readMarketing(ctx, params.ToReadParams(), core.MarketingObjects[params.ObjectName])
+		return c.readMarketing(ctx, *readParams, core.MarketingObjects[params.ObjectName])
 	case core.CommunicationObjects.Has(params.ObjectName):
+		readParams, err := makeReadParamsFromSearchParams(params)
+		if err != nil {
+			return nil, err
+		}
 		// Search for communication is not implemented, using simple read.
-		return c.readCommunications(ctx, params.ToReadParams(), core.CommunicationObjects[params.ObjectName])
+		return c.readCommunications(ctx, *readParams, core.CommunicationObjects[params.ObjectName])
 	case core.MiscellaneousObjects.Has(params.ObjectName):
+		readParams, err := makeReadParamsFromSearchParams(params)
+		if err != nil {
+			return nil, err
+		}
 		// Search for misc objects is not implemented, using simple read.
-		return c.readMiscAPI(ctx, params.ToReadParams(), core.MiscellaneousObjects[params.ObjectName])
+		return c.readMiscAPI(ctx, *readParams, core.MiscellaneousObjects[params.ObjectName])
 	default:
 		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
 		return c.searchCRMObjectsAPI(ctx, params)
@@ -178,6 +193,7 @@ func BuildLastModifiedFilterGroup(params *common.ReadParams) Filter {
 		FieldName: string(lastModifiedField),
 		Operator:  FilterOperatorTypeGTE,
 		Value:     params.Since.Format(time.RFC3339),
+		isSince:   true,
 	}
 }
 
@@ -197,6 +213,7 @@ func BuildUntilTimestampFilterGroup(params *common.ReadParams) Filter {
 		FieldName: string(lastModifiedField),
 		Operator:  FilterOperatorTypeLTE,
 		Value:     params.Until.Format(time.RFC3339),
+		isUntil:   true,
 	}
 }
 
@@ -207,6 +224,37 @@ func BuildIdFilterGroup(id string) Filter {
 		Operator:  FilterOperatorTypeGT,
 		Value:     id,
 	}
+}
+
+func makeReadParamsFromSearchParams(search SearchParams) (*common.ReadParams, error) {
+	params := &common.ReadParams{
+		ObjectName:        search.ObjectName,
+		Fields:            search.Fields,
+		NextPage:          search.NextPage,
+		AssociatedObjects: search.AssociatedObjects,
+	}
+
+	var err error
+
+	for _, group := range search.FilterGroups {
+		for _, filter := range group.Filters {
+			if filter.isSince {
+				params.Since, err = time.Parse(time.RFC3339, filter.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+
+			if filter.isUntil {
+				params.Until, err = time.Parse(time.RFC3339, filter.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+
+	return params, nil
 }
 
 // BuildSort builds a sort by clause for the given field and direction.
