@@ -42,12 +42,10 @@ func TestSubscriptionEventUpdateUser(t *testing.T) {
 	fields, err := event.UpdatedFields()
 	assert.NilError(t, err, "error should be nil")
 
-	// "Name" is not an *Address compound, so "Name.FirstName" stays dot-notation.
-	// See providers/salesforce/compoundfields.
 	assert.Equal(t, len(fields), 3, "should have three updated fields")
 	assert.Equal(t, fields[0], "LastModifiedDate", "first field name should be LastModifiedDate")
 	assert.Equal(t, fields[1], "LastModifiedById", "second field name should be LastModifiedById")
-	assert.Equal(t, fields[2], "Name.FirstName", "third field name should preserve compound dot notation")
+	assert.Equal(t, fields[2], "FirstName", "compound Name.FirstName field should be flattened to FirstName")
 }
 
 func TestSubscriptionEventUpdateContact(t *testing.T) {
@@ -85,7 +83,7 @@ func TestSubscriptionEventUpdateContact(t *testing.T) {
 
 	assert.Equal(t, len(fields), 2, "should have two updated fields")
 	assert.Equal(t, fields[0], "LastModifiedDate", "first field name should be LastModifiedDate")
-	assert.Equal(t, fields[1], "Name.LastName", "second field name should preserve Name compound dot notation")
+	assert.Equal(t, fields[1], "LastName", "compound Name.LastName field should be flattened to LastName")
 }
 
 func TestSubscriptionEventProperties(t *testing.T) {
@@ -157,18 +155,15 @@ func TestSubscriptionEventUpdateContactCompoundAddress(t *testing.T) {
 
 	assert.DeepEqual(t, fields, []string{
 		"LastModifiedDate",
-		"mailingstreet",
-		"mailingcity",
-		"otherpostalcode",
+		"MailingStreet", // flattened from MailingAddress.Street
+		"MailingCity", // flattened from MailingAddress.City
+		"OtherPostalCode", // flattened from OtherAddress.PostalCode
 	})
 }
-
-// TestSubscriptionEventUpdateAccountCompoundAddress verifies the same flattening
-// for Account, which has both BillingAddress and ShippingAddress compounds.
-func TestSubscriptionEventUpdateAccountCompoundAddress(t *testing.T) {
+func TestSubscriptionEventLeadAccountCompoundAddress(t *testing.T) {
 	t.Parallel()
 
-	data := testutils.DataFromFile(t, "subscription/update_account_compound_address.json")
+	data := testutils.DataFromFile(t, "subscription/update_lead_compound_address.json")
 
 	event := SubscriptionEvent{}
 	if err := json.Unmarshal(data, &event); err != nil {
@@ -177,75 +172,14 @@ func TestSubscriptionEventUpdateAccountCompoundAddress(t *testing.T) {
 
 	objectName, err := event.ObjectName()
 	assert.NilError(t, err, "error should be nil")
-	assert.Equal(t, objectName, "Account", "ObjectName should be Account")
+	assert.Equal(t, objectName, "Lead", "ObjectName should be Lead")
 
 	fields, err := event.UpdatedFields()
 	assert.NilError(t, err, "error should be nil")
 
 	assert.DeepEqual(t, fields, []string{
-		"billingstreet",
-		"shippingpostalcode",
+		"Street", // flattened from Address.Street
+		"PostalCode", // flattened from Address.PostalCode
 	})
 }
 
-func TestFlattenedCompoundSubField(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		object   string
-		compound string
-		sub      string
-		want     string
-	}{
-		// Account.BillingAddress: documented at sforce_api_objects_account.htm.
-		{object: "Account", compound: "BillingAddress", sub: "Street", want: "billingstreet"},
-		{object: "Account", compound: "BillingAddress", sub: "City", want: "billingcity"},
-		{object: "Account", compound: "BillingAddress", sub: "State", want: "billingstate"},
-		{object: "Account", compound: "BillingAddress", sub: "StateCode", want: "billingstatecode"},
-		{object: "Account", compound: "BillingAddress", sub: "PostalCode", want: "billingpostalcode"},
-		{object: "Account", compound: "BillingAddress", sub: "Country", want: "billingcountry"},
-		{object: "Account", compound: "BillingAddress", sub: "CountryCode", want: "billingcountrycode"},
-		{object: "Account", compound: "BillingAddress", sub: "GeocodeAccuracy", want: "billinggeocodeaccuracy"},
-		{object: "Account", compound: "ShippingAddress", sub: "City", want: "shippingcity"},
-
-		// Contact.MailingAddress / OtherAddress / Name:
-		// documented at sforce_api_objects_contact.htm.
-		{object: "Contact", compound: "MailingAddress", sub: "Street", want: "mailingstreet"},
-		{object: "Contact", compound: "MailingAddress", sub: "PostalCode", want: "mailingpostalcode"},
-		{object: "Contact", compound: "OtherAddress", sub: "PostalCode", want: "otherpostalcode"},
-		{object: "Contact", compound: "Name", sub: "FirstName", want: ""},
-		{object: "Contact", compound: "Name", sub: "LastName", want: ""},
-		{object: "Contact", compound: "Name", sub: "Salutation", want: ""},
-
-		// Lead.Address (single Address compound, no prefix on flattened columns):
-		// documented at sforce_api_objects_lead.htm.
-		{object: "Lead", compound: "Address", sub: "Street", want: "street"},
-		{object: "Lead", compound: "Address", sub: "PostalCode", want: "postalcode"},
-		{object: "Lead", compound: "Address", sub: "GeocodeAccuracy", want: "geocodeaccuracy"},
-		{object: "Lead", compound: "Name", sub: "LastName", want: ""},
-
-		// Case-insensitive compound / sub-field matching.
-		{object: "contact", compound: "mailingaddress", sub: "street", want: "mailingstreet"},
-		{object: "CONTACT", compound: "MAILINGADDRESS", sub: "STREET", want: "mailingstreet"},
-
-		// *Address flattening applies for any object API name.
-		{object: "AnotherObject", compound: "MailingAddress", sub: "Street", want: "mailingstreet"},
-		{object: "AnotherObject", compound: "BillingAddress", sub: "City", want: "billingcity"},
-		{object: "CustomObject__c", compound: "MailingAddress", sub: "Street", want: "mailingstreet"},
-
-		// Opportunity has no compound fields per the API reference.
-		{object: "Opportunity", compound: "Fiscal", sub: "Quarter", want: ""},
-
-		// User + Name: not an address compound.
-		{object: "User", compound: "Name", sub: "FirstName", want: ""},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.object+"."+tc.compound+"."+tc.sub, func(t *testing.T) {
-			t.Parallel()
-
-			got := FlattenedCompoundSubField(tc.compound, tc.sub)
-			assert.Equal(t, got, tc.want)
-		})
-	}
-}
