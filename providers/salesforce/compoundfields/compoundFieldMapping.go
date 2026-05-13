@@ -23,12 +23,13 @@ import "strings"
 //
 // See https://ampersand.slab.com/posts/salesforce-compound-fields-73jhbsjm for terminology.
 func FlattenedFieldNameFromCompoundField(compoundFieldName, subFieldName string) string {
+	// 1. Handle address compound fields
 	flatAddressField, ok := flattenedFromAddressCompound(compoundFieldName, subFieldName)
 	if ok {
 		return flatAddressField
 	}
 
-	// For all other compound fields, return the sub-field name
+	// 2. For all other compound fields, return the sub-field name
 	// e.g. ("Name", "FirstName") -> "FirstName"
 	return subFieldName
 }
