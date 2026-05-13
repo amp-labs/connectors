@@ -29,6 +29,8 @@ linters:
     - tagliatelle
     # We're not doing black-box testing, so enabling this would be counterproductive. We might want to discuss this though, it's a good practice.
     - testpackage
+    # Linter crashes when Generics are used.
+    - unparam
     # Annoying and not useful. Disabling otherwise we have to have comment everywhere
     - wrapcheck
     # Deprecated (since v2.2.0) due to: new major version. Replaced by wsl_v5.

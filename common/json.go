@@ -75,7 +75,8 @@ func (j *JSONHTTPClient) Get(ctx context.Context, url string, headers ...Header)
 // If the response is not a 2xx, an error is returned. If the response is a 401, the caller should
 // refresh the access token and retry the request. If errorHandler is nil, then the default error
 // handler is used. If not, the caller can inject their own error handling logic.
-func (j *JSONHTTPClient) Post(ctx context.Context,
+func (j *JSONHTTPClient) Post(
+	ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
 	data, err := json.Marshal(reqBody)
@@ -91,7 +92,8 @@ func (j *JSONHTTPClient) Post(ctx context.Context,
 	return ParseJSONResponse(ctx, res, body)
 }
 
-func (j *JSONHTTPClient) Put(ctx context.Context,
+func (j *JSONHTTPClient) Put(
+	ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
 	data, err := json.Marshal(reqBody)
@@ -107,7 +109,8 @@ func (j *JSONHTTPClient) Put(ctx context.Context,
 	return ParseJSONResponse(ctx, res, body)
 }
 
-func (j *JSONHTTPClient) Patch(ctx context.Context,
+func (j *JSONHTTPClient) Patch(
+	ctx context.Context,
 	url string, reqBody any, headers ...Header,
 ) (*JSONHTTPResponse, error) {
 	data, err := json.Marshal(reqBody)
