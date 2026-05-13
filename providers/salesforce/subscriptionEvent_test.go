@@ -160,6 +160,7 @@ func TestSubscriptionEventUpdateContactCompoundAddress(t *testing.T) {
 		"OtherPostalCode", // flattened from OtherAddress.PostalCode
 	})
 }
+
 func TestSubscriptionEventLeadAccountCompoundAddress(t *testing.T) {
 	t.Parallel()
 
@@ -183,3 +184,38 @@ func TestSubscriptionEventLeadAccountCompoundAddress(t *testing.T) {
 	})
 }
 
+func TestNormalizeUpdatedFieldName(t *testing.T) {
+	t.Parallel()
+
+	var s SubscriptionEvent
+
+	tests := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{name: "plain field unchanged", in: "LastModifiedDate", want: "LastModifiedDate"},
+		{name: "name without dot is unchanged", in: "Industry", want: "Industry"},
+		{name: "empty string", in: "", want: ""},
+		{name: "name compound first name", in: "Name.FirstName", want: "FirstName"},
+		{name: "name compound last name", in: "Name.LastName", want: "LastName"},
+		{name: "name compound salutation", in: "Name.Salutation", want: "Salutation"},
+		{name: "mailing address street", in: "MailingAddress.Street", want: "MailingStreet"},
+		{name: "mailing address postal code", in: "MailingAddress.PostalCode", want: "MailingPostalCode"},
+		{name: "billing address city", in: "BillingAddress.City", want: "BillingCity"},
+		{name: "shipping address state code", in: "ShippingAddress.StateCode", want: "ShippingStateCode"},
+		{name: "other address country", in: "OtherAddress.Country", want: "OtherCountry"},
+		{name: "bare address street lead style", in: "Address.Street", want: "Street"},
+		{name: "bare address geocode", in: "Address.GeocodeAccuracy", want: "GeocodeAccuracy"},
+		{name: "3-word address field", in: "DeliverToAddress.Street", want: "DeliverToStreet"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := s.normalizeUpdatedFieldName(tc.in)
+			assert.Equal(t, got, tc.want)
+		})
+	}
+}

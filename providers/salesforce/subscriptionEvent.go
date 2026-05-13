@@ -313,8 +313,8 @@ func isStandardCompoundField(obj, field string) bool {
 	return ok
 }
 
-// normalizeUpdatedFieldName lower cases the fied name
-// and also returns the flattened name of compound fields.
+// normalizeUpdatedFieldName returns the flattened name of compound fields.
+// otherwise returns the original field name.
 func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) string {
 	parts := strings.SplitN(name, ".", 2)
 	if len(parts) < 2 {
