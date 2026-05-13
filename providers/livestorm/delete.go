@@ -20,7 +20,7 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	u, err := urlbuilder.New(c.ProviderInfo().BaseURL, "/v1/events", params.RecordId)
+	u, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectEvents, params.RecordId)
 	if err != nil {
 		return nil, err
 	}

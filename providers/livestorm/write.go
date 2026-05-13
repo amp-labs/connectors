@@ -91,16 +91,16 @@ func (c *Connector) buildWriteURL(params common.WriteParams) (*urlbuilder.URL, s
 	switch params.ObjectName {
 	case objectEvents:
 		if params.IsCreate() {
-			u, err := urlbuilder.New(base, "/v1/events")
+			u, err := urlbuilder.New(base, apiVersion, objectEvents)
 
 			return u, http.MethodPost, err
 		}
 
-		u, err := urlbuilder.New(base, "/v1/events", params.RecordId)
+		u, err := urlbuilder.New(base, apiVersion, objectEvents, params.RecordId)
 
 		return u, http.MethodPatch, err
 	case objectUsers:
-		u, err := urlbuilder.New(base, "/v1/users")
+		u, err := urlbuilder.New(base, apiVersion, objectUsers)
 
 		return u, http.MethodPost, err
 	case objectSessionPeopleBulk:
@@ -114,7 +114,7 @@ func (c *Connector) buildWriteURL(params common.WriteParams) (*urlbuilder.URL, s
 			return nil, "", ErrSessionIDForWriteRequired
 		}
 
-		u, err := urlbuilder.New(base, "/v1/sessions", sessionID, "people", "bulk")
+		u, err := urlbuilder.New(base, apiVersion, "sessions", sessionID, "people", "bulk")
 
 		return u, http.MethodPost, err
 	default:
