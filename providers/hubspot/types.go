@@ -36,6 +36,15 @@ func (p SearchParams) ValidateParams() error {
 	return nil
 }
 
+func (p SearchParams) ToReadParams() common.ReadParams {
+	return common.ReadParams{
+		ObjectName:        p.ObjectName,
+		Fields:            p.Fields,
+		NextPage:          p.NextPage,
+		AssociatedObjects: p.AssociatedObjects,
+	}
+}
+
 type searchCRMParams struct {
 	SearchParams
 

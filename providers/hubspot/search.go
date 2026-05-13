@@ -34,39 +34,57 @@ func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*c
 // This endpoint paginates using paging.next.after which is to be used as an offset.
 // Archived results do not appear in search results.
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
-func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
+func (c *Connector) ReadUsingSearchAPI(ctx context.Context, params SearchParams) (*common.ReadResult, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
-	if err := config.ValidateParams(); err != nil {
+	if err := params.ValidateParams(); err != nil {
 		return nil, err
 	}
 
 	// Check if the NextPage token exceeds the search results limit.
 	// HubSpot's search API returns a 400 error if you try to paginate beyond 10,000 records.
 	// By detecting this proactively, we can return a specific error that callers can handle.
-	if err := checkSearchResultsLimit(config.NextPage); err != nil {
+	if err := checkSearchResultsLimit(params.NextPage); err != nil {
 		return nil, fmt.Errorf(
 			"%w: requested offset %s exceeds limit %d",
 			common.ErrResultsLimitExceeded,
-			config.NextPage,
+			params.NextPage,
 			searchResultsLimit,
 		)
 	}
 
-	if core.CRMObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
+	//
+	// Read using POST endpoints intended for Search.
+	//
+	switch {
+	case core.CRMObjectsWithoutPropertiesAPISupport.Has(params.ObjectName):
 		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
 		// For instance such object is Lists.
 		return c.searchCRM(ctx, searchCRMParams{
-			SearchParams: config,
+			SearchParams: params,
 		})
+	case core.MarketingObjects.Has(params.ObjectName):
+		// Search for marketing is not implemented, using simple read.
+		return c.readMarketing(ctx, params.ToReadParams(), core.MarketingObjects[params.ObjectName])
+	case core.CommunicationObjects.Has(params.ObjectName):
+		// Search for communication is not implemented, using simple read.
+		return c.readCommunications(ctx, params.ToReadParams(), core.CommunicationObjects[params.ObjectName])
+	case core.MiscellaneousObjects.Has(params.ObjectName):
+		// Search for misc objects is not implemented, using simple read.
+		return c.readMiscAPI(ctx, params.ToReadParams(), core.MiscellaneousObjects[params.ObjectName])
+	default:
+		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
+		return c.searchCRMObjectsAPI(ctx, params)
 	}
+}
 
-	url, err := c.getCRMObjectsSearchURL(config.ObjectName)
+func (c *Connector) searchCRMObjectsAPI(ctx context.Context, params SearchParams) (*common.ReadResult, error) {
+	url, err := c.getCRMObjectsSearchURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.JSONHTTPClient().Post(ctx, url.String(), makeFilterBody(config))
+	rsp, err := c.JSONHTTPClient().Post(ctx, url.String(), makeFilterBody(params))
 	if err != nil {
 		return nil, err
 	}
@@ -76,8 +94,8 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams)
 		core.GetRecords,
 		core.GetNextRecordsAfter,
 		associations.CreateDataMarshallerWithAssociations(
-			ctx, c.associationsFiller, config.ObjectName, config.AssociatedObjects),
-		config.Fields,
+			ctx, c.associationsFiller, params.ObjectName, params.AssociatedObjects),
+		params.Fields,
 	)
 }
 
