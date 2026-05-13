@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/batch"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/metadata"
 )
 
@@ -28,6 +29,9 @@ type Connector struct {
 	components.Reader
 	components.Writer
 	components.Deleter
+
+	// Dependent services.
+	batchStrategy *batch.Strategy
 }
 
 // NewConnector creates a new Microsoft connector. It defaults to the Microsoft
@@ -49,7 +53,8 @@ func NewConnectorForProvider(provider providers.Provider, params common.Connecto
 // nolint:funlen
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
-		Connector: base,
+		Connector:     base,
+		batchStrategy: batch.NewStrategy(base.JSONHTTPClient(), base.ProviderInfo()),
 	}
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
