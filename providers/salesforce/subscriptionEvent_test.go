@@ -42,8 +42,7 @@ func TestSubscriptionEventUpdateUser(t *testing.T) {
 	fields, err := event.UpdatedFields()
 	assert.NilError(t, err, "error should be nil")
 
-	// User has no rows in the compound field schema, so "Name.FirstName" is passed through
-	// as the original dot notation rather than reduced to "firstname".
+	// "Name" is not an *Address compound, so "Name.FirstName" stays dot-notation.
 	// See providers/salesforce/compoundfields.
 	assert.Equal(t, len(fields), 3, "should have three updated fields")
 	assert.Equal(t, fields[0], "LastModifiedDate", "first field name should be LastModifiedDate")
@@ -84,9 +83,9 @@ func TestSubscriptionEventUpdateContact(t *testing.T) {
 	fields, err := event.UpdatedFields()
 	assert.NilError(t, err, "error should be nil")
 
-	assert.Equal(t, len(fields), 2, "should have one updated field")
+	assert.Equal(t, len(fields), 2, "should have two updated fields")
 	assert.Equal(t, fields[0], "LastModifiedDate", "first field name should be LastModifiedDate")
-	assert.Equal(t, fields[1], "lastname", "second field name should be lastname")
+	assert.Equal(t, fields[1], "Name.LastName", "second field name should preserve Name compound dot notation")
 }
 
 func TestSubscriptionEventProperties(t *testing.T) {
@@ -197,53 +196,55 @@ func TestFlattenedCompoundSubField(t *testing.T) {
 		compound string
 		sub      string
 		want     string
-		wantOK   bool
 	}{
 		// Account.BillingAddress: documented at sforce_api_objects_account.htm.
-		{object: "Account", compound: "BillingAddress", sub: "Street", want: "billingstreet", wantOK: true},
-		{object: "Account", compound: "BillingAddress", sub: "City", want: "billingcity", wantOK: true},
-		{object: "Account", compound: "BillingAddress", sub: "State", want: "billingstate", wantOK: true},
-		{object: "Account", compound: "BillingAddress", sub: "StateCode", want: "billingstatecode", wantOK: true},
-		{object: "Account", compound: "BillingAddress", sub: "PostalCode", want: "billingpostalcode", wantOK: true},
-		{object: "Account", compound: "BillingAddress", sub: "Country", want: "billingcountry", wantOK: true},
-		{object: "Account", compound: "BillingAddress", sub: "CountryCode", want: "billingcountrycode", wantOK: true},
-		{object: "Account", compound: "BillingAddress", sub: "GeocodeAccuracy", want: "billinggeocodeaccuracy", wantOK: true},
-		{object: "Account", compound: "ShippingAddress", sub: "City", want: "shippingcity", wantOK: true},
+		{object: "Account", compound: "BillingAddress", sub: "Street", want: "billingstreet"},
+		{object: "Account", compound: "BillingAddress", sub: "City", want: "billingcity"},
+		{object: "Account", compound: "BillingAddress", sub: "State", want: "billingstate"},
+		{object: "Account", compound: "BillingAddress", sub: "StateCode", want: "billingstatecode"},
+		{object: "Account", compound: "BillingAddress", sub: "PostalCode", want: "billingpostalcode"},
+		{object: "Account", compound: "BillingAddress", sub: "Country", want: "billingcountry"},
+		{object: "Account", compound: "BillingAddress", sub: "CountryCode", want: "billingcountrycode"},
+		{object: "Account", compound: "BillingAddress", sub: "GeocodeAccuracy", want: "billinggeocodeaccuracy"},
+		{object: "Account", compound: "ShippingAddress", sub: "City", want: "shippingcity"},
 
 		// Contact.MailingAddress / OtherAddress / Name:
 		// documented at sforce_api_objects_contact.htm.
-		{object: "Contact", compound: "MailingAddress", sub: "Street", want: "mailingstreet", wantOK: true},
-		{object: "Contact", compound: "MailingAddress", sub: "PostalCode", want: "mailingpostalcode", wantOK: true},
-		{object: "Contact", compound: "OtherAddress", sub: "PostalCode", want: "otherpostalcode", wantOK: true},
-		{object: "Contact", compound: "Name", sub: "FirstName", want: "firstname", wantOK: true},
-		{object: "Contact", compound: "Name", sub: "LastName", want: "lastname", wantOK: true},
-		{object: "Contact", compound: "Name", sub: "Salutation", want: "salutation", wantOK: true},
+		{object: "Contact", compound: "MailingAddress", sub: "Street", want: "mailingstreet"},
+		{object: "Contact", compound: "MailingAddress", sub: "PostalCode", want: "mailingpostalcode"},
+		{object: "Contact", compound: "OtherAddress", sub: "PostalCode", want: "otherpostalcode"},
+		{object: "Contact", compound: "Name", sub: "FirstName", want: ""},
+		{object: "Contact", compound: "Name", sub: "LastName", want: ""},
+		{object: "Contact", compound: "Name", sub: "Salutation", want: ""},
 
 		// Lead.Address (single Address compound, no prefix on flattened columns):
 		// documented at sforce_api_objects_lead.htm.
-		{object: "Lead", compound: "Address", sub: "Street", want: "street", wantOK: true},
-		{object: "Lead", compound: "Address", sub: "PostalCode", want: "postalcode", wantOK: true},
-		{object: "Lead", compound: "Address", sub: "GeocodeAccuracy", want: "geocodeaccuracy", wantOK: true},
-		{object: "Lead", compound: "Name", sub: "LastName", want: "lastname", wantOK: true},
+		{object: "Lead", compound: "Address", sub: "Street", want: "street"},
+		{object: "Lead", compound: "Address", sub: "PostalCode", want: "postalcode"},
+		{object: "Lead", compound: "Address", sub: "GeocodeAccuracy", want: "geocodeaccuracy"},
+		{object: "Lead", compound: "Name", sub: "LastName", want: ""},
 
-		// Case-insensitive lookups.
-		{object: "contact", compound: "mailingaddress", sub: "street", want: "mailingstreet", wantOK: true},
-		{object: "CONTACT", compound: "MAILINGADDRESS", sub: "STREET", want: "mailingstreet", wantOK: true},
+		// Case-insensitive compound / sub-field matching.
+		{object: "contact", compound: "mailingaddress", sub: "street", want: "mailingstreet"},
+		{object: "CONTACT", compound: "MAILINGADDRESS", sub: "STREET", want: "mailingstreet"},
+
+		// *Address flattening applies for any object API name.
+		{object: "AnotherObject", compound: "MailingAddress", sub: "Street", want: "mailingstreet"},
+		{object: "AnotherObject", compound: "BillingAddress", sub: "City", want: "billingcity"},
+		{object: "CustomObject__c", compound: "MailingAddress", sub: "Street", want: "mailingstreet"},
 
 		// Opportunity has no compound fields per the API reference.
-		{object: "Opportunity", compound: "Fiscal", sub: "Quarter", wantOK: false},
+		{object: "Opportunity", compound: "Fiscal", sub: "Quarter", want: ""},
 
-		// Unmapped objects fall through.
-		{object: "User", compound: "Name", sub: "FirstName", wantOK: false},
-		{object: "CustomObject__c", compound: "MailingAddress", sub: "Street", wantOK: false},
+		// User + Name: not an address compound.
+		{object: "User", compound: "Name", sub: "FirstName", want: ""},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.object+"."+tc.compound+"."+tc.sub, func(t *testing.T) {
 			t.Parallel()
 
-			got, ok := FlattenedCompoundSubField(tc.object, tc.compound, tc.sub)
-			assert.Equal(t, ok, tc.wantOK)
+			got := FlattenedCompoundSubField(tc.compound, tc.sub)
 			assert.Equal(t, got, tc.want)
 		})
 	}

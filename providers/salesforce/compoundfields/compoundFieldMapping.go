@@ -2,30 +2,57 @@ package compoundfields
 
 import "strings"
 
-// FlattenedCompoundSubField returns the flattened SOQL column name for the
-// given object's compound sub-component (e.g. ("Contact", "MailingAddress",
-// "Street") -> "mailingstreet"). Lookups are case-insensitive. Returns ("",
-// false) when the (object, compound, sub-field) combination is not present in
-// compoundFieldFlattenedByObject (schema.go).
+// FlattenedFieldNameFromCompoundField returns the flattened field name
+// of a field received in a CDC change event.
+// See https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_subscribe_compound_fields.htm
+
+// It addressed the following 2 types of compound fields:
+// 1. Address compound fields:
+//   - "MailingAddress", "Street" -> "MailingStreet"
+//   - "Address", "Street" -> "Street"
 //
-// Use this to translate Salesforce CDC's "<Compound>.<Sub>" dot notation in
-// ChangeEventHeader.changedFields into the flattened column name that
-// downstream consumers (selectedFieldMappings, requiredWatchFields, SOQL
-// queries) reference. Returned names are lowercased to match schema.go.
+// 2. Name fields:
+//   - "Name", "FirstName" -> "FirstName"
+//   - "Name", "LastName" -> "LastName"
+//   - "Name", "Salutation" -> "Salutation"
+//   - "Name", "Suffix" -> "Suffix"
 //
-// See https://ampersand.slab.com/posts/salesforce-compound-fields-73jhbsjm
-func FlattenedCompoundSubField(object, compound, subField string) (string, bool) {
-	compounds, ok := compoundFieldFlattenedByObject[strings.ToLower(object)]
+// Please note that geolocation fields is not explicitly addressed, since they are
+// included in address compound fields.
+//   - "MailingAddress", "Latitude" -> "MailingLatitude"
+//
+// See https://ampersand.slab.com/posts/salesforce-compound-fields-73jhbsjm for terminology.
+func FlattenedFieldNameFromCompoundField(compoundFieldName, subFieldName string) string {
+	flatAddressField, ok := flattenedFromAddressCompound(compoundFieldName, subFieldName)
+	if ok {
+		return flatAddressField
+	}
+
+	// For all other compound fields, return the sub-field name
+	// e.g. ("Name", "FirstName") -> "FirstName"
+	return subFieldName
+}
+
+func flattenedFromAddressCompound(compound, subField string) (string, bool) {
+	prefix, ok := addressCompoundPrefix(compound)
 	if !ok {
 		return "", false
 	}
 
-	subs, ok := compounds[strings.ToLower(compound)]
-	if !ok {
+	return prefix + subField, true
+}
+
+func addressCompoundPrefix(compound string) (prefix string, ok bool) {
+	const suffix = "Address"
+
+	if len(compound) < len(suffix) {
 		return "", false
 	}
 
-	flat, ok := subs[strings.ToLower(subField)]
+	i := len(compound) - len(suffix)
+	if !strings.EqualFold(compound[i:], suffix) {
+		return "", false
+	}
 
-	return flat, ok
+	return compound[:i], true
 }

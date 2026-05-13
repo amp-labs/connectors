@@ -313,43 +313,16 @@ func isStandardCompoundField(obj, field string) bool {
 	return ok
 }
 
-// FlattenedCompoundSubField delegates to the compound field schema; see
-// providers/salesforce/compoundfields.
-func FlattenedCompoundSubField(object, compound, subField string) (string, bool) {
-	return compoundfields.FlattenedCompoundSubField(object, compound, subField)
-}
-
-func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error) { // nolint:funcorder
-	if !strings.Contains(name, ".") {
-		return name, nil
+// normalizeUpdatedFieldName lower cases the fied name
+// and also returns the flattened name of compound fields.
+func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) string {
+	parts := strings.SplitN(name, ".", 2)
+	if len(parts) < 2 {
+		// Not a compound field
+		return name
 	}
 
-	// Compound fields look like "Field.Subfield". Salesforce CDC reports compound
-	// sub-component changes using this dot notation (e.g. "MailingAddress.Street"),
-	// but selectedFieldMappings and requiredWatchFields are keyed by the flattened
-	// column name (e.g. "mailingstreet"). We translate the dot notation into the
-	// flattened form using the compound field schema in providers/salesforce/compoundfields so
-	// downstream matching against subscriptions works.
-	parts := strings.SplitN(name, ".", 2) //nolint:mnd
-	if len(parts) < 2 {                   //nolint:mnd
-		return parts[0], nil
-	}
-
-	obj, err := s.ObjectName()
-	if err != nil {
-		return "", fmt.Errorf("failed to get object name: %w", err)
-	}
-
-	if flat, ok := FlattenedCompoundSubField(obj, parts[0], parts[1]); ok {
-		return flat, nil
-	}
-
-	// No documented compound mapping for this (object, compound, sub-field).
-	// Preserve the original dot notation rather than guessing at the flattened
-	// form: returning a bare sub-name like "Street" (without knowing which
-	// Address compound it came from) silently collapses to an unrelated field
-	// and is the bug we're fixing.
-	return name, nil
+	return compoundfields.FlattenedFieldNameFromCompoundField(parts[0], parts[1])
 }
 
 func (s SubscriptionEvent) UpdatedFields() ([]string, error) {
@@ -382,12 +355,7 @@ func (s SubscriptionEvent) UpdatedFields() ([]string, error) {
 			)
 		}
 
-		fieldName, err := s.normalizeUpdatedFieldName(str)
-		if err != nil {
-			return nil, fmt.Errorf("failed to normalize field named %q: %w", str, err)
-		}
-
-		fields[i] = fieldName
+		fields[i] = s.normalizeUpdatedFieldName(str)
 	}
 
 	return fields, nil
