@@ -1,0 +1,66 @@
+{
+  "results": [
+    {
+      "id": "591e2731-c869-445d-b422-26f43145e9d2",
+      "name": "Tell me about yourself",
+      "createdAt": "2026-05-11T17:30:51.442Z",
+      "updatedAt": "2026-05-11T17:30:51.442Z",
+      "archived": false,
+      "fieldGroups": [
+        {
+          "groupType": "default_group",
+          "richTextType": "text"
+        }
+      ],
+      "configuration": {
+        "language": "en",
+        "cloneable": true,
+        "postSubmitAction": {
+          "type": "thank_you",
+          "value": ""
+        },
+        "editable": true,
+        "archivable": true,
+        "recaptchaEnabled": false,
+        "notifyContactOwner": false,
+        "notifyRecipients": [
+          "82226790"
+        ],
+        "createNewContactForNewEmail": false,
+        "prePopulateKnownValues": true,
+        "allowLinkToResetKnownValues": false,
+        "embedType": "V3"
+      },
+      "displayOptions": {
+        "renderRawHtml": false,
+        "theme": "default_style",
+        "submitButtonText": "Submit",
+        "style": {
+          "fontFamily": "arial, helvetica, sans-serif",
+          "backgroundWidth": "100%",
+          "labelTextColor": "#33475b",
+          "labelTextSize": "11px",
+          "helpTextColor": "#7C98B6",
+          "helpTextSize": "11px",
+          "legalConsentTextColor": "#33475b",
+          "legalConsentTextSize": "14px",
+          "submitColor": "#ff7a59",
+          "submitAlignment": "left",
+          "submitFontColor": "#ffffff",
+          "submitSize": "12px"
+        },
+        "cssClass": null
+      },
+      "legalConsentOptions": {
+        "type": "none"
+      },
+      "formType": "hubspot"
+    }
+  ],
+  "paging": {
+    "next": {
+      "after": "MQ%3D%3D",
+      "link": "https://api.hubapi.com/marketing/forms/2026-09-beta?limit=1&after=MQ%3D%3D"
+    }
+  }
+}

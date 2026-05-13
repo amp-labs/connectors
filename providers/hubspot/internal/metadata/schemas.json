@@ -679,6 +679,74 @@
               "providerType": "string[]"
             }
           }
+        },
+        "forms": {
+          "displayName": "Marketing Forms",
+          "description": "/marketing/forms/2026-09-beta",
+          "responseKey": "results",
+          "fields": {
+            "formType": {
+              "displayName": "formType",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "hubspot",
+                  "displayValue": "hubspot"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "fieldGroups": {
+              "displayName": "fieldGroups",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "configuration": {
+              "displayName": "configuration",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "displayOptions": {
+              "displayName": "displayOptions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "legalConsentOptions": {
+              "displayName": "legalConsentOptions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "archivedAt": {
+              "displayName": "archivedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            }
+          }
         }
       }
     }

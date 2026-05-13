@@ -133,7 +133,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
 func (c *Connector) readMarketing(ctx context.Context,
 	params common.ReadParams, object core.ObjectDescription,
 ) (*common.ReadResult, error) {
-	url, err := c.buildMarketingReadURL(params, object.Path)
+	url, err := c.buildMarketingReadURL(params, &object)
 	if err != nil {
 		return nil, err
 	}
@@ -163,21 +163,29 @@ func (c *Connector) readMarketing(ctx context.Context,
 // https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/get-campaigns
 //   - Incremental reading is not available.
 //   - Sorting is applied using "updatedAt" field from newest to oldest.
-func (c *Connector) buildMarketingReadURL(params common.ReadParams, objectPath string) (*urlbuilder.URL, error) {
+func (c *Connector) buildMarketingReadURL(
+	params common.ReadParams, object *core.ObjectDescription,
+) (*urlbuilder.URL, error) {
 	if len(params.NextPage) != 0 {
 		// Next page
 		return urlbuilder.New(params.NextPage.String())
 	}
 
 	// First page
-	url, err := c.getMarketingURL(objectPath)
+	url, err := c.getMarketingURL(object)
 	if err != nil {
 		return nil, err
 	}
 
-	url.WithQueryParam("properties", strings.Join(params.Fields.List(), ","))
 	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, core.DefaultPageSize))
-	url.WithQueryParam("sort", "-updatedAt") // newest first
+
+	if params.ObjectName == core.ObjectMarketingForms {
+		// This object does not have such query params. For consistency, it is reflected here.
+		// Sending non-existent query params is not considered an error by provider.
+	} else {
+		url.WithQueryParam("properties", strings.Join(params.Fields.List(), ","))
+		url.WithQueryParam("sort", "-updatedAt") // newest first
+	}
 
 	return url, nil
 }
@@ -189,8 +197,13 @@ func makeIncrementalFilterFunc(params common.ReadParams) common.RecordsFilterFun
 		return readhelper.MakeIdentityFilterFunc(core.GetNextRecordsURL)
 	}
 
+	order := readhelper.ReverseOrder
+	if params.ObjectName == core.ObjectMarketingForms {
+		order = readhelper.Unordered
+	}
+
 	return readhelper.MakeTimeFilterFunc(
-		readhelper.ReverseOrder,
+		order,
 		readhelper.NewTimeBoundary(),
 		"updatedAt", time.RFC3339,
 		core.GetNextRecordsURL,
