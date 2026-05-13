@@ -12,9 +12,12 @@ const (
 	DefaultPageSizeInt = int64(100)
 )
 
-const ObjectMarketingForms = "forms"
+const (
+	ObjectMarketingForms  = "forms"
+	ObjectMarketingEvents = "marketing-events"
+)
 
-//nolint:gochecknoglobals
+//nolint:gochecknoglobals,lll
 var (
 
 	// CRMObjectsWithoutPropertiesAPISupport contains HubSpot CRM object names that
@@ -34,10 +37,12 @@ var (
 	//
 	// The Marketing API is separate from the CRM API and is not related to the Objects API.
 	MarketingObjects = datautils.Map[string, ObjectDescription]{
+		// https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/get-campaigns
 		"campaigns": {
 			Path:              "campaigns",
 			RecordTransformer: common.FlattenNestedFields("properties"),
 			Version:           APIVersion2026March,
+			PageSize:          DefaultPageSize,
 		},
 		// "marketing/emails" refers to HubSpot marketing emails, which are distinct
 		// from the CRM email activity resource.
@@ -55,12 +60,21 @@ var (
 			Path:              "emails",
 			RecordTransformer: nil, // None. Fields and Raw are the same.
 			Version:           APIVersion2026March,
+			PageSize:          DefaultPageSize,
 		},
 		// https://developers.hubspot.com/docs/api-reference/2026-09-beta/marketing/forms/get-forms
 		ObjectMarketingForms: {
 			Path:              "forms",
 			RecordTransformer: nil,
 			Version:           APIVersion2026Sep,
+			PageSize:          DefaultPageSize,
+		},
+		// https://developers.hubspot.com/docs/api-reference/latest/marketing/marketing-events/get-marketing-events
+		ObjectMarketingEvents: {
+			Path:              "marketing-events",
+			RecordTransformer: nil,
+			Version:           APIVersion2026March,
+			PageSize:          DefaultPageSize,
 		},
 	}
 )
@@ -72,4 +86,6 @@ type ObjectDescription struct {
 	RecordTransformer common.RecordTransformer
 	// Hubspot API Version.
 	Version string
+	// PageSize is maximum possible page limit for an object.
+	PageSize string
 }

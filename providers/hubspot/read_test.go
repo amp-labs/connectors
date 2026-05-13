@@ -27,6 +27,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseMarketingEmailFirst := testutils.DataFromFile(t, "read/marketing-emails/1-first-page.json")
 	responseMarketingEmailLast := testutils.DataFromFile(t, "read/marketing-emails/2-last-page.json")
 	responseMarketingForms := testutils.DataFromFile(t, "read/marketing-forms.json")
+	responseMarketingEvents := testutils.DataFromFile(t, "read/marketing-events.json")
 
 	tests := []testroutines.Read{
 		{
@@ -482,6 +483,38 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 				},
 				NextPage: "https://api.hubapi.com/marketing/forms/2026-09-beta?limit=1&after=MQ%3D%3D",
+				Done:     false,
+			},
+		}, {
+			Name: "Read marketing events",
+			Input: common.ReadParams{
+				ObjectName: "marketing-events",
+				Fields:     connectors.Fields("eventName", "eventOrganizer"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/marketing/marketing-events/2026-03"),
+				Then:  mockserver.Response(http.StatusOK, responseMarketingEvents),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"eventname":      "Party",
+							"eventorganizer": "Alice",
+						},
+						Raw: map[string]any{
+							"objectId":        "555442196839",
+							"externalEventId": "qwe",
+							"eventStatus":     "ONGOING",
+							"eventStatusV2":   "ongoing",
+						},
+						Id: "555442196839",
+					},
+				},
+				NextPage: "https://api.hubapi.com/marketing/marketing-events/2026-03?after=NTU1NDQyMTk2ODQw",
 				Done:     false,
 			},
 		},
