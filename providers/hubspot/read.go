@@ -40,6 +40,8 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	case core.MarketingObjects.Has(params.ObjectName):
 		// Object is part of Hubspot Marketing API.
 		return c.readMarketing(ctx, params, core.MarketingObjects[params.ObjectName])
+	case core.CommunicationObjects.Has(params.ObjectName):
+		return c.readCommunications(ctx, params, core.CommunicationObjects[params.ObjectName])
 	case core.MiscellaneousObjects.Has(params.ObjectName):
 		return c.readMiscAPI(ctx, params, core.MiscellaneousObjects[params.ObjectName])
 	default:
@@ -214,6 +216,79 @@ func makeIncrementalFilterFunc(params common.ReadParams) common.RecordsFilterFun
 		readhelper.NewTimeBoundary(),
 		"updatedAt", time.RFC3339,
 		core.GetNextRecordsURL,
+	)
+}
+
+func (c *Connector) readCommunications(ctx context.Context, // nolint:funlen
+	params common.ReadParams, object core.ObjectDescription,
+) (*common.ReadResult, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	if params.IsFirstPage() {
+		url, err = c.getCommunicationURL(params.ObjectName, &object)
+	} else {
+		url, err = urlbuilder.New(params.NextPage.String())
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, object.PageSize))
+
+	// Prepare the URL query params and pick provider side filtering method.
+	var filter common.RecordsFilterFunc
+
+	switch params.ObjectName {
+	case core.ObjectCustomChannels:
+		// This object cannot be tested. The way it works is an assumption.
+		filter = readhelper.MakeTimeFilterFunc(
+			readhelper.Unordered, readhelper.NewTimeBoundary(),
+			"createdAt", time.RFC3339, core.GetNextRecordsURL,
+		)
+	case core.ObjectChannels:
+		filter = readhelper.MakeIdentityFilterFunc(core.GetNextRecordsURL)
+	case core.ObjectInboxes:
+		url.WithQueryParam("sort", "-updatedAt") // newest first
+
+		filter = readhelper.MakeTimeFilterFunc(
+			readhelper.ReverseOrder, readhelper.NewTimeBoundary(),
+			"updatedAt", time.RFC3339, core.GetNextRecordsURL,
+		)
+	case core.ObjectChannelAccounts:
+		url.WithQueryParam("sort", "-createdAt") // newest first
+
+		filter = readhelper.MakeTimeFilterFunc(
+			readhelper.ReverseOrder, readhelper.NewTimeBoundary(),
+			"createdAt", time.RFC3339, core.GetNextRecordsURL,
+		)
+	case core.ObjectThreads:
+		filter = readhelper.MakeTimeFilterFunc(
+			readhelper.Unordered, readhelper.NewTimeBoundary(),
+			"createdAt", time.RFC3339, core.GetNextRecordsURL,
+		)
+	default:
+		return nil, common.ErrObjectNotSupported
+	}
+
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResultFiltered(
+		params,
+		resp,
+		common.MakeRecordsFunc("results"),
+		filter,
+		readhelper.MakeMarshaledDataFuncWithId(
+			object.RecordTransformer,
+			readhelper.IdFieldQuery{Field: "id"},
+		),
+		params.Fields,
 	)
 }
 

@@ -20,6 +20,11 @@ func main() {
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
 		"communication-preferences",
+		"custom-channels",
+		"channel-accounts",
+		"channels",
+		"inboxes",
+		"threads",
 	})
 	if err != nil {
 		utils.Fail("error listing metadata", "error", err)

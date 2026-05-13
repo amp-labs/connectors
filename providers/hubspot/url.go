@@ -123,6 +123,15 @@ func (c *Connector) getMarketingURL(object *core.ObjectDescription) (*urlbuilder
 	return c.rootURL("marketing", object.Path, object.Version)
 }
 
+func (c *Connector) getCommunicationURL(objectName string, object *core.ObjectDescription) (*urlbuilder.URL, error) {
+	if objectName == core.ObjectCustomChannels {
+		// This is the only exception in the URL structure.
+		return c.rootURL("conversations/custom-channels", object.Version)
+	}
+
+	return c.rootURL("conversations/conversations", object.Version, object.Path)
+}
+
 func (c *Connector) crmURL(paths ...string) (*urlbuilder.URL, error) {
 	parts := append([]string{"crm"}, paths...)
 

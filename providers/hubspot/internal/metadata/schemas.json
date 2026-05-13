@@ -992,6 +992,271 @@
               "providerType": "datetime"
             }
           }
+        },
+        "custom-channels": {
+          "displayName": "Custom Channels",
+          "description": "/conversations/custom-channels/2026-03",
+          "responseKey": "results",
+          "fields": {
+            "capabilities": {
+              "displayName": "capabilities",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "channelAccountConnectionRedirectUrl": {
+              "displayName": "channelAccountConnectionRedirectUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "channelDescription": {
+              "displayName": "channelDescription",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "channelLogoUrl": {
+              "displayName": "channelLogoUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "webhookUrl": {
+              "displayName": "webhookUrl",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "channel-accounts": {
+          "displayName": "Channel Accounts",
+          "description": "/conversations/conversations/2026-09-beta/channel-accounts",
+          "responseKey": "results",
+          "fields": {
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "authorized": {
+              "displayName": "authorized",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "channelId": {
+              "displayName": "channelId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inboxId": {
+              "displayName": "inboxId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "archivedAt": {
+              "displayName": "archivedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "deliveryIdentifier": {
+              "displayName": "deliveryIdentifier",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "channels": {
+          "displayName": "Channels",
+          "description": "/conversations/conversations/2026-09-beta/channels",
+          "responseKey": "results",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "inboxes": {
+          "displayName": "Inboxes",
+          "description": "/conversations/conversations/2026-09-beta/inboxes",
+          "responseKey": "results",
+          "fields": {
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "HELP_DESK",
+                  "displayValue": "HELP_DESK"
+                },
+                {
+                  "value": "INBOX",
+                  "displayValue": "INBOX"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "archivedAt": {
+              "displayName": "archivedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            }
+          }
+        },
+        "threads": {
+          "displayName": "Threads",
+          "description": "/conversations/conversations/2026-09-beta/threads",
+          "responseKey": "results",
+          "fields": {
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "associatedContactId": {
+              "displayName": "associatedContactId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inboxId": {
+              "displayName": "inboxId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "originalChannelAccountId": {
+              "displayName": "originalChannelAccountId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "originalChannelId": {
+              "displayName": "originalChannelId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spam": {
+              "displayName": "spam",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "OPEN",
+                  "displayValue": "OPEN"
+                },
+                {
+                  "value": "CLOSED",
+                  "displayValue": "CLOSED"
+                }
+              ]
+            },
+            "assignedTo": {
+              "displayName": "assignedTo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "closedAt": {
+              "displayName": "closedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "latestMessageReceivedTimestamp": {
+              "displayName": "latestMessageReceivedTimestamp",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "latestMessageSentTimestamp": {
+              "displayName": "latestMessageSentTimestamp",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "latestMessageTimestamp": {
+              "displayName": "latestMessageTimestamp",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "threadAssociations": {
+              "displayName": "threadAssociations",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
         }
       }
     }

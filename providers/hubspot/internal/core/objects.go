@@ -16,6 +16,11 @@ const (
 	ObjectMarketingForms  = "forms"
 	ObjectMarketingEvents = "marketing-events"
 	ObjectMeetingLinks    = "meeting-links"
+	ObjectCustomChannels  = "custom-channels"
+	ObjectChannelAccounts = "channel-accounts"
+	ObjectChannels        = "channels"
+	ObjectInboxes         = "inboxes"
+	ObjectThreads         = "threads"
 )
 
 //nolint:gochecknoglobals,lll
@@ -75,6 +80,49 @@ var (
 			Path:              "marketing-events",
 			RecordTransformer: nil,
 			Version:           APIVersion2026March,
+			PageSize:          DefaultPageSize,
+		},
+	}
+
+	CommunicationObjects = datautils.Map[string, ObjectDescription]{
+		// https://developers.hubspot.com/docs/api-reference/latest/conversations/custom-channels/channels/get-custom-channels
+		// Requires scope: "conversations.custom_channels.read".
+		// This is available only for Hubspot with "Sales Hub Professional" license.
+		ObjectCustomChannels: {
+			Path:              "custom-channels",
+			RecordTransformer: nil,
+			Version:           APIVersion2026March,
+			PageSize:          DefaultPageSize,
+		},
+		// https://developers.hubspot.com/docs/api-reference/2026-09-beta/conversations/conversations/channel-accounts/get-channel-accounts
+		ObjectChannelAccounts: {
+			Path:              "channel-accounts",
+			RecordTransformer: nil,
+			Version:           APIVersion2026Sep,
+			PageSize:          DefaultPageSize,
+		},
+		// https://developers.hubspot.com/docs/api-reference/2026-09-beta/conversations/conversations/channels/get-channels
+		ObjectChannels: {
+			Path:              "channels",
+			RecordTransformer: nil,
+			Version:           APIVersion2026Sep,
+			PageSize:          DefaultPageSize,
+		},
+		// https://developers.hubspot.com/docs/api-reference/2026-09-beta/conversations/conversations/inbox/get-inboxes
+		// Note: provider responds to request "/crm/v3/properties/inboxes" for ListObjectMetadata,
+		// but that does not work for the read in ObjectsAPI.
+		// The fields are not matching so it should be a different object.
+		ObjectInboxes: {
+			Path:              "inboxes",
+			RecordTransformer: nil,
+			Version:           APIVersion2026Sep,
+			PageSize:          DefaultPageSize,
+		},
+		// https://developers.hubspot.com/docs/api-reference/2026-09-beta/conversations/conversations/threads/get-threads
+		ObjectThreads: {
+			Path:              "threads",
+			RecordTransformer: nil,
+			Version:           APIVersion2026Sep,
 			PageSize:          DefaultPageSize,
 		},
 	}

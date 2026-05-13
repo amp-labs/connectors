@@ -117,6 +117,8 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 		// Object is part of Hubspot Marketing API.
 		// There is no discovery endpoint. Using local file with schema definition.
 		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
+	case core.CommunicationObjects.Has(objectName):
+		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
 	case core.MiscellaneousObjects.Has(objectName):
 		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
 	default:
