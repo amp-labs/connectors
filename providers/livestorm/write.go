@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"maps"
 	"net/http"
 	"strconv"
 
@@ -39,12 +38,12 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	body, err := buildLivestormWriteBody(params, record)
+	u, method, err := c.buildWriteURL(params)
 	if err != nil {
 		return nil, err
 	}
 
-	u, method, err := c.buildWriteURL(params)
+	body, err := buildLivestormWriteBody(params, record)
 	if err != nil {
 		return nil, err
 	}
@@ -140,13 +139,12 @@ func marshalEventsWriteBody(params common.WriteParams, record map[string]any) ([
 		return json.Marshal(record)
 	}
 
-	attrs := maps.Clone(record)
-	delete(attrs, "id")
+	delete(record, "id")
 
 	payload := map[string]any{
 		"data": map[string]any{
 			"type":       jsonAPIResourceTypeEvents,
-			"attributes": attrs,
+			"attributes": record,
 		},
 	}
 
@@ -179,7 +177,6 @@ func marshalUsersWriteBody(record map[string]any) ([]byte, error) {
 // Pass session_id alongside attributes or a full document; see
 // https://developers.livestorm.co/reference/post_sessions-id-people-bulk
 func marshalSessionPeopleBulkBody(record map[string]any) ([]byte, error) {
-	record = maps.Clone(record)
 	delete(record, "session_id")
 
 	if _, has := record["data"]; has {
