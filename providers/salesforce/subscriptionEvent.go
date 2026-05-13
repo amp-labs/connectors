@@ -321,7 +321,8 @@ func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error
 	// sub-component changes using this dot notation (e.g. "MailingAddress.Street"),
 	// but selectedFieldMappings and requiredWatchFields are keyed by the flattened
 	// column name (e.g. "MailingStreet"). We translate the dot notation into the
-	// flattened form so downstream matching against subscriptions works.
+	// flattened form using the per-object mapping in compoundFieldMapping.go so
+	// downstream matching against subscriptions works.
 	parts := strings.SplitN(name, ".", 2) //nolint:mnd
 	if len(parts) < 2 {                   //nolint:mnd
 		return parts[0], nil
@@ -332,40 +333,16 @@ func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) (string, error
 		return "", fmt.Errorf("failed to get object name: %w", err)
 	}
 
-	if !isStandardCompoundField(obj, parts[0]) {
-		return name, nil
+	if flat, ok := FlattenedCompoundSubField(obj, parts[0], parts[1]); ok {
+		return flat, nil
 	}
 
-	return flattenedCompoundFieldName(parts[0], parts[1]), nil
-}
-
-// flattenedCompoundFieldName returns the column name that Salesforce uses for a
-// compound field's sub-component when the compound is exposed as flat columns.
-// See https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/compound_fields.htm.
-//
-// Examples:
-//   - MailingAddress.Street -> MailingStreet
-//   - BillingAddress.City   -> BillingCity
-//   - Address.Street        -> Street          (compound named just "Address")
-//   - Name.LastName         -> LastName        (Name compounds drop the prefix)
-//   - Fiscal.Quarter        -> FiscalQuarter   (other compounds keep the prefix)
-func flattenedCompoundFieldName(compound, sub string) string {
-	// Name compounds (e.g. Account.Name, Contact.Name) flatten to bare sub-fields.
-	if strings.EqualFold(compound, "Name") {
-		return sub
-	}
-
-	// Address-typed compounds flatten by stripping the "Address" suffix:
-	// MailingAddress -> "Mailing", BillingAddress -> "Billing", Address -> "".
-	const addressSuffix = "Address"
-	if len(compound) >= len(addressSuffix) &&
-		strings.EqualFold(compound[len(compound)-len(addressSuffix):], addressSuffix) {
-		return compound[:len(compound)-len(addressSuffix)] + sub
-	}
-
-	// Other compound types (Fiscal, Location, etc.) keep the compound name as
-	// the flattened prefix.
-	return compound + sub
+	// No documented compound mapping for this (object, compound, sub-field).
+	// Preserve the original dot notation rather than guessing at the flattened
+	// form: returning a bare sub-name like "Street" (without knowing which
+	// Address compound it came from) silently collapses to an unrelated field
+	// and is the bug we're fixing.
+	return name, nil
 }
 
 func (s SubscriptionEvent) UpdatedFields() ([]string, error) {
