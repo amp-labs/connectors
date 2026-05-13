@@ -130,3 +130,96 @@ func validateSubEvent[V any](t *testing.T, err error, actual, expected V, method
 	assert.NilError(t, err, "error should be nil")
 	assert.Equal(t, actual, expected, "method "+methodName)
 }
+
+// TestSubscriptionEventUpdateContactCompoundAddress verifies that Salesforce CDC
+// changedFields entries using "<Compound>.<Sub>" dot notation for address
+// compounds are normalized to their flattened column name
+// (e.g. "MailingAddress.Street" -> "MailingStreet"). This is what downstream
+// subscriptions match against. See ENG-3919.
+func TestSubscriptionEventUpdateContactCompoundAddress(t *testing.T) {
+	t.Parallel()
+
+	data := testutils.DataFromFile(t, "subscription/update_contact_compound_address.json")
+
+	event := SubscriptionEvent{}
+	if err := json.Unmarshal(data, &event); err != nil {
+		t.Fatalf("failed to start a test, cannot parse data; error (%v)", err)
+	}
+
+	objectName, err := event.ObjectName()
+	assert.NilError(t, err, "error should be nil")
+	assert.Equal(t, objectName, "Contact", "ObjectName should be Contact")
+
+	fields, err := event.UpdatedFields()
+	assert.NilError(t, err, "error should be nil")
+
+	assert.DeepEqual(t, fields, []string{
+		"LastModifiedDate",
+		"MailingStreet",
+		"MailingCity",
+		"OtherPostalCode",
+	})
+}
+
+// TestSubscriptionEventUpdateAccountCompoundAddress verifies the same flattening
+// for Account, which has both BillingAddress and ShippingAddress compounds.
+func TestSubscriptionEventUpdateAccountCompoundAddress(t *testing.T) {
+	t.Parallel()
+
+	data := testutils.DataFromFile(t, "subscription/update_account_compound_address.json")
+
+	event := SubscriptionEvent{}
+	if err := json.Unmarshal(data, &event); err != nil {
+		t.Fatalf("failed to start a test, cannot parse data; error (%v)", err)
+	}
+
+	objectName, err := event.ObjectName()
+	assert.NilError(t, err, "error should be nil")
+	assert.Equal(t, objectName, "Account", "ObjectName should be Account")
+
+	fields, err := event.UpdatedFields()
+	assert.NilError(t, err, "error should be nil")
+
+	assert.DeepEqual(t, fields, []string{
+		"BillingStreet",
+		"ShippingPostalCode",
+	})
+}
+
+func TestFlattenedCompoundFieldName(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		compound string
+		sub      string
+		want     string
+	}{
+		// Address-typed compounds: strip "Address" suffix and prepend.
+		{compound: "MailingAddress", sub: "Street", want: "MailingStreet"},
+		{compound: "MailingAddress", sub: "City", want: "MailingCity"},
+		{compound: "MailingAddress", sub: "State", want: "MailingState"},
+		{compound: "MailingAddress", sub: "PostalCode", want: "MailingPostalCode"},
+		{compound: "MailingAddress", sub: "Country", want: "MailingCountry"},
+		{compound: "MailingAddress", sub: "CountryCode", want: "MailingCountryCode"},
+		{compound: "BillingAddress", sub: "Street", want: "BillingStreet"},
+		{compound: "ShippingAddress", sub: "City", want: "ShippingCity"},
+		{compound: "OtherAddress", sub: "PostalCode", want: "OtherPostalCode"},
+		// Compounds named just "Address" flatten to the bare sub-field.
+		{compound: "Address", sub: "Street", want: "Street"},
+		// Name compounds drop the prefix.
+		{compound: "Name", sub: "FirstName", want: "FirstName"},
+		{compound: "Name", sub: "LastName", want: "LastName"},
+		// Other compound types keep the compound name as the prefix.
+		{compound: "Fiscal", sub: "Quarter", want: "FiscalQuarter"},
+		{compound: "Location", sub: "Latitude", want: "LocationLatitude"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.compound+"."+tc.sub, func(t *testing.T) {
+			t.Parallel()
+
+			got := flattenedCompoundFieldName(tc.compound, tc.sub)
+			assert.Equal(t, got, tc.want)
+		})
+	}
+}
