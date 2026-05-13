@@ -298,21 +298,6 @@ func init() {
 	}
 }
 
-// isStandardCompoundField checks if the given object and field
-// are part of the standard compound fields defined in Salesforce.
-//
-// See https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/compound_fields.htm
-func isStandardCompoundField(obj, field string) bool {
-	fields, ok := compositePrefixMap[strings.ToLower(obj)]
-	if !ok {
-		return false
-	}
-
-	_, ok = fields[strings.ToLower(field)]
-
-	return ok
-}
-
 // normalizeUpdatedFieldName returns the flattened name of compound fields.
 // otherwise returns the original field name.
 func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) string {
