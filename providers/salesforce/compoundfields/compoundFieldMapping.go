@@ -4,8 +4,9 @@ import "strings"
 
 // FlattenedFieldNameFromCompoundField returns the flattened field name
 // of a field received in a CDC change event.
+// nolint:lll
 // See https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_subscribe_compound_fields.htm
-
+//
 // It addressed the following 2 types of compound fields:
 // 1. Address compound fields:
 //   - "MailingAddress", "Street" -> "MailingStreet"

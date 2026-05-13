@@ -189,18 +189,6 @@ func (s SubscriptionEvent) EventTimeStampNano() (int64, error) {
 	return int64(num), nil
 }
 
-// normalizeUpdatedFieldName returns the flattened name of compound fields.
-// otherwise returns the original field name.
-func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) string {
-	parts := strings.SplitN(name, ".", 2)
-	if len(parts) < 2 {
-		// Not a compound field
-		return name
-	}
-
-	return compoundfields.FlattenedFieldNameFromCompoundField(parts[0], parts[1])
-}
-
 func (s SubscriptionEvent) UpdatedFields() ([]string, error) {
 	registry, err := s.asMap()
 	if err != nil {
@@ -235,6 +223,18 @@ func (s SubscriptionEvent) UpdatedFields() ([]string, error) {
 	}
 
 	return fields, nil
+}
+
+// normalizeUpdatedFieldName returns the flattened name of compound fields.
+// otherwise returns the original field name.
+func (s SubscriptionEvent) normalizeUpdatedFieldName(name string) string {
+	parts := strings.SplitN(name, ".", 2) //nolint:mnd
+	if len(parts) < 2 {                   //nolint:mnd
+		// Not a compound field
+		return name
+	}
+
+	return compoundfields.FlattenedFieldNameFromCompoundField(parts[0], parts[1])
 }
 
 func extractChangeEventHeader(registry map[string]any) (common.StringMap, error) {

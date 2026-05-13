@@ -155,8 +155,8 @@ func TestSubscriptionEventUpdateContactCompoundAddress(t *testing.T) {
 
 	assert.DeepEqual(t, fields, []string{
 		"LastModifiedDate",
-		"MailingStreet", // flattened from MailingAddress.Street
-		"MailingCity", // flattened from MailingAddress.City
+		"MailingStreet",   // flattened from MailingAddress.Street
+		"MailingCity",     // flattened from MailingAddress.City
 		"OtherPostalCode", // flattened from OtherAddress.PostalCode
 	})
 }
@@ -179,7 +179,7 @@ func TestSubscriptionEventLeadAccountCompoundAddress(t *testing.T) {
 	assert.NilError(t, err, "error should be nil")
 
 	assert.DeepEqual(t, fields, []string{
-		"Street", // flattened from Address.Street
+		"Street",     // flattened from Address.Street
 		"PostalCode", // flattened from Address.PostalCode
 	})
 }
