@@ -278,15 +278,20 @@ func generateClassMetaXML() string {
 //     field on newRec only so (rec.<f> != oldRec.<f>) evaluates true and
 //     fieldChanged=true.
 //
-//   - `coverTriggerDelegation` does one Database.insert with allOrNone=false
-//     on a best-effort SObject. The trigger's before-insert fires before
-//     validation rules per Salesforce's order of execution, so even if the
-//     org rejects the insert, the trigger's single delegation line has
-//     already executed and counts toward coverage.
+//   - `coverTriggerDelegation` uses SeeAllData=true to find an existing
+//     record of the target object and fire `before update` on it. The
+//     record is already valid (it exists), so the update reliably reaches
+//     the Apex before-update step without being short-circuited by
+//     required-field validation or before-save flows. All DML in test
+//     methods is rolled back automatically, so this doesn't modify the
+//     org's data. For orgs with zero records of the type, falls back to
+//     the generic makeRec()-based insert.
 //
 // Together these guarantee 100% coverage on the trigger (1/1) and the
 // handler (every line including the early-return and the Read variant's
-// conditional body) regardless of the customer org's validation rules.
+// conditional body) whenever the target object has at least one record in
+// the org — which covers full sandboxes and the vast majority of production
+// orgs. The fallback path remains best-effort for empty/new orgs.
 func generateTestClassCode(testClassName, handlerClassName string, params ApexTriggerParams) string {
 	// Validation requires len(WatchFields) > 0; defend against generator misuse
 	// by falling back to an empty string (the resulting Apex still compiles —
@@ -310,7 +315,9 @@ func generateTestClassCode(testClassName, handlerClassName string, params ApexTr
 		handlerClassName,  // 11: update branch — handler.process call
 		params.ObjectName, // 12: update branch — List<X> for newRecs
 		params.ObjectName, // 13: update branch — List<X> for oldRecs
-		params.ObjectName, // 14: coverTriggerDelegation — Schema.getGlobalDescribe lookup
+		params.ObjectName, // 14: coverTriggerDelegation — List<X> for SOQL result
+		params.ObjectName, // 15: coverTriggerDelegation — FROM X in SOQL
+		params.ObjectName, // 16: coverTriggerDelegation — Schema.getGlobalDescribe lookup in makeRec
 	)
 }
 
@@ -329,7 +336,9 @@ func generateTestClassCode(testClassName, handlerClassName string, params ApexTr
 //  11. handler class name — update-branch handler invocation
 //  12. object API name — update-branch List<X> for newRecs
 //  13. object API name — update-branch List<X> for oldRecs
-//  14. object API name — Schema.getGlobalDescribe lookup in makeRec
+//  14. object API name — coverTriggerDelegation List<X> for SOQL result type
+//  15. object API name — coverTriggerDelegation FROM X in SOQL
+//  16. object API name — Schema.getGlobalDescribe lookup in makeRec
 const apexTestClassTemplate = `@isTest
 private class %s {
     @isTest
@@ -355,16 +364,44 @@ private class %s {
         %s.process(new List<%s>{newRec}, new List<%s>{oldRec});
     }
 
-    @isTest
+    @isTest(SeeAllData=true)
     static void coverTriggerDelegation() {
-        // Best-effort DML so the trigger's single delegation line is covered.
-        // The before-insert trigger fires BEFORE the org's validation rules
-        // per Salesforce's order of execution, so the trigger code executes
-        // even when the insert is ultimately rejected. allOrNone=false keeps
-        // the test method passing on rejection.
-        SObject rec = makeRec();
+        // Touch an existing record of the target object to fire the
+        // before-update trigger. The record is valid by definition (it
+        // exists), so the update reliably reaches the Apex before-update
+        // step without being short-circuited by required-field validation or
+        // before-save flows that the generic makeRec() can't satisfy.
+        //
+        // All DML in test methods is rolled back automatically when the
+        // method exits, so this strategy doesn't modify the org's data —
+        // SystemModstamp, flow side effects on related records, and audit
+        // writes all roll back with the transaction. Outbound callouts /
+        // queued emails from those flows are discarded because the commit
+        // doesn't happen.
+        List<%s> existing = [SELECT Id FROM %s LIMIT 1];
+        if (!existing.isEmpty()) {
+            Test.startTest();
+            try {
+                Database.update(existing[0], false);
+            } catch (Exception e) {
+                // before-update fires before custom validation rules, so the
+                // delegation line counts as covered even on rejected update.
+            }
+            Test.stopTest();
+            return;
+        }
+
+        // Fallback for orgs with zero records of this type — best-effort
+        // insert via the generic schema-walking builder. If the org's
+        // validation / before-save flows reject this and the existing-record
+        // path also turned up nothing, the deploy fails loudly with the same
+        // coverage warning that motivated this rewrite.
         Test.startTest();
-        Database.insert(rec, false);
+        try {
+            Database.insert(makeRec(), false);
+        } catch (Exception e) {
+            // tolerate
+        }
         Test.stopTest();
     }
 

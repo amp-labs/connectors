@@ -540,17 +540,24 @@ func TestConstructApexTriggerBundlesTestClass(t *testing.T) { //nolint:funlen
 	//   - Populate the first watch field on the in-memory newRec for the
 	//     update branch so the change-detection condition evaluates true and
 	//     the Read variant's conditional indicator-assignment line is covered.
-	//   - Do at least one DML so the trigger's delegation line is covered.
+	//   - In coverTriggerDelegation, use @isTest(SeeAllData=true) and a SOQL
+	//     LIMIT 1 to find an existing record, then no-op-update it so the
+	//     before-update trigger fires (covers the trigger's one line without
+	//     needing makeRec() to construct a valid record). Fall back to a
+	//     makeRec()-based insert for orgs with zero records of the type.
 	for _, want := range []string{
 		"@isTest",
 		"private class Test_CDC_Lead",
 		"static void exerciseHandlerInsertNoop",
 		"static void exerciseHandlerUpdateBranch",
+		"@isTest(SeeAllData=true)",
 		"static void coverTriggerDelegation",
+		"List<Lead> existing = [SELECT Id FROM Lead LIMIT 1]",
+		"Database.update(existing[0], false)",
+		"Database.insert(makeRec(), false)",
 		"setWatchFieldValueIfPossible(newRec, 'Email')",
 		"private static void setWatchFieldValueIfPossible(SObject rec, String fieldName)",
 		"CDC_Lead_Handler.process",
-		"Database.insert(rec, false)",
 		"Schema.getGlobalDescribe().get('Lead')",
 	} {
 		if !strings.Contains(classCode, want) {
