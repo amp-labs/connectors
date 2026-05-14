@@ -16,7 +16,7 @@ func TestListObjectMetadata(t *testing.T) {
 	tests := []testroutines.Metadata{
 		{
 			Name:       "Successful metadata for events and people",
-			Input:      []string{"events", "people", "people_attributes", "jobs", "users", "session_chat_messages"},
+			Input:      []string{"events", "people", "people_attributes", "users", "session_chat_messages"},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -61,21 +61,6 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 							"slug": {
 								DisplayName:  "Slug",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-						},
-					},
-					"jobs": {
-						DisplayName: "Jobs",
-						Fields: map[string]common.FieldMetadata{
-							"id": {
-								DisplayName:  "Job Id",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-							"status": {
-								DisplayName:  "Status",
 								ValueType:    "string",
 								ProviderType: "string",
 							},

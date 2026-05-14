@@ -6,10 +6,8 @@ import (
 )
 
 // extractJSONAPIResourceNodes returns JSON:API primary `data` resource nodes only (no flattening).
-// List endpoints use `data` as an array (the usual Read path). Livestorm also returns `data` as a
-// single resource object for GET /v1/jobs/{id}; that yields one row. If Read is narrowed to
-// collections-only later, drop jobs (or similar singleton reads) from read routing instead of
-// changing this extractor.
+// List read responses use `data` as an array of resource objects. JSON:API also allows `data` as a
+// single resource object; that is normalized to a one-element slice so parsing stays spec-tolerant.
 func extractJSONAPIResourceNodes(root *ajson.Node) ([]*ajson.Node, error) {
 	items, arrErr := jsonquery.New(root).ArrayOptional("data")
 	if arrErr == nil {

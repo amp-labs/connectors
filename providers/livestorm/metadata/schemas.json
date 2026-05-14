@@ -113,34 +113,6 @@
             }
           }
         },
-        "jobs": {
-          "displayName": "Jobs",
-          "path": "/jobs",
-          "responseKey": "data",
-          "docs": "https://developers.livestorm.co/reference/get_jobs-id",
-          "fields": {
-            "id": {
-              "displayName": "Job Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "status": {
-              "displayName": "Status",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "created_at": {
-              "displayName": "Created At",
-              "valueType": "datetime",
-              "providerType": "datetime"
-            },
-            "updated_at": {
-              "displayName": "Updated At",
-              "valueType": "datetime",
-              "providerType": "datetime"
-            }
-          }
-        },
         "users": {
           "displayName": "Users",
           "path": "/v1/users",

@@ -17,7 +17,6 @@ func main() {
 		"events",
 		"people",
 		"people_attributes",
-		"jobs",
 		"session_chat_messages",
 	})
 	if err != nil {
