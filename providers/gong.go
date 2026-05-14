@@ -7,7 +7,7 @@ func init() {
 	SetInfo(Gong, ProviderInfo{
 		DisplayName: "Gong",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.api_base_url}}",
+		BaseURL:     "https://api.gong.io",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327371/media/gong_1722327370.svg",
@@ -15,7 +15,7 @@ func init() {
 			},
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327392/media/gong_1722327391.svg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327416/media/gong_1722327416.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327416/media/gong_1722327415.svg",
 			},
 		},
 		Oauth2Opts: &Oauth2Opts{
@@ -25,8 +25,7 @@ func init() {
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
-				ScopesField:       "scope",
-				WorkspaceRefField: "api_base_url",
+				ScopesField: "scope",
 			},
 		},
 		Support: Support{
