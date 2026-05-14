@@ -1,6 +1,8 @@
 package livestorm
 
 import (
+	"maps"
+
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -70,9 +72,7 @@ func flattenJSONAPIResourceForFields(n *ajson.Node) (map[string]any, error) {
 		return nil, err
 	}
 
-	for k, v := range attrMap {
-		merged[k] = v
-	}
+	maps.Copy(merged, attrMap)
 
 	return merged, nil
 }
