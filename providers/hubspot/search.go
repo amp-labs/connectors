@@ -55,6 +55,8 @@ func (c *Connector) ReadUsingSearchAPI( // nolint:cyclop
 		)
 	}
 
+	params = params.applyTimestampFilters()
+
 	//
 	// Read using POST endpoints intended for Search.
 	//
@@ -67,26 +69,14 @@ func (c *Connector) ReadUsingSearchAPI( // nolint:cyclop
 			SearchParams: params,
 		})
 	case core.MarketingObjects.Has(params.ObjectName):
-		readParams, err := makeReadParamsFromSearchParams(params)
-		if err != nil {
-			return nil, err
-		}
 		// Search for marketing is not implemented, using simple read.
-		return c.readMarketing(ctx, *readParams, core.MarketingObjects[params.ObjectName])
+		return c.readMarketing(ctx, makeReadParamsFromSearchParams(params), core.MarketingObjects[params.ObjectName])
 	case core.CommunicationObjects.Has(params.ObjectName):
-		readParams, err := makeReadParamsFromSearchParams(params)
-		if err != nil {
-			return nil, err
-		}
 		// Search for communication is not implemented, using simple read.
-		return c.readCommunications(ctx, *readParams, core.CommunicationObjects[params.ObjectName])
+		return c.readCommunications(ctx, makeReadParamsFromSearchParams(params), core.CommunicationObjects[params.ObjectName])
 	case core.MiscellaneousObjects.Has(params.ObjectName):
-		readParams, err := makeReadParamsFromSearchParams(params)
-		if err != nil {
-			return nil, err
-		}
 		// Search for misc objects is not implemented, using simple read.
-		return c.readMiscAPI(ctx, *readParams, core.MiscellaneousObjects[params.ObjectName])
+		return c.readMiscAPI(ctx, makeReadParamsFromSearchParams(params), core.MiscellaneousObjects[params.ObjectName])
 	default:
 		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
 		return c.searchCRMObjectsAPI(ctx, params)
@@ -193,7 +183,6 @@ func BuildLastModifiedFilterGroup(params *common.ReadParams) Filter {
 		FieldName: string(lastModifiedField),
 		Operator:  FilterOperatorTypeGTE,
 		Value:     params.Since.Format(time.RFC3339),
-		isSince:   true,
 	}
 }
 
@@ -213,7 +202,6 @@ func BuildUntilTimestampFilterGroup(params *common.ReadParams) Filter {
 		FieldName: string(lastModifiedField),
 		Operator:  FilterOperatorTypeLTE,
 		Value:     params.Until.Format(time.RFC3339),
-		isUntil:   true,
 	}
 }
 
@@ -226,35 +214,60 @@ func BuildIdFilterGroup(id string) Filter {
 	}
 }
 
-func makeReadParamsFromSearchParams(search SearchParams) (*common.ReadParams, error) {
-	params := &common.ReadParams{
+func makeReadParamsFromSearchParams(search SearchParams) common.ReadParams {
+	return common.ReadParams{
 		ObjectName:        search.ObjectName,
 		Fields:            search.Fields,
 		NextPage:          search.NextPage,
 		AssociatedObjects: search.AssociatedObjects,
+		Since:             search.Since,
+		Until:             search.Until,
+	}
+}
+
+func (p SearchParams) applyTimestampFilters() SearchParams {
+	params := makeReadParamsFromSearchParams(p)
+
+	sinceFilter := BuildLastModifiedFilterGroup(&params)
+	untilFilter := BuildUntilTimestampFilterGroup(&params)
+
+	if len(p.FilterGroups) == 0 && (sinceFilter != (Filter{}) || untilFilter != (Filter{})) {
+		// Initialize group because either since or until (or both) should be populated.
+		p.FilterGroups = []FilterGroup{{
+			Filters: Filters{},
+		}}
 	}
 
-	var err error
+	// Every group is "OR"ed together.
+	// If there are multiple groups it is logically ok to insert since/until in each.
+	for index, group := range p.FilterGroups {
+		if !group.hasFilter(sinceFilter) {
+			group.Filters = append(group.Filters, sinceFilter)
+		}
 
-	for _, group := range search.FilterGroups {
-		for _, filter := range group.Filters {
-			if filter.isSince {
-				params.Since, err = time.Parse(time.RFC3339, filter.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
+		if !group.hasFilter(untilFilter) {
+			group.Filters = append(group.Filters, untilFilter)
+		}
 
-			if filter.isUntil {
-				params.Until, err = time.Parse(time.RFC3339, filter.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
+		p.FilterGroups[index] = group
+	}
+
+	return p
+}
+
+func (g FilterGroup) hasFilter(target Filter) bool {
+	if target == (Filter{}) {
+		return true
+	}
+
+	for _, filter := range g.Filters {
+		if filter.FieldName == target.FieldName &&
+			filter.Operator == target.Operator {
+			return true
 		}
 	}
 
-	return params, nil
+	return false
 }
 
 // BuildSort builds a sort by clause for the given field and direction.

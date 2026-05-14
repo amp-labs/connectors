@@ -3,6 +3,7 @@ package hubspot
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -10,6 +11,12 @@ import (
 )
 
 type SearchParams struct {
+	// Since limits results to records created or updated at or after this timestamp.
+	// Zero value means no lower bound.
+	Since time.Time
+	// Until limits results to records created or updated before this timestamp.
+	// Zero value means no upper bound.
+	Until time.Time
 	// The name of the object we are reading, e.g. "Account"
 	ObjectName string // required
 	// NextPage is an opaque token that can be used to get the next page of results.
@@ -87,9 +94,6 @@ type Filter struct {
 	FieldName string             `json:"propertyName,omitempty"`
 	Operator  FilterOperatorType `json:"operator,omitempty"`
 	Value     string             `json:"value,omitempty"`
-
-	isSince bool
-	isUntil bool
 }
 
 type (

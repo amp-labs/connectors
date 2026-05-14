@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/hubspot"
 	connTest "github.com/amp-labs/connectors/test/hubspot"
 	"github.com/amp-labs/connectors/test/utils"
@@ -25,13 +24,7 @@ func main() {
 	res, err := conn.ReadUsingSearchAPI(ctx, hubspot.SearchParams{
 		ObjectName: "campaigns",
 		Fields:     connectors.Fields("hs_name", "hs_notes", "hs_budget_items_sum_amount"),
-		FilterGroups: []hubspot.FilterGroup{{
-			Filters: []hubspot.Filter{
-				hubspot.BuildLastModifiedFilterGroup(&common.ReadParams{
-					Since: time.Date(2026, 5, 5, 23, 10, 0, 0, time.UTC),
-				}),
-			},
-		}},
+		Since:      time.Date(2026, 5, 5, 23, 10, 0, 0, time.UTC),
 	})
 	if err != nil {
 		utils.Fail("error reading from connector", "error", err)
