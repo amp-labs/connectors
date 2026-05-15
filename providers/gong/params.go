@@ -17,7 +17,7 @@ type Option = func(params *parameters)
 
 type parameters struct {
 	paramsbuilder.Client
-	APIBaseURL string // Regional API base URL from OAuth token (e.g. "api.eu.gong.io")
+	APIBaseURL string // Regional API base URL from OAuth token (e.g. "https://us-12345.api.gong.io")
 }
 
 // WithWorkspace sets the regional API base URL for the Gong connector.
