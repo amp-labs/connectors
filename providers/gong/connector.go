@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/providers/gong/metadata"
 )
 
-const defaultAPIBaseURL = "api.gong.io"
+const defaultAPIBaseURL = "https://api.gong.io"
 
 const ApiVersion = "v2"
 
@@ -42,7 +42,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 	// Read provider info with regional base URL substitution.
 	providerInfo, err := providers.ReadInfo(conn.Provider(), catalogreplacer.CustomCatalogVariable{
 		Plan: catalogreplacer.SubstitutionPlan{
-			From: "api_base_url",
+			From: "api_base_url_for_customer",
 			To:   apiBaseURL,
 		},
 	})

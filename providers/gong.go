@@ -9,10 +9,11 @@ func init() {
 		AuthType:    Oauth2,
 		// Gong API base URL is region-specific. The OAuth token response includes
 		// an `api_base_url` field pointing to the tenant's regional endpoint.
-		// US tenants get https://api.gong.io; EU/APAC tenants get a different URL.
+		// US tenants get a tenant-specific URL, with a fallback to https://api.gong.io if missing.
+		// EU/APAC tenants get a different URL, with no safe fallback.
 		// Without this, non-US tenants receive "access token has been revoked" errors
 		// because their token is valid only for their regional endpoint.
-		BaseURL: "https://{{.api_base_url}}",
+		BaseURL: "{{.api_base_url_for_customer}}",
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722327371/media/gong_1722327370.svg",
@@ -30,7 +31,8 @@ func init() {
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
-				WorkspaceRefField: "api_base_url",
+				// See https://help.gong.io/docs/create-an-app-for-gong#exchange-the-code-for-an-access-token
+				WorkspaceRefField: "api_base_url_for_customer",
 				ScopesField:       "scope",
 			},
 		},
