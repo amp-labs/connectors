@@ -9,7 +9,8 @@ func init() {
 		AuthType:    Oauth2,
 		// Gong API base URL is region-specific. The OAuth token response includes
 		// an `api_base_url` field pointing to the tenant's regional endpoint.
-		// US tenants get https://api.gong.io; EU/APAC tenants get a different URL.
+		// US tenants get a tenant-specific URL, with a fallback to https://api.gong.io if missing.
+		// EU/APAC tenants get a different URL, with no safe fallback.
 		// Without this, non-US tenants receive "access token has been revoked" errors
 		// because their token is valid only for their regional endpoint.
 		BaseURL: "{{.api_base_url_for_customer}}",
