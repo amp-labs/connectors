@@ -30,6 +30,7 @@ func init() {
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
+				// See https://help.gong.io/docs/create-an-app-for-gong#exchange-the-code-for-an-access-token
 				WorkspaceRefField: "api_base_url_for_customer",
 				ScopesField:       "scope",
 			},
