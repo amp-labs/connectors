@@ -85,25 +85,7 @@ func (c *Connector) fetchCustomFieldDefinitions(ctx context.Context) ([]getRespo
 	page := 1
 
 	for {
-		url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/custom-fields")
-		if err != nil {
-			return nil, err
-		}
-
-		url.WithQueryParam(pageKey, strconv.Itoa(page))
-		url.WithQueryParam(pageSizeKey, pageSize)
-
-		res, err := c.JSONHTTPClient().Get(ctx, url.String())
-		if err != nil {
-			return nil, err
-		}
-
-		body, ok := res.Body()
-		if !ok {
-			return nil, fmt.Errorf("%w: empty custom-fields body", common.ErrEmptyJSONHTTPResponse)
-		}
-
-		items, err := jsonquery.New(body).ArrayOptional("")
+		items, err := c.fetchCustomFieldsPageNodes(ctx, page)
 		if err != nil {
 			return nil, err
 		}
@@ -112,26 +94,66 @@ func (c *Connector) fetchCustomFieldDefinitions(ctx context.Context) ([]getRespo
 			break
 		}
 
-		for _, n := range items {
-			if n == nil {
-				continue
-			}
-
-			p, err := jsonquery.ParseNode[getResponseCustomField](n)
-			if err != nil {
-				return nil, err
-			}
-
-			if p.CustomFieldId != "" {
-				out = append(out, *p)
-			}
+		parsed, err := parseCustomFieldDefinitionNodes(items)
+		if err != nil {
+			return nil, err
 		}
+
+		out = append(out, parsed...)
 
 		if len(items) < maxPageSizeInt {
 			break
 		}
 
 		page++
+	}
+
+	return out, nil
+}
+
+func (c *Connector) fetchCustomFieldsPageNodes(ctx context.Context, page int) ([]*ajson.Node, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/custom-fields")
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam(pageKey, strconv.Itoa(page))
+	url.WithQueryParam(pageSizeKey, pageSize)
+
+	res, err := c.JSONHTTPClient().Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	body, ok := res.Body()
+	if !ok {
+		return nil, fmt.Errorf("%w: empty custom-fields body", common.ErrEmptyJSONHTTPResponse)
+	}
+
+	items, err := jsonquery.New(body).ArrayOptional("")
+	if err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}
+
+func parseCustomFieldDefinitionNodes(items []*ajson.Node) ([]getResponseCustomField, error) {
+	out := make([]getResponseCustomField, 0, len(items))
+
+	for _, node := range items {
+		if node == nil {
+			continue
+		}
+
+		parsed, err := jsonquery.ParseNode[getResponseCustomField](node)
+		if err != nil {
+			return nil, err
+		}
+
+		if parsed.CustomFieldId != "" {
+			out = append(out, *parsed)
+		}
 	}
 
 	return out, nil
@@ -229,76 +251,87 @@ func mergeContactCustomFieldValuesIntoBody(record map[string]any) map[string]any
 		return record
 	}
 
-	var fromPrefix []map[string]any
+	fromPrefix := collectCustomFieldEntriesFromCfPrefixedKeys(record)
+	if len(fromPrefix) == 0 {
+		return record
+	}
 
-	for k, v := range record {
-		if !strings.HasPrefix(k, customFieldKeyPrefix) {
+	merged := copyRecordExcludingCfKeysAndCustomFieldValues(record)
+	merged["customFieldValues"] = combineCustomFieldValueArrays(record["customFieldValues"], fromPrefix)
+
+	return merged
+}
+
+func collectCustomFieldEntriesFromCfPrefixedKeys(record map[string]any) []map[string]any {
+	fromPrefix := make([]map[string]any, 0, len(record))
+
+	for key, value := range record {
+		if !strings.HasPrefix(key, customFieldKeyPrefix) {
 			continue
 		}
 
-		id := strings.TrimPrefix(k, customFieldKeyPrefix)
+		id := strings.TrimPrefix(key, customFieldKeyPrefix)
 		if id == "" {
 			continue
 		}
 
 		fromPrefix = append(fromPrefix, map[string]any{
 			"customFieldId": id,
-			"value":         toAPIValueArray(v),
+			"value":         toAPIValueArray(value),
 		})
 	}
 
-	if len(fromPrefix) == 0 {
-		return record
-	}
+	return fromPrefix
+}
 
+func copyRecordExcludingCfKeysAndCustomFieldValues(record map[string]any) map[string]any {
 	merged := make(map[string]any, len(record))
 
-	for k, v := range record {
-		if strings.HasPrefix(k, customFieldKeyPrefix) {
+	for key, value := range record {
+		if strings.HasPrefix(key, customFieldKeyPrefix) {
 			continue
 		}
 
-		if k == "customFieldValues" {
+		if key == "customFieldValues" {
 			continue
 		}
 
-		merged[k] = v
+		merged[key] = value
 	}
-
-	existing, hadExisting := record["customFieldValues"]
-	combined := make([]any, 0)
-
-	if hadExisting {
-		if list, ok := existing.([]any); ok {
-			for _, e := range list {
-				if m, ok2 := e.(map[string]any); ok2 {
-					combined = append(combined, m)
-				}
-			}
-		}
-	}
-
-	for _, e := range fromPrefix {
-		combined = append(combined, e)
-	}
-
-	merged["customFieldValues"] = combined
 
 	return merged
 }
 
-func toAPIValueArray(v any) []any {
-	if arr, ok := v.([]any); ok {
+func combineCustomFieldValueArrays(existing any, fromPrefix []map[string]any) []any {
+	combined := make([]any, 0, len(fromPrefix)+8)
+
+	if list, ok := existing.([]any); ok {
+		for _, entry := range list {
+			if m, okMap := entry.(map[string]any); okMap {
+				combined = append(combined, m)
+			}
+		}
+	}
+
+	for i := range fromPrefix {
+		combined = append(combined, fromPrefix[i])
+	}
+
+	return combined
+}
+
+func toAPIValueArray(raw any) []any {
+	if arr, ok := raw.([]any); ok {
 		return arr
 	}
 
-	if s, ok := v.(string); ok {
+	if s, ok := raw.(string); ok {
 		return []any{s}
 	}
 
-	if v == nil {
+	if raw == nil {
 		return []any{}
 	}
 
-	return []any{v}
+	return []any{raw}
 }
