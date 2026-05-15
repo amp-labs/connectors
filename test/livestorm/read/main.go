@@ -77,11 +77,6 @@ func main() {
 		readSessionChatMessages(ctx, conn, sessionID)
 	}
 
-	if jobID := os.Getenv("LIVESTORM_JOB_ID"); jobID != "" {
-		slog.Info("=== Read jobs by id (requires LIVESTORM_JOB_ID) ===")
-		readJob(ctx, conn, jobID)
-	}
-
 	slog.Info("Livestorm read tests completed successfully!")
 }
 
@@ -96,22 +91,6 @@ func readSessionChatMessages(ctx context.Context, conn *livestormprovider.Connec
 	})
 	if err != nil {
 		utils.Fail("error reading session_chat_messages from Livestorm", "error", err)
-	}
-
-	utils.DumpJSON(res, os.Stdout)
-}
-
-func readJob(ctx context.Context, conn *livestormprovider.Connector, jobID string) {
-	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "jobs",
-		Filter:     jobID,
-		Fields: connectors.Fields(
-			"status",
-			"updated_at",
-		),
-	})
-	if err != nil {
-		utils.Fail("error reading jobs from Livestorm", "error", err)
 	}
 
 	utils.DumpJSON(res, os.Stdout)

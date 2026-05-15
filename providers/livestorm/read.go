@@ -22,7 +22,6 @@ const (
 	apiVersion                = "v1"
 	objectEvents              = "events"
 	objectSessionChatMessages = "session_chat_messages"
-	objectJobs                = "jobs"
 )
 
 // nolint:gochecknoglobals
@@ -31,7 +30,6 @@ var readSupportedObjects = datautils.NewStringSet(
 	"people",
 	"people_attributes",
 	"session_chat_messages",
-	"jobs",
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -68,8 +66,6 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, common.ErrMissingObjects
 	case objectSessionChatMessages:
 		return c.buildSessionChatMessagesReadURL(params)
-	case objectJobs:
-		return c.buildJobReadURL(params)
 	default:
 		return c.buildGenericReadURL(params)
 	}
@@ -90,15 +86,6 @@ func (c *Connector) buildSessionChatMessagesReadURL(params common.ReadParams) (*
 	endpointURL.WithQueryParam("page[size]", readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
 
 	return endpointURL, nil
-}
-
-func (c *Connector) buildJobReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
-	jobID := strings.TrimSpace(params.Filter)
-	if jobID == "" {
-		return nil, ErrJobIDRequired
-	}
-
-	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "jobs", jobID)
 }
 
 func (c *Connector) buildGenericReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
