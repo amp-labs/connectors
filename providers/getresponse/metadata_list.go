@@ -27,7 +27,8 @@ func (c *Connector) listObjectMetadata(
 
 	custom, err := c.fetchCustomFieldDefinitions(ctx)
 	if err != nil {
-		return metadataResult, nil
+		// Best-effort: return static metadata when custom-fields API fails.
+		return metadataResult, nil //nolint:nilerr // intentional: do not fail ListObjectMetadata on enrichment errors
 	}
 
 	contactObject, ok := metadataResult.Result[objectContacts]

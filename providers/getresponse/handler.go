@@ -50,45 +50,52 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	// Set pagination parameters
-	// Use maximum page size if not specified or if it exceeds the maximum
-	requestedPageSize := params.PageSize
+	applyReadPaginationQuery(url, params.PageSize)
+	applyReadFieldsQuery(url, params)
+	addGetResponseFiltersIfPresent(url, params.Filter)
+	appendProviderSideCreatedOnFilters(url, params)
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func applyReadPaginationQuery(url *urlbuilder.URL, requestedPageSize int) {
 	if requestedPageSize <= 0 || requestedPageSize > maxPageSizeInt {
 		requestedPageSize = maxPageSizeInt
 	}
 
 	url.WithQueryParam(pageSizeKey, strconv.Itoa(requestedPageSize))
 	url.WithQueryParam(pageKey, "1")
+}
 
+func applyReadFieldsQuery(url *urlbuilder.URL, params common.ReadParams) {
 	fieldNames := params.Fields.List()
 	if params.ObjectName == objectContacts {
 		fieldNames = contactReadFieldsQueryForAPI(fieldNames)
 	}
 
-	// Add field selection
 	url.WithQueryParam("fields", strings.Join(fieldNames, ","))
+}
 
-	// Parse GetResponse-specific filter and sort from params.Filter
-	// Format: "query[name]=value&query[isDefault]=true&sort[name]=ASC&sort[createdOn]=DESC"
-	// This is a simple implementation - can be extended for more complex filtering
-	if params.Filter != "" {
-		addGetResponseFilters(url, params.Filter)
+func addGetResponseFiltersIfPresent(url *urlbuilder.URL, filterStr string) {
+	if filterStr == "" {
+		return
 	}
 
-	// Only add provider-side since/until filters if the object supports them
-	if shouldAddProviderSideFilter(params.ObjectName, params) {
-		if !params.Since.IsZero() {
-			url.WithQueryParam(sinceKey, params.Since.UTC().Format("2006-01-02T15:04:05+0000"))
-		}
+	addGetResponseFilters(url, filterStr)
+}
 
-		if !params.Until.IsZero() {
-			url.WithQueryParam(untilKey, params.Until.UTC().Format("2006-01-02T15:04:05+0000"))
-		}
+func appendProviderSideCreatedOnFilters(url *urlbuilder.URL, params common.ReadParams) {
+	if !shouldAddProviderSideFilter(params.ObjectName, params) {
+		return
 	}
 
-	requestURL := url.String()
+	if !params.Since.IsZero() {
+		url.WithQueryParam(sinceKey, params.Since.UTC().Format("2006-01-02T15:04:05+0000"))
+	}
 
-	return http.NewRequestWithContext(ctx, http.MethodGet, requestURL, nil)
+	if !params.Until.IsZero() {
+		url.WithQueryParam(untilKey, params.Until.UTC().Format("2006-01-02T15:04:05+0000"))
+	}
 }
 
 // addGetResponseFilters parses GetResponse filter string and adds query/sort parameters.
