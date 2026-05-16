@@ -36,14 +36,22 @@ func (s Strategy) Search(ctx context.Context, params *common.SearchParams) (*com
 		)
 	}
 
-	// Search has two execution paths:
+	// Search has three execution paths:
 	// - ObjectAPI: for core CRM objects supported by the canonical ObjectAPI endpoint.
 	// - Non-ObjectAPI: for CRM objects not supported by ObjectAPI, which use separate endpoints (e.g., Lists).
-	if core.CRMObjectsWithoutPropertiesAPISupport.Has(params.ObjectName) {
+	// - The rest: no search is supported.
+	switch {
+	case core.CRMObjectsWithoutPropertiesAPISupport.Has(params.ObjectName):
 		return s.searchViaNonstandardSearchAPI(ctx, params)
+	case core.MarketingObjects.Has(params.ObjectName):
+		fallthrough
+	case core.CommunicationObjects.Has(params.ObjectName):
+		fallthrough
+	case core.MiscellaneousObjects.Has(params.ObjectName):
+		return nil, common.ErrObjectNotSupported
+	default:
+		return s.searchViaObjectAPI(ctx, params)
 	}
-
-	return s.searchViaObjectAPI(ctx, params)
 }
 
 // checkSearchResultsLimit checks if the NextPage token exceeds HubSpot's search results limit.

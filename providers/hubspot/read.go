@@ -26,6 +26,9 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		return nil, err
 	}
 
+	//
+	// Read using regular GET endpoints.
+	//
 	switch {
 	case core.CRMObjectsWithoutPropertiesAPISupport.Has(params.ObjectName):
 		// Object is part of CRM namespace but outside ObjectAPI.
@@ -50,27 +53,32 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 	}
 }
 
+// CRM objects can be read using two ways.
+//   - If there are Since/Until parameters it will use:
+//     https://api.hubapi.com/crm/objects/2026-03/{objectType}/search
+//   - Otherwise, the Objects API endpoint is used:
+//     https://api.hubapi.com/crm/objects/2026-03/{objectType}
 func (c *Connector) readCRMObjectsAPI(
-	ctx context.Context, config common.ReadParams,
+	ctx context.Context, params common.ReadParams,
 ) (*common.ReadResult, error) { //nolint:funlen
 	// If filtering is required, then we have to use the search endpoint.
 	// The Search endpoint has a 10K record limit. In case this limit is reached,
 	// the sorting allows the caller to continue in another call by offsetting
 	// until the ID of the last record that was successfully fetched.
 	filters := make(Filters, 0)
-	if !config.Since.IsZero() {
-		filters = append(filters, BuildLastModifiedFilterGroup(&config))
+	if !params.Since.IsZero() {
+		filters = append(filters, BuildLastModifiedFilterGroup(&params))
 	}
 
-	if !config.Until.IsZero() {
-		filters = append(filters, BuildUntilTimestampFilterGroup(&config))
+	if !params.Until.IsZero() {
+		filters = append(filters, BuildUntilTimestampFilterGroup(&params))
 	}
 
-	filters = append(filters, BuildBuilderFilters(config.BuilderFilter)...)
+	filters = append(filters, BuildBuilderFilters(params.BuilderFilter)...)
 
 	if len(filters) != 0 {
 		searchParams := SearchParams{
-			ObjectName: config.ObjectName,
+			ObjectName: params.ObjectName,
 			FilterGroups: []FilterGroup{{
 				Filters: filters,
 				// Add more filter groups to OR them together
@@ -78,15 +86,15 @@ func (c *Connector) readCRMObjectsAPI(
 			SortBy: []SortBy{
 				BuildSort(ObjectFieldHsObjectId, SortDirectionAsc),
 			},
-			NextPage:          config.NextPage,
-			Fields:            config.Fields,
-			AssociatedObjects: config.AssociatedObjects,
+			NextPage:          params.NextPage,
+			Fields:            params.Fields,
+			AssociatedObjects: params.AssociatedObjects,
 		}
 
 		return c.ReadUsingSearchAPI(ctx, searchParams)
 	}
 
-	url, err := c.buildReadURL(config)
+	url, err := c.buildCRMReadURL(params)
 	if err != nil {
 		return nil, err
 	}
@@ -101,12 +109,12 @@ func (c *Connector) readCRMObjectsAPI(
 		core.GetRecords,
 		core.GetNextRecordsURL,
 		associations.CreateDataMarshallerWithAssociations(
-			ctx, c.associationsFiller, config.ObjectName, config.AssociatedObjects),
-		config.Fields,
+			ctx, c.associationsFiller, params.ObjectName, params.AssociatedObjects),
+		params.Fields,
 	)
 }
 
-func (c *Connector) buildReadURL(params common.ReadParams) (string, error) {
+func (c *Connector) buildCRMReadURL(params common.ReadParams) (string, error) {
 	if len(params.NextPage) != 0 {
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the NextPage URL, the fields are ignored.

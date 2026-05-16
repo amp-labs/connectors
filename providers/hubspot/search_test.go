@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -280,4 +281,183 @@ func TestSearchResultsLimitConstant(t *testing.T) {
 	if searchResultsLimit != 10000 {
 		t.Errorf("searchResultsLimit should be 10000, got %d", searchResultsLimit)
 	}
+}
+
+func TestReadUsingSearchAPI(t *testing.T) {
+	t.Parallel()
+
+	payloadContacts := testutils.DataFromFile(t, "read-via-search/contacts-payload.json")
+	responseContacts := testutils.DataFromFile(t, "read-via-search/contacts-response.json")
+	responseCampaigns := testutils.DataFromFile(t, "read-via-search/campaigns-response.json")
+
+	contactsOutput := &common.ReadResult{
+		Rows: 1,
+		Data: []common.ReadResultRow{{
+			Id: "220006890315",
+			Fields: map[string]any{
+				"email": "effieklestz@yahoo.com",
+			},
+			Raw: map[string]any{
+				"id": "220006890315",
+				"properties": map[string]any{
+					"company":          nil,
+					"createdate":       "2026-05-06T11:48:03.785Z",
+					"email":            "effieklestz@yahoo.com",
+					"firstname":        nil,
+					"hs_object_id":     "220006890315",
+					"lastmodifieddate": "2026-05-06T19:26:18.036Z",
+					"lastname":         nil,
+					"phone":            nil,
+					"website":          nil,
+				},
+				"createdAt": "2026-05-06T11:48:03.785Z",
+				"updatedAt": "2026-05-06T19:26:18.036Z",
+				"archived":  false,
+				"url":       "https://app.hubspot.com/contacts/44623425/record/0-1/220006890315",
+			},
+		}},
+		Done: true,
+	}
+
+	tests := []SearchViaRead{
+		{
+			Name: "Read contacts using search API without filters",
+			Input: SearchParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+				Since:      time.Date(2026, 5, 5, 23, 10, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/search"),
+					mockcond.BodyBytes(payloadContacts),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Expected: contactsOutput,
+		},
+		{
+			Name: "Read contacts using search API with filters and since",
+			Input: SearchParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+				Since:      time.Date(2026, 5, 5, 23, 10, 0, 0, time.UTC),
+				FilterGroups: []FilterGroup{{
+					Filters: []Filter{
+						BuildLastModifiedFilterGroup(&common.ReadParams{
+							ObjectName: "contacts",
+							Since:      time.Date(2026, 5, 5, 23, 10, 0, 0, time.UTC),
+						}),
+					},
+				}},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/search"),
+					mockcond.BodyBytes(payloadContacts),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Expected: contactsOutput,
+		},
+		{
+			Name: "Read contacts using search API with filters and no since",
+			Input: SearchParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+				FilterGroups: []FilterGroup{{
+					Filters: []Filter{
+						BuildLastModifiedFilterGroup(&common.ReadParams{
+							ObjectName: "contacts",
+							Since:      time.Date(2026, 5, 5, 23, 10, 0, 0, time.UTC),
+						}),
+					},
+				}},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/crm/v3/objects/contacts/search"),
+					mockcond.BodyBytes(payloadContacts),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Expected: contactsOutput,
+		},
+		{
+			Name: "Read marketing campaigns via Search",
+			Input: SearchParams{
+				ObjectName: "campaigns",
+				Fields:     connectors.Fields("hs_budget_items_sum_amount", "hs_name", "hs_notes"),
+				Since:      time.Date(2026, 5, 5, 23, 10, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/marketing/campaigns/2026-03"),
+					mockcond.BodyBytes(nil),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCampaigns),
+			}.Server(),
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id: "84f199fa-beb7-4dca-ad94-3d778cdce157",
+					Fields: map[string]any{
+						"hs_budget_items_sum_amount": "2.0",
+						"hs_name":                    "Nurture",
+						"hs_notes":                   "Creating campaign from the Dashboard",
+					},
+					Raw: map[string]any{
+						"id": "84f199fa-beb7-4dca-ad94-3d778cdce157",
+						"properties": map[string]any{
+							"hs_budget_items_sum_amount": "2.0",
+							"hs_name":                    "Nurture",
+							"hs_notes":                   "Creating campaign from the Dashboard",
+						},
+						"createdAt": "2026-05-05T23:41:20.330Z",
+						"updatedAt": "2026-05-05T23:45:04.200Z",
+						"businessUnits": []any{
+							map[string]any{"id": float64(0)},
+						},
+					},
+				}},
+				Done: true,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (*Connector, error) {
+				return constructTestConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
+type (
+	SearchViaReadType = testroutines.TestCase[SearchParams, *common.ReadResult]
+	SearchViaRead     SearchViaReadType
+)
+
+func (r SearchViaRead) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
+	t.Helper()
+
+	t.Cleanup(func() {
+		SearchViaReadType(r).Close()
+	})
+
+	conn := builder.Build(t, r.Name)
+	output, err := conn.ReadUsingSearchAPI(t.Context(), r.Input)
+
+	SearchViaReadType(r).Validate(t, err, output)
 }
