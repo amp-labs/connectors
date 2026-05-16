@@ -463,9 +463,13 @@ func newApolloConnector(
 func newGongConnector(
 	params common.ConnectorParams,
 ) (*gong.Connector, error) {
-	return gong.NewConnector(
-		gong.WithAuthenticatedClient(params.AuthenticatedClient),
-	)
+	var args []gong.Option
+
+	if len(params.Workspace) > 0 {
+		args = append(args, gong.WithWorkspace(params.Workspace))
+	}
+
+	return gong.NewConnector(append(args, gong.WithAuthenticatedClient(params.AuthenticatedClient))...)
 }
 
 func newAttioConnector(

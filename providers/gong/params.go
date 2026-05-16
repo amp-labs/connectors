@@ -37,6 +37,7 @@ func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unuse
 
 	return &common.ConnectorParams{
 		AuthenticatedClient: oldParams.Client.Caller.Client,
+		Workspace:           oldParams.APIBaseURL,
 	}, nil
 }
 
