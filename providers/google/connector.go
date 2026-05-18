@@ -155,6 +155,10 @@ func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
+	if c.Calendar != nil {
+		return c.Calendar.Subscribe(ctx, params)
+	}
+
 	if c.Mail != nil {
 		return c.Mail.Subscribe(ctx, params)
 	}
@@ -167,6 +171,10 @@ func (c *Connector) UpdateSubscription(
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
+	if c.Calendar != nil {
+		return c.Calendar.UpdateSubscription(ctx, params, previousResult)
+	}
+
 	if c.Mail != nil {
 		return c.Mail.UpdateSubscription(ctx, params, previousResult)
 	}
@@ -178,6 +186,10 @@ func (c *Connector) DeleteSubscription(
 	ctx context.Context,
 	previousResult common.SubscriptionResult,
 ) error {
+	if c.Calendar != nil {
+		return c.Calendar.DeleteSubscription(ctx, previousResult)
+	}
+
 	if c.Mail != nil {
 		return c.Mail.DeleteSubscription(ctx, previousResult)
 	}
@@ -186,6 +198,10 @@ func (c *Connector) DeleteSubscription(
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
+	if c.Calendar != nil {
+		return c.Calendar.EmptySubscriptionParams()
+	}
+
 	if c.Mail != nil {
 		return c.Mail.EmptySubscriptionParams()
 	}
@@ -194,6 +210,10 @@ func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 }
 
 func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
+	if c.Calendar != nil {
+		return c.Calendar.EmptySubscriptionResult()
+	}
+
 	if c.Mail != nil {
 		return c.Mail.EmptySubscriptionResult()
 	}
@@ -206,6 +226,10 @@ func (c *Connector) VerifyWebhookMessage(
 	request *common.WebhookRequest,
 	params *common.VerificationParams,
 ) (bool, error) {
+	if c.Calendar != nil {
+		return c.Calendar.VerifyWebhookMessage(ctx, request, params)
+	}
+
 	if c.Mail != nil {
 		return c.Mail.VerifyWebhookMessage(ctx, request, params)
 	}
@@ -219,6 +243,10 @@ func (c *Connector) GetRecordsByIds(ctx context.Context, // nolint: revive
 	fields []string,
 	associations []string,
 ) ([]common.ReadResultRow, error) {
+	if c.Calendar != nil {
+		return c.Calendar.GetRecordsByIds(ctx, objectName, recordIds, fields, associations)
+	}
+
 	if c.Mail != nil {
 		return c.Mail.GetRecordsByIds(ctx, objectName, recordIds, fields, associations)
 	}
@@ -231,12 +259,24 @@ func (c *Connector) RunScheduledMaintenance(
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
+	if c.Calendar != nil {
+		return c.Calendar.RunScheduledMaintenance(ctx, params, previousResult)
+	}
+
 	if c.Mail != nil {
 		return c.Mail.RunScheduledMaintenance(ctx, params, previousResult)
 	}
 
 	return nil, common.ErrNotImplemented
 }
+
+// Re-exports of Google Calendar subscribe types so external callers can use them
+// without importing the internal calendar package.
+type (
+	CalendarWatchRequest       = calendar.WatchRequest
+	CalendarWatchResponse      = calendar.WatchResponse
+	CalendarSubscriptionResult = calendar.CalendarSubscriptionResult
+)
 
 // Re-exports of Gmail history.list types so external callers can use them
 // without importing the internal mail package.
