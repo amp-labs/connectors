@@ -22,9 +22,9 @@ func main() {
 
 	conn := connTest.GetRampConnector(ctx)
 
-	sinceTime := time.Now().Add(-30 * 24 * time.Hour) // last 30 days
+	sinceTime := time.Now().Add(-1 * time.Hour) // last 30 days
 
-	slog.Info("Reading transactions (last 30 days)...")
+	slog.Info("Reading transactions (last hour)...")
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "transactions",
@@ -63,7 +63,7 @@ func main() {
 
 	utils.DumpJSON(res, os.Stdout)
 
-	slog.Info("Reading vendors (last 30 days)...")
+	slog.Info("Reading vendors (last hour)...")
 
 	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "vendors",
@@ -76,7 +76,7 @@ func main() {
 
 	utils.DumpJSON(res, os.Stdout)
 
-	slog.Info("Reading reimbursements (last 30 days)...")
+	slog.Info("Reading reimbursements (last hour)...")
 
 	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "reimbursements",

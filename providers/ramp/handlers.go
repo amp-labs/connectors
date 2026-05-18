@@ -16,6 +16,7 @@ import (
 const (
 	pageSizeKey = "page_size"
 	pageSize    = "100"
+	data        = "data"
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -52,7 +53,7 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(
 		response,
-		common.ExtractRecordsFromPath("data"),
+		common.ExtractRecordsFromPath(data),
 		makeNextRecordsURL,
 		common.GetMarshaledData,
 		params.Fields,
