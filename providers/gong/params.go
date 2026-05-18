@@ -94,58 +94,21 @@ func buildReadBody(config common.ReadParams) map[string]any {
 	}
 
 	if config.ObjectName == objectNameCalls {
-		body["contentSelector"] = callContentSelector(config.Fields)
+		body["contentSelector"] = callContentSelector()
 	}
 
 	return body
 }
 
-// callContentSelector returns the contentSelector used for POST /v2/calls/extensive.
-// parties and media are always requested. content, interaction, and collaboration are
-// requested only when the corresponding root field is in `fields`.
-//
-// Field selections arrive here already collapsed to root names by the server's
-// ExtractFieldForConnector, so we can't be more granular than per-section; when a
-// section is requested, every sub-flag in it is set to true.
+// callContentSelector returns the contentSelector used for POST /v2/calls/extensive, which
+// adds parties + media to the response.
 // https://app.gong.io/settings/api/documentation#post-/v2/calls/extensive
-func callContentSelector(fields datautils.StringSet) map[string]any {
-	exposed := map[string]any{
-		"parties": true,
-		"media":   true,
-	}
-
-	if fields.Has("content") {
-		exposed["content"] = map[string]any{
-			"structure":          true,
-			"topics":             true,
-			"trackers":           true,
-			"trackerOccurrences": true,
-			"pointsOfInterest":   true,
-			"brief":              true,
-			"outline":            true,
-			"highlights":         true,
-			"callOutcome":        true,
-			"keyPoints":          true,
-		}
-	}
-
-	if fields.Has("interaction") {
-		exposed["interaction"] = map[string]any{
-			"speakers":               true,
-			"video":                  true,
-			"personInteractionStats": true,
-			"questions":              true,
-		}
-	}
-
-	if fields.Has("collaboration") {
-		exposed["collaboration"] = map[string]any{
-			"publicComments": true,
-		}
-	}
-
+func callContentSelector() map[string]any {
 	return map[string]any{
-		"context":       "Extended",
-		"exposedFields": exposed,
+		"context": "Extended",
+		"exposedFields": map[string]any{
+			"parties": true,
+			"media":   true,
+		},
 	}
 }

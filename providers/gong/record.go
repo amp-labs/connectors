@@ -40,7 +40,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive,funlen
 	case objectNameCalls:
 		// getReadURL already appends /extensive for calls.
 		filterKey = "callIds"
-		contentSelector = callContentSelector(datautils.NewSetFromList(fields))
+		contentSelector = callContentSelector()
 		transformer = extractMetaDataFields
 	case objectNameUsers:
 		filterKey = "userIds"
