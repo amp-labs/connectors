@@ -1,596 +1,4462 @@
 {
   "modules": {
     "root": {
-      "id": "",
-      "path": "",
+      "id": "root",
+      "path": "/developer/v1",
       "objects": {
-        "transactions": {
-          "displayName": "Transactions",
-          "path": "developer/v1/transactions",
+        "accounting/accounts": {
+          "displayName": "Accounting Accounts",
+          "path": "/accounting/accounts",
           "responseKey": "data",
           "fields": {
-            "accounting_categories": "accounting_categories",
-            "accounting_date": "accounting_date",
-            "accounting_field_selections": "accounting_field_selections",
-            "amount": "amount",
-            "attendees": "attendees",
-            "card_holder": "card_holder",
-            "card_id": "card_id",
-            "card_present": "card_present",
-            "currency_code": "currency_code",
-            "decline_details": "decline_details",
-            "disputes": "disputes",
-            "entity_id": "entity_id",
-            "id": "id",
-            "limit_id": "limit_id",
-            "line_items": "line_items",
-            "memo": "memo",
-            "merchant_category_code": "merchant_category_code",
-            "merchant_category_code_description": "merchant_category_code_description",
-            "merchant_data": "merchant_data",
-            "merchant_descriptor": "merchant_descriptor",
-            "merchant_id": "merchant_id",
-            "merchant_location": "merchant_location",
-            "merchant_name": "merchant_name",
-            "minor_unit_conversion_rate": "minor_unit_conversion_rate",
-            "original_transaction_amount": "original_transaction_amount",
-            "policy_violations": "policy_violations",
-            "receipts": "receipts",
-            "requires_accounting_vendor_creation_to_sync": "requires_accounting_vendor_creation_to_sync",
-            "settlement_date": "settlement_date",
-            "sk_category_id": "sk_category_id",
-            "sk_category_name": "sk_category_name",
-            "spend_program_id": "spend_program_id",
-            "state": "state",
-            "statement_id": "statement_id",
-            "sync_status": "sync_status",
-            "synced_at": "synced_at",
-            "trip_id": "trip_id",
-            "trip_name": "trip_name",
-            "user_transaction_time": "user_transaction_time"
+            "accounting_connection_id": {
+              "displayName": "accounting_connection_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "classification": {
+              "displayName": "classification",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "ANY",
+                  "displayValue": "ANY"
+                },
+                {
+                  "value": "ASSET",
+                  "displayValue": "ASSET"
+                },
+                {
+                  "value": "CREDCARD",
+                  "displayValue": "CREDCARD"
+                },
+                {
+                  "value": "EQUITY",
+                  "displayValue": "EQUITY"
+                },
+                {
+                  "value": "EXPENSE",
+                  "displayValue": "EXPENSE"
+                },
+                {
+                  "value": "LIABILITY",
+                  "displayValue": "LIABILITY"
+                },
+                {
+                  "value": "REVENUE",
+                  "displayValue": "REVENUE"
+                },
+                {
+                  "value": "UNKNOWN",
+                  "displayValue": "UNKNOWN"
+                }
+              ]
+            },
+            "code": {
+              "displayName": "code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "gl_account_category_info": {
+              "displayName": "gl_account_category_info",
+              "valueType": "other"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_active": {
+              "displayName": "is_active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "provider_name": {
+              "displayName": "provider_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ramp_id": {
+              "displayName": "ramp_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
-        "users": {
-          "displayName": "Users",
-          "path": "developer/v1/users",
+        "accounting/fields": {
+          "displayName": "Accounting Fields",
+          "path": "/accounting/fields",
           "responseKey": "data",
           "fields": {
-            "business_id": "business_id",
-            "custom_fields": "custom_fields",
-            "department_id": "department_id",
-            "email": "email",
-            "employee_id": "employee_id",
-            "entity_id": "entity_id",
-            "first_name": "first_name",
-            "id": "id",
-            "is_manager": "is_manager",
-            "last_name": "last_name",
-            "location_id": "location_id",
-            "manager_id": "manager_id",
-            "phone": "phone",
-            "role": "role",
-            "scheduled_deactivation_date": "scheduled_deactivation_date",
-            "scheduled_invitation_date": "scheduled_invitation_date",
-            "status": "status"
+            "accounting_connection_id": {
+              "displayName": "accounting_connection_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "input_type": {
+              "displayName": "input_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "BOOLEAN",
+                  "displayValue": "BOOLEAN"
+                },
+                {
+                  "value": "DATE",
+                  "displayValue": "DATE"
+                },
+                {
+                  "value": "FREE_FORM_TEXT",
+                  "displayValue": "FREE_FORM_TEXT"
+                },
+                {
+                  "value": "SINGLE_CHOICE",
+                  "displayValue": "SINGLE_CHOICE"
+                }
+              ]
+            },
+            "is_active": {
+              "displayName": "is_active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_required_for": {
+              "displayName": "is_required_for",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "is_splittable": {
+              "displayName": "is_splittable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "provider_name": {
+              "displayName": "provider_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ramp_id": {
+              "displayName": "ramp_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
-        "cards": {
-          "displayName": "Cards",
-          "path": "developer/v1/cards",
+        "accounting/vendors": {
+          "displayName": "Accounting Vendors",
+          "path": "/accounting/vendors",
           "responseKey": "data",
           "fields": {
-            "card_program_id": "card_program_id",
-            "cardholder_id": "cardholder_id",
-            "cardholder_name": "cardholder_name",
-            "created_at": "created_at",
-            "display_name": "display_name",
-            "entity_id": "entity_id",
-            "expiration": "expiration",
-            "fulfillment": "fulfillment",
-            "has_program_overridden": "has_program_overridden",
-            "id": "id",
-            "is_physical": "is_physical",
-            "last_four": "last_four",
-            "spending_restrictions": "spending_restrictions",
-            "state": "state"
+            "accounting_connection_id": {
+              "displayName": "accounting_connection_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "code": {
+              "displayName": "code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_active": {
+              "displayName": "is_active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_synced": {
+              "displayName": "is_synced",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "provider_name": {
+              "displayName": "provider_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ramp_id": {
+              "displayName": "ramp_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendor_category_info": {
+              "displayName": "vendor_category_info",
+              "valueType": "other"
+            }
           }
         },
-        "departments": {
-          "displayName": "Departments",
-          "path": "developer/v1/departments",
+        "audit-logs/events": {
+          "displayName": "Audit Logs",
+          "path": "/audit-logs/events",
           "responseKey": "data",
           "fields": {
-            "id": "id",
-            "name": "name"
+            "actor_details": {
+              "displayName": "Actor Details",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "actor_id": {
+              "displayName": "Actor Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "actor_type": {
+              "displayName": "Actor Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "additional_details": {
+              "displayName": "Additional Details",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "event_details": {
+              "displayName": "Event Details",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "event_time": {
+              "displayName": "Event Time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "event_type": {
+              "displayName": "Event Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary_reference": {
+              "displayName": "Primary Reference",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "user_details": {
+              "displayName": "User Details",
+              "valueType": "other",
+              "providerType": "object"
+            }
           }
         },
-        "locations": {
-          "displayName": "Locations",
-          "path": "developer/v1/locations",
+        "bank-accounts": {
+          "displayName": "Bank Accounts",
+          "path": "/bank-accounts",
           "responseKey": "data",
           "fields": {
-            "entity_id": "entity_id",
-            "id": "id",
-            "name": "name"
-          }
-        },
-        "vendors": {
-          "displayName": "Vendors",
-          "path": "developer/v1/vendors",
-          "responseKey": "data",
-          "fields": {
-            "accounting_vendor_remote_id": "accounting_vendor_remote_id",
-            "address": "address",
-            "billing_frequency": "billing_frequency",
-            "contacts": "contacts",
-            "country": "country",
-            "created_at": "created_at",
-            "default_entity_id": "default_entity_id",
-            "default_payment_method": "default_payment_method",
-            "description": "description",
-            "external_vendor_id": "external_vendor_id",
-            "federal_tax_classification": "federal_tax_classification",
-            "id": "id",
-            "is_active": "is_active",
-            "is_deletable": "is_deletable",
-            "merchant_id": "merchant_id",
-            "name": "name",
-            "name_legal": "name_legal",
-            "sk_category_id": "sk_category_id",
-            "sk_category_name": "sk_category_name",
-            "state": "state",
-            "subsidiary": "subsidiary",
-            "tax_address": "tax_address",
-            "total_spend_all_time": "total_spend_all_time",
-            "total_spend_last_30_days": "total_spend_last_30_days",
-            "total_spend_last_365_days": "total_spend_last_365_days",
-            "total_spend_ytd": "total_spend_ytd",
-            "vendor_owner_id": "vendor_owner_id",
-            "vendor_type": "vendor_type"
-          }
-        },
-        "limits": {
-          "displayName": "Limits",
-          "path": "developer/v1/limits",
-          "responseKey": "data",
-          "fields": {
-            "balance": "balance",
-            "cards": "cards",
-            "created_at": "created_at",
-            "display_name": "display_name",
-            "entity_id": "entity_id",
-            "has_program_overridden": "has_program_overridden",
-            "id": "id",
-            "is_exempt_from_policy_agent": "is_exempt_from_policy_agent",
-            "is_shareable": "is_shareable",
-            "permitted_spend_types": "permitted_spend_types",
-            "restrictions": "restrictions",
-            "spend_program_id": "spend_program_id",
-            "state": "state",
-            "suspension": "suspension",
-            "users": "users"
-          }
-        },
-        "reimbursements": {
-          "displayName": "Reimbursements",
-          "path": "developer/v1/reimbursements",
-          "responseKey": "data",
-          "fields": {
-            "accounting_date": "accounting_date",
-            "accounting_field_selections": "accounting_field_selections",
-            "amount": "amount",
-            "approved_at": "approved_at",
-            "attendees": "attendees",
-            "created_at": "created_at",
-            "currency": "currency",
-            "direction": "direction",
-            "distance": "distance",
-            "employee_id": "employee_id",
-            "end_location": "end_location",
-            "entity_id": "entity_id",
-            "id": "id",
-            "line_items": "line_items",
-            "memo": "memo",
-            "merchant": "merchant",
-            "merchant_id": "merchant_id",
-            "original_reimbursement_amount": "original_reimbursement_amount",
-            "payee_amount": "payee_amount",
-            "payment_batch_id": "payment_batch_id",
-            "payment_id": "payment_id",
-            "payment_processed_at": "payment_processed_at",
-            "receipts": "receipts",
-            "spend_limit_id": "spend_limit_id",
-            "start_location": "start_location",
-            "state": "state",
-            "submitted_at": "submitted_at",
-            "sync_status": "sync_status",
-            "synced_at": "synced_at",
-            "trace_id": "trace_id",
-            "transaction_date": "transaction_date",
-            "trip_id": "trip_id",
-            "type": "type",
-            "updated_at": "updated_at",
-            "user_email": "user_email",
-            "user_full_name": "user_full_name",
-            "user_id": "user_id",
-            "waypoints": "waypoints"
+            "account_name": {
+              "displayName": "account_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "account_number_last_four": {
+              "displayName": "account_number_last_four",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "financial_institution_name": {
+              "displayName": "financial_institution_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "bills": {
           "displayName": "Bills",
-          "path": "developer/v1/bills",
+          "path": "/bills",
           "responseKey": "data",
           "fields": {
-            "accounting_date": "accounting_date",
-            "accounting_field_selections": "accounting_field_selections",
-            "amount": "amount",
-            "applied_vendor_credits": "applied_vendor_credits",
-            "approval_status": "approval_status",
-            "archived_at": "archived_at",
-            "bill_owner": "bill_owner",
-            "created_at": "created_at",
-            "deep_link_url": "deep_link_url",
-            "draft_bill_created_at": "draft_bill_created_at",
-            "draft_bill_id": "draft_bill_id",
-            "due_at": "due_at",
-            "enable_accounting_sync": "enable_accounting_sync",
-            "entity_id": "entity_id",
-            "fx_conversion_rate": "fx_conversion_rate",
-            "id": "id",
-            "inventory_line_items": "inventory_line_items",
-            "invoice_number": "invoice_number",
-            "invoice_urls": "invoice_urls",
-            "issued_at": "issued_at",
-            "item_receipt_ids": "item_receipt_ids",
-            "line_items": "line_items",
-            "memo": "memo",
-            "paid_at": "paid_at",
-            "payment": "payment",
-            "posting_date": "posting_date",
-            "purchase_order_id": "purchase_order_id",
-            "remote_id": "remote_id",
-            "status": "status",
-            "status_summary": "status_summary",
-            "sync_status": "sync_status",
-            "vendor": "vendor",
-            "vendor_contact_id": "vendor_contact_id",
-            "vendor_memo": "vendor_memo"
+            "accounting_date": {
+              "displayName": "accounting_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "accounting_field_selections": {
+              "displayName": "accounting_field_selections",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "amount": {
+              "displayName": "amount",
+              "valueType": "other"
+            },
+            "applied_vendor_credits": {
+              "displayName": "applied_vendor_credits",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "approval_status": {
+              "displayName": "approval_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "APPROVED",
+                  "displayValue": "APPROVED"
+                },
+                {
+                  "value": "INITIALIZED",
+                  "displayValue": "INITIALIZED"
+                },
+                {
+                  "value": "PENDING",
+                  "displayValue": "PENDING"
+                },
+                {
+                  "value": "REJECTED",
+                  "displayValue": "REJECTED"
+                },
+                {
+                  "value": "TERMINATED",
+                  "displayValue": "TERMINATED"
+                }
+              ]
+            },
+            "archived_at": {
+              "displayName": "archived_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bill_owner": {
+              "displayName": "bill_owner",
+              "valueType": "other"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deep_link_url": {
+              "displayName": "deep_link_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "draft_bill_created_at": {
+              "displayName": "draft_bill_created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "draft_bill_id": {
+              "displayName": "draft_bill_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "due_at": {
+              "displayName": "due_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enable_accounting_sync": {
+              "displayName": "enable_accounting_sync",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fx_conversion_rate": {
+              "displayName": "fx_conversion_rate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inventory_line_items": {
+              "displayName": "inventory_line_items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "invoice_number": {
+              "displayName": "invoice_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoice_urls": {
+              "displayName": "invoice_urls",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "issued_at": {
+              "displayName": "issued_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "item_receipt_ids": {
+              "displayName": "item_receipt_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "line_items": {
+              "displayName": "line_items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "memo": {
+              "displayName": "memo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "paid_at": {
+              "displayName": "paid_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payment": {
+              "displayName": "payment",
+              "valueType": "other"
+            },
+            "posting_date": {
+              "displayName": "posting_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "purchase_order_id": {
+              "displayName": "purchase_order_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "remote_id": {
+              "displayName": "remote_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "OPEN",
+                  "displayValue": "OPEN"
+                },
+                {
+                  "value": "PAID",
+                  "displayValue": "PAID"
+                }
+              ]
+            },
+            "status_summary": {
+              "displayName": "status_summary",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "APPROVAL_PENDING",
+                  "displayValue": "APPROVAL_PENDING"
+                },
+                {
+                  "value": "APPROVAL_REJECTED",
+                  "displayValue": "APPROVAL_REJECTED"
+                },
+                {
+                  "value": "ARCHIVED",
+                  "displayValue": "ARCHIVED"
+                },
+                {
+                  "value": "AWAITING_RELEASE",
+                  "displayValue": "AWAITING_RELEASE"
+                },
+                {
+                  "value": "BLOCKED",
+                  "displayValue": "BLOCKED"
+                },
+                {
+                  "value": "HELD_BY_PROVIDER",
+                  "displayValue": "HELD_BY_PROVIDER"
+                },
+                {
+                  "value": "ON_HOLD",
+                  "displayValue": "ON_HOLD"
+                },
+                {
+                  "value": "PAYMENT_COMPLETED",
+                  "displayValue": "PAYMENT_COMPLETED"
+                },
+                {
+                  "value": "PAYMENT_DETAILS_MISSING",
+                  "displayValue": "PAYMENT_DETAILS_MISSING"
+                },
+                {
+                  "value": "PAYMENT_ERROR",
+                  "displayValue": "PAYMENT_ERROR"
+                },
+                {
+                  "value": "PAYMENT_NOT_INSTRUCTED",
+                  "displayValue": "PAYMENT_NOT_INSTRUCTED"
+                },
+                {
+                  "value": "PAYMENT_PROCESSING",
+                  "displayValue": "PAYMENT_PROCESSING"
+                },
+                {
+                  "value": "PAYMENT_READY",
+                  "displayValue": "PAYMENT_READY"
+                },
+                {
+                  "value": "PAYMENT_SCHEDULED",
+                  "displayValue": "PAYMENT_SCHEDULED"
+                },
+                {
+                  "value": "PENDING_VENDOR_APPROVAL",
+                  "displayValue": "PENDING_VENDOR_APPROVAL"
+                },
+                {
+                  "value": "WAITING_FOR_TRANSACTION_MATCH",
+                  "displayValue": "WAITING_FOR_TRANSACTION_MATCH"
+                },
+                {
+                  "value": "WAITING_FOR_VENDOR",
+                  "displayValue": "WAITING_FOR_VENDOR"
+                }
+              ]
+            },
+            "sync_status": {
+              "displayName": "sync_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "BILL_AND_PAYMENT_SYNCED",
+                  "displayValue": "BILL_AND_PAYMENT_SYNCED"
+                },
+                {
+                  "value": "BILL_SYNCED",
+                  "displayValue": "BILL_SYNCED"
+                },
+                {
+                  "value": "NOT_SYNCED",
+                  "displayValue": "NOT_SYNCED"
+                }
+              ]
+            },
+            "vendor": {
+              "displayName": "vendor",
+              "valueType": "other"
+            },
+            "vendor_contact_id": {
+              "displayName": "vendor_contact_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendor_memo": {
+              "displayName": "vendor_memo",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
-        "bills_drafts": {
+        "bills/drafts": {
           "displayName": "Bill Drafts",
-          "path": "developer/v1/bills/drafts",
+          "path": "/bills/drafts",
           "responseKey": "data",
           "fields": {
-            "accounting_date": "accounting_date",
-            "accounting_field_selections": "accounting_field_selections",
-            "amount": "amount",
-            "bill_owner": "bill_owner",
-            "created_at": "created_at",
-            "due_at": "due_at",
-            "entity_id": "entity_id",
-            "id": "id",
-            "inventory_line_items": "inventory_line_items",
-            "invoice_number": "invoice_number",
-            "invoice_urls": "invoice_urls",
-            "issued_at": "issued_at",
-            "line_items": "line_items",
-            "memo": "memo",
-            "posting_date": "posting_date",
-            "remote_id": "remote_id",
-            "status": "status",
-            "sync_status": "sync_status",
-            "vendor": "vendor",
-            "vendor_memo": "vendor_memo"
+            "accounting_date": {
+              "displayName": "accounting_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "accounting_field_selections": {
+              "displayName": "accounting_field_selections",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "amount": {
+              "displayName": "amount",
+              "valueType": "other"
+            },
+            "bill_owner": {
+              "displayName": "bill_owner",
+              "valueType": "other"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "due_at": {
+              "displayName": "due_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inventory_line_items": {
+              "displayName": "inventory_line_items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "invoice_number": {
+              "displayName": "invoice_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoice_urls": {
+              "displayName": "invoice_urls",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "issued_at": {
+              "displayName": "issued_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "line_items": {
+              "displayName": "line_items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "memo": {
+              "displayName": "memo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "posting_date": {
+              "displayName": "posting_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "remote_id": {
+              "displayName": "remote_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other"
+            },
+            "sync_status": {
+              "displayName": "sync_status",
+              "valueType": "other"
+            },
+            "vendor": {
+              "displayName": "vendor",
+              "valueType": "other"
+            },
+            "vendor_memo": {
+              "displayName": "vendor_memo",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
-        "receipts": {
-          "displayName": "Receipts",
-          "path": "developer/v1/receipts",
+        "cards": {
+          "displayName": "Cards",
+          "path": "/cards",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "id": "id",
-            "receipt_url": "receipt_url",
-            "transaction_id": "transaction_id",
-            "user_id": "user_id"
-          }
-        },
-        "spend_programs": {
-          "displayName": "Spend Programs",
-          "path": "developer/v1/spend-programs",
-          "responseKey": "data",
-          "fields": {
-            "description": "description",
-            "display_name": "display_name",
-            "icon": "icon",
-            "id": "id",
-            "is_shareable": "is_shareable",
-            "issue_physical_card_if_needed": "issue_physical_card_if_needed",
-            "permitted_spend_types": "permitted_spend_types",
-            "restrictions": "restrictions"
-          }
-        },
-        "statements": {
-          "displayName": "Statements",
-          "path": "developer/v1/statements",
-          "responseKey": "data",
-          "fields": {
-            "balance_sections": "balance_sections",
-            "charges": "charges",
-            "credits": "credits",
-            "end_date": "end_date",
-            "ending_balance": "ending_balance",
-            "id": "id",
-            "opening_balance": "opening_balance",
-            "payments": "payments",
-            "preceding_statement_id": "preceding_statement_id",
-            "start_date": "start_date",
-            "statement_lines": "statement_lines",
-            "statement_url": "statement_url"
-          }
-        },
-        "transfers": {
-          "displayName": "Transfers",
-          "path": "developer/v1/transfers",
-          "responseKey": "data",
-          "fields": {
-            "amount": "amount",
-            "bank_account_id": "bank_account_id",
-            "created_at": "created_at",
-            "entity_id": "entity_id",
-            "id": "id",
-            "payment_id": "payment_id",
-            "status": "status",
-            "sync_status": "sync_status"
+            "card_program_id": {
+              "displayName": "card_program_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cardholder_id": {
+              "displayName": "cardholder_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cardholder_name": {
+              "displayName": "cardholder_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expiration": {
+              "displayName": "expiration",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fulfillment": {
+              "displayName": "fulfillment",
+              "valueType": "other"
+            },
+            "has_program_overridden": {
+              "displayName": "has_program_overridden",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_physical": {
+              "displayName": "is_physical",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "last_four": {
+              "displayName": "last_four",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spending_restrictions": {
+              "displayName": "spending_restrictions",
+              "valueType": "other"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "ACTIVE",
+                  "displayValue": "ACTIVE"
+                },
+                {
+                  "value": "CHIP_LOCKED",
+                  "displayValue": "CHIP_LOCKED"
+                },
+                {
+                  "value": "SUSPENDED",
+                  "displayValue": "SUSPENDED"
+                },
+                {
+                  "value": "TERMINATED",
+                  "displayValue": "TERMINATED"
+                },
+                {
+                  "value": "UNACTIVATED",
+                  "displayValue": "UNACTIVATED"
+                }
+              ]
+            }
           }
         },
         "cashbacks": {
           "displayName": "Cashbacks",
-          "path": "developer/v1/cashbacks",
+          "path": "/cashbacks",
           "responseKey": "data",
           "fields": {
-            "amount": "amount",
-            "created_at": "created_at",
-            "entity_id": "entity_id",
-            "id": "id",
-            "sync_status": "sync_status"
+            "amount": {
+              "displayName": "amount",
+              "valueType": "other"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sync_status": {
+              "displayName": "sync_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "NOT_SYNC_READY",
+                  "displayValue": "NOT_SYNC_READY"
+                },
+                {
+                  "value": "SYNCED",
+                  "displayValue": "SYNCED"
+                },
+                {
+                  "value": "SYNC_READY",
+                  "displayValue": "SYNC_READY"
+                }
+              ]
+            }
           }
         },
-        "merchants": {
-          "displayName": "Merchants",
-          "path": "developer/v1/merchants",
+        "departments": {
+          "displayName": "Departments",
+          "path": "/departments",
           "responseKey": "data",
           "fields": {
-            "id": "id",
-            "is_auto_approved": "is_auto_approved",
-            "merchant_name": "merchant_name",
-            "sk_category_name": "sk_category_name"
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "entities": {
           "displayName": "Entities",
-          "path": "developer/v1/entities",
+          "path": "/entities",
           "responseKey": "data",
           "fields": {
-            "accounts": "accounts",
-            "connected_subsidiary": "connected_subsidiary",
-            "currency": "currency",
-            "entity_name": "entity_name",
-            "id": "id",
-            "is_primary": "is_primary",
-            "location_ids": "location_ids",
-            "payment_accounts": "payment_accounts"
+            "accounts": {
+              "displayName": "accounts",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "connected_subsidiary": {
+              "displayName": "connected_subsidiary",
+              "valueType": "other"
+            },
+            "currency": {
+              "displayName": "currency",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "AED",
+                  "displayValue": "AED"
+                },
+                {
+                  "value": "AFN",
+                  "displayValue": "AFN"
+                },
+                {
+                  "value": "ALL",
+                  "displayValue": "ALL"
+                },
+                {
+                  "value": "AMD",
+                  "displayValue": "AMD"
+                },
+                {
+                  "value": "ANG",
+                  "displayValue": "ANG"
+                },
+                {
+                  "value": "AOA",
+                  "displayValue": "AOA"
+                },
+                {
+                  "value": "ARS",
+                  "displayValue": "ARS"
+                },
+                {
+                  "value": "AUD",
+                  "displayValue": "AUD"
+                },
+                {
+                  "value": "AWG",
+                  "displayValue": "AWG"
+                },
+                {
+                  "value": "AZN",
+                  "displayValue": "AZN"
+                },
+                {
+                  "value": "BAM",
+                  "displayValue": "BAM"
+                },
+                {
+                  "value": "BBD",
+                  "displayValue": "BBD"
+                },
+                {
+                  "value": "BDT",
+                  "displayValue": "BDT"
+                },
+                {
+                  "value": "BGN",
+                  "displayValue": "BGN"
+                },
+                {
+                  "value": "BHD",
+                  "displayValue": "BHD"
+                },
+                {
+                  "value": "BIF",
+                  "displayValue": "BIF"
+                },
+                {
+                  "value": "BMD",
+                  "displayValue": "BMD"
+                },
+                {
+                  "value": "BND",
+                  "displayValue": "BND"
+                },
+                {
+                  "value": "BOB",
+                  "displayValue": "BOB"
+                },
+                {
+                  "value": "BOV",
+                  "displayValue": "BOV"
+                },
+                {
+                  "value": "BRL",
+                  "displayValue": "BRL"
+                },
+                {
+                  "value": "BSD",
+                  "displayValue": "BSD"
+                },
+                {
+                  "value": "BTN",
+                  "displayValue": "BTN"
+                },
+                {
+                  "value": "BWP",
+                  "displayValue": "BWP"
+                },
+                {
+                  "value": "BYN",
+                  "displayValue": "BYN"
+                },
+                {
+                  "value": "BZD",
+                  "displayValue": "BZD"
+                },
+                {
+                  "value": "CAD",
+                  "displayValue": "CAD"
+                },
+                {
+                  "value": "CDF",
+                  "displayValue": "CDF"
+                },
+                {
+                  "value": "CHE",
+                  "displayValue": "CHE"
+                },
+                {
+                  "value": "CHF",
+                  "displayValue": "CHF"
+                },
+                {
+                  "value": "CHW",
+                  "displayValue": "CHW"
+                },
+                {
+                  "value": "CLF",
+                  "displayValue": "CLF"
+                },
+                {
+                  "value": "CLP",
+                  "displayValue": "CLP"
+                },
+                {
+                  "value": "CNH",
+                  "displayValue": "CNH"
+                },
+                {
+                  "value": "CNY",
+                  "displayValue": "CNY"
+                },
+                {
+                  "value": "COP",
+                  "displayValue": "COP"
+                },
+                {
+                  "value": "COU",
+                  "displayValue": "COU"
+                },
+                {
+                  "value": "CRC",
+                  "displayValue": "CRC"
+                },
+                {
+                  "value": "CUC",
+                  "displayValue": "CUC"
+                },
+                {
+                  "value": "CUP",
+                  "displayValue": "CUP"
+                },
+                {
+                  "value": "CVE",
+                  "displayValue": "CVE"
+                },
+                {
+                  "value": "CZK",
+                  "displayValue": "CZK"
+                },
+                {
+                  "value": "DJF",
+                  "displayValue": "DJF"
+                },
+                {
+                  "value": "DKK",
+                  "displayValue": "DKK"
+                },
+                {
+                  "value": "DOP",
+                  "displayValue": "DOP"
+                },
+                {
+                  "value": "DZD",
+                  "displayValue": "DZD"
+                },
+                {
+                  "value": "EGP",
+                  "displayValue": "EGP"
+                },
+                {
+                  "value": "ERN",
+                  "displayValue": "ERN"
+                },
+                {
+                  "value": "ETB",
+                  "displayValue": "ETB"
+                },
+                {
+                  "value": "EUR",
+                  "displayValue": "EUR"
+                },
+                {
+                  "value": "EURC",
+                  "displayValue": "EURC"
+                },
+                {
+                  "value": "FJD",
+                  "displayValue": "FJD"
+                },
+                {
+                  "value": "FKP",
+                  "displayValue": "FKP"
+                },
+                {
+                  "value": "GBP",
+                  "displayValue": "GBP"
+                },
+                {
+                  "value": "GEL",
+                  "displayValue": "GEL"
+                },
+                {
+                  "value": "GHS",
+                  "displayValue": "GHS"
+                },
+                {
+                  "value": "GIP",
+                  "displayValue": "GIP"
+                },
+                {
+                  "value": "GMD",
+                  "displayValue": "GMD"
+                },
+                {
+                  "value": "GNF",
+                  "displayValue": "GNF"
+                },
+                {
+                  "value": "GTQ",
+                  "displayValue": "GTQ"
+                },
+                {
+                  "value": "GYD",
+                  "displayValue": "GYD"
+                },
+                {
+                  "value": "HKD",
+                  "displayValue": "HKD"
+                },
+                {
+                  "value": "HNL",
+                  "displayValue": "HNL"
+                },
+                {
+                  "value": "HRK",
+                  "displayValue": "HRK"
+                },
+                {
+                  "value": "HTG",
+                  "displayValue": "HTG"
+                },
+                {
+                  "value": "HUF",
+                  "displayValue": "HUF"
+                },
+                {
+                  "value": "IDR",
+                  "displayValue": "IDR"
+                },
+                {
+                  "value": "ILS",
+                  "displayValue": "ILS"
+                },
+                {
+                  "value": "INR",
+                  "displayValue": "INR"
+                },
+                {
+                  "value": "IQD",
+                  "displayValue": "IQD"
+                },
+                {
+                  "value": "IRR",
+                  "displayValue": "IRR"
+                },
+                {
+                  "value": "ISK",
+                  "displayValue": "ISK"
+                },
+                {
+                  "value": "JMD",
+                  "displayValue": "JMD"
+                },
+                {
+                  "value": "JOD",
+                  "displayValue": "JOD"
+                },
+                {
+                  "value": "JPY",
+                  "displayValue": "JPY"
+                },
+                {
+                  "value": "KES",
+                  "displayValue": "KES"
+                },
+                {
+                  "value": "KGS",
+                  "displayValue": "KGS"
+                },
+                {
+                  "value": "KHR",
+                  "displayValue": "KHR"
+                },
+                {
+                  "value": "KMF",
+                  "displayValue": "KMF"
+                },
+                {
+                  "value": "KPW",
+                  "displayValue": "KPW"
+                },
+                {
+                  "value": "KRW",
+                  "displayValue": "KRW"
+                },
+                {
+                  "value": "KWD",
+                  "displayValue": "KWD"
+                },
+                {
+                  "value": "KYD",
+                  "displayValue": "KYD"
+                },
+                {
+                  "value": "KZT",
+                  "displayValue": "KZT"
+                },
+                {
+                  "value": "LAK",
+                  "displayValue": "LAK"
+                },
+                {
+                  "value": "LBP",
+                  "displayValue": "LBP"
+                },
+                {
+                  "value": "LKR",
+                  "displayValue": "LKR"
+                },
+                {
+                  "value": "LRD",
+                  "displayValue": "LRD"
+                },
+                {
+                  "value": "LSL",
+                  "displayValue": "LSL"
+                },
+                {
+                  "value": "LYD",
+                  "displayValue": "LYD"
+                },
+                {
+                  "value": "MAD",
+                  "displayValue": "MAD"
+                },
+                {
+                  "value": "MDL",
+                  "displayValue": "MDL"
+                },
+                {
+                  "value": "MGA",
+                  "displayValue": "MGA"
+                },
+                {
+                  "value": "MKD",
+                  "displayValue": "MKD"
+                },
+                {
+                  "value": "MMK",
+                  "displayValue": "MMK"
+                },
+                {
+                  "value": "MNT",
+                  "displayValue": "MNT"
+                },
+                {
+                  "value": "MOP",
+                  "displayValue": "MOP"
+                },
+                {
+                  "value": "MRU",
+                  "displayValue": "MRU"
+                },
+                {
+                  "value": "MUR",
+                  "displayValue": "MUR"
+                },
+                {
+                  "value": "MVR",
+                  "displayValue": "MVR"
+                },
+                {
+                  "value": "MWK",
+                  "displayValue": "MWK"
+                },
+                {
+                  "value": "MXN",
+                  "displayValue": "MXN"
+                },
+                {
+                  "value": "MXV",
+                  "displayValue": "MXV"
+                },
+                {
+                  "value": "MYR",
+                  "displayValue": "MYR"
+                },
+                {
+                  "value": "MZN",
+                  "displayValue": "MZN"
+                },
+                {
+                  "value": "NAD",
+                  "displayValue": "NAD"
+                },
+                {
+                  "value": "NGN",
+                  "displayValue": "NGN"
+                },
+                {
+                  "value": "NIO",
+                  "displayValue": "NIO"
+                },
+                {
+                  "value": "NOK",
+                  "displayValue": "NOK"
+                },
+                {
+                  "value": "NPR",
+                  "displayValue": "NPR"
+                },
+                {
+                  "value": "NZD",
+                  "displayValue": "NZD"
+                },
+                {
+                  "value": "OMR",
+                  "displayValue": "OMR"
+                },
+                {
+                  "value": "PAB",
+                  "displayValue": "PAB"
+                },
+                {
+                  "value": "PEN",
+                  "displayValue": "PEN"
+                },
+                {
+                  "value": "PGK",
+                  "displayValue": "PGK"
+                },
+                {
+                  "value": "PHP",
+                  "displayValue": "PHP"
+                },
+                {
+                  "value": "PKR",
+                  "displayValue": "PKR"
+                },
+                {
+                  "value": "PLN",
+                  "displayValue": "PLN"
+                },
+                {
+                  "value": "PYG",
+                  "displayValue": "PYG"
+                },
+                {
+                  "value": "QAR",
+                  "displayValue": "QAR"
+                },
+                {
+                  "value": "RON",
+                  "displayValue": "RON"
+                },
+                {
+                  "value": "RSD",
+                  "displayValue": "RSD"
+                },
+                {
+                  "value": "RUB",
+                  "displayValue": "RUB"
+                },
+                {
+                  "value": "RWF",
+                  "displayValue": "RWF"
+                },
+                {
+                  "value": "SAR",
+                  "displayValue": "SAR"
+                },
+                {
+                  "value": "SBD",
+                  "displayValue": "SBD"
+                },
+                {
+                  "value": "SCR",
+                  "displayValue": "SCR"
+                },
+                {
+                  "value": "SDG",
+                  "displayValue": "SDG"
+                },
+                {
+                  "value": "SEK",
+                  "displayValue": "SEK"
+                },
+                {
+                  "value": "SGD",
+                  "displayValue": "SGD"
+                },
+                {
+                  "value": "SHP",
+                  "displayValue": "SHP"
+                },
+                {
+                  "value": "SLE",
+                  "displayValue": "SLE"
+                },
+                {
+                  "value": "SLL",
+                  "displayValue": "SLL"
+                },
+                {
+                  "value": "SOS",
+                  "displayValue": "SOS"
+                },
+                {
+                  "value": "SRD",
+                  "displayValue": "SRD"
+                },
+                {
+                  "value": "SSP",
+                  "displayValue": "SSP"
+                },
+                {
+                  "value": "STN",
+                  "displayValue": "STN"
+                },
+                {
+                  "value": "SVC",
+                  "displayValue": "SVC"
+                },
+                {
+                  "value": "SYP",
+                  "displayValue": "SYP"
+                },
+                {
+                  "value": "SZL",
+                  "displayValue": "SZL"
+                },
+                {
+                  "value": "THB",
+                  "displayValue": "THB"
+                },
+                {
+                  "value": "TJS",
+                  "displayValue": "TJS"
+                },
+                {
+                  "value": "TMT",
+                  "displayValue": "TMT"
+                },
+                {
+                  "value": "TND",
+                  "displayValue": "TND"
+                },
+                {
+                  "value": "TOP",
+                  "displayValue": "TOP"
+                },
+                {
+                  "value": "TRY",
+                  "displayValue": "TRY"
+                },
+                {
+                  "value": "TTD",
+                  "displayValue": "TTD"
+                },
+                {
+                  "value": "TWD",
+                  "displayValue": "TWD"
+                },
+                {
+                  "value": "TZS",
+                  "displayValue": "TZS"
+                },
+                {
+                  "value": "UAH",
+                  "displayValue": "UAH"
+                },
+                {
+                  "value": "UGX",
+                  "displayValue": "UGX"
+                },
+                {
+                  "value": "USD",
+                  "displayValue": "USD"
+                },
+                {
+                  "value": "USDB",
+                  "displayValue": "USDB"
+                },
+                {
+                  "value": "USDC",
+                  "displayValue": "USDC"
+                },
+                {
+                  "value": "USDT",
+                  "displayValue": "USDT"
+                },
+                {
+                  "value": "USN",
+                  "displayValue": "USN"
+                },
+                {
+                  "value": "UYI",
+                  "displayValue": "UYI"
+                },
+                {
+                  "value": "UYU",
+                  "displayValue": "UYU"
+                },
+                {
+                  "value": "UYW",
+                  "displayValue": "UYW"
+                },
+                {
+                  "value": "UZS",
+                  "displayValue": "UZS"
+                },
+                {
+                  "value": "VED",
+                  "displayValue": "VED"
+                },
+                {
+                  "value": "VES",
+                  "displayValue": "VES"
+                },
+                {
+                  "value": "VND",
+                  "displayValue": "VND"
+                },
+                {
+                  "value": "VUV",
+                  "displayValue": "VUV"
+                },
+                {
+                  "value": "WST",
+                  "displayValue": "WST"
+                },
+                {
+                  "value": "XAD",
+                  "displayValue": "XAD"
+                },
+                {
+                  "value": "XAF",
+                  "displayValue": "XAF"
+                },
+                {
+                  "value": "XAG",
+                  "displayValue": "XAG"
+                },
+                {
+                  "value": "XAU",
+                  "displayValue": "XAU"
+                },
+                {
+                  "value": "XBA",
+                  "displayValue": "XBA"
+                },
+                {
+                  "value": "XBB",
+                  "displayValue": "XBB"
+                },
+                {
+                  "value": "XBC",
+                  "displayValue": "XBC"
+                },
+                {
+                  "value": "XBD",
+                  "displayValue": "XBD"
+                },
+                {
+                  "value": "XCD",
+                  "displayValue": "XCD"
+                },
+                {
+                  "value": "XCG",
+                  "displayValue": "XCG"
+                },
+                {
+                  "value": "XDR",
+                  "displayValue": "XDR"
+                },
+                {
+                  "value": "XOF",
+                  "displayValue": "XOF"
+                },
+                {
+                  "value": "XPD",
+                  "displayValue": "XPD"
+                },
+                {
+                  "value": "XPF",
+                  "displayValue": "XPF"
+                },
+                {
+                  "value": "XPT",
+                  "displayValue": "XPT"
+                },
+                {
+                  "value": "XSU",
+                  "displayValue": "XSU"
+                },
+                {
+                  "value": "XTS",
+                  "displayValue": "XTS"
+                },
+                {
+                  "value": "XUA",
+                  "displayValue": "XUA"
+                },
+                {
+                  "value": "XXX",
+                  "displayValue": "XXX"
+                },
+                {
+                  "value": "YER",
+                  "displayValue": "YER"
+                },
+                {
+                  "value": "ZAR",
+                  "displayValue": "ZAR"
+                },
+                {
+                  "value": "ZMW",
+                  "displayValue": "ZMW"
+                },
+                {
+                  "value": "ZWG",
+                  "displayValue": "ZWG"
+                },
+                {
+                  "value": "ZWL",
+                  "displayValue": "ZWL"
+                }
+              ]
+            },
+            "entity_name": {
+              "displayName": "entity_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_primary": {
+              "displayName": "is_primary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "location_ids": {
+              "displayName": "location_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "payment_accounts": {
+              "displayName": "payment_accounts",
+              "valueType": "other",
+              "providerType": "array"
+            }
           }
         },
-        "bank_accounts": {
-          "displayName": "Bank Accounts",
-          "path": "developer/v1/bank-accounts",
-          "responseKey": "data",
-          "fields": {
-            "account_name": "account_name",
-            "account_number_last_four": "account_number_last_four",
-            "financial_institution_name": "financial_institution_name",
-            "id": "id"
-          }
-        },
-        "purchase_orders": {
-          "displayName": "Purchase Orders",
-          "path": "developer/v1/purchase-orders",
-          "responseKey": "data",
-          "fields": {
-            "accounting_field_selections": "accounting_field_selections",
-            "amount": "amount",
-            "archived_at": "archived_at",
-            "bill_ids": "bill_ids",
-            "billing_status": "billing_status",
-            "created_at": "created_at",
-            "creation_source": "creation_source",
-            "entity_id": "entity_id",
-            "external_id": "external_id",
-            "id": "id",
-            "item_receipt_ids": "item_receipt_ids",
-            "line_items": "line_items",
-            "memo": "memo",
-            "name": "name",
-            "net_payment_terms": "net_payment_terms",
-            "owner_id": "owner_id",
-            "promise_date": "promise_date",
-            "purchase_order_number": "purchase_order_number",
-            "ramp_url": "ramp_url",
-            "receipt_status": "receipt_status",
-            "remote_id": "remote_id",
-            "ship_to_address": "ship_to_address",
-            "ship_to_company_name": "ship_to_company_name",
-            "shipping_contact_email": "shipping_contact_email",
-            "shipping_contact_first_name": "shipping_contact_first_name",
-            "shipping_contact_last_name": "shipping_contact_last_name",
-            "shipping_contact_phone_number": "shipping_contact_phone_number",
-            "spend_end_date": "spend_end_date",
-            "spend_program_id": "spend_program_id",
-            "spend_request_id": "spend_request_id",
-            "spend_start_date": "spend_start_date",
-            "spend_total_amount": "spend_total_amount",
-            "three_way_match_enabled": "three_way_match_enabled",
-            "transaction_ids": "transaction_ids",
-            "user_id": "user_id",
-            "vendor_id": "vendor_id"
-          }
-        },
-        "item_receipts": {
+        "item-receipts": {
           "displayName": "Item Receipts",
-          "path": "developer/v1/item-receipts",
+          "path": "/item-receipts",
           "responseKey": "data",
           "fields": {
-            "archived_at": "archived_at",
-            "created_at": "created_at",
-            "documents": "documents",
-            "id": "id",
-            "item_receipt_number": "item_receipt_number",
-            "line_items": "line_items",
-            "memo": "memo",
-            "purchase_order_id": "purchase_order_id",
-            "received_at": "received_at",
-            "remote_id": "remote_id"
+            "archived_at": {
+              "displayName": "archived_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "documents": {
+              "displayName": "documents",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "item_receipt_number": {
+              "displayName": "item_receipt_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "line_items": {
+              "displayName": "line_items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "memo": {
+              "displayName": "memo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "purchase_order_id": {
+              "displayName": "purchase_order_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "received_at": {
+              "displayName": "received_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "remote_id": {
+              "displayName": "remote_id",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
-        "repayments": {
-          "displayName": "Repayments",
-          "path": "developer/v1/repayments",
+        "limits": {
+          "displayName": "Limits",
+          "path": "/limits",
           "responseKey": "data",
           "fields": {
-            "entity_id": "entity_id",
-            "funding_method": "funding_method",
-            "id": "id",
-            "original_transaction_id": "original_transaction_id",
-            "repaid_at": "repaid_at",
-            "repayment_amount": "repayment_amount",
-            "status": "status",
-            "user_id": "user_id",
-            "user_signature": "user_signature"
+            "balance": {
+              "displayName": "balance",
+              "valueType": "other"
+            },
+            "cards": {
+              "displayName": "cards",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "has_program_overridden": {
+              "displayName": "has_program_overridden",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_exempt_from_policy_agent": {
+              "displayName": "is_exempt_from_policy_agent",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_shareable": {
+              "displayName": "is_shareable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "permitted_spend_types": {
+              "displayName": "permitted_spend_types",
+              "valueType": "other"
+            },
+            "restrictions": {
+              "displayName": "restrictions",
+              "valueType": "other"
+            },
+            "spend_program_id": {
+              "displayName": "spend_program_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "ACTIVE",
+                  "displayValue": "ACTIVE"
+                },
+                {
+                  "value": "ARCHIVED",
+                  "displayValue": "ARCHIVED"
+                },
+                {
+                  "value": "SUSPENDED",
+                  "displayValue": "SUSPENDED"
+                },
+                {
+                  "value": "TERMINATED",
+                  "displayValue": "TERMINATED"
+                }
+              ]
+            },
+            "suspension": {
+              "displayName": "suspension",
+              "valueType": "other"
+            },
+            "users": {
+              "displayName": "users",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "locations": {
+          "displayName": "Locations",
+          "path": "/locations",
+          "responseKey": "data",
+          "fields": {
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "memos": {
           "displayName": "Memos",
-          "path": "developer/v1/memos",
+          "path": "/memos",
           "responseKey": "data",
           "fields": {
-            "id": "id",
-            "memo": "memo"
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "memo": {
+              "displayName": "memo",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "merchants": {
+          "displayName": "Merchants",
+          "path": "/merchants",
+          "responseKey": "data",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_auto_approved": {
+              "displayName": "is_auto_approved",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "merchant_name": {
+              "displayName": "merchant_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sk_category_name": {
+              "displayName": "sk_category_name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "purchase-orders": {
+          "displayName": "Purchase Orders",
+          "path": "/purchase-orders",
+          "responseKey": "data",
+          "fields": {
+            "accounting_field_selections": {
+              "displayName": "accounting_field_selections",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "amount": {
+              "displayName": "amount",
+              "valueType": "other"
+            },
+            "archived_at": {
+              "displayName": "archived_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bill_ids": {
+              "displayName": "bill_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "billing_status": {
+              "displayName": "billing_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "CLOSED",
+                  "displayValue": "CLOSED"
+                },
+                {
+                  "value": "DELETED",
+                  "displayValue": "DELETED"
+                },
+                {
+                  "value": "FULLY_BILLED",
+                  "displayValue": "FULLY_BILLED"
+                },
+                {
+                  "value": "OPEN",
+                  "displayValue": "OPEN"
+                },
+                {
+                  "value": "PARTIALLY_BILLED",
+                  "displayValue": "PARTIALLY_BILLED"
+                }
+              ]
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "creation_source": {
+              "displayName": "creation_source",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "ACCOUNTING_PROVIDER",
+                  "displayValue": "ACCOUNTING_PROVIDER"
+                },
+                {
+                  "value": "DEVELOPER_API",
+                  "displayValue": "DEVELOPER_API"
+                },
+                {
+                  "value": "EXTERNAL_IMPORT",
+                  "displayValue": "EXTERNAL_IMPORT"
+                },
+                {
+                  "value": "RAMP",
+                  "displayValue": "RAMP"
+                }
+              ]
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "item_receipt_ids": {
+              "displayName": "item_receipt_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "line_items": {
+              "displayName": "line_items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "memo": {
+              "displayName": "memo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "net_payment_terms": {
+              "displayName": "net_payment_terms",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "owner_id": {
+              "displayName": "owner_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "promise_date": {
+              "displayName": "promise_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "purchase_order_number": {
+              "displayName": "purchase_order_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ramp_url": {
+              "displayName": "ramp_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "receipt_status": {
+              "displayName": "receipt_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "FULLY_RECEIVED",
+                  "displayValue": "FULLY_RECEIVED"
+                },
+                {
+                  "value": "NOT_RECEIVED",
+                  "displayValue": "NOT_RECEIVED"
+                },
+                {
+                  "value": "OVER_RECEIVED",
+                  "displayValue": "OVER_RECEIVED"
+                },
+                {
+                  "value": "PARTIALLY_RECEIVED",
+                  "displayValue": "PARTIALLY_RECEIVED"
+                }
+              ]
+            },
+            "remote_id": {
+              "displayName": "remote_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ship_to_address": {
+              "displayName": "ship_to_address",
+              "valueType": "other"
+            },
+            "ship_to_company_name": {
+              "displayName": "ship_to_company_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shipping_contact_email": {
+              "displayName": "shipping_contact_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shipping_contact_first_name": {
+              "displayName": "shipping_contact_first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shipping_contact_last_name": {
+              "displayName": "shipping_contact_last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shipping_contact_phone_number": {
+              "displayName": "shipping_contact_phone_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spend_end_date": {
+              "displayName": "spend_end_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spend_program_id": {
+              "displayName": "spend_program_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spend_request_id": {
+              "displayName": "spend_request_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spend_start_date": {
+              "displayName": "spend_start_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spend_total_amount": {
+              "displayName": "spend_total_amount",
+              "valueType": "other"
+            },
+            "three_way_match_enabled": {
+              "displayName": "three_way_match_enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "transaction_ids": {
+              "displayName": "transaction_ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendor_id": {
+              "displayName": "vendor_id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "receipts": {
+          "displayName": "Receipts",
+          "path": "/receipts",
+          "responseKey": "data",
+          "fields": {
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "receipt_url": {
+              "displayName": "receipt_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "transaction_id": {
+              "displayName": "transaction_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "reimbursements": {
+          "displayName": "Reimbursements",
+          "path": "/reimbursements",
+          "responseKey": "data",
+          "fields": {
+            "accounting_date": {
+              "displayName": "accounting_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "accounting_field_selections": {
+              "displayName": "accounting_field_selections",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "amount": {
+              "displayName": "amount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "approved_at": {
+              "displayName": "approved_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "attendees": {
+              "displayName": "attendees",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currency": {
+              "displayName": "currency",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "direction": {
+              "displayName": "direction",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "BUSINESS_TO_USER",
+                  "displayValue": "BUSINESS_TO_USER"
+                },
+                {
+                  "value": "USER_TO_BUSINESS",
+                  "displayValue": "USER_TO_BUSINESS"
+                }
+              ]
+            },
+            "distance": {
+              "displayName": "distance",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "employee_id": {
+              "displayName": "employee_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "end_location": {
+              "displayName": "end_location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "line_items": {
+              "displayName": "line_items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "memo": {
+              "displayName": "memo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merchant": {
+              "displayName": "merchant",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merchant_id": {
+              "displayName": "merchant_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "original_reimbursement_amount": {
+              "displayName": "original_reimbursement_amount",
+              "valueType": "other"
+            },
+            "payee_amount": {
+              "displayName": "payee_amount",
+              "valueType": "other"
+            },
+            "payment_batch_id": {
+              "displayName": "payment_batch_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payment_id": {
+              "displayName": "payment_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payment_processed_at": {
+              "displayName": "payment_processed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "receipts": {
+              "displayName": "receipts",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "spend_limit_id": {
+              "displayName": "spend_limit_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_location": {
+              "displayName": "start_location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "APPROVED",
+                  "displayValue": "APPROVED"
+                },
+                {
+                  "value": "AWAITING_EXPORT",
+                  "displayValue": "AWAITING_EXPORT"
+                },
+                {
+                  "value": "AWAITING_PAYMENT",
+                  "displayValue": "AWAITING_PAYMENT"
+                },
+                {
+                  "value": "AWAITING_PUSH_PAYMENT",
+                  "displayValue": "AWAITING_PUSH_PAYMENT"
+                },
+                {
+                  "value": "CANCELED",
+                  "displayValue": "CANCELED"
+                },
+                {
+                  "value": "DELETED",
+                  "displayValue": "DELETED"
+                },
+                {
+                  "value": "DRAFT",
+                  "displayValue": "DRAFT"
+                },
+                {
+                  "value": "EXPORTED",
+                  "displayValue": "EXPORTED"
+                },
+                {
+                  "value": "EXPORT_FAILED",
+                  "displayValue": "EXPORT_FAILED"
+                },
+                {
+                  "value": "EXPORT_INITIATED",
+                  "displayValue": "EXPORT_INITIATED"
+                },
+                {
+                  "value": "EXPORT_MARKED_AS_FAILED",
+                  "displayValue": "EXPORT_MARKED_AS_FAILED"
+                },
+                {
+                  "value": "EXPORT_SUCCESSFUL",
+                  "displayValue": "EXPORT_SUCCESSFUL"
+                },
+                {
+                  "value": "FAILED_REIMBURSEMENT",
+                  "displayValue": "FAILED_REIMBURSEMENT"
+                },
+                {
+                  "value": "INIT",
+                  "displayValue": "INIT"
+                },
+                {
+                  "value": "MANUALLY_REIMBURSED",
+                  "displayValue": "MANUALLY_REIMBURSED"
+                },
+                {
+                  "value": "MISSING_ACH",
+                  "displayValue": "MISSING_ACH"
+                },
+                {
+                  "value": "PENDING",
+                  "displayValue": "PENDING"
+                },
+                {
+                  "value": "PROCESSING",
+                  "displayValue": "PROCESSING"
+                },
+                {
+                  "value": "PUSH_PAYMENT_FAILED",
+                  "displayValue": "PUSH_PAYMENT_FAILED"
+                },
+                {
+                  "value": "PUSH_PAYMENT_INITIATED",
+                  "displayValue": "PUSH_PAYMENT_INITIATED"
+                },
+                {
+                  "value": "REIMBURSED",
+                  "displayValue": "REIMBURSED"
+                },
+                {
+                  "value": "REIMBURSED_VIA_PUSH",
+                  "displayValue": "REIMBURSED_VIA_PUSH"
+                },
+                {
+                  "value": "REJECTED",
+                  "displayValue": "REJECTED"
+                }
+              ]
+            },
+            "submitted_at": {
+              "displayName": "submitted_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sync_status": {
+              "displayName": "sync_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "NOT_SYNC_READY",
+                  "displayValue": "NOT_SYNC_READY"
+                },
+                {
+                  "value": "SYNCED",
+                  "displayValue": "SYNCED"
+                },
+                {
+                  "value": "SYNC_READY",
+                  "displayValue": "SYNC_READY"
+                }
+              ]
+            },
+            "synced_at": {
+              "displayName": "synced_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "trace_id": {
+              "displayName": "trace_id",
+              "valueType": "other"
+            },
+            "transaction_date": {
+              "displayName": "transaction_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "trip_id": {
+              "displayName": "trip_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "MILEAGE",
+                  "displayValue": "MILEAGE"
+                },
+                {
+                  "value": "OUT_OF_POCKET",
+                  "displayValue": "OUT_OF_POCKET"
+                },
+                {
+                  "value": "PAYBACK_FULL",
+                  "displayValue": "PAYBACK_FULL"
+                },
+                {
+                  "value": "PAYBACK_PARTIAL",
+                  "displayValue": "PAYBACK_PARTIAL"
+                },
+                {
+                  "value": "PER_DIEM",
+                  "displayValue": "PER_DIEM"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_email": {
+              "displayName": "user_email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_full_name": {
+              "displayName": "user_full_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "waypoints": {
+              "displayName": "waypoints",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "repayments": {
+          "displayName": "Repayments",
+          "path": "/repayments",
+          "responseKey": "data",
+          "fields": {
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "funding_method": {
+              "displayName": "funding_method",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "original_transaction_id": {
+              "displayName": "original_transaction_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repaid_at": {
+              "displayName": "repaid_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "repayment_amount": {
+              "displayName": "repayment_amount",
+              "valueType": "other"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "AWAITING_MANUAL_REPAYMENT",
+                  "displayValue": "AWAITING_MANUAL_REPAYMENT"
+                },
+                {
+                  "value": "AWAITING_PAYMENT",
+                  "displayValue": "AWAITING_PAYMENT"
+                },
+                {
+                  "value": "NONE",
+                  "displayValue": "NONE"
+                },
+                {
+                  "value": "REPAID",
+                  "displayValue": "REPAID"
+                },
+                {
+                  "value": "REPAYMENT_FAILED",
+                  "displayValue": "REPAYMENT_FAILED"
+                },
+                {
+                  "value": "REQUESTED_BY_REVIEWER",
+                  "displayValue": "REQUESTED_BY_REVIEWER"
+                }
+              ]
+            },
+            "user_id": {
+              "displayName": "user_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_signature": {
+              "displayName": "user_signature",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "spend-programs": {
+          "displayName": "Spend Programs",
+          "path": "/spend-programs",
+          "responseKey": "data",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "display_name": {
+              "displayName": "display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "icon": {
+              "displayName": "icon",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "AccountingServicesIcon",
+                  "displayValue": "AccountingServicesIcon"
+                },
+                {
+                  "value": "AdvertisingIcon",
+                  "displayValue": "AdvertisingIcon"
+                },
+                {
+                  "value": "CONTRACTORS_AND_PROFESSIONAL_SERVICES",
+                  "displayValue": "CONTRACTORS_AND_PROFESSIONAL_SERVICES"
+                },
+                {
+                  "value": "CUSTOM",
+                  "displayValue": "CUSTOM"
+                },
+                {
+                  "value": "CardIcon",
+                  "displayValue": "CardIcon"
+                },
+                {
+                  "value": "EducationStipendIcon",
+                  "displayValue": "EducationStipendIcon"
+                },
+                {
+                  "value": "EmployeeRewardsIcon",
+                  "displayValue": "EmployeeRewardsIcon"
+                },
+                {
+                  "value": "GroundTransportationIcon",
+                  "displayValue": "GroundTransportationIcon"
+                },
+                {
+                  "value": "LegalFeesIcon",
+                  "displayValue": "LegalFeesIcon"
+                },
+                {
+                  "value": "LodgingIcon",
+                  "displayValue": "LodgingIcon"
+                },
+                {
+                  "value": "LunchOrderingIcon",
+                  "displayValue": "LunchOrderingIcon"
+                },
+                {
+                  "value": "OnboardingIcon",
+                  "displayValue": "OnboardingIcon"
+                },
+                {
+                  "value": "PerDiemCardIcon",
+                  "displayValue": "PerDiemCardIcon"
+                },
+                {
+                  "value": "SOFTWARE",
+                  "displayValue": "SOFTWARE"
+                },
+                {
+                  "value": "SaasSubscriptionIcon",
+                  "displayValue": "SaasSubscriptionIcon"
+                },
+                {
+                  "value": "SoftwareTrialIcon",
+                  "displayValue": "SoftwareTrialIcon"
+                },
+                {
+                  "value": "SuppliesIcon",
+                  "displayValue": "SuppliesIcon"
+                },
+                {
+                  "value": "TeamSocialIcon",
+                  "displayValue": "TeamSocialIcon"
+                },
+                {
+                  "value": "TravelExpensesIcon",
+                  "displayValue": "TravelExpensesIcon"
+                },
+                {
+                  "value": "VirtualEventIcon",
+                  "displayValue": "VirtualEventIcon"
+                },
+                {
+                  "value": "WellnessIcon",
+                  "displayValue": "WellnessIcon"
+                },
+                {
+                  "value": "WorkFromHomeIcon",
+                  "displayValue": "WorkFromHomeIcon"
+                },
+                {
+                  "value": "advertising",
+                  "displayValue": "advertising"
+                },
+                {
+                  "value": "airlines",
+                  "displayValue": "airlines"
+                },
+                {
+                  "value": "bills",
+                  "displayValue": "bills"
+                },
+                {
+                  "value": "business",
+                  "displayValue": "business"
+                },
+                {
+                  "value": "car_services",
+                  "displayValue": "car_services"
+                },
+                {
+                  "value": "contractor",
+                  "displayValue": "contractor"
+                },
+                {
+                  "value": "education",
+                  "displayValue": "education"
+                },
+                {
+                  "value": "entertainment",
+                  "displayValue": "entertainment"
+                },
+                {
+                  "value": "event_balloons",
+                  "displayValue": "event_balloons"
+                },
+                {
+                  "value": "event_virtual",
+                  "displayValue": "event_virtual"
+                },
+                {
+                  "value": "food",
+                  "displayValue": "food"
+                },
+                {
+                  "value": "fuel_and_gas",
+                  "displayValue": "fuel_and_gas"
+                },
+                {
+                  "value": "general_expense",
+                  "displayValue": "general_expense"
+                },
+                {
+                  "value": "general_merchandise",
+                  "displayValue": "general_merchandise"
+                },
+                {
+                  "value": "gift",
+                  "displayValue": "gift"
+                },
+                {
+                  "value": "government_services",
+                  "displayValue": "government_services"
+                },
+                {
+                  "value": "internet_and_phone",
+                  "displayValue": "internet_and_phone"
+                },
+                {
+                  "value": "legal",
+                  "displayValue": "legal"
+                },
+                {
+                  "value": "lodging",
+                  "displayValue": "lodging"
+                },
+                {
+                  "value": "lodging_room",
+                  "displayValue": "lodging_room"
+                },
+                {
+                  "value": "newspaper",
+                  "displayValue": "newspaper"
+                },
+                {
+                  "value": "office",
+                  "displayValue": "office"
+                },
+                {
+                  "value": "physical_card",
+                  "displayValue": "physical_card"
+                },
+                {
+                  "value": "procurement_checklist",
+                  "displayValue": "procurement_checklist"
+                },
+                {
+                  "value": "procurement_intake",
+                  "displayValue": "procurement_intake"
+                },
+                {
+                  "value": "professional_services",
+                  "displayValue": "professional_services"
+                },
+                {
+                  "value": "restaurants",
+                  "displayValue": "restaurants"
+                },
+                {
+                  "value": "reward",
+                  "displayValue": "reward"
+                },
+                {
+                  "value": "saas_software",
+                  "displayValue": "saas_software"
+                },
+                {
+                  "value": "shipping",
+                  "displayValue": "shipping"
+                },
+                {
+                  "value": "travel_misc",
+                  "displayValue": "travel_misc"
+                },
+                {
+                  "value": "wellness",
+                  "displayValue": "wellness"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_shareable": {
+              "displayName": "is_shareable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "issue_physical_card_if_needed": {
+              "displayName": "issue_physical_card_if_needed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "permitted_spend_types": {
+              "displayName": "permitted_spend_types",
+              "valueType": "other"
+            },
+            "restrictions": {
+              "displayName": "restrictions",
+              "valueType": "other"
+            }
+          }
+        },
+        "statements": {
+          "displayName": "Statements",
+          "path": "/statements",
+          "responseKey": "data",
+          "fields": {
+            "balance_sections": {
+              "displayName": "balance_sections",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "charges": {
+              "displayName": "charges",
+              "valueType": "other"
+            },
+            "credits": {
+              "displayName": "credits",
+              "valueType": "other"
+            },
+            "end_date": {
+              "displayName": "end_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ending_balance": {
+              "displayName": "ending_balance",
+              "valueType": "other"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "opening_balance": {
+              "displayName": "opening_balance",
+              "valueType": "other"
+            },
+            "payments": {
+              "displayName": "payments",
+              "valueType": "other"
+            },
+            "preceding_statement_id": {
+              "displayName": "preceding_statement_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_date": {
+              "displayName": "start_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "statement_lines": {
+              "displayName": "statement_lines",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "statement_url": {
+              "displayName": "statement_url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "transactions": {
+          "displayName": "Transactions",
+          "path": "/transactions",
+          "responseKey": "data",
+          "fields": {
+            "accounting_categories": {
+              "displayName": "accounting_categories",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "accounting_date": {
+              "displayName": "accounting_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "accounting_field_selections": {
+              "displayName": "accounting_field_selections",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "amount": {
+              "displayName": "amount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "attendees": {
+              "displayName": "attendees",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "card_holder": {
+              "displayName": "card_holder",
+              "valueType": "other"
+            },
+            "card_id": {
+              "displayName": "card_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "card_present": {
+              "displayName": "card_present",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "currency_code": {
+              "displayName": "currency_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "decline_details": {
+              "displayName": "decline_details",
+              "valueType": "other"
+            },
+            "disputes": {
+              "displayName": "disputes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "limit_id": {
+              "displayName": "limit_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "line_items": {
+              "displayName": "line_items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "memo": {
+              "displayName": "memo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merchant_category_code": {
+              "displayName": "merchant_category_code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merchant_category_code_description": {
+              "displayName": "merchant_category_code_description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merchant_data": {
+              "displayName": "merchant_data",
+              "valueType": "other"
+            },
+            "merchant_descriptor": {
+              "displayName": "merchant_descriptor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merchant_id": {
+              "displayName": "merchant_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merchant_location": {
+              "displayName": "merchant_location",
+              "valueType": "other"
+            },
+            "merchant_name": {
+              "displayName": "merchant_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "minor_unit_conversion_rate": {
+              "displayName": "minor_unit_conversion_rate",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "original_transaction_amount": {
+              "displayName": "original_transaction_amount",
+              "valueType": "other"
+            },
+            "policy_violations": {
+              "displayName": "policy_violations",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "receipts": {
+              "displayName": "receipts",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "requires_accounting_vendor_creation_to_sync": {
+              "displayName": "requires_accounting_vendor_creation_to_sync",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "settlement_date": {
+              "displayName": "settlement_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sk_category_id": {
+              "displayName": "sk_category_id",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                },
+                {
+                  "value": "13",
+                  "displayValue": "13"
+                },
+                {
+                  "value": "14",
+                  "displayValue": "14"
+                },
+                {
+                  "value": "15",
+                  "displayValue": "15"
+                },
+                {
+                  "value": "16",
+                  "displayValue": "16"
+                },
+                {
+                  "value": "17",
+                  "displayValue": "17"
+                },
+                {
+                  "value": "18",
+                  "displayValue": "18"
+                },
+                {
+                  "value": "19",
+                  "displayValue": "19"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "20",
+                  "displayValue": "20"
+                },
+                {
+                  "value": "21",
+                  "displayValue": "21"
+                },
+                {
+                  "value": "23",
+                  "displayValue": "23"
+                },
+                {
+                  "value": "24",
+                  "displayValue": "24"
+                },
+                {
+                  "value": "25",
+                  "displayValue": "25"
+                },
+                {
+                  "value": "26",
+                  "displayValue": "26"
+                },
+                {
+                  "value": "27",
+                  "displayValue": "27"
+                },
+                {
+                  "value": "28",
+                  "displayValue": "28"
+                },
+                {
+                  "value": "29",
+                  "displayValue": "29"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "30",
+                  "displayValue": "30"
+                },
+                {
+                  "value": "31",
+                  "displayValue": "31"
+                },
+                {
+                  "value": "32",
+                  "displayValue": "32"
+                },
+                {
+                  "value": "33",
+                  "displayValue": "33"
+                },
+                {
+                  "value": "34",
+                  "displayValue": "34"
+                },
+                {
+                  "value": "35",
+                  "displayValue": "35"
+                },
+                {
+                  "value": "36",
+                  "displayValue": "36"
+                },
+                {
+                  "value": "37",
+                  "displayValue": "37"
+                },
+                {
+                  "value": "38",
+                  "displayValue": "38"
+                },
+                {
+                  "value": "39",
+                  "displayValue": "39"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "40",
+                  "displayValue": "40"
+                },
+                {
+                  "value": "41",
+                  "displayValue": "41"
+                },
+                {
+                  "value": "42",
+                  "displayValue": "42"
+                },
+                {
+                  "value": "43",
+                  "displayValue": "43"
+                },
+                {
+                  "value": "44",
+                  "displayValue": "44"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                }
+              ]
+            },
+            "sk_category_name": {
+              "displayName": "sk_category_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spend_program_id": {
+              "displayName": "spend_program_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "ALL",
+                  "displayValue": "ALL"
+                },
+                {
+                  "value": "CLEARED",
+                  "displayValue": "CLEARED"
+                },
+                {
+                  "value": "COMPLETION",
+                  "displayValue": "COMPLETION"
+                },
+                {
+                  "value": "DECLINED",
+                  "displayValue": "DECLINED"
+                },
+                {
+                  "value": "ERROR",
+                  "displayValue": "ERROR"
+                },
+                {
+                  "value": "PENDING",
+                  "displayValue": "PENDING"
+                },
+                {
+                  "value": "PENDING_INITIATION",
+                  "displayValue": "PENDING_INITIATION"
+                }
+              ]
+            },
+            "statement_id": {
+              "displayName": "statement_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sync_status": {
+              "displayName": "sync_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "NOT_SYNC_READY",
+                  "displayValue": "NOT_SYNC_READY"
+                },
+                {
+                  "value": "SYNCED",
+                  "displayValue": "SYNCED"
+                },
+                {
+                  "value": "SYNC_READY",
+                  "displayValue": "SYNC_READY"
+                }
+              ]
+            },
+            "synced_at": {
+              "displayName": "synced_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "trip_id": {
+              "displayName": "trip_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "trip_name": {
+              "displayName": "trip_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_transaction_time": {
+              "displayName": "user_transaction_time",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "transfers": {
+          "displayName": "Transfers",
+          "path": "/transfers",
+          "responseKey": "data",
+          "fields": {
+            "amount": {
+              "displayName": "amount",
+              "valueType": "other"
+            },
+            "bank_account_id": {
+              "displayName": "bank_account_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payment_id": {
+              "displayName": "payment_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "ACH_CONFIRMED",
+                  "displayValue": "ACH_CONFIRMED"
+                },
+                {
+                  "value": "CANCELED",
+                  "displayValue": "CANCELED"
+                },
+                {
+                  "value": "COMPLETED",
+                  "displayValue": "COMPLETED"
+                },
+                {
+                  "value": "ERROR",
+                  "displayValue": "ERROR"
+                },
+                {
+                  "value": "INITIATED",
+                  "displayValue": "INITIATED"
+                },
+                {
+                  "value": "NOT_ACKED",
+                  "displayValue": "NOT_ACKED"
+                },
+                {
+                  "value": "NOT_ENOUGH_FUNDS",
+                  "displayValue": "NOT_ENOUGH_FUNDS"
+                },
+                {
+                  "value": "PROCESSING_BY_ODFI",
+                  "displayValue": "PROCESSING_BY_ODFI"
+                },
+                {
+                  "value": "REJECTED_BY_ODFI",
+                  "displayValue": "REJECTED_BY_ODFI"
+                },
+                {
+                  "value": "RETURNED_BY_RDFI",
+                  "displayValue": "RETURNED_BY_RDFI"
+                },
+                {
+                  "value": "SUBMITTED_TO_FED",
+                  "displayValue": "SUBMITTED_TO_FED"
+                },
+                {
+                  "value": "SUBMITTED_TO_RDFI",
+                  "displayValue": "SUBMITTED_TO_RDFI"
+                },
+                {
+                  "value": "UNNECESSARY",
+                  "displayValue": "UNNECESSARY"
+                },
+                {
+                  "value": "UPLOADED",
+                  "displayValue": "UPLOADED"
+                }
+              ]
+            },
+            "sync_status": {
+              "displayName": "sync_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "NOT_SYNC_READY",
+                  "displayValue": "NOT_SYNC_READY"
+                },
+                {
+                  "value": "SYNCED",
+                  "displayValue": "SYNCED"
+                },
+                {
+                  "value": "SYNC_READY",
+                  "displayValue": "SYNC_READY"
+                }
+              ]
+            }
           }
         },
         "trips": {
           "displayName": "Trips",
-          "path": "developer/v1/trips",
+          "path": "/trips",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "description": "description",
-            "end_date": "end_date",
-            "id": "id",
-            "length_in_days": "length_in_days",
-            "locations": "locations",
-            "name": "name",
-            "spend_events": "spend_events",
-            "start_date": "start_date",
-            "status": "status",
-            "total_spend": "total_spend",
-            "travel_types": "travel_types",
-            "updated_at": "updated_at",
-            "user_id": "user_id"
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "end_date": {
+              "displayName": "End Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "length_in_days": {
+              "displayName": "Length In Days",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "locations": {
+              "displayName": "Locations",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spend_events": {
+              "displayName": "Spend Events",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "start_date": {
+              "displayName": "Start Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "total_spend": {
+              "displayName": "Total Spend",
+              "valueType": "float",
+              "providerType": "number"
+            },
+            "travel_types": {
+              "displayName": "Travel Types",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_id": {
+              "displayName": "User Id",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
-        "audit_logs": {
-          "displayName": "Audit Logs",
-          "path": "developer/v1/audit-logs/events",
-          "responseKey": "data",
-          "fields": {
-            "actor_details": "actor_details",
-            "actor_id": "actor_id",
-            "actor_type": "actor_type",
-            "additional_details": "additional_details",
-            "event_details": "event_details",
-            "event_time": "event_time",
-            "event_type": "event_type",
-            "id": "id",
-            "primary_reference": "primary_reference",
-            "user_details": "user_details"
-          }
-        },
-        "unified_requests": {
+        "unified-requests": {
           "displayName": "Unified Requests",
-          "path": "developer/v1/unified-requests",
-          "responseKey": "data",
+          "path": "/unified-requests",
+          "responseKey": "",
           "fields": {
-            "approval_instance_id": "approval_instance_id",
-            "approved_at": "approved_at",
-            "created_at": "created_at",
-            "created_by_user": "created_by_user",
-            "deleted_at": "deleted_at",
-            "entity": "entity",
-            "id": "id",
-            "name": "name",
-            "ramp_url": "ramp_url",
-            "reason": "reason",
-            "rejected_at": "rejected_at",
-            "request_duration": "request_duration",
-            "submitted_at": "submitted_at",
-            "wbp_info": "wbp_info"
+            "amount_details": {
+              "displayName": "amount_details",
+              "valueType": "other"
+            },
+            "approval_instance_id": {
+              "displayName": "approval_instance_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "approved_at": {
+              "displayName": "approved_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "blank_canvas_execution_id": {
+              "displayName": "blank_canvas_execution_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "coordinator": {
+              "displayName": "coordinator",
+              "valueType": "other"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_by_user": {
+              "displayName": "created_by_user",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "deleted_at": {
+              "displayName": "deleted_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "earliest_due_date": {
+              "displayName": "earliest_due_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity": {
+              "displayName": "entity",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "existing_spend_allocation_id": {
+              "displayName": "existing_spend_allocation_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "existing_spend_request": {
+              "displayName": "existing_spend_request",
+              "valueType": "other"
+            },
+            "has_blocking_approval_requirements": {
+              "displayName": "has_blocking_approval_requirements",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_expansion_request": {
+              "displayName": "is_expansion_request",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_import_only_spend_program": {
+              "displayName": "is_import_only_spend_program",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_renewal_request": {
+              "displayName": "is_renewal_request",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_shareable": {
+              "displayName": "is_shareable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_sla_due_soon": {
+              "displayName": "is_sla_due_soon",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "issuance_parameters": {
+              "displayName": "issuance_parameters",
+              "valueType": "other"
+            },
+            "lock_date": {
+              "displayName": "lock_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lock_display": {
+              "displayName": "lock_display",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other"
+            },
+            "payee": {
+              "displayName": "payee",
+              "valueType": "other"
+            },
+            "payment_restrictions": {
+              "displayName": "payment_restrictions",
+              "valueType": "other"
+            },
+            "post_spend_approval_instance_policy": {
+              "displayName": "post_spend_approval_instance_policy",
+              "valueType": "other"
+            },
+            "prediction": {
+              "displayName": "prediction",
+              "valueType": "other"
+            },
+            "purchase_order": {
+              "displayName": "purchase_order",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "ramp_url": {
+              "displayName": "ramp_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reason": {
+              "displayName": "reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reduced_agreements": {
+              "displayName": "reduced_agreements",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "rejected_at": {
+              "displayName": "rejected_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relative_lock_duration_count": {
+              "displayName": "relative_lock_duration_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "relative_lock_duration_unit": {
+              "displayName": "relative_lock_duration_unit",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "DAYS",
+                  "displayValue": "DAYS"
+                },
+                {
+                  "value": "MONTHS",
+                  "displayValue": "MONTHS"
+                },
+                {
+                  "value": "WEEKS",
+                  "displayValue": "WEEKS"
+                },
+                {
+                  "value": "YEARS",
+                  "displayValue": "YEARS"
+                }
+              ]
+            },
+            "request_duration": {
+              "displayName": "request_duration",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "request_status": {
+              "displayName": "request_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "APPROVED",
+                  "displayValue": "APPROVED"
+                },
+                {
+                  "value": "DRAFT",
+                  "displayValue": "DRAFT"
+                },
+                {
+                  "value": "REJECTED",
+                  "displayValue": "REJECTED"
+                },
+                {
+                  "value": "SUBMITTED",
+                  "displayValue": "SUBMITTED"
+                }
+              ]
+            },
+            "restricted_request_type": {
+              "displayName": "restricted_request_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "SPEND_ALLOCATION",
+                  "displayValue": "SPEND_ALLOCATION"
+                }
+              ]
+            },
+            "resulting_spend_allocation_id": {
+              "displayName": "resulting_spend_allocation_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "secondary_display_name": {
+              "displayName": "secondary_display_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sla_due_date": {
+              "displayName": "sla_due_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sla_duration_in_seconds": {
+              "displayName": "sla_duration_in_seconds",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "spend_allocation": {
+              "displayName": "spend_allocation",
+              "valueType": "other"
+            },
+            "spend_allocation_outcome_settings": {
+              "displayName": "spend_allocation_outcome_settings",
+              "valueType": "other"
+            },
+            "spend_eligibility_starts_at": {
+              "displayName": "spend_eligibility_starts_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spend_end_date": {
+              "displayName": "spend_end_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spend_frequency": {
+              "displayName": "spend_frequency",
+              "valueType": "other"
+            },
+            "spend_intent": {
+              "displayName": "spend_intent",
+              "valueType": "other"
+            },
+            "spend_request_id": {
+              "displayName": "spend_request_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spend_request_type": {
+              "displayName": "spend_request_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "TRAVEL",
+                  "displayValue": "TRAVEL"
+                }
+              ]
+            },
+            "spend_request_vendor_type": {
+              "displayName": "spend_request_vendor_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "EXISTING",
+                  "displayValue": "EXISTING"
+                },
+                {
+                  "value": "NEW",
+                  "displayValue": "NEW"
+                }
+              ]
+            },
+            "spend_start_date": {
+              "displayName": "spend_start_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spending_restrictions": {
+              "displayName": "spending_restrictions",
+              "valueType": "other"
+            },
+            "submitted_at": {
+              "displayName": "submitted_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tasks": {
+              "displayName": "tasks",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "total_amount_details": {
+              "displayName": "total_amount_details",
+              "valueType": "other"
+            },
+            "travel_metadata": {
+              "displayName": "travel_metadata",
+              "valueType": "other"
+            },
+            "unified_request_type": {
+              "displayName": "unified_request_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "SPEND_REQUEST",
+                  "displayValue": "SPEND_REQUEST"
+                }
+              ]
+            },
+            "unified_spend_request_type": {
+              "displayName": "unified_spend_request_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "TRAVEL",
+                  "displayValue": "TRAVEL"
+                }
+              ]
+            },
+            "user_defined_name": {
+              "displayName": "user_defined_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "wbp_info": {
+              "displayName": "wbp_info",
+              "valueType": "other"
+            }
           }
         },
-        "accounting_accounts": {
-          "displayName": "Accounting Accounts",
-          "path": "developer/v1/accounting/accounts",
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
           "responseKey": "data",
           "fields": {
-            "accounting_connection_id": "accounting_connection_id",
-            "classification": "classification",
-            "code": "code",
-            "created_at": "created_at",
-            "gl_account_category_info": "gl_account_category_info",
-            "id": "id",
-            "is_active": "is_active",
-            "name": "name",
-            "provider_name": "provider_name",
-            "ramp_id": "ramp_id",
-            "updated_at": "updated_at"
+            "business_id": {
+              "displayName": "business_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields": {
+              "displayName": "custom_fields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "department_id": {
+              "displayName": "department_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employee_id": {
+              "displayName": "employee_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_manager": {
+              "displayName": "is_manager",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location_id": {
+              "displayName": "location_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "manager_id": {
+              "displayName": "manager_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "role": {
+              "displayName": "role",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "AUDITOR",
+                  "displayValue": "AUDITOR"
+                },
+                {
+                  "value": "BUSINESS_ADMIN",
+                  "displayValue": "BUSINESS_ADMIN"
+                },
+                {
+                  "value": "BUSINESS_BOOKKEEPER",
+                  "displayValue": "BUSINESS_BOOKKEEPER"
+                },
+                {
+                  "value": "BUSINESS_OWNER",
+                  "displayValue": "BUSINESS_OWNER"
+                },
+                {
+                  "value": "BUSINESS_USER",
+                  "displayValue": "BUSINESS_USER"
+                },
+                {
+                  "value": "GUEST_USER",
+                  "displayValue": "GUEST_USER"
+                },
+                {
+                  "value": "IT_ADMIN",
+                  "displayValue": "IT_ADMIN"
+                },
+                {
+                  "value": "UNBUNDLED_ADMIN",
+                  "displayValue": "UNBUNDLED_ADMIN"
+                },
+                {
+                  "value": "UNBUNDLED_BOOKKEEPER",
+                  "displayValue": "UNBUNDLED_BOOKKEEPER"
+                },
+                {
+                  "value": "UNBUNDLED_OWNER",
+                  "displayValue": "UNBUNDLED_OWNER"
+                },
+                {
+                  "value": "UNBUNDLED_USER",
+                  "displayValue": "UNBUNDLED_USER"
+                }
+              ]
+            },
+            "scheduled_deactivation_date": {
+              "displayName": "scheduled_deactivation_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scheduled_invitation_date": {
+              "displayName": "scheduled_invitation_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "INVITE_EXPIRED",
+                  "displayValue": "INVITE_EXPIRED"
+                },
+                {
+                  "value": "INVITE_PENDING",
+                  "displayValue": "INVITE_PENDING"
+                },
+                {
+                  "value": "USER_ACTIVE",
+                  "displayValue": "USER_ACTIVE"
+                },
+                {
+                  "value": "USER_DRAFT",
+                  "displayValue": "USER_DRAFT"
+                },
+                {
+                  "value": "USER_INACTIVE",
+                  "displayValue": "USER_INACTIVE"
+                },
+                {
+                  "value": "USER_ONBOARDING",
+                  "displayValue": "USER_ONBOARDING"
+                },
+                {
+                  "value": "USER_SUSPENDED",
+                  "displayValue": "USER_SUSPENDED"
+                }
+              ]
+            }
           }
         },
-        "accounting_vendors": {
-          "displayName": "Accounting Vendors",
-          "path": "developer/v1/accounting/vendors",
+        "vendors": {
+          "displayName": "Vendors",
+          "path": "/vendors",
           "responseKey": "data",
           "fields": {
-            "accounting_connection_id": "accounting_connection_id",
-            "code": "code",
-            "created_at": "created_at",
-            "id": "id",
-            "is_active": "is_active",
-            "is_synced": "is_synced",
-            "name": "name",
-            "provider_name": "provider_name",
-            "ramp_id": "ramp_id",
-            "updated_at": "updated_at",
-            "vendor_category_info": "vendor_category_info"
-          }
-        },
-        "accounting_fields": {
-          "displayName": "Accounting Fields",
-          "path": "developer/v1/accounting/fields",
-          "responseKey": "data",
-          "fields": {
-            "accounting_connection_id": "accounting_connection_id",
-            "created_at": "created_at",
-            "display_name": "display_name",
-            "id": "id",
-            "input_type": "input_type",
-            "is_active": "is_active",
-            "is_required_for": "is_required_for",
-            "is_splittable": "is_splittable",
-            "name": "name",
-            "provider_name": "provider_name",
-            "ramp_id": "ramp_id",
-            "updated_at": "updated_at"
+            "accounting_vendor_remote_id": {
+              "displayName": "accounting_vendor_remote_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address": {
+              "displayName": "address",
+              "valueType": "other"
+            },
+            "billing_frequency": {
+              "displayName": "billing_frequency",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "ANNUAL",
+                  "displayValue": "ANNUAL"
+                },
+                {
+                  "value": "MONTHLY",
+                  "displayValue": "MONTHLY"
+                },
+                {
+                  "value": "MULTIPLE",
+                  "displayValue": "MULTIPLE"
+                },
+                {
+                  "value": "NA",
+                  "displayValue": "NA"
+                },
+                {
+                  "value": "OTHER",
+                  "displayValue": "OTHER"
+                },
+                {
+                  "value": "QUARTERLY",
+                  "displayValue": "QUARTERLY"
+                },
+                {
+                  "value": "ROLLING",
+                  "displayValue": "ROLLING"
+                },
+                {
+                  "value": "TBD",
+                  "displayValue": "TBD"
+                },
+                {
+                  "value": "TWICE_A_YEAR",
+                  "displayValue": "TWICE_A_YEAR"
+                }
+              ]
+            },
+            "contacts": {
+              "displayName": "contacts",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "country": {
+              "displayName": "country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_entity_id": {
+              "displayName": "default_entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_payment_method": {
+              "displayName": "default_payment_method",
+              "valueType": "other"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_vendor_id": {
+              "displayName": "external_vendor_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "federal_tax_classification": {
+              "displayName": "federal_tax_classification",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "C_CORPORATION",
+                  "displayValue": "C_CORPORATION"
+                },
+                {
+                  "value": "INDIVIDUAL_SOLE_PROPRIETOR_SINGLE_MEMBER_LLC",
+                  "displayValue": "INDIVIDUAL_SOLE_PROPRIETOR_SINGLE_MEMBER_LLC"
+                },
+                {
+                  "value": "INTERNATIONAL",
+                  "displayValue": "INTERNATIONAL"
+                },
+                {
+                  "value": "LLC_C_CORPORATION",
+                  "displayValue": "LLC_C_CORPORATION"
+                },
+                {
+                  "value": "LLC_PARTNERSHIP",
+                  "displayValue": "LLC_PARTNERSHIP"
+                },
+                {
+                  "value": "LLC_S_CORPORATION",
+                  "displayValue": "LLC_S_CORPORATION"
+                },
+                {
+                  "value": "OTHER",
+                  "displayValue": "OTHER"
+                },
+                {
+                  "value": "PARTNERSHIP",
+                  "displayValue": "PARTNERSHIP"
+                },
+                {
+                  "value": "S_CORPORATION",
+                  "displayValue": "S_CORPORATION"
+                },
+                {
+                  "value": "TRUST_ESTATE",
+                  "displayValue": "TRUST_ESTATE"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_active": {
+              "displayName": "is_active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_deletable": {
+              "displayName": "is_deletable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "merchant_id": {
+              "displayName": "merchant_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name_legal": {
+              "displayName": "name_legal",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sk_category_id": {
+              "displayName": "sk_category_id",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "10",
+                  "displayValue": "10"
+                },
+                {
+                  "value": "11",
+                  "displayValue": "11"
+                },
+                {
+                  "value": "12",
+                  "displayValue": "12"
+                },
+                {
+                  "value": "13",
+                  "displayValue": "13"
+                },
+                {
+                  "value": "14",
+                  "displayValue": "14"
+                },
+                {
+                  "value": "15",
+                  "displayValue": "15"
+                },
+                {
+                  "value": "16",
+                  "displayValue": "16"
+                },
+                {
+                  "value": "17",
+                  "displayValue": "17"
+                },
+                {
+                  "value": "18",
+                  "displayValue": "18"
+                },
+                {
+                  "value": "19",
+                  "displayValue": "19"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                },
+                {
+                  "value": "20",
+                  "displayValue": "20"
+                },
+                {
+                  "value": "21",
+                  "displayValue": "21"
+                },
+                {
+                  "value": "23",
+                  "displayValue": "23"
+                },
+                {
+                  "value": "24",
+                  "displayValue": "24"
+                },
+                {
+                  "value": "25",
+                  "displayValue": "25"
+                },
+                {
+                  "value": "26",
+                  "displayValue": "26"
+                },
+                {
+                  "value": "27",
+                  "displayValue": "27"
+                },
+                {
+                  "value": "28",
+                  "displayValue": "28"
+                },
+                {
+                  "value": "29",
+                  "displayValue": "29"
+                },
+                {
+                  "value": "3",
+                  "displayValue": "3"
+                },
+                {
+                  "value": "30",
+                  "displayValue": "30"
+                },
+                {
+                  "value": "31",
+                  "displayValue": "31"
+                },
+                {
+                  "value": "32",
+                  "displayValue": "32"
+                },
+                {
+                  "value": "33",
+                  "displayValue": "33"
+                },
+                {
+                  "value": "34",
+                  "displayValue": "34"
+                },
+                {
+                  "value": "35",
+                  "displayValue": "35"
+                },
+                {
+                  "value": "36",
+                  "displayValue": "36"
+                },
+                {
+                  "value": "37",
+                  "displayValue": "37"
+                },
+                {
+                  "value": "38",
+                  "displayValue": "38"
+                },
+                {
+                  "value": "39",
+                  "displayValue": "39"
+                },
+                {
+                  "value": "4",
+                  "displayValue": "4"
+                },
+                {
+                  "value": "40",
+                  "displayValue": "40"
+                },
+                {
+                  "value": "41",
+                  "displayValue": "41"
+                },
+                {
+                  "value": "42",
+                  "displayValue": "42"
+                },
+                {
+                  "value": "43",
+                  "displayValue": "43"
+                },
+                {
+                  "value": "44",
+                  "displayValue": "44"
+                },
+                {
+                  "value": "5",
+                  "displayValue": "5"
+                },
+                {
+                  "value": "6",
+                  "displayValue": "6"
+                },
+                {
+                  "value": "7",
+                  "displayValue": "7"
+                },
+                {
+                  "value": "8",
+                  "displayValue": "8"
+                },
+                {
+                  "value": "9",
+                  "displayValue": "9"
+                }
+              ]
+            },
+            "sk_category_name": {
+              "displayName": "sk_category_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subsidiary": {
+              "displayName": "subsidiary",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tax_address": {
+              "displayName": "tax_address",
+              "valueType": "other"
+            },
+            "total_spend_all_time": {
+              "displayName": "total_spend_all_time",
+              "valueType": "other"
+            },
+            "total_spend_last_30_days": {
+              "displayName": "total_spend_last_30_days",
+              "valueType": "other"
+            },
+            "total_spend_last_365_days": {
+              "displayName": "total_spend_last_365_days",
+              "valueType": "other"
+            },
+            "total_spend_ytd": {
+              "displayName": "total_spend_ytd",
+              "valueType": "other"
+            },
+            "vendor_owner_id": {
+              "displayName": "vendor_owner_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "vendor_type": {
+              "displayName": "vendor_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "BUSINESS",
+                  "displayValue": "BUSINESS"
+                },
+                {
+                  "value": "INDIVIDUAL",
+                  "displayValue": "INDIVIDUAL"
+                }
+              ]
+            }
           }
         }
       }

@@ -31,8 +31,8 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
 		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
 		Endpoint: oauth2.Endpoint{
-			AuthURL:   "https://api.ramp.com/v1/authorize",
-			TokenURL:  "https://api.ramp.com/developer/v1/token",
+			AuthURL:   "https://demo.ramp.com/v1/authorize",
+			TokenURL:  "https://demo-api.ramp.com/developer/v1/token",
 			AuthStyle: oauth2.AuthStyleInHeader,
 		},
 		Scopes: []string{
