@@ -12,7 +12,7 @@ import (
 var (
 	//go:embed schemas.json
 	schemaContent []byte
-	FileManager   = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV1](
+	FileManager   = scrapper.NewMetadataFileManager[staticschema.FieldMetadataMapV2](
 		schemaContent, fileconv.NewSiblingFileLocator())
 
 	Schemas = FileManager.MustLoadSchemas()
