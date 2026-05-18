@@ -15,7 +15,7 @@ func GetRampConnector(ctx context.Context) *ramp.Connector {
 	filePath := credscanning.LoadPath(providers.RampDemo)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
-	conn, err := ramp.NewConnector(common.ConnectorParams{
+	conn, err := ramp.NewDemoConnector(common.ConnectorParams{
 		AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
 	})
 	if err != nil {

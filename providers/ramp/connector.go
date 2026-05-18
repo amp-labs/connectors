@@ -22,7 +22,7 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.RampDemo, params, constructor)
+	return components.Initialize(providers.Ramp, params, constructor)
 }
 
 func NewDemoConnector(params common.ConnectorParams) (*Connector, error) {
