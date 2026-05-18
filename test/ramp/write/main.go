@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"log/slog"
+	"os"
 	"os/signal"
 	"syscall"
 
@@ -33,7 +32,7 @@ func main() {
 		utils.Fail("error creating department", "error", err)
 	}
 
-	printJSON(createResult)
+	utils.DumpJSON(createResult, os.Stdout)
 
 	if createResult.RecordId == "" {
 		utils.Fail("expected a record ID after create")
@@ -52,7 +51,7 @@ func main() {
 		utils.Fail("error updating department", "error", err)
 	}
 
-	printJSON(updateResult)
+	utils.DumpJSON(updateResult, os.Stdout)
 
 	slog.Info("> TEST Create location")
 
@@ -66,16 +65,7 @@ func main() {
 		utils.Fail("error creating location", "error", err)
 	}
 
-	printJSON(locResult)
+	utils.DumpJSON(locResult, os.Stdout)
 
 	slog.Info("Done")
-}
-
-func printJSON(v any) {
-	b, err := json.MarshalIndent(v, "", "  ")
-	if err != nil {
-		utils.Fail("json marshal error", "error", err)
-	}
-
-	fmt.Println(string(b))
 }
