@@ -72,8 +72,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	method := http.MethodPost
+
 	if params.RecordId != "" {
 		url.AddPath(params.RecordId)
+
 		method = http.MethodPatch
 	}
 
@@ -96,14 +98,14 @@ func (c *Connector) parseWriteResponse(
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	id, err := jsonquery.New(body).StringOptional("id")
+	id, err := jsonquery.New(body).StringOptional("id") //nolint: varnamelen
 	if err != nil {
 		return nil, err
 	}
 
 	data, err := jsonquery.Convertor.ObjectToMap(body)
 	if err != nil || id == nil {
-		return &common.WriteResult{Success: true}, nil
+		return &common.WriteResult{Success: true}, nil //nolint: nilerr
 	}
 
 	return &common.WriteResult{
