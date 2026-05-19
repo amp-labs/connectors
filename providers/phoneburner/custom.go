@@ -12,11 +12,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// customFieldKeyPrefix is a connector-only namespace (not in PhoneBurner JSON). The provider
-// uses display_name on definitions and name on each contact custom_fields entry; we prefix those
-// labels so flattened values do not collide with built-in contact keys.
-const customFieldKeyPrefix = "custom_"
-
 // memberCustomFieldDefinition is a row from GET /rest/1/customfields (member-level definitions).
 // See: https://www.phoneburner.com/developer/route_list#customfields
 type memberCustomFieldDefinition struct {
@@ -32,8 +27,7 @@ type memberCustomFieldDefinition struct {
 // PhoneBurner documents display_name as required when creating a field (POST) and
 // always includes it in GET examples (https://www.phoneburner.com/developer/route_list#customfields).
 // The list endpoint can still return individual rows with a blank display_name (legacy or
-// partial records); we skip those because our connector keys fields as custom_<display_name>,
-// which must match the "name" on each contact's custom_fields array.
+// partial records); we skip those because we key fields by the provider display name.
 func (d memberCustomFieldDefinition) isUsableForMetadata() bool {
 	return strings.TrimSpace(d.DisplayName) != ""
 }
@@ -55,11 +49,10 @@ func memberCustomFieldTypeToValueType(typeID string) common.ValueType {
 	}
 }
 
-// customFieldMetadataKey builds the ListObjectMetadata / read field name from the provider label
-// (display_name or custom_fields[].name). Callers pass the API string; do not assemble custom_* keys by hand.
-// common.ExtractLowercaseFieldsFromRaw lowercases keys on ReadResultRow.Fields.
+// customFieldMetadataKey is the connector field name for a PhoneBurner custom field: the provider
+// display_name / custom_fields[].name lowercased with spaces preserved (e.g. "Lead Score" -> "lead score").
 func customFieldMetadataKey(displayName string) string {
-	return customFieldKeyPrefix + strings.TrimSpace(displayName)
+	return strings.ToLower(strings.TrimSpace(displayName))
 }
 
 func (c *Connector) fetchMemberCustomFieldDefinitions(ctx context.Context) ([]memberCustomFieldDefinition, error) {
@@ -147,8 +140,8 @@ func parseMemberCustomFieldDefinitionsPage(body *ajson.Node) ([]memberCustomFiel
 	return out, int(totalPages), nil
 }
 
-// flattenContactCustomFieldsInMap promotes contact custom_fields entries to top-level custom_*
-// keys for common.ExtractLowercaseFieldsFromRaw. Used only from readContactRecordTransformer;
+// flattenContactCustomFieldsInMap promotes contact custom_fields entries to top-level keys named
+// by customFieldMetadataKey(name). Used only from readContactRecordTransformer;
 // readhelper.MakeMarshaledDataFuncWithId keeps provider-shaped Raw (separate ObjectToMap) and
 // extracts ReadResultRow.Id from raw.
 func flattenContactCustomFieldsInMap(record map[string]any) map[string]any {

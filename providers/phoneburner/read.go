@@ -139,7 +139,7 @@ func applyTimeScopingToURL(url *urlbuilder.URL, params common.ReadParams) {
 //
 // Custom fields are supported only for contacts: GET /rest/1/contacts returns each contact
 // with a custom_fields array in the normal payload (no separate embed). For contacts we
-// flatten those entries to custom_<display_name> keys on Fields via readContactRecordTransformer;
+// flatten those entries to lowercase display-name keys on Fields via readContactRecordTransformer;
 // other objects use standard marshaling without custom-field handling.
 func parseReadResponse(
 	_ context.Context,

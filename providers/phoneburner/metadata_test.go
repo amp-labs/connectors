@@ -16,9 +16,9 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	isCustomField := true
-
 	responseCustomfieldsDefinitions := testutils.DataFromFile(t, "read/customfields-definitions.json")
+
+	isCustomField := true
 
 	tests := []testroutines.Metadata{
 		{
