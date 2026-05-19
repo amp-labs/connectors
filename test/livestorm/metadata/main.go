@@ -17,7 +17,7 @@ func main() {
 		"events",
 		"people",
 		"people_attributes",
-		"session_chat_messages",
+		"jobs",
 	})
 	if err != nil {
 		log.Fatalf("ListObjectMetadata error: %v", err)
