@@ -63,7 +63,7 @@ func (r Result[B]) JoinedErr() error {
 //
 // Non-2xx responses are converted into structured errors and stored in Errors.
 // Successful responses are stored in Responses.
-func (r Result[B]) storeResponseBody(wrapper responseWrapper[B]) { // nolint:unparam
+func (r Result[B]) storeResponseBody(wrapper *responseWrapper[B]) { // nolint:unparam
 	item := wrapper.Data
 	if !httpkit.Status2xx(item.Status) {
 		// In case of an error, no response body will be included.
