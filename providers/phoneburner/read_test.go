@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -108,21 +109,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					},
 					Raw: map[string]any{
 						"contact_user_id": "30919237",
-						"owner_id":        "13514766",
-						"first_name":      "John",
-						"last_name":       "Demo",
-						"date_added":      "2023-10-15 10:38:07",
-						"raw_phone":       "6025551234",
-						"primary_email": map[string]any{
-							"email": "john.demo@example.com",
-						},
-						"custom_fields": []any{
-							map[string]any{
-								"name":  "Lead Score",
-								"type":  "7",
-								"value": "42",
-							},
-						},
+						"custom_fields":   mockutils.Any{},
 					},
 				}},
 				NextPage: "",
