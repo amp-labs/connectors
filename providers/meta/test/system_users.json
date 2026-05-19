@@ -1,0 +1,16 @@
+{
+    "data": [
+        {
+            "id": "122096363306901679",
+            "name": "My System User",
+            "role": "ADMIN"
+        }
+    ],
+    "paging": {
+        "cursors": {
+            "before": "QVFIUkVWY19yMHBzbmYzNXBSTlBuc1hxU0ZARbjh6dy1LMGFlNHJTM1RPVTFWTExCQ1V2aWRxZAW9UX3kxS29NZAndmeFpEX0JBMUhsZAlQ3dDZAxSFU3VnlCNGVn",
+            "after": "QVFIUkVWY19yMHBzbmYzNXBSTlBuc1hxU0ZARbjh6dy1LMGFlNHJTM1RPVTFWTExCQ1V2aWRxZAW9UX3kxS29NZAndmeFpEX0JBMUhsZAlQ3dDZAxSFU3VnlCNGVn"
+        },
+        "next": "https://graph.facebook.com/v19.0/1190021932394709/system_users?limit=25&after=QVFIUkVWY19yMHBzbmYzNXBSTlBuc1hxU0ZARbjh6dy1LMGFlNHJTM1RPVTFWTExCQ1V2aWRxZAW9UX3kxS29NZAndmeFpEX0JBMUhsZAlQ3dDZAxSFU3VnlCNGVn"
+    }
+}
