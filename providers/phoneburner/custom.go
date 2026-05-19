@@ -12,8 +12,9 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// customFieldKeyPrefix disambiguates member-defined custom field values on the contact from built-in
-// top-level contact keys when we promote custom_fields into the read record.
+// customFieldKeyPrefix is a connector-only namespace (not in PhoneBurner JSON). The provider
+// uses display_name on definitions and name on each contact custom_fields entry; we prefix those
+// labels so flattened values do not collide with built-in contact keys.
 const customFieldKeyPrefix = "custom_"
 
 // memberCustomFieldDefinition is a row from GET /rest/1/customfields (member-level definitions).
@@ -54,10 +55,9 @@ func memberCustomFieldTypeToValueType(typeID string) common.ValueType {
 	}
 }
 
-// customFieldMetadataKey is the key used in ListObjectMetadata and when flattening contact
-// custom_fields to the read record: [customFieldKeyPrefix] + the provider display name, trimmed only.
-// The name is not slugified. common.ExtractLowercaseFieldsFromRaw still lowercases for lookup, so
-// ReadResultRow.Fields use lowercase keys.
+// customFieldMetadataKey builds the ListObjectMetadata / read field name from the provider label
+// (display_name or custom_fields[].name). Callers pass the API string; do not assemble custom_* keys by hand.
+// common.ExtractLowercaseFieldsFromRaw lowercases keys on ReadResultRow.Fields.
 func customFieldMetadataKey(displayName string) string {
 	return customFieldKeyPrefix + strings.TrimSpace(displayName)
 }

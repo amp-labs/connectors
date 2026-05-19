@@ -1,6 +1,7 @@
 package phoneburner
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -51,12 +52,12 @@ func TestParseMemberCustomFieldDefinitionsPage_skipsBlankDisplayName(t *testing.
 func TestReadContactRecordTransformerAndMarshaledDataWithId(t *testing.T) {
 	t.Parallel()
 
-	const leadKey = "custom_Lead Score" // metadata / read request field key (prefix + display name)
+	leadKey := customFieldMetadataKey(leadScoreDisplayName)
 
 	jsonStr := `{
 		"contact_user_id": "30919237",
 		"custom_fields": [
-			{"name": "Lead Score", "type": "7", "value": "42"}
+			{"name": "` + leadScoreDisplayName + `", "type": "7", "value": "42"}
 		]
 	}`
 
@@ -86,17 +87,18 @@ func TestReadContactRecordTransformerAndMarshaledDataWithId(t *testing.T) {
 	}
 
 	// Fields: flattened custom value (lookup key is lowercased by ExtractLowercaseFieldsFromRaw).
-	if got, want := row.Fields["custom_lead score"], "42"; got != want {
-		t.Fatalf("Fields[custom_lead score] = %v, want %v", got, want)
+	fieldsKey := strings.ToLower(leadKey)
+	if got, want := row.Fields[fieldsKey], "42"; got != want {
+		t.Fatalf("Fields[%q] = %v, want %v", fieldsKey, got, want)
 	}
 
 	// Raw: must stay provider-shaped; no top-level merged custom key.
-	if _, ok := row.Raw["custom_Lead Score"]; ok {
-		t.Fatal(`Raw must not contain flattened custom field key "custom_Lead Score"`)
+	if _, ok := row.Raw[leadKey]; ok {
+		t.Fatalf(`Raw must not contain flattened connector key %q`, leadKey)
 	}
 
-	if _, ok := row.Raw["custom_lead score"]; ok {
-		t.Fatal(`Raw must not contain Fields-style lowercased key "custom_lead score"`)
+	if _, ok := row.Raw[fieldsKey]; ok {
+		t.Fatalf(`Raw must not contain Fields-style lowercased key %q`, fieldsKey)
 	}
 
 	cf, ok := row.Raw["custom_fields"]

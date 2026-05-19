@@ -3,6 +3,7 @@ package phoneburner
 import (
 	"net/http"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -85,7 +86,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Name: "Read contacts flattens custom_fields to custom_ prefixed keys",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				Fields:     connectors.Fields("contact_user_id", "custom_Lead Score"),
+				Fields:     connectors.Fields("contact_user_id", customFieldMetadataKey(leadScoreDisplayName)),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -101,8 +102,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"contact_user_id":   "30919237",
-						"custom_lead score": "42",
+						"contact_user_id": "30919237",
+						// lowercased by ExtractLowercaseFieldsFromRaw
+						strings.ToLower(customFieldMetadataKey(leadScoreDisplayName)): "42",
 					},
 					Raw: map[string]any{
 						"contact_user_id": "30919237",

@@ -146,8 +146,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ValueType:    "string",
 								ProviderType: "string",
 							},
-							"custom_Lead Score": {
-								DisplayName:  "Lead Score",
+							customFieldMetadataKey(leadScoreDisplayName): {
+								DisplayName:  leadScoreDisplayName,
 								ValueType:    "float",
 								ProviderType: "Numeric",
 								IsCustom:     &isCustomField,
