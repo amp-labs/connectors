@@ -25,6 +25,18 @@ type memberCustomFieldDefinition struct {
 	TypeName      string `json:"type_name"`
 }
 
+// isUsableForMetadata reports whether a row from GET /rest/1/customfields can be
+// exposed on contacts metadata and read flattening.
+//
+// PhoneBurner documents display_name as required when creating a field (POST) and
+// always includes it in GET examples (https://www.phoneburner.com/developer/route_list#customfields).
+// The list endpoint can still return individual rows with a blank display_name (legacy or
+// partial records); we skip those because our connector keys fields as custom_<display_name>,
+// which must match the "name" on each contact's custom_fields array.
+func (d memberCustomFieldDefinition) isUsableForMetadata() bool {
+	return strings.TrimSpace(d.DisplayName) != ""
+}
+
 func memberCustomFieldTypeToValueType(typeID string) common.ValueType {
 	switch strings.TrimSpace(typeID) {
 	case "1":
@@ -118,6 +130,10 @@ func parseMemberCustomFieldDefinitionsPage(body *ajson.Node) ([]memberCustomFiel
 		def, err := jsonquery.ParseNode[memberCustomFieldDefinition](n)
 		if err != nil {
 			return nil, 0, fmt.Errorf("%w: %w", common.ErrResolvingCustomFields, err)
+		}
+
+		if !def.isUsableForMetadata() {
+			continue
 		}
 
 		out = append(out, *def)

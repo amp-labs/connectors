@@ -47,10 +47,6 @@ func (c *Connector) ListObjectMetadata(
 	}
 
 	for _, def := range definitions {
-		if def.DisplayName == "" {
-			continue
-		}
-
 		key := customFieldMetadataKey(def.DisplayName)
 		isCustom := true
 
