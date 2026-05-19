@@ -36,6 +36,21 @@ func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult)
 	return result
 }
 
+// ComparatorSubsetReadByIds compares two slices of ReadResultRow as a subset,
+// ignoring order and focusing only on relevant fields, raw data, associations, and identifiers.
+func ComparatorSubsetReadByIds(serverURL string, actual, expected []common.ReadResultRow) *testutils.CompareResult {
+	return ComparatorSubsetRead(serverURL,
+		&common.ReadResult{
+			Rows: int64(len(actual)),
+			Data: actual,
+		},
+		&common.ReadResult{
+			Rows: int64(len(expected)),
+			Data: expected,
+		},
+	)
+}
+
 // ComparatorPagination will check pagination related fields.
 // Note: you may use an alias for Mock-Server-URL which will be dynamically resolved at runtime.
 // Example:
@@ -213,6 +228,24 @@ func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMet
 	}
 
 	return result
+}
+
+func ComparatorSubscriptionWithResult(
+	resultComparator func(expectedResult, actualResult any) *testutils.CompareResult,
+) Comparator[*common.SubscriptionResult] {
+	return func(_ string, actual, expected *common.SubscriptionResult) *testutils.CompareResult {
+		result := testutils.NewCompareResult()
+		result.Merge(mockutils.SubscriptionResultComparator.CompareWithoutResultArg(actual, expected))
+		result.Merge(resultComparator(expected.Result, actual.Result))
+
+		return result
+	}
+}
+
+func ComparatorSubscriptionWithoutResult(
+	_ string, actual, expected *common.SubscriptionResult,
+) *testutils.CompareResult {
+	return mockutils.SubscriptionResultComparator.CompareWithoutResultArg(actual, expected)
 }
 
 func mapIsSubsetMap(subset, superset map[string]any) bool {

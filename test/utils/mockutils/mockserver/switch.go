@@ -43,7 +43,7 @@ func (c Switch) Server() *httptest.Server {
 			return
 		}
 
-		// Default fail behaviour.
+		// Default fail behavior.
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte(`{"error": {"message": "condition failed"}}`))
 	})
