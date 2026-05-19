@@ -50,19 +50,16 @@ var (
 			Version:           APIVersion2026March,
 			PageSize:          DefaultPageSize,
 		},
-		// "marketing/emails" refers to HubSpot marketing emails, which are distinct
-		// from the CRM email activity resource.
-		//
-		// The object name preserves the marketing-prefixed endpoint form to avoid a
-		// naming collision with CRM emails.
-		//
-		// Path is relative to the Marketing API base path.
+		// "marketing-emails" refers to HubSpot marketing emails, which are distinct
+		// from the CRM email activity resource. The hyphenated form disambiguates
+		// from the CRM `emails` object while staying consistent with other marketing
+		// object names (e.g. `marketing-events`).
 		//
 		// Marketing emails:
 		// https://developers.hubspot.com/docs/api-reference/latest/marketing/marketing-emails/get-emails
 		// CRM emails:
 		// https://developers.hubspot.com/docs/api-reference/latest/crm/activities/emails/guide
-		"marketing/emails": {
+		"marketing-emails": {
 			Path:              "emails",
 			RecordTransformer: nil, // None. Fields and Raw are the same.
 			Version:           APIVersion2026March,

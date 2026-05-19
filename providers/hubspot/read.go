@@ -160,15 +160,30 @@ func (c *Connector) readMarketing(ctx context.Context,
 		identifier = "objectId"
 	}
 
+	marshaller := readhelper.MakeMarshaledDataFuncWithId(
+		object.RecordTransformer,
+		readhelper.IdFieldQuery{Field: identifier},
+	)
+
+	// Campaigns support per-asset-type associations via HubSpot's list-campaign-assets endpoint.
+	// Other marketing objects don't have a comparable association API.
+	if params.ObjectName == "campaigns" && len(params.AssociatedObjects) > 0 {
+		marshaller = readhelper.ChainedMarshaller(
+			marshaller,
+			func(rows []common.ReadResultRow) error {
+				return c.campaignAssetsFiller.FillAssociations(
+					ctx, params.ObjectName, params.AssociatedObjects, rows,
+				)
+			},
+		)
+	}
+
 	return common.ParseResultFiltered(
 		params,
 		resp,
 		common.MakeRecordsFunc("results"),
 		makeIncrementalFilterFunc(params),
-		readhelper.MakeMarshaledDataFuncWithId(
-			object.RecordTransformer,
-			readhelper.IdFieldQuery{Field: identifier},
-		),
+		marshaller,
 		params.Fields,
 	)
 }

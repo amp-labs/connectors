@@ -158,7 +158,7 @@
             }
           }
         },
-        "marketing/emails": {
+        "marketing-emails": {
           "displayName": "Marketing Emails",
           "description": "/marketing/emails/2026-03",
           "responseKey": "results",

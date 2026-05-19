@@ -36,10 +36,11 @@ type Connector struct {
 	components.Deleter
 
 	// These delegate complex functionality to keep Connector modular and prevent code bloat.
-	customAdapter      *custom.Adapter  // used for connectors.UpsertMetadataConnector capabilities.
-	batchAdapter       *batch.Adapter   // used for connectors.BatchWriteConnector capabilities.
-	searchStrategy     *search.Strategy // used for connectors.SearchConnector capabilities.
-	associationsFiller associations.Filler
+	customAdapter        *custom.Adapter  // used for connectors.UpsertMetadataConnector capabilities.
+	batchAdapter         *batch.Adapter   // used for connectors.BatchWriteConnector capabilities.
+	searchStrategy       *search.Strategy // used for connectors.SearchConnector capabilities.
+	associationsFiller   associations.Filler
+	campaignAssetsFiller associations.Filler // used for campaigns→assets associations on the marketing read path.
 }
 
 var _ connectors.WebhookVerifierConnector = &Connector{}
@@ -73,6 +74,9 @@ func constructor(base *components.Connector) (*Connector, error) {
 	connector.customAdapter = custom.NewAdapter(connector.JSONHTTPClient(), connector.ProviderInfo())
 	associationsStrategy := associations.NewStrategy(connector.JSONHTTPClient(), connector.ProviderInfo())
 	connector.associationsFiller = associationsStrategy
+	connector.campaignAssetsFiller = associations.NewCampaignAssetsFiller(
+		connector.JSONHTTPClient(), connector.ProviderInfo(),
+	)
 	connector.batchAdapter = batch.NewAdapter(connector.HTTPClient(), connector.ProviderInfo(), associationsStrategy)
 	connector.searchStrategy = search.NewStrategy(
 		connector.JSONHTTPClient(), connector.ProviderInfo(), connector.associationsFiller,

@@ -373,7 +373,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		{
 			Name: "Successfully describe various objects",
 			Input: []string{
-				"campaigns", "marketing/emails", "forms",
+				"campaigns", "marketing-emails", "forms",
 				"marketing-events", "meeting-links",
 			},
 			Server:     mockserver.Dummy(),
@@ -411,7 +411,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							},
 						},
 					},
-					"marketing/emails": {
+					"marketing-emails": {
 						DisplayName: "Marketing Emails",
 						Fields: map[string]common.FieldMetadata{
 							"campaignName": {

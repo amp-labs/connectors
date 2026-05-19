@@ -378,7 +378,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Read marketing emails first page",
 			Input: common.ReadParams{
-				ObjectName: "marketing/emails",
+				ObjectName: "marketing-emails",
 				Fields:     connectors.Fields("subject"),
 			},
 			Server: mockserver.Conditional{
@@ -421,7 +421,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Read marketing emails last page",
 			Input: common.ReadParams{
-				ObjectName: "marketing/emails",
+				ObjectName: "marketing-emails",
 				Fields:     connectors.Fields("subject"),
 				NextPage:   testroutines.URLTestServer + "/marketing/emails/2026-03?limit=3&sort=-updatedAt&after=Mw%3D%3D",
 			},
