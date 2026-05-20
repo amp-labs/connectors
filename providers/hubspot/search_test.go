@@ -392,7 +392,7 @@ func TestReadUsingSearchAPI(t *testing.T) {
 		{
 			Name: "Read marketing campaigns via Search",
 			Input: SearchParams{
-				ObjectName: "campaigns",
+				ObjectName: "marketing-campaigns",
 				Fields:     connectors.Fields("hs_budget_items_sum_amount", "hs_name", "hs_notes"),
 				Since:      time.Date(2026, 5, 5, 23, 10, 0, 0, time.UTC),
 			},

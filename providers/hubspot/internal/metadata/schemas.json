@@ -59,9 +59,9 @@
             }
           }
         },
-        "campaigns": {
-          "displayName": "Campaigns",
-          "description": "Object does not belong to CRM: /marketing/campaigns",
+        "marketing-campaigns": {
+          "displayName": "Marketing Campaigns",
+          "description": "Object is not part of CRM but marketing: /marketing/campaigns",
           "responseKey": "results",
           "fields": {
             "hs_name": {
@@ -158,7 +158,7 @@
             }
           }
         },
-        "marketing/emails": {
+        "marketing-emails": {
           "displayName": "Marketing Emails",
           "description": "/marketing/emails/2026-03",
           "responseKey": "results",
@@ -680,7 +680,7 @@
             }
           }
         },
-        "forms": {
+        "marketing-forms": {
           "displayName": "Marketing Forms",
           "description": "/marketing/forms/2026-09-beta",
           "responseKey": "results",
