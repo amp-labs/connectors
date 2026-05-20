@@ -181,9 +181,11 @@ func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.U
 const defaultTimestampColumn = "SystemModstamp"
 
 // getTimestampColumn returns the field name used for incremental read queries.
-func (c *Connector) getTimestampColumn() string {
-	if c.timestampColumn != "" {
-		return c.timestampColumn
+func (c *Connector) getTimestampColumn(params common.ReadParams) string {
+	if params.UseAlternateTimestamp {
+		if c.timestampColumn != "" {
+			return c.timestampColumn
+		}
 	}
 
 	return defaultTimestampColumn

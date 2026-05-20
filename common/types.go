@@ -208,6 +208,9 @@ type ReadParams struct {
 
 	// PageSize specifies the # of records to request when making a read request.
 	PageSize int // optional
+
+	// UseAlternateTimestamp specifies if the alternate timestamp should be used for pagination.
+	UseAlternateTimestamp bool // optional
 }
 
 func (p ReadParams) IsFirstPage() bool {
