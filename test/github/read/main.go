@@ -27,7 +27,7 @@ func main() {
 	connector := github.GetGithubConnector(ctx)
 
 	res, err := connector.Read(ctx, common.ReadParams{
-		ObjectName: "emails",
+		ObjectName: "user/emails",
 		Fields:     datautils.NewStringSet("email", "primary"),
 	})
 	if err != nil {

@@ -157,6 +157,131 @@
             }
           }
         },
+        "agents/tasks": {
+          "displayName": "Agents Tasks",
+          "path": "/agents/tasks",
+          "responseKey": "tasks",
+          "fields": {
+            "archived_at": {
+              "displayName": "archived_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "artifacts": {
+              "displayName": "artifacts",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "creator": {
+              "displayName": "creator",
+              "valueType": "other"
+            },
+            "creator_type": {
+              "displayName": "creator_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "user",
+                  "displayValue": "user"
+                },
+                {
+                  "value": "organization",
+                  "displayValue": "organization"
+                }
+              ]
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "repository": {
+              "displayName": "repository",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "session_count": {
+              "displayName": "session_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                },
+                {
+                  "value": "in_progress",
+                  "displayValue": "in_progress"
+                },
+                {
+                  "value": "completed",
+                  "displayValue": "completed"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                },
+                {
+                  "value": "idle",
+                  "displayValue": "idle"
+                },
+                {
+                  "value": "waiting_for_user",
+                  "displayValue": "waiting_for_user"
+                },
+                {
+                  "value": "timed_out",
+                  "displayValue": "timed_out"
+                },
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_collaborators": {
+              "displayName": "user_collaborators",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
         "blocks": {
           "displayName": "Blocks",
           "path": "/user/blocks",
@@ -2150,103 +2275,6 @@
             }
           }
         },
-        "migrations": {
-          "displayName": "Migrations",
-          "path": "/user/migrations",
-          "responseKey": "",
-          "fields": {
-            "archive_url": {
-              "displayName": "archive_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "exclude": {
-              "displayName": "exclude",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "exclude_attachments": {
-              "displayName": "exclude_attachments",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_git_data": {
-              "displayName": "exclude_git_data",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_metadata": {
-              "displayName": "exclude_metadata",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_owner_projects": {
-              "displayName": "exclude_owner_projects",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_releases": {
-              "displayName": "exclude_releases",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "guid": {
-              "displayName": "guid",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "lock_repositories": {
-              "displayName": "lock_repositories",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "node_id": {
-              "displayName": "node_id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "org_metadata_only": {
-              "displayName": "org_metadata_only",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "owner": {
-              "displayName": "owner",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "repositories": {
-              "displayName": "repositories",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "state": {
-              "displayName": "state",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
-            }
-          }
-        },
         "organizations": {
           "displayName": "Organizations",
           "path": "/organizations",
@@ -4142,131 +4170,6 @@
             }
           }
         },
-        "tasks": {
-          "displayName": "Tasks",
-          "path": "/agents/tasks",
-          "responseKey": "tasks",
-          "fields": {
-            "archived_at": {
-              "displayName": "archived_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "artifacts": {
-              "displayName": "artifacts",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "creator": {
-              "displayName": "creator",
-              "valueType": "other"
-            },
-            "creator_type": {
-              "displayName": "creator_type",
-              "valueType": "singleSelect",
-              "providerType": "string",
-              "values": [
-                {
-                  "value": "user",
-                  "displayValue": "user"
-                },
-                {
-                  "value": "organization",
-                  "displayValue": "organization"
-                }
-              ]
-            },
-            "html_url": {
-              "displayName": "html_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "name": {
-              "displayName": "name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "owner": {
-              "displayName": "owner",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "repository": {
-              "displayName": "repository",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "session_count": {
-              "displayName": "session_count",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "state": {
-              "displayName": "state",
-              "valueType": "singleSelect",
-              "providerType": "string",
-              "values": [
-                {
-                  "value": "queued",
-                  "displayValue": "queued"
-                },
-                {
-                  "value": "in_progress",
-                  "displayValue": "in_progress"
-                },
-                {
-                  "value": "completed",
-                  "displayValue": "completed"
-                },
-                {
-                  "value": "failed",
-                  "displayValue": "failed"
-                },
-                {
-                  "value": "idle",
-                  "displayValue": "idle"
-                },
-                {
-                  "value": "waiting_for_user",
-                  "displayValue": "waiting_for_user"
-                },
-                {
-                  "value": "timed_out",
-                  "displayValue": "timed_out"
-                },
-                {
-                  "value": "cancelled",
-                  "displayValue": "cancelled"
-                }
-              ]
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "user_collaborators": {
-              "displayName": "user_collaborators",
-              "valueType": "other",
-              "providerType": "array"
-            }
-          }
-        },
         "teams": {
           "displayName": "Teams",
           "path": "/user/teams",
@@ -4670,7 +4573,7 @@
           }
         },
         "user/emails": {
-          "displayName": "User/Emails",
+          "displayName": "User Emails",
           "path": "/user/emails",
           "responseKey": "",
           "fields": {
@@ -4697,7 +4600,7 @@
           }
         },
         "user/gpg_keys": {
-          "displayName": "User/Gpg Keys",
+          "displayName": "User GPG Keys",
           "path": "/user/gpg_keys",
           "responseKey": "",
           "fields": {
@@ -5154,7 +5057,7 @@
           }
         },
         "user/keys": {
-          "displayName": "User/Keys",
+          "displayName": "User Keys",
           "path": "/user/keys",
           "responseKey": "",
           "fields": {
@@ -5273,6 +5176,103 @@
               "displayName": "user",
               "valueType": "other",
               "providerType": "object"
+            }
+          }
+        },
+        "user/migrations": {
+          "displayName": "User Migrations",
+          "path": "/user/migrations",
+          "responseKey": "",
+          "fields": {
+            "archive_url": {
+              "displayName": "archive_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "exclude": {
+              "displayName": "exclude",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "exclude_attachments": {
+              "displayName": "exclude_attachments",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_git_data": {
+              "displayName": "exclude_git_data",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_metadata": {
+              "displayName": "exclude_metadata",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_owner_projects": {
+              "displayName": "exclude_owner_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_releases": {
+              "displayName": "exclude_releases",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "guid": {
+              "displayName": "guid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lock_repositories": {
+              "displayName": "lock_repositories",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "org_metadata_only": {
+              "displayName": "org_metadata_only",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "repositories": {
+              "displayName": "repositories",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         },

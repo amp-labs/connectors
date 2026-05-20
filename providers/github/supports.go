@@ -55,19 +55,19 @@ var (
 var (
 	supportPagination = datautils.NewSet( //nolint: gochecknoglobals
 		"advisories", "blocks", "classrooms", "user/codespaces",
-		"deliveries", "emails", "events", "followers", "following", "gists",
+		"deliveries", "user/emails", "events", "followers", "following", "gists",
 		"gists/starred", "gpg_keys", "installation-requests", "installation/repositories",
 		"issues", "keys", "licenses", "marketplace_listing/plans",
 		"marketplace_listing/stubbed/plans", "marketplace_purchases", "migrations",
 		"notifications", "orgs", "packages", "gists/public", "public_emails", "repos",
 		"repository_invitations", "secrets", "social_accounts", "ssh_signing_keys",
 		"stubbed", "subscriptions", "teams", "user/installations", "user/issues",
-		"user/memberships/orgs", "user/starred",
+		"user/memberships/orgs", "user/starred", "agents/tasks",
 	)
 
 	supportSince = datautils.NewSet( //nolint: gochecknoglobals
 		"gists", "gists/starred", "issues",
-		"gists/public", "repos", "user/issues",
+		"gists/public", "repos", "user/issues", "agents/tasks",
 	)
 
 	supportByUpdate = datautils.NewSet( //nolint: gochecknoglobals
