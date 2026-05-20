@@ -1,6 +1,9 @@
 package salesforce
 
 import (
+	"maps"
+	"strings"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -47,7 +50,8 @@ type Connector struct {
 	// timestampColumn overrides the default "SystemModstamp" field used in
 	// incremental read queries (Since/Until WHERE clauses). When empty,
 	// "SystemModstamp" is used.
-	timestampColumn string
+	timestampColumn                string
+	alternateTimestampUsingObjects map[common.ObjectName]bool
 }
 
 // NewConnector returns a new Salesforce connector.
@@ -70,6 +74,7 @@ func NewConnector(opts ...Option) (*Connector, error) {
 	}
 
 	conn.timestampColumn = params.timestampColumn
+	conn.alternateTimestampUsingObjects = params.alternateTimestampUsingObjects
 
 	connectorParams, err := newParams(opts)
 	if err != nil {
@@ -151,6 +156,31 @@ func (c *Connector) SetBaseURL(newURL string) {
 	c.HTTPClient().Base = newURL
 }
 
+// GetTimestampColumn returns the field name used in incremental-read WHERE
+// clauses (Since/Until) for the given object. The configured alternate column
+// applies only to objects that opted in via WithTimestampColumn's second
+// argument; all other objects fall back to defaultTimestampColumn. Object
+// names are matched case-insensitively.
+func (c *Connector) GetTimestampColumn(objectName common.ObjectName) string {
+	if c.timestampColumn != "" {
+		if _, ok := c.alternateTimestampUsingObjects[common.ObjectName(strings.ToLower(string(objectName)))]; ok {
+			return c.timestampColumn
+		}
+	}
+
+	return defaultTimestampColumn
+}
+
+// AlternateTimestampUsingObjects returns a copy of the set of objects that
+// opted into the alternate timestamp column configured via WithTimestampColumn.
+// A copy is returned so callers cannot mutate connector state.
+func (c *Connector) AlternateTimestampUsingObjects() map[common.ObjectName]bool {
+	out := make(map[common.ObjectName]bool, len(c.alternateTimestampUsingObjects))
+	maps.Copy(out, c.alternateTimestampUsingObjects)
+
+	return out
+}
+
 func (c *Connector) getRestApiURL(paths ...string) (*urlbuilder.URL, error) {
 	parts := append([]string{
 		crmcore.RestAPISuffix, // scope URLs to API version
@@ -179,15 +209,6 @@ func (c *Connector) getURIPartSobjectsDescribe(objectName string) (*urlbuilder.U
 }
 
 const defaultTimestampColumn = "SystemModstamp"
-
-// getTimestampColumn returns the field name used for incremental read queries.
-func (c *Connector) getTimestampColumn() string {
-	if c.timestampColumn != "" {
-		return c.timestampColumn
-	}
-
-	return defaultTimestampColumn
-}
 
 func (c *Connector) isPardotModule() bool {
 	return c.pardotAdapter != nil

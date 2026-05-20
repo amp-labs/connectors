@@ -2,6 +2,7 @@ package connector
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -314,7 +315,7 @@ func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connecto
 	}
 
 	if field, ok := params.Metadata["timestampColumn"]; ok && field != "" {
-		opts = append(opts, salesforce.WithTimestampColumn(field))
+		opts = append(opts, salesforce.WithTimestampColumn(field, extractAlternateTimestampUsingObjects(params.Metadata)))
 	}
 
 	return salesforce.NewConnector(opts...)
@@ -336,10 +337,42 @@ func newSalesforceJWTConnector(params common.ConnectorParams) (*salesforce.Conne
 	}
 
 	if field, ok := params.Metadata["timestampColumn"]; ok && field != "" {
-		opts = append(opts, salesforce.WithTimestampColumn(field))
+		opts = append(opts, salesforce.WithTimestampColumn(field, extractAlternateTimestampUsingObjects(params.Metadata)))
 	}
 
 	return salesforce.NewConnector(opts...)
+}
+
+// alternateTimestampMetadataSuffix is the suffix on per-object metadata keys
+// that opt that object into the alternate timestamp column. For example, a
+// metadata entry "Account_timestampColumnCreateTime" opts Account into
+// salesforce.WithTimestampColumn's overridden column for incremental reads.
+// Object names are matched case-insensitively because getTimestampColumn
+// lowercases the lookup.
+const alternateTimestampMetadataSuffix = "_timestampColumnCreateTime"
+
+// extractAlternateTimestampUsingObjects walks the connector metadata for
+// "<ObjectName>_timestampColumnCreateTime" entries and returns the set of
+// objects (keyed lowercase, matching the runtime lookup) that opt into the
+// alternate timestamp column. Returns an empty map (never nil) so callers can
+// rely on lookups without nil-checking.
+func extractAlternateTimestampUsingObjects(metadata map[string]string) map[common.ObjectName]bool {
+	objects := make(map[common.ObjectName]bool)
+
+	for key := range metadata {
+		if !strings.HasSuffix(key, alternateTimestampMetadataSuffix) {
+			continue
+		}
+
+		object := strings.TrimSuffix(key, alternateTimestampMetadataSuffix)
+		if object == "" {
+			continue
+		}
+
+		objects[common.ObjectName(strings.ToLower(object))] = true
+	}
+
+	return objects
 }
 
 func newHubspotConnector(params common.ConnectorParams) (*hubspot.Connector, error) {
