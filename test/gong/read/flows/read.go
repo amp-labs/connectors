@@ -23,14 +23,26 @@ func main() {
 
 	conn := connTest.GetGongConnector(ctx)
 
+	slog.Info("Reading flows aggregated across all users..")
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "flows",
-		Fields:     connectors.Fields("id", "name"),
+		Fields:     connectors.Fields("id", "name", "visibility"),
 	})
 	if err != nil {
 		utils.Fail("error reading from Gong", "error", err)
 	}
 
-	slog.Info("Reading flows..")
 	utils.DumpJSON(res, os.Stdout)
+
+	slog.Info("Reading flows with users association..")
+	resWithAssoc, err := conn.Read(ctx, common.ReadParams{
+		ObjectName:        "flows",
+		Fields:            connectors.Fields("id", "name", "visibility"),
+		AssociatedObjects: []string{"users"},
+	})
+	if err != nil {
+		utils.Fail("error reading from Gong with associations", "error", err)
+	}
+
+	utils.DumpJSON(resWithAssoc, os.Stdout)
 }

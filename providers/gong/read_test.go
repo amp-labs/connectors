@@ -251,6 +251,166 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		},
 
 		{
+			Name: "Flows: no users returns empty result",
+			Input: common.ReadParams{
+				ObjectName: "flows",
+				Fields:     connectors.Fields("id", "name"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If: mockcond.Path("/v2/users"),
+					Then: mockserver.ResponseString(http.StatusOK, `{
+						"requestId": "noUsers",
+						"records": {"totalRecords": 0, "currentPageSize": 0, "currentPageNumber": 0},
+						"users": []
+					}`),
+				}},
+			}.Server(),
+			Expected:     &common.ReadResult{Done: true, Rows: 0, Data: nil},
+			ExpectedErrs: nil,
+		},
+		{
+			// Branch B behavior: aggregate flows across every user, dedupe shared
+			// flow (id 9000000000000099) which appears under both Alice and Bob.
+			Name: "Flows: aggregate across all users and dedupe by id",
+			Input: common.ReadParams{
+				ObjectName: "flows",
+				Fields:     connectors.Fields("id", "name", "visibility"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/v2/users"),
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "get-records-users.json")),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/v2/flows"),
+						mockcond.QueryParam("flowOwnerEmail", "alice@example.com"),
+					},
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_alice.json")),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/v2/flows"),
+						mockcond.QueryParam("flowOwnerEmail", "bob@example.com"),
+					},
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_bob.json")),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Data: []common.ReadResultRow{{
+					Id: "9000000000000001",
+					Fields: map[string]any{
+						"name":       "Alice's Personal Outreach",
+						"visibility": "Personal",
+					},
+					Raw: map[string]any{
+						"id":         "9000000000000001",
+						"visibility": "Personal",
+					},
+				}, {
+					Id: "9000000000000002",
+					Fields: map[string]any{
+						"name":       "Bob's Personal Outreach",
+						"visibility": "Personal",
+					},
+					Raw: map[string]any{
+						"id":         "9000000000000002",
+						"visibility": "Personal",
+					},
+				}, {
+					Id: "9000000000000099",
+					Fields: map[string]any{
+						"name":       "Company-wide Sales Cadence",
+						"visibility": "Company",
+					},
+					Raw: map[string]any{
+						"id":         "9000000000000099",
+						"visibility": "Company",
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Flows: AssociatedObjects=users attaches each Personal flow's owner",
+			Input: common.ReadParams{
+				ObjectName:        "flows",
+				Fields:            connectors.Fields("id", "name", "visibility"),
+				AssociatedObjects: []string{"users"},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/v2/users"),
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "get-records-users.json")),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/v2/flows"),
+						mockcond.QueryParam("flowOwnerEmail", "alice@example.com"),
+					},
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_alice.json")),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/v2/flows"),
+						mockcond.QueryParam("flowOwnerEmail", "bob@example.com"),
+					},
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_bob.json")),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Data: []common.ReadResultRow{{
+					Id: "9000000000000001",
+					Fields: map[string]any{
+						"visibility": "Personal",
+					},
+					Raw: map[string]any{
+						"visibility": "Personal",
+					},
+					Associations: map[string][]common.Association{
+						"users": {{
+							ObjectId: "8000000000000001",
+							Raw: map[string]any{
+								"emailAddress": "alice@example.com",
+							},
+						}},
+					},
+				}, {
+					Id: "9000000000000002",
+					Fields: map[string]any{
+						"visibility": "Personal",
+					},
+					Raw: map[string]any{
+						"visibility": "Personal",
+					},
+					Associations: map[string][]common.Association{
+						"users": {{
+							ObjectId: "8000000000000002",
+							Raw: map[string]any{
+								"emailAddress": "bob@example.com",
+							},
+						}},
+					},
+				}, {
+					Id: "9000000000000099",
+					Fields: map[string]any{
+						"visibility": "Company",
+					},
+					Raw: map[string]any{
+						"visibility": "Company",
+					},
+					// Company flows: no user association.
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name:  "Successful read transcripts using POST",
 			Input: common.ReadParams{ObjectName: "transcripts", Fields: connectors.Fields("callid")},
 			Server: mockserver.Conditional{

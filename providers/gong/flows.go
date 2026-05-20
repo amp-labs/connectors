@@ -3,6 +3,8 @@ package gong
 import (
 	"context"
 	"fmt"
+	"sort"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
@@ -10,6 +12,8 @@ import (
 
 // readFlows handles the special case for reading flows which requires flowOwnerEmail query param.
 // It fetches all users first, then iterates through their emails to fetch flows for each user.
+// Flows are aggregated across users and deduplicated by id, because shared/company flows may
+// appear in multiple users' result sets while personal flows are unique to their owner.
 // Some users may not have engage license or may not be added to flows, so we handle errors gracefully.
 // ref: https://gong.app.gong.io/settings/api/documentation#get-/v2/flows
 func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { // nolint:cyclop,lll
@@ -19,13 +23,14 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 	}
 
 	if len(users) == 0 {
-		return &common.ReadResult{
-			Rows:     0,
-			Data:     nil,
-			NextPage: "",
-			Done:     true,
-		}, nil
+		return emptyFlowsResult(), nil
 	}
+
+	includeUserAssoc := wantsUserAssociation(config.AssociatedObjects)
+
+	// Aggregate flows across all users, keyed by id to dedupe shared/company flows
+	// that surface in multiple users' result sets.
+	aggregated := make(map[string]common.ReadResultRow)
 
 	for _, user := range users {
 		userEmail, ok := user.Raw["emailAddress"].(string)
@@ -40,21 +45,78 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 			continue
 		}
 
-		// Return as soon as we find flows for a user
-		return &common.ReadResult{
-			Rows:     int64(len(flows)),
-			Data:     flows,
-			NextPage: "",
-			Done:     true,
-		}, nil
+		for _, flow := range flows {
+			if _, seen := aggregated[flow.Id]; seen {
+				continue
+			}
+
+			if includeUserAssoc {
+				attachUserToPersonalFlow(&flow, user)
+			}
+
+			aggregated[flow.Id] = flow
+		}
 	}
 
+	data := make([]common.ReadResultRow, 0, len(aggregated))
+	for _, flow := range aggregated {
+		data = append(data, flow)
+	}
+
+	// Stable order: map iteration is random in Go.
+	sort.Slice(data, func(i, j int) bool {
+		return data[i].Id < data[j].Id
+	})
+
+	return &common.ReadResult{
+		Rows:     int64(len(data)),
+		Data:     data,
+		NextPage: "",
+		Done:     true,
+	}, nil
+}
+
+func emptyFlowsResult() *common.ReadResult {
 	return &common.ReadResult{
 		Rows:     0,
 		Data:     nil,
 		NextPage: "",
 		Done:     true,
-	}, nil
+	}
+}
+
+// wantsUserAssociation reports whether the caller asked for user records to be
+// attached alongside each flow.
+func wantsUserAssociation(associatedObjects []string) bool {
+	for _, name := range associatedObjects {
+		switch strings.ToLower(name) {
+		case "user", "users":
+			return true
+		}
+	}
+
+	return false
+}
+
+// attachUserToPersonalFlow attaches the owning user as an association if the flow
+// has Personal visibility. Shared and Company flows are not user-specific.
+func attachUserToPersonalFlow(flow *common.ReadResultRow, user common.ReadResultRow) {
+	visibility, _ := flow.Raw["visibility"].(string)
+	if !strings.EqualFold(visibility, "Personal") {
+		return
+	}
+
+	if flow.Associations == nil {
+		flow.Associations = make(map[string][]common.Association)
+	}
+
+	flow.Associations[objectNameUsers] = append(
+		flow.Associations[objectNameUsers],
+		common.Association{
+			ObjectId: user.Id,
+			Raw:      user.Raw,
+		},
+	)
 }
 
 // fetchAllUsers retrieves all users from the /users endpoint.

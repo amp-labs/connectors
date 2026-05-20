@@ -1,0 +1,28 @@
+{
+  "requestId": "b1b2c3d4e5f6g7h8i9j0",
+  "records": {
+    "totalRecords": 2,
+    "currentPageSize": 2,
+    "currentPageNumber": 0
+  },
+  "flows": [
+    {
+      "id": "9000000000000002",
+      "name": "Bob's Personal Outreach",
+      "folderId": "7000000000000002",
+      "folderName": "My Folder",
+      "visibility": "Personal",
+      "creationDate": "2025-01-16T11:00:00Z",
+      "exclusive": false
+    },
+    {
+      "id": "9000000000000099",
+      "name": "Company-wide Sales Cadence",
+      "folderId": "7000000000000099",
+      "folderName": "Shared Folder",
+      "visibility": "Company",
+      "creationDate": "2025-01-10T08:30:00Z",
+      "exclusive": true
+    }
+  ]
+}
