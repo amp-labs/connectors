@@ -8,7 +8,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
-	serviceNow "github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/test/servicenow"
 )
 
