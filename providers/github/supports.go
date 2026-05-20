@@ -62,7 +62,7 @@ var (
 		"notifications", "orgs", "packages", "gists/public", "public_emails", "repos",
 		"repository_invitations", "secrets", "social_accounts", "ssh_signing_keys",
 		"stubbed", "subscriptions", "teams", "user/installations", "user/issues",
-		"user/memberships/orgs", "user/starred", "agents/tasks",
+		"user/memberships/orgs", "user/starred", "agents/tasks", "users",
 	)
 
 	supportSince = datautils.NewSet( //nolint: gochecknoglobals

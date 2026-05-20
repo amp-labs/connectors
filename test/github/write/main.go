@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/providers/github"
 	hs "github.com/amp-labs/connectors/test/github"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 func main() {
@@ -41,6 +42,8 @@ func main() {
 	if err := updateUserCodespaces(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
+
+	slog.Info("> TEST create user repos")
 
 	if err := createUserRepos(ctx, conn); err != nil {
 		slog.Error(err.Error())
@@ -127,7 +130,7 @@ func createUserRepos(ctx context.Context, conn *github.Connector) error {
 	config := common.WriteParams{
 		ObjectName: "repos",
 		RecordData: map[string]any{
-			"name":        "test-repo",
+			"name":        gofakeit.Username() + "-test-repo",
 			"description": "Example repository from connector",
 			"private":     false,
 		},
