@@ -47,6 +47,9 @@ var (
 	// https://docs.github.com/en/rest/codespaces/codespaces?apiVersion=2022-11-28#update-a-codespace-for-the-authenticated-user
 	// https://docs.github.com/en/rest/codespaces/codespaces?apiVersion=2022-11-28#delete-a-codespace-for-the-authenticated-user
 	objectNameUserCodespaces = "user/codespaces"
+
+	// https://docs.github.com/en/rest/repos/repos?apiVersion=2026-03-10#create-a-repository-for-the-authenticated-user
+	objectNameUserRepos = "repos"
 )
 
 var (
@@ -78,7 +81,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	// nolint:lll
 	writeSupport := []string{
 		objectNameGist, objectNameUserEmails, objectNameUserGpgKeys, objectNameUserKeys, objectNameUserSSHSigningKeys, objectNameUserSocialAccounts,
-		objectNameUserCodespaces,
+		objectNameUserCodespaces, objectNameUserRepos,
 	}
 
 	// nolint:lll

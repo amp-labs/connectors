@@ -48,4 +48,15 @@ func main() {
 	}
 
 	utils.DumpJSON(res, os.Stdout)
+
+	res, err = connector.Read(ctx, common.ReadParams{
+		ObjectName: "users",
+		Fields:     datautils.NewStringSet("login", "id", "url"),
+	})
+
+	if err != nil {
+		slog.Error(err.Error())
+	}
+
+	utils.DumpJSON(res, os.Stdout)
 }

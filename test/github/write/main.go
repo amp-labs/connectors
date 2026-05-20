@@ -41,6 +41,10 @@ func main() {
 	if err := updateUserCodespaces(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
+
+	if err := createUserRepos(ctx, conn); err != nil {
+		slog.Error(err.Error())
+	}
 }
 
 func addUserEmails(ctx context.Context, conn *github.Connector) error {
@@ -101,6 +105,31 @@ func updateUserCodespaces(ctx context.Context, conn *github.Connector) error {
 		RecordId:   "fuzzy-fishstick-jj457pqw4q7g2565v",
 		RecordData: map[string]any{
 			"display_name": "test",
+		},
+	}
+
+	result, err := conn.Write(ctx, config)
+	if err != nil {
+		return err
+	}
+
+	jsonStr, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(jsonStr))
+
+	return nil
+}
+
+func createUserRepos(ctx context.Context, conn *github.Connector) error {
+	config := common.WriteParams{
+		ObjectName: "repos",
+		RecordData: map[string]any{
+			"name":        "test-repo",
+			"description": "Example repository from connector",
+			"private":     false,
 		},
 	}
 

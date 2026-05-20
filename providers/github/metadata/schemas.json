@@ -19,11 +19,6 @@
               "valueType": "string",
               "providerType": "string"
             },
-            "cvss": {
-              "displayName": "cvss",
-              "valueType": "other",
-              "providerType": "object"
-            },
             "cvss_severities": {
               "displayName": "cvss_severities",
               "valueType": "other",
@@ -530,8 +525,7 @@
             },
             "payload": {
               "displayName": "payload",
-              "valueType": "other",
-              "providerType": "object"
+              "valueType": "other"
             },
             "public": {
               "displayName": "public",
@@ -824,11 +818,6 @@
               "valueType": "other",
               "providerType": "object"
             },
-            "forks": {
-              "displayName": "forks",
-              "valueType": "other",
-              "providerType": "array"
-            },
             "forks_url": {
               "displayName": "forks_url",
               "valueType": "string",
@@ -843,11 +832,6 @@
               "displayName": "git_push_url",
               "valueType": "string",
               "providerType": "string"
-            },
-            "history": {
-              "displayName": "history",
-              "valueType": "other",
-              "providerType": "array"
             },
             "html_url": {
               "displayName": "html_url",
@@ -888,11 +872,6 @@
               "displayName": "url",
               "valueType": "string",
               "providerType": "string"
-            },
-            "user": {
-              "displayName": "user",
-              "valueType": "other",
-              "providerType": "object"
             }
           }
         },
@@ -936,11 +915,6 @@
               "valueType": "other",
               "providerType": "object"
             },
-            "forks": {
-              "displayName": "forks",
-              "valueType": "other",
-              "providerType": "array"
-            },
             "forks_url": {
               "displayName": "forks_url",
               "valueType": "string",
@@ -955,11 +929,6 @@
               "displayName": "git_push_url",
               "valueType": "string",
               "providerType": "string"
-            },
-            "history": {
-              "displayName": "history",
-              "valueType": "other",
-              "providerType": "array"
             },
             "html_url": {
               "displayName": "html_url",
@@ -1000,11 +969,6 @@
               "displayName": "url",
               "valueType": "string",
               "providerType": "string"
-            },
-            "user": {
-              "displayName": "user",
-              "valueType": "other",
-              "providerType": "object"
             }
           }
         },
@@ -1048,11 +1012,6 @@
               "valueType": "other",
               "providerType": "object"
             },
-            "forks": {
-              "displayName": "forks",
-              "valueType": "other",
-              "providerType": "array"
-            },
             "forks_url": {
               "displayName": "forks_url",
               "valueType": "string",
@@ -1067,11 +1026,6 @@
               "displayName": "git_push_url",
               "valueType": "string",
               "providerType": "string"
-            },
-            "history": {
-              "displayName": "history",
-              "valueType": "other",
-              "providerType": "array"
             },
             "html_url": {
               "displayName": "html_url",
@@ -1112,11 +1066,6 @@
               "displayName": "url",
               "valueType": "string",
               "providerType": "string"
-            },
-            "user": {
-              "displayName": "user",
-              "valueType": "other",
-              "providerType": "object"
             }
           }
         },
@@ -1220,6 +1169,11 @@
               "displayName": "clone_url",
               "valueType": "string",
               "providerType": "string"
+            },
+            "code_search_index_status": {
+              "displayName": "code_search_index_status",
+              "valueType": "other",
+              "providerType": "object"
             },
             "collaborators_url": {
               "displayName": "collaborators_url",
@@ -1341,11 +1295,6 @@
               "valueType": "boolean",
               "providerType": "boolean"
             },
-            "has_downloads": {
-              "displayName": "has_downloads",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
             "has_issues": {
               "displayName": "has_issues",
               "valueType": "boolean",
@@ -1358,6 +1307,11 @@
             },
             "has_projects": {
               "displayName": "has_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_pull_requests": {
+              "displayName": "has_pull_requests",
               "valueType": "boolean",
               "providerType": "boolean"
             },
@@ -1430,11 +1384,6 @@
               "displayName": "license",
               "valueType": "other",
               "providerType": "object"
-            },
-            "master_branch": {
-              "displayName": "master_branch",
-              "valueType": "string",
-              "providerType": "string"
             },
             "merge_commit_message": {
               "displayName": "merge_commit_message",
@@ -1524,6 +1473,21 @@
               "displayName": "private",
               "valueType": "boolean",
               "providerType": "boolean"
+            },
+            "pull_request_creation_policy": {
+              "displayName": "pull_request_creation_policy",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "all",
+                  "displayValue": "all"
+                },
+                {
+                  "value": "collaborators_only",
+                  "displayValue": "collaborators_only"
+                }
+              ]
             },
             "pulls_url": {
               "displayName": "pulls_url",
@@ -1654,11 +1618,6 @@
               "valueType": "string",
               "providerType": "string"
             },
-            "use_squash_pr_title_as_default": {
-              "displayName": "use_squash_pr_title_as_default",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
             "visibility": {
               "displayName": "visibility",
               "valueType": "string",
@@ -1690,11 +1649,6 @@
               "displayName": "active_lock_reason",
               "valueType": "string",
               "providerType": "string"
-            },
-            "assignee": {
-              "displayName": "assignee",
-              "valueType": "other",
-              "providerType": "object"
             },
             "assignees": {
               "displayName": "assignees",
@@ -1800,6 +1754,16 @@
               "valueType": "int",
               "providerType": "integer"
             },
+            "issue_dependencies_summary": {
+              "displayName": "issue_dependencies_summary",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "issue_field_values": {
+              "displayName": "issue_field_values",
+              "valueType": "other",
+              "providerType": "array"
+            },
             "labels": {
               "displayName": "labels",
               "valueType": "other",
@@ -1830,8 +1794,18 @@
               "valueType": "int",
               "providerType": "integer"
             },
+            "parent_issue_url": {
+              "displayName": "parent_issue_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "performed_via_github_app": {
               "displayName": "performed_via_github_app",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "pinned_comment": {
+              "displayName": "pinned_comment",
               "valueType": "other",
               "providerType": "object"
             },
@@ -1876,6 +1850,10 @@
                 {
                   "value": "not_planned",
                   "displayValue": "not_planned"
+                },
+                {
+                  "value": "duplicate",
+                  "displayValue": "duplicate"
                 }
               ]
             },
@@ -1893,6 +1871,11 @@
               "displayName": "title",
               "valueType": "string",
               "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "providerType": "object"
             },
             "updated_at": {
               "displayName": "updated_at",
@@ -2162,6 +2145,103 @@
             },
             "updated_at": {
               "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "migrations": {
+          "displayName": "Migrations",
+          "path": "/user/migrations",
+          "responseKey": "",
+          "fields": {
+            "archive_url": {
+              "displayName": "archive_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "exclude": {
+              "displayName": "exclude",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "exclude_attachments": {
+              "displayName": "exclude_attachments",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_git_data": {
+              "displayName": "exclude_git_data",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_metadata": {
+              "displayName": "exclude_metadata",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_owner_projects": {
+              "displayName": "exclude_owner_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclude_releases": {
+              "displayName": "exclude_releases",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "guid": {
+              "displayName": "guid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lock_repositories": {
+              "displayName": "lock_repositories",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "node_id": {
+              "displayName": "node_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "org_metadata_only": {
+              "displayName": "org_metadata_only",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "repositories": {
+              "displayName": "repositories",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
               "valueType": "string",
               "providerType": "string"
             }
@@ -2496,6 +2576,11 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "code_search_index_status": {
+              "displayName": "code_search_index_status",
+              "valueType": "other",
+              "providerType": "object"
+            },
             "collaborators_url": {
               "displayName": "collaborators_url",
               "valueType": "string",
@@ -2616,11 +2701,6 @@
               "valueType": "boolean",
               "providerType": "boolean"
             },
-            "has_downloads": {
-              "displayName": "has_downloads",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
             "has_issues": {
               "displayName": "has_issues",
               "valueType": "boolean",
@@ -2633,6 +2713,11 @@
             },
             "has_projects": {
               "displayName": "has_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_pull_requests": {
+              "displayName": "has_pull_requests",
               "valueType": "boolean",
               "providerType": "boolean"
             },
@@ -2705,11 +2790,6 @@
               "displayName": "license",
               "valueType": "other",
               "providerType": "object"
-            },
-            "master_branch": {
-              "displayName": "master_branch",
-              "valueType": "string",
-              "providerType": "string"
             },
             "merge_commit_message": {
               "displayName": "merge_commit_message",
@@ -2799,6 +2879,21 @@
               "displayName": "private",
               "valueType": "boolean",
               "providerType": "boolean"
+            },
+            "pull_request_creation_policy": {
+              "displayName": "pull_request_creation_policy",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "all",
+                  "displayValue": "all"
+                },
+                {
+                  "value": "collaborators_only",
+                  "displayValue": "collaborators_only"
+                }
+              ]
             },
             "pulls_url": {
               "displayName": "pulls_url",
@@ -2929,11 +3024,6 @@
               "valueType": "string",
               "providerType": "string"
             },
-            "use_squash_pr_title_as_default": {
-              "displayName": "use_squash_pr_title_as_default",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
             "visibility": {
               "displayName": "visibility",
               "valueType": "string",
@@ -3036,6 +3126,11 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "custom_properties": {
+              "displayName": "custom_properties",
+              "valueType": "other",
+              "providerType": "object"
+            },
             "default_branch": {
               "displayName": "default_branch",
               "valueType": "string",
@@ -3121,11 +3216,6 @@
               "valueType": "boolean",
               "providerType": "boolean"
             },
-            "has_downloads": {
-              "displayName": "has_downloads",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
             "has_issues": {
               "displayName": "has_issues",
               "valueType": "boolean",
@@ -3138,6 +3228,11 @@
             },
             "has_projects": {
               "displayName": "has_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_pull_requests": {
+              "displayName": "has_pull_requests",
               "valueType": "boolean",
               "providerType": "boolean"
             },
@@ -3270,6 +3365,21 @@
               "displayName": "private",
               "valueType": "boolean",
               "providerType": "boolean"
+            },
+            "pull_request_creation_policy": {
+              "displayName": "pull_request_creation_policy",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "all",
+                  "displayValue": "all"
+                },
+                {
+                  "value": "collaborators_only",
+                  "displayValue": "collaborators_only"
+                }
+              ]
             },
             "pulls_url": {
               "displayName": "pulls_url",
@@ -3650,6 +3760,11 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "custom_properties": {
+              "displayName": "custom_properties",
+              "valueType": "other",
+              "providerType": "object"
+            },
             "default_branch": {
               "displayName": "default_branch",
               "valueType": "string",
@@ -3735,11 +3850,6 @@
               "valueType": "boolean",
               "providerType": "boolean"
             },
-            "has_downloads": {
-              "displayName": "has_downloads",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
             "has_issues": {
               "displayName": "has_issues",
               "valueType": "boolean",
@@ -3752,6 +3862,11 @@
             },
             "has_projects": {
               "displayName": "has_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_pull_requests": {
+              "displayName": "has_pull_requests",
               "valueType": "boolean",
               "providerType": "boolean"
             },
@@ -3885,6 +4000,21 @@
               "valueType": "boolean",
               "providerType": "boolean"
             },
+            "pull_request_creation_policy": {
+              "displayName": "pull_request_creation_policy",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "all",
+                  "displayValue": "all"
+                },
+                {
+                  "value": "collaborators_only",
+                  "displayValue": "collaborators_only"
+                }
+              ]
+            },
             "pulls_url": {
               "displayName": "pulls_url",
               "valueType": "string",
@@ -4012,6 +4142,131 @@
             }
           }
         },
+        "tasks": {
+          "displayName": "Tasks",
+          "path": "/agents/tasks",
+          "responseKey": "tasks",
+          "fields": {
+            "archived_at": {
+              "displayName": "archived_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "artifacts": {
+              "displayName": "artifacts",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "creator": {
+              "displayName": "creator",
+              "valueType": "other"
+            },
+            "creator_type": {
+              "displayName": "creator_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "user",
+                  "displayValue": "user"
+                },
+                {
+                  "value": "organization",
+                  "displayValue": "organization"
+                }
+              ]
+            },
+            "html_url": {
+              "displayName": "html_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "repository": {
+              "displayName": "repository",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "session_count": {
+              "displayName": "session_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                },
+                {
+                  "value": "in_progress",
+                  "displayValue": "in_progress"
+                },
+                {
+                  "value": "completed",
+                  "displayValue": "completed"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                },
+                {
+                  "value": "idle",
+                  "displayValue": "idle"
+                },
+                {
+                  "value": "waiting_for_user",
+                  "displayValue": "waiting_for_user"
+                },
+                {
+                  "value": "timed_out",
+                  "displayValue": "timed_out"
+                },
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "user_collaborators": {
+              "displayName": "user_collaborators",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
         "teams": {
           "displayName": "Teams",
           "path": "/user/teams",
@@ -4026,6 +4281,11 @@
               "displayName": "description",
               "valueType": "string",
               "providerType": "string"
+            },
+            "enterprise_id": {
+              "displayName": "enterprise_id",
+              "valueType": "int",
+              "providerType": "integer"
             },
             "html_url": {
               "displayName": "html_url",
@@ -4082,6 +4342,11 @@
               "valueType": "other",
               "providerType": "object"
             },
+            "organization_id": {
+              "displayName": "organization_id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
             "parent": {
               "displayName": "parent",
               "valueType": "other",
@@ -4121,6 +4386,21 @@
               "displayName": "slug",
               "valueType": "string",
               "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "enterprise",
+                  "displayValue": "enterprise"
+                },
+                {
+                  "value": "organization",
+                  "displayValue": "organization"
+                }
+              ]
             },
             "updated_at": {
               "displayName": "updated_at",
@@ -4522,6 +4802,11 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "client_id": {
+              "displayName": "client_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "contact_email": {
               "displayName": "contact_email",
               "valueType": "string",
@@ -4623,11 +4908,6 @@
               "displayName": "active_lock_reason",
               "valueType": "string",
               "providerType": "string"
-            },
-            "assignee": {
-              "displayName": "assignee",
-              "valueType": "other",
-              "providerType": "object"
             },
             "assignees": {
               "displayName": "assignees",
@@ -4733,6 +5013,16 @@
               "valueType": "int",
               "providerType": "integer"
             },
+            "issue_dependencies_summary": {
+              "displayName": "issue_dependencies_summary",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "issue_field_values": {
+              "displayName": "issue_field_values",
+              "valueType": "other",
+              "providerType": "array"
+            },
             "labels": {
               "displayName": "labels",
               "valueType": "other",
@@ -4763,8 +5053,18 @@
               "valueType": "int",
               "providerType": "integer"
             },
+            "parent_issue_url": {
+              "displayName": "parent_issue_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "performed_via_github_app": {
               "displayName": "performed_via_github_app",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "pinned_comment": {
+              "displayName": "pinned_comment",
               "valueType": "other",
               "providerType": "object"
             },
@@ -4809,6 +5109,10 @@
                 {
                   "value": "not_planned",
                   "displayValue": "not_planned"
+                },
+                {
+                  "value": "duplicate",
+                  "displayValue": "duplicate"
                 }
               ]
             },
@@ -4826,6 +5130,11 @@
               "displayName": "title",
               "valueType": "string",
               "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "other",
+              "providerType": "object"
             },
             "updated_at": {
               "displayName": "updated_at",
@@ -4864,6 +5173,11 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "last_used": {
+              "displayName": "last_used",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "read_only": {
               "displayName": "read_only",
               "valueType": "boolean",
@@ -4891,6 +5205,16 @@
           "path": "/user/memberships/orgs",
           "responseKey": "",
           "fields": {
+            "direct_membership": {
+              "displayName": "direct_membership",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "enterprise_teams_providing_indirect_membership": {
+              "displayName": "enterprise_teams_providing_indirect_membership",
+              "valueType": "other",
+              "providerType": "array"
+            },
             "organization": {
               "displayName": "organization",
               "valueType": "other",
@@ -4949,103 +5273,6 @@
               "displayName": "user",
               "valueType": "other",
               "providerType": "object"
-            }
-          }
-        },
-        "user/migrations": {
-          "displayName": "User Migrations",
-          "path": "/user/migrations",
-          "responseKey": "",
-          "fields": {
-            "archive_url": {
-              "displayName": "archive_url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "created_at": {
-              "displayName": "created_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "exclude": {
-              "displayName": "exclude",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "exclude_attachments": {
-              "displayName": "exclude_attachments",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_git_data": {
-              "displayName": "exclude_git_data",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_metadata": {
-              "displayName": "exclude_metadata",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_owner_projects": {
-              "displayName": "exclude_owner_projects",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "exclude_releases": {
-              "displayName": "exclude_releases",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "guid": {
-              "displayName": "guid",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "id": {
-              "displayName": "id",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "lock_repositories": {
-              "displayName": "lock_repositories",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "node_id": {
-              "displayName": "node_id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "org_metadata_only": {
-              "displayName": "org_metadata_only",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "owner": {
-              "displayName": "owner",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "repositories": {
-              "displayName": "repositories",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "state": {
-              "displayName": "state",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "updated_at": {
-              "displayName": "updated_at",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "url",
-              "valueType": "string",
-              "providerType": "string"
             }
           }
         },
@@ -5162,6 +5389,11 @@
               "displayName": "clone_url",
               "valueType": "string",
               "providerType": "string"
+            },
+            "code_search_index_status": {
+              "displayName": "code_search_index_status",
+              "valueType": "other",
+              "providerType": "object"
             },
             "collaborators_url": {
               "displayName": "collaborators_url",
@@ -5283,11 +5515,6 @@
               "valueType": "boolean",
               "providerType": "boolean"
             },
-            "has_downloads": {
-              "displayName": "has_downloads",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
             "has_issues": {
               "displayName": "has_issues",
               "valueType": "boolean",
@@ -5300,6 +5527,11 @@
             },
             "has_projects": {
               "displayName": "has_projects",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "has_pull_requests": {
+              "displayName": "has_pull_requests",
               "valueType": "boolean",
               "providerType": "boolean"
             },
@@ -5372,11 +5604,6 @@
               "displayName": "license",
               "valueType": "other",
               "providerType": "object"
-            },
-            "master_branch": {
-              "displayName": "master_branch",
-              "valueType": "string",
-              "providerType": "string"
             },
             "merge_commit_message": {
               "displayName": "merge_commit_message",
@@ -5466,6 +5693,21 @@
               "displayName": "private",
               "valueType": "boolean",
               "providerType": "boolean"
+            },
+            "pull_request_creation_policy": {
+              "displayName": "pull_request_creation_policy",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "all",
+                  "displayValue": "all"
+                },
+                {
+                  "value": "collaborators_only",
+                  "displayValue": "collaborators_only"
+                }
+              ]
             },
             "pulls_url": {
               "displayName": "pulls_url",
@@ -5595,11 +5837,6 @@
               "displayName": "url",
               "valueType": "string",
               "providerType": "string"
-            },
-            "use_squash_pr_title_as_default": {
-              "displayName": "use_squash_pr_title_as_default",
-              "valueType": "boolean",
-              "providerType": "boolean"
             },
             "visibility": {
               "displayName": "visibility",

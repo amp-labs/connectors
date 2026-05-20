@@ -78,7 +78,15 @@ func makeNextRecordsURL(responseHeaders http.Header) common.NextPageFunc {
 	}
 }
 
-func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) { //nolint:lll
+func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	// Previously we did not support creating repositories.
+	// The read operation uses the object name "repos" and gets the full URL path from schemas.json.
+	// For consistency we accept "repos" for write operations as well and map it to "user/repos" here.
+	if params.ObjectName == objectNameUserRepos {
+		params.ObjectName = "user/repos"
+	}
+
+	//nolint:lll
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName)
 	if err != nil {
 		return nil, err
