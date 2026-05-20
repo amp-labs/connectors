@@ -59,7 +59,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	url.WithQueryParam("q", makeSOQL(config, c.getTimestampColumn(config)).String())
+	url.WithQueryParam("q", makeSOQL(config, c.GetTimestampColumn(common.ObjectName(config.ObjectName))).String())
 
 	return url, nil
 }

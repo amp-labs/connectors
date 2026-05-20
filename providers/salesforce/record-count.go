@@ -29,7 +29,7 @@ func (c *Connector) GetRecordCount(
 	soql := (&crmcore.SOQLBuilder{}).SelectCount().From(params.ObjectName)
 
 	// Add WHERE clauses based on timestamps
-	timestampColumn := c.getTimestampColumn(common.ReadParams{})
+	timestampColumn := c.GetTimestampColumn(common.ObjectName(params.ObjectName))
 
 	if params.SinceTimestamp != nil && !params.SinceTimestamp.IsZero() {
 		soql.Where(timestampColumn + " > " + datautils.Time.FormatRFC3339inUTC(*params.SinceTimestamp))
