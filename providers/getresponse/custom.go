@@ -228,23 +228,27 @@ func contactReadFieldsQueryForAPI(fieldNames []string) []string {
 		return fieldNames
 	}
 
-	for _, f := range fieldNames {
-		if strings.EqualFold(f, "customFieldValues") {
+	needsCustomFieldValues := false
+
+	for _, fieldName := range fieldNames {
+		if strings.EqualFold(fieldName, "customFieldValues") {
 			return fieldNames
 		}
-	}
 
-	for _, f := range fieldNames {
-		if strings.HasPrefix(f, customFieldKeyPrefix) {
-			out := make([]string, 0, len(fieldNames)+1)
-			out = append(out, fieldNames...)
-			out = append(out, "customFieldValues")
-
-			return out
+		if strings.HasPrefix(fieldName, customFieldKeyPrefix) {
+			needsCustomFieldValues = true
 		}
 	}
 
-	return fieldNames
+	if !needsCustomFieldValues {
+		return fieldNames
+	}
+
+	out := make([]string, 0, len(fieldNames)+1)
+	out = append(out, fieldNames...)
+	out = append(out, "customFieldValues")
+
+	return out
 }
 
 // mergeContactCustomFieldValuesIntoBody moves keys prefixed with cf_ into
