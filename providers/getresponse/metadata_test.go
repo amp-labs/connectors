@@ -77,7 +77,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									{Value: "gold", DisplayValue: "gold"},
 									{Value: "silver", DisplayValue: "silver"},
 								},
-								IsCustom: boolPtr(true),
+								IsCustom: new(true),
 							},
 						},
 					},
@@ -95,10 +95,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})
 		})
 	}
-}
-
-func boolPtr(b bool) *bool {
-	return &b
 }
 
 // testServerCustomFieldsListJSON serves GET /v3/custom-fields with the given JSON body.
