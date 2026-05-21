@@ -1,0 +1,14 @@
+[
+  {
+    "uuid": "emp_001",
+    "first_name": "Alice",
+    "last_name": "Anderson",
+    "email": "alice@example.com"
+  },
+  {
+    "uuid": "emp_002",
+    "first_name": "Bob",
+    "last_name": "Brown",
+    "email": "bob@example.com"
+  }
+]

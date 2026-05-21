@@ -215,6 +215,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Granola:                    wrapper(newGranolaConnector),
 	providers.Groove:                     wrapper(newGrooveConnector),
 	providers.Gusto:                      wrapper(newGustoConnector),
+	providers.GustoDemo:                  wrapper(newGustoDemoConnector),
 	providers.HappyFox:                   wrapper(newHappyFoxConnector),
 	providers.HelpScoutMailbox:           wrapper(newHelpScoutMailboxConnector),
 	providers.HeyReach:                   wrapper(newHeyReachConnector),
@@ -877,6 +878,12 @@ func newGustoConnector(
 	params common.ConnectorParams,
 ) (*gusto.Connector, error) {
 	return gusto.NewConnector(params)
+}
+
+func newGustoDemoConnector(
+	params common.ConnectorParams,
+) (*gusto.Connector, error) {
+	return gusto.NewDemoConnector(params)
 }
 
 func newPinterestConnector(
