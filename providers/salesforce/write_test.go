@@ -41,7 +41,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				testutils.StringError("No such column 'AccountNumer' on sobject of type Account"),
+				testutils.StringError("Field 'AccountNumer' was not found or is not accessible on object 'Account'."),
 			},
 		},
 		{

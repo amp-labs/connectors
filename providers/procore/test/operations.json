@@ -1,0 +1,18 @@
+{
+    "data": [
+        {
+            "id": "op_abc123",
+            "status": "succeeded",
+            "operation_type": "bulk_update",
+            "created_at": "2024-11-10T12:00:00Z",
+            "updated_at": "2024-11-10T12:05:30Z"
+        },
+        {
+            "id": "op_def456",
+            "status": "pending",
+            "operation_type": "bulk_create",
+            "created_at": "2024-11-12T09:20:00Z",
+            "updated_at": "2024-11-12T09:20:00Z"
+        }
+    ]
+}

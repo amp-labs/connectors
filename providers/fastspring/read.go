@@ -226,14 +226,7 @@ func nextPageFromIntegerCounter(previousRequestURL *url.URL) common.NextPageFunc
 			return "", err
 		}
 
-		// Re-parse from string so we do not mutate the live request URL when the builder
-		// serializes (it sets RawQuery on the delegate).
-		cloned, err := url.Parse(previousRequestURL.String())
-		if err != nil {
-			return "", err
-		}
-
-		u, err := urlbuilder.FromRawURL(cloned)
+		u, err := urlbuilder.FromRawURL(previousRequestURL)
 		if err != nil {
 			return "", err
 		}

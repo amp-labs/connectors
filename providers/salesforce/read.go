@@ -10,7 +10,6 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/associations"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
-	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
 
 const defaultSOQLPageSize = 2000
@@ -60,7 +59,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	url.WithQueryParam("q", makeSOQL(config, c.getTimestampColumn()).String())
+	url.WithQueryParam("q", makeSOQL(config, c.GetTimestampColumn(common.ObjectName(config.ObjectName))).String())
 
 	return url, nil
 }
@@ -124,12 +123,7 @@ func (c *Connector) DeployApexTriggersForFilteredRead( //nolint:unused
 		}, nil
 	}
 
-	triggerCodeMap := make(map[common.ObjectName]string, len(triggerParams))
-	for objName, params := range triggerParams {
-		triggerCodeMap[objName] = metadata.GenerateTriggerCodeForFilteredRead(*params, params.IndicatorField.FieldName)
-	}
-
-	zipDataMap, err := buildApexTriggerZips(triggerParams, triggerCodeMap)
+	zipDataMap, err := buildApexTriggerZips(triggerParams)
 	if err != nil {
 		return nil, err
 	}

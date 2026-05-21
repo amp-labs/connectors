@@ -22,9 +22,7 @@ func (c *Connector) GetRecordCount(
 	params *common.RecordCountParams,
 ) (*common.RecordCountResult, error) {
 	// Build search URL
-	url, err := c.getCRMObjectsSearchURL(SearchParams{
-		ObjectName: params.ObjectName,
-	})
+	url, err := c.getCRMObjectsSearchURL(params.ObjectName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build search URL: %w", err)
 	}
@@ -61,7 +59,7 @@ func (c *Connector) GetRecordCount(
 	}
 
 	// Execute the search request
-	response, err := c.Client.Post(ctx, url, filterBody)
+	response, err := c.JSONHTTPClient().Post(ctx, url.String(), filterBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute search request: %w", err)
 	}

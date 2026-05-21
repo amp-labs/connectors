@@ -42,10 +42,10 @@ func TestSubscriptionEventUpdateUser(t *testing.T) {
 	fields, err := event.UpdatedFields()
 	assert.NilError(t, err, "error should be nil")
 
-	assert.Equal(t, len(fields), 3, "should have one updated field")
+	assert.Equal(t, len(fields), 3, "should have three updated fields")
 	assert.Equal(t, fields[0], "LastModifiedDate", "first field name should be LastModifiedDate")
 	assert.Equal(t, fields[1], "LastModifiedById", "second field name should be LastModifiedById")
-	assert.Equal(t, fields[2], "FirstName", "third field name should be FirstName")
+	assert.Equal(t, fields[2], "FirstName", "compound Name.FirstName field should be flattened to FirstName")
 }
 
 func TestSubscriptionEventUpdateContact(t *testing.T) {
@@ -81,9 +81,9 @@ func TestSubscriptionEventUpdateContact(t *testing.T) {
 	fields, err := event.UpdatedFields()
 	assert.NilError(t, err, "error should be nil")
 
-	assert.Equal(t, len(fields), 2, "should have one updated field")
+	assert.Equal(t, len(fields), 2, "should have two updated fields")
 	assert.Equal(t, fields[0], "LastModifiedDate", "first field name should be LastModifiedDate")
-	assert.Equal(t, fields[1], "LastName", "second field name should be LastName")
+	assert.Equal(t, fields[1], "LastName", "compound Name.LastName field should be flattened to LastName")
 }
 
 func TestSubscriptionEventProperties(t *testing.T) {
@@ -129,4 +129,93 @@ func validateSubEvent[V any](t *testing.T, err error, actual, expected V, method
 
 	assert.NilError(t, err, "error should be nil")
 	assert.Equal(t, actual, expected, "method "+methodName)
+}
+
+// TestSubscriptionEventUpdateContactCompoundAddress verifies that Salesforce CDC
+// changedFields entries using "<Compound>.<Sub>" dot notation for address
+// compounds are normalized to their flattened column name
+// (e.g. "MailingAddress.Street" -> "mailingstreet"). This is what downstream
+// subscriptions match against. See ENG-3919.
+func TestSubscriptionEventUpdateContactCompoundAddress(t *testing.T) {
+	t.Parallel()
+
+	data := testutils.DataFromFile(t, "subscription/update_contact_compound_address.json")
+
+	event := SubscriptionEvent{}
+	if err := json.Unmarshal(data, &event); err != nil {
+		t.Fatalf("failed to start a test, cannot parse data; error (%v)", err)
+	}
+
+	objectName, err := event.ObjectName()
+	assert.NilError(t, err, "error should be nil")
+	assert.Equal(t, objectName, "Contact", "ObjectName should be Contact")
+
+	fields, err := event.UpdatedFields()
+	assert.NilError(t, err, "error should be nil")
+
+	assert.DeepEqual(t, fields, []string{
+		"LastModifiedDate",
+		"MailingStreet",   // flattened from MailingAddress.Street
+		"MailingCity",     // flattened from MailingAddress.City
+		"OtherPostalCode", // flattened from OtherAddress.PostalCode
+	})
+}
+
+func TestSubscriptionEventLeadAccountCompoundAddress(t *testing.T) {
+	t.Parallel()
+
+	data := testutils.DataFromFile(t, "subscription/update_lead_compound_address.json")
+
+	event := SubscriptionEvent{}
+	if err := json.Unmarshal(data, &event); err != nil {
+		t.Fatalf("failed to start a test, cannot parse data; error (%v)", err)
+	}
+
+	objectName, err := event.ObjectName()
+	assert.NilError(t, err, "error should be nil")
+	assert.Equal(t, objectName, "Lead", "ObjectName should be Lead")
+
+	fields, err := event.UpdatedFields()
+	assert.NilError(t, err, "error should be nil")
+
+	assert.DeepEqual(t, fields, []string{
+		"Street",     // flattened from Address.Street
+		"PostalCode", // flattened from Address.PostalCode
+	})
+}
+
+func TestNormalizeUpdatedFieldName(t *testing.T) {
+	t.Parallel()
+
+	var s SubscriptionEvent
+
+	tests := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{name: "plain field unchanged", in: "LastModifiedDate", want: "LastModifiedDate"},
+		{name: "name without dot is unchanged", in: "Industry", want: "Industry"},
+		{name: "empty string", in: "", want: ""},
+		{name: "name compound first name", in: "Name.FirstName", want: "FirstName"},
+		{name: "name compound last name", in: "Name.LastName", want: "LastName"},
+		{name: "name compound salutation", in: "Name.Salutation", want: "Salutation"},
+		{name: "mailing address street", in: "MailingAddress.Street", want: "MailingStreet"},
+		{name: "mailing address postal code", in: "MailingAddress.PostalCode", want: "MailingPostalCode"},
+		{name: "billing address city", in: "BillingAddress.City", want: "BillingCity"},
+		{name: "shipping address state code", in: "ShippingAddress.StateCode", want: "ShippingStateCode"},
+		{name: "other address country", in: "OtherAddress.Country", want: "OtherCountry"},
+		{name: "bare address street lead style", in: "Address.Street", want: "Street"},
+		{name: "bare address geocode", in: "Address.GeocodeAccuracy", want: "GeocodeAccuracy"},
+		{name: "3-word address field", in: "DeliverToAddress.Street", want: "DeliverToStreet"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := s.normalizeUpdatedFieldName(tc.in)
+			assert.Equal(t, got, tc.want)
+		})
+	}
 }

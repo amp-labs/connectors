@@ -1,0 +1,69 @@
+{
+  "total": 3,
+  "results": [
+    {
+      "activeDomain": "44623425.hs-sites.com",
+      "archived": false,
+      "businessUnitId": "0",
+      "content": {},
+      "createdAt": "2026-05-07T22:59:00.597Z",
+      "createdById": "82226790",
+      "emailTemplateMode": "DRAG_AND_DROP",
+      "from": {},
+      "id": "212476546342",
+      "isAb": false,
+      "isPublished": false,
+      "isTransactional": false,
+      "jitterSendTime": true,
+      "language": "en",
+      "name": "A new marketing email",
+      "previewKey": "OqmGJCWC",
+      "publishDate": "2026-05-07T22:59:00Z",
+      "sendOnPublish": true,
+      "state": "DRAFT",
+      "subcategory": "batch",
+      "subject": "Behold the latest version of our newsletter!",
+      "subscriptionDetails": {},
+      "to": {},
+      "type": "BATCH_EMAIL",
+      "updatedAt": "2026-05-07T22:59:00.597Z",
+      "updatedById": "82226790",
+      "webversion": {}
+    },
+    {
+      "activeDomain": "44623425.hs-sites.com",
+      "archived": false,
+      "businessUnitId": "0",
+      "content": {},
+      "createdAt": "2024-05-29T22:37:35.474Z",
+      "createdById": "62365053",
+      "emailTemplateMode": "DRAG_AND_DROP",
+      "from": {},
+      "id": "168871137104",
+      "isAb": false,
+      "isPublished": false,
+      "isTransactional": false,
+      "jitterSendTime": true,
+      "language": "en",
+      "name": "Product Launch",
+      "previewKey": "XRbaCfJY",
+      "publishDate": "2024-05-29T22:38:43Z",
+      "sendOnPublish": true,
+      "state": "DRAFT",
+      "subcategory": "batch",
+      "subject": "Product Launch",
+      "subscriptionDetails": {},
+      "to": {},
+      "type": "BATCH_EMAIL",
+      "updatedAt": "2024-05-29T22:38:43.603Z",
+      "updatedById": "62365053",
+      "webversion": {}
+    }
+  ],
+  "paging": {
+    "next": {
+      "after": "Mw%3D%3D",
+      "link": "https://api.hubapi.com/marketing/emails/2026-03?limit=3&sort=-updatedAt&after=Mw%3D%3D"
+    }
+  }
+}

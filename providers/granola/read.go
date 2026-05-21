@@ -79,7 +79,7 @@ func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadPar
 	//   - https://docs.granola.ai/api-reference/list-notes
 	//   - https://docs.granola.ai/api-reference/get-note
 	if needsFullNotesFetch(params) {
-		notes, err := c.fetchNotes(ctx, resp, params)
+		notes, err := c.fetchNotes(ctx, resp)
 		if err != nil {
 			return nil, err
 		}

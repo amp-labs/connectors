@@ -155,9 +155,11 @@ func collectAssociations(included []dataItem, details map[string]map[string][]in
 					}
 
 					associations[assoc] = append(associations[assoc], common.Association{
-						ObjectId:        strconv.Itoa(data.ID),
-						AssociationType: data.Type,
-						Raw:             raw,
+						ObjectId: strconv.Itoa(data.ID),
+						ProviderAssociationMetadata: map[string]any{
+							"type": data.Type,
+						},
+						Raw: raw,
 					})
 				}
 			}

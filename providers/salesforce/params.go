@@ -27,7 +27,8 @@ type parameters struct {
 	// different provider name (e.g. salesforceJWT), which shares the underlying
 	// Salesforce APIs but differs only in its authentication scheme. Defaults
 	// to providers.Salesforce when unset.
-	provider providers.Provider
+	provider                       providers.Provider
+	alternateTimestampUsingObjects map[common.ObjectName]bool
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
@@ -100,9 +101,10 @@ func WithMetadata(metadata map[string]string) Option {
 // WithTimestampColumn overrides the default "SystemModstamp" field used for
 // incremental read queries. When set, the given field name is used in the
 // Since/Until WHERE clauses instead of SystemModstamp.
-func WithTimestampColumn(field string) Option {
+func WithTimestampColumn(field string, alternateTimestampUsingObjects map[common.ObjectName]bool) Option {
 	return func(params *parameters) {
 		params.timestampColumn = field
+		params.alternateTimestampUsingObjects = alternateTimestampUsingObjects
 	}
 }
 

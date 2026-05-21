@@ -1,0 +1,75 @@
+{
+  "callData": {
+    "collaboration": {},
+    "content": {
+      "scorecardsAnswers": [],
+      "topics": [
+        {"duration": 0, "name": "Call Setup"},
+        {"duration": 144, "name": "Small Talk"},
+        {"duration": 0, "name": "Moving Forward"},
+        {"duration": 0, "name": "Pricing"},
+        {"duration": 0, "name": "Next Steps"},
+        {"duration": 0, "name": "Wrap-Up"}
+      ],
+      "trackers": [
+        {"count": 0, "id": "1685862917844761218", "name": "Pricing (tracker)", "type": "KEYWORD"},
+        {"count": 1, "id": "1793237018173488966", "name": "Objections (tracker)", "type": "KEYWORD"}
+      ]
+    },
+    "context": [],
+    "interaction": {
+      "interactionStats": [
+        {"name": "Talk Ratio", "value": 0},
+        {"name": "Longest Monologue", "value": 0},
+        {"name": "Longest Customer Story", "value": 14},
+        {"name": "Interactivity", "value": 10},
+        {"name": "Patience", "value": 0}
+      ]
+    },
+    "metaData": {
+      "calendarEventId": null,
+      "clientUniqueId": null,
+      "customData": null,
+      "direction": "Inbound",
+      "duration": 147,
+      "id": "4570250816631531513",
+      "isPrivate": false,
+      "language": "eng",
+      "media": "Audio",
+      "meetingUrl": "https://www.conference.com/example-user",
+      "primaryUserId": "1309263961237846110",
+      "purpose": null,
+      "scheduled": "2024-02-17T03:30:00-07:00",
+      "scope": "External",
+      "sdrDisposition": "No Answer",
+      "started": "2024-02-17T03:30:00-07:00",
+      "system": "ClearSlide",
+      "title": "Discuss Use Cases",
+      "url": "https://us-49467.app.gong.io/call?id=4570250816631531513",
+      "workspaceId": "1007648505208900737"
+    },
+    "parties": [
+      {
+        "affiliation": "Unknown",
+        "context": [],
+        "id": "171236364525528710",
+        "methods": ["Attendee"],
+        "name": "Phone Caller #4",
+        "speakerId": "1733377625204635858"
+      },
+      {
+        "affiliation": "Internal",
+        "context": [],
+        "emailAddress": "internal.attendee@example.com",
+        "id": "9178113854064029868",
+        "methods": ["Attendee"],
+        "name": "Internal Attendee",
+        "phoneNumber": "+15555550100",
+        "speakerId": null,
+        "userId": "1309263961237846110"
+      }
+    ]
+  },
+  "isPrivate": false,
+  "isTest": true
+}

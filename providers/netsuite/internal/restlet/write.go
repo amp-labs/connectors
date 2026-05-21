@@ -8,6 +8,8 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
@@ -71,15 +73,25 @@ func (a *Adapter) parseWriteResponse(
 		return nil, parseRestletError(fullResp)
 	}
 
-	var writeBody writeResponseBody
-	if err := json.Unmarshal(fullResp.Body, &writeBody); err != nil {
+	node, err := ajson.Unmarshal(fullResp.Body)
+	if err != nil {
 		return nil, fmt.Errorf("failed to parse write response body: %w", err)
 	}
 
-	recordId := fmt.Sprintf("%v", writeBody.RecordId)
+	rawID, err := jsonquery.New(node).TextWithDefault("recordId", "")
+	if err != nil {
+		//nolint:nilerr
+		return &common.WriteResult{Success: true}, nil
+	}
 
-	return &common.WriteResult{
+	result := &common.WriteResult{
 		Success:  true,
-		RecordId: recordId,
-	}, nil
+		RecordId: rawID,
+	}
+
+	if data, err := jsonquery.Convertor.ObjectToMap(node); err == nil {
+		result.Data = data
+	}
+
+	return result, nil
 }

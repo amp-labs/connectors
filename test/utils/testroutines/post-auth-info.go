@@ -5,7 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 type (
@@ -21,8 +21,8 @@ func (r PostAuthInfo) Run(t *testing.T, builder ConnectorBuilder[connectors.Auth
 		PostAuthInfoType(r).Close()
 	})
 
-	r.Comparator = func(serverURL string, actual, expected *common.PostAuthInfo) *mockutils.CompareResult {
-		result := mockutils.NewCompareResult()
+	r.Comparator = func(serverURL string, actual, expected *common.PostAuthInfo) *testutils.CompareResult {
+		result := testutils.NewCompareResult()
 
 		result.Assert("ProviderWorkspaceRef", expected.ProviderWorkspaceRef, actual.ProviderWorkspaceRef)
 		result.Assert("CatalogVars", expected.CatalogVars, actual.CatalogVars)

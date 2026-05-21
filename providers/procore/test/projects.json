@@ -1,0 +1,28 @@
+[
+    {
+        "id": 2783405,
+        "name": "Test Project Alpha",
+        "display_name": "Alpha",
+        "project_number": "PN-001",
+        "active": true,
+        "company": {
+            "id": 4283186,
+            "name": "Ampersand Demo"
+        },
+        "created_at": "2024-06-10T12:34:56Z",
+        "updated_at": "2024-11-15T08:22:01Z"
+    },
+    {
+        "id": 2783406,
+        "name": "Test Project Bravo",
+        "display_name": "Bravo",
+        "project_number": "PN-002",
+        "active": false,
+        "company": {
+            "id": 4283186,
+            "name": "Ampersand Demo"
+        },
+        "created_at": "2024-07-01T09:00:00Z",
+        "updated_at": "2024-10-30T15:45:00Z"
+    }
+]

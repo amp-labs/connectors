@@ -60,3 +60,7 @@ result, err := client.Search(context.Background(), hubspot.SearchParams{
     },
 })
 ```
+
+# Docs
+
+[Hubspot CRM](https://developers.hubspot.com/docs/guides/crm/understanding-the-crm)

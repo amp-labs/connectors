@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "id": "attr_1",
+      "type": "people_attributes",
+      "attributes": {
+        "slug": "company"
+      }
+    }
+  ],
+  "meta": {
+    "current_page": 0,
+    "page_count": 1
+  }
+}

@@ -36,14 +36,15 @@ type NoteRecords map[string]NoteRecord
 // fetchNotes retrieves the full note payloads for all note IDs found in the
 // provided list response.
 func (c *Connector) fetchNotes(
-	ctx context.Context, collectionResp *common.JSONHTTPResponse, params common.ReadParams,
+	ctx context.Context, collectionResp *common.JSONHTTPResponse,
 ) (NoteRecords, error) {
 	collection, err := common.UnmarshalJSON[NotesCollection](collectionResp)
 	if err != nil {
 		return nil, err
 	}
 
-	includeTranscript := params.Fields.Has("transcript")
+	// Always include the transcript when fetching a full note
+	includeTranscript := true
 	notesChannel := make(chan NoteRecord, len(collection.Notes))
 	callbacks := make([]simultaneously.Job, 0, len(collection.Notes))
 

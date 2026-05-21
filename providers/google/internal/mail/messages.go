@@ -5,14 +5,37 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"net/http"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/spyzhov/ajson"
 )
+
+// gmailMaxConcurrentFetches caps the number of in-flight messages.get requests per call.
+// Gmail enforces a per-user concurrent-request limit (returns 429 "Too many concurrent
+// requests for user" when exceeded) and a 15,000 quota-units/min/user budget where
+// messages.get costs 5 units each.
+//
+// Sizing math:
+//   - Per-user budget:  15,000 units/min / 60 = 250 units/sec
+//   - Max sustainable:  250 units/sec / 5 units per get = 50 GETs/sec/user
+//   - For cap = C and avg Gmail latency L ~= 200ms, sustained RPS ~= C / L:
+//     C = 5  -> 25 RPS -> 125 units/sec -> 7,500/min  (50% of budget)
+//     C = 10 -> 50 RPS -> 250 units/sec -> 15,000/min (100% -- no headroom)
+//   - C = 5 stays under the concurrent-request wall AND keeps half the quota-unit
+//     budget free for retries and other API traffic on the same token.
+//
+// Refs:
+//   - Concurrent-request guidance:
+//     https://developers.google.com/workspace/gmail/api/guides/handle-errors#concurrent-requests
+//   - Per-user/per-project quota units:
+//     https://developers.google.com/workspace/gmail/api/reference/quota
+const gmailMaxConcurrentFetches = 5
 
 // fetchMessages retrieves the full message payloads for all message IDs found
 // in the provided collection response.
@@ -42,8 +65,9 @@ func (a *Adapter) fetchMessages(
 		callbacks = append(callbacks, a.fetchMessage(messagesChannel, messageID))
 	}
 
-	// Run all jobs concurrently. If any job fails, context is expected to cancel.
-	if err = simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+	// Run jobs with bounded concurrency to avoid Gmail per-user 429s. If any job fails,
+	// context is expected to cancel.
+	if err = simultaneously.DoCtx(ctx, gmailMaxConcurrentFetches, callbacks...); err != nil {
 		return nil, err
 	}
 
@@ -80,7 +104,7 @@ func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (
 		callbacks = append(callbacks, a.fetchMessage(messagesChannel, messageID))
 	}
 
-	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+	if err := simultaneously.DoCtx(ctx, gmailMaxConcurrentFetches, callbacks...); err != nil {
 		return nil, err
 	}
 
@@ -102,6 +126,11 @@ func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (
 
 // fetchMessage returns a concurrently executable job that fetches a single message
 // by ID and sends the fully decoded MessageRecord to messagesChannel.
+//
+// A 404 on a single message is treated as a skip rather than a batch failure: the
+// missing message is debug-logged and the job returns nil so simultaneously.DoCtx
+// does not cancel the other in-flight fetches. Callers therefore receive the
+// partial set of messages that did resolve.
 func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId string,
 ) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
@@ -112,6 +141,16 @@ func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId str
 
 		resp, err := a.JSONHTTPClient().Get(ctx, url.String())
 		if err != nil {
+			var httpErr *common.HTTPError
+			if errors.As(err, &httpErr) && httpErr.Status == http.StatusNotFound {
+				logging.Logger(ctx).Debug(
+					"gmail: message not found, skipping",
+					"messageId", messageId,
+				)
+
+				return nil
+			}
+
 			return err
 		}
 
