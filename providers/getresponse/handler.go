@@ -138,7 +138,7 @@ func (c *Connector) parseReadResponse(
 	// Use ParseResultFiltered to support connector-side filtering for objects that don't support provider-side filtering
 	marshalFromNode := common.MakeMarshaledDataFunc(nil)
 	if params.ObjectName == objectContacts {
-		marshalFromNode = common.MakeMarshaledDataFunc(contactReadRecordTransformer)
+		marshalFromNode = common.MakeMarshaledDataFunc(contactReadRecordCustomFieldsTransformer)
 	}
 
 	return common.ParseResultFiltered(

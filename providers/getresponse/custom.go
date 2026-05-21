@@ -151,9 +151,9 @@ func parseCustomFieldDefinitionNodes(items []*ajson.Node) ([]getResponseCustomFi
 	return out, nil
 }
 
-// contactReadRecordTransformer flattens customFieldValues onto the record map
+// contactReadRecordCustomFieldsTransformer flattens customFieldValues onto the record map
 // (keys cf_<id>) so they participate in field selection like other connectors.
-func contactReadRecordTransformer(node *ajson.Node) (map[string]any, error) {
+func contactReadRecordCustomFieldsTransformer(node *ajson.Node) (map[string]any, error) {
 	obj, err := jsonquery.Convertor.ObjectToMap(node)
 	if err != nil {
 		return nil, err
@@ -191,6 +191,18 @@ func flattenContactCustomFieldValues(object map[string]any) {
 	}
 }
 
+// normalizeCustomFieldAPIValue unwraps GetResponse custom-field "value" shapes so flattened
+// cf_<id> fields are easy to read and compare.
+//
+// The API often wraps scalars in a one-element array (e.g. single_select). We collapse that
+// to a scalar; multi-value fields stay as slices; empty arrays become nil.
+//
+// Sample customFieldValues entry from GET /v3/contacts:
+//
+//	{"customFieldId": "abc", "value": ["gold"]}           // single_select → cf_abc: "gold"
+//	{"customFieldId": "def", "value": ["a", "b"]}         // multi_select  → cf_def: ["a", "b"]
+//	{"customFieldId": "ghi", "value": "plain"}            // text          → cf_ghi: "plain"
+//	{"customFieldId": "jkl", "value": []}                  // unset         → cf_jkl: nil
 func normalizeCustomFieldAPIValue(v any) any {
 	arr, ok := v.([]any)
 	if !ok {
