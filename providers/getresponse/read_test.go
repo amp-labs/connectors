@@ -190,17 +190,13 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("email", CustomFieldKey("f1")),
 			},
-			Server: mockserver.Switch{
+			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				Cases: []mockserver.Case{
-					{
-						If: mockcond.And{
-							mockcond.MethodGET(),
-							mockcond.Path("/v3/contacts"),
-						},
-						Then: mockserver.Response(http.StatusOK, []byte(contactsWithCustomFieldsResponse)),
-					},
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/contacts"),
 				},
+				Then: mockserver.Response(http.StatusOK, []byte(contactsWithCustomFieldsResponse)),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,

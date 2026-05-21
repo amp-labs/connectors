@@ -18,6 +18,17 @@ const customFieldKeyPrefix = "cf_"
 
 const objectContacts = "contacts"
 
+// contactCustomFieldValue is one element of the customFieldValues array on GET /v3/contacts.
+// https://apireference.getresponse.com
+type contactCustomFieldValue struct {
+	CustomFieldId string `json:"customFieldId"`
+	Value         any    `json:"value"`
+}
+
+func (v contactCustomFieldValue) normalizedValue() any {
+	return normalizeCustomFieldAPIValue(v.Value)
+}
+
 // getResponseCustomField is a subset of GET /v3/custom-fields items.
 // https://apireference.getresponse.com
 type getResponseCustomField struct {
@@ -153,41 +164,81 @@ func parseCustomFieldDefinitionNodes(items []*ajson.Node) ([]getResponseCustomFi
 
 // contactReadRecordCustomFieldsTransformer flattens customFieldValues onto the record map
 // (keys cf_<id>) so they participate in field selection like other connectors.
+//
+// FlattenNestedFields is not used here: GetResponse returns an array of {customFieldId, value}
+// entries, not a single nested object whose keys should be promoted (see Capsule custom.go).
 func contactReadRecordCustomFieldsTransformer(node *ajson.Node) (map[string]any, error) {
-	obj, err := jsonquery.Convertor.ObjectToMap(node)
+	root, err := jsonquery.Convertor.ObjectToMap(node)
 	if err != nil {
 		return nil, err
 	}
 
-	flattenContactCustomFieldValues(obj)
+	entries, err := jsonquery.New(node).ArrayOptional("customFieldValues")
+	if err != nil {
+		return nil, err
+	}
 
-	return obj, nil
+	for _, entryNode := range entries {
+		field, err := jsonquery.ParseNode[contactCustomFieldValue](entryNode)
+		if err != nil {
+			return nil, err
+		}
+
+		if field.CustomFieldId == "" {
+			continue
+		}
+
+		root[CustomFieldKey(field.CustomFieldId)] = field.normalizedValue()
+	}
+
+	return root, nil
 }
 
 func flattenContactCustomFieldValues(object map[string]any) {
+	entries := parseContactCustomFieldValuesFromMap(object)
+	applyFlattenedCustomFieldValues(object, entries)
+}
+
+func parseContactCustomFieldValuesFromMap(object map[string]any) []contactCustomFieldValue {
 	raw, ok := object["customFieldValues"]
 	if !ok {
-		return
+		return nil
 	}
 
-	entries, ok := raw.([]any)
-	if !ok || len(entries) == 0 {
-		return
+	slice, ok := raw.([]any)
+	if !ok || len(slice) == 0 {
+		return nil
 	}
 
-	for _, e := range entries {
-		m, ok := e.(map[string]any)
+	entries := make([]contactCustomFieldValue, 0, len(slice))
+
+	for _, item := range slice {
+		record, ok := item.(map[string]any)
 		if !ok {
 			continue
 		}
 
-		id, _ := m["customFieldId"].(string)
+		id, _ := record["customFieldId"].(string)
 		if id == "" {
 			continue
 		}
 
-		normalized := normalizeCustomFieldAPIValue(m["value"])
-		object[CustomFieldKey(id)] = normalized
+		entries = append(entries, contactCustomFieldValue{
+			CustomFieldId: id,
+			Value:         record["value"],
+		})
+	}
+
+	return entries
+}
+
+func applyFlattenedCustomFieldValues(object map[string]any, entries []contactCustomFieldValue) {
+	for _, field := range entries {
+		if field.CustomFieldId == "" {
+			continue
+		}
+
+		object[CustomFieldKey(field.CustomFieldId)] = field.normalizedValue()
 	}
 }
 
@@ -271,8 +322,8 @@ func mergeContactCustomFieldValuesIntoBody(record map[string]any) map[string]any
 	return merged
 }
 
-func collectCustomFieldEntriesFromCfPrefixedKeys(record map[string]any) []map[string]any {
-	fromPrefix := make([]map[string]any, 0, len(record))
+func collectCustomFieldEntriesFromCfPrefixedKeys(record map[string]any) []contactCustomFieldValue {
+	fromPrefix := make([]contactCustomFieldValue, 0, len(record))
 
 	for key, value := range record {
 		if !strings.HasPrefix(key, customFieldKeyPrefix) {
@@ -284,9 +335,9 @@ func collectCustomFieldEntriesFromCfPrefixedKeys(record map[string]any) []map[st
 			continue
 		}
 
-		fromPrefix = append(fromPrefix, map[string]any{
-			"customFieldId": id,
-			"value":         toAPIValueArray(value),
+		fromPrefix = append(fromPrefix, contactCustomFieldValue{
+			CustomFieldId: id,
+			Value:         toAPIValueArray(value),
 		})
 	}
 
@@ -311,7 +362,7 @@ func copyRecordExcludingCfKeysAndCustomFieldValues(record map[string]any) map[st
 	return merged
 }
 
-func combineCustomFieldValueArrays(existing any, fromPrefix []map[string]any) []any {
+func combineCustomFieldValueArrays(existing any, fromPrefix []contactCustomFieldValue) []any {
 	existingList, _ := existing.([]any)
 
 	capacity := len(fromPrefix) + len(existingList)
@@ -324,10 +375,17 @@ func combineCustomFieldValueArrays(existing any, fromPrefix []map[string]any) []
 	}
 
 	for i := range fromPrefix {
-		combined = append(combined, fromPrefix[i])
+		combined = append(combined, fromPrefix[i].toAPIEntry())
 	}
 
 	return combined
+}
+
+func (v contactCustomFieldValue) toAPIEntry() map[string]any {
+	return map[string]any{
+		"customFieldId": v.CustomFieldId,
+		"value":         toAPIValueArray(v.Value),
+	}
 }
 
 func toAPIValueArray(raw any) []any {
