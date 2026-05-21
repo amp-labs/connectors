@@ -101,13 +101,13 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Create contact maps cf_* keys into customFieldValues body",
+			Name: "Create contact write maps cf_* keys to customFieldValues in API body",
 			Input: common.WriteParams{
 				ObjectName: "contacts",
 				RecordData: map[string]any{
 					"email":    "new@example.com",
 					"campaign": map[string]any{"campaignId": "C"},
-					CustomFieldKey("f1"): "gold",
+					"cf_f1":    "gold",
 				},
 			},
 			Server: mockserver.Conditional{

@@ -303,26 +303,26 @@ func contactReadFieldsQueryForAPI(fieldNames []string) []string {
 	return queryFields
 }
 
-// mergeContactCustomFieldValuesIntoBody moves keys prefixed with cf_ into
-// the customFieldValues array expected by the GetResponse API. Keys with an
-// empty id after the prefix are left on the record unchanged.
-func mergeContactCustomFieldValuesIntoBody(record map[string]any) map[string]any {
+// prepareContactWriteRecordData shapes RecordData for POST /v3/contacts.
+// Callers may set custom fields using connector keys cf_<customFieldId>; this converts
+// them into the customFieldValues array the GetResponse API expects.
+func prepareContactWriteRecordData(record map[string]any) map[string]any {
 	if len(record) == 0 {
 		return record
 	}
 
-	fromPrefix := collectCustomFieldEntriesFromCfPrefixedKeys(record)
-	if len(fromPrefix) == 0 {
+	fromCfKeys := collectContactCustomFieldsFromCfKeys(record)
+	if len(fromCfKeys) == 0 {
 		return record
 	}
 
-	merged := copyRecordExcludingCfKeysAndCustomFieldValues(record)
-	merged["customFieldValues"] = combineCustomFieldValueArrays(record["customFieldValues"], fromPrefix)
+	payload := copyContactWriteRecordExcludingCustomFields(record)
+	payload["customFieldValues"] = mergeContactCustomFieldValuesForWrite(record["customFieldValues"], fromCfKeys)
 
-	return merged
+	return payload
 }
 
-func collectCustomFieldEntriesFromCfPrefixedKeys(record map[string]any) []contactCustomFieldValue {
+func collectContactCustomFieldsFromCfKeys(record map[string]any) []contactCustomFieldValue {
 	fromPrefix := make([]contactCustomFieldValue, 0, len(record))
 
 	for key, value := range record {
@@ -344,7 +344,7 @@ func collectCustomFieldEntriesFromCfPrefixedKeys(record map[string]any) []contac
 	return fromPrefix
 }
 
-func copyRecordExcludingCfKeysAndCustomFieldValues(record map[string]any) map[string]any {
+func copyContactWriteRecordExcludingCustomFields(record map[string]any) map[string]any {
 	merged := make(map[string]any, len(record))
 
 	for key, value := range record {
@@ -362,10 +362,10 @@ func copyRecordExcludingCfKeysAndCustomFieldValues(record map[string]any) map[st
 	return merged
 }
 
-func combineCustomFieldValueArrays(existing any, fromPrefix []contactCustomFieldValue) []any {
+func mergeContactCustomFieldValuesForWrite(existing any, fromCfKeys []contactCustomFieldValue) []any {
 	existingList, _ := existing.([]any)
 
-	capacity := len(fromPrefix) + len(existingList)
+	capacity := len(fromCfKeys) + len(existingList)
 	combined := make([]any, 0, capacity)
 
 	for _, entry := range existingList {
@@ -374,8 +374,8 @@ func combineCustomFieldValueArrays(existing any, fromPrefix []contactCustomField
 		}
 	}
 
-	for i := range fromPrefix {
-		combined = append(combined, fromPrefix[i].toAPIEntry())
+	for i := range fromCfKeys {
+		combined = append(combined, fromCfKeys[i].toAPIEntry())
 	}
 
 	return combined

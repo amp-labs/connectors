@@ -80,7 +80,7 @@ func TestFlattenContactCustomFieldValues(t *testing.T) {
 	}
 }
 
-func TestMergeContactCustomFieldValuesIntoBody(t *testing.T) {
+func TestPrepareContactWriteRecordData(t *testing.T) {
 	t.Parallel()
 
 	t.Run("record without cf_ keys is returned unchanged", func(t *testing.T) {
@@ -88,7 +88,7 @@ func TestMergeContactCustomFieldValuesIntoBody(t *testing.T) {
 
 		contactEmail := gofakeit.Email()
 		in := map[string]any{"email": contactEmail}
-		out := mergeContactCustomFieldValuesIntoBody(in)
+		out := prepareContactWriteRecordData(in)
 		if len(out) != 1 || out["email"] != contactEmail {
 			t.Fatalf("got %#v", out)
 		}
@@ -105,7 +105,7 @@ func TestMergeContactCustomFieldValuesIntoBody(t *testing.T) {
 			"email":                              contactEmail,
 			CustomFieldKey(jobTitleCustomFieldID): jobTitleValue,
 		}
-		out := mergeContactCustomFieldValuesIntoBody(in)
+		out := prepareContactWriteRecordData(in)
 		if out["email"] != contactEmail {
 			t.Fatalf("email stripped: %#v", out)
 		}

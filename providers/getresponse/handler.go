@@ -220,7 +220,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 			return nil, err
 		}
 
-		recordData = mergeContactCustomFieldValuesIntoBody(map[string]any(rec))
+		recordData = prepareContactWriteRecordData(map[string]any(rec))
 	}
 
 	jsonData, err := json.Marshal(recordData)
