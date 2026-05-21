@@ -127,12 +127,7 @@ func (c *Connector) fetchCustomFieldsPageNodes(ctx context.Context, page int) ([
 		return nil, fmt.Errorf("%w: empty custom-fields body", common.ErrEmptyJSONHTTPResponse)
 	}
 
-	items, err := jsonquery.New(body).ArrayOptional("")
-	if err != nil {
-		return nil, err
-	}
-
-	return items, nil
+	return jsonquery.New(body).ArrayOptional("")
 }
 
 func parseCustomFieldDefinitionNodes(items []*ajson.Node) ([]getResponseCustomField, error) {
