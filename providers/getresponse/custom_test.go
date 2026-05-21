@@ -4,13 +4,15 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 func TestCustomFieldKey(t *testing.T) {
 	t.Parallel()
 
-	if got := CustomFieldKey("abc"); got != "cf_abc" {
-		t.Fatalf("CustomFieldKey: got %q want cf_abc", got)
+	customFieldDefinitionID := "newsletter_subscription_tier"
+	if got := CustomFieldKey(customFieldDefinitionID); got != "cf_"+customFieldDefinitionID {
+		t.Fatalf("CustomFieldKey: got %q want cf_%s", got, customFieldDefinitionID)
 	}
 }
 
@@ -26,7 +28,11 @@ func TestContactReadFieldsQueryForAPI(t *testing.T) {
 		{name: "no custom", input: []string{"email", "name"}, want: []string{"email", "name"}},
 		{name: "customFieldValues passthrough", input: []string{"email", "customFieldValues"}, want: []string{"email", "customFieldValues"}},
 		{name: "folded customFieldValues", input: []string{"CustomFieldValues"}, want: []string{"CustomFieldValues"}},
-		{name: "cf prefix appends", input: []string{"email", "cf_x1"}, want: []string{"email", "cf_x1", "customFieldValues"}},
+		{
+			name:  "cf_ prefixed field appends customFieldValues to query",
+			input: []string{"email", "cf_newsletter_preference"},
+			want:  []string{"email", "cf_newsletter_preference", "customFieldValues"},
+		},
 	}
 
 	for _, tt := range tests {
@@ -50,53 +56,62 @@ func TestContactReadFieldsQueryForAPI(t *testing.T) {
 func TestFlattenContactCustomFieldValues(t *testing.T) {
 	t.Parallel()
 
+	contactEmail := gofakeit.Email()
+	singleSelectFieldID := "loyalty_tier_level"
+	multiSelectFieldID := "product_interest_tags"
+
 	obj := map[string]any{
-		"email": "a@b.c",
+		"email": contactEmail,
 		"customFieldValues": []any{
-			map[string]any{"customFieldId": "f1", "value": []any{"solo"}},
-			map[string]any{"customFieldId": "f2", "value": []any{"a", "b"}},
+			map[string]any{"customFieldId": singleSelectFieldID, "value": []any{"gold_member"}},
+			map[string]any{"customFieldId": multiSelectFieldID, "value": []any{"newsletter", "webinar"}},
 		},
 	}
 
 	flattenContactCustomFieldValues(obj)
 
-	if obj[CustomFieldKey("f1")] != "solo" {
-		t.Fatalf("f1: got %#v", obj[CustomFieldKey("f1")])
+	if obj[CustomFieldKey(singleSelectFieldID)] != "gold_member" {
+		t.Fatalf("%s: got %#v", singleSelectFieldID, obj[CustomFieldKey(singleSelectFieldID)])
 	}
 
-	v2, ok := obj[CustomFieldKey("f2")].([]any)
-	if !ok || len(v2) != 2 {
-		t.Fatalf("f2: got %#v", obj[CustomFieldKey("f2")])
+	multiValue, ok := obj[CustomFieldKey(multiSelectFieldID)].([]any)
+	if !ok || len(multiValue) != 2 {
+		t.Fatalf("%s: got %#v", multiSelectFieldID, obj[CustomFieldKey(multiSelectFieldID)])
 	}
 }
 
 func TestMergeContactCustomFieldValuesIntoBody(t *testing.T) {
 	t.Parallel()
 
-	t.Run("no cf keys unchanged", func(t *testing.T) {
+	t.Run("record without cf_ keys is returned unchanged", func(t *testing.T) {
 		t.Parallel()
 
-		in := map[string]any{"email": "x@y.z"}
+		contactEmail := gofakeit.Email()
+		in := map[string]any{"email": contactEmail}
 		out := mergeContactCustomFieldValuesIntoBody(in)
-		if len(out) != 1 || out["email"] != "x@y.z" {
+		if len(out) != 1 || out["email"] != contactEmail {
 			t.Fatalf("got %#v", out)
 		}
 	})
 
-	t.Run("cf keys become array", func(t *testing.T) {
+	t.Run("cf_ prefixed keys are merged into customFieldValues array", func(t *testing.T) {
 		t.Parallel()
 
+		contactEmail := gofakeit.Email()
+		jobTitleCustomFieldID := "job_title_custom_field"
+		jobTitleValue := "Senior Marketing Manager"
+
 		in := map[string]any{
-			"email":              "x@y.z",
-			CustomFieldKey("a"): "hello",
+			"email":                              contactEmail,
+			CustomFieldKey(jobTitleCustomFieldID): jobTitleValue,
 		}
 		out := mergeContactCustomFieldValuesIntoBody(in)
-		if out["email"] != "x@y.z" {
+		if out["email"] != contactEmail {
 			t.Fatalf("email stripped: %#v", out)
 		}
 
-		if _, ok := out[CustomFieldKey("a")]; ok {
-			t.Fatal("cf key should be removed from root")
+		if _, ok := out[CustomFieldKey(jobTitleCustomFieldID)]; ok {
+			t.Fatal("cf_ key should be removed from root record")
 		}
 
 		raw, ok := out["customFieldValues"].([]any)
@@ -104,8 +119,8 @@ func TestMergeContactCustomFieldValuesIntoBody(t *testing.T) {
 			t.Fatalf("customFieldValues: %#v", out["customFieldValues"])
 		}
 
-		m, ok := raw[0].(map[string]any)
-		if !ok || m["customFieldId"] != "a" {
+		entry, ok := raw[0].(map[string]any)
+		if !ok || entry["customFieldId"] != jobTitleCustomFieldID {
 			t.Fatalf("entry: %#v", raw[0])
 		}
 	})

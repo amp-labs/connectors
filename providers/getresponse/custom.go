@@ -244,11 +244,12 @@ func contactReadFieldsQueryForAPI(fieldNames []string) []string {
 		return fieldNames
 	}
 
-	out := make([]string, 0, len(fieldNames)+1)
-	out = append(out, fieldNames...)
-	out = append(out, "customFieldValues")
+	// Copy the original fields so appending customFieldValues does not mutate the caller's slice.
+	queryFields := make([]string, len(fieldNames), len(fieldNames)+1)
+	copy(queryFields, fieldNames)
+	queryFields = append(queryFields, "customFieldValues")
 
-	return out
+	return queryFields
 }
 
 // mergeContactCustomFieldValuesIntoBody moves keys prefixed with cf_ into
@@ -311,13 +312,14 @@ func copyRecordExcludingCfKeysAndCustomFieldValues(record map[string]any) map[st
 }
 
 func combineCustomFieldValueArrays(existing any, fromPrefix []map[string]any) []any {
-	combined := make([]any, 0, len(fromPrefix)+8)
+	existingList, _ := existing.([]any)
 
-	if list, ok := existing.([]any); ok {
-		for _, entry := range list {
-			if m, okMap := entry.(map[string]any); okMap {
-				combined = append(combined, m)
-			}
+	capacity := len(fromPrefix) + len(existingList)
+	combined := make([]any, 0, capacity)
+
+	for _, entry := range existingList {
+		if m, ok := entry.(map[string]any); ok {
+			combined = append(combined, m)
 		}
 	}
 
