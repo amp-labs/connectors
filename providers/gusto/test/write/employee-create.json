@@ -1,0 +1,8 @@
+{
+  "uuid": "emp_001",
+  "first_name": "Alice",
+  "last_name": "Anderson",
+  "email": "alice@example.com",
+  "company_uuid": "test-company-uuid",
+  "version": "v1"
+}
