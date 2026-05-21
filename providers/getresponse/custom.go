@@ -34,15 +34,12 @@ func CustomFieldKey(customFieldID string) string {
 }
 
 func (d getResponseCustomField) fieldMetadata() common.FieldMetadata {
-	vt := d.mapValueType()
-	isCustom := true
-
 	return common.FieldMetadata{
 		DisplayName:  d.Name,
-		ValueType:    vt,
+		ValueType:    d.mapValueType(),
 		ProviderType: d.ValueType,
 		Values:       d.selectValues(),
-		IsCustom:     &isCustom,
+		IsCustom:     new(true),
 	}
 }
 

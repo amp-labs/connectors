@@ -104,18 +104,14 @@ func boolPtr(b bool) *bool {
 // testServerCustomFieldsListJSON serves GET /v3/custom-fields with the given JSON body.
 // Other requests get an empty custom-field list so ListObjectMetadata does not hit a teapot dummy.
 func testServerCustomFieldsListJSON(customFieldsJSON string) *httptest.Server {
-	return mockserver.Switch{
+	return mockserver.Conditional{
 		Setup: mockserver.ContentJSON(),
-		Cases: []mockserver.Case{
-			{
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v3/custom-fields"),
-				},
-				Then: mockserver.Response(http.StatusOK, []byte(customFieldsJSON)),
-			},
+		If: mockcond.And{
+			mockcond.MethodGET(),
+			mockcond.Path("/v3/custom-fields"),
 		},
-		Default: mockserver.Response(http.StatusOK, []byte(`[]`)),
+		Then: mockserver.Response(http.StatusOK, []byte(customFieldsJSON)),
+		Else: mockserver.Response(http.StatusOK, []byte(`[]`)),
 	}.Server()
 }
 
