@@ -12,6 +12,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/getresponse/metadata"
@@ -50,20 +51,25 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	applyReadPaginationQuery(url, params.PageSize)
+	applyReadPaginationQuery(url, params)
 	applyReadFieldsQuery(url, params)
-	addGetResponseFiltersIfPresent(url, params.Filter)
+
+	if params.Filter != "" {
+		addGetResponseFilters(url, params.Filter)
+	}
+
 	appendProviderSideCreatedOnFilters(url, params)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
-func applyReadPaginationQuery(url *urlbuilder.URL, requestedPageSize int) {
-	if requestedPageSize <= 0 || requestedPageSize > maxPageSizeInt {
-		requestedPageSize = maxPageSizeInt
+func applyReadPaginationQuery(url *urlbuilder.URL, params common.ReadParams) {
+	pageSizeParam := readhelper.PageSizeWithDefaultStr(params, strconv.Itoa(maxPageSizeInt))
+	if params.PageSize > maxPageSizeInt {
+		pageSizeParam = strconv.Itoa(maxPageSizeInt)
 	}
 
-	url.WithQueryParam(pageSizeKey, strconv.Itoa(requestedPageSize))
+	url.WithQueryParam(pageSizeKey, pageSizeParam)
 	url.WithQueryParam(pageKey, "1")
 }
 
@@ -74,14 +80,6 @@ func applyReadFieldsQuery(url *urlbuilder.URL, params common.ReadParams) {
 	}
 
 	url.WithQueryParam("fields", strings.Join(fieldNames, ","))
-}
-
-func addGetResponseFiltersIfPresent(url *urlbuilder.URL, filterStr string) {
-	if filterStr == "" {
-		return
-	}
-
-	addGetResponseFilters(url, filterStr)
 }
 
 func appendProviderSideCreatedOnFilters(url *urlbuilder.URL, params common.ReadParams) {
