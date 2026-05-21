@@ -2,6 +2,7 @@ package connector
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -38,6 +39,7 @@ import (
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
 	"github.com/amp-labs/connectors/providers/cloudtalk"
+	"github.com/amp-labs/connectors/providers/connectwise"
 	"github.com/amp-labs/connectors/providers/constantcontact"
 	"github.com/amp-labs/connectors/providers/copper"
 	"github.com/amp-labs/connectors/providers/customerapp"
@@ -88,6 +90,7 @@ import (
 	"github.com/amp-labs/connectors/providers/lever"
 	"github.com/amp-labs/connectors/providers/linear"
 	"github.com/amp-labs/connectors/providers/linkedin"
+	"github.com/amp-labs/connectors/providers/livestorm"
 	"github.com/amp-labs/connectors/providers/loxo"
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/microsoft"
@@ -96,6 +99,7 @@ import (
 	"github.com/amp-labs/connectors/providers/netsuite"
 	netsuitem2m "github.com/amp-labs/connectors/providers/netsuite/m2m"
 	"github.com/amp-labs/connectors/providers/nutshell"
+	"github.com/amp-labs/connectors/providers/odoo"
 	"github.com/amp-labs/connectors/providers/okta"
 	"github.com/amp-labs/connectors/providers/outplay"
 	"github.com/amp-labs/connectors/providers/outreach"
@@ -105,6 +109,7 @@ import (
 	"github.com/amp-labs/connectors/providers/pipedrive"
 	"github.com/amp-labs/connectors/providers/pipeliner"
 	"github.com/amp-labs/connectors/providers/podium"
+	"github.com/amp-labs/connectors/providers/procore"
 	"github.com/amp-labs/connectors/providers/pylon"
 	"github.com/amp-labs/connectors/providers/quickbooks"
 	"github.com/amp-labs/connectors/providers/recurly"
@@ -160,8 +165,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Atlassian:                  wrapper(newAtlassianConnector),
 	providers.Attio:                      wrapper(newAttioConnector),
 	providers.Avoma:                      wrapper(newAvomaConnector),
-	providers.BigQuery:                   wrapper(newBigQueryConnector),
 	providers.Bentley:                    wrapper(newBentleyConnector),
+	providers.BigQuery:                   wrapper(newBigQueryConnector),
 	providers.Bitbucket:                  wrapper(newBitBucketConnector),
 	providers.Blackbaud:                  wrapper(newBlackbaudConnector),
 	providers.Blueshift:                  wrapper(newBlueshiftConnector),
@@ -173,14 +178,15 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.CallRail:                   wrapper(newCallRail),
 	providers.CampaignMonitor:            wrapper(newCampaignMonitorConnector),
 	providers.Capsule:                    wrapper(newCapsuleConnector),
-	providers.Chargebee:                  wrapper(newChargebeeConnector),
 	providers.ChargeOver:                 wrapper(newChargeOver),
+	providers.Chargebee:                  wrapper(newChargebeeConnector),
 	providers.ChiliPiper:                 wrapper(newChiliPiperConnector),
 	providers.Chorus:                     wrapper(newChorusConnector),
 	providers.ClariCopilot:               wrapper(newClariCopilotConnector),
 	providers.ClickUp:                    wrapper(newClickUpConnector),
 	providers.Close:                      wrapper(newCloseConnector),
 	providers.CloudTalk:                  wrapper(newCloudTalkConnector),
+	providers.ConnectWise:                wrapper(newConnectWiseConnector),
 	providers.ConstantContact:            wrapper(newConstantContactConnector),
 	providers.Copper:                     wrapper(newCopperConnector),
 	providers.CustomerJourneysApp:        wrapper(newCustomerJourneysAppConnector),
@@ -213,9 +219,9 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.HappyFox:                   wrapper(newHappyFoxConnector),
 	providers.HelpScoutMailbox:           wrapper(newHelpScoutMailboxConnector),
 	providers.HeyReach:                   wrapper(newHeyReachConnector),
-	providers.HousecallPro:               wrapper(newHousecallProConnector),
 	providers.HighLevelStandard:          wrapper(newHighLevelStandardConnector),
 	providers.HighLevelWhiteLabel:        wrapper(newHighLevelWhiteLabelConnector),
+	providers.HousecallPro:               wrapper(newHousecallProConnector),
 	providers.Hubspot:                    wrapper(newHubspotConnector),
 	providers.Hunter:                     wrapper(newHunterConnector),
 	providers.Insightly:                  wrapper(newInsightlyConnector),
@@ -233,6 +239,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Lever:                      wrapper(newLeverConnector),
 	providers.Linear:                     wrapper(newLinearConnector),
 	providers.LinkedIn:                   wrapper(newLinkedInConnector),
+	providers.Livestorm:                  wrapper(newLivestormConnector),
 	providers.Loxo:                       wrapper(newLoxoConnector),
 	providers.Marketo:                    wrapper(newMarketoConnector),
 	providers.Microsoft:                  wrapper(newMicrosoftConnector),
@@ -242,6 +249,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Netsuite:                   wrapper(newNetsuiteConnector),
 	providers.NetsuiteM2M:                wrapper(newNetsuiteM2MConnector),
 	providers.Nutshell:                   wrapper(newNutshellConnector),
+	providers.Odoo:                       wrapper(newOdooConnector),
 	providers.Okta:                       wrapper(newOktaConnector),
 	providers.Outplay:                    wrapper(newOutplayConnector),
 	providers.Outreach:                   wrapper(newOutreachConnector),
@@ -251,6 +259,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Pipedrive:                  wrapper(newPipedriveConnector),
 	providers.Pipeliner:                  wrapper(newPipelinerConnector),
 	providers.Podium:                     wrapper(newPodiumConnector),
+	providers.Procore:                    wrapper(newProcoreConnector),
+	providers.ProcoreSandbox:             wrapper(newProcoreSandboxConnector),
 	providers.Pylon:                      wrapper(newPylonConnector),
 	providers.QuickBooks:                 wrapper(newQuickbooksConnector),
 	providers.QuickbooksSandbox:          wrapper(newQuickbooksSandboxConnector),
@@ -308,7 +318,7 @@ func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connecto
 	}
 
 	if field, ok := params.Metadata["timestampColumn"]; ok && field != "" {
-		opts = append(opts, salesforce.WithTimestampColumn(field))
+		opts = append(opts, salesforce.WithTimestampColumn(field, extractAlternateTimestampUsingObjects(params.Metadata)))
 	}
 
 	return salesforce.NewConnector(opts...)
@@ -330,17 +340,46 @@ func newSalesforceJWTConnector(params common.ConnectorParams) (*salesforce.Conne
 	}
 
 	if field, ok := params.Metadata["timestampColumn"]; ok && field != "" {
-		opts = append(opts, salesforce.WithTimestampColumn(field))
+		opts = append(opts, salesforce.WithTimestampColumn(field, extractAlternateTimestampUsingObjects(params.Metadata)))
 	}
 
 	return salesforce.NewConnector(opts...)
 }
 
+// alternateTimestampMetadataSuffix is the suffix on per-object metadata keys
+// that opt that object into the alternate timestamp column. For example, a
+// metadata entry "Account_timestampColumnCreateTime" opts Account into
+// salesforce.WithTimestampColumn's overridden column for incremental reads.
+// Object names are matched case-insensitively because getTimestampColumn
+// lowercases the lookup.
+const alternateTimestampMetadataSuffix = "_timestampColumnCreateTime"
+
+// extractAlternateTimestampUsingObjects walks the connector metadata for
+// "<ObjectName>_timestampColumnCreateTime" entries and returns the set of
+// objects (keyed lowercase, matching the runtime lookup) that opt into the
+// alternate timestamp column. Returns an empty map (never nil) so callers can
+// rely on lookups without nil-checking.
+func extractAlternateTimestampUsingObjects(metadata map[string]string) map[common.ObjectName]bool {
+	objects := make(map[common.ObjectName]bool)
+
+	for key := range metadata {
+		if !strings.HasSuffix(key, alternateTimestampMetadataSuffix) {
+			continue
+		}
+
+		object := strings.TrimSuffix(key, alternateTimestampMetadataSuffix)
+		if object == "" {
+			continue
+		}
+
+		objects[common.ObjectName(strings.ToLower(object))] = true
+	}
+
+	return objects
+}
+
 func newHubspotConnector(params common.ConnectorParams) (*hubspot.Connector, error) {
-	return hubspot.NewConnector(
-		hubspot.WithAuthenticatedClient(params.AuthenticatedClient),
-		hubspot.WithModule(params.Module),
-	)
+	return hubspot.NewConnector(params)
 }
 
 func newDocusignConnector(
@@ -460,9 +499,13 @@ func newApolloConnector(
 func newGongConnector(
 	params common.ConnectorParams,
 ) (*gong.Connector, error) {
-	return gong.NewConnector(
-		gong.WithAuthenticatedClient(params.AuthenticatedClient),
-	)
+	var args []gong.Option
+
+	if len(params.Workspace) > 0 {
+		args = append(args, gong.WithWorkspace(params.Workspace))
+	}
+
+	return gong.NewConnector(append(args, gong.WithAuthenticatedClient(params.AuthenticatedClient))...)
 }
 
 func newAttioConnector(
@@ -532,6 +575,12 @@ func newCloudTalkConnector(
 	params common.ConnectorParams,
 ) (*cloudtalk.Connector, error) {
 	return cloudtalk.NewConnector(params)
+}
+
+func newConnectWiseConnector(
+	params common.ConnectorParams,
+) (*connectwise.Connector, error) {
+	return connectwise.NewConnector(params)
 }
 
 func newKlaviyoConnector(
@@ -664,6 +713,12 @@ func newOktaConnector(
 	params common.ConnectorParams,
 ) (*okta.Connector, error) {
 	return okta.NewConnector(params)
+}
+
+func newOdooConnector(
+	params common.ConnectorParams,
+) (*odoo.Connector, error) {
+	return odoo.NewConnector(params)
 }
 
 func newHeyReachConnector(
@@ -979,7 +1034,14 @@ func newLinkedInConnector(
 	return linkedin.NewConnector(params)
 }
 
-func newBitBucketConnector(params common.ConnectorParams,
+func newLivestormConnector(
+	params common.ConnectorParams,
+) (*livestorm.Connector, error) {
+	return livestorm.NewConnector(params)
+}
+
+func newBitBucketConnector(
+	params common.ConnectorParams,
 ) (*bitbucket.Connector, error) {
 	return bitbucket.NewConnector(params)
 }
@@ -990,67 +1052,80 @@ func newAmplitudeConnector(
 	return amplitude.NewConnector(params)
 }
 
-func newCalendlyConnector(params common.ConnectorParams,
+func newCalendlyConnector(
+	params common.ConnectorParams,
 ) (*calendly.Connector, error) {
 	return calendly.NewConnector(params)
 }
 
-func newPaddleConnector(params common.ConnectorParams,
+func newPaddleConnector(
+	params common.ConnectorParams,
 ) (*paddle.Connector, error) {
 	return paddle.NewConnector(params)
 }
 
-func newJobberConnector(params common.ConnectorParams,
+func newJobberConnector(
+	params common.ConnectorParams,
 ) (*jobber.Connector, error) {
 	return jobber.NewConnector(params)
 }
 
-func newJustCallConnector(params common.ConnectorParams,
+func newJustCallConnector(
+	params common.ConnectorParams,
 ) (*justcall.Connector, error) {
 	return justcall.NewConnector(params)
 }
 
-func newChorusConnector(params common.ConnectorParams,
+func newChorusConnector(
+	params common.ConnectorParams,
 ) (*chorus.Connector, error) {
 	return chorus.NewConnector(params)
 }
 
-func newWebexConnector(params common.ConnectorParams,
+func newWebexConnector(
+	params common.ConnectorParams,
 ) (*webex.Connector, error) {
 	return webex.NewConnector(params)
 }
 
-func newChargebeeConnector(params common.ConnectorParams,
+func newChargebeeConnector(
+	params common.ConnectorParams,
 ) (*chargebee.Connector, error) {
 	return chargebee.NewConnector(params)
 }
 
-func newLoxoConnector(params common.ConnectorParams,
+func newLoxoConnector(
+	params common.ConnectorParams,
 ) (*loxo.Connector, error) {
 	return loxo.NewConnector(params)
 }
 
-func newSnapchatAdsConnector(params common.ConnectorParams,
+func newSnapchatAdsConnector(
+	params common.ConnectorParams,
 ) (*snapchatads.Connector, error) {
 	return snapchatads.NewConnector(params)
 }
 
-func newOutplayConnector(params common.ConnectorParams,
+func newOutplayConnector(
+	params common.ConnectorParams,
 ) (*outplay.Connector, error) {
 	return outplay.NewConnector(params)
 }
 
-func newHappyFoxConnector(params common.ConnectorParams,
+func newHappyFoxConnector(
+	params common.ConnectorParams,
 ) (*happyfox.Connector, error) {
 	return happyfox.NewConnector(params)
 }
 
-func newSnowflakeConnector(params common.ConnectorParams,
+func newSnowflakeConnector(
+	params common.ConnectorParams,
 ) (*snowflake.Connector, error) {
 	return snowflake.NewConnector(params)
 }
 
-func newBigQueryConnector(params common.ConnectorParams,
+func newBigQueryConnector(
+	params common.ConnectorParams,
 ) (*bigquery.Connector, error) {
 	return bigquery.NewConnector(params)
 }
@@ -1153,4 +1228,12 @@ func newFourFourConnector(params common.ConnectorParams) (*fourfour.Connector, e
 
 func newChargeOver(params common.ConnectorParams) (*chargeover.Connector, error) {
 	return chargeover.NewConnector(params)
+}
+
+func newProcoreConnector(params common.ConnectorParams) (*procore.Connector, error) {
+	return procore.NewConnector(params)
+}
+
+func newProcoreSandboxConnector(params common.ConnectorParams) (*procore.Connector, error) {
+	return procore.NewSandboxConnector(params)
 }

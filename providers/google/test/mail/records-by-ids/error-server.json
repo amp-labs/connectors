@@ -1,0 +1,14 @@
+{
+  "error": {
+    "code": 500,
+    "message": "Internal error encountered.",
+    "errors": [
+      {
+        "message": "Internal error encountered.",
+        "domain": "global",
+        "reason": "backendError"
+      }
+    ],
+    "status": "INTERNAL"
+  }
+}

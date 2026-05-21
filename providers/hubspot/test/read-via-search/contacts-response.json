@@ -1,0 +1,23 @@
+{
+  "total": 115,
+  "results": [
+    {
+      "id": "220006890315",
+      "properties": {
+        "company": null,
+        "createdate": "2026-05-06T11:48:03.785Z",
+        "email": "effieklestz@yahoo.com",
+        "firstname": null,
+        "hs_object_id": "220006890315",
+        "lastmodifieddate": "2026-05-06T19:26:18.036Z",
+        "lastname": null,
+        "phone": null,
+        "website": null
+      },
+      "createdAt": "2026-05-06T11:48:03.785Z",
+      "updatedAt": "2026-05-06T19:26:18.036Z",
+      "archived": false,
+      "url": "https://app.hubspot.com/contacts/44623425/record/0-1/220006890315"
+    }
+  ]
+}

@@ -72,12 +72,6 @@ type schemaRequest struct {
 	Type   string `json:"type"`
 }
 
-// writeResponseBody is the body on a successful create/update.
-type writeResponseBody struct {
-	RecordId any    `json:"recordId"` // can be int or string
-	Type     string `json:"type"`
-}
-
 // schemaResponseBody is the body on a successful getschema.
 type schemaResponseBody struct {
 	Type         string                       `json:"type"`

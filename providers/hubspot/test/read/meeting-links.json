@@ -1,0 +1,25 @@
+{
+  "total": 3,
+  "results": [
+    {
+      "id": "12428962",
+      "slug": "int/public-gathering",
+      "link": "https://meetings.hubspot.com/int/public-gathering",
+      "name": "Public Gathering",
+      "type": "PERSONAL_LINK",
+      "organizerUserId": "82226790",
+      "userIdsOfLinkMembers": [
+        "82226790"
+      ],
+      "defaultLink": false,
+      "createdAt": "2026-05-11T23:49:27.717Z",
+      "updatedAt": "2026-05-11T23:49:27.717Z"
+    }
+  ],
+  "paging": {
+    "next": {
+      "after": "MQ%3D%3D",
+      "link": "https://api.hubapi.com/scheduler/2026-03/meetings/meeting-links?limit=1&after=MQ%3D%3D"
+    }
+  }
+}

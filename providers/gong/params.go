@@ -17,6 +17,17 @@ type Option = func(params *parameters)
 
 type parameters struct {
 	paramsbuilder.Client
+
+	APIBaseURL string // Regional API base URL from OAuth token (e.g. "https://us-12345.api.gong.io")
+}
+
+// WithWorkspace sets the regional API base URL for the Gong connector.
+// This is extracted from the OAuth token response field "api_base_url".
+// US tenants may omit this (defaults to api.gong.io).
+func WithWorkspace(apiBaseURL string) Option {
+	return func(params *parameters) {
+		params.APIBaseURL = apiBaseURL
+	}
 }
 
 func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unused
@@ -27,6 +38,7 @@ func newParams(opts []Option) (*common.ConnectorParams, error) { // nolint:unuse
 
 	return &common.ConnectorParams{
 		AuthenticatedClient: oldParams.Client.Caller.Client,
+		Workspace:           oldParams.APIBaseURL,
 	}, nil
 }
 
@@ -83,15 +95,58 @@ func buildReadBody(config common.ReadParams) map[string]any {
 	}
 
 	if config.ObjectName == objectNameCalls {
-		// https://app.gong.io/settings/api/documentation#post-/v2/calls/extensive
-		body["contentSelector"] = map[string]any{
-			"context": "Extended",
-			"exposedFields": map[string]any{
-				"parties": true,
-				"media":   true,
-			},
-		}
+		body["contentSelector"] = callContentSelector(config.Fields)
 	}
 
 	return body
+}
+
+// callContentSelector returns the contentSelector used for POST /v2/calls/extensive.
+// parties and media are always requested. content, interaction, and collaboration are
+// requested only when the corresponding root field is in `fields`.
+//
+// Field selections arrive here already collapsed to root names by the server's
+// ExtractFieldForConnector, so we can't be more granular than per-section; when a
+// section is requested, every sub-flag in it is set to true.
+// https://app.gong.io/settings/api/documentation#post-/v2/calls/extensive
+func callContentSelector(fields datautils.StringSet) map[string]any {
+	exposed := map[string]any{
+		"parties": true,
+		"media":   true,
+	}
+
+	if fields.Has("content") {
+		exposed["content"] = map[string]any{
+			"structure":          true,
+			"topics":             true,
+			"trackers":           true,
+			"trackerOccurrences": true,
+			"pointsOfInterest":   true,
+			"brief":              true,
+			"outline":            true,
+			"highlights":         true,
+			"callOutcome":        true,
+			"keyPoints":          true,
+		}
+	}
+
+	if fields.Has("interaction") {
+		exposed["interaction"] = map[string]any{
+			"speakers":               true,
+			"video":                  true,
+			"personInteractionStats": true,
+			"questions":              true,
+		}
+	}
+
+	if fields.Has("collaboration") {
+		exposed["collaboration"] = map[string]any{
+			"publicComments": true,
+		}
+	}
+
+	return map[string]any{
+		"context":       "Extended",
+		"exposedFields": exposed,
+	}
 }

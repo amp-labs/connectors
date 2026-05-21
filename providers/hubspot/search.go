@@ -9,8 +9,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/associations"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
 )
 
 const (
@@ -24,45 +24,72 @@ const (
 	searchPageSize = "200"
 )
 
+func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error) {
+	return c.searchStrategy.Search(ctx, params)
+}
+
 // ReadUsingSearchAPI uses the POST /search endpoint to filter object records and return the result.
 // This endpoint has a limit of 10,000 records. If the result has more than 10,000 records,
 // the caller should employ sorting to paginate through the result on the client side.
 // This endpoint paginates using paging.next.after which is to be used as an offset.
 // Archived results do not appear in search results.
 // Read more @ https://developers.hubspot.com/docs/api/crm/search
-func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams) (*common.ReadResult, error) {
+func (c *Connector) ReadUsingSearchAPI( // nolint:cyclop
+	ctx context.Context, params SearchParams,
+) (*common.ReadResult, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
-	if err := config.ValidateParams(); err != nil {
+	if err := params.ValidateParams(); err != nil {
 		return nil, err
 	}
 
 	// Check if the NextPage token exceeds the search results limit.
 	// HubSpot's search API returns a 400 error if you try to paginate beyond 10,000 records.
 	// By detecting this proactively, we can return a specific error that callers can handle.
-	if err := checkSearchResultsLimit(config.NextPage); err != nil {
+	if err := checkSearchResultsLimit(params.NextPage); err != nil {
 		return nil, fmt.Errorf(
 			"%w: requested offset %s exceeds limit %d",
 			common.ErrResultsLimitExceeded,
-			config.NextPage,
+			params.NextPage,
 			searchResultsLimit,
 		)
 	}
 
-	if core.ObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
+	params = params.applyTimestampFilters()
+
+	//
+	// Read using POST endpoints intended for Search.
+	//
+
+	switch {
+	case core.CRMObjectsWithoutPropertiesAPISupport.Has(params.ObjectName):
 		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
 		// For instance such object is Lists.
 		return c.searchCRM(ctx, searchCRMParams{
-			SearchParams: config,
+			SearchParams: params,
 		})
+	case core.MarketingObjects.Has(params.ObjectName):
+		// Search for marketing is not implemented, using simple read.
+		return c.readMarketing(ctx, makeReadParamsFromSearchParams(params), core.MarketingObjects[params.ObjectName])
+	case core.CommunicationObjects.Has(params.ObjectName):
+		// Search for communication is not implemented, using simple read.
+		return c.readCommunications(ctx, makeReadParamsFromSearchParams(params), core.CommunicationObjects[params.ObjectName])
+	case core.MiscellaneousObjects.Has(params.ObjectName):
+		// Search for misc objects is not implemented, using simple read.
+		return c.readMiscAPI(ctx, makeReadParamsFromSearchParams(params), core.MiscellaneousObjects[params.ObjectName])
+	default:
+		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
+		return c.searchCRMObjectsAPI(ctx, params)
 	}
+}
 
-	url, err := c.getCRMObjectsSearchURL(config)
+func (c *Connector) searchCRMObjectsAPI(ctx context.Context, params SearchParams) (*common.ReadResult, error) {
+	url, err := c.getCRMObjectsSearchURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Post(ctx, url, makeFilterBody(config))
+	rsp, err := c.JSONHTTPClient().Post(ctx, url.String(), makeFilterBody(params))
 	if err != nil {
 		return nil, err
 	}
@@ -72,8 +99,8 @@ func (c *Connector) ReadUsingSearchAPI(ctx context.Context, config SearchParams)
 		core.GetRecords,
 		core.GetNextRecordsAfter,
 		associations.CreateDataMarshallerWithAssociations(
-			ctx, c.crmAdapter.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
-		config.Fields,
+			ctx, c.associationsFiller, params.ObjectName, params.AssociatedObjects),
+		params.Fields,
 	)
 }
 
@@ -87,7 +114,7 @@ func (c *Connector) searchCRM(
 		return nil, err
 	}
 
-	url, err := c.getCRMSearchURL(config)
+	url, err := c.getCRMSearchURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +124,7 @@ func (c *Connector) searchCRM(
 		return nil, err
 	}
 
-	rsp, err := c.Client.Post(ctx, url, payload)
+	rsp, err := c.JSONHTTPClient().Post(ctx, url.String(), payload)
 	if err != nil {
 		return nil, err
 	}
@@ -185,6 +212,62 @@ func BuildIdFilterGroup(id string) Filter {
 		Operator:  FilterOperatorTypeGT,
 		Value:     id,
 	}
+}
+
+func makeReadParamsFromSearchParams(search SearchParams) common.ReadParams {
+	return common.ReadParams{
+		ObjectName:        search.ObjectName,
+		Fields:            search.Fields,
+		NextPage:          search.NextPage,
+		AssociatedObjects: search.AssociatedObjects,
+		Since:             search.Since,
+		Until:             search.Until,
+	}
+}
+
+func (p SearchParams) applyTimestampFilters() SearchParams {
+	params := makeReadParamsFromSearchParams(p)
+
+	sinceFilter := BuildLastModifiedFilterGroup(&params)
+	untilFilter := BuildUntilTimestampFilterGroup(&params)
+
+	if len(p.FilterGroups) == 0 && (sinceFilter != (Filter{}) || untilFilter != (Filter{})) {
+		// Initialize group because either since or until (or both) should be populated.
+		p.FilterGroups = []FilterGroup{{
+			Filters: Filters{},
+		}}
+	}
+
+	// Every group is "OR"ed together.
+	// If there are multiple groups it is logically ok to insert since/until in each.
+	for index, group := range p.FilterGroups {
+		if !group.hasFilter(sinceFilter) {
+			group.Filters = append(group.Filters, sinceFilter)
+		}
+
+		if !group.hasFilter(untilFilter) {
+			group.Filters = append(group.Filters, untilFilter)
+		}
+
+		p.FilterGroups[index] = group
+	}
+
+	return p
+}
+
+func (g FilterGroup) hasFilter(target Filter) bool {
+	if target == (Filter{}) {
+		return true
+	}
+
+	for _, filter := range g.Filters {
+		if filter.FieldName == target.FieldName &&
+			filter.Operator == target.Operator {
+			return true
+		}
+	}
+
+	return false
 }
 
 // BuildSort builds a sort by clause for the given field and direction.

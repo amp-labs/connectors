@@ -48,7 +48,7 @@ func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadDa
 }
 
 // VerifyWebhookMessage verifies the signature of a webhook message from Hubspot.
-func (*Connector) VerifyWebhookMessage(
+func (c *Connector) VerifyWebhookMessage(
 	_ context.Context, request *common.WebhookRequest, params *common.VerificationParams,
 ) (bool, error) {
 	hsParams, err := common.AssertType[*HubspotVerificationParams](params.Param)

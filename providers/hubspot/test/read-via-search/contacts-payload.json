@@ -1,0 +1,17 @@
+{
+  "filterGroups": [
+    {
+      "filters": [
+        {
+          "propertyName": "lastmodifieddate",
+          "operator": "GTE",
+          "value": "2026-05-05T23:10:00Z"
+        }
+      ]
+    }
+  ],
+  "limit": "200",
+  "properties": [
+    "email"
+  ]
+}

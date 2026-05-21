@@ -15,9 +15,9 @@ func TestListObjectMetadata(t *testing.T) {
 
 	tests := []testroutines.Metadata{
 		{
-			Name:  "Successful metadata for commerce objects",
-			Input: []string{"accounts", "orders", "products", "subscriptions", "events-processed", "events-unprocessed"},
-			Server: mockserver.Dummy(),
+			Name:       "Successful metadata for commerce objects",
+			Input:      []string{"accounts", "orders", "products", "subscriptions", "events-processed", "events-unprocessed"},
+			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{

@@ -1,0 +1,13 @@
+{
+    "id": 2783407,
+    "name": "Test Project Charlie",
+    "display_name": "Charlie",
+    "project_number": "PN-003",
+    "active": true,
+    "company": {
+        "id": 4283186,
+        "name": "Ampersand Demo"
+    },
+    "created_at": "2024-12-10T12:00:00Z",
+    "updated_at": "2024-12-10T12:00:00Z"
+}

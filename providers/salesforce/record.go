@@ -69,7 +69,7 @@ func (c *Connector) buildReadByIdentifierURL(config recordsByIDsParams) (*urlbui
 		return nil, err
 	}
 
-	query := makeSOQL(config.ReadParams, c.getTimestampColumn()).
+	query := makeSOQL(config.ReadParams, c.GetTimestampColumn(common.ObjectName(config.ObjectName))).
 		WithIDs(config.RecordIdentifiers.List()).
 		String()
 

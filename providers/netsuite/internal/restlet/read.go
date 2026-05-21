@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 const (
@@ -136,9 +138,10 @@ func parseSearchRecord(rec map[string]json.RawMessage) common.ReadResultRow {
 	}
 
 	if idRaw, ok := rec["_id"]; ok {
-		var id any
-		if err := json.Unmarshal(idRaw, &id); err == nil {
-			row.Id = fmt.Sprintf("%v", id)
+		if node, err := ajson.Unmarshal(idRaw); err == nil {
+			if id, err := jsonquery.New(node).TextWithDefault("", ""); err == nil {
+				row.Id = id
+			}
 		}
 	}
 
