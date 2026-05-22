@@ -10,6 +10,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/providers/google/internal/core"
 )
 
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
@@ -24,6 +25,11 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
 	http.StatusConflict: errors.Join(common.ErrConflict, common.ErrBadRequest),
 }
+
+// jsonResponder mirrors what was previously passed inline to ErrorHandler.JSON; it is
+// now reused as the non-rate-limit fallback in interpretJSONError. The statusCodeMapping
+// remains in effect for non-rate-limit responses (e.g. 409 → ErrConflict).
+var jsonResponder = interpreter.NewFaultyResponder(errorFormats, statusCodeMapping) //nolint:gochecknoglobals
 
 // ErrorDetails
 // nolint:tagliatelle
@@ -55,6 +61,14 @@ func (d ErrorDetails) CombineErr(base error) error {
 	}
 
 	return fmt.Errorf("%w: %v", base, message)
+}
+
+// interpretJSONError routes Contacts JSON error bodies through the shared Google
+// rate-limit detector. People API returns 403 with reason RATE_LIMIT_EXCEEDED for
+// per-user quota violations; without this hook the response maps to ErrForbidden
+// (unrecoverable) instead of ErrLimitExceeded (retryable).
+func (a *Adapter) interpretJSONError(res *http.Response, body []byte) error {
+	return core.InterpretJSONError(res, body, jsonResponder.HandleErrorResponse)
 }
 
 // Typical HTML google error message has Title with paragraph describing the problem.

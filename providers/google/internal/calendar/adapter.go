@@ -35,7 +35,7 @@ func constructor(base *components.Connector) (*Adapter, error) {
 	}
 
 	errorHandler := interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+		JSON: interpreter.DirectFaultyResponder{Callback: adapter.interpretJSONError},
 		HTML: interpreter.DirectFaultyResponder{Callback: adapter.interpretHTMLError},
 	}.Handle
 
