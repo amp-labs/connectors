@@ -12,7 +12,7 @@ import (
 func (a *Adapter) buildObjectURL(objectName string) (*urlbuilder.URL, error) {
 	spec, ok := objectRegistry[objectName]
 	if !ok || spec.path == "" {
-		spec.path = objectName
+		return nil, fmt.Errorf("%w: unknown object %q", common.ErrObjectNotSupported, objectName)
 	}
 
 	path := strings.ReplaceAll(spec.path, accountKeyPlaceholder, a.accountKey)
