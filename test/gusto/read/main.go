@@ -20,6 +20,7 @@ func main() {
 	utils.SetupLogging()
 
 	conn := connTest.GetConnector(ctx)
+	conn.GetPostAuthInfo(ctx)
 
 	slog.Info("=== Reading employees ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
