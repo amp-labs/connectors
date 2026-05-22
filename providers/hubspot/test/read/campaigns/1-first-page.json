@@ -1,0 +1,39 @@
+{
+  "total": 3,
+  "results": [
+    {
+      "id": "84f199fa-beb7-4dca-ad94-3d778cdce157",
+      "properties": {
+        "hs_budget_items_sum_amount": "2.0",
+        "hs_name": "Nurture",
+        "hs_notes": "Creating campaign from the Dashboard"
+      },
+      "createdAt": "2026-05-05T23:41:20.330Z",
+      "updatedAt": "2026-05-05T23:45:04.200Z",
+      "businessUnits": [
+        {
+          "id": 0
+        }
+      ]
+    },
+    {
+      "id": "fc4583f7-5cfc-4773-8fa4-076cd4f4ae6d",
+      "properties": {
+        "hs_name": "Kiwi"
+      },
+      "createdAt": "2026-05-05T23:09:27.549Z",
+      "updatedAt": "2026-05-05T23:09:27.713Z",
+      "businessUnits": [
+        {
+          "id": 0
+        }
+      ]
+    }
+  ],
+  "paging": {
+    "next": {
+      "after": "Mg%3D%3D",
+      "link": "https://api.hubapi.com/marketing/campaigns/2026-03?limit=2&sort=-updatedAt&properties=hs_name%2Chs_notes%2Chs_budget_items_sum_amount&after=Mg%3D%3D"
+    }
+  }
+}

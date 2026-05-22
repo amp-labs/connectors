@@ -210,6 +210,10 @@ type ReadParams struct {
 	PageSize int // optional
 }
 
+func (p ReadParams) IsFirstPage() bool {
+	return p.NextPage.String() == ""
+}
+
 type WriteHeader struct {
 	Key   string
 	Value string

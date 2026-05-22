@@ -1,0 +1,10 @@
+[
+  {
+    "uuid": "job_003",
+    "employee_uuid": "emp_002",
+    "title": "Product Manager",
+    "rate": "95000.00",
+    "payment_unit": "Year",
+    "primary": true
+  }
+]

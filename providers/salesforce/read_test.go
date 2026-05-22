@@ -537,12 +537,14 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	}
 }
 
-func constructTestConnectorWithTimestampColumn(serverURL, field string) (*Connector, error) {
+func constructTestConnectorWithTimestampColumn(
+	serverURL, field string, alternateObjects map[common.ObjectName]bool,
+) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
 		WithWorkspace("test-workspace"),
 		WithModule(providers.ModuleSalesforceCRM),
-		WithTimestampColumn(field),
+		WithTimestampColumn(field, alternateObjects),
 	)
 	if err != nil {
 		return nil, err

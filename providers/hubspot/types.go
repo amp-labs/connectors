@@ -3,13 +3,20 @@ package hubspot
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
 )
 
 type SearchParams struct {
+	// Since limits results to records created or updated at or after this timestamp.
+	// Zero value means no lower bound.
+	Since time.Time
+	// Until limits results to records created or updated before this timestamp.
+	// Zero value means no upper bound.
+	Until time.Time
 	// The name of the object we are reading, e.g. "Account"
 	ObjectName string // required
 	// NextPage is an opaque token that can be used to get the next page of results.

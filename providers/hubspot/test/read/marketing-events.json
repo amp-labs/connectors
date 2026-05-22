@@ -1,0 +1,36 @@
+{
+  "results": [
+    {
+      "eventName": "Party",
+      "eventType": null,
+      "startDateTime": null,
+      "endDateTime": null,
+      "eventOrganizer": "Alice",
+      "eventDescription": null,
+      "eventUrl": null,
+      "eventCancelled": false,
+      "eventCompleted": false,
+      "customProperties": [],
+      "objectId": "555442196839",
+      "externalEventId": "qwe",
+      "eventStatus": "ONGOING",
+      "eventStatusV2": "ongoing",
+      "appInfo": {
+        "id": "123",
+        "name": "ApplicationABC"
+      },
+      "registrants": 0,
+      "attendees": 0,
+      "cancellations": 0,
+      "noShows": 0,
+      "createdAt": "2026-05-11T22:07:29.059Z",
+      "updatedAt": "2026-05-11T22:07:30.038Z"
+    }
+  ],
+  "paging": {
+    "next": {
+      "after": "NTU1NDQyMTk2ODQw",
+      "link": "https://api.hubapi.com/marketing/marketing-events/2026-03?after=NTU1NDQyMTk2ODQw"
+    }
+  }
+}

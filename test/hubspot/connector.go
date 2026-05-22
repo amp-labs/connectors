@@ -2,8 +2,8 @@ package hubspot
 
 import (
 	"context"
-	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/hubspot"
@@ -11,13 +11,20 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// GetHubspotConnector returns a Hubspot connector.
+// GetHubspotConnector returns a Hubspot CRM connector.
 func GetHubspotConnector(ctx context.Context) *hubspot.Connector {
+	return getHubspotConnector(ctx, providers.ModuleHubspotCRM)
+}
+
+func getHubspotConnector(ctx context.Context, moduleID common.ModuleID) *hubspot.Connector {
 	reader := CredsReader()
 
 	conn, err := hubspot.NewConnector(
-		hubspot.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		hubspot.WithModule(providers.ModuleHubspotCRM))
+		common.ConnectorParams{
+			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
+			Module:              moduleID,
+		},
+	)
 	if err != nil {
 		utils.Fail("error creating hubspot connector", "error", err)
 	}

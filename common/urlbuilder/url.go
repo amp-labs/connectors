@@ -50,16 +50,38 @@ func New(base string, path ...string) (*URL, error) {
 	return u, nil
 }
 
-// FromRawURL converts a core Go `url.URL` into `urlbuilder.URL`,
-// providing better control over query parameters and encoding.
+// FromRawURL creates an independent copy of a net/url.URL as *urlbuilder.URL.
+//
+// Unlike direct pointer use, mutations to the returned URL—including path
+// changes via AddPath(), query updates via WithQueryParam()/RemoveQueryParam(),
+// and String() which regenerates RawQuery—do not modify the original *url.URL.
+//
+// This safety is critical when wrapping http.Request.URL or parsed endpoints,
+// as urlbuilder.URL provides immutable query keys, proper percent-encoding,
+// and builder-style modifications for robust API construction.
+//
+// Example:
+//
+//	u, _ := url.Parse("https://api.example.com?existing=1")
+//	b, _ := FromRawURL(u)
+//	b.WithQueryParam("new", "value") // Original u unchanged
 func FromRawURL(rawURL *url.URL) (*URL, error) {
-	values, err := url.ParseQuery(rawURL.RawQuery)
+	if rawURL == nil {
+		return nil, ErrInvalidURL
+	}
+
+	delegate, err := url.Parse(rawURL.String())
+	if err != nil {
+		return nil, errors.Join(err, ErrInvalidURL)
+	}
+
+	values, err := url.ParseQuery(delegate.RawQuery)
 	if err != nil {
 		return nil, errors.Join(err, ErrInvalidURL)
 	}
 
 	return &URL{
-		delegate:             rawURL,
+		delegate:             delegate,
 		queryParams:          values,
 		unencodedQueryParams: url.Values{},
 		encodingExceptions:   make(map[string]string),

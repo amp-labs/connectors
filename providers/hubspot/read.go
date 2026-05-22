@@ -3,11 +3,14 @@ package hubspot
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/associations"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/common/readhelper"
+	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/associations"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
 )
 
 // Read reads data from Hubspot. If Since is set, it will use the
@@ -16,43 +19,66 @@ import (
 // search endpoint. If Since is not set, it will use the read endpoint.
 // In case Deleted objects won’t appear in any search results.
 // Deleted objects can only be read by using this endpoint.
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { //nolint:funlen
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) { //nolint:funlen
 	ctx = logging.With(ctx, "connector", "hubspot")
 
-	if err := config.ValidateParams(true); err != nil {
+	if err := params.ValidateParams(true); err != nil {
 		return nil, err
 	}
 
-	if core.ObjectsWithoutPropertiesAPISupport.Has(config.ObjectName) {
-		// Objects outside ObjectAPI have different endpoint while both are part of CRM module.
-		// For instance Lists are fully returned only via Search endpoint.
+	//
+	// Read using regular GET endpoints.
+	//
+	switch {
+	case core.CRMObjectsWithoutPropertiesAPISupport.Has(params.ObjectName):
+		// Object is part of CRM namespace but outside ObjectAPI.
+		// For instance object "lists" is returned only via CRM Search endpoint.
 		return c.searchCRM(ctx, searchCRMParams{
 			SearchParams: SearchParams{
-				ObjectName: config.ObjectName,
-				NextPage:   config.NextPage,
-				Fields:     config.Fields,
+				ObjectName: params.ObjectName,
+				NextPage:   params.NextPage,
+				Fields:     params.Fields,
 			},
 		})
+	case core.MarketingObjects.Has(params.ObjectName):
+		// Object is part of Hubspot Marketing API.
+		return c.readMarketing(ctx, params, core.MarketingObjects[params.ObjectName])
+	case core.CommunicationObjects.Has(params.ObjectName):
+		return c.readCommunications(ctx, params, core.CommunicationObjects[params.ObjectName])
+	case core.MiscellaneousObjects.Has(params.ObjectName):
+		return c.readMiscAPI(ctx, params, core.MiscellaneousObjects[params.ObjectName])
+	default:
+		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
+		return c.readCRMObjectsAPI(ctx, params)
 	}
+}
 
+// CRM objects can be read using two ways.
+//   - If there are Since/Until parameters it will use:
+//     https://api.hubapi.com/crm/objects/2026-03/{objectType}/search
+//   - Otherwise, the Objects API endpoint is used:
+//     https://api.hubapi.com/crm/objects/2026-03/{objectType}
+func (c *Connector) readCRMObjectsAPI(
+	ctx context.Context, params common.ReadParams,
+) (*common.ReadResult, error) { //nolint:funlen
 	// If filtering is required, then we have to use the search endpoint.
 	// The Search endpoint has a 10K record limit. In case this limit is reached,
 	// the sorting allows the caller to continue in another call by offsetting
 	// until the ID of the last record that was successfully fetched.
 	filters := make(Filters, 0)
-	if !config.Since.IsZero() {
-		filters = append(filters, BuildLastModifiedFilterGroup(&config))
+	if !params.Since.IsZero() {
+		filters = append(filters, BuildLastModifiedFilterGroup(&params))
 	}
 
-	if !config.Until.IsZero() {
-		filters = append(filters, BuildUntilTimestampFilterGroup(&config))
+	if !params.Until.IsZero() {
+		filters = append(filters, BuildUntilTimestampFilterGroup(&params))
 	}
 
-	filters = append(filters, BuildBuilderFilters(config.BuilderFilter)...)
+	filters = append(filters, BuildBuilderFilters(params.BuilderFilter)...)
 
 	if len(filters) != 0 {
 		searchParams := SearchParams{
-			ObjectName: config.ObjectName,
+			ObjectName: params.ObjectName,
 			FilterGroups: []FilterGroup{{
 				Filters: filters,
 				// Add more filter groups to OR them together
@@ -60,20 +86,20 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 			SortBy: []SortBy{
 				BuildSort(ObjectFieldHsObjectId, SortDirectionAsc),
 			},
-			NextPage:          config.NextPage,
-			Fields:            config.Fields,
-			AssociatedObjects: config.AssociatedObjects,
+			NextPage:          params.NextPage,
+			Fields:            params.Fields,
+			AssociatedObjects: params.AssociatedObjects,
 		}
 
 		return c.ReadUsingSearchAPI(ctx, searchParams)
 	}
 
-	url, err := c.buildReadURL(config)
+	url, err := c.buildCRMReadURL(params)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url)
+	rsp, err := c.JSONHTTPClient().Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}
@@ -83,39 +109,243 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		core.GetRecords,
 		core.GetNextRecordsURL,
 		associations.CreateDataMarshallerWithAssociations(
-			ctx, c.crmAdapter.AssociationsFiller, config.ObjectName, config.AssociatedObjects),
-		config.Fields,
+			ctx, c.associationsFiller, params.ObjectName, params.AssociatedObjects),
+		params.Fields,
 	)
 }
 
-func (c *Connector) buildReadURL(config common.ReadParams) (string, error) {
-	if len(config.NextPage) != 0 {
+func (c *Connector) buildCRMReadURL(params common.ReadParams) (string, error) {
+	if len(params.NextPage) != 0 {
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the NextPage URL, the fields are ignored.
-		return config.NextPage.String(), nil
+		return params.NextPage.String(), nil
 	}
 
 	// If NextPage is not set, then we're reading the first page of results.
 	// We need to construct the query and then make the request.
-	// NB: The final slash is just to emulate prior behavior in earlier versions
-	// of this code. If it turns out to be unnecessary, remove it.
-	return c.getCRMObjectsReadURL(config)
+	url, err := c.getCRMObjectsURL(params.ObjectName)
+	if err != nil {
+		return "", err
+	}
+
+	fields := params.Fields.List()
+	if len(fields) != 0 {
+		url.WithQueryParam("properties", strings.Join(fields, ","))
+	}
+
+	if params.Deleted {
+		url.WithQueryParam("archived", "true")
+	}
+
+	url.WithQueryParam("limit", core.DefaultPageSize)
+
+	return url.String(), nil
 }
 
-// makeCRMObjectsQueryValues returns the query for the desired read operation.
-func makeCRMObjectsQueryValues(config common.ReadParams) []string {
-	var out []string
-
-	fields := config.Fields.List()
-	if len(fields) != 0 {
-		out = append(out, "properties", strings.Join(fields, ","))
+func (c *Connector) readMarketing(ctx context.Context,
+	params common.ReadParams, object core.ObjectDescription,
+) (*common.ReadResult, error) {
+	url, err := c.buildMarketingReadURL(params, &object)
+	if err != nil {
+		return nil, err
 	}
 
-	if config.Deleted {
-		out = append(out, "archived", "true")
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
+	if err != nil {
+		return nil, err
 	}
 
-	out = append(out, "limit", core.DefaultPageSize)
+	identifier := "id"
+	if params.ObjectName == core.ObjectMarketingEvents {
+		identifier = "objectId"
+	}
 
-	return out
+	return common.ParseResultFiltered(
+		params,
+		resp,
+		common.MakeRecordsFunc("results"),
+		makeIncrementalFilterFunc(params),
+		readhelper.MakeMarshaledDataFuncWithId(
+			object.RecordTransformer,
+			readhelper.IdFieldQuery{Field: identifier},
+		),
+		params.Fields,
+	)
+}
+
+// When reading objects in Hubspot you must explicitly request the fields.
+// https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/guide#campaign-properties
+//
+// Reading campaigns object:
+// https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/get-campaigns
+//   - Incremental reading is not available.
+//   - Sorting is applied using "updatedAt" field from newest to oldest.
+func (c *Connector) buildMarketingReadURL(
+	params common.ReadParams, object *core.ObjectDescription,
+) (*urlbuilder.URL, error) {
+	if len(params.NextPage) != 0 {
+		// Next page
+		return urlbuilder.New(params.NextPage.String())
+	}
+
+	// First page
+	url, err := c.getMarketingURL(object)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, core.DefaultPageSize))
+
+	if params.ObjectName == core.ObjectMarketingForms || params.ObjectName == core.ObjectMeetingLinks {
+		// This object does not have such query params. For consistency, it is reflected here.
+		// Sending non-existent query params is not considered an error by provider.
+	} else {
+		url.WithQueryParam("properties", strings.Join(params.Fields.List(), ","))
+		url.WithQueryParam("sort", "-updatedAt") // newest first
+	}
+
+	return url, nil
+}
+
+// makeIncrementalFilterFunc embodies connector-side filtering.
+// ReverseOrder is used because we request Campaigns sorted from newest to oldest.
+func makeIncrementalFilterFunc(params common.ReadParams) common.RecordsFilterFunc {
+	if params.Since.IsZero() && params.Until.IsZero() {
+		return readhelper.MakeIdentityFilterFunc(core.GetNextRecordsURL)
+	}
+
+	order := readhelper.ReverseOrder
+	if params.ObjectName == core.ObjectMarketingForms {
+		order = readhelper.Unordered
+	}
+
+	return readhelper.MakeTimeFilterFunc(
+		order,
+		readhelper.NewTimeBoundary(),
+		"updatedAt", time.RFC3339,
+		core.GetNextRecordsURL,
+	)
+}
+
+func (c *Connector) readCommunications(ctx context.Context, // nolint:funlen
+	params common.ReadParams, object core.ObjectDescription,
+) (*common.ReadResult, error) {
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+
+	if params.IsFirstPage() {
+		url, err = c.getCommunicationURL(params.ObjectName, &object)
+	} else {
+		url, err = urlbuilder.New(params.NextPage.String())
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, object.PageSize))
+
+	// Prepare the URL query params and pick provider side filtering method.
+	var filter common.RecordsFilterFunc
+
+	switch params.ObjectName {
+	case core.ObjectCustomChannels:
+		// This object cannot be tested. The way it works is an assumption.
+		filter = readhelper.MakeTimeFilterFunc(
+			readhelper.Unordered, readhelper.NewTimeBoundary(),
+			"createdAt", time.RFC3339, core.GetNextRecordsURL,
+		)
+	case core.ObjectChannels:
+		filter = readhelper.MakeIdentityFilterFunc(core.GetNextRecordsURL)
+	case core.ObjectInboxes:
+		url.WithQueryParam("sort", "-updatedAt") // newest first
+
+		filter = readhelper.MakeTimeFilterFunc(
+			readhelper.ReverseOrder, readhelper.NewTimeBoundary(),
+			"updatedAt", time.RFC3339, core.GetNextRecordsURL,
+		)
+	case core.ObjectChannelAccounts:
+		url.WithQueryParam("sort", "-createdAt") // newest first
+
+		filter = readhelper.MakeTimeFilterFunc(
+			readhelper.ReverseOrder, readhelper.NewTimeBoundary(),
+			"createdAt", time.RFC3339, core.GetNextRecordsURL,
+		)
+	case core.ObjectThreads:
+		filter = readhelper.MakeTimeFilterFunc(
+			readhelper.Unordered, readhelper.NewTimeBoundary(),
+			"createdAt", time.RFC3339, core.GetNextRecordsURL,
+		)
+	default:
+		return nil, common.ErrObjectNotSupported
+	}
+
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResultFiltered(
+		params,
+		resp,
+		common.MakeRecordsFunc("results"),
+		filter,
+		readhelper.MakeMarshaledDataFuncWithId(
+			object.RecordTransformer,
+			readhelper.IdFieldQuery{Field: "id"},
+		),
+		params.Fields,
+	)
+}
+
+func (c *Connector) readMiscAPI(ctx context.Context,
+	params common.ReadParams, object core.ObjectDescription,
+) (*common.ReadResult, error) {
+	url, err := c.buildMiscURL(params, &object)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResultFiltered(
+		params,
+		resp,
+		common.MakeRecordsFunc("results"),
+		readhelper.MakeTimeFilterFunc(
+			readhelper.Unordered,
+			readhelper.NewTimeBoundary(),
+			"updatedAt", time.RFC3339,
+			core.GetNextRecordsURL,
+		),
+		readhelper.MakeMarshaledDataFuncWithId(
+			object.RecordTransformer,
+			readhelper.IdFieldQuery{Field: "id"},
+		),
+		params.Fields,
+	)
+}
+
+func (c *Connector) buildMiscURL(
+	params common.ReadParams, object *core.ObjectDescription,
+) (*urlbuilder.URL, error) {
+	if len(params.NextPage) != 0 {
+		// Next page
+		return urlbuilder.New(params.NextPage.String())
+	}
+
+	// First page
+	url, err := c.rootURL(object.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, object.PageSize))
+
+	return url, nil
 }
