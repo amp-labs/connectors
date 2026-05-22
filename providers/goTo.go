@@ -1,7 +1,17 @@
 package providers
 
-const GoTo Provider = "goTo"
+import "github.com/amp-labs/connectors/common"
 
+const (
+	GoTo Provider = "goTo"
+	// ModuleGoTo covers the api.getgo.com base URL, which serves multiple GoTo
+	// products (admin, meetings, webinars, etc). We name it just "goTo" so users
+	// don't have to guess which specific product it maps to.
+	ModuleGoTo        common.ModuleID = "goTo"
+	ModuleGoToConnect common.ModuleID = "goToConnect"
+)
+
+// nolint: funlen
 func init() {
 	SetInfo(GoTo, ProviderInfo{
 		DisplayName: "GoTo",
@@ -38,6 +48,39 @@ func init() {
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
+		},
+		PostAuthInfoNeeded: true,
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "accountKey",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleGoTo:        ModuleDependency{},
+						ModuleGoToConnect: ModuleDependency{},
+					},
+				},
+			},
+		},
+		DefaultModule: ModuleGoTo,
+		Modules: &Modules{
+			ModuleGoTo: {
+				BaseURL:     "https://api.getgo.com",
+				DisplayName: "GoTo",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+			ModuleGoToConnect: {
+				BaseURL:     "https://api.goto.com",
+				DisplayName: "GoTo Connect",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 		},
 	})
 }
