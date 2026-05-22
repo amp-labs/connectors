@@ -41,6 +41,15 @@ func init() { //nolint:funlen
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1775077412/media/gusto.com_1775077412.svg",
 			},
 		},
+
+		PostAuthInfoNeeded: true,
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "companyId",
+				},
+			},
+		},
 	})
 
 	// Gusto Demo configuration
@@ -75,6 +84,15 @@ func init() { //nolint:funlen
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1775077438/media/gusto.com_1775077438.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1775077412/media/gusto.com_1775077412.svg",
+			},
+		},
+
+		PostAuthInfoNeeded: true,
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "companyId",
+				},
 			},
 		},
 	})

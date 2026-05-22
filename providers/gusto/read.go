@@ -143,11 +143,11 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	if strings.Contains(path, companyIDPlaceholder) {
-		if c.companyID == "" {
+		if c.companyId == "" {
 			return nil, ErrMissingCompanyID
 		}
 
-		path = strings.ReplaceAll(path, companyIDPlaceholder, c.companyID)
+		path = strings.ReplaceAll(path, companyIDPlaceholder, c.companyId)
 	}
 
 	apiURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
@@ -164,7 +164,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 // buildEmployeeListURL returns the paginated employees-list URL, reusing the
 // employees path from the schema so URL construction is consistent.
 func (c *Connector) buildEmployeeListURL(params common.ReadParams) (*urlbuilder.URL, error) {
-	if c.companyID == "" {
+	if c.companyId == "" {
 		return nil, ErrMissingCompanyID
 	}
 
@@ -173,7 +173,7 @@ func (c *Connector) buildEmployeeListURL(params common.ReadParams) (*urlbuilder.
 		return nil, err
 	}
 
-	path = strings.ReplaceAll(path, companyIDPlaceholder, c.companyID)
+	path = strings.ReplaceAll(path, companyIDPlaceholder, c.companyId)
 
 	apiURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {

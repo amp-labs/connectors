@@ -217,11 +217,11 @@ func (c *Connector) buildUpdateURL(params common.WriteParams) (*urlbuilder.URL, 
 	baseURL := c.ProviderInfo().BaseURL
 
 	if companyScopedUpdate.Has(params.ObjectName) {
-		if c.companyID == "" {
+		if c.companyId == "" {
 			return nil, "", ErrMissingCompanyID
 		}
 
-		u, err := urlbuilder.New(baseURL, "v1", "companies", c.companyID, params.ObjectName, params.RecordId)
+		u, err := urlbuilder.New(baseURL, "v1", "companies", c.companyId, params.ObjectName, params.RecordId)
 
 		return u, http.MethodPut, err
 	}
@@ -239,11 +239,11 @@ func (c *Connector) buildCreateURL(
 
 	switch {
 	case companyScopedCreate.Has(params.ObjectName):
-		if c.companyID == "" {
+		if c.companyId == "" {
 			return nil, "", ErrMissingCompanyID
 		}
 
-		u, err := urlbuilder.New(baseURL, "v1", "companies", c.companyID, params.ObjectName)
+		u, err := urlbuilder.New(baseURL, "v1", "companies", c.companyId, params.ObjectName)
 
 		return u, http.MethodPost, err
 
