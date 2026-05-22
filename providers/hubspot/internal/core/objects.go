@@ -1,6 +1,8 @@
 package core
 
 import (
+	"strings"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
@@ -30,6 +32,36 @@ const (
 	AssociationAssets   = "assets"
 	AssociationContacts = "contacts"
 )
+
+// ActivityEventObjectPrefix is a special object prefix for the family of event objects.
+//
+// There are many event types, the list may differ between the accounts.
+// https://developers.hubspot.com/docs/api-reference/latest/events/retrieve-events/get-event-types
+//
+// Connector accepts objectName that follows the following format: `activity_event_<EVENT-TYPE>`.
+//
+// Examples:
+//
+//	activity_event_e_visited_page
+//	activity_event_e_call_ended
+//	activity_event_e_document_shared_v2
+//	activity_event_e_form_completion_v2
+//	activity_event_e_clicked_whatsapp_message
+//	activity_event_e_form_view
+//	activity_event_e_form_submission_v2
+//	activity_event_e_form_submission
+//	activity_event_e_v2_contact_replied_sequence_email
+const ActivityEventObjectPrefix = "activity_event_"
+
+func IsActivityEvent(objectName string) bool {
+	return strings.HasPrefix(objectName, ActivityEventObjectPrefix)
+}
+
+func ExtractActivityEventType(objectName string) string {
+	eventType, _ := strings.CutPrefix(objectName, ActivityEventObjectPrefix)
+
+	return eventType
+}
 
 //nolint:gochecknoglobals,lll
 var (

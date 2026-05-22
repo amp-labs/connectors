@@ -1,0 +1,29 @@
+{
+  "results": [
+    {
+      "objectType": "DEAL",
+      "objectId": "16455361891",
+      "eventType": "e_deal_closed",
+      "occurredAt": "2023-12-11T20:09:51.854Z",
+      "id": "44623425-16455361891-1702325391854",
+      "properties": {
+        "hs_amount": "3600.0",
+        "hs_team": "54660893",
+        "hs_closed_state": "CLOSED_WON",
+        "hs_closed_state_reason": "",
+        "hs_pipeline": "default",
+        "hs_analytics_latest_source_data_2": "userId:62365053",
+        "hs_deal_name": "16455361891",
+        "hs_analytics_latest_source_data_1": "CRM_UI",
+        "hs_analytics_latest_source": "OFFLINE",
+        "hs_deal_owner": "641085326"
+      }
+    }
+  ],
+  "paging": {
+    "next": {
+      "after": "MTc0MTcwMDk2NzA3OXwwLTN8MzQ1MjY5ODU1MTl8NC0xODAxMjcwfC0xODQ0NzUyMzM3fA%3D%3D",
+      "link": "https://api.hubapi.com/events/event-occurrences/2026-03/?eventType=e_deal_closed&after=MTc0MTcwMDk2NzA3OXwwLTN8MzQ1MjY5ODU1MTl8NC0xODAxMjcwfC0xODQ0NzUyMzM3fA%3D%3D"
+    }
+  }
+}

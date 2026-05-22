@@ -142,6 +142,11 @@ func (c *Connector) getCommunicationURL(objectName string, object *core.ObjectDe
 	return c.rootURL("conversations/conversations", object.Version, object.Path)
 }
 
+// https://developers.hubspot.com/docs/api-reference/latest/events/retrieve-events/get-events
+func (c *Connector) getEventOccurrencesURL() (*urlbuilder.URL, error) {
+	return c.rootURL("events/event-occurrences", core.APIVersion2026March)
+}
+
 func (c *Connector) crmURL(paths ...string) (*urlbuilder.URL, error) {
 	parts := append([]string{"crm"}, paths...)
 

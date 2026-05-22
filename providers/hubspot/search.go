@@ -77,6 +77,8 @@ func (c *Connector) ReadUsingSearchAPI( // nolint:cyclop
 	case core.MiscellaneousObjects.Has(params.ObjectName):
 		// Search for misc objects is not implemented, using simple read.
 		return c.readMiscAPI(ctx, makeReadParamsFromSearchParams(params), core.MiscellaneousObjects[params.ObjectName])
+	case core.IsActivityEvent(params.ObjectName):
+		return c.readActivityEvent(ctx, makeReadParamsFromSearchParams(params))
 	default:
 		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
 		return c.searchCRMObjectsAPI(ctx, params)
