@@ -10,8 +10,8 @@ import (
 	pbmetadata "github.com/amp-labs/connectors/providers/phoneburner/metadata"
 )
 
-// ListObjectMetadata returns static schema fields plus member-defined contact custom fields
-// from GET /rest/1/customfields. See https://www.phoneburner.com/developer/route_list#customfields
+// ListObjectMetadata returns static schema fields from embedded OpenAPI metadata.
+// Only contacts may be augmented with member-defined custom fields (see mergeContactsCustomFieldMetadata).
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context,
 	objectNames []string,
@@ -25,13 +25,21 @@ func (c *Connector) ListObjectMetadata(
 		return nil, fmt.Errorf("failed to get base metadata: %w", err)
 	}
 
-	if !slices.Contains(objectNames, objectContacts) {
-		return result, nil
+	// Contacts are the only object with member custom field definitions from the provider API.
+	if slices.Contains(objectNames, objectContacts) {
+		c.mergeContactsCustomFieldMetadata(ctx, result)
 	}
 
+	return result, nil
+}
+
+// mergeContactsCustomFieldMetadata augments result.Result[contacts] with fields from
+// GET /rest/1/customfields. Other objects in result are untouched.
+// See https://www.phoneburner.com/developer/route_list#customfields
+func (c *Connector) mergeContactsCustomFieldMetadata(ctx context.Context, result *common.ListObjectMetadataResult) {
 	objectMetadata, ok := result.Result[objectContacts]
 	if !ok {
-		return result, nil
+		return
 	}
 
 	definitions, err := c.fetchMemberCustomFieldDefinitions(ctx)
@@ -39,7 +47,7 @@ func (c *Connector) ListObjectMetadata(
 		slog.Warn("Failed to fetch PhoneBurner custom field definitions; returning base contact metadata only",
 			"error", err)
 
-		return result, nil
+		return
 	}
 
 	if objectMetadata.Fields == nil {
@@ -59,6 +67,4 @@ func (c *Connector) ListObjectMetadata(
 	}
 
 	result.Result[objectContacts] = objectMetadata
-
-	return result, nil
 }
