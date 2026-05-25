@@ -1,9 +1,0 @@
-{
-  "data": {
-    "id": "job_1",
-    "type": "jobs",
-    "attributes": {
-      "status": "done"
-    }
-  }
-}

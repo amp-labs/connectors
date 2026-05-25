@@ -3,14 +3,12 @@ package main
 import (
 	"context"
 	"log/slog"
-	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	livestormprovider "github.com/amp-labs/connectors/providers/livestorm"
 	connTest "github.com/amp-labs/connectors/test/livestorm"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
@@ -72,26 +70,5 @@ func main() {
 	slog.Info("=== Metadata vs Read validation: people_attributes ===")
 	testscenario.ValidateMetadataContainsRead(ctx, conn, "people_attributes", nil)
 
-	if jobID := os.Getenv("LIVESTORM_JOB_ID"); jobID != "" {
-		slog.Info("=== Read jobs by id (requires LIVESTORM_JOB_ID) ===")
-		readJob(ctx, conn, jobID)
-	}
-
 	slog.Info("Livestorm read tests completed successfully!")
-}
-
-func readJob(ctx context.Context, conn *livestormprovider.Connector, jobID string) {
-	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "jobs",
-		Filter:     jobID,
-		Fields: connectors.Fields(
-			"status",
-			"updated_at",
-		),
-	})
-	if err != nil {
-		utils.Fail("error reading jobs from Livestorm", "error", err)
-	}
-
-	utils.DumpJSON(res, os.Stdout)
 }

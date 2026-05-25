@@ -21,7 +21,6 @@ const (
 
 	apiVersion   = "v1"
 	objectEvents = "events"
-	objectJobs   = "jobs"
 )
 
 // nolint:gochecknoglobals
@@ -29,7 +28,6 @@ var readSupportedObjects = datautils.NewStringSet(
 	"events",
 	"people",
 	"people_attributes",
-	"jobs",
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -61,23 +59,11 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	switch params.ObjectName {
-	case "":
+	if params.ObjectName == "" {
 		return nil, common.ErrMissingObjects
-	case objectJobs:
-		return c.buildJobReadURL(params)
-	default:
-		return c.buildGenericReadURL(params)
-	}
-}
-
-func (c *Connector) buildJobReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
-	jobID := strings.TrimSpace(params.Filter)
-	if jobID == "" {
-		return nil, ErrJobIDRequired
 	}
 
-	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "jobs", jobID)
+	return c.buildGenericReadURL(params)
 }
 
 func (c *Connector) buildGenericReadURL(params common.ReadParams) (*urlbuilder.URL, error) {

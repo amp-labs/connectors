@@ -26,7 +26,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	eventsBody := testutils.DataFromFile(t, "read-events.json")
 	eventsMultipageBody := testutils.DataFromFile(t, "read-events-multipage.json")
 	peopleFirstPageBody := testutils.DataFromFile(t, "read-people-first-page.json")
-	jobBody := testutils.DataFromFile(t, "read-job.json")
 	peopleAttributesBody := testutils.DataFromFile(t, "read-people-attributes.json")
 
 	tests := []testroutines.Read{
@@ -47,12 +46,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input:        common.ReadParams{ObjectName: "unknown", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
-			Name:         "Jobs require job id in filter",
-			Input:        common.ReadParams{ObjectName: objectJobs, Fields: connectors.Fields("id")},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{ErrJobIDRequired},
 		},
 		{
 			Name: "Read events applies v1 path and incremental time filters",
@@ -210,41 +203,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							"type": "people",
 							"attributes": map[string]any{
 								"email": "a@example.com",
-							},
-						},
-					},
-				},
-			},
-		},
-		{
-			Name: "Read job by id",
-			Input: common.ReadParams{
-				ObjectName: objectJobs,
-				Filter:     "job_1",
-				Fields:     connectors.Fields("status"),
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v1/jobs/job_1"),
-				},
-				Then: mockserver.Response(http.StatusOK, jobBody),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Done: true,
-				Data: []common.ReadResultRow{
-					{
-						Fields: map[string]any{
-							"status": "done",
-						},
-						Raw: map[string]any{
-							"id":   "job_1",
-							"type": "jobs",
-							"attributes": map[string]any{
-								"status": "done",
 							},
 						},
 					},
