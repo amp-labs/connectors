@@ -2,6 +2,7 @@ package connector
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -65,6 +66,7 @@ import (
 	"github.com/amp-labs/connectors/providers/gorgias"
 	"github.com/amp-labs/connectors/providers/granola"
 	"github.com/amp-labs/connectors/providers/groove"
+	"github.com/amp-labs/connectors/providers/gusto"
 	"github.com/amp-labs/connectors/providers/happyfox"
 	"github.com/amp-labs/connectors/providers/helpscoutmailbox"
 	"github.com/amp-labs/connectors/providers/heyreach"
@@ -88,6 +90,7 @@ import (
 	"github.com/amp-labs/connectors/providers/lever"
 	"github.com/amp-labs/connectors/providers/linear"
 	"github.com/amp-labs/connectors/providers/linkedin"
+	"github.com/amp-labs/connectors/providers/livestorm"
 	"github.com/amp-labs/connectors/providers/loxo"
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/microsoft"
@@ -211,6 +214,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Gorgias:                    wrapper(newGorgiasConnector),
 	providers.Granola:                    wrapper(newGranolaConnector),
 	providers.Groove:                     wrapper(newGrooveConnector),
+	providers.Gusto:                      wrapper(newGustoConnector),
+	providers.GustoDemo:                  wrapper(newGustoDemoConnector),
 	providers.HappyFox:                   wrapper(newHappyFoxConnector),
 	providers.HelpScoutMailbox:           wrapper(newHelpScoutMailboxConnector),
 	providers.HeyReach:                   wrapper(newHeyReachConnector),
@@ -234,6 +239,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Lever:                      wrapper(newLeverConnector),
 	providers.Linear:                     wrapper(newLinearConnector),
 	providers.LinkedIn:                   wrapper(newLinkedInConnector),
+	providers.Livestorm:                  wrapper(newLivestormConnector),
 	providers.Loxo:                       wrapper(newLoxoConnector),
 	providers.Marketo:                    wrapper(newMarketoConnector),
 	providers.Microsoft:                  wrapper(newMicrosoftConnector),
@@ -312,7 +318,7 @@ func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connecto
 	}
 
 	if field, ok := params.Metadata["timestampColumn"]; ok && field != "" {
-		opts = append(opts, salesforce.WithTimestampColumn(field))
+		opts = append(opts, salesforce.WithTimestampColumn(field, extractAlternateTimestampUsingObjects(params.Metadata)))
 	}
 
 	return salesforce.NewConnector(opts...)
@@ -334,17 +340,46 @@ func newSalesforceJWTConnector(params common.ConnectorParams) (*salesforce.Conne
 	}
 
 	if field, ok := params.Metadata["timestampColumn"]; ok && field != "" {
-		opts = append(opts, salesforce.WithTimestampColumn(field))
+		opts = append(opts, salesforce.WithTimestampColumn(field, extractAlternateTimestampUsingObjects(params.Metadata)))
 	}
 
 	return salesforce.NewConnector(opts...)
 }
 
+// alternateTimestampMetadataSuffix is the suffix on per-object metadata keys
+// that opt that object into the alternate timestamp column. For example, a
+// metadata entry "Account_timestampColumnCreateTime" opts Account into
+// salesforce.WithTimestampColumn's overridden column for incremental reads.
+// Object names are matched case-insensitively because getTimestampColumn
+// lowercases the lookup.
+const alternateTimestampMetadataSuffix = "_timestampColumnCreateTime"
+
+// extractAlternateTimestampUsingObjects walks the connector metadata for
+// "<ObjectName>_timestampColumnCreateTime" entries and returns the set of
+// objects (keyed lowercase, matching the runtime lookup) that opt into the
+// alternate timestamp column. Returns an empty map (never nil) so callers can
+// rely on lookups without nil-checking.
+func extractAlternateTimestampUsingObjects(metadata map[string]string) map[common.ObjectName]bool {
+	objects := make(map[common.ObjectName]bool)
+
+	for key := range metadata {
+		if !strings.HasSuffix(key, alternateTimestampMetadataSuffix) {
+			continue
+		}
+
+		object := strings.TrimSuffix(key, alternateTimestampMetadataSuffix)
+		if object == "" {
+			continue
+		}
+
+		objects[common.ObjectName(strings.ToLower(object))] = true
+	}
+
+	return objects
+}
+
 func newHubspotConnector(params common.ConnectorParams) (*hubspot.Connector, error) {
-	return hubspot.NewConnector(
-		hubspot.WithAuthenticatedClient(params.AuthenticatedClient),
-		hubspot.WithModule(params.Module),
-	)
+	return hubspot.NewConnector(params)
 }
 
 func newDocusignConnector(
@@ -464,9 +499,13 @@ func newApolloConnector(
 func newGongConnector(
 	params common.ConnectorParams,
 ) (*gong.Connector, error) {
-	return gong.NewConnector(
-		gong.WithAuthenticatedClient(params.AuthenticatedClient),
-	)
+	var args []gong.Option
+
+	if len(params.Workspace) > 0 {
+		args = append(args, gong.WithWorkspace(params.Workspace))
+	}
+
+	return gong.NewConnector(append(args, gong.WithAuthenticatedClient(params.AuthenticatedClient))...)
 }
 
 func newAttioConnector(
@@ -835,6 +874,18 @@ func newGrooveConnector(
 	return groove.NewConnector(params)
 }
 
+func newGustoConnector(
+	params common.ConnectorParams,
+) (*gusto.Connector, error) {
+	return gusto.NewConnector(params)
+}
+
+func newGustoDemoConnector(
+	params common.ConnectorParams,
+) (*gusto.Connector, error) {
+	return gusto.NewDemoConnector(params)
+}
+
 func newPinterestConnector(
 	params common.ConnectorParams,
 ) (*pinterest.Connector, error) {
@@ -981,6 +1032,12 @@ func newLinkedInConnector(
 	params common.ConnectorParams,
 ) (*linkedin.Connector, error) {
 	return linkedin.NewConnector(params)
+}
+
+func newLivestormConnector(
+	params common.ConnectorParams,
+) (*livestorm.Connector, error) {
+	return livestorm.NewConnector(params)
 }
 
 func newBitBucketConnector(

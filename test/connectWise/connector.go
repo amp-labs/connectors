@@ -10,12 +10,21 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
+var clientIdField = credscanning.Field{
+	Name:      "clientId",
+	PathJSON:  "metadata.clientId",
+	SuffixENV: "CLIENT_ID",
+}
+
 func GetConnectWiseConnector(ctx context.Context) *connectwise.Connector {
 	filePath := credscanning.LoadPath(providers.ConnectWise)
-	reader := utils.MustCreateProvCredJSON(filePath, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false, clientIdField)
 
 	conn, err := connectwise.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: utils.NewBasicAuthClient(ctx, reader),
+		Metadata: map[string]string{
+			"clientId": reader.Get(clientIdField),
+		},
 	})
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

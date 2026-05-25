@@ -1,77 +1,82 @@
 package hubspot
 
 import (
-	"context"
-
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
+	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/associations"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/batch"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/custom"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/search"
 )
 
-// Connector provides integration with Hubspot provider.
+// Connector implements the HubSpot integration.
 //
-// The CRM module is undergoing partial migration: some operations are implemented directly within Connector,
-// while others are delegated to specialized sub-adapters (see below).
-// These sub-adapters will be consolidated as the migration completes under "crm.Adapter".
+// HubSpot is modeled as a single connector.
+// Unlike multi-module providers, all supported operations belong directly to Connector.
+//
+// Complex feature sets may still live in dedicated internal packages
+// (for example batch, search, or subscriptions), but those packages are
+// implementation details rather than top-level modules.
+//
+// The long-term direction is for Connector to own all operations directly,
+// with reusable feature strategies embedded as needed.
 type Connector struct {
-	Client       *common.JSONHTTPClient
-	providerInfo *providers.ProviderInfo
-	moduleInfo   *providers.ModuleInfo
-	moduleID     common.ModuleID
+	// Shared connector infrastructure.
+	*components.Connector
 
-	// crmAdapter handles the core Hubspot CRM module.
-	// It provides dedicated support for HubspotCRM-specific functionality.
-	crmAdapter *crm.Adapter
+	// Provides access to an authenticated client.
+	common.RequireAuthenticatedClient
+
+	// Operations
+	components.Deleter
+
+	// These delegate complex functionality to keep Connector modular and prevent code bloat.
+	customAdapter      *custom.Adapter  // used for connectors.UpsertMetadataConnector capabilities.
+	batchAdapter       *batch.Adapter   // used for connectors.BatchWriteConnector capabilities.
+	searchStrategy     *search.Strategy // used for connectors.SearchConnector capabilities.
+	associationsFiller associations.Filler
 }
 
 var _ connectors.WebhookVerifierConnector = &Connector{}
 
 // NewConnector returns a new Hubspot connector.
-// Nearly all of the logic for this connector assumes that the module is CRM (url construction, etc)
-// When we have to add support for other modules, it might be best to create a separate internal package.
-func NewConnector(opts ...Option) (conn *Connector, outErr error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts,
-		WithModule(common.ModuleRoot), // The module is resolved on behalf of the user if the option is missing.
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	conn = &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: params.Client.Caller,
-		},
-		moduleID: params.Module.Selection.ID,
-	}
-
-	conn.providerInfo, err = providers.ReadInfo(providers.Hubspot)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.Client.HTTPClient.Base = conn.providerInfo.BaseURL
-	// Note: error handler must return common.HTTPError.
-	// Check method in the internal package "custom", method "readGroupName" which relies on error casting.
-	conn.Client.HTTPClient.ErrorHandler = core.InterpretJSONError
-	conn.moduleInfo = conn.providerInfo.ReadModuleInfo(conn.moduleID)
-
-	connectorParams, err := newParams(opts)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.crmAdapter, err = crm.NewAdapter(connectorParams)
-	if err != nil {
-		return nil, err
-	}
-
-	return conn, nil
+// Hubspot connector still owns CRM functionality. Not every CRM feature is located under `crm` package.
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
+	return components.Initialize(providers.Hubspot, params, constructor)
 }
 
-func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error) {
-	// Delegated.
-	return c.crmAdapter.Search(ctx, params)
+func constructor(base *components.Connector) (*Connector, error) {
+	connector := &Connector{
+		Connector: base,
+	}
+
+	// Note: error handler must return common.HTTPError.
+	// Check method in the internal package "custom", method "readGroupName" which relies on error casting.
+	connector.SetErrorHandler(core.InterpretJSONError)
+
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler:  core.InterpretJSONError,
+		},
+	)
+
+	connector.customAdapter = custom.NewAdapter(connector.JSONHTTPClient(), connector.ProviderInfo())
+	associationsStrategy := associations.NewStrategy(connector.JSONHTTPClient(), connector.ProviderInfo())
+	connector.associationsFiller = associationsStrategy
+	connector.batchAdapter = batch.NewAdapter(connector.HTTPClient(), connector.ProviderInfo(), associationsStrategy)
+	connector.searchStrategy = search.NewStrategy(
+		connector.JSONHTTPClient(), connector.ProviderInfo(), connector.associationsFiller,
+	)
+
+	return connector, nil
 }

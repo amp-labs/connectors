@@ -102,7 +102,7 @@ func (a *Adapter) parseReadResponse(
 		resp,
 		recordsExtractor(cfg.service, params.ObjectName),
 		nextPageExtractor(cfg.service, params.ObjectName, request),
-		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
+		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField(cfg.readIDFieldOrDefault())),
 		params.Fields,
 	)
 }
@@ -178,7 +178,7 @@ func corporateNextPage(service objectService, objectName string, req *http.Reque
 	return func(node *ajson.Node) (string, error) {
 		records, err := extract(node)
 		if err != nil {
-			return "", nil //nolint:nilerr
+			return "", err
 		}
 
 		if len(records) < corporatePageSize {
@@ -187,7 +187,7 @@ func corporateNextPage(service objectService, objectName string, req *http.Reque
 
 		currentPage, err := strconv.ParseInt(req.URL.Query().Get(queryParamPage), 10, 64)
 		if err != nil {
-			return "", nil //nolint:nilerr
+			return "", err
 		}
 
 		return strconv.FormatInt(currentPage+1, 10), nil
@@ -196,25 +196,23 @@ func corporateNextPage(service objectService, objectName string, req *http.Reque
 
 // webinarNextPage returns the next page number, or "" when there are no
 // more pages. Page numbers are 0-indexed.
-// if page object or its number/totalPages fields are missing,.
 func webinarNextPage(node *ajson.Node) (string, error) {
 	page := jsonquery.New(node, "page")
 
-	// missing page object is normal.
-	// some objects (e.g. userSubscriptions,webhooks) don't return a page object at all.
-	// if the page object is missing or malformed, we assume there are no more pages.
+	// some objects (e.g. userSubscriptions, webhooks) don't return a page
+	// object at all, which means there are no more pages.
 	if page == nil {
 		return "", nil //nolint:nilerr
 	}
 
 	currPage, err := page.IntegerRequired("number")
 	if err != nil {
-		return "", nil //nolint:nilerr
+		return "", err
 	}
 
 	totalPages, err := page.IntegerRequired("totalPages")
 	if err != nil {
-		return "", nil //nolint:nilerr
+		return "", err
 	}
 
 	next := currPage + 1

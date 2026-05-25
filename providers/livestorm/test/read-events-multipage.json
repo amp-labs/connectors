@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "id": "evt_1",
+      "type": "events",
+      "attributes": {
+        "title": "Paged Event",
+        "updated_at": "2025-01-02T12:00:00Z"
+      }
+    }
+  ],
+  "meta": {
+    "current_page": 0,
+    "page_count": 3
+  }
+}

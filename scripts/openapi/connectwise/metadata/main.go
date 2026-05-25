@@ -369,20 +369,22 @@ func main() {
 
 	objects := Objects()
 	for _, object := range objects {
+		objectName := getObjectName(object)
+
 		if object.Problem != nil {
 			slog.Error("schema not extracted",
-				"objectName", object.ObjectName,
+				"objectName", objectName,
 				"error", object.Problem,
 			)
 		}
 
 		for _, field := range object.Fields {
-			schemas.Add(common.ModuleRoot, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+			schemas.Add(common.ModuleRoot, objectName, object.DisplayName, object.URLPath, object.ResponseKey,
 				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 
 		for _, queryParam := range object.QueryParams {
-			registry.Add(queryParam, object.ObjectName)
+			registry.Add(queryParam, objectName)
 		}
 	}
 
@@ -425,4 +427,17 @@ func collectionDisplayName(displayName string) string {
 	}
 
 	return naming.NewPluralString(collectionName).String()
+}
+
+// getObjectName hardcodes object names to make names consistent across related endpoints.
+// Fixes any trailing slashes.
+func getObjectName(object metadatadef.Schema) string {
+	objectName := object.ObjectName
+	if objectName == "opportunities" {
+		objectName = "sales/opportunities"
+	}
+
+	objectName, _ = strings.CutSuffix(objectName, "/")
+
+	return objectName
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/providers/google/internal/core"
 )
 
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
@@ -18,6 +19,10 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 		},
 	}...,
 )
+
+// jsonResponder mirrors what was previously passed inline to ErrorHandler.JSON; it is
+// now reused as the non-rate-limit fallback in interpretJSONError.
+var jsonResponder = interpreter.NewFaultyResponder(errorFormats, nil) //nolint:gochecknoglobals
 
 type ErrorResponse struct {
 	Error ErrorDetails `json:"error"`
@@ -45,6 +50,14 @@ func (e ErrorResponse) CombineErr(base error) error {
 	}
 
 	return fmt.Errorf("%w: %v", base, strings.Join(messages, ","))
+}
+
+// interpretJSONError routes Gmail JSON error bodies through the shared Google
+// rate-limit detector. Gmail returns 403 with reason RATE_LIMIT_EXCEEDED for
+// per-user quota violations; without this hook the response maps to ErrForbidden
+// (unrecoverable) instead of ErrLimitExceeded (retryable).
+func (a *Adapter) interpretJSONError(res *http.Response, body []byte) error {
+	return core.InterpretJSONError(res, body, jsonResponder.HandleErrorResponse)
 }
 
 func (a *Adapter) interpretHTMLError(res *http.Response, body []byte) error {

@@ -41,6 +41,17 @@ type objectConfig struct {
 	// has been verified end-to-end so we don't accidentally surface an
 	// endpoint that returns 405 to callers.
 	writable bool
+	// readIDField is the JSON key that uniquely identifies a record in read
+	// responses for this object.
+	readIDField string
+}
+
+func (c objectConfig) readIDFieldOrDefault() string {
+	if c.readIDField == "" {
+		return "id"
+	}
+
+	return c.readIDField
 }
 
 const accountKeyPlaceholder = "{accountKey}"

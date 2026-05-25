@@ -136,15 +136,25 @@ func TestRead(t *testing.T) {
 						Then: mockserver.Response(http.StatusOK, responseNotes),
 					},
 					{
-						If:   mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+						If: mockcond.And{
+							mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+							mockcond.QueryParam("include", "transcript"),
+						},
 						Then: mockserver.Response(http.StatusOK, noteFull["not_1d3tmYTlCICgjy"]),
 					},
 					{
-						If:   mockcond.Path("/v1/notes/not_4f7kQhLpMNBvxy"),
+
+						If: mockcond.And{
+							mockcond.Path("/v1/notes/not_4f7kQhLpMNBvxy"),
+							mockcond.QueryParam("include", "transcript"),
+						},
 						Then: mockserver.Response(http.StatusOK, noteFull["not_4f7kQhLpMNBvxy"]),
 					},
 					{
-						If:   mockcond.Path("/v1/notes/not_9b2xRwNsTLCfop"),
+						If: mockcond.And{
+							mockcond.Path("/v1/notes/not_9b2xRwNsTLCfop"),
+							mockcond.QueryParam("include", "transcript"),
+						},
 						Then: mockserver.Response(http.StatusOK, noteFull["not_9b2xRwNsTLCfop"]),
 					},
 				},

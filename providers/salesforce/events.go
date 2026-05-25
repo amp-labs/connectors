@@ -2,7 +2,11 @@ package salesforce
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"net/http"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
@@ -65,10 +69,12 @@ type EventChannelMember struct {
 }
 
 type EventChannelMemberMetadata struct {
-	EventChannel     string           `json:"eventChannel"`
-	SelectedEntity   string           `json:"selectedEntity,omitempty"`
-	EnrichedFields   []*EnrichedField `json:"enrichedFields,omitempty"`
-	FilterExpression string           `json:"filterExpression,omitempty"`
+	EventChannel   string `json:"eventChannel"`
+	SelectedEntity string `json:"selectedEntity,omitempty"`
+	// EnrichedFields are the fields are list of fields that are used in filter expression
+	EnrichedFields []*EnrichedField `json:"enrichedFields"`
+	// Filter expression is used to filter COC events to reduce the number of events
+	FilterExpression string `json:"filterExpression"`
 }
 
 type EnrichedField struct {
@@ -159,6 +165,13 @@ func (n *NamedCredential) DestinationResourceName() string {
 func (c *Connector) CreateEventChannel(ctx context.Context, channel *EventChannel) (*EventChannel, error) {
 	res, err := c.postToSFAPI(ctx, channel, "tooling/sobjects/PlatformEventChannel", "PlatformEventChannel")
 	if err != nil {
+		if isDuplicateDeveloperName(err) {
+			// PlatformEventChannel.DeveloperName is FullName without the "__chn" suffix.
+			developerName := strings.TrimSuffix(channel.FullName, "__chn")
+
+			return recoverDuplicateByDeveloperName[EventChannel](ctx, c, "PlatformEventChannel", developerName)
+		}
+
 		return nil, err
 	}
 
@@ -180,6 +193,10 @@ func (c *Connector) CreateEventChannelMember(
 ) (*EventChannelMember, error) {
 	res, err := c.postToSFAPI(ctx, member, "tooling/sobjects/PlatformEventChannelMember", "EventChannelMember")
 	if err != nil {
+		if isDuplicateDeveloperName(err) {
+			return recoverDuplicateByDeveloperName[EventChannelMember](ctx, c, "PlatformEventChannelMember", member.FullName)
+		}
+
 		return nil, err
 	}
 
@@ -191,18 +208,65 @@ func (c *Connector) CreateEventChannelMember(
 // UpdateEventChannelMember updates an existing PlatformEventChannelMember via PATCH.
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_platformeventchannelmember.htm
+//
+// Salesforce's Tooling API treats the PATCH body as a full Metadata replacement:
+// EventChannel and SelectedEntity are REQUIRED (a body without them returns
+// "Required field is missing: selectedEntity") but also IMMUTABLE (a body
+// whose value differs from what Salesforce has stored returns "Update is not
+// supported for the selectedEntity field on platform event channel members.").
+//
+// To avoid the case-mismatch hazard — Salesforce normalizes the stored
+// SelectedEntity / EventChannel (e.g. "account" → "Account__ChangeEvent")
+// while our locally-cached prevState may still hold the caller's original
+// casing — we first GET the live record to pick up its canonical immutable
+// fields, then PATCH using those values plus the caller-supplied mutable
+// fields (FilterExpression and EnrichedFields). The extra round trip is
+// worth it: passing a stale SelectedEntity tanks the whole UpdateSubscription
+// with a 400 even though the value didn't semantically change.
 func (c *Connector) UpdateEventChannelMember(
 	ctx context.Context,
 	member *EventChannelMember,
 ) (*EventChannelMember, error) {
-	// Salesforce Tooling API expects the Metadata wrapper and FullName in the PATCH body.
-	body := &EventChannelMember{FullName: member.FullName, Metadata: member.Metadata}
+	if member == nil || member.Metadata == nil {
+		return nil, errEventChannelMemberNilInput
+	}
 
-	_, err := c.patchToSFAPI(ctx, body,
+	current, err := getToolingEntityByID[EventChannelMember](
+		ctx, c, "PlatformEventChannelMember", member.Id,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch current EventChannelMember %s before PATCH: %w", member.Id, err)
+	}
+
+	if current == nil || current.Metadata == nil {
+		return nil, fmt.Errorf("%w: id=%s", errEventChannelMemberMissingMD, member.Id)
+	}
+
+	// Build the PATCH body using Salesforce's canonical immutable values for
+	// EventChannel and SelectedEntity, plus the caller's intended new values
+	// for the mutable fields.
+	body := &EventChannelMember{
+		FullName: current.FullName,
+		Metadata: &EventChannelMemberMetadata{
+			EventChannel:     current.Metadata.EventChannel,
+			SelectedEntity:   current.Metadata.SelectedEntity,
+			FilterExpression: member.Metadata.FilterExpression,
+			EnrichedFields:   member.Metadata.EnrichedFields,
+		},
+	}
+
+	_, err = c.patchToSFAPI(ctx, body,
 		"tooling/sobjects/PlatformEventChannelMember/"+member.Id, "EventChannelMember")
 	if err != nil {
 		return nil, err
 	}
+
+	// Reflect the canonical immutable values back into the caller's member so
+	// downstream consumers (e.g. diff.channelMembersExisting) see the
+	// authoritative casing.
+	member.FullName = current.FullName
+	member.Metadata.EventChannel = current.Metadata.EventChannel
+	member.Metadata.SelectedEntity = current.Metadata.SelectedEntity
 
 	return member, nil
 }
@@ -220,6 +284,10 @@ func (c *Connector) CreateEventRelayConfig(
 ) (*EventRelayConfig, error) {
 	res, err := c.postToSFAPI(ctx, cfg, "/tooling/sobjects/EventRelayConfig", "EventRelayConfig")
 	if err != nil {
+		if isDuplicateDeveloperName(err) {
+			return recoverDuplicateByDeveloperName[EventRelayConfig](ctx, c, "EventRelayConfig", cfg.FullName)
+		}
+
 		return nil, err
 	}
 
@@ -299,6 +367,10 @@ func GetRemoteResource(orgId, channelId string) string {
 func (c *Connector) CreateNamedCredential(ctx context.Context, creds *NamedCredential) (*NamedCredential, error) {
 	res, err := c.postToSFAPI(ctx, creds, "/tooling/sobjects/NamedCredential", "NamedCredential")
 	if err != nil {
+		if isDuplicateDeveloperName(err) {
+			return recoverDuplicateByDeveloperName[NamedCredential](ctx, c, "NamedCredential", creds.FullName)
+		}
+
 		return nil, err
 	}
 
@@ -364,10 +436,232 @@ func (c *Connector) deleteToSFAPI(ctx context.Context, path string, entity strin
 		return nil, err
 	}
 
+	// Check the entity exists before deleting. If it's already gone (404),
+	// treat the delete as a no-op so callers can retry safely.
+	if _, err := c.Client.Get(ctx, location.String()); err != nil {
+		var httpErr *common.HTTPError
+		if errors.As(err, &httpErr) && httpErr.Status == http.StatusNotFound {
+			logging.Logger(ctx).Info("skipping delete, entity not found", "entity", entity)
+
+			return nil, nil //nolint:nilnil
+		}
+
+		return nil, fmt.Errorf("error checking %s before delete: %w", entity, err)
+	}
+
 	resp, err := c.Client.Delete(ctx, location.String())
 	if err != nil {
 		return nil, fmt.Errorf("error deleting %s: %w", entity, err)
 	}
 
 	return resp, nil
+}
+
+const errCodeDuplicateDeveloperName = "DUPLICATE_DEVELOPER_NAME"
+
+var (
+	errToolingQueryNoRecordsField  = errors.New("tooling/query response missing 'records' field")
+	errToolingEntityNotFound       = errors.New("no tooling entity found by FullName")
+	errToolingRecordMissingID      = errors.New("tooling/query record missing 'Id' field")
+	errEventChannelMemberNilInput  = errors.New("UpdateEventChannelMember: member or metadata is nil")
+	errEventChannelMemberMissingMD = errors.New("UpdateEventChannelMember: GET returned empty metadata")
+)
+
+// CustomFieldExists reports whether a custom field with the given API
+// name (must include the __c suffix) exists on the named Salesforce object.
+//
+// Implementation queries the Tooling API CustomField sobject by TableEnumOrId
+// and DeveloperName. CustomField.DeveloperName stores the suffix-less form, so
+// the trailing __c is stripped before the query.
+func (c *Connector) CustomFieldExists(
+	ctx context.Context, objectName, fieldAPIName string,
+) (bool, error) {
+	developerName := strings.TrimSuffix(fieldAPIName, "__c")
+	soql := fmt.Sprintf(
+		"SELECT Id FROM CustomField WHERE TableEnumOrId = '%s' AND DeveloperName = '%s'",
+		escapeSOQLString(objectName), escapeSOQLString(developerName),
+	)
+
+	return c.toolingEntityExists(ctx, soql)
+}
+
+// toolingEntityExists runs the given Tooling API SOQL query and reports whether
+// it returned at least one record. Used by the existence-check helpers to power
+// the manual-creation flow.
+func (c *Connector) toolingEntityExists(ctx context.Context, soql string) (bool, error) {
+	location, err := c.getRestApiURL("tooling/query")
+	if err != nil {
+		return false, err
+	}
+
+	location.WithQueryParam("q", soql)
+
+	resp, err := c.Client.Get(ctx, location.String())
+	if err != nil {
+		return false, err
+	}
+
+	body, ok := resp.Body()
+	if !ok {
+		return false, common.ErrEmptyJSONHTTPResponse
+	}
+
+	obj, err := body.GetObject()
+	if err != nil {
+		return false, err
+	}
+
+	recordsNode, exists := obj["records"]
+	if !exists {
+		return false, fmt.Errorf("%w: soql=%q", errToolingQueryNoRecordsField, soql)
+	}
+
+	records, err := recordsNode.GetArray()
+	if err != nil {
+		return false, err
+	}
+
+	return len(records) > 0, nil
+}
+
+// sfAPIError is a single entry in a Salesforce API error response array.
+// nolint:tagliatelle
+type sfAPIError struct {
+	Message   string   `json:"message"`
+	ErrorCode string   `json:"errorCode"`
+	Fields    []string `json:"fields"`
+}
+
+// isDuplicateDeveloperName reports whether err is a 400 response whose body
+// contains the DUPLICATE_DEVELOPER_NAME Salesforce error code.
+func isDuplicateDeveloperName(err error) bool {
+	var httpErr *common.HTTPError
+	if !errors.As(err, &httpErr) || httpErr.Status != http.StatusBadRequest {
+		return false
+	}
+
+	var entries []sfAPIError
+	if jsonErr := json.Unmarshal(httpErr.Body, &entries); jsonErr != nil {
+		return false
+	}
+
+	for _, e := range entries {
+		if e.ErrorCode == errCodeDuplicateDeveloperName {
+			return true
+		}
+	}
+
+	return false
+}
+
+// recoverDuplicateByDeveloperName looks up a tooling entity by DeveloperName
+// and returns the full record. Used to make Create* idempotent when Salesforce
+// reports DUPLICATE_DEVELOPER_NAME — the SOQL query yields the existing Id,
+// and the follow-up GET returns the same shape a successful Create would have.
+//
+// Salesforce does not allow FullName in a SOQL WHERE clause for these metadata
+// objects, so callers must pass a DeveloperName. For most entities here that
+// equals the FullName, but PlatformEventChannel strips its "__chn" suffix.
+func recoverDuplicateByDeveloperName[T any](
+	ctx context.Context, conn *Connector, objectType, developerName string,
+) (*T, error) {
+	logging.Logger(ctx).Info("create returned duplicate, fetching existing record",
+		"objectType", objectType, "developerName", developerName)
+
+	id, err := conn.findToolingEntityIDByDeveloperName(ctx, objectType, developerName)
+	if err != nil {
+		return nil, fmt.Errorf("%s duplicate detected, but SOQL lookup failed: %w",
+			objectType, err)
+	}
+
+	existing, err := getToolingEntityByID[T](ctx, conn, objectType, id)
+	if err != nil {
+		return nil, fmt.Errorf("%s duplicate detected, found id=%s but GET failed: %w",
+			objectType, id, err)
+	}
+
+	return existing, nil
+}
+
+// findToolingEntityIDByDeveloperName runs a Tooling API SOQL query to find
+// the Id of the given object type by DeveloperName.
+func (c *Connector) findToolingEntityIDByDeveloperName(
+	ctx context.Context, objectType, developerName string,
+) (string, error) {
+	location, err := c.getRestApiURL("tooling/query")
+	if err != nil {
+		return "", err
+	}
+
+	soql := fmt.Sprintf("SELECT Id FROM %s WHERE DeveloperName = '%s'",
+		objectType, escapeSOQLString(developerName))
+	location.WithQueryParam("q", soql)
+
+	resp, err := c.Client.Get(ctx, location.String())
+	if err != nil {
+		return "", err
+	}
+
+	body, ok := resp.Body()
+	if !ok {
+		return "", common.ErrEmptyJSONHTTPResponse
+	}
+
+	obj, err := body.GetObject()
+	if err != nil {
+		return "", err
+	}
+
+	recordsNode, exists := obj["records"]
+	if !exists {
+		return "", fmt.Errorf("%w: objectType=%s", errToolingQueryNoRecordsField, objectType)
+	}
+
+	records, err := recordsNode.GetArray()
+	if err != nil {
+		return "", err
+	}
+
+	if len(records) == 0 {
+		return "", fmt.Errorf("%w: objectType=%s, developerName=%s", errToolingEntityNotFound, objectType, developerName)
+	}
+
+	rec, err := records[0].GetObject()
+	if err != nil {
+		return "", err
+	}
+
+	idNode, exists := rec["Id"]
+	if !exists {
+		return "", fmt.Errorf("%w: objectType=%s", errToolingRecordMissingID, objectType)
+	}
+
+	return idNode.MustString(), nil
+}
+
+// getToolingEntityByID fetches an entity by Id from the Tooling API and
+// unmarshals into T.
+func getToolingEntityByID[T any](
+	ctx context.Context, conn *Connector, objectType, id string,
+) (*T, error) {
+	location, err := conn.getRestApiURL(fmt.Sprintf("tooling/sobjects/%s/%s", objectType, id))
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := conn.Client.Get(ctx, location.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return common.UnmarshalJSON[T](resp)
+}
+
+// escapeSOQLString escapes a value for safe inclusion in a SOQL string
+// literal. Backslashes must be escaped before single quotes.
+func escapeSOQLString(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
+	s = strings.ReplaceAll(s, `'`, `\'`)
+
+	return s
 }

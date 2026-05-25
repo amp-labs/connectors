@@ -1,0 +1,18 @@
+{
+  "total": 3,
+  "results": [
+    {
+      "id": "5f7bff76-193f-43af-968b-f13c6576ca76",
+      "properties": {
+        "hs_name": "Inbound"
+      },
+      "createdAt": "2026-05-05T23:07:11.797Z",
+      "updatedAt": "2026-05-05T23:07:12.040Z",
+      "businessUnits": [
+        {
+          "id": 0
+        }
+      ]
+    }
+  ]
+}

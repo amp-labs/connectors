@@ -1,0 +1,41 @@
+{
+  "total": 3,
+  "results": [
+    {
+      "activeDomain": "44623425.hs-sites.com",
+      "allEmailCampaignIds": [
+        "285771108"
+      ],
+      "archived": false,
+      "businessUnitId": "0",
+      "content": {},
+      "createdAt": "2023-12-08T17:47:58.334Z",
+      "createdById": "100",
+      "emailCampaignGroupId": "285768335",
+      "emailTemplateMode": "DRAG_AND_DROP",
+      "from": {},
+      "id": "149139108889",
+      "isAb": false,
+      "isPublished": true,
+      "isTransactional": true,
+      "jitterSendTime": true,
+      "language": "en",
+      "name": "Ticket received",
+      "previewKey": "UMDqTsdm",
+      "primaryEmailCampaignId": "285771108",
+      "publishDate": "2023-12-08T17:47:59Z",
+      "publishedAt": "2023-12-08T17:47:58.956Z",
+      "publishedById": "100",
+      "publishedByName": "HubSpot System",
+      "state": "AUTOMATED",
+      "subcategory": "ticket_opened_kickback_email",
+      "subject": "Your ticket '{{ticket.subject}}' has been received",
+      "subscriptionDetails": {},
+      "to": {},
+      "type": "TICKET_EMAIL",
+      "updatedAt": "2023-12-08T17:47:59.150Z",
+      "updatedById": "100",
+      "webversion": {}
+    }
+  ]
+}

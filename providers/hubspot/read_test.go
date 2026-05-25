@@ -22,6 +22,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseContacts := testutils.DataFromFile(t, "read/objects-api/contacts-response.json")
 	responseListsFirst := testutils.DataFromFile(t, "read-lists-1-first-page.json")
 	responseListsLast := testutils.DataFromFile(t, "read-lists-2-second-page.json")
+	responseCampaignsFirst := testutils.DataFromFile(t, "read/campaigns/1-first-page.json")
+	responseCampaignsLast := testutils.DataFromFile(t, "read/campaigns/2-last-page.json")
+	responseMarketingEmailFirst := testutils.DataFromFile(t, "read/marketing-emails/1-first-page.json")
+	responseMarketingEmailLast := testutils.DataFromFile(t, "read/marketing-emails/2-last-page.json")
+	responseMarketingForms := testutils.DataFromFile(t, "read/marketing-forms.json")
+	responseMarketingEvents := testutils.DataFromFile(t, "read/marketing-events.json")
+	responseMeetingLinks := testutils.DataFromFile(t, "read/meeting-links.json")
 
 	tests := []testroutines.Read{
 		{
@@ -242,6 +249,305 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Done:     true,
 			},
 			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read marketing campaigns first page",
+			Input: common.ReadParams{
+				ObjectName: "campaigns",
+				Fields:     connectors.Fields("hs_name", "hs_notes", "hs_budget_items_sum_amount"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/marketing/campaigns/2026-03"),
+					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("sort", "-updatedAt"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCampaignsFirst),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"hs_name":                    "Nurture",
+						"hs_notes":                   "Creating campaign from the Dashboard",
+						"hs_budget_items_sum_amount": "2.0",
+					},
+					Raw: map[string]any{
+						"id": "84f199fa-beb7-4dca-ad94-3d778cdce157",
+						"properties": map[string]any{
+							"hs_name":                    "Nurture",
+							"hs_notes":                   "Creating campaign from the Dashboard",
+							"hs_budget_items_sum_amount": "2.0",
+						},
+						"createdAt": "2026-05-05T23:41:20.330Z",
+						"updatedAt": "2026-05-05T23:45:04.200Z",
+					},
+					Id: "84f199fa-beb7-4dca-ad94-3d778cdce157",
+				}, {
+					Fields: map[string]any{
+						"hs_name": "Kiwi",
+					},
+					Raw: map[string]any{
+						"id": "fc4583f7-5cfc-4773-8fa4-076cd4f4ae6d",
+						"properties": map[string]any{
+							"hs_name": "Kiwi",
+						},
+						"createdAt": "2026-05-05T23:09:27.549Z",
+						"updatedAt": "2026-05-05T23:09:27.713Z",
+					},
+					Id: "fc4583f7-5cfc-4773-8fa4-076cd4f4ae6d",
+				}},
+				NextPage: "https://api.hubapi.com/marketing/campaigns/2026-03?limit=2&sort=-updatedAt&properties=hs_name%2Chs_notes%2Chs_budget_items_sum_amount&after=Mg%3D%3D",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Read marketing campaigns with connector side filtering",
+			Input: common.ReadParams{
+				ObjectName: "campaigns",
+				Fields:     connectors.Fields("hs_name"),
+				// The first item will be returned, last filtered out.
+				// Due to the sort order there will be no next page.
+				// The record which is excluded has this timestamp: 2026-05-05T23:09:27.713Z
+				Since: time.Date(2026, 5, 5, 23, 10, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/marketing/campaigns/2026-03"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCampaignsFirst),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"hs_name": "Nurture",
+						},
+						Raw: map[string]any{
+							"updatedAt": "2026-05-05T23:45:04.200Z",
+						},
+						Id: "84f199fa-beb7-4dca-ad94-3d778cdce157",
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Read marketing campaigns last page",
+			Input: common.ReadParams{
+				ObjectName: "campaigns",
+				Fields:     connectors.Fields("hs_name"),
+				NextPage:   testroutines.URLTestServer + "/marketing/campaigns/2026-03?limit=2&sort=-updatedAt&properties=hs_name%2Chs_notes%2Chs_budget_items_sum_amount&after=Mg%3D%3D",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/marketing/campaigns/2026-03"),
+					mockcond.QueryParam("after", "Mg=="),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCampaignsLast),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"hs_name": "Inbound",
+						},
+						Raw: map[string]any{
+							"createdAt": "2026-05-05T23:07:11.797Z",
+							"updatedAt": "2026-05-05T23:07:12.040Z",
+						},
+						Id: "5f7bff76-193f-43af-968b-f13c6576ca76",
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Read marketing emails first page",
+			Input: common.ReadParams{
+				ObjectName: "marketing/emails",
+				Fields:     connectors.Fields("subject"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/marketing/emails/2026-03"),
+					mockcond.QueryParam("sort", "-updatedAt"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseMarketingEmailFirst),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"subject": "Behold the latest version of our newsletter!",
+					},
+					Raw: map[string]any{
+						"createdAt":         "2026-05-07T22:59:00.597Z",
+						"createdById":       "82226790",
+						"emailTemplateMode": "DRAG_AND_DROP",
+					},
+					Id: "212476546342",
+				}, {
+					Fields: map[string]any{
+						"subject": "Product Launch",
+					},
+					Raw: map[string]any{
+						"createdAt":         "2024-05-29T22:37:35.474Z",
+						"createdById":       "62365053",
+						"emailTemplateMode": "DRAG_AND_DROP",
+					},
+					Id: "168871137104",
+				}},
+				NextPage: "https://api.hubapi.com/marketing/emails/2026-03?limit=3&sort=-updatedAt&after=Mw%3D%3D",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Read marketing emails last page",
+			Input: common.ReadParams{
+				ObjectName: "marketing/emails",
+				Fields:     connectors.Fields("subject"),
+				NextPage:   testroutines.URLTestServer + "/marketing/emails/2026-03?limit=3&sort=-updatedAt&after=Mw%3D%3D",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/marketing/emails/2026-03"),
+					mockcond.QueryParam("limit", "3"),
+					mockcond.QueryParam("after", "Mw=="),
+					mockcond.QueryParam("sort", "-updatedAt"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseMarketingEmailLast),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"subject": "Your ticket '{{ticket.subject}}' has been received",
+						},
+						Raw: map[string]any{
+							"createdAt":            "2023-12-08T17:47:58.334Z",
+							"createdById":          "100",
+							"emailCampaignGroupId": "285768335",
+							"emailTemplateMode":    "DRAG_AND_DROP",
+						},
+						Id: "149139108889",
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+		}, {
+			Name: "Read marketing forms",
+			Input: common.ReadParams{
+				ObjectName: "forms",
+				Fields:     connectors.Fields("name", "updatedAt"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/marketing/forms/2026-09-beta"),
+				Then:  mockserver.Response(http.StatusOK, responseMarketingForms),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"name":      "Tell me about yourself",
+							"updatedat": "2026-05-11T17:30:51.442Z",
+						},
+						Raw: map[string]any{
+							"archived": false,
+							"formType": "hubspot",
+						},
+						Id: "591e2731-c869-445d-b422-26f43145e9d2",
+					},
+				},
+				NextPage: "https://api.hubapi.com/marketing/forms/2026-09-beta?limit=1&after=MQ%3D%3D",
+				Done:     false,
+			},
+		}, {
+			Name: "Read marketing events",
+			Input: common.ReadParams{
+				ObjectName: "marketing-events",
+				Fields:     connectors.Fields("eventName", "eventOrganizer"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/marketing/marketing-events/2026-03"),
+				Then:  mockserver.Response(http.StatusOK, responseMarketingEvents),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"eventname":      "Party",
+							"eventorganizer": "Alice",
+						},
+						Raw: map[string]any{
+							"objectId":        "555442196839",
+							"externalEventId": "qwe",
+							"eventStatus":     "ONGOING",
+							"eventStatusV2":   "ongoing",
+						},
+						Id: "555442196839",
+					},
+				},
+				NextPage: "https://api.hubapi.com/marketing/marketing-events/2026-03?after=NTU1NDQyMTk2ODQw",
+				Done:     false,
+			},
+		}, {
+			Name: "Read meeting-links",
+			Input: common.ReadParams{
+				ObjectName: "meeting-links",
+				Fields:     connectors.Fields("name", "slug"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/scheduler/2026-03/meetings/meeting-links"),
+				Then:  mockserver.Response(http.StatusOK, responseMeetingLinks),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"slug": "int/public-gathering",
+							"name": "Public Gathering",
+						},
+						Raw: map[string]any{
+							"link": "https://meetings.hubspot.com/int/public-gathering",
+							"type": "PERSONAL_LINK",
+						},
+						Id: "12428962",
+					},
+				},
+				NextPage: "https://api.hubapi.com/scheduler/2026-03/meetings/meeting-links?limit=1&after=MQ%3D%3D",
+				Done:     false,
+			},
 		},
 	}
 

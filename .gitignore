@@ -145,8 +145,8 @@ destructive.zip
 output/
 
 # Salesforce test binaries
-apex
+/apex
 test/salesforce/apex/apex
-subscribe
+/subscribe
 subscriber
 test/salesforce/subscribe/subscribe

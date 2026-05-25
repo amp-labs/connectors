@@ -13,8 +13,8 @@ import (
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/core"
-	"github.com/amp-labs/connectors/providers/hubspot/internal/crm/metadata"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/metadata"
 )
 
 type objectMetadataResult struct {
@@ -30,8 +30,7 @@ type objectMetadataError struct {
 func (c *Connector) UpsertMetadata(
 	ctx context.Context, params *common.UpsertMetadataParams,
 ) (*common.UpsertMetadataResult, error) {
-	// Delegated.
-	return c.crmAdapter.UpsertMetadata(ctx, params)
+	return c.customAdapter.UpsertMetadata(ctx, params)
 }
 
 // ListObjectMetadata returns object metadata for each object name provided.
@@ -111,11 +110,21 @@ func (c *Connector) ListObjectMetadata( // nolint:cyclop,funlen
 
 // getObjectMetadata returns object metadata for the given object name.
 func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*common.ObjectMetadata, error) {
-	if core.ObjectsWithoutPropertiesAPISupport.Has(objectName) {
+	switch {
+	case core.CRMObjectsWithoutPropertiesAPISupport.Has(objectName):
 		return c.getObjectMetadataFromCRMSearch(ctx, objectName)
+	case core.MarketingObjects.Has(objectName):
+		// Object is part of Hubspot Marketing API.
+		// There is no discovery endpoint. Using local file with schema definition.
+		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
+	case core.CommunicationObjects.Has(objectName):
+		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
+	case core.MiscellaneousObjects.Has(objectName):
+		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
+	default:
+		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
+		return c.getObjectMetadataFromPropertyAPI(ctx, objectName)
 	}
-
-	return c.getObjectMetadataFromPropertyAPI(ctx, objectName)
 }
 
 // This method describes objects that are part of Objects API using properties endpoint.
@@ -123,12 +132,12 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 func (c *Connector) getObjectMetadataFromPropertyAPI(
 	ctx context.Context, objectName string,
 ) (*common.ObjectMetadata, error) {
-	url, err := c.getPropertiesURL(objectName)
+	url, err := c.getCRMPropertiesURL(objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url.String())
+	rsp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, fmt.Errorf("error fetching HubSpot fields: %w", err)
 	}
@@ -171,12 +180,12 @@ func (c *Connector) getObjectMetadataFromCRMSearch(
 	})
 	if err != nil {
 		// Ignore an error and fallback to static schema.
-		return metadata.Schemas.SelectOne(c.moduleID, objectName)
+		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
 	}
 
 	if len(readResult.Data) == 0 {
 		// Read returned no rows.
-		return metadata.Schemas.SelectOne(c.moduleID, objectName)
+		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
 	}
 
 	fields := make(map[string]common.FieldMetadata)
@@ -225,7 +234,7 @@ func (c *Connector) GetAccountInfo(ctx context.Context) (*AccountInfo, *common.J
 		return nil, nil, err
 	}
 
-	resp, err := c.Client.Get(ctx, url.String())
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, resp, fmt.Errorf("error fetching HubSpot token info: %w", err)
 	}
@@ -393,7 +402,7 @@ func (c *Connector) fetchExternalMetadataEnumValues(
 	// For each external field that we support make an API call to fetch enumeration options.
 	// Store this values for each field within each object.
 	for _, discovery := range externalFields {
-		rsp, err := c.Client.Get(ctx, c.getURLFromRoot(discovery.EndpointPath))
+		rsp, err := c.JSONHTTPClient().Get(ctx, c.getURLFromRoot(discovery.EndpointPath))
 		if err != nil {
 			return nil, fmt.Errorf("error resolving external metadata values for HubSpot: %w", err)
 		}
@@ -520,12 +529,12 @@ type stage struct {
 func (c *Connector) fetchRequiredFieldsBestEffort(
 	ctx context.Context, objectName string, fields map[string]common.FieldMetadata,
 ) (map[string]common.FieldMetadata, error) {
-	url, err := c.getObjectSchemaURL(objectName)
+	url, err := c.getCRMSchemaURL(objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url.String())
+	rsp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		if isMissingSchemasScope(err) {
 			// User does not have permission to access the schema endpoint.

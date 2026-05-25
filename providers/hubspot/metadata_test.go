@@ -370,6 +370,102 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Successfully describe various objects",
+			Input: []string{
+				"campaigns", "marketing/emails", "forms",
+				"marketing-events", "meeting-links",
+			},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"campaigns": {
+						DisplayName: "Campaigns",
+						Fields: map[string]common.FieldMetadata{
+							"hs_campaign_status": {
+								DisplayName:  "Campaign Status",
+								ValueType:    "singleSelect",
+								ProviderType: "Enumeration",
+								Values: common.FieldValues{{
+									Value:        "planned",
+									DisplayValue: "planned",
+								}, {
+									Value:        "in_progress",
+									DisplayValue: "in_progress",
+								}, {
+									Value:        "active",
+									DisplayValue: "active",
+								}, {
+									Value:        "paused",
+									DisplayValue: "paused",
+								}, {
+									Value:        "completed",
+									DisplayValue: "completed",
+								}},
+							},
+							"hs_name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "String",
+							},
+						},
+					},
+					"marketing/emails": {
+						DisplayName: "Marketing Emails",
+						Fields: map[string]common.FieldMetadata{
+							"campaignName": {
+								DisplayName:  "campaignName",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"subject": {
+								DisplayName:  "subject",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"forms": {
+						DisplayName: "Marketing Forms",
+						Fields: map[string]common.FieldMetadata{
+							"archivedAt": {
+								DisplayName:  "archivedAt",
+								ValueType:    "datetime",
+								ProviderType: "string<date-time>",
+							},
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"marketing-events": {
+						DisplayName: "Marketing Events",
+						Fields: map[string]common.FieldMetadata{
+							"eventName": {
+								DisplayName:  "eventName",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"meeting-links": {
+						DisplayName: "Meeting Links",
+						Fields: map[string]common.FieldMetadata{
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -386,17 +482,17 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(mockutils.NewClient()),
-		WithModule(providers.ModuleHubspotCRM),
+		common.ConnectorParams{
+			Module:              providers.ModuleHubspotCRM,
+			AuthenticatedClient: mockutils.NewClient(),
+		},
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.providerInfo.BaseURL = mockutils.ReplaceURLOrigin(connector.providerInfo.BaseURL, serverURL)
-	connector.moduleInfo.BaseURL = mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL)
-	connector.crmAdapter.SetUnitTestBaseURL(mockutils.ReplaceURLOrigin(connector.moduleInfo.BaseURL, serverURL))
+	connector.SetUnitTestMockServerBaseURL(serverURL)
 
 	return connector, nil
 }

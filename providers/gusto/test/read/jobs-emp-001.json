@@ -1,0 +1,18 @@
+[
+  {
+    "uuid": "job_001",
+    "employee_uuid": "emp_001",
+    "title": "Software Engineer",
+    "rate": "80000.00",
+    "payment_unit": "Year",
+    "primary": true
+  },
+  {
+    "uuid": "job_002",
+    "employee_uuid": "emp_001",
+    "title": "Tech Lead",
+    "rate": "90000.00",
+    "payment_unit": "Year",
+    "primary": false
+  }
+]
