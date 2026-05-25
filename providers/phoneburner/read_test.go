@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -18,6 +19,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	responseContacts := testutils.DataFromFile(t, "read/contacts.json")
+	responseContactsWithCustomFields := testutils.DataFromFile(t, "read/contacts-with-custom-fields.json")
 	responseDialSessions := testutils.DataFromFile(t, "read/dialsession.json")
 	responseFolders := testutils.DataFromFile(t, "read/folders.json")
 	responseMembers := testutils.DataFromFile(t, "read/members.json")
@@ -79,6 +81,39 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				NextPage: "",
 				Done:     true,
 			},
+		},
+		{
+			Name: "Read contacts flattens custom_fields by display name",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("contact_user_id", customFieldMetadataKey(leadScoreDisplayName)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/rest/1/contacts"),
+					mockcond.QueryParam("page_size", "100"),
+					mockcond.QueryParam("page", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContactsWithCustomFields),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"contact_user_id": "30919237",
+						"lead score":      "42",
+					},
+					Raw: map[string]any{
+						"contact_user_id": "30919237",
+						"custom_fields":   mockutils.Any{},
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
 		},
 		{
 			Name: "Read contacts with Since sends updated_from/update_to in PST",

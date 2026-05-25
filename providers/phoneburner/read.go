@@ -135,6 +135,12 @@ func applyTimeScopingToURL(url *urlbuilder.URL, params common.ReadParams) {
 	}
 }
 
+// parseReadResponse parses list/read responses for PhoneBurner objects.
+//
+// Custom fields are supported only for contacts: GET /rest/1/contacts returns each contact
+// with a custom_fields array in the normal payload (no separate embed). For contacts we
+// flatten those entries to lowercase display-name keys on Fields via readContactRecordTransformer;
+// other objects use standard marshaling without custom-field handling.
 func parseReadResponse(
 	_ context.Context,
 	params common.ReadParams,
@@ -153,17 +159,21 @@ func parseReadResponse(
 		return nil, err
 	}
 
-	switch params.ObjectName {
-	case objectMembers:
-		if !params.Since.IsZero() || !params.Until.IsZero() {
-			return parseFilteredObjectResponse(params, response, objectMembers, "date_added", nextRecordsURL(url, objectMembers))
-		}
-	case objectVoicemails:
-		if !params.Since.IsZero() || !params.Until.IsZero() {
-			return parseFilteredObjectResponse(
-				params, response, objectVoicemails, "created_when", nextRecordsURL(url, objectVoicemails),
-			)
-		}
+	if res, handled, err := readWithClientSideTimeFilterIfNeeded(params, response, url); handled {
+		return res, err
+	}
+
+	if params.ObjectName == objectContacts {
+		return common.ParseResult(
+			response,
+			common.MakeRecordsFunc(objectContacts, objectContacts),
+			nextRecordsURL(url, params.ObjectName),
+			readhelper.MakeMarshaledDataFuncWithId(
+				readContactRecordTransformer,
+				readhelper.NewIdField("contact_user_id"),
+			),
+			params.Fields,
+		)
 	}
 
 	records, err := recordsFunc(params.ObjectName)
@@ -178,6 +188,36 @@ func parseReadResponse(
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+// readWithClientSideTimeFilterIfNeeded handles members and voicemails when Since/Until require
+// client-side filtering. If it returns handled true, res and err are the outcome; otherwise the
+// caller should use the standard read path.
+func readWithClientSideTimeFilterIfNeeded(
+	params common.ReadParams,
+	response *common.JSONHTTPResponse,
+	url *urlbuilder.URL,
+) (res *common.ReadResult, handled bool, err error) {
+	if params.Since.IsZero() && params.Until.IsZero() {
+		return nil, false, nil
+	}
+
+	switch params.ObjectName {
+	case objectMembers:
+		r, e := parseFilteredObjectResponse(
+			params, response, objectMembers, "date_added", nextRecordsURL(url, objectMembers),
+		)
+
+		return r, true, e
+	case objectVoicemails:
+		r, e := parseFilteredObjectResponse(
+			params, response, objectVoicemails, "created_when", nextRecordsURL(url, objectVoicemails),
+		)
+
+		return r, true, e
+	default:
+		return nil, false, nil
+	}
 }
 
 // parseFilteredObjectResponse handles time-filtered reads for objects that do not natively
