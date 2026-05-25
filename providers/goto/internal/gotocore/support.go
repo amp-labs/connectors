@@ -59,21 +59,21 @@ const accountKeyPlaceholder = "{accountKey}"
 // objectRegistry maps object names to their endpoint metadata.
 var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglobals
 	// GoToMeeting API
-	"historicalMeetings": {path: "G2M/rest/historicalMeetings", service: serviceMeetings},
-	"upcomingMeetings":   {path: "G2M/rest/upcomingMeetings", service: serviceMeetings},
+	"historicalMeetings": {path: "G2M/rest/historicalMeetings", service: serviceMeetings, readIDField: "meetingId"},
+	"upcomingMeetings":   {path: "G2M/rest/upcomingMeetings", service: serviceMeetings, readIDField: "meetingId"},
 
 	// GoToWebinar API
-	"webinars": {path: "G2W/rest/v2/organizers/{accountKey}/webinars", service: serviceWebinar},
+	"webinars": {path: "G2W/rest/v2/organizers/{accountKey}/webinars", service: serviceWebinar, readIDField: "webinarId"},
 	// For webhooks and userSubscriptions, the productType query parameter is required
 	// and must be set to "g2w" to retrieve webinar webhooks.
 	// Ref: https://developer.goto.com/GoToWebinarV2#tag/Webhooks/operation/getWebhooks
-	"webhooks":          {path: "G2W/rest/v2/webhooks?productType=g2w", service: serviceWebinar, writable: true},
-	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar, writable: true},
+	"webhooks":          {path: "G2W/rest/v2/webhooks?productType=g2w", service: serviceWebinar, writable: true, readIDField: "webhookKey"},                   //nolint:lll
+	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar, writable: true, readIDField: "userSubscriptionKey"}, //nolint:lll
 
 	// GoToAssist Corporate API
-	"representatives": {path: "G2AC/rest/v1/representatives/pages", service: serviceCorporate, writable: true},
-	"teams":           {path: "G2AC/rest/v1/teams/pages", service: serviceCorporate, writable: true},
-	"portals":         {path: "G2AC/rest/v1/portals/pages", service: serviceCorporate},
+	"representatives": {path: "G2AC/rest/v1/representatives/pages", service: serviceCorporate, writable: true, readIDField: "id"},
+	"teams":           {path: "G2AC/rest/v1/teams/pages", service: serviceCorporate, writable: true, readIDField: "teamKey"},
+	"portals":         {path: "G2AC/rest/v1/portals/pages", service: serviceCorporate, readIDField: "portalKey"},
 
 	// GoToAssist Remote Support API
 	// We use "sessions" as the object name for extended sessions because this is
@@ -81,19 +81,19 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	// endpoint requires us to specify the type of sessions and only returns that
 	// type, while the extended sessions endpoint returns all types of sessions
 	// without requiring us to specify the type.
-	"sessions": {path: "G2A/rest/v1/extendedsessions", service: serviceRemoteSupport},
+	"sessions": {path: "G2A/rest/v1/extendedsessions", service: serviceRemoteSupport, readIDField: "sessionId"},
 
 	// Admin API
-	"attributes":   {path: "admin/rest/v1/accounts/{accountKey}/attributes", service: serviceAdmin, writable: true},
-	"licenses":     {path: "admin/rest/v1/accounts/{accountKey}/licenses", service: serviceAdmin},
-	"rolesets":     {path: "admin/rest/v1/accounts/{accountKey}/rolesets", service: serviceAdmin, writable: true},
-	"templates":    {path: "admin/rest/v1/accounts/{accountKey}/templates", service: serviceAdmin, writable: true},
-	"admin/users":  {path: "admin/rest/v1/accounts/{accountKey}/users", service: serviceAdmin, writable: true},
-	"admin/groups": {path: "admin/rest/v1/accounts/{accountKey}/groups", service: serviceAdmin, writable: true},
+	"attributes":   {path: "admin/rest/v1/accounts/{accountKey}/attributes", service: serviceAdmin, writable: true, readIDField: "key"},
+	"licenses":     {path: "admin/rest/v1/accounts/{accountKey}/licenses", service: serviceAdmin, readIDField: "key"},
+	"rolesets":     {path: "admin/rest/v1/accounts/{accountKey}/rolesets", service: serviceAdmin, writable: true, readIDField: "id"},
+	"templates":    {path: "admin/rest/v1/accounts/{accountKey}/templates", service: serviceAdmin, writable: true, readIDField: "key"},
+	"admin/users":  {path: "admin/rest/v1/accounts/{accountKey}/users", service: serviceAdmin, writable: true, readIDField: "key"},
+	"admin/groups": {path: "admin/rest/v1/accounts/{accountKey}/groups", service: serviceAdmin, writable: true, readIDField: "key"},
 
 	// SCIM API
-	"users":  {path: "identity/v1/Users", service: serviceSCIM, writable: true},
-	"groups": {path: "identity/v1/Groups", service: serviceSCIM, writable: true},
+	"users":  {path: "identity/v1/Users", service: serviceSCIM, writable: true, readIDField: "id"},
+	"groups": {path: "identity/v1/Groups", service: serviceSCIM, writable: true, readIDField: "id"},
 
 	// Only Write - these objects don't have a read endpoint,
 	//  but we want to be able to write to them via the generic write handler
