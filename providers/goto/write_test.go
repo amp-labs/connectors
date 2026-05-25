@@ -115,6 +115,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				Data: map[string]any{
 					"teamKey": float64(0),
 				},
+				RecordId: "0",
 			},
 			ExpectedErrs: nil,
 		},
