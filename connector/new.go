@@ -64,6 +64,7 @@ import (
 	"github.com/amp-labs/connectors/providers/gong"
 	"github.com/amp-labs/connectors/providers/google"
 	"github.com/amp-labs/connectors/providers/gorgias"
+	gotoconn "github.com/amp-labs/connectors/providers/goto"
 	"github.com/amp-labs/connectors/providers/granola"
 	"github.com/amp-labs/connectors/providers/groove"
 	"github.com/amp-labs/connectors/providers/gusto"
@@ -212,6 +213,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Google:                     wrapper(newGoogleConnector),
 	providers.GoogleWorkspaceDelegation:  wrapper(newGoogleWorkspaceDelegationConnector),
 	providers.Gorgias:                    wrapper(newGorgiasConnector),
+	providers.GoTo:                       wrapper(newGoToConnector),
 	providers.Granola:                    wrapper(newGranolaConnector),
 	providers.Groove:                     wrapper(newGrooveConnector),
 	providers.Gusto:                      wrapper(newGustoConnector),
@@ -1236,4 +1238,8 @@ func newProcoreConnector(params common.ConnectorParams) (*procore.Connector, err
 
 func newProcoreSandboxConnector(params common.ConnectorParams) (*procore.Connector, error) {
 	return procore.NewSandboxConnector(params)
+}
+
+func newGoToConnector(params common.ConnectorParams) (*gotoconn.Connector, error) {
+	return gotoconn.NewConnector(params)
 }
