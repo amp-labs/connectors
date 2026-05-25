@@ -20,7 +20,7 @@ const (
 	// applied when sampling records for schema. Wide enough to
 	// catch at least one record on endpoints that mandate a
 	// time-range filter.
-	metadataSampleWindowDays = 120
+	metadataSampleWindowDays = 400
 )
 
 func (a *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {

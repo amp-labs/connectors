@@ -45,7 +45,7 @@ func SeparateDotWords(text string) string {
 // by inserting a space before each uppercase letter that follows a lowercase letter.
 // Acronyms (consecutive uppercase letters) are kept as a single word.
 func SeparateCamelCaseWords(text string) string {
-	var b strings.Builder
+	var b strings.Builder //nolint:varnamelen
 
 	var prev rune
 	for i, r := range text {
