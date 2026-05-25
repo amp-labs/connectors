@@ -1,0 +1,24 @@
+{
+  "totalNumSessions": 500,
+  "sessions": [
+    {
+      "sessionId": "SS-87555",
+      "sessionType": "screen_sharing",
+      "sessionStartToken": 8555444,
+      "customerJoinUrl": "https://logmein.com/join",
+      "partnerObject": 7559966,
+      "partnerObjectUrl": "https://logmein.com/partners/view",
+      "status": "complete",
+      "startedAt": "2021-04-30T06:00:00Z",
+      "customerJoinedAt": "2021-04-30T06:01:00Z",
+      "endedAt": "2021-04-30T06:05:00Z",
+      "expertName": "John Doe",
+      "expertEmail": "john.doe@logmein.com",
+      "expertUserKey": "31416",
+      "customerName": "Jane Doe",
+      "customerEmail": "jane.doe@logmein.com",
+      "accountKey": 741599,
+      "sessionRecordingUrl": "https://logmein.com/session"
+    }
+  ]
+}

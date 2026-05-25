@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"log/slog"
+	"fmt"
+	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/amp-labs/connectors/providers"
-	gotoconn "github.com/amp-labs/connectors/providers/goto"
 	connTest "github.com/amp-labs/connectors/test/goto"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -17,18 +17,15 @@ func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	// Set up slog logging.
 	utils.SetupLogging()
 
 	conn := connTest.GetGoToConnector(ctx, providers.ModuleGoTo)
 
-	info, err := conn.GetPostAuthInfo(ctx)
-	if err != nil || info.CatalogVars == nil {
-		utils.Fail("error obtaining auth info", "error", err)
+	m, err := conn.ListObjectMetadata(ctx, []string{"historicalMeetings", "webinars"})
+	if err != nil {
+		utils.Fail("error listing metadata for GoTo", "error", err)
 	}
 
-	accountKey := gotoconn.NewAuthMetadataVars(*info.CatalogVars).AccountKey
-
-	// Log the retrieved account key.
-	slog.Info("retrieved auth metadata", "account key", accountKey)
+	utils.DumpJSON(m.Result, os.Stdout)
+	fmt.Println("Errors: ", m.Errors)
 }
