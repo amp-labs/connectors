@@ -22,8 +22,8 @@ const (
 )
 
 // objectConfig describes how to fetch a sample record for a GoTo object on
-// the api.getgo.com host. Both metadata and (eventually) read operations
-// consult this registry.
+// the api.getgo.com host. Metadata, read, and write operations all consult
+// this registry.
 type objectConfig struct {
 	// path is the URL template under the BaseURL. The literal {accountKey}
 	// is substituted with the connector's account key at resolve time.
@@ -36,9 +36,24 @@ type objectConfig struct {
 	// building and pagination depend on this value.
 	service objectService
 
+	// readable indicates whether the object exposes a list endpoint that the
+	// generic read handler (and metadata sampling) can hit. Defaults to false;
+	// flip on once the endpoint has been verified end-to-end so we don't
+	// surface a write-only object as readable.
+	readable bool
+
+	// writable indicates whether the object accepts create/update via the
+	// generic write handler. Defaults to false; flip on once the endpoint
+	// has been verified end-to-end so we don't accidentally surface an
+	// endpoint that returns 405 to callers.
+	writable bool
 	// readIDField is the JSON key that uniquely identifies a record in read
 	// responses for this object.
 	readIDField string
+
+	// writeIDField is the JSON key that uniquely identifies a record in write
+	// responses for this object.
+	writeIDField string
 }
 
 func (c objectConfig) readIDFieldOrDefault() string {
@@ -49,44 +64,117 @@ func (c objectConfig) readIDFieldOrDefault() string {
 	return c.readIDField
 }
 
+func (c objectConfig) writeIDFieldOrDefault() string {
+	if c.writeIDField == "" {
+		return "id"
+	}
+
+	return c.writeIDField
+}
+
 const accountKeyPlaceholder = "{accountKey}"
 
 // objectRegistry maps object names to their endpoint metadata.
 var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglobals
 	// GoToMeeting API
-	"historicalMeetings": {path: "G2M/rest/historicalMeetings", service: serviceMeetings, readIDField: "meetingId"},
-	"upcomingMeetings":   {path: "G2M/rest/upcomingMeetings", service: serviceMeetings, readIDField: "meetingId"},
+	"historicalMeetings": {
+		path:    "G2M/rest/historicalMeetings",
+		service: serviceMeetings, readable: true, readIDField: "meetingId",
+	},
+	"upcomingMeetings": {
+		path:    "G2M/rest/upcomingMeetings",
+		service: serviceMeetings, readable: true, readIDField: "meetingId",
+	},
 
 	// GoToWebinar API
-	"webinars": {path: "G2W/rest/v2/organizers/{accountKey}/webinars", service: serviceWebinar, readIDField: "webinarId"},
+	"webinars": {
+		path:    "G2W/rest/v2/organizers/{accountKey}/webinars",
+		service: serviceWebinar, readable: true, readIDField: "webinarId",
+	}, //nolint:lll
 	// For webhooks and userSubscriptions, the productType query parameter is required
 	// and must be set to "g2w" to retrieve webinar webhooks.
 	// Ref: https://developer.goto.com/GoToWebinarV2#tag/Webhooks/operation/getWebhooks
-	"webhooks":          {path: "G2W/rest/v2/webhooks?productType=g2w", service: serviceWebinar, readIDField: "webhookKey"},                   //nolint:lll
-	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar, readIDField: "userSubscriptionKey"}, //nolint:lll
+	"webhooks": {
+		path:    "G2W/rest/v2/webhooks?productType=g2w",
+		service: serviceWebinar, readable: true, writable: true, readIDField: "webhookKey", writeIDField: "webhookKey",
+	}, //nolint:lll
+	"userSubscriptions": {
+		path:    "G2W/rest/v2/userSubscriptions?productType=g2w",
+		service: serviceWebinar, readable: true, writable: true, readIDField: "userSubscriptionKey", writeIDField: "userSubscriptionKey", //nolint:lll
+	},
 
 	// GoToAssist Corporate API
-	"representatives": {path: "G2AC/rest/v1/representatives/pages", service: serviceCorporate, readIDField: "id"},
-	"teams":           {path: "G2AC/rest/v1/teams/pages", service: serviceCorporate, readIDField: "teamKey"},
-	"portals":         {path: "G2AC/rest/v1/portals/pages", service: serviceCorporate, readIDField: "portalKey"},
+	"representatives": {
+		path:    "G2AC/rest/v1/representatives/pages",
+		service: serviceCorporate, readable: true, writable: true, readIDField: "id", writeIDField: "representativeKey",
+	},
+	"teams": {
+		path:    "G2AC/rest/v1/teams/pages",
+		service: serviceCorporate, readable: true, writable: true, readIDField: "teamKey", writeIDField: "teamKey",
+	},
+	"portals": {
+		path:    "G2AC/rest/v1/portals/pages",
+		service: serviceCorporate, readable: true, readIDField: "portalKey",
+	},
 
-	// GoToAssist Remote Support API
+	// GoToAssist Remote Support API``
 	// We use "sessions" as the object name for extended sessions because this is
 	// just an extended version of the normal sessions endpoint. The normal sessions
 	// endpoint requires us to specify the type of sessions and only returns that
 	// type, while the extended sessions endpoint returns all types of sessions
 	// without requiring us to specify the type.
-	"sessions": {path: "G2A/rest/v1/extendedsessions", service: serviceRemoteSupport, readIDField: "sessionId"},
+	"sessions": {
+		path:    "G2A/rest/v1/extendedsessions",
+		service: serviceRemoteSupport, readable: true, readIDField: "sessionId",
+	},
 
 	// Admin API
-	"attributes":   {path: "admin/rest/v1/accounts/{accountKey}/attributes", service: serviceAdmin, readIDField: "key"},
-	"licenses":     {path: "admin/rest/v1/accounts/{accountKey}/licenses", service: serviceAdmin, readIDField: "key"},
-	"rolesets":     {path: "admin/rest/v1/accounts/{accountKey}/rolesets", service: serviceAdmin, readIDField: "id"},
-	"templates":    {path: "admin/rest/v1/accounts/{accountKey}/templates", service: serviceAdmin, readIDField: "key"},
-	"admin/users":  {path: "admin/rest/v1/accounts/{accountKey}/users", service: serviceAdmin, readIDField: "key"},
-	"admin/groups": {path: "admin/rest/v1/accounts/{accountKey}/groups", service: serviceAdmin, readIDField: "key"},
+	"attributes": {
+		path:    "admin/rest/v1/accounts/{accountKey}/attributes",
+		service: serviceAdmin, readable: true, writable: true, readIDField: "key", writeIDField: "id",
+	}, //nolint:lll
+	"licenses": {
+		path:    "admin/rest/v1/accounts/{accountKey}/licenses",
+		service: serviceAdmin, readable: true, readIDField: "key",
+	},
+	"rolesets": {
+		path:    "admin/rest/v1/accounts/{accountKey}/rolesets",
+		service: serviceAdmin, readable: true, writable: true, readIDField: "id", writeIDField: "id",
+	}, //nolint:lll
+
+	// templates doesn't return an ID field for Writes.
+	"templates": {
+		path:    "admin/rest/v1/accounts/{accountKey}/templates",
+		service: serviceAdmin, readable: true, writable: true, readIDField: "key",
+	}, //nolint:lll
+	"admin/users": {
+		path:    "admin/rest/v1/accounts/{accountKey}/users",
+		service: serviceAdmin, readable: true, writable: true, readIDField: "key", writeIDField: "key",
+	}, //nolint:lll
+	"admin/groups": {
+		path:    "admin/rest/v1/accounts/{accountKey}/groups",
+		service: serviceAdmin, readable: true, writable: true, readIDField: "key", writeIDField: "id",
+	}, //nolint:lll
 
 	// SCIM API
-	"users":  {path: "identity/v1/Users", service: serviceSCIM, readIDField: "id"},
-	"groups": {path: "identity/v1/Groups", service: serviceSCIM, readIDField: "id"},
+	"users": {
+		path:    "identity/v1/Users",
+		service: serviceSCIM, readable: true, writable: true, readIDField: "id", writeIDField: "id",
+	},
+	"groups": {
+		path:    "identity/v1/Groups",
+		service: serviceSCIM, readable: true, writable: true, readIDField: "id", writeIDField: "id",
+	},
+
+	// Only Write - these objects don't have a read endpoint,
+	//  but we want to be able to write to them via the generic write handler
+	"meetings": {
+		path:    "G2M/rest/meetings",
+		service: serviceMeetings, writable: true, writeIDField: "meetingid",
+	},
+	// Tickets doesn't have a id field in the response.
+	"tickets": {
+		path:    "G2M/rest/tickets",
+		service: serviceRemoteSupport, writable: true,
+	},
 }

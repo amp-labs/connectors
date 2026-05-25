@@ -12,12 +12,18 @@ import (
 )
 
 func (a *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
+	cfg, ok := objectRegistry[objectName]
+	if !ok || !cfg.readable {
+		return nil, fmt.Errorf("%w: object %s does not support read",
+			common.ErrOperationNotSupportedForObject, objectName)
+	}
+
 	url, err := a.buildObjectURL(objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	if spec, ok := objectRegistry[objectName]; ok && spec.service == serviceAdmin {
+	if cfg.service == serviceAdmin {
 		url.WithQueryParam(queryParamPageSize, sampleSize)
 	} else {
 		url.WithQueryParam(queryParamSize, sampleSize)

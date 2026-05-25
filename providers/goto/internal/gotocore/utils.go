@@ -22,13 +22,6 @@ func (a *Adapter) buildObjectURL(objectName string) (*urlbuilder.URL, error) {
 		return nil, fmt.Errorf("error building URL for object %s: %w", objectName, err)
 	}
 
-	if spec.service == serviceAdmin {
-		// Admin API uses "pageSize" for pagination, while other services use "size".
-		url.WithQueryParam(queryParamPageSize, sampleSize)
-	} else {
-		url.WithQueryParam(queryParamSize, sampleSize)
-	}
-
 	return url, nil
 }
 

@@ -109,3 +109,11 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 
 	return nil, common.ErrNotImplemented
 }
+
+func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error) {
+	if c.gotoCore != nil {
+		return c.gotoCore.Write(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
