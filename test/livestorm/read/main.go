@@ -3,14 +3,12 @@ package main
 import (
 	"context"
 	"log/slog"
-	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	livestormprovider "github.com/amp-labs/connectors/providers/livestorm"
 	connTest "github.com/amp-labs/connectors/test/livestorm"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
@@ -72,26 +70,5 @@ func main() {
 	slog.Info("=== Metadata vs Read validation: people_attributes ===")
 	testscenario.ValidateMetadataContainsRead(ctx, conn, "people_attributes", nil)
 
-	if sessionID := os.Getenv("LIVESTORM_SESSION_ID"); sessionID != "" {
-		slog.Info("=== Read session_chat_messages (requires LIVESTORM_SESSION_ID) ===")
-		readSessionChatMessages(ctx, conn, sessionID)
-	}
-
 	slog.Info("Livestorm read tests completed successfully!")
-}
-
-func readSessionChatMessages(ctx context.Context, conn *livestormprovider.Connector, sessionID string) {
-	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "session_chat_messages",
-		Filter:     sessionID,
-		Fields: connectors.Fields(
-			"text",
-			"created_at",
-		),
-	})
-	if err != nil {
-		utils.Fail("error reading session_chat_messages from Livestorm", "error", err)
-	}
-
-	utils.DumpJSON(res, os.Stdout)
 }

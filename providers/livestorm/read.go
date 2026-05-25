@@ -19,9 +19,8 @@ const (
 	// Default page size for list endpoints (page[size]). https://developers.livestorm.co/
 	defaultPageSize = "100"
 
-	apiVersion                = "v1"
-	objectEvents              = "events"
-	objectSessionChatMessages = "session_chat_messages"
+	apiVersion   = "v1"
+	objectEvents = "events"
 )
 
 // nolint:gochecknoglobals
@@ -29,7 +28,6 @@ var readSupportedObjects = datautils.NewStringSet(
 	"events",
 	"people",
 	"people_attributes",
-	"session_chat_messages",
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -61,31 +59,11 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	switch params.ObjectName {
-	case "":
+	if params.ObjectName == "" {
 		return nil, common.ErrMissingObjects
-	case objectSessionChatMessages:
-		return c.buildSessionChatMessagesReadURL(params)
-	default:
-		return c.buildGenericReadURL(params)
-	}
-}
-
-func (c *Connector) buildSessionChatMessagesReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
-	sessionID := strings.TrimSpace(params.Filter)
-	if sessionID == "" {
-		return nil, ErrSessionIDRequired
 	}
 
-	endpointURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "sessions", sessionID, "chat_messages")
-	if err != nil {
-		return nil, err
-	}
-
-	endpointURL.WithQueryParam("page[number]", "0")
-	endpointURL.WithQueryParam("page[size]", readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
-
-	return endpointURL, nil
+	return c.buildGenericReadURL(params)
 }
 
 func (c *Connector) buildGenericReadURL(params common.ReadParams) (*urlbuilder.URL, error) {

@@ -26,7 +26,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	eventsBody := testutils.DataFromFile(t, "read-events.json")
 	eventsMultipageBody := testutils.DataFromFile(t, "read-events-multipage.json")
 	peopleFirstPageBody := testutils.DataFromFile(t, "read-people-first-page.json")
-	chatMessagesBody := testutils.DataFromFile(t, "read-session-chat-messages.json")
 	peopleAttributesBody := testutils.DataFromFile(t, "read-people-attributes.json")
 
 	tests := []testroutines.Read{
@@ -47,12 +46,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input:        common.ReadParams{ObjectName: "unknown", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
-			Name:         "Session chat messages require session id in filter",
-			Input:        common.ReadParams{ObjectName: objectSessionChatMessages, Fields: connectors.Fields("id")},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{ErrSessionIDRequired},
 		},
 		{
 			Name: "Read events applies v1 path and incremental time filters",
@@ -210,43 +203,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 							"type": "people",
 							"attributes": map[string]any{
 								"email": "a@example.com",
-							},
-						},
-					},
-				},
-			},
-		},
-		{
-			Name: "Read session chat messages by session id",
-			Input: common.ReadParams{
-				ObjectName: objectSessionChatMessages,
-				Filter:     "sess_1",
-				Fields:     connectors.Fields("text"),
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v1/sessions/sess_1/chat_messages"),
-					mockcond.QueryParam("page[number]", "0"),
-					mockcond.QueryParam("page[size]", "100"),
-				},
-				Then: mockserver.Response(http.StatusOK, chatMessagesBody),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Done: true,
-				Data: []common.ReadResultRow{
-					{
-						Fields: map[string]any{
-							"text": "hello",
-						},
-						Raw: map[string]any{
-							"id":   "chat_1",
-							"type": "session_chat_messages",
-							"attributes": map[string]any{
-								"text": "hello",
 							},
 						},
 					},
