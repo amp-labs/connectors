@@ -37,7 +37,7 @@ const (
 	// applied when sampling records for schema. Wide enough to
 	// catch at least one record on endpoints that mandate a
 	// time-range filter.
-	metadataSampleWindowDays = 120
+	metadataSampleWindowDays = 400
 )
 
 func NewAdapter(params common.ConnectorParams, accountKey string) (*Adapter, error) {

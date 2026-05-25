@@ -1,0 +1,8 @@
+{
+  "uuid": "comp_001",
+  "job_uuid": "job_001",
+  "rate": "100.00",
+  "payment_unit": "Hour",
+  "flsa_status": "Nonexempt",
+  "version": "v1"
+}

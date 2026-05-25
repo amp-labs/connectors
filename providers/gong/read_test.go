@@ -114,6 +114,42 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Requesting the content field opts only that section into exposedFields",
+			Input: common.ReadParams{
+				ObjectName: "calls",
+				Fields:     connectors.Fields("id", "content"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.Body(`{
+					"filter":{},
+					"contentSelector":{
+						"context":"Extended",
+						"exposedFields":{
+							"parties":true,
+							"media":true,
+							"content":{
+								"structure":true,
+								"topics":true,
+								"trackers":true,
+								"trackerOccurrences":true,
+								"pointsOfInterest":true,
+								"brief":true,
+								"outline":true,
+								"highlights":true,
+								"callOutcome":true,
+								"keyPoints":true
+							}
+						}
+					}
+				}`),
+				Then: mockserver.Response(http.StatusOK, fakeServerResp),
+			}.Server(),
+			Comparator:   testroutines.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 2, NextPage: "", Done: true},
+			ExpectedErrs: nil,
+		},
+		{
 			Name:  "Successful read with 2 entries without cursor/next page",
 			Input: common.ReadParams{ObjectName: "calls", Fields: connectors.Fields("id")},
 			Server: mockserver.Conditional{
@@ -256,6 +292,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(
 		WithAuthenticatedClient(mockutils.NewClient()),
+		WithWorkspace("https://api.gong.io"), // full URL required; setBaseURL below overrides origin for tests
 	)
 	if err != nil {
 		return nil, err

@@ -4,10 +4,13 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
 )
+
+const defaultAPIBaseURL = "https://api.gong.io"
 
 const ApiVersion = "v2"
 
@@ -30,8 +33,19 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) {
 		},
 	}
 
-	// Read provider info
-	providerInfo, err := providers.ReadInfo(conn.Provider())
+	// Determine regional API base URL; default to api.gong.io for US tenants.
+	apiBaseURL := params.APIBaseURL
+	if apiBaseURL == "" {
+		apiBaseURL = defaultAPIBaseURL
+	}
+
+	// Read provider info with regional base URL substitution.
+	providerInfo, err := providers.ReadInfo(conn.Provider(), catalogreplacer.CustomCatalogVariable{
+		Plan: catalogreplacer.SubstitutionPlan{
+			From: "api_base_url_for_customer",
+			To:   apiBaseURL,
+		},
+	})
 	if err != nil {
 		return nil, err
 	}

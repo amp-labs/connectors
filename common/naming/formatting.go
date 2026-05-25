@@ -2,6 +2,7 @@ package naming
 
 import (
 	"strings"
+	"unicode"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -38,4 +39,23 @@ func SeparateUnderscoreWords(text string) string {
 
 func SeparateDotWords(text string) string {
 	return strings.ReplaceAll(text, ".", " ")
+}
+
+// SeparateCamelCaseWords converts camelCase or PascalCase into space-separated words
+// by inserting a space before each uppercase letter that follows a lowercase letter.
+// Acronyms (consecutive uppercase letters) are kept as a single word.
+func SeparateCamelCaseWords(text string) string {
+	var b strings.Builder //nolint:varnamelen
+
+	var prev rune
+	for i, r := range text {
+		if i > 0 && unicode.IsUpper(r) && unicode.IsLower(prev) {
+			b.WriteRune(' ')
+		}
+
+		b.WriteRune(r)
+		prev = r
+	}
+
+	return b.String()
 }

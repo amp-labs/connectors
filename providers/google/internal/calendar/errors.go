@@ -8,6 +8,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/amp-labs/connectors/common/interpreter"
+	"github.com/amp-labs/connectors/providers/google/internal/core"
 )
 
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
@@ -18,6 +19,10 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 		},
 	}...,
 )
+
+// jsonResponder mirrors what was previously passed inline to ErrorHandler.JSON; it is
+// now reused as the non-rate-limit fallback in interpretJSONError.
+var jsonResponder = interpreter.NewFaultyResponder(errorFormats, nil) //nolint:gochecknoglobals
 
 // ErrorDetails
 // nolint:tagliatelle
@@ -49,6 +54,14 @@ func (d ErrorDetails) CombineErr(base error) error {
 	}
 
 	return fmt.Errorf("%w: %v", base, message)
+}
+
+// interpretJSONError routes Calendar JSON error bodies through the shared Google
+// rate-limit detector. Calendar returns 403 with reason RATE_LIMIT_EXCEEDED for
+// per-user quota violations; without this hook the response maps to ErrForbidden
+// (unrecoverable) instead of ErrLimitExceeded (retryable).
+func (a *Adapter) interpretJSONError(res *http.Response, body []byte) error {
+	return core.InterpretJSONError(res, body, jsonResponder.HandleErrorResponse)
 }
 
 // Typical HTML google error message has Title with paragraph describing the problem.

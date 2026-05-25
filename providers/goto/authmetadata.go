@@ -21,12 +21,11 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 
 	c.accountKey = accountKey
 
-	catalogVars := map[string]string{
-		"accountKey": accountKey,
-	}
-
 	return &common.PostAuthInfo{
-		CatalogVars: &catalogVars,
+		CatalogVars: AuthMetadataVars{
+			AccountKey: accountKey,
+		}.AsMap(),
+		RawResponse: nil,
 	}, nil
 }
 
@@ -41,13 +40,13 @@ func (c *Connector) retrieveAccountKey(ctx context.Context) (string, error) {
 		return "", err
 	}
 
+	if _, ok := resp.Body(); !ok {
+		return "", common.ErrEmptyJSONHTTPResponse
+	}
+
 	data, err := common.UnmarshalJSON[map[string]any](resp)
 	if err != nil {
 		return "", common.ErrFailedToUnmarshalBody
-	}
-
-	if data == nil {
-		return "", common.ErrMissingExpectedValues
 	}
 
 	rawAccountKey, ok := (*data)["accountKey"]

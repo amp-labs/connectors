@@ -69,7 +69,7 @@ func (a *Adapter) parseSingleObjectMetadataResponse(
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
 		Fields:      make(map[string]common.FieldMetadata),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(naming.SeparateUnderscoreWords(objectName)),
+		DisplayName: naming.CapitalizeFirstLetterEveryWord(naming.SeparateCamelCaseWords(objectName)),
 	}
 
 	records, err := extractRecords(response, objectName)

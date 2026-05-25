@@ -1,0 +1,17 @@
+{
+  "data": [
+    {
+      "id": "person_a",
+      "type": "people",
+      "attributes": {
+        "email": "alpha@example.com",
+        "first_name": "Alpha",
+        "last_name": "User"
+      }
+    }
+  ],
+  "meta": {
+    "current_page": 0,
+    "page_count": 1
+  }
+}

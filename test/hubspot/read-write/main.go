@@ -8,7 +8,6 @@ import (
 
 	"github.com/amp-labs/connectors/internal/datautils"
 	connTest "github.com/amp-labs/connectors/test/hubspot"
-	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
 	"github.com/brianvoe/gofakeit/v6"
 )
@@ -27,9 +26,6 @@ func main() {
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
-
-	// Set up slog logging.
-	utils.SetupLogging()
 
 	// Get the Hubspot connector.
 	conn := connTest.GetHubspotConnector(ctx)

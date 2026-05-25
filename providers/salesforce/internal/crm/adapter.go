@@ -97,6 +97,13 @@ func (a Adapter) DeployMetadataZip(ctx context.Context, zipData []byte) (string,
 	return a.customAdapter.DeployMetadataZip(ctx, zipData)
 }
 
+func (a Adapter) DeployMetadataZipWithTests(
+	ctx context.Context, zipData []byte, testLevel metadata.TestLevel, runTests []string,
+) (string, error) {
+	// Delegated.
+	return a.customAdapter.DeployMetadataZipWithTests(ctx, zipData, testLevel, runTests)
+}
+
 func (a Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*metadata.DeployResult, error) {
 	// Delegated.
 	return a.customAdapter.CheckDeployStatus(ctx, deployID)

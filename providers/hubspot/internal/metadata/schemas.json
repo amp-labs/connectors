@@ -1,0 +1,1264 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "lists": {
+          "displayName": "Lists",
+          "description": "This object lives outside of Hubspot Objects API: /crm/v3/lists/search",
+          "responseKey": "data",
+          "fields": {
+            "additionalProperties": {
+              "displayName": "additionalProperties",
+              "valueType": "other"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "other"
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "other"
+            },
+            "filtersUpdatedAt": {
+              "displayName": "filtersUpdatedAt",
+              "valueType": "other"
+            },
+            "listId": {
+              "displayName": "listId",
+              "valueType": "other"
+            },
+            "listVersion": {
+              "displayName": "listVersion",
+              "valueType": "other"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "other"
+            },
+            "objectTypeId": {
+              "displayName": "objectTypeId",
+              "valueType": "other"
+            },
+            "processingStatus": {
+              "displayName": "processingStatus",
+              "valueType": "other"
+            },
+            "processingType": {
+              "displayName": "processingType",
+              "valueType": "other"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "other"
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "other"
+            }
+          }
+        },
+        "campaigns": {
+          "displayName": "Campaigns",
+          "description": "Object does not belong to CRM: /marketing/campaigns",
+          "responseKey": "results",
+          "fields": {
+            "hs_name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "hs_start_date": {
+              "displayName": "Start Date",
+              "valueType": "date",
+              "providerType": "Date (YYYY-MM-DD)"
+            },
+            "hs_end_date": {
+              "displayName": "End Date",
+              "valueType": "date",
+              "providerType": "Date (YYYY-MM-DD)"
+            },
+            "hs_notes": {
+              "displayName": "Notes",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "hs_audience": {
+              "displayName": "Audience",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "hs_currency_code": {
+              "displayName": "Currency Code",
+              "valueType": "string",
+              "providerType": "ISO currency code"
+            },
+            "hs_campaign_status": {
+              "displayName": "Campaign Status",
+              "valueType": "singleSelect",
+              "providerType": "Enumeration",
+              "values": [
+                {
+                  "value": "planned",
+                  "displayValue": "planned"
+                },
+                {
+                  "value": "in_progress",
+                  "displayValue": "in_progress"
+                },
+                {
+                  "value": "active",
+                  "displayValue": "active"
+                },
+                {
+                  "value": "paused",
+                  "displayValue": "paused"
+                },
+                {
+                  "value": "completed",
+                  "displayValue": "completed"
+                }
+              ]
+            },
+            "hs_utm": {
+              "displayName": "UTM",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "hs_owner": {
+              "displayName": "Owner",
+              "valueType": "string",
+              "providerType": "User ID"
+            },
+            "hs_color_hex": {
+              "displayName": "Color Hex",
+              "valueType": "string",
+              "providerType": "Hex code"
+            },
+            "hs_created_by_user_id": {
+              "displayName": "Creator User ID",
+              "valueType": "string",
+              "providerType": "User ID"
+            },
+            "hs_object_id": {
+              "displayName": "Object ID",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "hs_budget_items_sum_amount": {
+              "displayName": "The sum of all budget items",
+              "valueType": "string",
+              "providerType": "Monetary value"
+            },
+            "hs_spend_items_sum_amount": {
+              "displayName": "The sum of all spend items",
+              "valueType": "string",
+              "providerType": "Monetary value"
+            }
+          }
+        },
+        "marketing/emails": {
+          "displayName": "Marketing Emails",
+          "description": "/marketing/emails/2026-03",
+          "responseKey": "results",
+          "fields": {
+            "isAb": {
+              "displayName": "isAb",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "activeDomain": {
+              "displayName": "activeDomain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allEmailCampaignIds": {
+              "displayName": "allEmailCampaignIds",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "businessUnitId": {
+              "displayName": "businessUnitId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "campaign": {
+              "displayName": "campaign",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "campaignName": {
+              "displayName": "campaignName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "campaignUtm": {
+              "displayName": "campaignUtm",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "clonedFrom": {
+              "displayName": "clonedFrom",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "content": {
+              "displayName": "content",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedAt": {
+              "displayName": "deletedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "emailCampaignGroupId": {
+              "displayName": "emailCampaignGroupId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailTemplateMode": {
+              "displayName": "emailTemplateMode",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "DESIGN_MANAGER",
+                  "displayValue": "DESIGN_MANAGER"
+                },
+                {
+                  "value": "DRAG_AND_DROP",
+                  "displayValue": "DRAG_AND_DROP"
+                }
+              ]
+            },
+            "feedbackSurveyId": {
+              "displayName": "feedbackSurveyId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "int",
+              "providerType": "integer<int64>"
+            },
+            "folderIdV2": {
+              "displayName": "folderIdV2",
+              "valueType": "int",
+              "providerType": "integer<int64>"
+            },
+            "from": {
+              "displayName": "from",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isPublished": {
+              "displayName": "isPublished",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isTransactional": {
+              "displayName": "isTransactional",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "jitterSendTime": {
+              "displayName": "jitterSendTime",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "language": {
+              "displayName": "language",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "previewKey": {
+              "displayName": "previewKey",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primaryEmailCampaignId": {
+              "displayName": "primaryEmailCampaignId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "publishDate": {
+              "displayName": "publishDate",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "publishedAt": {
+              "displayName": "publishedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "publishedByEmail": {
+              "displayName": "publishedByEmail",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "publishedById": {
+              "displayName": "publishedById",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "publishedByName": {
+              "displayName": "publishedByName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "rssData": {
+              "displayName": "rssData",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sendOnPublish": {
+              "displayName": "sendOnPublish",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "state": {
+              "displayName": "state",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "AGENT_GENERATED",
+                  "displayValue": "AGENT_GENERATED"
+                },
+                {
+                  "value": "AUTOMATED",
+                  "displayValue": "AUTOMATED"
+                },
+                {
+                  "value": "AUTOMATED_AB",
+                  "displayValue": "AUTOMATED_AB"
+                },
+                {
+                  "value": "AUTOMATED_AB_VARIANT",
+                  "displayValue": "AUTOMATED_AB_VARIANT"
+                },
+                {
+                  "value": "AUTOMATED_DRAFT",
+                  "displayValue": "AUTOMATED_DRAFT"
+                },
+                {
+                  "value": "AUTOMATED_DRAFT_AB",
+                  "displayValue": "AUTOMATED_DRAFT_AB"
+                },
+                {
+                  "value": "AUTOMATED_DRAFT_ABVARIANT",
+                  "displayValue": "AUTOMATED_DRAFT_ABVARIANT"
+                },
+                {
+                  "value": "AUTOMATED_FOR_FORM",
+                  "displayValue": "AUTOMATED_FOR_FORM"
+                },
+                {
+                  "value": "AUTOMATED_FOR_FORM_BUFFER",
+                  "displayValue": "AUTOMATED_FOR_FORM_BUFFER"
+                },
+                {
+                  "value": "AUTOMATED_FOR_FORM_DRAFT",
+                  "displayValue": "AUTOMATED_FOR_FORM_DRAFT"
+                },
+                {
+                  "value": "AUTOMATED_FOR_FORM_LEGACY",
+                  "displayValue": "AUTOMATED_FOR_FORM_LEGACY"
+                },
+                {
+                  "value": "AUTOMATED_LOSER_ABVARIANT",
+                  "displayValue": "AUTOMATED_LOSER_ABVARIANT"
+                },
+                {
+                  "value": "AUTOMATED_SENDING",
+                  "displayValue": "AUTOMATED_SENDING"
+                },
+                {
+                  "value": "BLOG_EMAIL_DRAFT",
+                  "displayValue": "BLOG_EMAIL_DRAFT"
+                },
+                {
+                  "value": "BLOG_EMAIL_PUBLISHED",
+                  "displayValue": "BLOG_EMAIL_PUBLISHED"
+                },
+                {
+                  "value": "DRAFT",
+                  "displayValue": "DRAFT"
+                },
+                {
+                  "value": "DRAFT_AB",
+                  "displayValue": "DRAFT_AB"
+                },
+                {
+                  "value": "DRAFT_AB_VARIANT",
+                  "displayValue": "DRAFT_AB_VARIANT"
+                },
+                {
+                  "value": "ERROR",
+                  "displayValue": "ERROR"
+                },
+                {
+                  "value": "LOSER_AB_VARIANT",
+                  "displayValue": "LOSER_AB_VARIANT"
+                },
+                {
+                  "value": "PAGE_STUB",
+                  "displayValue": "PAGE_STUB"
+                },
+                {
+                  "value": "PRE_PROCESSING",
+                  "displayValue": "PRE_PROCESSING"
+                },
+                {
+                  "value": "PROCESSING",
+                  "displayValue": "PROCESSING"
+                },
+                {
+                  "value": "PUBLISHED",
+                  "displayValue": "PUBLISHED"
+                },
+                {
+                  "value": "PUBLISHED_AB",
+                  "displayValue": "PUBLISHED_AB"
+                },
+                {
+                  "value": "PUBLISHED_AB_VARIANT",
+                  "displayValue": "PUBLISHED_AB_VARIANT"
+                },
+                {
+                  "value": "PUBLISHED_OR_SCHEDULED",
+                  "displayValue": "PUBLISHED_OR_SCHEDULED"
+                },
+                {
+                  "value": "RSS_TO_EMAIL_DRAFT",
+                  "displayValue": "RSS_TO_EMAIL_DRAFT"
+                },
+                {
+                  "value": "RSS_TO_EMAIL_PUBLISHED",
+                  "displayValue": "RSS_TO_EMAIL_PUBLISHED"
+                },
+                {
+                  "value": "SCHEDULED",
+                  "displayValue": "SCHEDULED"
+                },
+                {
+                  "value": "SCHEDULED_AB",
+                  "displayValue": "SCHEDULED_AB"
+                },
+                {
+                  "value": "SCHEDULED_OR_PUBLISHED",
+                  "displayValue": "SCHEDULED_OR_PUBLISHED"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "AB_EMAIL",
+                  "displayValue": "AB_EMAIL"
+                },
+                {
+                  "value": "AUTOMATED_AB_EMAIL",
+                  "displayValue": "AUTOMATED_AB_EMAIL"
+                },
+                {
+                  "value": "AUTOMATED_EMAIL",
+                  "displayValue": "AUTOMATED_EMAIL"
+                },
+                {
+                  "value": "BATCH_EMAIL",
+                  "displayValue": "BATCH_EMAIL"
+                },
+                {
+                  "value": "BLOG_EMAIL",
+                  "displayValue": "BLOG_EMAIL"
+                },
+                {
+                  "value": "BLOG_EMAIL_CHILD",
+                  "displayValue": "BLOG_EMAIL_CHILD"
+                },
+                {
+                  "value": "FEEDBACK_CES_EMAIL",
+                  "displayValue": "FEEDBACK_CES_EMAIL"
+                },
+                {
+                  "value": "FEEDBACK_CUSTOM_EMAIL",
+                  "displayValue": "FEEDBACK_CUSTOM_EMAIL"
+                },
+                {
+                  "value": "FEEDBACK_CUSTOM_SURVEY_EMAIL",
+                  "displayValue": "FEEDBACK_CUSTOM_SURVEY_EMAIL"
+                },
+                {
+                  "value": "FEEDBACK_NPS_EMAIL",
+                  "displayValue": "FEEDBACK_NPS_EMAIL"
+                },
+                {
+                  "value": "FOLLOWUP_EMAIL",
+                  "displayValue": "FOLLOWUP_EMAIL"
+                },
+                {
+                  "value": "LEADFLOW_EMAIL",
+                  "displayValue": "LEADFLOW_EMAIL"
+                },
+                {
+                  "value": "LOCALTIME_EMAIL",
+                  "displayValue": "LOCALTIME_EMAIL"
+                },
+                {
+                  "value": "MANAGE_PREFERENCES_EMAIL",
+                  "displayValue": "MANAGE_PREFERENCES_EMAIL"
+                },
+                {
+                  "value": "MARKETING_SINGLE_SEND_API",
+                  "displayValue": "MARKETING_SINGLE_SEND_API"
+                },
+                {
+                  "value": "MEMBERSHIP_EMAIL_VERIFICATION_EMAIL",
+                  "displayValue": "MEMBERSHIP_EMAIL_VERIFICATION_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_FOLLOW_UP_EMAIL",
+                  "displayValue": "MEMBERSHIP_FOLLOW_UP_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_OTP_LOGIN_EMAIL",
+                  "displayValue": "MEMBERSHIP_OTP_LOGIN_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_PASSWORD_RESET_EMAIL",
+                  "displayValue": "MEMBERSHIP_PASSWORD_RESET_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_PASSWORD_SAVED_EMAIL",
+                  "displayValue": "MEMBERSHIP_PASSWORD_SAVED_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_PASSWORDLESS_AUTH_EMAIL",
+                  "displayValue": "MEMBERSHIP_PASSWORDLESS_AUTH_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_REGISTRATION_EMAIL",
+                  "displayValue": "MEMBERSHIP_REGISTRATION_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_REGISTRATION_FOLLOW_UP_EMAIL",
+                  "displayValue": "MEMBERSHIP_REGISTRATION_FOLLOW_UP_EMAIL"
+                },
+                {
+                  "value": "MEMBERSHIP_VERIFICATION_EMAIL",
+                  "displayValue": "MEMBERSHIP_VERIFICATION_EMAIL"
+                },
+                {
+                  "value": "OPTIN_EMAIL",
+                  "displayValue": "OPTIN_EMAIL"
+                },
+                {
+                  "value": "OPTIN_FOLLOWUP_EMAIL",
+                  "displayValue": "OPTIN_FOLLOWUP_EMAIL"
+                },
+                {
+                  "value": "RESUBSCRIBE_EMAIL",
+                  "displayValue": "RESUBSCRIBE_EMAIL"
+                },
+                {
+                  "value": "RSS_EMAIL",
+                  "displayValue": "RSS_EMAIL"
+                },
+                {
+                  "value": "RSS_EMAIL_CHILD",
+                  "displayValue": "RSS_EMAIL_CHILD"
+                },
+                {
+                  "value": "SINGLE_SEND_API",
+                  "displayValue": "SINGLE_SEND_API"
+                },
+                {
+                  "value": "SMTP_TOKEN",
+                  "displayValue": "SMTP_TOKEN"
+                },
+                {
+                  "value": "TICKET_EMAIL",
+                  "displayValue": "TICKET_EMAIL"
+                }
+              ]
+            },
+            "stats": {
+              "displayName": "stats",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "subcategory": {
+              "displayName": "subcategory",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subscriptionDetails": {
+              "displayName": "subscriptionDetails",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "teamsWithAccess": {
+              "displayName": "teamsWithAccess",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "testing": {
+              "displayName": "testing",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "to": {
+              "displayName": "to",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "unpublishedAt": {
+              "displayName": "unpublishedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "updatedById": {
+              "displayName": "updatedById",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "usersWithAccess": {
+              "displayName": "usersWithAccess",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "webversion": {
+              "displayName": "webversion",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "workflowNames": {
+              "displayName": "workflowNames",
+              "valueType": "other",
+              "providerType": "string[]"
+            }
+          }
+        },
+        "forms": {
+          "displayName": "Marketing Forms",
+          "description": "/marketing/forms/2026-09-beta",
+          "responseKey": "results",
+          "fields": {
+            "formType": {
+              "displayName": "formType",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "hubspot",
+                  "displayValue": "hubspot"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "fieldGroups": {
+              "displayName": "fieldGroups",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "configuration": {
+              "displayName": "configuration",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "displayOptions": {
+              "displayName": "displayOptions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "legalConsentOptions": {
+              "displayName": "legalConsentOptions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "archivedAt": {
+              "displayName": "archivedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            }
+          }
+        },
+        "marketing-events": {
+          "displayName": "Marketing Events",
+          "description": "/marketing/marketing-events/2026-03",
+          "responseKey": "results",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "customProperties": {
+              "displayName": "customProperties",
+              "valueType": "other",
+              "providerType": "object[]"
+            },
+            "eventName": {
+              "displayName": "eventName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "objectId": {
+              "displayName": "objectId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "appInfo": {
+              "displayName": "appInfo",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "attendees": {
+              "displayName": "attendees",
+              "valueType": "int",
+              "providerType": "integer<int32>"
+            },
+            "cancellations": {
+              "displayName": "cancellations",
+              "valueType": "int",
+              "providerType": "integer<int32>"
+            },
+            "endDateTime": {
+              "displayName": "endDateTime",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "eventCancelled": {
+              "displayName": "eventCancelled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "eventCompleted": {
+              "displayName": "eventCompleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "eventDescription": {
+              "displayName": "eventDescription",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventOrganizer": {
+              "displayName": "eventOrganizer",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventStatus": {
+              "displayName": "eventStatus",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventStatusV2": {
+              "displayName": "eventStatusV2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventType": {
+              "displayName": "eventType",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "eventUrl": {
+              "displayName": "eventUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "externalEventId": {
+              "displayName": "externalEventId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "noShows": {
+              "displayName": "noShows",
+              "valueType": "int",
+              "providerType": "integer<int32>"
+            },
+            "registrants": {
+              "displayName": "registrants",
+              "valueType": "int",
+              "providerType": "integer<int32>"
+            },
+            "startDateTime": {
+              "displayName": "startDateTime",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            }
+          }
+        },
+        "meeting-links": {
+          "displayName": "Meeting Links",
+          "description": "/scheduler/2026-03/meetings/meeting-links",
+          "responseKey": "results",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "defaultLink": {
+              "displayName": "defaultLink",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "link": {
+              "displayName": "link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "organizerUserId": {
+              "displayName": "organizerUserId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "slug": {
+              "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "GROUP_CALENDAR",
+                  "displayValue": "GROUP_CALENDAR"
+                },
+                {
+                  "value": "PERSONAL_LINK",
+                  "displayValue": "PERSONAL_LINK"
+                },
+                {
+                  "value": "ROUND_ROBIN_CALENDAR",
+                  "displayValue": "ROUND_ROBIN_CALENDAR"
+                }
+              ]
+            },
+            "userIdsOfLinkMembers": {
+              "displayName": "userIdsOfLinkMembers",
+              "valueType": "other",
+              "providerType": "string[]"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            }
+          }
+        },
+        "communication-preferences": {
+          "displayName": "Definitions of communication preferences",
+          "description": "/communication-preferences/2026-03/definitions",
+          "responseKey": "results",
+          "fields": {
+            "businessUnitId": {
+              "displayName": "businessUnitId",
+              "valueType": "int",
+              "providerType": "int"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "int"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "purpose": {
+              "displayName": "purpose",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "communicationMethod": {
+              "displayName": "communicationMethod",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isActive": {
+              "displayName": "isActive",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isDefault": {
+              "displayName": "isDefault",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isInternal": {
+              "displayName": "isInternal",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "custom-channels": {
+          "displayName": "Custom Channels",
+          "description": "/conversations/custom-channels/2026-03",
+          "responseKey": "results",
+          "fields": {
+            "capabilities": {
+              "displayName": "capabilities",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "channelAccountConnectionRedirectUrl": {
+              "displayName": "channelAccountConnectionRedirectUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "channelDescription": {
+              "displayName": "channelDescription",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "channelLogoUrl": {
+              "displayName": "channelLogoUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "webhookUrl": {
+              "displayName": "webhookUrl",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "channel-accounts": {
+          "displayName": "Channel Accounts",
+          "description": "/conversations/conversations/2026-09-beta/channel-accounts",
+          "responseKey": "results",
+          "fields": {
+            "active": {
+              "displayName": "active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "authorized": {
+              "displayName": "authorized",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "channelId": {
+              "displayName": "channelId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inboxId": {
+              "displayName": "inboxId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "archivedAt": {
+              "displayName": "archivedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "deliveryIdentifier": {
+              "displayName": "deliveryIdentifier",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "channels": {
+          "displayName": "Channels",
+          "description": "/conversations/conversations/2026-09-beta/channels",
+          "responseKey": "results",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "inboxes": {
+          "displayName": "Inboxes",
+          "description": "/conversations/conversations/2026-09-beta/inboxes",
+          "responseKey": "results",
+          "fields": {
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "HELP_DESK",
+                  "displayValue": "HELP_DESK"
+                },
+                {
+                  "value": "INBOX",
+                  "displayValue": "INBOX"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "archivedAt": {
+              "displayName": "archivedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            }
+          }
+        },
+        "threads": {
+          "displayName": "Threads",
+          "description": "/conversations/conversations/2026-09-beta/threads",
+          "responseKey": "results",
+          "fields": {
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "associatedContactId": {
+              "displayName": "associatedContactId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inboxId": {
+              "displayName": "inboxId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "originalChannelAccountId": {
+              "displayName": "originalChannelAccountId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "originalChannelId": {
+              "displayName": "originalChannelId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spam": {
+              "displayName": "spam",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "enum<string>",
+              "values": [
+                {
+                  "value": "OPEN",
+                  "displayValue": "OPEN"
+                },
+                {
+                  "value": "CLOSED",
+                  "displayValue": "CLOSED"
+                }
+              ]
+            },
+            "assignedTo": {
+              "displayName": "assignedTo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "closedAt": {
+              "displayName": "closedAt",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "latestMessageReceivedTimestamp": {
+              "displayName": "latestMessageReceivedTimestamp",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "latestMessageSentTimestamp": {
+              "displayName": "latestMessageSentTimestamp",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "latestMessageTimestamp": {
+              "displayName": "latestMessageTimestamp",
+              "valueType": "datetime",
+              "providerType": "string<date-time>"
+            },
+            "threadAssociations": {
+              "displayName": "threadAssociations",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}
