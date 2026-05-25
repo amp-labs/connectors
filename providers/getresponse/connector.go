@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/getresponse/metadata"
 )
 
 type Connector struct {
@@ -32,11 +31,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		Connector: base,
 	}
 
-	// static metadata for ListObjectMetadata
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
-		connector.ProviderContext.Module(),
-		metadata.Schemas,
-	)
+	connector.SchemaProvider = schema.NewDelegateSchemaProvider(connector.listObjectMetadata)
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
