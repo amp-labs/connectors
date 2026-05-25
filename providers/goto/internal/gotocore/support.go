@@ -35,6 +35,18 @@ type objectConfig struct {
 	// and return their records under different response keys, so request
 	// building and pagination depend on this value.
 	service objectService
+
+	// readIDField is the JSON key that uniquely identifies a record in read
+	// responses for this object.
+	readIDField string
+}
+
+func (c objectConfig) readIDFieldOrDefault() string {
+	if c.readIDField == "" {
+		return "id"
+	}
+
+	return c.readIDField
 }
 
 const accountKeyPlaceholder = "{accountKey}"
@@ -42,21 +54,21 @@ const accountKeyPlaceholder = "{accountKey}"
 // objectRegistry maps object names to their endpoint metadata.
 var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglobals
 	// GoToMeeting API
-	"historicalMeetings": {path: "G2M/rest/historicalMeetings", service: serviceMeetings},
-	"upcomingMeetings":   {path: "G2M/rest/upcomingMeetings", service: serviceMeetings},
+	"historicalMeetings": {path: "G2M/rest/historicalMeetings", service: serviceMeetings, readIDField: "meetingId"},
+	"upcomingMeetings":   {path: "G2M/rest/upcomingMeetings", service: serviceMeetings, readIDField: "meetingId"},
 
 	// GoToWebinar API
-	"webinars": {path: "G2W/rest/v2/organizers/{accountKey}/webinars", service: serviceWebinar},
+	"webinars": {path: "G2W/rest/v2/organizers/{accountKey}/webinars", service: serviceWebinar, readIDField: "webinarId"},
 	// For webhooks and userSubscriptions, the productType query parameter is required
 	// and must be set to "g2w" to retrieve webinar webhooks.
 	// Ref: https://developer.goto.com/GoToWebinarV2#tag/Webhooks/operation/getWebhooks
-	"webhooks":          {path: "G2W/rest/v2/webhooks?productType=g2w", service: serviceWebinar},
-	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar},
+	"webhooks":          {path: "G2W/rest/v2/webhooks?productType=g2w", service: serviceWebinar, readIDField: "webhookKey"},                   //nolint:lll
+	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar, readIDField: "userSubscriptionKey"}, //nolint:lll
 
 	// GoToAssist Corporate API
-	"representatives": {path: "G2AC/rest/v1/representatives/pages", service: serviceCorporate},
-	"teams":           {path: "G2AC/rest/v1/teams/pages", service: serviceCorporate},
-	"portals":         {path: "G2AC/rest/v1/portals/pages", service: serviceCorporate},
+	"representatives": {path: "G2AC/rest/v1/representatives/pages", service: serviceCorporate, readIDField: "id"},
+	"teams":           {path: "G2AC/rest/v1/teams/pages", service: serviceCorporate, readIDField: "teamKey"},
+	"portals":         {path: "G2AC/rest/v1/portals/pages", service: serviceCorporate, readIDField: "portalKey"},
 
 	// GoToAssist Remote Support API
 	// We use "sessions" as the object name for extended sessions because this is
@@ -64,17 +76,17 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	// endpoint requires us to specify the type of sessions and only returns that
 	// type, while the extended sessions endpoint returns all types of sessions
 	// without requiring us to specify the type.
-	"sessions": {path: "G2A/rest/v1/extendedsessions", service: serviceRemoteSupport},
+	"sessions": {path: "G2A/rest/v1/extendedsessions", service: serviceRemoteSupport, readIDField: "sessionId"},
 
 	// Admin API
-	"attributes":   {path: "admin/rest/v1/accounts/{accountKey}/attributes", service: serviceAdmin},
-	"licenses":     {path: "admin/rest/v1/accounts/{accountKey}/licenses", service: serviceAdmin},
-	"rolesets":     {path: "admin/rest/v1/accounts/{accountKey}/rolesets", service: serviceAdmin},
-	"templates":    {path: "admin/rest/v1/accounts/{accountKey}/templates", service: serviceAdmin},
-	"admin/users":  {path: "admin/rest/v1/accounts/{accountKey}/users", service: serviceAdmin},
-	"admin/groups": {path: "admin/rest/v1/accounts/{accountKey}/groups", service: serviceAdmin},
+	"attributes":   {path: "admin/rest/v1/accounts/{accountKey}/attributes", service: serviceAdmin, readIDField: "key"},
+	"licenses":     {path: "admin/rest/v1/accounts/{accountKey}/licenses", service: serviceAdmin, readIDField: "key"},
+	"rolesets":     {path: "admin/rest/v1/accounts/{accountKey}/rolesets", service: serviceAdmin, readIDField: "id"},
+	"templates":    {path: "admin/rest/v1/accounts/{accountKey}/templates", service: serviceAdmin, readIDField: "key"},
+	"admin/users":  {path: "admin/rest/v1/accounts/{accountKey}/users", service: serviceAdmin, readIDField: "key"},
+	"admin/groups": {path: "admin/rest/v1/accounts/{accountKey}/groups", service: serviceAdmin, readIDField: "key"},
 
 	// SCIM API
-	"users":  {path: "identity/v1/Users", service: serviceSCIM},
-	"groups": {path: "identity/v1/Groups", service: serviceSCIM},
+	"users":  {path: "identity/v1/Users", service: serviceSCIM, readIDField: "id"},
+	"groups": {path: "identity/v1/Groups", service: serviceSCIM, readIDField: "id"},
 }

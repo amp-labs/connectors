@@ -11,48 +11,53 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-const (
-	queryParamSize     = "size"
-	queryParamPageSize = "pageSize"
-	sampleSize         = "1"
-
-	// metadataSampleWindowDays is the size in days of the time-range filter
-	// applied when sampling records for schema. Wide enough to
-	// catch at least one record on endpoints that mandate a
-	// time-range filter.
-	metadataSampleWindowDays = 400
-)
-
 func (a *Adapter) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := a.buildObjectURL(objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	applyMetadataTimeFilter(url, objectName)
+	if spec, ok := objectRegistry[objectName]; ok && spec.service == serviceAdmin {
+		url.WithQueryParam(queryParamPageSize, sampleSize)
+	} else {
+		url.WithQueryParam(queryParamSize, sampleSize)
+	}
+
+	applyTimeFilter(url, objectName, time.Time{}, time.Time{})
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }
 
-// applyMetadataTimeFilter adds the mandatory time-range query params for
-// endpoints that require them. The window is wide enough (past 120 days,
-// plus 120 days into the future for endpoints that accept upcoming records)
-// to maximize the chance of sampling at least one record for schema
-// inference.
-func applyMetadataTimeFilter(url *urlbuilder.URL, objectName string) {
-	setWindow := func(startParam, endParam string, pastDays, futureDays int) {
-		now := time.Now().UTC()
-		url.WithQueryParam(startParam, now.AddDate(0, 0, -pastDays).Format(time.RFC3339))
-		url.WithQueryParam(endParam, now.AddDate(0, 0, futureDays).Format(time.RFC3339))
+// applyTimeFilter adds the mandatory time-range query params for endpoints
+// that require them. Caller-supplied since/until win when non-zero;
+// otherwise a default window (past 120 days, plus 120 days into the future
+// for endpoints that accept upcoming records) is used so that metadata
+// sampling and unbounded reads still hit at least one record.
+func applyTimeFilter(url *urlbuilder.URL, objectName string, since, until time.Time) {
+	now := time.Now().UTC()
+	pick := func(t, fallback time.Time) time.Time {
+		if t.IsZero() {
+			return fallback
+		}
+
+		return t
 	}
+
+	setWindow := func(startParam, endParam string, defStart, defEnd time.Time) {
+		url.WithQueryParam(startParam, pick(since, defStart).Format(time.RFC3339))
+		url.WithQueryParam(endParam, pick(until, defEnd).Format(time.RFC3339))
+	}
+
+	defaultPast := now.AddDate(0, 0, -metadataSampleWindowDays)
+	defaultFuture := now.AddDate(0, 0, metadataSampleWindowDays)
 
 	switch objectName {
 	case "historicalMeetings":
-		setWindow("startDate", "endDate", metadataSampleWindowDays, 0)
+		setWindow("startDate", "endDate", defaultPast, now)
 	case "webinars":
-		setWindow("fromTime", "toTime", metadataSampleWindowDays, metadataSampleWindowDays)
+		setWindow("fromTime", "toTime", defaultPast, defaultFuture)
 	case "sessions":
-		setWindow("fromTime", "toTime", metadataSampleWindowDays, 0)
+		setWindow("fromTime", "toTime", defaultPast, now)
 	}
 }
 
