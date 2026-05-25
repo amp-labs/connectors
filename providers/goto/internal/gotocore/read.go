@@ -14,8 +14,8 @@ import (
 
 func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	cfg, ok := objectRegistry[params.ObjectName]
-	if !ok {
-		return nil, fmt.Errorf("%w: object %s is not registered for read",
+	if !ok || !cfg.readable {
+		return nil, fmt.Errorf("%w: object %s does not support read",
 			common.ErrOperationNotSupportedForObject, params.ObjectName)
 	}
 
@@ -93,8 +93,8 @@ func (a *Adapter) parseReadResponse(
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	cfg, ok := objectRegistry[params.ObjectName]
-	if !ok {
-		return nil, fmt.Errorf("%w: object %s is not registered for read",
+	if !ok || !cfg.readable {
+		return nil, fmt.Errorf("%w: object %s does not support read",
 			common.ErrOperationNotSupportedForObject, params.ObjectName)
 	}
 
@@ -158,7 +158,7 @@ func readNodeArray(node *ajson.Node, jsonPath string, nestedPath ...string) ([]m
 // `page` envelope (number/totalPages).
 func nextPageExtractor(service objectService, objectName string, req *http.Request) common.NextPageFunc {
 	switch service { //nolint:exhaustive // page envelope is the default.
-	case serviceSCIM, serviceRemoteSupport:
+	case serviceSCIM, serviceRemoteSupport, serviceMeetings:
 		return func(*ajson.Node) (string, error) { return "", nil }
 	case serviceAdmin:
 		return adminNextPage

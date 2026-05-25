@@ -128,7 +128,7 @@ func (a *Adapter) parseWriteResponse(
 	if params.RecordId != "" {
 		recordID = params.RecordId
 	} else if recordID == "" {
-		recordID = extractWriteRecordID(data)
+		recordID = extractWriteRecordID(data, cfg.writeIDFieldOrDefault())
 	}
 
 	return &common.WriteResult{
@@ -187,6 +187,8 @@ func extractGenericWriteRecord(body *ajson.Node) (map[string]any, string, error)
 			return nil, "", fmt.Errorf("empty array in write response: %w", err)
 		}
 
+		// for the objects that returns an arry
+		// It only returns a single record, so we take the first element of the array as the record node.
 		node = arr[0]
 	}
 
@@ -198,8 +200,8 @@ func extractGenericWriteRecord(body *ajson.Node) (map[string]any, string, error)
 	return data, "", nil
 }
 
-func extractWriteRecordID(data map[string]any) string {
-	switch v := data["id"].(type) {
+func extractWriteRecordID(data map[string]any, writeIDField string) string {
+	switch v := data[writeIDField].(type) {
 	case string:
 		return v
 	case float64:
