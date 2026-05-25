@@ -187,7 +187,7 @@ func extractGenericWriteRecord(body *ajson.Node) (map[string]any, string, error)
 			return nil, "", fmt.Errorf("empty array in write response: %w", err)
 		}
 
-		// for the objects that returns an arry
+		// for the objects that returns an array
 		// It only returns a single record, so we take the first element of the array as the record node.
 		node = arr[0]
 	}
