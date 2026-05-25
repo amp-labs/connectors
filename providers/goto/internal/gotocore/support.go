@@ -62,8 +62,8 @@ var objectRegistry = datautils.Map[string, objectConfig]{ //nolint:gochecknoglob
 	// For webhooks and userSubscriptions, the productType query parameter is required
 	// and must be set to "g2w" to retrieve webinar webhooks.
 	// Ref: https://developer.goto.com/GoToWebinarV2#tag/Webhooks/operation/getWebhooks
-	"webhooks":          {path: "G2W/rest/v2/webhooks?productType=g2w", service: serviceWebinar, readIDField: "webhookKey"},
-	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar, readIDField: "userSubscriptionKey"},
+	"webhooks":          {path: "G2W/rest/v2/webhooks?productType=g2w", service: serviceWebinar, readIDField: "webhookKey"},                   //nolint:lll
+	"userSubscriptions": {path: "G2W/rest/v2/userSubscriptions?productType=g2w", service: serviceWebinar, readIDField: "userSubscriptionKey"}, //nolint:lll
 
 	// GoToAssist Corporate API
 	"representatives": {path: "G2AC/rest/v1/representatives/pages", service: serviceCorporate, readIDField: "id"},
