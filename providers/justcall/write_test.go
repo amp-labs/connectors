@@ -220,7 +220,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}

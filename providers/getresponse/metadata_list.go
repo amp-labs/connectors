@@ -2,6 +2,7 @@ package getresponse
 
 import (
 	"context"
+	"slices"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -48,11 +49,5 @@ func (c *Connector) listObjectMetadata(
 }
 
 func objectNamesIncludeCustomFields(objectNames []string) bool {
-	for _, objectName := range objectNames {
-		if objectsWithCustomFields.Has(objectName) {
-			return true
-		}
-	}
-
-	return false
+	return slices.ContainsFunc(objectNames, objectsWithCustomFields.Has)
 }

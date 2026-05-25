@@ -115,7 +115,7 @@ func TestAdsListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestAdsConnector(tt.Server.URL)
+				return constructTestAdsConnector(tt.Server)
 			})
 		})
 	}

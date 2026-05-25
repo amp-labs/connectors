@@ -122,7 +122,7 @@ func TestErrorHandler(t *testing.T) { //nolint:funlen
 				t.Fatalf("test server failed to create request (%v)", err)
 			}
 
-			res, err := http.DefaultClient.Do(req)
+			res, err := tt.server.Client().Do(req)
 			if err != nil {
 				t.Fatalf("test server failed to respond (%v)", err)
 			}

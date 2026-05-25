@@ -67,7 +67,7 @@ func TestAdsDelete(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.DeleteConnector, error) {
-				return constructTestAdsConnector(tt.Server.URL)
+				return constructTestAdsConnector(tt.Server)
 			})
 		})
 	}
@@ -101,7 +101,7 @@ func TestPlatformDelete(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.DeleteConnector, error) {
-				return constructTestPlatformConnector(tt.Server.URL)
+				return constructTestPlatformConnector(tt.Server)
 			})
 		})
 	}

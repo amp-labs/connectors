@@ -197,7 +197,7 @@ func TestAdsRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestAdsConnector(tt.Server.URL)
+				return constructTestAdsConnector(tt.Server)
 			})
 		})
 	}

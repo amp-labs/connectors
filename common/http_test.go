@@ -618,9 +618,7 @@ func TestHTTPClient_Get_Success(t *testing.T) {
 
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -646,9 +644,7 @@ func TestHTTPClient_Get_WithBaseURL(t *testing.T) {
 	client := &HTTPClient{
 		Base: server.URL,
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -670,9 +666,7 @@ func TestHTTPClient_Get_ErrorResponse(t *testing.T) {
 
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -694,9 +688,7 @@ func TestHTTPClient_Get_CustomErrorHandler(t *testing.T) {
 	customErr := errors.New("custom error")
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 		ErrorHandler: func(rsp *http.Response, body []byte) error {
 			return customErr
@@ -728,9 +720,7 @@ func TestHTTPClient_Post_Success(t *testing.T) {
 
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -759,9 +749,7 @@ func TestHTTPClient_Post_URLEncoded(t *testing.T) {
 
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -795,9 +783,7 @@ func TestHTTPClient_Patch_Success(t *testing.T) {
 
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -830,9 +816,7 @@ func TestHTTPClient_Put_Success(t *testing.T) {
 
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -855,9 +839,7 @@ func TestHTTPClient_Delete_Success(t *testing.T) {
 
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -880,9 +862,7 @@ func TestHTTPClient_CustomResponseHandler(t *testing.T) {
 	responseHandlerCalled := false
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 		ResponseHandler: func(rsp *http.Response) (*http.Response, error) {
 			responseHandlerCalled = true
@@ -912,9 +892,7 @@ func TestHTTPClient_CustomShouldHandleError(t *testing.T) {
 	shouldHandleErrorCalled := false
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 		ShouldHandleError: func(response *http.Response) bool {
 			shouldHandleErrorCalled = true
@@ -1452,9 +1430,7 @@ func TestHTTPClient_MethodsWithContext(t *testing.T) {
 
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -1489,9 +1465,7 @@ func TestHTTPClient_WithEmptyResponseHandler(t *testing.T) {
 
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 		ResponseHandler: nil, // Explicitly nil
 	}
@@ -1514,9 +1488,7 @@ func TestHTTPClient_WithEmptyErrorHandler(t *testing.T) {
 
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 		ErrorHandler: nil, // Explicitly nil, should use default error handler
 	}
@@ -1538,9 +1510,7 @@ func TestHTTPClient_WithEmptyShouldHandleError(t *testing.T) {
 
 	client := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 		ShouldHandleError: nil, // Should use default 2xx check
 	}

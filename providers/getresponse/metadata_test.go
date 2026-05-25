@@ -55,9 +55,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
-			Name:  "Describe contacts merges custom field definitions",
-			Input: []string{"contacts"},
-			Server: testServerCustomFieldsListJSON(`[{"customFieldId":"fld1","name":"Tier","fieldType":"text","valueType":"single_select","values":["gold","silver"]}]`),
+			Name:       "Describe contacts merges custom field definitions",
+			Input:      []string{"contacts"},
+			Server:     testServerCustomFieldsListJSON(`[{"customFieldId":"fld1","name":"Tier","fieldType":"text","valueType":"single_select","values":["gold","silver"]}]`),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
