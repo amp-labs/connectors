@@ -27,6 +27,21 @@ type Comparator[Output any] func(serverURL string, actual, expected Output) *tes
 // allowing for a more concise test that still validates the desired behavior.
 func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
+
+	if actual == nil && expected == nil {
+		return result
+	}
+
+	if actual == nil {
+		result.AddDiff("actual ReadResult is empty while expected something")
+		return result
+	}
+
+	if expected == nil {
+		result.AddDiff("expected ReadResult should not be empty")
+		return result
+	}
+
 	result.Merge(mockutils.ReadResultComparator.SubsetFields(actual, expected))
 	result.Merge(mockutils.ReadResultComparator.SubsetRaw(actual, expected))
 	result.Merge(mockutils.ReadResultComparator.SubsetAssociationsRaw(actual, expected))

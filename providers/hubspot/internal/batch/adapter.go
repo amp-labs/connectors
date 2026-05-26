@@ -70,3 +70,13 @@ func (a *Adapter) getCreateURL(objectName common.ObjectName) (*urlbuilder.URL, e
 func (a *Adapter) getUpdateURL(objectName common.ObjectName) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.providerInfo.BaseURL, "crm", "objects", core.APIVersion2026March, objectName.String(), "batch/update")
 }
+
+// getReadURL builds the HubSpot batch read endpoint for the given object type.
+func (a *Adapter) getReadURL(objectName common.ObjectName) (*urlbuilder.URL, error) {
+	if core.ObjectMarketingCampaigns == objectName {
+		// https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/batch/get-campaigns
+		return urlbuilder.New(a.providerInfo.BaseURL, "marketing/campaigns", core.APIVersion2026March, "batch/read")
+	}
+
+	return nil, common.ErrObjectNotSupported
+}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -106,8 +107,11 @@ func (readResultComparator) SubsetFields(actual, expected *common.ReadResult) *t
 	return result
 }
 
-// SubsetAssociationsRaw checks that expected ReadResult.Associations are matching exactly,
-// but for each Association.Raw it only checks if every mentioned expected field is present in actual raw.
+// SubsetAssociationsRaw checks that expected ReadResult.Associations match the actual result.
+//
+// The order of associations in the slice does not matter. The check succeeds as long as all
+// associations mentioned in the test are present. For each Association.Raw, only the expected
+// fields are compared, so the actual raw data may contain additional fields.
 func (readResultComparator) SubsetAssociationsRaw(actual, expected *common.ReadResult) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
 	if len(actual.Data) < len(expected.Data) {
@@ -124,30 +128,48 @@ func (readResultComparator) SubsetAssociationsRaw(actual, expected *common.ReadR
 		for key, expectedAssociations := range expected.Data[i].Associations {
 			actualAssociations, ok := actual.Data[i].Associations[key]
 			if !ok {
-				result.AddDiff("Data[%d].Associations[%s] missing", i, key)
+				result.AddDiff("Data[%d].Associations[%s] missing, but has %v", i, key,
+					datautils.FromMap(actual.Data[i].Associations).Keys())
 				continue
 			}
 
-			message = fmt.Sprintf("Data[%d].Associations[%s] length", i, key)
-			if !result.Assert(message, len(expectedAssociations), len(actualAssociations)) {
+			if !result.Assert(fmt.Sprintf("Length(Data[%d].Associations[%s])", i, key),
+				len(expectedAssociations), len(actualAssociations)) {
 				continue
 			}
 
-			for j := range expectedAssociations {
-				result.Assert(fmt.Sprintf("Data[%d].Associations[%s][%d].ObjectId", i, key, j),
-					expectedAssociations[j].ObjectId, actualAssociations[j].ObjectId)
+			actualByObjectID := make(map[string]common.Association, len(actualAssociations))
+			for _, association := range actualAssociations {
+				if _, exists := actualByObjectID[association.ObjectId]; exists {
+					result.AddDiff(
+						"actual.Data[%v].Associations[%v] has duplicate ObjectIds, is it intended?", i, key)
+				}
+				actualByObjectID[association.ObjectId] = association
+			}
 
-				for metaKey, exp := range expectedAssociations[j].ProviderAssociationMetadata {
-					got := actualAssociations[j].ProviderAssociationMetadata[metaKey]
-					message := fmt.Sprintf("Data[%d].Associations[%s][%d].ProviderAssociationMetadata[%s]", i, key, j, metaKey)
+			for _, expectedAssociation := range expectedAssociations {
+				actualAssociation, ok := actualByObjectID[expectedAssociation.ObjectId]
+				if !ok {
+					result.AddDiff("Data[%d].Associations[%s].ObjectId %s is missing",
+						i, key, expectedAssociation.ObjectId)
+					continue
+				}
+
+				for metaKey, exp := range expectedAssociation.ProviderAssociationMetadata {
+					got := actualAssociation.ProviderAssociationMetadata[metaKey]
+					message = fmt.Sprintf(
+						"Data[%d].Associations[%s].ProviderAssociationMetadata[%s][%s]",
+						i, key, expectedAssociation.ObjectId, metaKey,
+					)
 					result.Assert(message, exp, got)
 				}
 
-				// Check if expected Raw is a subset of actual Raw
-				for field := range expectedAssociations[j].Raw {
-					exp := expectedAssociations[j].Raw[field]
-					got := actualAssociations[j].Raw[field]
-					message = fmt.Sprintf("Data[%d].Associations[%s][%d].Raw[%s]", i, key, j, field)
+				for field := range expectedAssociation.Raw {
+					exp := expectedAssociation.Raw[field]
+					got := actualAssociation.Raw[field]
+					message = fmt.Sprintf(
+						"Data[%d].Associations[%s].Raw[%s][%s]", i, key, expectedAssociation.ObjectId, field,
+					)
 					result.Assert(message, exp, got)
 				}
 			}

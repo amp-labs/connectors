@@ -207,10 +207,10 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							"cf_f1": "gold",
 						},
 						Raw: map[string]any{
-							"contactId":       "pV3r",
-							"name":            "John Doe",
-							"email":           "john.doe@example.com",
-							"createdOn":       "2024-01-15T10:00:00+0000",
+							"contactId": "pV3r",
+							"name":      "John Doe",
+							"email":     "john.doe@example.com",
+							"createdOn": "2024-01-15T10:00:00+0000",
 							"customFieldValues": []any{
 								map[string]any{
 									"customFieldId": "f1",

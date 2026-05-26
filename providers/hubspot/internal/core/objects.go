@@ -25,6 +25,8 @@ const (
 	ObjectThreads            = "threads"
 )
 
+const AssociationAssets = "assets"
+
 //nolint:gochecknoglobals,lll
 var (
 

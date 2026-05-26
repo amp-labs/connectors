@@ -102,7 +102,7 @@ func TestPrepareContactWriteRecordData(t *testing.T) {
 		jobTitleValue := "Senior Marketing Manager"
 
 		in := map[string]any{
-			"email":                              contactEmail,
+			"email":                               contactEmail,
 			CustomFieldKey(jobTitleCustomFieldID): jobTitleValue,
 		}
 		out := prepareContactWriteRecordData(in)

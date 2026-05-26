@@ -1,0 +1,87 @@
+{
+  "completedAt": "2026-05-20T18:40:27.234Z",
+  "status": "COMPLETE",
+  "startedAt": "2026-05-20T18:40:27.104Z",
+  "results": [
+    {
+      "id": "430318c4-abb7-4bf7-a75e-9c5fa8f475a6",
+      "properties": {
+        "hs_budget_items_sum_amount": "2.0",
+        "hs_name": "Clothing Promotion",
+        "hs_notes": "Sports t-shirts and pants"
+      },
+      "createdAt": "2026-05-05T23:41:20.330Z",
+      "updatedAt": "2026-05-05T23:45:04.200Z",
+      "businessUnits": [
+        {
+          "id": 0
+        }
+      ],
+      "assets": {
+        "AD_CAMPAIGN": {
+          "results": [
+            {
+              "id": "709704336",
+              "name": "New Campaign Group"
+            }
+          ]
+        },
+        "MARKETING_EMAIL": {
+          "results": [
+            {
+              "id": "212476546342",
+              "name": "A new marketing email"
+            }
+          ]
+        },
+        "MARKETING_EVENT": {
+          "results": [
+            {
+              "id": "555449508947",
+              "name": "Holidays"
+            }
+          ]
+        },
+        "MEETING_EVENT": {
+          "results": [
+            {
+              "id": "76153683252",
+              "name": "Ampersand Enablement Session"
+            }
+          ]
+        },
+        "OBJECT_LIST": {
+          "results": [
+            {
+              "id": "181",
+              "name": "Cindy - Eng Above March 31, 2025"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "36137b99-47a6-40fe-986d-839a5e3deebb",
+      "properties": {
+        "hs_name": "Breaking news"
+      },
+      "createdAt": "2026-05-05T23:09:27.549Z",
+      "updatedAt": "2026-05-05T23:09:27.713Z",
+      "businessUnits": [
+        {
+          "id": 0
+        }
+      ],
+      "assets": {
+        "OBJECT_LIST": {
+          "results": [
+            {
+              "id": "44",
+              "name": "SMB CEOs: 50-249"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

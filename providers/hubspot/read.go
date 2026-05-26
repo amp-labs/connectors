@@ -2,6 +2,7 @@ package hubspot
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
@@ -9,7 +10,9 @@ import (
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/associations"
+	"github.com/amp-labs/connectors/providers/hubspot/internal/batch"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
 )
 
@@ -160,15 +163,35 @@ func (c *Connector) readMarketing(ctx context.Context,
 		identifier = "objectId"
 	}
 
+	marshaler := readhelper.MakeMarshaledDataFuncWithId(
+		object.RecordTransformer,
+		readhelper.IdFieldQuery{Field: identifier},
+	)
+
+	if params.ObjectName == core.ObjectMarketingCampaigns {
+		if datautils.NewSetFromList(params.AssociatedObjects).Has(core.AssociationAssets) {
+			// Attach asset association to marketing campaign.
+			marshaler = readhelper.ChainedMarshaller(
+				// Process campaigns normally.
+				readhelper.MakeMarshaledDataFuncWithId(
+					object.RecordTransformer,
+					readhelper.IdFieldQuery{Field: identifier},
+				),
+				// Enhance records with associations.
+				readhelper.HydrateAssociations(ctx,
+					core.ObjectMarketingCampaigns, params.AssociatedObjects,
+					c.lookupMarketingCampaignAssets,
+				),
+			)
+		}
+	}
+
 	return common.ParseResultFiltered(
 		params,
 		resp,
 		common.MakeRecordsFunc("results"),
 		makeIncrementalFilterFunc(params),
-		readhelper.MakeMarshaledDataFuncWithId(
-			object.RecordTransformer,
-			readhelper.IdFieldQuery{Field: identifier},
-		),
+		marshaler,
 		params.Fields,
 	)
 }
@@ -349,3 +372,56 @@ func (c *Connector) buildMiscURL(
 
 	return url, nil
 }
+
+func (c *Connector) lookupMarketingCampaignAssets(ctx context.Context,
+	fromObject common.ObjectName,
+	identifiers []readhelper.RowID,
+	toObject string,
+) (map[readhelper.RowID][]common.Association, error) {
+	if fromObject != core.ObjectMarketingCampaigns {
+		// Marketing campaigns is the only object supported.
+		return nil, readhelper.ErrAssociationsUnsupported
+	}
+
+	if toObject != core.AssociationAssets {
+		// Only associations to "assets" is supported.
+		return nil, readhelper.ErrAssociationsUnsupported
+	}
+
+	batchResult := batch.Read[marketingCampaignSchema](ctx, c.batchAdapter, batch.ReadParams{
+		ObjectName:  fromObject,
+		Identifiers: identifiers,
+	})
+
+	if len(batchResult.Errors) != 0 {
+		return nil, errors.Join(batchResult.Errors...)
+	}
+
+	registry := map[readhelper.RowID][]common.Association{}
+	for _, record := range batchResult.Records {
+		registry[record.ID] = make([]common.Association, len(record.Assets))
+
+		index := 0
+		for assetKind, asset := range record.Assets {
+			registry[record.ID][index] = common.Association{
+				ObjectId:                    assetKind,
+				Raw:                         asset,
+				ProviderAssociationMetadata: nil,
+			}
+			index += 1
+		}
+	}
+
+	return registry, nil
+}
+
+type marketingCampaignSchema struct {
+	ID     string         `json:"id"`
+	Assets campaignAssets `json:"assets"`
+}
+
+type (
+	campaignAssets map[assetType]campaignAsset
+	assetType      = string
+	campaignAsset  map[string]any
+)
