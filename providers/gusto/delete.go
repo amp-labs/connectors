@@ -75,11 +75,11 @@ func (c *Connector) buildDeleteURL(params common.DeleteParams) (*urlbuilder.URL,
 	baseURL := c.ProviderInfo().BaseURL
 
 	if companyScopedUpdate.Has(params.ObjectName) {
-		if c.companyID == "" {
+		if c.companyId == "" {
 			return nil, ErrMissingCompanyID
 		}
 
-		return urlbuilder.New(baseURL, "v1", "companies", c.companyID, params.ObjectName, params.RecordId)
+		return urlbuilder.New(baseURL, "v1", "companies", c.companyId, params.ObjectName, params.RecordId)
 	}
 
 	return urlbuilder.New(baseURL, "v1", params.ObjectName, params.RecordId)

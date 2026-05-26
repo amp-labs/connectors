@@ -55,6 +55,7 @@ func main() { //nolint:funlen
 	utils.SetupLogging()
 
 	conn := connTest.GetConnector(ctx)
+	conn.GetPostAuthInfo(ctx)
 	stamp := time.Now().Format("20060102-150405")
 
 	// Discover parents we'll use throughout the run.

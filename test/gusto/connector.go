@@ -11,23 +11,13 @@ import (
 	"golang.org/x/oauth2"
 )
 
-//nolint:gochecknoglobals
-var fieldCompanyID = credscanning.Field{
-	Name:      "companyId",
-	PathJSON:  "metadata.companyId",
-	SuffixENV: "COMPANY_ID",
-}
-
 func GetConnector(ctx context.Context) *gusto.Connector {
 	filePath := credscanning.LoadPath(providers.GustoDemo)
-	reader := utils.MustCreateProvCredJSON(filePath, true, fieldCompanyID)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
 
 	conn, err := gusto.NewDemoConnector(
 		common.ConnectorParams{
 			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
-			Metadata: map[string]string{
-				"companyId": reader.Get(fieldCompanyID),
-			},
 		},
 	)
 	if err != nil {

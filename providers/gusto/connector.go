@@ -24,13 +24,14 @@ const metadataKeyCompanyID = "companyId"
 type Connector struct {
 	*components.Connector
 	common.RequireAuthenticatedClient
+	common.PostAuthInfo
 
 	components.SchemaProvider
 	components.Reader
 	components.Writer
 	components.Deleter
 
-	companyID string
+	companyId string
 }
 
 // NewConnector creates a new Gusto connector for the production environment.
@@ -45,9 +46,11 @@ func NewDemoConnector(params common.ConnectorParams) (*Connector, error) {
 
 func constructor(params common.ConnectorParams) func(*components.Connector) (*Connector, error) {
 	return func(base *components.Connector) (*Connector, error) {
+		authMetadata := NewAuthMetadataVars(params.Metadata)
+
 		connector := &Connector{
 			Connector: base,
-			companyID: params.Metadata[metadataKeyCompanyID],
+			companyId: authMetadata.CompanyId,
 		}
 
 		connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
