@@ -2,11 +2,11 @@
   "total": 3,
   "results": [
     {
-      "id": "84f199fa-beb7-4dca-ad94-3d778cdce157",
+      "id": "430318c4-abb7-4bf7-a75e-9c5fa8f475a6",
       "properties": {
         "hs_budget_items_sum_amount": "2.0",
-        "hs_name": "Nurture",
-        "hs_notes": "Creating campaign from the Dashboard"
+        "hs_name": "Clothing Promotion",
+        "hs_notes": "Sports t-shirts and pants"
       },
       "createdAt": "2026-05-05T23:41:20.330Z",
       "updatedAt": "2026-05-05T23:45:04.200Z",
@@ -17,9 +17,9 @@
       ]
     },
     {
-      "id": "fc4583f7-5cfc-4773-8fa4-076cd4f4ae6d",
+      "id": "36137b99-47a6-40fe-986d-839a5e3deebb",
       "properties": {
-        "hs_name": "Kiwi"
+        "hs_name": "Breaking news"
       },
       "createdAt": "2026-05-05T23:09:27.549Z",
       "updatedAt": "2026-05-05T23:09:27.713Z",

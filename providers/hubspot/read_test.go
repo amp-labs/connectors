@@ -24,6 +24,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseListsLast := testutils.DataFromFile(t, "read-lists-2-second-page.json")
 	responseCampaignsFirst := testutils.DataFromFile(t, "read/campaigns/1-first-page.json")
 	responseCampaignsLast := testutils.DataFromFile(t, "read/campaigns/2-last-page.json")
+	responseCampaignsBatchOK := testutils.DataFromFile(t, "batch/read/campaigns/ok-200.json")
+	responseCampaignsBatchMulti := testutils.DataFromFile(t, "batch/read/campaigns/multi-207.json")
 	responseMarketingEmailFirst := testutils.DataFromFile(t, "read/marketing-emails/1-first-page.json")
 	responseMarketingEmailLast := testutils.DataFromFile(t, "read/marketing-emails/2-last-page.json")
 	responseMarketingForms := testutils.DataFromFile(t, "read/marketing-forms.json")
@@ -271,34 +273,34 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"hs_name":                    "Nurture",
-						"hs_notes":                   "Creating campaign from the Dashboard",
+						"hs_name":                    "Clothing Promotion",
+						"hs_notes":                   "Sports t-shirts and pants",
 						"hs_budget_items_sum_amount": "2.0",
 					},
 					Raw: map[string]any{
-						"id": "84f199fa-beb7-4dca-ad94-3d778cdce157",
+						"id": "430318c4-abb7-4bf7-a75e-9c5fa8f475a6",
 						"properties": map[string]any{
-							"hs_name":                    "Nurture",
-							"hs_notes":                   "Creating campaign from the Dashboard",
+							"hs_name":                    "Clothing Promotion",
+							"hs_notes":                   "Sports t-shirts and pants",
 							"hs_budget_items_sum_amount": "2.0",
 						},
 						"createdAt": "2026-05-05T23:41:20.330Z",
 						"updatedAt": "2026-05-05T23:45:04.200Z",
 					},
-					Id: "84f199fa-beb7-4dca-ad94-3d778cdce157",
+					Id: "430318c4-abb7-4bf7-a75e-9c5fa8f475a6",
 				}, {
 					Fields: map[string]any{
-						"hs_name": "Kiwi",
+						"hs_name": "Breaking news",
 					},
 					Raw: map[string]any{
-						"id": "fc4583f7-5cfc-4773-8fa4-076cd4f4ae6d",
+						"id": "36137b99-47a6-40fe-986d-839a5e3deebb",
 						"properties": map[string]any{
-							"hs_name": "Kiwi",
+							"hs_name": "Breaking news",
 						},
 						"createdAt": "2026-05-05T23:09:27.549Z",
 						"updatedAt": "2026-05-05T23:09:27.713Z",
 					},
-					Id: "fc4583f7-5cfc-4773-8fa4-076cd4f4ae6d",
+					Id: "36137b99-47a6-40fe-986d-839a5e3deebb",
 				}},
 				NextPage: "https://api.hubapi.com/marketing/campaigns/2026-03?limit=2&sort=-updatedAt&properties=hs_name%2Chs_notes%2Chs_budget_items_sum_amount&after=Mg%3D%3D",
 				Done:     false,
@@ -328,12 +330,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
-							"hs_name": "Nurture",
+							"hs_name": "Clothing Promotion",
 						},
 						Raw: map[string]any{
 							"updatedAt": "2026-05-05T23:45:04.200Z",
 						},
-						Id: "84f199fa-beb7-4dca-ad94-3d778cdce157",
+						Id: "430318c4-abb7-4bf7-a75e-9c5fa8f475a6",
 					},
 				},
 				NextPage: "",
@@ -343,7 +345,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Read marketing campaigns last page",
 			Input: common.ReadParams{
-				ObjectName: "campaigns",
+				ObjectName: "marketing-campaigns",
 				Fields:     connectors.Fields("hs_name"),
 				NextPage:   testroutines.URLTestServer + "/marketing/campaigns/2026-03?limit=2&sort=-updatedAt&properties=hs_name%2Chs_notes%2Chs_budget_items_sum_amount&after=Mg%3D%3D",
 			},
@@ -373,6 +375,143 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				NextPage: "",
 				Done:     true,
+			},
+		},
+		{
+			Name: "Read marketing campaigns with associated assets",
+			Input: common.ReadParams{
+				ObjectName: "marketing-campaigns",
+				Fields:     connectors.Fields("hs_name"),
+				AssociatedObjects: []string{
+					"assets",
+				},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/marketing/campaigns/2026-03"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCampaignsFirst),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/marketing/campaigns/2026-03/batch/read"),
+						mockcond.PermuteJSONBody(
+							`{"inputs":[%inputs]}`,
+							mockcond.PermuteSlot{Name: "inputs", NoQuotes: true, Values: []string{
+								`{"id":"430318c4-abb7-4bf7-a75e-9c5fa8f475a6"}`,
+								`{"id":"36137b99-47a6-40fe-986d-839a5e3deebb"}`,
+							}},
+						),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCampaignsBatchOK),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"hs_name": "Clothing Promotion"},
+						Raw:    map[string]any{"createdAt": "2026-05-05T23:41:20.330Z"},
+						Id:     "430318c4-abb7-4bf7-a75e-9c5fa8f475a6",
+						Associations: map[string][]common.Association{
+							"assets": {{
+								ObjectId: "AD_CAMPAIGN",
+								Raw: map[string]any{
+									"results": []any{map[string]any{
+										"id":   "709704336",
+										"name": "New Campaign Group",
+									}},
+								},
+							}, {
+								ObjectId: "MARKETING_EMAIL",
+								Raw: map[string]any{
+									"results": []any{map[string]any{
+										"id":   "212476546342",
+										"name": "A new marketing email",
+									}},
+								},
+							}, {
+								ObjectId: "MARKETING_EVENT",
+								Raw: map[string]any{
+									"results": []any{map[string]any{
+										"id":   "555449508947",
+										"name": "Holidays",
+									}},
+								},
+							}, {
+								ObjectId: "MEETING_EVENT",
+								Raw: map[string]any{
+									"results": []any{map[string]any{
+										"id":   "76153683252",
+										"name": "Ampersand Enablement Session",
+									}},
+								},
+							}, {
+								ObjectId: "OBJECT_LIST",
+								Raw: map[string]any{
+									"results": []any{map[string]any{
+										"id":   "181",
+										"name": "Cindy - Eng Above March 31, 2025",
+									}},
+								},
+							}},
+						},
+					},
+					{
+						Fields: map[string]any{"hs_name": "Breaking news"},
+						Raw:    map[string]any{"createdAt": "2026-05-05T23:09:27.549Z"},
+						Id:     "36137b99-47a6-40fe-986d-839a5e3deebb",
+						Associations: map[string][]common.Association{
+							"assets": {{
+								ObjectId: "OBJECT_LIST",
+								Raw: map[string]any{
+									"results": []any{map[string]any{
+										"id":   "44",
+										"name": "SMB CEOs: 50-249",
+									}},
+								},
+							}},
+						},
+					},
+				},
+				NextPage: "https://api.hubapi.com/marketing/campaigns/2026-03?limit=2&sort=-updatedAt&properties=hs_name%2Chs_notes%2Chs_budget_items_sum_amount&after=Mg%3D%3D",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Read marketing campaigns with partial assets response fails the read",
+			Input: common.ReadParams{
+				ObjectName: "marketing-campaigns",
+				Fields:     connectors.Fields("hs_name"),
+				AssociatedObjects: []string{
+					"assets",
+				},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/marketing/campaigns/2026-03"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCampaignsLast),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/marketing/campaigns/2026-03/batch/read"),
+						mockcond.Body(`{"inputs":[{"id":"5f7bff76-193f-43af-968b-f13c6576ca76"}]}`),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCampaignsBatchMulti),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected:   nil,
+			ExpectedErrs: []error{
+				testutils.StringError("Invalid request: 'Invalid campaign GUID format: 430318c4-abb7-4bf7-a75ee-9c5fa8f475a6'"),
 			},
 		},
 		{
