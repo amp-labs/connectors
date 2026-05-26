@@ -253,7 +253,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Read marketing campaigns first page",
 			Input: common.ReadParams{
-				ObjectName: "campaigns",
+				ObjectName: "marketing-campaigns",
 				Fields:     connectors.Fields("hs_name", "hs_notes", "hs_budget_items_sum_amount"),
 			},
 			Server: mockserver.Conditional{
@@ -307,7 +307,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Read marketing campaigns with connector side filtering",
 			Input: common.ReadParams{
-				ObjectName: "campaigns",
+				ObjectName: "marketing-campaigns",
 				Fields:     connectors.Fields("hs_name"),
 				// The first item will be returned, last filtered out.
 				// Due to the sort order there will be no next page.
@@ -378,7 +378,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Read marketing emails first page",
 			Input: common.ReadParams{
-				ObjectName: "marketing/emails",
+				ObjectName: "marketing-emails",
 				Fields:     connectors.Fields("subject"),
 			},
 			Server: mockserver.Conditional{
@@ -421,7 +421,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Read marketing emails last page",
 			Input: common.ReadParams{
-				ObjectName: "marketing/emails",
+				ObjectName: "marketing-emails",
 				Fields:     connectors.Fields("subject"),
 				NextPage:   testroutines.URLTestServer + "/marketing/emails/2026-03?limit=3&sort=-updatedAt&after=Mw%3D%3D",
 			},
@@ -456,10 +456,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				NextPage: "",
 				Done:     true,
 			},
-		}, {
+		},
+		{
 			Name: "Read marketing forms",
 			Input: common.ReadParams{
-				ObjectName: "forms",
+				ObjectName: "marketing-forms",
 				Fields:     connectors.Fields("name", "updatedAt"),
 			},
 			Server: mockserver.Conditional{
@@ -486,7 +487,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				NextPage: "https://api.hubapi.com/marketing/forms/2026-09-beta?limit=1&after=MQ%3D%3D",
 				Done:     false,
 			},
-		}, {
+		},
+		{
 			Name: "Read marketing events",
 			Input: common.ReadParams{
 				ObjectName: "marketing-events",
@@ -518,7 +520,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				NextPage: "https://api.hubapi.com/marketing/marketing-events/2026-03?after=NTU1NDQyMTk2ODQw",
 				Done:     false,
 			},
-		}, {
+		},
+		{
 			Name: "Read meeting-links",
 			Input: common.ReadParams{
 				ObjectName: "meeting-links",

@@ -21,7 +21,7 @@ func main() {
 	conn := connTest.GetHubspotConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "forms",
+		ObjectName: "marketing-forms",
 		Fields:     connectors.Fields("name", "updatedAt"),
 		// Since:      time.Date(2026, 5, 5, 23, 10, 0, 0, time.UTC),
 	})

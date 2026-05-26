@@ -13,14 +13,16 @@ const (
 )
 
 const (
-	ObjectMarketingForms  = "forms"
-	ObjectMarketingEvents = "marketing-events"
-	ObjectMeetingLinks    = "meeting-links"
-	ObjectCustomChannels  = "custom-channels"
-	ObjectChannelAccounts = "channel-accounts"
-	ObjectChannels        = "channels"
-	ObjectInboxes         = "inboxes"
-	ObjectThreads         = "threads"
+	ObjectMarketingCampaigns = "marketing-campaigns"
+	ObjectMarketingEmails    = "marketing-emails"
+	ObjectMarketingForms     = "marketing-forms"
+	ObjectMarketingEvents    = "marketing-events"
+	ObjectMeetingLinks       = "meeting-links"
+	ObjectCustomChannels     = "custom-channels"
+	ObjectChannelAccounts    = "channel-accounts"
+	ObjectChannels           = "channels"
+	ObjectInboxes            = "inboxes"
+	ObjectThreads            = "threads"
 )
 
 //nolint:gochecknoglobals,lll
@@ -44,7 +46,7 @@ var (
 	// The Marketing API is separate from the CRM API and is not related to the Objects API.
 	MarketingObjects = datautils.Map[string, ObjectDescription]{
 		// https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/get-campaigns
-		"campaigns": {
+		ObjectMarketingCampaigns: {
 			Path:              "campaigns",
 			RecordTransformer: common.FlattenNestedFields("properties"),
 			Version:           APIVersion2026March,
@@ -62,7 +64,7 @@ var (
 		// https://developers.hubspot.com/docs/api-reference/latest/marketing/marketing-emails/get-emails
 		// CRM emails:
 		// https://developers.hubspot.com/docs/api-reference/latest/crm/activities/emails/guide
-		"marketing/emails": {
+		ObjectMarketingEmails: {
 			Path:              "emails",
 			RecordTransformer: nil, // None. Fields and Raw are the same.
 			Version:           APIVersion2026March,

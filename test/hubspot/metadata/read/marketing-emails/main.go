@@ -19,7 +19,7 @@ func main() {
 	conn := connTest.GetHubspotConnector(ctx)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		"marketing/emails",
+		"marketing-emails",
 	})
 	if err != nil {
 		utils.Fail("error listing metadata", "error", err)
