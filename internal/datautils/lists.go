@@ -56,6 +56,15 @@ func (l IndexedLists[ID, V]) GetBuckets() []ID {
 	return result
 }
 
+func (l IndexedLists[ID, V]) CombinedLength() int {
+	length := 0
+	for _, list := range l {
+		length += len(list)
+	}
+
+	return length
+}
+
 func (l NamedLists[V]) GetBuckets() []string {
 	return IndexedLists[string, V](l).GetBuckets()
 }

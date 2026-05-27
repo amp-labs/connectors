@@ -29,8 +29,10 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "marketing-campaigns",
 		Fields:     connectors.Fields("hs_name", "hs_notes", "hs_budget_items_sum_amount"),
+		PageSize:   1,
 		AssociatedObjects: []string{
 			"assets",
+			"contacts",
 		},
 	})
 	if err != nil {

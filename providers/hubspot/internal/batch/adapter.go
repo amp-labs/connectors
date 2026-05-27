@@ -78,5 +78,10 @@ func (a *Adapter) getReadURL(objectName common.ObjectName) (*urlbuilder.URL, err
 		return urlbuilder.New(a.providerInfo.BaseURL, "marketing/campaigns", core.APIVersion2026March, "batch/read")
 	}
 
+	if core.ObjectContacts == objectName {
+		// https://developers.hubspot.com/docs/api-reference/latest/crm/objects/contacts/batch/get-contacts
+		return urlbuilder.New(a.providerInfo.BaseURL, "crm/objects", core.APIVersion2026March, "contacts", "batch/read")
+	}
+
 	return nil, common.ErrObjectNotSupported
 }
