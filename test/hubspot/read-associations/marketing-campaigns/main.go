@@ -30,7 +30,8 @@ func main() {
 		ObjectName: "marketing-campaigns",
 		Fields:     connectors.Fields("hs_name", "hs_notes", "hs_budget_items_sum_amount"),
 		AssociatedObjects: []string{
-			"assets",
+			//"assets",
+			"contacts",
 		},
 	})
 	if err != nil {

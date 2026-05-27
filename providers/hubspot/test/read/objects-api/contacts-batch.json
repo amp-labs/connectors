@@ -1,0 +1,37 @@
+{
+  "completedAt": "2026-05-21T23:20:54.374Z",
+  "status": "COMPLETE",
+  "startedAt": "2026-05-21T23:20:54.333Z",
+  "results": [
+    {
+      "id": "110338039632",
+      "properties": {
+        "createdate": "2026-05-21T22:43:55.385Z",
+        "email": "bh@hubspot.com",
+        "firstname": "Brian",
+        "hs_object_id": "110338039632",
+        "lastmodifieddate": "2026-05-21T22:45:00.229Z",
+        "lastname": "Halligan (Sample Contact)"
+      },
+      "createdAt": "2026-05-21T22:43:55.385Z",
+      "updatedAt": "2026-05-21T22:45:00.229Z",
+      "archived": false,
+      "url": "https://app-eu1.hubspot.com/contacts/148543157/record/0-1/110338039632"
+    },
+    {
+      "id": "110323586992",
+      "properties": {
+        "createdate": "2026-05-21T22:43:54.883Z",
+        "email": "emailmaria@hubspot.com",
+        "firstname": "Maria",
+        "hs_object_id": "110323586992",
+        "lastmodifieddate": "2026-05-21T22:45:02.231Z",
+        "lastname": "Johnson (Sample Contact)"
+      },
+      "createdAt": "2026-05-21T22:43:54.883Z",
+      "updatedAt": "2026-05-21T22:45:02.231Z",
+      "archived": false,
+      "url": "https://app-eu1.hubspot.com/contacts/148543157/record/0-1/110323586992"
+    }
+  ]
+}
