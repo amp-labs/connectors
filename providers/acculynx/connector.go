@@ -6,6 +6,7 @@
 package acculynx
 
 import (
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/deleter"
@@ -15,6 +16,12 @@ import (
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/acculynx/metadata"
+)
+
+var (
+	_ connectors.BatchRecordReaderConnector = &Connector{}
+	_ connectors.WebhookVerifierConnector   = &Connector{}
+	_ connectors.SubscribeConnector         = &Connector{}
 )
 
 // Connector is the AccuLynx connector.
