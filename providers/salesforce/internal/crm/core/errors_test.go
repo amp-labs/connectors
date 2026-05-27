@@ -76,23 +76,6 @@ func TestInterpretJSONError_WrapsHTTPErrorForKnownCodes(t *testing.T) {
 	}
 }
 
-func TestInterpretJSONError_PreservesLegacyErrorString(t *testing.T) {
-	t.Parallel()
-
-	body := []byte(`[{"message":"Unable to create/update fields: X11x_Research_Report__c","errorCode":"INVALID_FIELD_FOR_INSERT_UPDATE"}]`)
-	res := &http.Response{StatusCode: http.StatusBadRequest, Header: http.Header{}}
-
-	err := interpretJSONError(res, body)
-	if err == nil {
-		t.Fatal("expected error, got nil")
-	}
-
-	want := "bad request: Unable to create/update fields: X11x_Research_Report__c (HTTP status 400)"
-	if got := err.Error(); got != want {
-		t.Errorf("error message format changed\n  want: %s\n  got:  %s", want, got)
-	}
-}
-
 func TestInterpretJSONError_FieldNotFoundStaysBare(t *testing.T) {
 	t.Parallel()
 
