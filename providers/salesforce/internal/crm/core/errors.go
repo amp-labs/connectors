@@ -24,12 +24,15 @@ type jsonError struct {
 	ErrorCode string `json:"errorCode"`
 }
 
-func createError(baseErr error, sfErr jsonError, res *http.Response) error {
+func createError(baseErr error, sfErr jsonError, res *http.Response, body []byte) error {
+	var innerErr error
 	if len(sfErr.Message) > 0 {
-		return fmt.Errorf("%w: %s (HTTP status %d)", baseErr, sfErr.Message, res.StatusCode)
+		innerErr = fmt.Errorf("%w: %s", baseErr, sfErr.Message)
+	} else {
+		innerErr = baseErr
 	}
 
-	return baseErr
+	return common.NewHTTPError(res.StatusCode, body, common.GetResponseHeaders(res), innerErr)
 }
 
 // noSuchColumnRe extracts the field and object names from a Salesforce
@@ -75,9 +78,11 @@ func formatFieldNotFoundMessage(msg string) string {
 	return strings.TrimSpace(msg) + fieldNotFoundGuidance
 }
 
-// fieldNotFoundError wraps common.ErrBadRequest for errors.Is matching but
-// renders only the supplied message — bypassing the "bad request:" prefix
-// and "(HTTP status N)" suffix that createError would otherwise add.
+// fieldNotFoundError wraps common.ErrBadRequest for errors.Is matching while
+// rendering only the supplied message. It is intentionally not returned via
+// createError / common.NewHTTPError so the formatted, customer-facing message
+// is not prefixed with "HTTP status N: " or "bad request: ". The trade-off is
+// that the raw provider response body is not propagated for this error case.
 type fieldNotFoundError struct {
 	msg string
 }
@@ -94,17 +99,17 @@ func interpretJSONError(res *http.Response, body []byte) error { // nolint:cyclo
 	for _, sfErr := range errs {
 		switch sfErr.ErrorCode {
 		case "INVALID_SESSION_ID":
-			return createError(common.ErrInvalidSessionId, sfErr, res)
+			return createError(common.ErrInvalidSessionId, sfErr, res, body)
 		case "INSUFFICIENT_ACCESS_OR_READONLY":
-			return createError(common.ErrForbidden, sfErr, res)
+			return createError(common.ErrForbidden, sfErr, res, body)
 		case "API_DISABLED_FOR_ORG":
-			return createError(common.ErrApiDisabled, sfErr, res)
+			return createError(common.ErrApiDisabled, sfErr, res, body)
 		case "UNABLE_TO_LOCK_ROW":
-			return createError(common.ErrUnableToLockRow, sfErr, res)
+			return createError(common.ErrUnableToLockRow, sfErr, res, body)
 		case "INVALID_GRANT":
-			return createError(common.ErrInvalidGrant, sfErr, res)
+			return createError(common.ErrInvalidGrant, sfErr, res, body)
 		case "REQUEST_LIMIT_EXCEEDED":
-			return createError(common.ErrLimitExceeded, sfErr, res)
+			return createError(common.ErrLimitExceeded, sfErr, res, body)
 		case "INVALID_TYPE":
 			fallthrough
 		case "INVALID_FIELD_FOR_INSERT_UPDATE":
@@ -120,9 +125,9 @@ func interpretJSONError(res *http.Response, body []byte) error { // nolint:cyclo
 				}
 			}
 
-			return createError(common.ErrBadRequest, sfErr, res)
+			return createError(common.ErrBadRequest, sfErr, res, body)
 		case "INVALID_QUERY_LOCATOR":
-			return createError(common.ErrCursorGone, sfErr, res)
+			return createError(common.ErrCursorGone, sfErr, res, body)
 		default:
 			continue
 		}
@@ -159,5 +164,5 @@ func interpretXMLError(res *http.Response, body []byte) error {
 	return createError(matchingErr, jsonError{
 		Message:   message,
 		ErrorCode: code,
-	}, res)
+	}, res, body)
 }
