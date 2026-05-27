@@ -13,6 +13,7 @@ const (
 )
 
 const (
+	ObjectContacts           = "contacts"
 	ObjectMarketingCampaigns = "marketing-campaigns"
 	ObjectMarketingEmails    = "marketing-emails"
 	ObjectMarketingForms     = "marketing-forms"
@@ -25,7 +26,10 @@ const (
 	ObjectThreads            = "threads"
 )
 
-const AssociationAssets = "assets"
+const (
+	AssociationAssets   = "assets"
+	AssociationContacts = "contacts"
+)
 
 //nolint:gochecknoglobals,lll
 var (
@@ -53,6 +57,10 @@ var (
 			RecordTransformer: common.FlattenNestedFields("properties"),
 			Version:           APIVersion2026March,
 			PageSize:          DefaultPageSize,
+			Associations: datautils.NewSet(
+				AssociationAssets,
+				AssociationContacts,
+			),
 		},
 		// "marketing/emails" refers to HubSpot marketing emails, which are distinct
 		// from the CRM email activity resource.
@@ -161,4 +169,6 @@ type ObjectDescription struct {
 	Version string
 	// PageSize is maximum possible page limit for an object.
 	PageSize string
+	// List of supported Associations by this object.
+	Associations datautils.Set[string]
 }

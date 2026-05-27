@@ -2,7 +2,9 @@ package hubspot
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -11,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/associations"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/batch"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
@@ -148,6 +151,15 @@ func (c *Connector) buildCRMReadURL(params common.ReadParams) (string, error) {
 func (c *Connector) readMarketing(ctx context.Context,
 	params common.ReadParams, object core.ObjectDescription,
 ) (*common.ReadResult, error) {
+	requestedAssociations := datautils.NewSetFromList(params.AssociatedObjects)
+	unsupportedAssociations := requestedAssociations.Subtract(object.Associations)
+
+	if len(unsupportedAssociations) != 0 {
+		return nil, fmt.Errorf("%w: associations %v",
+			readhelper.ErrAssociationsUnsupported, strings.Join(unsupportedAssociations, ","),
+		)
+	}
+
 	url, err := c.buildMarketingReadURL(params, &object)
 	if err != nil {
 		return nil, err
@@ -169,21 +181,18 @@ func (c *Connector) readMarketing(ctx context.Context,
 	)
 
 	if params.ObjectName == core.ObjectMarketingCampaigns {
-		if datautils.NewSetFromList(params.AssociatedObjects).Has(core.AssociationAssets) {
-			// Attach asset association to marketing campaign.
-			marshaler = readhelper.ChainedMarshaller(
-				// Process campaigns normally.
-				readhelper.MakeMarshaledDataFuncWithId(
-					object.RecordTransformer,
-					readhelper.IdFieldQuery{Field: identifier},
-				),
-				// Enhance records with associations.
-				readhelper.HydrateAssociations(ctx,
-					core.ObjectMarketingCampaigns, params.AssociatedObjects,
-					c.lookupMarketingCampaignAssets,
-				),
-			)
-		}
+		marshaler = readhelper.ChainedMarshaller(
+			// Process campaigns normally.
+			readhelper.MakeMarshaledDataFuncWithId(
+				object.RecordTransformer,
+				readhelper.IdFieldQuery{Field: identifier},
+			),
+			// Enhance marketing campaigns with associations.
+			readhelper.HydrateAssociations(ctx,
+				core.ObjectMarketingCampaigns, params.AssociatedObjects,
+				c.lookupMarketingCampaignAssociations,
+			),
+		)
 	}
 
 	return common.ParseResultFiltered(
@@ -373,23 +382,31 @@ func (c *Connector) buildMiscURL(
 	return url, nil
 }
 
-func (c *Connector) lookupMarketingCampaignAssets(ctx context.Context,
+func (c *Connector) lookupMarketingCampaignAssociations(ctx context.Context,
 	fromObject common.ObjectName,
 	identifiers []readhelper.RowID,
 	toObject string,
 ) (map[readhelper.RowID][]common.Association, error) {
 	if fromObject != core.ObjectMarketingCampaigns {
-		// Marketing campaigns is the only object supported.
-		return nil, readhelper.ErrAssociationsUnsupported
+		// Marketing campaigns is the only object supported by this method.
+		return nil, readhelper.ErrAssociationLookupNotImplemented
 	}
 
-	if toObject != core.AssociationAssets {
-		// Only associations to "assets" is supported.
+	switch toObject {
+	case core.AssociationAssets:
+		return c.lookupMarketingCampaignAssets(ctx, identifiers)
+	case core.AssociationContacts:
+		return c.lookupMarketingCampaignContacts(ctx, identifiers)
+	default:
 		return nil, readhelper.ErrAssociationsUnsupported
 	}
+}
 
+func (c *Connector) lookupMarketingCampaignAssets(ctx context.Context,
+	identifiers []string,
+) (map[string][]common.Association, error) {
 	batchResult := batch.Read[marketingCampaignSchema](ctx, c.batchAdapter, batch.ReadParams{
-		ObjectName:  fromObject,
+		ObjectName:  core.ObjectMarketingCampaigns,
 		Identifiers: identifiers,
 	})
 
@@ -397,6 +414,7 @@ func (c *Connector) lookupMarketingCampaignAssets(ctx context.Context,
 		return nil, errors.Join(batchResult.Errors...)
 	}
 
+	// Campaign identifier to assets associations.
 	registry := map[readhelper.RowID][]common.Association{}
 	for _, record := range batchResult.Records {
 		registry[record.ID] = make([]common.Association, len(record.Assets))
@@ -425,3 +443,168 @@ type (
 	assetType      = string
 	campaignAsset  map[string]any
 )
+
+type crmObjectSchema[T ~string] struct {
+	// ID which can be found inside the Data.
+	ID T
+	// Data is the raw JSON.
+	Data map[string]any
+}
+
+func (c *crmObjectSchema[T]) UnmarshalJSON(bytes []byte) error {
+	type essentials struct {
+		ID T `json:"id"`
+	}
+
+	var essentialData essentials
+	if err := json.Unmarshal(bytes, &essentialData); err != nil {
+		return err
+	}
+
+	c.ID = essentialData.ID
+
+	var everything map[string]any
+	if err := json.Unmarshal(bytes, &everything); err != nil {
+		return err
+	}
+
+	c.Data = everything
+
+	return nil
+}
+
+func (c *Connector) lookupMarketingCampaignContacts(ctx context.Context, // nolint:funlen
+	campaignIdentifiers []string,
+) (map[string][]common.Association, error) {
+	var (
+		contactTypes    = []string{"contactFirstTouch", "contactLastTouch", "influencedContacts"}
+		numRequests     = len(contactTypes) * len(campaignIdentifiers)
+		responseChannel = make(chan relationshipCampaignToContacts, numRequests)
+		callbacks       = make([]simultaneously.Job, numRequests)
+		index           = 0
+	)
+
+	// Collect contacts for each existing contact type aka relationship from campaign to contacts.
+	for _, contactType := range contactTypes {
+		// There is no batch endpoint, get contact ids for each campaign instance.
+		for _, identifier := range campaignIdentifiers {
+			callbacks[index] = func(ctx context.Context) error {
+				return c.fetchMarketingCampaignContactIdentifiers(ctx, identifier, contactType, responseChannel)
+			}
+			index += 1
+		}
+	}
+
+	// Wait for all routines.
+	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+		close(responseChannel)
+
+		return nil, err
+	}
+
+	close(responseChannel)
+
+	// Collect all contact identifiers to fetch full contact information.
+	// Create the lookup to match the contacts back to the campaigns.
+	type contactRelationship struct {
+		ContactType string
+		CampaignID  CampaignID
+	}
+
+	campaignLookup := make(map[ContactID]contactRelationship)
+	contactIDs := make([]string, 0)
+
+	for relationship := range responseChannel {
+		for _, contactID := range relationship.ContactIDs {
+			campaignLookup[contactID] = contactRelationship{
+				ContactType: relationship.ContactType,
+				CampaignID:  relationship.CampaignID,
+			}
+			contactIDs = append(contactIDs, string(contactID))
+		}
+	}
+
+	// Fetch contacts.
+	contactBatchResult := batch.Read[crmObjectSchema[ContactID]](ctx, c.batchAdapter, batch.ReadParams{
+		ObjectName:  core.ObjectContacts,
+		Identifiers: contactIDs,
+	})
+
+	if len(contactBatchResult.Errors) != 0 {
+		return nil, errors.Join(contactBatchResult.Errors...)
+	}
+
+	// Create and fill in associations.
+	registry := datautils.IndexedLists[string, common.Association]{}
+
+	for _, contact := range contactBatchResult.Records {
+		relationship := campaignLookup[contact.ID]
+		registry.Add(string(relationship.CampaignID), common.Association{
+			ObjectId: string(contact.ID),
+			Raw:      contact.Data,
+			ProviderAssociationMetadata: map[string]any{
+				"associationType": relationship.ContactType,
+			},
+		})
+	}
+
+	return registry, nil
+}
+
+func (c *Connector) fetchMarketingCampaignContactIdentifiers(ctx context.Context,
+	campaignIdentifier string,
+	contactType string,
+	outbox chan<- relationshipCampaignToContacts,
+) error {
+	url, err := c.getMarketingCampaignContactsURL(campaignIdentifier, contactType)
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
+	if err != nil {
+		return err
+	}
+
+	collection, err := common.UnmarshalJSON[identifierCollection](resp)
+	if err != nil {
+		return err
+	}
+
+	outbox <- relationshipCampaignToContacts{
+		CampaignID:  CampaignID(campaignIdentifier),
+		ContactType: contactType,
+		ContactIDs:  collection.IDs(),
+	}
+
+	return nil
+}
+
+// identifierCollection holds contact identifiers associated with marketing campaign.
+// The contacts response for the following types is the same: contactFirstTouch, contactLastTouch, influencedContacts.
+// https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/reports/get-contact-ids
+type identifierCollection struct {
+	Results []struct {
+		ID ContactID `json:"id"`
+	} `json:"results"`
+}
+
+func (c identifierCollection) IDs() []ContactID {
+	identifiers := make([]ContactID, len(c.Results))
+	for index, result := range c.Results {
+		identifiers[index] = result.ID
+	}
+
+	return identifiers
+}
+
+type (
+	CampaignID string
+	ContactID  string
+)
+
+type relationshipCampaignToContacts struct {
+	CampaignID  CampaignID
+	ContactType string
+	ContactIDs  []ContactID
+}

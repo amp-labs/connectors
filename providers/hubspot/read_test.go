@@ -26,6 +26,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCampaignsLast := testutils.DataFromFile(t, "read/campaigns/2-last-page.json")
 	responseCampaignsBatchOK := testutils.DataFromFile(t, "batch/read/campaigns/ok-200.json")
 	responseCampaignsBatchMulti := testutils.DataFromFile(t, "batch/read/campaigns/multi-207.json")
+	responseCampaignsInfluencedContacts := testutils.DataFromFile(t, "read/campaigns/influenced-contacts.json")
+	responseContactsBatched := testutils.DataFromFile(t, "read/objects-api/contacts-batch.json")
 	responseMarketingEmailFirst := testutils.DataFromFile(t, "read/marketing-emails/1-first-page.json")
 	responseMarketingEmailLast := testutils.DataFromFile(t, "read/marketing-emails/2-last-page.json")
 	responseMarketingForms := testutils.DataFromFile(t, "read/marketing-forms.json")
@@ -512,6 +514,113 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Expected:   nil,
 			ExpectedErrs: []error{
 				testutils.StringError("Invalid request: 'Invalid campaign GUID format: 430318c4-abb7-4bf7-a75ee-9c5fa8f475a6'"),
+			},
+		},
+		{
+			Name: "Read marketing campaigns with associated influenced contacts",
+			Input: common.ReadParams{
+				ObjectName: "marketing-campaigns",
+				Fields:     connectors.Fields("hs_name"),
+				AssociatedObjects: []string{
+					"contacts",
+				},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/marketing/campaigns/2026-03"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCampaignsLast),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/marketing/campaigns/2026-03/5f7bff76-193f-43af-968b-f13c6576ca76/reports/contacts/contactFirstTouch"), // nolint:ll
+					},
+					Then: mockserver.Response(http.StatusOK),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/marketing/campaigns/2026-03/5f7bff76-193f-43af-968b-f13c6576ca76/reports/contacts/contactLastTouch"), // nolint:ll
+					},
+					Then: mockserver.Response(http.StatusOK),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/marketing/campaigns/2026-03/5f7bff76-193f-43af-968b-f13c6576ca76/reports/contacts/influencedContacts"), // nolint:ll
+					},
+					Then: mockserver.Response(http.StatusOK, responseCampaignsInfluencedContacts),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/crm/objects/2026-03/contacts/batch/read"),
+						mockcond.PermuteJSONBody(
+							`{"inputs":[%inputs]}`,
+							mockcond.PermuteSlot{Name: "inputs", NoQuotes: true, Values: []string{
+								`{"id":"110338039632"}`,
+								`{"id":"110323586992"}`,
+							}},
+						),
+					},
+					Then: mockserver.Response(http.StatusOK, responseContactsBatched),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"hs_name": "Inbound"},
+						Raw:    map[string]any{"createdAt": "2026-05-05T23:07:11.797Z"},
+						Id:     "5f7bff76-193f-43af-968b-f13c6576ca76",
+						Associations: map[string][]common.Association{
+							"contacts": {{
+								ObjectId: "110338039632",
+								Raw: map[string]any{
+									"id":        "110338039632",
+									"createdAt": "2026-05-21T22:43:55.385Z",
+									"updatedAt": "2026-05-21T22:45:00.229Z",
+									"archived":  false,
+									"url":       "https://app-eu1.hubspot.com/contacts/148543157/record/0-1/110338039632",
+									"properties": map[string]any{
+										"createdate":       "2026-05-21T22:43:55.385Z",
+										"email":            "bh@hubspot.com",
+										"firstname":        "Brian",
+										"hs_object_id":     "110338039632",
+										"lastmodifieddate": "2026-05-21T22:45:00.229Z",
+										"lastname":         "Halligan (Sample Contact)",
+									},
+								},
+								ProviderAssociationMetadata: map[string]any{
+									"associationType": "influencedContacts",
+								},
+							}, {
+								ObjectId: "110323586992",
+								Raw: map[string]any{
+									"id":        "110323586992",
+									"createdAt": "2026-05-21T22:43:54.883Z",
+									"updatedAt": "2026-05-21T22:45:02.231Z",
+									"archived":  false,
+									"url":       "https://app-eu1.hubspot.com/contacts/148543157/record/0-1/110323586992",
+									"properties": map[string]any{
+										"createdate":       "2026-05-21T22:43:54.883Z",
+										"email":            "emailmaria@hubspot.com",
+										"firstname":        "Maria",
+										"hs_object_id":     "110323586992",
+										"lastmodifieddate": "2026-05-21T22:45:02.231Z",
+										"lastname":         "Johnson (Sample Contact)",
+									},
+								},
+								ProviderAssociationMetadata: map[string]any{
+									"associationType": "influencedContacts",
+								},
+							}},
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
 			},
 		},
 		{
