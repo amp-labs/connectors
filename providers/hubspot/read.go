@@ -402,9 +402,26 @@ func (c *Connector) lookupMarketingCampaignAssociations(ctx context.Context,
 	}
 }
 
+// lookupMarketingCampaignAssets performs a batch read of marketing campaigns and
+// resolves all assets associated with each campaign.
+//
+// The provider API returns campaign assets grouped by asset type
+// (for example MARKETING_EMAIL, MARKETING_EVENT, or AD_CAMPAIGN).
+// Each asset type is paginated independently and the batch endpoint only returns
+// the first page, capped at 50 assets per type.
+//
+// This method:
+//
+//  1. Batch reads campaigns together with the first page of their assets.
+//  2. Detects asset types that have additional pages.
+//  3. Fetches all remaining pages for every paginated asset type.
+//  4. Converts the final asset collection into Ampersand associations.
+//
+// Returned associations preserve the provider asset type in
+// ProviderAssociationMetadata["assetType"].
 func (c *Connector) lookupMarketingCampaignAssets(ctx context.Context,
 	identifiers []string,
-) (map[string][]common.Association, error) {
+) (map[readhelper.RowID][]common.Association, error) {
 	batchResult := batch.Read[marketingCampaignSchema](ctx, c.batchAdapter, batch.ReadParams{
 		ObjectName:  core.ObjectMarketingCampaigns,
 		Identifiers: identifiers,
@@ -414,35 +431,176 @@ func (c *Connector) lookupMarketingCampaignAssets(ctx context.Context,
 		return nil, errors.Join(batchResult.Errors...)
 	}
 
-	// Campaign identifier to assets associations.
-	registry := map[readhelper.RowID][]common.Association{}
-	for _, record := range batchResult.Records {
-		registry[record.ID] = make([]common.Association, len(record.Assets))
+	assetBundles := convertBatchCampaignsToAssetBundles(batchResult.Records)
 
+	// Fetch all remaining paginated assets and extend the asset registries stored inside the bundles.
+	if err := c.fetchRemainingAssets(ctx, assetBundles); err != nil {
+		return nil, err
+	}
+
+	// Convert collected assets into associations keyed by campaign ID.
+	registry := map[readhelper.RowID][]common.Association{}
+
+	for _, bundle := range assetBundles {
+		campaignID := readhelper.RowID(bundle.ID)
+		registry[campaignID] = make([]common.Association, bundle.Assets.CombinedLength())
 		index := 0
-		for assetKind, asset := range record.Assets {
-			registry[record.ID][index] = common.Association{
-				ObjectId:                    assetKind,
-				Raw:                         asset,
-				ProviderAssociationMetadata: nil,
+
+		// Every asset becomes a distinct association.
+		// The original provider asset type is preserved as metadata.
+		for assetKind, assets := range bundle.Assets {
+			for _, asset := range assets {
+				registry[campaignID][index] = common.Association{
+					ObjectId: asset.Identifier(),
+					Raw:      asset,
+					ProviderAssociationMetadata: map[string]any{
+						"assetType": assetKind,
+					},
+				}
+				index += 1
 			}
-			index += 1
 		}
 	}
 
 	return registry, nil
 }
 
+// fetchRemainingAssets resolves all paginated asset collections for the provided campaigns.
+//
+// The initial campaign batch read only contains the first page of assets for each asset type.
+// Pagination is independent per asset type, therefore each asset category must be traversed
+// separately until exhaustion.
+//
+// The method mutates the provided bundles in place by appending newly fetched assets into bundle.Assets.
+// Pagination continues until the provider stops returning a paging cursor.
+func (c *Connector) fetchRemainingAssets(ctx context.Context, bundles []assetBundle) error {
+	for _, bundle := range bundles {
+		for assetKind, after := range bundle.NextPages {
+			url, err := c.getMarketingCampaignAssetsURL(bundle.ID, assetKind)
+			if err != nil {
+				return err
+			}
+
+			// Traverse all pages for this campaign + asset type pair.
+			for after != "" {
+				// https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/assets/get-assets
+				url.WithQueryParam("after", after)
+				delete(bundle.NextPages, assetKind) // symbolic bookkeeping
+
+				resp, err := c.JSONHTTPClient().Get(ctx, url.String())
+				if err != nil {
+					return err
+				}
+
+				assets, err := common.UnmarshalJSON[assetsResponse](resp)
+				if err != nil {
+					return err
+				}
+
+				// Append fetched assets into the existing registry.
+				for _, asset := range assets.Results {
+					bundle.Assets.Add(assetKind, asset)
+				}
+
+				// Continue pagination if another page exists.
+				if assets.Paging != nil {
+					after = assets.Paging.Next.After
+
+					continue
+				}
+
+				// No paging token means this was the final page.
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 type marketingCampaignSchema struct {
-	ID     string         `json:"id"`
-	Assets campaignAssets `json:"assets"`
+	ID           CampaignID           `json:"id"`
+	AssetMapping campaignAssetMapping `json:"assets"`
 }
 
 type (
-	campaignAssets map[assetType]campaignAsset
-	assetType      = string
-	campaignAsset  map[string]any
+	// campaignAssetMapping groups assets by provider asset type.
+	//
+	// Example keys:
+	//   - MARKETING_EMAIL
+	//   - MARKETING_EVENT
+	//   - AD_CAMPAIGN
+	campaignAssetMapping map[assetType]assetsResponse
+	assetType            = string
+	assetsResponse       struct {
+		Results []assetDef `json:"results"`
+		Paging  *struct {
+			Next struct {
+				After string `json:"after"`
+				Link  string `json:"link"`
+			} `json:"next"`
+		} `json:"paging,omitempty"`
+	}
+	assetDef map[string]any
 )
+
+func (a assetDef) Identifier() string {
+	id, _ := a["id"].(string)
+
+	return id
+}
+
+// assetBundle is an intermediate aggregation structure used while resolving
+// campaign assets across paginated provider responses.
+//
+// The batch campaign endpoint only returns the first page of assets for each
+// asset type. assetBundle stores:
+//
+//   - all currently collected assets grouped by asset type
+//   - pagination cursors for asset types that have more than one page
+//
+// The bundle acts as the bridge between the provider API representation and
+// the final Ampersand association model.
+type assetBundle struct {
+	// Campaign identifier owning the assets.
+	ID CampaignID
+	// Fully or partially collected Assets grouped by asset type.
+	Assets datautils.IndexedLists[assetType, assetDef]
+	// NextPages holds "after" page token keyed by asset type.
+	// Presence in this map indicates that additional pages must still be fetched.
+	NextPages map[assetType]string
+}
+
+// convertBatchCampaignsToAssetBundles transforms batch campaign responses into
+// mutable asset bundles suitable for pagination expansion.
+func convertBatchCampaignsToAssetBundles(campaigns []marketingCampaignSchema) []assetBundle {
+	bundles := make([]assetBundle, len(campaigns))
+
+	for index, campaign := range campaigns {
+		// Init bundle.
+		bundle := assetBundle{
+			ID:        campaign.ID,
+			Assets:    make(datautils.IndexedLists[assetType, assetDef]),
+			NextPages: make(map[assetType]string),
+		}
+		bundles[index] = bundle
+
+		// Populate bundle.
+		for assetKind, assetWrapper := range campaign.AssetMapping {
+			// Store the first page of assets already returned by the batch API.
+			for _, asset := range assetWrapper.Results {
+				bundle.Assets.Add(assetKind, asset)
+			}
+
+			// Record pagination state for asset types that require additional fetches.
+			if assetWrapper.Paging != nil {
+				bundle.NextPages[assetKind] = assetWrapper.Paging.Next.After
+			}
+		}
+	}
+
+	return bundles
+}
 
 type crmObjectSchema[T ~string] struct {
 	// ID which can be found inside the Data.
