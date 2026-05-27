@@ -24,15 +24,36 @@ type jsonError struct {
 	ErrorCode string `json:"errorCode"`
 }
 
+// errorWithRawResponse preserves the legacy "<sentinel>: <msg> (HTTP status N)"
+// formatting from Error() while still threading a *common.HTTPError through
+// the chain so that callers using errors.As(err, &*common.HTTPError{}) can
+// recover the raw provider response body. Without this, NewHTTPError's own
+// Error() would prefix the message with "HTTP status N: ", which existing
+// log consumers and customer integrations depend on staying after the
+// sentinel and message.
+type errorWithRawResponse struct {
+	msg     string
+	httpErr *common.HTTPError
+}
+
+func (e *errorWithRawResponse) Error() string { return e.msg }
+func (e *errorWithRawResponse) Unwrap() error { return e.httpErr }
+
 func createError(baseErr error, sfErr jsonError, res *http.Response, body []byte) error {
-	var innerErr error
-	if len(sfErr.Message) > 0 {
-		innerErr = fmt.Errorf("%w: %s", baseErr, sfErr.Message)
-	} else {
-		innerErr = baseErr
+	if len(sfErr.Message) == 0 {
+		return baseErr
 	}
 
-	return common.NewHTTPError(res.StatusCode, body, common.GetResponseHeaders(res), innerErr)
+	msgErr := fmt.Errorf("%w: %s (HTTP status %d)", baseErr, sfErr.Message, res.StatusCode)
+
+	httpErr, ok := common.NewHTTPError(res.StatusCode, body, common.GetResponseHeaders(res), msgErr).(*common.HTTPError)
+	if !ok {
+		// NewHTTPError returns the bare inner err when the status code is out
+		// of the [1, 599] range. Fall back to the plain formatted error.
+		return msgErr
+	}
+
+	return &errorWithRawResponse{msg: msgErr.Error(), httpErr: httpErr}
 }
 
 // noSuchColumnRe extracts the field and object names from a Salesforce
@@ -78,11 +99,14 @@ func formatFieldNotFoundMessage(msg string) string {
 	return strings.TrimSpace(msg) + fieldNotFoundGuidance
 }
 
-// fieldNotFoundError wraps common.ErrBadRequest for errors.Is matching while
-// rendering only the supplied message. It is intentionally not returned via
-// createError / common.NewHTTPError so the formatted, customer-facing message
-// is not prefixed with "HTTP status N: " or "bad request: ". The trade-off is
-// that the raw provider response body is not propagated for this error case.
+// fieldNotFoundError wraps common.ErrBadRequest for errors.Is matching but
+// renders only the supplied message — bypassing the "bad request:" prefix
+// and "(HTTP status N)" suffix that createError would otherwise add.
+//
+// Because this path does not go through createError, the raw provider
+// response body is not propagated for "No such column" errors. The formatted
+// guidance message contains the field name and remediation steps, which is
+// the actionable signal for this specific case.
 type fieldNotFoundError struct {
 	msg string
 }
