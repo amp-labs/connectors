@@ -104,8 +104,9 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Account ID",
-					Prompt:      "Your NetSuite Account ID (e.g. TD1234567 for production, TD1234567_SB1 for sandbox).",
+					DisplayName: "Netsuite URL Prefix",
+					Prompt: "If your Netsuite URL is https://1234567-sb.app.netsuite.com/, then the prefix is 1234567-sb.",
+					DocsURL: "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_1498251763.html",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTAPI: ModuleDependency{},
 						ModuleNetsuiteSuiteQL: ModuleDependency{},
