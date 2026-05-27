@@ -26,6 +26,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCampaignsLast := testutils.DataFromFile(t, "read/campaigns/2-last-page.json")
 	responseCampaignsBatchOK := testutils.DataFromFile(t, "batch/read/campaigns/ok-200.json")
 	responseCampaignsBatchMulti := testutils.DataFromFile(t, "batch/read/campaigns/multi-207.json")
+	responseMarketingEmailAssets := testutils.DataFromFile(t, "read/campaigns/marketing-email-assets-2-page.json")
 	responseCampaignsInfluencedContacts := testutils.DataFromFile(t, "read/campaigns/influenced-contacts.json")
 	responseContactsBatched := testutils.DataFromFile(t, "read/objects-api/contacts-batch.json")
 	responseMarketingEmailFirst := testutils.DataFromFile(t, "read/marketing-emails/1-first-page.json")
@@ -409,6 +410,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						),
 					},
 					Then: mockserver.Response(http.StatusOK, responseCampaignsBatchOK),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/marketing/campaigns/2026-03/36137b99-47a6-40fe-986d-839a5e3deebb/assets/MARKETING_EMAIL"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseMarketingEmailAssets),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
@@ -421,45 +428,40 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						Id:     "430318c4-abb7-4bf7-a75e-9c5fa8f475a6",
 						Associations: map[string][]common.Association{
 							"assets": {{
-								ObjectId: "AD_CAMPAIGN",
+								ObjectId: "709704336",
 								Raw: map[string]any{
-									"results": []any{map[string]any{
-										"id":   "709704336",
-										"name": "New Campaign Group",
-									}},
+									"id":   "709704336",
+									"name": "New Campaign Group",
 								},
+								ProviderAssociationMetadata: map[string]any{"assetType": "AD_CAMPAIGN"},
 							}, {
-								ObjectId: "MARKETING_EMAIL",
+								ObjectId: "212476546342",
 								Raw: map[string]any{
-									"results": []any{map[string]any{
-										"id":   "212476546342",
-										"name": "A new marketing email",
-									}},
+									"id":   "212476546342",
+									"name": "A new marketing email",
 								},
+								ProviderAssociationMetadata: map[string]any{"assetType": "MARKETING_EMAIL"},
 							}, {
-								ObjectId: "MARKETING_EVENT",
+								ObjectId: "555449508947",
 								Raw: map[string]any{
-									"results": []any{map[string]any{
-										"id":   "555449508947",
-										"name": "Holidays",
-									}},
+									"id":   "555449508947",
+									"name": "Holidays",
 								},
+								ProviderAssociationMetadata: map[string]any{"assetType": "MARKETING_EVENT"},
 							}, {
-								ObjectId: "MEETING_EVENT",
+								ObjectId: "76153683252",
 								Raw: map[string]any{
-									"results": []any{map[string]any{
-										"id":   "76153683252",
-										"name": "Ampersand Enablement Session",
-									}},
+									"id":   "76153683252",
+									"name": "Ampersand Enablement Session",
 								},
+								ProviderAssociationMetadata: map[string]any{"assetType": "MEETING_EVENT"},
 							}, {
-								ObjectId: "OBJECT_LIST",
+								ObjectId: "181",
 								Raw: map[string]any{
-									"results": []any{map[string]any{
-										"id":   "181",
-										"name": "Cindy - Eng Above March 31, 2025",
-									}},
+									"id":   "181",
+									"name": "Cindy - Eng Above March 31, 2025",
 								},
+								ProviderAssociationMetadata: map[string]any{"assetType": "OBJECT_LIST"},
 							}},
 						},
 					},
@@ -469,13 +471,33 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						Id:     "36137b99-47a6-40fe-986d-839a5e3deebb",
 						Associations: map[string][]common.Association{
 							"assets": {{
-								ObjectId: "OBJECT_LIST",
+								ObjectId: "50",
 								Raw: map[string]any{
-									"results": []any{map[string]any{
-										"id":   "44",
-										"name": "SMB CEOs: 50-249",
-									}},
+									"id":   "50",
+									"name": "SMB CEOs: 50-249",
 								},
+								ProviderAssociationMetadata: map[string]any{"assetType": "OBJECT_LIST"},
+							}, {
+								ObjectId: "411238073536",
+								Raw: map[string]any{
+									"id":   "411238073536",
+									"name": "Asset (3)",
+								},
+								ProviderAssociationMetadata: map[string]any{"assetType": "MARKETING_EMAIL"},
+							}, {
+								ObjectId: "411207591161",
+								Raw: map[string]any{
+									"id":   "411207591161",
+									"name": "Asset (2)",
+								},
+								ProviderAssociationMetadata: map[string]any{"assetType": "MARKETING_EMAIL"},
+							}, {
+								ObjectId: "411234145518",
+								Raw: map[string]any{
+									"id":   "411234145518",
+									"name": "Asset (1)",
+								},
+								ProviderAssociationMetadata: map[string]any{"assetType": "MARKETING_EMAIL"},
 							}},
 						},
 					},

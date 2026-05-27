@@ -76,10 +76,24 @@
         "OBJECT_LIST": {
           "results": [
             {
-              "id": "44",
+              "id": "50",
               "name": "SMB CEOs: 50-249"
             }
           ]
+        },
+        "MARKETING_EMAIL": {
+          "results": [
+            {
+              "id": "411238073536",
+              "name": "Asset (3)"
+            }
+          ],
+          "paging": {
+            "next": {
+              "after": "MTIzNDMzMzQyMTc5OQ%3D%3D",
+              "link": "https://api.hubapi.com/marketing/v3/campaigns/a67c3289-dc9d-492b-9760-01374b313c78/assets/MARKETING_EMAIL?after=MTIzNDMzMzQyMTc5OQ%3D%3D"
+            }
+          }
         }
       }
     }

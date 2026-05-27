@@ -128,6 +128,11 @@ func (c *Connector) getMarketingCampaignContactsURL(campaignID, contactType stri
 	return c.rootURL("marketing/campaigns", core.APIVersion2026March, campaignID, "reports/contacts", contactType)
 }
 
+// https://developers.hubspot.com/docs/api-reference/latest/marketing/campaigns/assets/get-assets
+func (c *Connector) getMarketingCampaignAssetsURL(campaignID CampaignID, assetKind assetType) (*urlbuilder.URL, error) {
+	return c.rootURL("marketing/campaigns", core.APIVersion2026March, string(campaignID), "assets", assetKind)
+}
+
 func (c *Connector) getCommunicationURL(objectName string, object *core.ObjectDescription) (*urlbuilder.URL, error) {
 	if objectName == core.ObjectCustomChannels {
 		// This is the only exception in the URL structure.
