@@ -392,6 +392,11 @@ func (c *Connector) lookupMarketingCampaignAssociations(ctx context.Context,
 		return nil, readhelper.ErrAssociationLookupNotImplemented
 	}
 
+	if len(identifiers) == 0 {
+		// Early exit.
+		return make(map[readhelper.RowID][]common.Association), nil
+	}
+
 	switch toObject {
 	case core.AssociationAssets:
 		return c.lookupMarketingCampaignAssets(ctx, identifiers)
