@@ -39,7 +39,8 @@ func TestIsContextAlive(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), 1*time.Millisecond)
 		defer cancel()
 
-		time.Sleep(10 * time.Millisecond)
+		// wait for context to expire
+		<-ctx.Done()
 		assert.False(t, IsContextAlive(ctx))
 	})
 
