@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"sort"
 	"strings"
 	"sync"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -1000,13 +1000,16 @@ func TestNewConnector_WithOptions(t *testing.T) {
 		"persons": testPersonSchema,
 	}
 
+	client := mockutils.NewClient()
+	defer client.CloseIdleConnections()
+
 	// Test WithClient option
-	conn, err := NewConnector(WithSchemas(schemas), WithClient(http.DefaultClient))
+	conn, err := NewConnector(WithSchemas(schemas), WithClient(client))
 	require.NoError(t, err)
 	require.NotNil(t, conn)
 
 	// Test WithAuthenticatedClient option
-	conn2, err := NewConnector(WithSchemas(schemas), WithAuthenticatedClient(http.DefaultClient))
+	conn2, err := NewConnector(WithSchemas(schemas), WithAuthenticatedClient(client))
 	require.NoError(t, err)
 	require.NotNil(t, conn2)
 }

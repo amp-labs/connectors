@@ -2,6 +2,7 @@ package justcall
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -416,24 +417,24 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
+func constructTestConnector(server *httptest.Server) (*Connector, error) {
 	connector, err := NewConnector(
 		common.ConnectorParams{
 			Module:              common.ModuleRoot,
-			AuthenticatedClient: &http.Client{},
+			AuthenticatedClient: server.Client(),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	connector.SetUnitTestBaseURL(serverURL)
+	connector.SetUnitTestBaseURL(server.URL)
 
 	return connector, nil
 }

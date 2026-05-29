@@ -99,7 +99,7 @@ func TestDelete(t *testing.T) {
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.DeleteConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}

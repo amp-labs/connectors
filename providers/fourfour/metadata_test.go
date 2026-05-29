@@ -2,6 +2,7 @@ package fourfour
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -99,22 +100,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
+func constructTestConnector(server *httptest.Server) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: http.DefaultClient,
+		AuthenticatedClient: server.Client(),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	// for testing we want to redirect calls to our mock server
-	connector.SetBaseURL(serverURL)
+	connector.SetUnitTestMockServerBaseURL(server.URL)
 
 	return connector, nil
 }

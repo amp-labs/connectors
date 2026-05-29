@@ -159,9 +159,7 @@ func TestJSONHTTPClient_Get_Success(t *testing.T) {
 
 	httpClient := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -209,9 +207,7 @@ func TestJSONHTTPClient_Get_ErrorResponse(t *testing.T) {
 
 	httpClient := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -238,9 +234,7 @@ func TestJSONHTTPClient_Get_ErrorPostProcessor(t *testing.T) {
 
 	httpClient := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -282,9 +276,7 @@ func TestJSONHTTPClient_Post_Success(t *testing.T) {
 
 	httpClient := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -357,9 +349,7 @@ func TestJSONHTTPClient_Put_Success(t *testing.T) {
 
 	httpClient := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -405,9 +395,7 @@ func TestJSONHTTPClient_Patch_Success(t *testing.T) {
 
 	httpClient := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -444,9 +432,7 @@ func TestJSONHTTPClient_Delete_Success(t *testing.T) {
 
 	httpClient := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 
@@ -481,9 +467,7 @@ func TestJSONHTTPClient_Delete_WithResponseBody(t *testing.T) {
 
 	httpClient := &HTTPClient{
 		Client: &mockAuthClient{
-			doFunc: func(req *http.Request) (*http.Response, error) {
-				return http.DefaultClient.Do(req)
-			},
+			doFunc: server.Client().Do,
 		},
 	}
 

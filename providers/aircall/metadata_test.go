@@ -1,7 +1,7 @@
 package aircall
 
 import (
-	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -84,17 +84,17 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
+func constructTestConnector(server *httptest.Server) (*Connector, error) {
 	connector, err := NewConnector(
 		common.ConnectorParams{
 			Module:              common.ModuleRoot,
-			AuthenticatedClient: &http.Client{},
+			AuthenticatedClient: server.Client(),
 			Workspace:           "test-workspace",
 		},
 	)
@@ -103,7 +103,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	}
 
 	// Override the base URL to point to the test server
-	connector.SetUnitTestBaseURL(serverURL)
+	connector.SetUnitTestBaseURL(server.URL)
 
 	return connector, nil
 }

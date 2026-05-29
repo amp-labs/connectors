@@ -1,7 +1,7 @@
 package gusto
 
 import (
-	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -122,24 +122,24 @@ func TestListObjectMetadata(t *testing.T) {
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
+func constructTestConnector(server *httptest.Server) (*Connector, error) {
 	connector, err := NewConnector(
 		common.ConnectorParams{
 			Module:              common.ModuleRoot,
-			AuthenticatedClient: &http.Client{},
+			AuthenticatedClient: server.Client(),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	connector.SetUnitTestBaseURL(serverURL)
+	connector.SetUnitTestBaseURL(server.URL)
 
 	return connector, nil
 }
