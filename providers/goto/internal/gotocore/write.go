@@ -6,11 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -40,7 +40,7 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 		}
 	}
 
-	jsonData, err := marshalWriteBody(params.RecordData)
+	jsonData, err := marshalWriteBody(params.ObjectName, params.RecordData)
 	if err != nil {
 		return nil, err
 	}
@@ -48,26 +48,26 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
-// marshalWriteBody serializes the write payload. Most GoTo endpoints accept a
-// JSON object, but a few (e.g. webhooks, userSubscriptions) accept an array of
-// objects — for those we pass the slice through without coercing it to a map.
-func marshalWriteBody(recordData any) ([]byte, error) {
-	v := reflect.ValueOf(recordData)
-	if v.IsValid() && (v.Kind() == reflect.Slice || v.Kind() == reflect.Array) {
-		jsonData, err := json.Marshal(recordData)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal record data: %w", err)
-		}
+// arrayBodyObjects are the GoTo objects whose write endpoints expect the request
+// body to be a JSON array of records rather than a single object.
+var arrayBodyObjects = datautils.NewSet("webhooks", "userSubscriptions") //nolint:gochecknoglobals
 
-		return jsonData, nil
-	}
-
+// marshalWriteBody serializes the write payload. RecordData always arrives as a
+// single record object; most GoTo endpoints accept that object as-is, but a few
+// (webhooks, userSubscriptions) require a JSON array, so for those we wrap the
+// record in a one-element array before marshaling.
+func marshalWriteBody(objectName string, recordData any) ([]byte, error) {
 	asMap, err := common.RecordDataToMap(recordData)
 	if err != nil {
 		return nil, err
 	}
 
-	jsonData, err := json.Marshal(asMap)
+	var payload any = asMap
+	if arrayBodyObjects.Has(objectName) {
+		payload = []map[string]any{asMap}
+	}
+
+	jsonData, err := json.Marshal(payload)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal record data: %w", err)
 	}
