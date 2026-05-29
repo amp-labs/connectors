@@ -2,6 +2,7 @@ package hubspot
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
@@ -121,6 +123,8 @@ func (c *Connector) getObjectMetadata(ctx context.Context, objectName string) (*
 		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
 	case core.MiscellaneousObjects.Has(objectName):
 		return metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
+	case core.IsActivityEvent(objectName):
+		return c.sampleActivityEventMetadata(ctx, objectName)
 	default:
 		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
 		return c.getObjectMetadataFromPropertyAPI(ctx, objectName)
@@ -579,4 +583,80 @@ func isMissingSchemasScope(err error) bool {
 type schemaResponse struct {
 	RequiredProperties []string           `json:"requiredProperties"`
 	Properties         []fieldDescription `json:"properties"`
+}
+
+func (c *Connector) sampleActivityEventMetadata(ctx context.Context,
+	objectName string,
+) (*common.ObjectMetadata, error) {
+	url, err := c.getEventOccurrencesURL()
+	if err != nil {
+		return nil, err
+	}
+
+	eventType := core.ExtractActivityEventType(objectName)
+	url.WithQueryParam("eventType", eventType)
+	url.WithQueryParam("limit", "1")
+
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	activityEvent, err := common.UnmarshalJSON[activityEventResponse](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	fields := make(common.FieldsMetadata)
+	for _, fieldName := range activityEvent.Fields() {
+		fields.AddFieldWithDisplayOnly(fieldName, fieldName)
+	}
+
+	displayFormat := func(name string) string {
+		displayName, _ := strings.CutPrefix(name, "e_")
+		displayName = naming.SeparateUnderscoreWords(displayName)
+
+		return naming.CapitalizeFirstLetterEveryWord(displayName)
+	}
+
+	return common.NewObjectMetadata(displayFormat(eventType), fields), nil
+}
+
+type activityEventResponse struct {
+	Results []activityEventResponseResult `json:"results"`
+}
+
+type activityEventResponseResult struct {
+	RawJSON          map[string]any
+	NestedProperties map[string]any
+}
+
+func (a *activityEventResponseResult) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, &a.RawJSON); err != nil {
+		return err
+	}
+
+	type nestedProperties struct {
+		Properties map[string]any `json:"properties"`
+	}
+
+	var nested nestedProperties
+	if err := json.Unmarshal(data, &nested); err != nil {
+		return err
+	}
+
+	a.NestedProperties = nested.Properties
+
+	return nil
+}
+
+func (r activityEventResponse) Fields() []string {
+	if len(r.Results) == 0 {
+		return nil
+	}
+
+	return datautils.MergeSets(
+		datautils.FromMap(r.Results[0].RawJSON).KeySet(),
+		datautils.FromMap(r.Results[0].NestedProperties).KeySet(),
+	).List()
 }

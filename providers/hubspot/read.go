@@ -53,6 +53,8 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		return c.readCommunications(ctx, params, core.CommunicationObjects[params.ObjectName])
 	case core.MiscellaneousObjects.Has(params.ObjectName):
 		return c.readMiscAPI(ctx, params, core.MiscellaneousObjects[params.ObjectName])
+	case core.IsActivityEvent(params.ObjectName):
+		return c.readActivityEvent(ctx, params)
 	default:
 		// Otherwise object belongs to Hubspot Objects API (sub-category of CRM namespace).
 		return c.readCRMObjectsAPI(ctx, params)
@@ -257,6 +259,60 @@ func makeIncrementalFilterFunc(params common.ReadParams) common.RecordsFilterFun
 		"updatedAt", time.RFC3339,
 		core.GetNextRecordsURL,
 	)
+}
+
+func (c *Connector) readActivityEvent(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	eventType := core.ExtractActivityEventType(params.ObjectName)
+
+	url, err := c.buildActivityEventReadURL(params, eventType)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(
+		resp,
+		core.GetRecords,
+		core.GetNextRecordsURL,
+		readhelper.MakeMarshaledDataFuncWithId(
+			common.FlattenNestedFields("properties"),
+			readhelper.IdFieldQuery{Field: "id"},
+		),
+		params.Fields,
+	)
+}
+
+func (c *Connector) buildActivityEventReadURL(
+	params common.ReadParams, eventType string,
+) (*urlbuilder.URL, error) {
+	if len(params.NextPage) != 0 {
+		// Next page
+		return urlbuilder.New(params.NextPage.String())
+	}
+
+	// First page
+	url, err := c.getEventOccurrencesURL()
+	if err != nil {
+		return nil, err
+	}
+
+	// Note: do not use "sort" query parameter in the reverse order "-occurredAt", because it messes up the pagination.
+	url.WithQueryParam("eventType", eventType) // required
+	url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, core.DefaultPageSize))
+
+	if !params.Since.IsZero() {
+		url.WithQueryParam("occurredAfter", datautils.Time.FormatRFC3339inUTC(params.Since))
+	}
+
+	if !params.Until.IsZero() {
+		url.WithQueryParam("occurredBefore", datautils.Time.FormatRFC3339inUTC(params.Until))
+	}
+
+	return url, nil
 }
 
 func (c *Connector) readCommunications(ctx context.Context, // nolint:funlen

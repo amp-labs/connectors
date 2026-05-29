@@ -23,6 +23,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 	metadataDealsPipelines := testutils.DataFromFile(t, "metadata-deals-external-pipelines.json")
 	metadataErrSchemaScopes := testutils.DataFromFile(t, "metadata-err-schemas-scope.json")
 	responseLists := testutils.DataFromFile(t, "read-lists-1-first-page.json")
+	responseEventDealClosed := testutils.DataFromFile(t, "read/events/e_deal_closed.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -459,6 +460,50 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "string",
 								ProviderType: "string",
 							},
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successfully describe activity event deal closed",
+			Input: []string{"AMPERSAND-event-occurrences-e_deal_closed"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/events/event-occurrences/2026-03"),
+					mockcond.QueryParam("eventType", "e_deal_closed"),
+					mockcond.QueryParam("limit", "1"), // sampling
+				},
+				Then: mockserver.Response(http.StatusOK, responseEventDealClosed),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"AMPERSAND-event-occurrences-e_deal_closed": {
+						DisplayName: "Deal Closed",
+						Fields: map[string]common.FieldMetadata{
+							// Nested fields from properties.
+							"hs_amount":                         {DisplayName: "hs_amount"},
+							"hs_team":                           {DisplayName: "hs_team"},
+							"hs_closed_state":                   {DisplayName: "hs_closed_state"},
+							"hs_closed_state_reason":            {DisplayName: "hs_closed_state_reason"},
+							"hs_pipeline":                       {DisplayName: "hs_pipeline"},
+							"hs_analytics_latest_source_data_2": {DisplayName: "hs_analytics_latest_source_data_2"},
+							"hs_deal_name":                      {DisplayName: "hs_deal_name"},
+							"hs_analytics_latest_source_data_1": {DisplayName: "hs_analytics_latest_source_data_1"},
+							"hs_analytics_latest_source":        {DisplayName: "hs_analytics_latest_source"},
+							"hs_deal_owner":                     {DisplayName: "hs_deal_owner"},
+							// Root level fields.
+							"properties": {DisplayName: "properties"},
+							"objectType": {DisplayName: "objectType"},
+							"objectId":   {DisplayName: "objectId"},
+							"eventType":  {DisplayName: "eventType"},
+							"occurredAt": {DisplayName: "occurredAt"},
+							"id":         {DisplayName: "id"},
 						},
 					},
 				},

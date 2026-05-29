@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -34,6 +35,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseMarketingForms := testutils.DataFromFile(t, "read/marketing-forms.json")
 	responseMarketingEvents := testutils.DataFromFile(t, "read/marketing-events.json")
 	responseMeetingLinks := testutils.DataFromFile(t, "read/meeting-links.json")
+	responseEventVisitedPage := testutils.DataFromFile(t, "read/events/e_visited_page.json")
 
 	tests := []testroutines.Read{
 		{
@@ -820,6 +822,48 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				NextPage: "https://api.hubapi.com/scheduler/2026-03/meetings/meeting-links?limit=1&after=MQ%3D%3D",
 				Done:     false,
+			},
+		},
+		{
+			Name: "Read activity event visited page",
+			Input: common.ReadParams{
+				ObjectName: "AMPERSAND-event-occurrences-e_visited_page",
+				Fields:     connectors.Fields("hs_title"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/events/event-occurrences/2026-03"),
+					mockcond.QueryParam("eventType", "e_visited_page"),
+					mockcond.QueryParam("limit", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseEventVisitedPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"hs_title": "Title ABC"},
+					Raw: map[string]any{
+						"objectType": "CONTACT",
+						"objectId":   "221021723238",
+						"eventType":  "e_visited_page",
+						"properties": mockutils.Any{},
+					},
+					Id: "leviathan-842781b4-ac94-337b-b943-3c4379430816-1778543237075",
+				}, {
+					Fields: map[string]any{"hs_title": "Title JKL"},
+					Raw: map[string]any{
+						"objectType": "CONTACT",
+						"objectId":   "222875712435",
+						"eventType":  "e_visited_page",
+						"properties": mockutils.Any{},
+					},
+					Id: "leviathan-4fdf9fe8-e2b2-37d8-a5ea-b70b4cb94e74-1779327364329",
+				}},
+				NextPage: "",
+				Done:     true,
 			},
 		},
 	}
