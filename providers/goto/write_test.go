@@ -18,6 +18,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 	createGroupsResponse := testutils.DataFromFile(t, "create-groups.json")
 	createTeamsResponse := testutils.DataFromFile(t, "create-teams.json")
 	createTemplatesResponse := testutils.DataFromFile(t, "create-templates.json")
+	createWebhookResponse := testutils.DataFromFile(t, "create-webhook.json")
 
 	tests := []testroutines.Write{
 		{
@@ -142,6 +143,40 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				Success:  true,
 				RecordId: "kdhoasdofaso",
 				Data:     map[string]any{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// webhooks is an array-body endpoint: we accept a single record
+			// object and must wrap it into a one-element array in the request.
+			Name: "Create webhook wraps single object into array body",
+			Input: common.WriteParams{
+				ObjectName: "webhooks",
+				RecordData: map[string]any{
+					"callbackUrl":  "https://example.com/hook",
+					"eventName":    "registrant.joined",
+					"eventVersion": "1.0.0",
+					"product":      "g2w",
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/G2W/rest/v2/webhooks"),
+					// the single record object must be wrapped in a one-element array
+					mockcond.Body(`[{"callbackUrl":"https://example.com/hook","eventName":"registrant.joined","eventVersion":"1.0.0","product":"g2w"}]`), //nolint:lll
+				},
+				Then: mockserver.Response(http.StatusOK, createWebhookResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "cdb516e0-85f8-4e30-bf19-ddb0ea9d40c2",
+				Data: map[string]any{
+					"webhookKey":  "cdb516e0-85f8-4e30-bf19-ddb0ea9d40c2",
+					"callbackUrl": "https://example.com/hook",
+				},
 			},
 			ExpectedErrs: nil,
 		},
