@@ -827,7 +827,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Read activity event visited page",
 			Input: common.ReadParams{
-				ObjectName: "activity_event_e_visited_page",
+				ObjectName: "AMPERSAND-event-occurrences-e_visited_page",
 				Fields:     connectors.Fields("hs_title"),
 			},
 			Server: mockserver.Conditional{

@@ -469,7 +469,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		},
 		{
 			Name:  "Successfully describe activity event deal closed",
-			Input: []string{"activity_event_e_deal_closed"},
+			Input: []string{"AMPERSAND-event-occurrences-e_deal_closed"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -483,7 +483,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"activity_event_e_deal_closed": {
+					"AMPERSAND-event-occurrences-e_deal_closed": {
 						DisplayName: "Deal Closed",
 						Fields: map[string]common.FieldMetadata{
 							// Nested fields from properties.

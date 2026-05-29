@@ -22,7 +22,7 @@ func main() {
 	conn := connTest.GetHubspotConnector(ctx)
 
 	metadata, err := conn.ListObjectMetadata(ctx, []string{
-		"activity_event_e_visited_page",
+		"AMPERSAND-event-occurrences-e_visited_page",
 	})
 	if err != nil {
 		utils.Fail("error listing metadata for provider", "error", err)

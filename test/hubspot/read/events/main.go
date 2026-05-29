@@ -21,7 +21,7 @@ func main() {
 	conn := connTest.GetHubspotConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "activity_event_e_visited_page",
+		ObjectName: "AMPERSAND-event-occurrences-e_visited_page",
 		Fields:     connectors.Fields("hs_page_id", "hs_title"),
 		//Since:      utils.Timestamp("2026-05-21T23:34:50.537Z"),
 		//PageSize: 2,

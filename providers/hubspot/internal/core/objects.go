@@ -38,20 +38,20 @@ const (
 // There are many event types, the list may differ between the accounts.
 // https://developers.hubspot.com/docs/api-reference/latest/events/retrieve-events/get-event-types
 //
-// Connector accepts objectName that follows the following format: `activity_event_<EVENT-TYPE>`.
+// Connector accepts objectName that follows the following format: `AMPERSAND-event-occurrences-<EVENT-TYPE>`.
 //
 // Examples:
 //
-//	activity_event_e_visited_page
-//	activity_event_e_call_ended
-//	activity_event_e_document_shared_v2
-//	activity_event_e_form_completion_v2
-//	activity_event_e_clicked_whatsapp_message
-//	activity_event_e_form_view
-//	activity_event_e_form_submission_v2
-//	activity_event_e_form_submission
-//	activity_event_e_v2_contact_replied_sequence_email
-const ActivityEventObjectPrefix = "activity_event_"
+//	AMPERSAND-event-occurrences-e_visited_page
+//	AMPERSAND-event-occurrences-e_call_ended
+//	AMPERSAND-event-occurrences-e_document_shared_v2
+//	AMPERSAND-event-occurrences-e_form_completion_v2
+//	AMPERSAND-event-occurrences-e_clicked_whatsapp_message
+//	AMPERSAND-event-occurrences-e_form_view
+//	AMPERSAND-event-occurrences-e_form_submission_v2
+//	AMPERSAND-event-occurrences-e_form_submission
+//	AMPERSAND-event-occurrences-e_v2_contact_replied_sequence_email
+const ActivityEventObjectPrefix = "AMPERSAND-event-occurrences-"
 
 func IsActivityEvent(objectName string) bool {
 	return strings.HasPrefix(objectName, ActivityEventObjectPrefix)
