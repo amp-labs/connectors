@@ -12,7 +12,20 @@ import (
 
 const (
 	restAPIPrefix = "api"
+	// apiNamespace is ServiceNow's REST API namespace ("now", short for the Now
+	// Platform). It is part of the URL infrastructure shared by every endpoint,
+	// not a meaningful part of an object's identity, so it lives here rather than
+	// being baked into object names.
+	apiNamespace = "now"
 )
+
+// Object names map onto ServiceNow REST resources without the "now" namespace
+// prefix (it only means "servicenow" and adds no meaning). Table API records use
+// a "table/<name>" name, where "table" identifies the generic Table API surface
+// and disambiguates it from dedicated endpoints (e.g. "contact"). Only real
+// ServiceNow entities are objects here; the Batch API ("now/batch") is a
+// transport for batched writes, not an entity, so it is intentionally not an
+// object.
 
 type Connector struct {
 	// Basic connector

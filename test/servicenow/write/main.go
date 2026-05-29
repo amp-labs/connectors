@@ -47,7 +47,7 @@ func run() error {
 
 func testWriteIncidents(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "now/table/incident",
+		ObjectName: "table/incident",
 		RecordData: map[string]any{
 			"assigned_to": "1c741bd70b2322007518478d83673af3",
 			"urgency":     "1",
@@ -75,7 +75,7 @@ func testWriteIncidents(ctx context.Context, conn *ServiceNow.Connector) error {
 
 func testUpdateIncidents(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "now/table/incident",
+		ObjectName: "table/incident",
 		RecordId:   "6a2f6fbb83f02210290fed70deaad320",
 		RecordData: map[string]any{
 			"company": "Ampersand",
@@ -101,7 +101,7 @@ func testUpdateIncidents(ctx context.Context, conn *ServiceNow.Connector) error 
 
 func testUpdateMailServer(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "now/table/cmdb_ci_email_server",
+		ObjectName: "table/cmdb_ci_email_server",
 		RecordId:   "280ffff1c0a8000b0083f5395b44bc97",
 		RecordData: map[string]any{
 			"due_in": "2025-10-10",
@@ -127,7 +127,7 @@ func testUpdateMailServer(ctx context.Context, conn *ServiceNow.Connector) error
 
 func testCreateContact(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "now/contact",
+		ObjectName: "contact",
 		RecordData: map[string]any{
 			"active":       true,
 			"agent_status": "On break",

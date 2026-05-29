@@ -25,7 +25,7 @@ func run() error {
 	conn := servicenow.GetServiceNowConnector(ctx)
 
 	res, err := conn.Search(ctx, &common.SearchParams{
-		ObjectName: "now/table/incident",
+		ObjectName: "table/incident",
 		Fields:     datautils.NewStringSet("number", "state", "short_description", "caller_id"),
 		Filter: common.SearchFilter{
 			FieldFilters: []common.FieldFilter{
