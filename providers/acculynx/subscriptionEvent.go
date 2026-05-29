@@ -15,6 +15,22 @@ import (
 // SubscriptionEvent is the parsed AccuLynx webhook payload. The documented
 // payload shape is stale: real deliveries use lowercase "event", nest the
 // record under event.<object>.id, and omit companyId entirely.
+//
+// Sample delivery (contact_added):
+//
+//	{
+//	  "topicName":      "contact_added",
+//	  "eventDateTime":  "2026-05-26T14:23:55.4999782Z",
+//	  "eventId":        "38e4c045-2a6c-43f2-8309-ac8b5fc3fc2b",
+//	  "subscriptionId": "6541d9e1-12c1-45b8-b5bd-5ffa8849a4b8",
+//	  "event": {
+//	    "contact": {
+//	      "id":   "eadaaa11-1276-4166-bb93-db02f46b39a2",
+//	      "date": "2026-05-26T14:23:55.2976156Z",
+//	      "_link": "https://api.acculynx.com/api/v2/contacts/eadaaa11-..."
+//	    }
+//	  }
+//	}
 type SubscriptionEvent map[string]any
 
 var (
@@ -103,9 +119,9 @@ func (e SubscriptionEvent) ObjectName() (string, error) {
 	}
 
 	switch {
-	case strings.HasPrefix(topic, "contact_"), strings.HasPrefix(topic, "contact."):
+	case strings.HasPrefix(topic, "contact"):
 		return objectContacts, nil
-	case strings.HasPrefix(topic, "job_"), strings.HasPrefix(topic, "job."):
+	case strings.HasPrefix(topic, "job"):
 		return objectJobs, nil
 	default:
 		return "", fmt.Errorf("%w: %s", errUnsupportedTopicName, topic)
@@ -243,8 +259,9 @@ func (e SubscriptionEvent) objectWrapper() (map[string]any, error) {
 	return wrapper, nil
 }
 
-// VerifyWebhookMessage always returns true: AccuLynx does not sign webhooks
-// and exposes no verification mechanism on the wire.
+// VerifyWebhookMessage always returns true. AccuLynx's docs reference a
+// webhook secret, but the live API does not return one on subscription create
+// and deliveries carry no signing header (verified empirically).
 func (c *Connector) VerifyWebhookMessage(
 	_ context.Context,
 	_ *common.WebhookRequest,

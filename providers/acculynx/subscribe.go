@@ -257,6 +257,8 @@ func (c *Connector) createSubscription(
 	return parsed, nil
 }
 
+// updateSubscription sends the PUT. AccuLynx returns 200 with an empty body,
+// so there is no parsed result to return.
 func (c *Connector) updateSubscription(
 	ctx context.Context, subscriptionID string, payload subscriptionUpdateRequest,
 ) error {
@@ -348,6 +350,7 @@ func resolveTopics(events map[common.ObjectName]common.ObjectEvents) ([]string, 
 	}
 
 	topics := make([]string, 0, len(seen))
+	// nosemgrep: trailofbits.go.iterate-over-empty-map.iterate-over-empty-map
 	for t := range seen {
 		topics = append(topics, t)
 	}
