@@ -675,7 +675,7 @@ func (c *Connector) lookupMarketingCampaignContacts(ctx context.Context, // noli
 	}
 
 	campaignLookup := make(map[ContactID]contactRelationship)
-	contactIDs := make([]string, 0)
+	contactIDs := make(datautils.Set[string])
 
 	for relationship := range responseChannel {
 		for _, contactID := range relationship.ContactIDs {
@@ -683,14 +683,14 @@ func (c *Connector) lookupMarketingCampaignContacts(ctx context.Context, // noli
 				ContactType: relationship.ContactType,
 				CampaignID:  relationship.CampaignID,
 			}
-			contactIDs = append(contactIDs, string(contactID))
+			contactIDs.AddOne(string(contactID))
 		}
 	}
 
 	// Fetch contacts.
 	contactBatchResult := batch.Read[crmObjectSchema[ContactID]](ctx, c.batchAdapter, batch.ReadParams{
 		ObjectName:  core.ObjectContacts,
-		Identifiers: contactIDs,
+		Identifiers: contactIDs.List(),
 	})
 
 	if len(contactBatchResult.Errors) != 0 {

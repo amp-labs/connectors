@@ -91,11 +91,11 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name:        "workspace",
-					DisplayName: "Netsuite URL Prefix",
-					Prompt: "If your Netsuite URL is `https://1234567-sb.app.netsuite.com`, then the prefix is `1234567-sb`.",
+					Name:         "workspace",
+					DisplayName:  "Netsuite URL Prefix",
+					Prompt:       "If your Netsuite URL is `https://1234567-sb.app.netsuite.com`, then the prefix is `1234567-sb`.",
 					DefaultValue: "1234567-sb",
-					DocsURL: "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_1498251763.html",
+					DocsURL:      "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_1498251763.html",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTAPI: ModuleDependency{},
 						ModuleNetsuiteSuiteQL: ModuleDependency{},
