@@ -3,6 +3,7 @@ package pipeliner
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -85,11 +86,24 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Next page URL is inferred, when provided with an object",
-			Input: common.ReadParams{ObjectName: "Profiles", Fields: connectors.Fields("id")},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, responseProfilesFirstPage),
+			Name: "Next page URL is inferred, when provided with an object",
+			Input: common.ReadParams{
+				ObjectName: "Profiles",
+				Fields:     connectors.Fields("id"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+				PageSize: 77,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v100/rest/spaces/test-workspace/entities/Profiles"),
+					mockcond.QueryParam("first", "77"),
+					mockcond.QueryParam("order-by", "-modified"),
+					mockcond.QueryParam("filter-op[modified]", "gte"),
+					mockcond.QueryParam("filter[modified]", "2024-09-19T12:30:45Z"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProfilesFirstPage),
 			}.Server(),
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
