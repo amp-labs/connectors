@@ -337,7 +337,7 @@ func extractSubscriptionResult(result *common.SubscriptionResult) (*Subscription
 // for the given events. Objects must be in objectEventTopics; pass-through
 // events must be in validAcculynxTopics.
 func resolveTopics(events map[common.ObjectName]common.ObjectEvents) ([]string, error) {
-	seen := make(map[string]struct{})
+	seen := datautils.NewSet[string]()
 
 	for obj, objEvents := range events {
 		if err := appendObjectTopics(obj, objEvents, seen); err != nil {
@@ -345,16 +345,11 @@ func resolveTopics(events map[common.ObjectName]common.ObjectEvents) ([]string, 
 		}
 	}
 
-	if len(seen) == 0 {
+	if seen.IsEmpty() {
 		return nil, errNoTopicsResolved
 	}
 
-	topics := make([]string, 0, len(seen))
-	// nosemgrep: trailofbits.go.iterate-over-empty-map.iterate-over-empty-map
-	for t := range seen {
-		topics = append(topics, t)
-	}
-
+	topics := seen.List()
 	slices.Sort(topics)
 
 	return topics, nil
@@ -363,7 +358,7 @@ func resolveTopics(events map[common.ObjectName]common.ObjectEvents) ([]string, 
 func appendObjectTopics(
 	obj common.ObjectName,
 	objEvents common.ObjectEvents,
-	seen map[string]struct{},
+	seen datautils.Set[string],
 ) error {
 	objMap, supported := objectEventTopics[obj]
 	if !supported && len(objEvents.PassThroughEvents) == 0 {
@@ -378,7 +373,7 @@ func appendObjectTopics(
 		}
 
 		for _, t := range topics {
-			seen[t] = struct{}{}
+			seen.AddOne(t)
 		}
 	}
 
@@ -387,7 +382,7 @@ func appendObjectTopics(
 			return fmt.Errorf("%w: %s", errUnknownPassThroughTopic, raw)
 		}
 
-		seen[raw] = struct{}{}
+		seen.AddOne(raw)
 	}
 
 	return nil
