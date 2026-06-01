@@ -53,15 +53,12 @@ func (c *Connector) fetchObjectMetadataViaIntrospection(
 	ctx context.Context,
 	objectName string,
 ) (*common.ObjectMetadata, error) {
-	query, err := introspectionQueryForObject(objectName)
-	if err != nil {
-		return nil, err
-	}
+	query := introspectionQueryForObject(objectName)
 
 	res, err := c.postGraphQL(ctx, query)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.parseSingleObjectMetadataResponse(ctx, objectName, nil, res)
+	return parseSingleObjectMetadataResponse(objectName, res)
 }

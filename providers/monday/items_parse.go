@@ -21,12 +21,20 @@ func extractItemsRecords(node *ajson.Node) ([]map[string]any, error) {
 	}
 
 	boards, err := jsonquery.New(dataNode).ArrayOptional("boards")
-	if err != nil || len(boards) == 0 {
+	if err != nil {
+		return nil, err
+	}
+
+	if len(boards) == 0 {
 		return []map[string]any{}, nil
 	}
 
 	itemsPage, err := jsonquery.New(boards[0]).ObjectOptional("items_page")
-	if err != nil || itemsPage == nil {
+	if err != nil {
+		return nil, err
+	}
+
+	if itemsPage == nil {
 		return []map[string]any{}, nil
 	}
 

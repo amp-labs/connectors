@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/spyzhov/ajson"
 )
 
 // Field keys for board column values on items use cf_<columnId>.
@@ -89,10 +89,17 @@ func (d mondayColumnDefinition) selectValues() []common.FieldValue {
 	}
 
 	out := make([]common.FieldValue, 0, len(labels))
+	labelValues := make([]string, 0, len(labels))
 	for _, label := range labels {
 		if s, ok := label.(string); ok {
-			out = append(out, common.FieldValue{Value: s, DisplayValue: s})
+			labelValues = append(labelValues, s)
 		}
+	}
+
+	sort.Strings(labelValues)
+
+	for _, s := range labelValues {
+		out = append(out, common.FieldValue{Value: s, DisplayValue: s})
 	}
 
 	return out
@@ -126,7 +133,11 @@ func (c *Connector) fetchBoardColumnDefinitions(ctx context.Context, boardID str
 	}
 
 	boards, err := jsonquery.New(dataNode).ArrayOptional("boards")
-	if err != nil || len(boards) == 0 {
+	if err != nil {
+		return nil, err
+	}
+
+	if len(boards) == 0 {
 		return nil, nil
 	}
 
@@ -177,30 +188,7 @@ func (v columnValue) normalizedValue() any {
 	return v.Value
 }
 
-// itemReadRecordCustomFieldsTransformer flattens column_values onto the record map as cf_<columnId>.
-func itemReadRecordCustomFieldsTransformer(node *ajson.Node) (map[string]any, error) {
-	root, err := jsonquery.Convertor.ObjectToMap(node)
-	if err != nil {
-		return nil, err
-	}
-
-	entries, err := jsonquery.New(node).ArrayOptional("column_values")
-	if err != nil {
-		return nil, err
-	}
-
-	for _, entryNode := range entries {
-		field, err := jsonquery.ParseNode[columnValue](entryNode)
-		if err != nil || field.ID == "" {
-			continue
-		}
-
-		root[CustomFieldKey(field.ID)] = field.normalizedValue()
-	}
-
-	return root, nil
-}
-
+// flattenItemColumnValues promotes column_values entries to cf_<columnId> keys on the record map.
 func flattenItemColumnValues(object map[string]any) {
 	entries := parseColumnValuesFromMap(object)
 	applyFlattenedColumnValues(object, entries)
@@ -275,7 +263,10 @@ func itemReadFieldsIncludeColumnValues(fieldNames []string) bool {
 }
 
 // prepareItemWriteRecordData maps cf_<columnId> keys into column_values JSON for Monday mutations.
-func prepareItemWriteRecordData(record map[string]any, columns map[string]mondayColumnDefinition) (map[string]any, error) {
+func prepareItemWriteRecordData(
+	record map[string]any,
+	columns map[string]mondayColumnDefinition,
+) (map[string]any, error) {
 	if len(record) == 0 {
 		return record, nil
 	}
@@ -375,20 +366,20 @@ func parseExistingColumnValuesJSON(existing any) (map[string]any, error) {
 		return map[string]any{}, nil
 	}
 
-	switch v := existing.(type) {
+	switch existingValue := existing.(type) {
 	case string:
-		if strings.TrimSpace(v) == "" {
+		if strings.TrimSpace(existingValue) == "" {
 			return map[string]any{}, nil
 		}
 
 		var parsed map[string]any
-		if err := json.Unmarshal([]byte(v), &parsed); err != nil {
+		if err := json.Unmarshal([]byte(existingValue), &parsed); err != nil {
 			return nil, err
 		}
 
 		return parsed, nil
 	case map[string]any:
-		return v, nil
+		return existingValue, nil
 	default:
 		return map[string]any{}, nil
 	}

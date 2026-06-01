@@ -80,8 +80,8 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 								ValueType:    common.ValueTypeSingleSelect,
 								ProviderType: "status",
 								Values: []common.FieldValue{
-									{Value: "Working on it", DisplayValue: "Working on it"},
 									{Value: "Done", DisplayValue: "Done"},
+									{Value: "Working on it", DisplayValue: "Working on it"},
 								},
 								IsCustom: new(true),
 							},
