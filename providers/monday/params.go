@@ -18,8 +18,12 @@ const (
 
 var (
 	// ErrBoardIDRequired is returned when board_id is required but missing.
-	ErrBoardIDRequired = errors.New("board_id is required for items operations; set ReadParams.Filter to board_id=<id>, " +
-		"BuilderFilter field board_id eq <id>, or ListObjectMetadata object name items@<board_id>")
+	ErrBoardIDRequired = errors.New(
+		"board_id is required for items operations; " +
+			"set ReadParams.Filter to board_id=<id>, " +
+			"BuilderFilter field board_id eq <id>, " +
+			"or ListObjectMetadata object name items@<board_id>",
+	)
 )
 
 // parseObjectNameAndBoardID splits items@<board_id> for metadata requests.
