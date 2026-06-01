@@ -27,7 +27,7 @@ func main() {
 	connector := github.GetGithubConnector(ctx)
 
 	res, err := connector.Read(ctx, common.ReadParams{
-		ObjectName: "emails",
+		ObjectName: "user/emails",
 		Fields:     datautils.NewStringSet("email", "primary"),
 	})
 	if err != nil {
@@ -43,6 +43,17 @@ func main() {
 		Fields:     datautils.NewStringSet("full_name", "downloads_url", "description", "default_branch"),
 		Since:      time.Date(2024, 0o3, 1, 0, 0, 0, 0, time.UTC),
 	})
+	if err != nil {
+		slog.Error(err.Error())
+	}
+
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = connector.Read(ctx, common.ReadParams{
+		ObjectName: "users",
+		Fields:     datautils.NewStringSet("login", "id", "url"),
+	})
+
 	if err != nil {
 		slog.Error(err.Error())
 	}

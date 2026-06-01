@@ -47,24 +47,27 @@ var (
 	// https://docs.github.com/en/rest/codespaces/codespaces?apiVersion=2022-11-28#update-a-codespace-for-the-authenticated-user
 	// https://docs.github.com/en/rest/codespaces/codespaces?apiVersion=2022-11-28#delete-a-codespace-for-the-authenticated-user
 	objectNameUserCodespaces = "user/codespaces"
+
+	// https://docs.github.com/en/rest/repos/repos?apiVersion=2026-03-10#create-a-repository-for-the-authenticated-user
+	objectNameUserRepos = "repos"
 )
 
 var (
 	supportPagination = datautils.NewSet( //nolint: gochecknoglobals
 		"advisories", "blocks", "classrooms", "user/codespaces",
-		"deliveries", "emails", "events", "followers", "following", "gists",
+		"deliveries", "user/emails", "events", "followers", "following", "gists",
 		"gists/starred", "gpg_keys", "installation-requests", "installation/repositories",
 		"issues", "keys", "licenses", "marketplace_listing/plans",
 		"marketplace_listing/stubbed/plans", "marketplace_purchases", "migrations",
 		"notifications", "orgs", "packages", "gists/public", "public_emails", "repos",
 		"repository_invitations", "secrets", "social_accounts", "ssh_signing_keys",
 		"stubbed", "subscriptions", "teams", "user/installations", "user/issues",
-		"user/memberships/orgs", "user/starred",
+		"user/memberships/orgs", "user/starred", "agents/tasks", "users",
 	)
 
 	supportSince = datautils.NewSet( //nolint: gochecknoglobals
 		"gists", "gists/starred", "issues",
-		"gists/public", "repos", "user/issues",
+		"gists/public", "repos", "user/issues", "agents/tasks",
 	)
 
 	supportByUpdate = datautils.NewSet( //nolint: gochecknoglobals
@@ -78,7 +81,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	// nolint:lll
 	writeSupport := []string{
 		objectNameGist, objectNameUserEmails, objectNameUserGpgKeys, objectNameUserKeys, objectNameUserSSHSigningKeys, objectNameUserSocialAccounts,
-		objectNameUserCodespaces,
+		objectNameUserCodespaces, objectNameUserRepos,
 	}
 
 	// nolint:lll

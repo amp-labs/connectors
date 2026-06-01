@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	//go:embed api.github.com.2022-11-28.yaml
+	//go:embed api.github.com.2026-03-10.yaml
 	apiFile    []byte
 	ApiManager = api3.NewOpenapiFileManager[any](apiFile) //nolint:gochecknoglobals
 )

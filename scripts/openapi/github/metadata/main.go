@@ -55,6 +55,8 @@ var (
 		"/user/ssh_signing_keys":             "user/ssh_signing_keys",
 		"/user/social_accounts":              "user/social_accounts",
 		"/user/codespaces":                   "user/codespaces",
+		"/user/migrations":                   "user/migrations",
+		"/agents/tasks":                      "agents/tasks",
 	}
 
 	overrideDisplayName = map[string]string{ //nolint:gochecknoglobals
@@ -69,12 +71,18 @@ var (
 		"marketplace_listing/stubbed/plans": "Marketplace Listing Stubbed Plans",
 		"user/memberships/orgs":             "User Memberships Orgs",
 		"user/codespaces":                   "User Codespaces",
+		"user/migrations":                   "User Migrations",
+		"user/keys":                         "User Keys",
+		"user/gpg_keys":                     "User GPG Keys",
+		"user/emails":                       "User Emails",
+		"agents/tasks":                      "Agents Tasks",
 	}
 
 	objectNametoResponseField = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 		"user/installations":        "installations",
 		"installation/repositories": "repositories",
 		"user/codespaces":           "codespaces",
+		"agents/tasks":              "tasks",
 	},
 		func(objectName string) (fieldName string) {
 			return objectName

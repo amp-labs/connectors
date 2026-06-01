@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/providers/github"
 	hs "github.com/amp-labs/connectors/test/github"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 func main() {
@@ -39,6 +40,12 @@ func main() {
 	slog.Info("> TEST update user codespaces")
 
 	if err := updateUserCodespaces(ctx, conn); err != nil {
+		slog.Error(err.Error())
+	}
+
+	slog.Info("> TEST create user repos")
+
+	if err := createUserRepos(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
 }
@@ -101,6 +108,31 @@ func updateUserCodespaces(ctx context.Context, conn *github.Connector) error {
 		RecordId:   "fuzzy-fishstick-jj457pqw4q7g2565v",
 		RecordData: map[string]any{
 			"display_name": "test",
+		},
+	}
+
+	result, err := conn.Write(ctx, config)
+	if err != nil {
+		return err
+	}
+
+	jsonStr, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(jsonStr))
+
+	return nil
+}
+
+func createUserRepos(ctx context.Context, conn *github.Connector) error {
+	config := common.WriteParams{
+		ObjectName: "repos",
+		RecordData: map[string]any{
+			"name":        gofakeit.Username() + "-test-repo",
+			"description": "Example repository from connector",
+			"private":     false,
 		},
 	}
 
