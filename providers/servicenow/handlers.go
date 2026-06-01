@@ -14,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/spyzhov/ajson"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -190,8 +191,9 @@ func (c *Connector) parseWriteResponse(
 
 	result, err := body.GetKey("result")
 	if err != nil {
-		// No "result" field (e.g. an empty body). The write still succeeded.
-		return &common.WriteResult{Success: true}, nil //nolint: nilerr
+		// No "result" envelope. Some APIs (lead and other TMF/Open APIs) return the
+		// created record as a bare top-level object, so recover sys_id from the root.
+		return c.writeResultFromRecord(ctx, params, body) //nolint: nilerr
 	}
 
 	// Some scoped APIs (e.g. Contact, Consumer) return only the new record's sys_id
@@ -208,18 +210,29 @@ func (c *Connector) parseWriteResponse(
 
 	// Most APIs (Table API and the like) return the written record object:
 	// {"result": {...}}.
-	if !result.IsObject() {
+	return c.writeResultFromRecord(ctx, params, result)
+}
+
+// writeResultFromRecord builds a WriteResult from a record object node, capturing
+// its fields as Data and its sys_id as the RecordId. A node that isn't an object,
+// or that carries no sys_id, still yields a successful result.
+func (c *Connector) writeResultFromRecord(
+	ctx context.Context,
+	params common.WriteParams,
+	record *ajson.Node,
+) (*common.WriteResult, error) {
+	if !record.IsObject() {
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	data, err := jsonquery.Convertor.ObjectToMap(result)
+	data, err := jsonquery.Convertor.ObjectToMap(record)
 	if err != nil {
 		logging.Logger(ctx).Error("failed to convert result object to map", "object", params.ObjectName, "err", err.Error())
 
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	recordID, err := jsonquery.New(result).StringOptional("sys_id")
+	recordID, err := jsonquery.New(record).StringOptional("sys_id")
 	if err != nil || recordID == nil {
 		return &common.WriteResult{ //nolint: nilerr
 			Success: true,
