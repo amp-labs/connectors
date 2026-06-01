@@ -72,13 +72,12 @@ func testCreateWebhooks(ctx context.Context) error {
 	conn := connTest.GetGoToConnector(ctx, providers.ModuleGoTo)
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "webhooks",
-		RecordData: []map[string]any{
-			{
-				"callbackUrl":  "https://webhook.site/4930c4f8-c82c-4183-9fb0-bce3b7450cd1",
-				"eventName":    "registrant.joined",
-				"eventVersion": "1.0.0",
-				"product":      "g2w",
-			},
+		RecordData: map[string]any{
+
+			"callbackUrl":  "https://webhook.site/a7abb896-0b6a-453e-944d-233c13664021",
+			"eventName":    "registrant.joined",
+			"eventVersion": "1.0.0",
+			"product":      "g2w",
 		},
 	})
 	if err != nil {

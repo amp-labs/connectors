@@ -1,0 +1,15 @@
+{
+  "_embedded": {
+    "webhooks": [
+      {
+        "callbackUrl": "https://example.com/hook",
+        "createTime": "2026-05-29T11:08:44.508Z",
+        "eventName": "registrant.joined",
+        "eventVersion": "1.0.0",
+        "product": "g2w",
+        "state": "INACTIVE",
+        "webhookKey": "cdb516e0-85f8-4e30-bf19-ddb0ea9d40c2"
+      }
+    ]
+  }
+}
