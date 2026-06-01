@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"slices"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
@@ -90,6 +91,26 @@ func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {
 		return "", err
 	}
 
+	// Offset-paginated objects (e.g. the Knowledge and Change APIs) page via offset
+	// rather than the Link header, so seed the first page's window here. Some accept
+	// a page-size param (limitKey); others (Change) only take an offset.
+	if pg, ok := offsetPaginationOf(params.ObjectName); ok {
+		if pg.limitKey != "" {
+			url.WithQueryParam(pg.limitKey, strconv.Itoa(offsetPageSize))
+		}
+
+		url.WithQueryParam(pg.offsetKey, "0")
+	} else if pp, ok := pagePaginationOf(params.ObjectName); ok {
+		url.WithQueryParam(pp.perPageKey, strconv.Itoa(offsetPageSize))
+		url.WithQueryParam(pp.pageKey, "1")
+	}
+
+	// Incremental read: filter by sys_updated_on when Since/Until are set and the
+	// object's list endpoint accepts sysparm_query.
+	if query := incrementalQuery(params); query != "" {
+		url.WithQueryParam("sysparm_query", query)
+	}
+
 	return url.String(), nil
 }
 
@@ -108,9 +129,18 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	// Objects that paginate via limit/offset (e.g. the Knowledge API) advance the
+	// window from the request URL; everything else follows the Link header.
+	nextPage := getNextRecordsURL(response, c.ProviderInfo().BaseURL)
+	if _, ok := offsetPaginationOf(params.ObjectName); ok {
+		nextPage = offsetNextPage(params.ObjectName, request)
+	} else if _, ok := pagePaginationOf(params.ObjectName); ok {
+		nextPage = pageNextPage(params.ObjectName, request)
+	}
+
 	return common.ParseResult(response,
 		recordsFunc(params.ObjectName),
-		getNextRecordsURL(response, c.ProviderInfo().BaseURL),
+		nextPage,
 		common.GetMarshaledData,
 		params.Fields,
 	)
