@@ -158,10 +158,27 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	result, err := jsonquery.New(body).ObjectRequired("result")
+	result, err := body.GetKey("result")
 	if err != nil {
-		logging.Logger(ctx).Error("failed to parse write response", "object", params.ObjectName, "body", body, "err", err.Error()) //nolint:lll
+		// No "result" field (e.g. an empty body). The write still succeeded.
+		return &common.WriteResult{Success: true}, nil
+	}
 
+	// Some scoped APIs (e.g. Contact, Consumer) return only the new record's sys_id
+	// as a bare string: {"result": "<sys_id>"}. We capture it as the RecordId.
+	if result.IsString() {
+		recordID := result.MustString()
+
+		return &common.WriteResult{
+			Success:  true,
+			RecordId: recordID,
+			Data:     map[string]any{"sys_id": recordID},
+		}, nil
+	}
+
+	// Most APIs (Table API and the like) return the written record object:
+	// {"result": {...}}.
+	if !result.IsObject() {
 		return &common.WriteResult{Success: true}, nil
 	}
 
@@ -172,9 +189,17 @@ func (c *Connector) parseWriteResponse(
 		return &common.WriteResult{Success: true}, nil
 	}
 
+	recordID, err := jsonquery.New(result).StringOptional("sys_id")
+	if err != nil || recordID == nil {
+		return &common.WriteResult{
+			Success: true,
+			Data:    data,
+		}, nil
+	}
+
 	return &common.WriteResult{
-		Success: true,
-		Errors:  nil,
-		Data:    data,
+		Success:  true,
+		RecordId: *recordID,
+		Data:     data,
 	}, nil
 }
