@@ -106,7 +106,7 @@ type offsetParams struct {
 // and at an offset past the end it returns a duplicate of the last record rather
 // than an empty page, so offset pagination can't terminate. Its default read
 // returns all records in a single page, so it's read without paging.
-var offsetPaginatedObjects = map[string]offsetParams{
+var offsetPaginatedObjects = map[string]offsetParams{ //nolint: gochecknoglobals
 	"articles": {limitKey: "limit", offsetKey: "offset"},
 }
 
@@ -165,7 +165,7 @@ type pageParams struct {
 
 // pagePaginatedObjects use 1-based page-number pagination (page + per-page) and
 // signal the end with a short or empty page.
-var pagePaginatedObjects = map[string]pageParams{
+var pagePaginatedObjects = map[string]pageParams{ //nolint: gochecknoglobals
 	"scorecards": {pageKey: "sysparm_page", perPageKey: "sysparm_per_page"},
 }
 

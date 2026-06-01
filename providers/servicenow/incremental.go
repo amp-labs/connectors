@@ -12,7 +12,7 @@ const snDateTimeFormat = "2006-01-02 15:04:05"
 
 // incrementalScopedObjects are non-Table-API objects whose list GET accepts a
 // sysparm_query on sys_updated_on, so they support Since/Until delta reads.
-var incrementalScopedObjects = []string{
+var incrementalScopedObjects = []string{ //nolint: gochecknoglobals
 	"account",
 	"case",
 	"change",
