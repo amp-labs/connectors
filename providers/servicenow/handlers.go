@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
@@ -26,6 +27,12 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	path, err := objectPath(objectName)
 	if err != nil {
 		return nil, err
+	}
+
+	// Metadata is sampled from a list response, so it is only available for objects
+	// whose collection can be listed.
+	if !slices.Contains(readSupportedObjects, objectName) {
+		return nil, fmt.Errorf("%w: %s does not support metadata", common.ErrOperationNotSupportedForObject, objectName)
 	}
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, path)
