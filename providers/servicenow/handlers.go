@@ -161,7 +161,7 @@ func (c *Connector) parseWriteResponse(
 	result, err := body.GetKey("result")
 	if err != nil {
 		// No "result" field (e.g. an empty body). The write still succeeded.
-		return &common.WriteResult{Success: true}, nil
+		return &common.WriteResult{Success: true}, nil //nolint: nilerr
 	}
 
 	// Some scoped APIs (e.g. Contact, Consumer) return only the new record's sys_id
@@ -191,7 +191,7 @@ func (c *Connector) parseWriteResponse(
 
 	recordID, err := jsonquery.New(result).StringOptional("sys_id")
 	if err != nil || recordID == nil {
-		return &common.WriteResult{
+		return &common.WriteResult{ //nolint: nilerr
 			Success: true,
 			Data:    data,
 		}, nil
