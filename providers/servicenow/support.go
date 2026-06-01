@@ -13,7 +13,7 @@ import (
 // offered for these. Objects absent here may still be writable (see
 // writeSupportedObjects): e.g. order, entitlement and the ai_* assets are
 // create/update-only because their APIs expose no listable collection endpoint.
-var readSupportedObjects = []string{
+var readSupportedObjects = []string{ //nolint: gochecknoglobals
 	"Groups",
 	"Users",
 	"account",
@@ -74,7 +74,7 @@ var readSupportedObjects = []string{
 // on their collection. Objects whose create requires mandatory query parameters
 // the writer can't supply (several sn_cdm and now/cilifecyclemgmt action APIs)
 // are excluded.
-var writeSupportedObjects = []string{
+var writeSupportedObjects = []string{ // nolint: gochecknoglobals
 	"Groups",
 	"Users",
 	"ai_dataset",
