@@ -2,7 +2,7 @@
   "modules": {
     "root": {
       "id": "root",
-      "path": "",
+      "path": "/api/v2",
       "objects": {
         "acculynx/countries": {
           "displayName": "AccuLynx Countries",

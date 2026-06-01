@@ -2,8 +2,10 @@ package acculynx
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
+	neturl "net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -17,6 +19,8 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+var errChildPagesExceeded = errors.New("acculynx: nested fetch exceeded page cap")
+
 const (
 	// AccuLynx OpenAPI does not document maximum pageSize, but its API enforces
 	// server-side per-object caps: /jobs and /supplements reject pageSize > 25,
@@ -24,11 +28,6 @@ const (
 	// across every object. Well within AccuLynx's 10 req/sec per-key limit.
 	defaultPageSize = "25"
 	maxPageSize     = 25
-
-	// apiVersionPrefix is prepended to every schema path. The catalog BaseURL is
-	// the smallest URL ("https://api.acculynx.com") so proxy builders can pin
-	// their own version; the deep connector targets V2 explicitly.
-	apiVersionPrefix = "/api/v2"
 
 	pageSizeParam    = "pageSize"
 	recordStartParam = "recordStartIndex"
@@ -38,6 +37,13 @@ const (
 	// AccuLynx 10 req/sec per API key gives plenty of headroom; 4 is a
 	// conservative cap for the per-parent fan-out.
 	maxConcurrentChildFetch = 4
+
+	// Safety cap on per-parent pagination — bounds the worst-case latency of
+	// one Read call. 200 pages × 25 per page = 5000 records per parent,
+	// generous for any sane window. For unbounded reads on outlier datasets
+	// (e.g. jobs with hundreds of thousands of history entries), the cap fires
+	// with a clear error pointing the caller at Since/Until — see fetchChildPages.
+	maxChildPagesPerParent = 200
 
 	// /calendars/{calendarId}/appointments requires startDate/endDate. When the
 	// caller supplies neither, default to a 30-day window ending now.
@@ -115,7 +121,7 @@ func (c *Connector) buildInitialURL(params common.ReadParams) (*urlbuilder.URL, 
 		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersionPrefix, path)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
 	}
@@ -271,7 +277,7 @@ func (c *Connector) fetchChildrenForParents(
 		idx, id := i, parentID
 
 		jobs[idx] = func(ctx context.Context) error {
-			rows, fetchErr := c.fetchChildPage(ctx, id, params, nested)
+			rows, fetchErr := c.fetchChildPages(ctx, id, params, nested)
 			if fetchErr != nil {
 				return fmt.Errorf("fetching %s for %s %s: %w",
 					nested.leafSuffix, nested.parentObject, id, fetchErr)
@@ -295,10 +301,13 @@ func (c *Connector) fetchChildrenForParents(
 	return data, nil
 }
 
-// fetchChildPage calls the child endpoint once. AccuLynx's nested list
-// endpoints return the full collection in a single response, so no per-parent
-// pagination loop is needed.
-func (c *Connector) fetchChildPage(
+// fetchChildPages walks every page of one parent's nested collection.
+// AccuLynx server-side paginates these endpoints (jobs/invoices,
+// jobs/estimates, jobs/history, etc. — verified in the OpenAPI spec), so
+// the loop follows result.NextPage until the records-array length signals the
+// last page. Children configured as paginationNone exit after one iteration
+// because makeNextPage returns "" immediately.
+func (c *Connector) fetchChildPages(
 	ctx context.Context,
 	parentID string,
 	params common.ReadParams,
@@ -311,35 +320,62 @@ func (c *Connector) fetchChildPage(
 
 	parentPath = strings.TrimSuffix(parentPath, "/")
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersionPrefix, parentPath, parentID, nested.leafSuffix)
+	reqURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, parentPath, parentID, nested.leafSuffix)
 	if err != nil {
 		return nil, err
 	}
 
-	applyPagination(url, params.ObjectName, params)
+	applyPagination(reqURL, params.ObjectName, params)
+	applyHistoryDateWindow(reqURL, params)
 
 	if params.ObjectName == "calendars/appointments" {
-		applyAppointmentsDateWindow(url, params)
+		applyAppointmentsDateWindow(reqURL, params)
 	}
 
-	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
+	var allRows []common.ReadResultRow
+
+	for range maxChildPagesPerParent {
+		resp, err := c.JSONHTTPClient().Get(ctx, reqURL.String())
+		if err != nil {
+			return nil, err
+		}
+
+		result, err := common.ParseResultFiltered(
+			params,
+			resp,
+			c.recordsFunc(params.ObjectName),
+			c.makeFilterFunc(params, reqURL),
+			common.MakeMarshaledDataFunc(nil),
+			params.Fields,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		allRows = append(allRows, result.Data...)
+
+		if result.NextPage == "" {
+			return allRows, nil
+		}
+
+		reqURL, err = parseNextPageURL(result.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return nil, fmt.Errorf(
+		"%w: %s/%s/%s after %d pages — for jobs/history pass Since/Until to filter server-side",
+		errChildPagesExceeded, nested.parentObject, parentID, nested.leafSuffix, maxChildPagesPerParent)
+}
+
+func parseNextPageURL(s string) (*urlbuilder.URL, error) {
+	parsed, err := neturl.Parse(s)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := common.ParseResultFiltered(
-		params,
-		resp,
-		c.recordsFunc(params.ObjectName),
-		c.makeFilterFunc(params, url),
-		common.MakeMarshaledDataFunc(nil),
-		params.Fields,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return result.Data, nil
+	return urlbuilder.FromRawURL(parsed)
 }
 
 // applyAppointmentsDateWindow ensures /calendars/{id}/appointments always
