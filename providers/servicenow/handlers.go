@@ -10,18 +10,10 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
-	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/spyzhov/ajson"
 )
-
-type responseData struct {
-	Result []map[string]any `json:"result"`
-	// Other fields
-}
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	path, err := objectPath(objectName)
@@ -49,27 +41,38 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
-	}
-
-	res, err := common.UnmarshalJSON[responseData](response)
-	if err != nil {
+	body, ok := response.Body()
+	if !ok {
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	if len(res.Result) == 0 {
+	// Extract records using the object's response shape (default/SCIM/nested/array),
+	// so metadata works for every supported object, not only the {"result":[...]} ones.
+	records, err := recordsFunc(objectName)(body)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(records) == 0 {
 		return nil, common.ErrMissingExpectedValues
 	}
 
-	// Using the first result data to generate the metadata.
-	for k := range res.Result[0] {
-		// TODO fix deprecated
-		objectMetadata.FieldsMap[k] = k // nolint:staticcheck
+	fields := make(common.FieldsMetadata)
+
+	// Use the first record to sample fields. ServiceNow REST responses carry no
+	// field type metadata, so we infer the value type from the sampled value.
+	for field, value := range records[0] {
+		fields[field] = common.FieldMetadata{
+			DisplayName:  field,
+			ValueType:    common.InferValueTypeFromData(value),
+			ProviderType: "", // not provided by ServiceNow
+		}
 	}
 
-	return &objectMetadata, nil
+	return common.NewObjectMetadata(
+		objectName,
+		fields,
+	), nil
 }
 
 func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {
@@ -106,8 +109,8 @@ func (c *Connector) parseReadResponse(
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	return common.ParseResult(response,
-		common.ExtractRecordsFromPath("result"),
-		getNextRecordsURL(response),
+		recordsFunc(params.ObjectName),
+		getNextRecordsURL(response, c.ProviderInfo().BaseURL),
 		common.GetMarshaledData,
 		params.Fields,
 	)
@@ -174,10 +177,4 @@ func (c *Connector) parseWriteResponse(
 		Errors:  nil,
 		Data:    data,
 	}, nil
-}
-
-func getNextRecordsURL(resp *common.JSONHTTPResponse) common.NextPageFunc {
-	return func(n *ajson.Node) (string, error) {
-		return httpkit.HeaderLink(resp, "next"), nil
-	}
 }
