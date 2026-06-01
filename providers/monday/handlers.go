@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -33,20 +32,11 @@ var (
 	ErrWriteUserNotSupported = errors.New("write user not supported")
 )
 
-// Record ID paths in GraphQL response.
-const (
-	mondayBoardsIDPath = "data.create_board.id"
-	mondayUsersIDPath  = "data.create_user.id"
-)
 
-func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion)
-	if err != nil {
-		return nil, fmt.Errorf("failed to build URL: %w", err)
-	}
+func introspectionQueryForObject(objectName string) (string, error) {
+	typeName := naming.NewSingularString(naming.CapitalizeFirstLetterEveryWord(objectName)).String()
 
-	// Use introspection query to get field information
-	query := fmt.Sprintf(`{
+	return fmt.Sprintf(`{
 		__type(name: "%s") {
 			name
 			fields {
@@ -60,7 +50,19 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 				}
 			}
 		}
-	}`, naming.NewSingularString(naming.CapitalizeFirstLetterEveryWord(objectName)).String())
+	}`, typeName), nil
+}
+
+func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build URL: %w", err)
+	}
+
+	query, err := introspectionQueryForObject(objectName)
+	if err != nil {
+		return nil, err
+	}
 
 	// Create the request body as a map
 	requestBody := map[string]string{
@@ -90,6 +92,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
+		Fields:      make(common.FieldsMetadata),
 		FieldsMap:   make(map[string]string),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
@@ -107,10 +110,12 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		)
 	}
 
-	// Process each field from the introspection result
 	for _, field := range metadataResp.Data.Type.Fields {
-		// TODO fix deprecated
-		objectMetadata.FieldsMap[field.Name] = field.Name // nolint:staticcheck
+		objectMetadata.AddFieldMetadata(field.Name, common.FieldMetadata{
+			DisplayName:  field.Name,
+			ValueType:    common.ValueTypeOther,
+			ProviderType: "",
+		})
 	}
 
 	return &objectMetadata, nil
@@ -232,26 +237,47 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	var page *int
+	var query string
 
-	var limit int
-
-	if params.NextPage != "" {
-		// Parse the page number from NextPage
-		var pageNum int
-
-		_, err := fmt.Sscanf(string(params.NextPage), "%d", &pageNum)
+	switch params.ObjectName {
+	case mondayObjectItems:
+		boardID, err := boardIDFromReadParams(params)
 		if err != nil {
-			return nil, fmt.Errorf("invalid next page format: %w", err)
+			return nil, err
 		}
 
-		page = &pageNum
-		limit = defaultPageSize
-	}
+		limit := params.PageSize
+		if limit <= 0 {
+			limit = defaultPageSize
+		}
 
-	query, err := getQueryForObject(params.ObjectName, page, &limit)
-	if err != nil {
-		return nil, err
+		cursor := ""
+		if params.NextPage != "" {
+			cursor = params.NextPage.String()
+		}
+
+		query = getItemsQuery(boardID, limit, cursor, true)
+	default:
+		var page *int
+
+		limit := 0
+
+		if params.NextPage != "" {
+			var pageNum int
+
+			_, err := fmt.Sscanf(string(params.NextPage), "%d", &pageNum)
+			if err != nil {
+				return nil, fmt.Errorf("invalid next page format: %w", err)
+			}
+
+			page = &pageNum
+			limit = defaultPageSize
+		}
+
+		query, err = getQueryForObject(params.ObjectName, page, &limit)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	requestBody := map[string]string{
@@ -307,8 +333,21 @@ func (c *Connector) parseReadResponse(
 
 		records = make([]any, len(data.Data.Boards))
 		for i, board := range data.Data.Boards {
-			records[i] = board
+			records[i] = board 
 		}
+	case mondayObjectItems:
+		limit := params.PageSize
+		if limit <= 0 {
+			limit = defaultPageSize
+		}
+
+		return common.ParseResult(
+			resp,
+			extractItemsRecords,
+			makeItemsNextRecordsURL(limit),
+			marshalItemsReadResult,
+			params.Fields,
+		)
 	default:
 		return nil, fmt.Errorf("%w: %s", ErrUnsupportedObjectName, params.ObjectName)
 	}
@@ -374,6 +413,39 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 				}
 			}`, params.RecordId, recordData["name"])
 		}
+	case mondayObjectItems:
+		boardID, err := boardIDFromWriteRecord(recordData)
+		if err != nil {
+			return nil, err
+		}
+
+		columns, err := c.fetchBoardColumnDefinitions(ctx, boardID)
+		if err != nil {
+			return nil, err
+		}
+
+		prepared, err := prepareItemWriteRecordData(recordData, columnDefinitionsByID(columns))
+		if err != nil {
+			return nil, err
+		}
+
+		columnValuesJSON, _ := prepared["column_values"].(string)
+
+		if params.RecordId == "" {
+			itemName, ok := prepared["name"].(string)
+			if !ok {
+				return nil, fmt.Errorf("%w: name is required for item creation", common.ErrMissingFields)
+			}
+
+			groupID, _ := prepared["group_id"].(string)
+			mutation = getCreateItemMutation(boardID, groupID, itemName, columnValuesJSON)
+		} else {
+			if columnValuesJSON == "" {
+				return nil, fmt.Errorf("%w: column_values or cf_<columnId> fields required for item update", common.ErrMissingFields)
+			}
+
+			mutation = getChangeMultipleColumnValuesMutation(boardID, params.RecordId, columnValuesJSON)
+		}
 	case mondayObjectUser:
 		return nil, ErrWriteUserNotSupported
 	default:
@@ -420,27 +492,41 @@ func extractResponseErrors(node *ajson.Node) ([]any, error) {
 	return errorMsgs, nil
 }
 
-func extractRecordID(node *ajson.Node, objectName string) (string, error) {
-	createRecordIDPaths := map[string]string{
-		mondayObjectBoard: mondayBoardsIDPath,
-		mondayObjectUser:  mondayUsersIDPath,
+func extractRecordID(node *ajson.Node, objectName string, recordID string) (string, error) {
+	type mutationPath struct {
+		parent string
+		child  string
 	}
 
-	idPath, valid := createRecordIDPaths[objectName]
+	paths := map[string]mutationPath{
+		mondayObjectBoard: {parent: "create_board", child: "id"},
+		mondayObjectUser:  {parent: "create_user", child: "id"},
+		mondayObjectItems: {parent: "create_item", child: "id"},
+	}
+
+	path, valid := paths[objectName]
 	if !valid {
 		return "", fmt.Errorf("%w: %s", common.ErrOperationNotSupportedForObject, objectName)
 	}
 
-	rawID, err := jsonquery.New(node).IntegerOptional(idPath)
+	if objectName == mondayObjectItems && recordID != "" {
+		path = mutationPath{parent: "change_multiple_column_values", child: "id"}
+	}
+
+	rawID, err := jsonquery.New(node, "data", path.parent).TextWithDefault(path.child, "")
 	if err != nil {
 		return "", err
 	}
 
-	if rawID == nil {
-		return "", nil
+	if rawID != "" {
+		return rawID, nil
 	}
 
-	return strconv.FormatInt(*rawID, 10), nil
+	if recordID != "" {
+		return recordID, nil
+	}
+
+	return "", nil
 }
 
 func (c *Connector) parseWriteResponse(
@@ -463,7 +549,7 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	recordId, err := extractRecordID(node, params.ObjectName)
+	recordId, err := extractRecordID(node, params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err
 	}
@@ -481,12 +567,38 @@ func (c *Connector) parseWriteResponse(
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	if params.ObjectName != mondayObjectItems {
+		return nil, fmt.Errorf("%w: %s", common.ErrOperationNotSupportedForObject, params.ObjectName)
+	}
+
+	if params.RecordId == "" {
+		return nil, common.ErrMissingRecordID
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion)
 	if err != nil {
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodDelete, url.String(), nil)
+	mutation := getDeleteItemMutation(params.RecordId)
+
+	requestBody := map[string]string{
+		"query": mutation,
+	}
+
+	jsonBody, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonBody))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	return req, nil
 }
 
 func (c *Connector) parseDeleteResponse(
