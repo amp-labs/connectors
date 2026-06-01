@@ -23,7 +23,12 @@ type responseData struct {
 }
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, objectName)
+	path, err := objectPath(objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, path)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +70,12 @@ func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {
 		return params.NextPage.String(), nil
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
+	path, err := objectPath(params.ObjectName)
+	if err != nil {
+		return "", err
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, path)
 	if err != nil {
 		return "", err
 	}
@@ -101,7 +111,12 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	method := http.MethodPost
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
+	path, err := objectPath(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, path)
 	if err != nil {
 		return nil, err
 	}

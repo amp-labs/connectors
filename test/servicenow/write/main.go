@@ -22,17 +22,17 @@ func run() error {
 	ctx := context.Background()
 	conn := servicenow.GetServiceNowConnector(ctx)
 
-	err := testWriteIncidents(ctx, conn)
+	err := testCreateLead(ctx, conn)
 	if err != nil {
 		return err
 	}
 
-	err = testUpdateIncidents(ctx, conn)
+	err = testUpdateLead(ctx, conn)
 	if err != nil {
 		return err
 	}
 
-	err = testUpdateMailServer(ctx, conn)
+	err = testUpdateCase(ctx, conn)
 	if err != nil {
 		return err
 	}
@@ -45,13 +45,13 @@ func run() error {
 	return nil
 }
 
-func testWriteIncidents(ctx context.Context, conn *ServiceNow.Connector) error {
+func testCreateLead(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "now/table/incident",
+		ObjectName: "lead",
 		RecordData: map[string]any{
-			"assigned_to": "1c741bd70b2322007518478d83673af3",
-			"urgency":     "1",
-			"comments":    "Elevating urgency, this is a blocking issue",
+			"short_description": "Interested in premium plan",
+			"state":             "1",
+			"company":           "Withampersand",
 		},
 	}
 
@@ -73,9 +73,9 @@ func testWriteIncidents(ctx context.Context, conn *ServiceNow.Connector) error {
 	return nil
 }
 
-func testUpdateIncidents(ctx context.Context, conn *ServiceNow.Connector) error {
+func testUpdateLead(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "now/table/incident",
+		ObjectName: "lead",
 		RecordId:   "6a2f6fbb83f02210290fed70deaad320",
 		RecordData: map[string]any{
 			"company": "Ampersand",
@@ -99,12 +99,12 @@ func testUpdateIncidents(ctx context.Context, conn *ServiceNow.Connector) error 
 	return nil
 }
 
-func testUpdateMailServer(ctx context.Context, conn *ServiceNow.Connector) error {
+func testUpdateCase(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "now/table/cmdb_ci_email_server",
+		ObjectName: "case",
 		RecordId:   "280ffff1c0a8000b0083f5395b44bc97",
 		RecordData: map[string]any{
-			"due_in": "2025-10-10",
+			"priority": "2",
 		},
 	}
 
@@ -127,7 +127,7 @@ func testUpdateMailServer(ctx context.Context, conn *ServiceNow.Connector) error
 
 func testCreateContact(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "now/contact",
+		ObjectName: "contact",
 		RecordData: map[string]any{
 			"active":       true,
 			"agent_status": "On break",

@@ -40,7 +40,12 @@ func (c *Connector) constructSearchURL(params *common.SearchParams) (*urlbuilder
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, params.ObjectName)
+	path, err := objectPath(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, path)
 	if err != nil {
 		return nil, err
 	}
