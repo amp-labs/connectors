@@ -24,7 +24,7 @@ import (
 // scoped API and are served by the generic Table API; they are added explicitly as
 // named objects mapping to "now/table/<table>". The generic Table API itself is
 // not exposed as a single catch-all object.
-var objectPaths = map[string]string{
+var objectPaths = map[string]string{ //nolint: gochecknoglobals
 	// Common platform tables served by the generic Table API
 	// (/api/now/table/<table>). These have no dedicated scoped REST API; the
 	// object name is the table name itself.
@@ -49,11 +49,11 @@ var objectPaths = map[string]string{
 	"cmn_location":   "now/table/cmn_location",   // Table API
 	"cmn_department": "now/table/cmn_department", // Table API
 
-	"Groups":               "now/scim/Groups",                                      // System for Cross-domain Identity Management (SCIM) API
-	"groups":               "now/scim/Groups",                                      // SCIM API (lowercase alias of "Groups")
-	"Users":                "now/scim/Users",                                       // System for Cross-domain Identity Management (SCIM) API
-	"users":                "now/scim/Users",                                       // SCIM API (lowercase alias of "Users")
-	"agents":               "sn_agent/agents/list",                                 // Agent Client Collector API (list endpoint)
+	"Groups":               "now/scim/Groups",
+	"groups":               "now/scim/Groups",
+	"Users":                "now/scim/Users",
+	"users":                "now/scim/Users",
+	"agents":               "sn_agent/agents/list",
 	"account":              "now/account",                                          // Account API
 	"ai_dataset":           "sn_ent/asset/ai_dataset",                              // AI Assets API
 	"ai_model":             "sn_ent/asset/ai_model",                                // AI Assets API
