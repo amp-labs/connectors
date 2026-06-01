@@ -27,7 +27,7 @@ type recordsPath struct {
 //
 // Objects whose list response is a single object rather than an array (e.g. the
 // WSD Reservation API) are not supported, since they don't represent a record list.
-var objectRecordsPath = map[string]recordsPath{
+var objectRecordsPath = map[string]recordsPath{ //nolint:gochecknoglobals
 	// SCIM — {"Resources": [...]}
 	"Users":  {jsonPath: "Resources"},
 	"Groups": {jsonPath: "Resources"},
