@@ -45,9 +45,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		PostAuthInfoNeeded: true,
 		Metadata: &ProviderMetadata{
@@ -67,9 +67,9 @@ func init() {
 				BaseURL:     "https://api.getgo.com",
 				DisplayName: "GoTo",
 				Support: Support{
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 			},
 			ModuleGoToConnect: {
