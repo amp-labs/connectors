@@ -32,7 +32,7 @@ func init() { // nolint:funlen
 			Url:                "https://{{.workspace}}.my.salesforce.com/services/oauth2/userinfo",
 		},
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
+			GrantType:                 AuthorizationCodePKCE,
 			AuthURL:                   "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
 			AuthURLParams:             map[string]string{"prompt": "login"},
 			TokenURL:                  "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
