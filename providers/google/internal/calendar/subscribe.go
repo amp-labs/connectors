@@ -4,16 +4,22 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"maps"
 	"net/http"
 	"net/url"
 	"slices"
+	"sync"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/google/uuid"
 )
+
+// calendarMaxConcurrentWatches bounds the number of watch/stop calls issued in
+// parallel so we don't trip Google Calendar's per-user rate limits.
+const calendarMaxConcurrentWatches = 4
 
 // Compile-time interface conformance checks.
 var (
@@ -120,11 +126,6 @@ func (a *Adapter) EmptySubscriptionResult() *common.SubscriptionResult {
 //	"exists"     — a resource was created or updated
 //	"not_exists" — a resource was deleted
 //
-// If any watch call fails after some have succeeded, the successfully-created
-// channels are rolled back via stopChannel before returning. If rollback also
-// fails, returns SubscriptionStatusFailedToRollback so the caller knows orphaned
-// channels may exist in Google Calendar.
-//
 // ref: https://developers.google.com/workspace/calendar/api/v3/reference/events/watch
 // ref: https://developers.google.com/workspace/calendar/api/v3/reference/calendarList/watch
 func (a *Adapter) Subscribe(
@@ -141,139 +142,62 @@ func (a *Adapter) Subscribe(
 		baseID = uuid.New().String()
 	}
 
-	result := &CalendarSubscriptionResult{
-		Channels: make(map[common.ObjectName]*WatchResponse),
-	}
-
-	// Sort for deterministic processing order so rollback behaviour is predictable.
-	objects := sortedKeys(params.SubscriptionEvents)
-
-	for _, obj := range objects {
-		resp, err := a.watchObject(ctx, obj, baseID, watchReq)
-		if err != nil {
-			if len(result.Channels) > 0 {
-				rollbackErr := a.stopAllChannels(ctx, result.Channels)
-				if rollbackErr != nil {
-					return &common.SubscriptionResult{
-						Status: common.SubscriptionStatusFailedToRollback,
-						Result: result,
-					}, fmt.Errorf("subscribe: watching %q failed: %w; rollback also failed: %w", obj, err, rollbackErr)
-				}
+	// watchObjects returns whatever channels were created even on failure, so we can
+	// roll them back here rather than mid-loop.
+	channels, err := a.watchObjects(ctx, sortedKeys(params.SubscriptionEvents), baseID, watchReq)
+	if err != nil {
+		if len(channels) > 0 {
+			if rollbackErr := a.stopAllChannels(ctx, channels); rollbackErr != nil {
+				return &common.SubscriptionResult{
+					Status: common.SubscriptionStatusFailedToRollback,
+					Result: &CalendarSubscriptionResult{Channels: channels},
+				}, fmt.Errorf("subscribe: %w; rollback also failed: %w", err, rollbackErr)
 			}
-
-			return &common.SubscriptionResult{
-				Status: common.SubscriptionStatusFailed,
-			}, fmt.Errorf("subscribe: watching %q: %w", obj, err)
 		}
 
-		result.Channels[obj] = resp
+		return &common.SubscriptionResult{
+			Status: common.SubscriptionStatusFailed,
+		}, fmt.Errorf("subscribe: %w", err)
 	}
 
 	return &common.SubscriptionResult{
-		Result:       result,
+		Result:       &CalendarSubscriptionResult{Channels: channels},
 		Status:       common.SubscriptionStatusSuccess,
 		ObjectEvents: params.SubscriptionEvents,
 	}, nil
 }
 
-// UpdateSubscription reconciles an existing subscription with the new desired state.
+// UpdateSubscription moves an existing subscription to the new desired object set.
 //
-// Objects present in prev but absent from params are stopped. Objects in params
-// but absent from prev are newly watched. Objects present in both are left untouched
-// (Google Calendar does not support mutating an existing channel).
-func (a *Adapter) UpdateSubscription( //nolint: cyclop,funlen
+// Google Calendar channels cannot be extended or mutated, so an "update" is really
+// a recreate: we create a fresh set of channels for the full desired object set and
+// then stop the previous channels. Recreating everything — not just the delta — keeps
+// all channels on the same expiration clock so they renew together.
+//
+// Creating the new channels happens first; if that fails nothing has changed and the
+// error is returned. Stopping the previous channels is best-effort: they expire on
+// their own, so a failure there is logged and tolerated (the caller may briefly receive
+// duplicate notifications until the old channels lapse).
+func (a *Adapter) UpdateSubscription(
 	ctx context.Context,
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	watchReq, err := validateWatchRequest(params)
+	result, err := a.Subscribe(ctx, params)
 	if err != nil {
-		return nil, err
+		return result, fmt.Errorf("update: creating new subscription: %w", err)
 	}
 
-	prevChannels := extractChannels(previousResult)
-
-	toAdd := make(map[common.ObjectName]common.ObjectEvents)
-	toRemove := make(map[common.ObjectName]*WatchResponse)
-
-	for obj, evt := range params.SubscriptionEvents {
-		if _, exists := prevChannels[obj]; !exists {
-			toAdd[obj] = evt
+	if previousResult != nil {
+		if err := a.DeleteSubscription(ctx, *previousResult); err != nil {
+			logging.Logger(ctx).Warn(
+				"update: failed to stop previous channels; they will expire automatically",
+				"error", err,
+			)
 		}
 	}
 
-	for obj, ch := range prevChannels {
-		if _, exists := params.SubscriptionEvents[obj]; !exists {
-			toRemove[obj] = ch
-		}
-	}
-
-	// Start from a copy of the previous channels; we'll mutate it below.
-	updatedChannels := make(map[common.ObjectName]*WatchResponse, len(prevChannels))
-	maps.Copy(updatedChannels, prevChannels)
-
-	// Stop removed channels.
-	var stopErr error
-
-	for obj, ch := range toRemove {
-		if err := a.stopChannel(ctx, ch.ID, ch.ResourceID); err != nil {
-			stopErr = errors.Join(stopErr, fmt.Errorf("update: stopping %q: %w", obj, err))
-		} else {
-			delete(updatedChannels, obj)
-		}
-	}
-
-	if stopErr != nil {
-		return &common.SubscriptionResult{
-			Status: common.SubscriptionStatusFailed,
-			Result: &CalendarSubscriptionResult{Channels: updatedChannels},
-		}, stopErr
-	}
-
-	// Watch newly added objects.
-	baseID := watchReq.ID
-	if baseID == "" {
-		baseID = uuid.New().String()
-	}
-
-	// justAdded tracks objects successfully watched in this call so they can be
-	// rolled back if a later watch in the same loop fails.
-	justAdded := make([]common.ObjectName, 0, len(toAdd))
-
-	for _, obj := range sortedKeys(toAdd) {
-		resp, watchErr := a.watchObject(ctx, obj, baseID, watchReq)
-		if watchErr != nil {
-			var rollbackErr error
-			for _, o := range justAdded {
-				if err := a.stopChannel(ctx, updatedChannels[o].ID, updatedChannels[o].ResourceID); err != nil {
-					rollbackErr = errors.Join(rollbackErr, fmt.Errorf("stopping channel for %q: %w", o, err))
-				} else {
-					delete(updatedChannels, o)
-				}
-			}
-
-			if rollbackErr != nil {
-				return &common.SubscriptionResult{
-					Status: common.SubscriptionStatusFailedToRollback,
-					Result: &CalendarSubscriptionResult{Channels: updatedChannels},
-				}, fmt.Errorf("update: watching %q failed: %w; rollback also failed: %w", obj, watchErr, rollbackErr)
-			}
-
-			return &common.SubscriptionResult{
-				Status: common.SubscriptionStatusFailed,
-				Result: &CalendarSubscriptionResult{Channels: updatedChannels},
-			}, fmt.Errorf("update: watching %q: %w", obj, watchErr)
-		}
-
-		justAdded = append(justAdded, obj)
-		updatedChannels[obj] = resp
-	}
-
-	return &common.SubscriptionResult{
-		Result:       &CalendarSubscriptionResult{Channels: updatedChannels},
-		Status:       common.SubscriptionStatusSuccess,
-		ObjectEvents: params.SubscriptionEvents,
-	}, nil
+	return result, nil
 }
 
 // DeleteSubscription stops all active watch channels stored in result.
@@ -291,9 +215,9 @@ func (a *Adapter) DeleteSubscription(
 
 // RunScheduledMaintenance renews all watch channels.
 //
-// Google Calendar does not support extending an existing channel's lifetime.
-// Renewal requires stopping each channel and re-watching the same objects.
-// This is equivalent to DeleteSubscription followed by Subscribe with the same params.
+// Google Calendar does not support extending an existing channel's lifetime, so renewal
+// is the same recreate-then-stop flow as UpdateSubscription: create a fresh set of
+// channels for the same objects, then stop the previous ones.
 //
 // Callers should schedule maintenance before the earliest expiration across all channels.
 func (a *Adapter) RunScheduledMaintenance(
@@ -301,32 +225,29 @@ func (a *Adapter) RunScheduledMaintenance(
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	if err := a.DeleteSubscription(ctx, *previousResult); err != nil {
-		return &common.SubscriptionResult{
-			Status: common.SubscriptionStatusFailed,
-		}, fmt.Errorf("maintenance: stopping old channels: %w", err)
-	}
-
-	return a.Subscribe(ctx, params)
+	return a.UpdateSubscription(ctx, params, previousResult)
 }
 
-// VerifyWebhookMessage always returns true for Google Calendar.
-// Push notifications are delivered via Google's infrastructure and authenticated
-// at the transport layer; no application-level signature verification is needed.
-// Callers should verify the X-Goog-Channel-Token header against their stored token
-// if they set one in WatchRequest.Token.
+// VerifyWebhookMessage is not yet implemented for Google Calendar.
+//
+// Verification (comparing the X-Goog-Channel-Token header against a stored token) is
+// being delivered in a separate PR. Until then this refuses verification rather than
+// asserting authenticity it never checked — callers must not treat unverified messages
+// as trusted.
 func (a *Adapter) VerifyWebhookMessage(
 	ctx context.Context,
 	request *common.WebhookRequest,
 	params *common.VerificationParams,
 ) (bool, error) {
-	return true, nil
+	return false, common.ErrNotImplemented
 }
 
-// GetRecordsByIds is not implemented for Google Calendar.
+// GetRecordsByIds is not yet implemented for Google Calendar.
+//
 // Calendar push notifications deliver an empty body — only headers are sent (X-Goog-Resource-State,
-// X-Goog-Resource-ID, etc.). There is no record payload to enrich from; callers must issue
-// a follow-up API read (e.g. events.list) to fetch what actually changed.
+// X-Goog-Resource-ID, etc.). There is no record payload to enrich from; fetching what actually
+// changed requires a follow-up API read (e.g. events.list). That strategy is being delivered in a
+// separate PR alongside verification.
 func (a *Adapter) GetRecordsByIds( //nolint:revive
 	ctx context.Context,
 	objectName string,
@@ -334,7 +255,58 @@ func (a *Adapter) GetRecordsByIds( //nolint:revive
 	fields []string,
 	associations []string,
 ) ([]common.ReadResultRow, error) {
-	return nil, common.ErrGetRecordNotSupportedForObject
+	return nil, common.ErrNotImplemented
+}
+
+// watchResult pairs a created watch channel with the object it belongs to so the
+// concurrent fan-in can rebuild the object→channel map.
+// watchObjects creates a watch channel for each object concurrently, bounded by
+// calendarMaxConcurrentWatches.
+//
+// Each job records its outcome under a mutex and returns nil regardless of failure, so
+// every watch call runs to completion rather than cancelling its siblings on the first
+// error. This mirrors the other subscribe connectors (outreach, salesloft, zoho) and
+// guarantees the returned map holds *every* channel that was created — even when err is
+// non-nil — so the caller has the full set to roll back. Per-object failures are joined
+// into the returned error.
+func (a *Adapter) watchObjects(
+	ctx context.Context,
+	objects []common.ObjectName,
+	baseID string,
+	req *WatchRequest,
+) (map[common.ObjectName]*WatchResponse, error) {
+	var (
+		mutex    sync.Mutex
+		watchErr error
+	)
+
+	channels := make(map[common.ObjectName]*WatchResponse, len(objects))
+	callbacks := make([]simultaneously.Job, 0, len(objects))
+
+	for _, obj := range objects {
+		callbacks = append(callbacks, func(ctx context.Context) error {
+			resp, err := a.watchObject(ctx, obj, baseID, req)
+
+			mutex.Lock()
+			defer mutex.Unlock()
+
+			if err != nil {
+				watchErr = errors.Join(watchErr, fmt.Errorf("watching %q: %w", obj, err))
+
+				return nil
+			}
+
+			channels[obj] = resp
+
+			return nil
+		})
+	}
+
+	if err := simultaneously.DoCtx(ctx, calendarMaxConcurrentWatches, callbacks...); err != nil {
+		return channels, err
+	}
+
+	return channels, watchErr
 }
 
 // watchObject POSTs a watch request for a single object and returns the channel response.
