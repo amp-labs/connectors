@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "id": "inv-001",
+      "balanceDue": 100,
+      "modifiedDate": "2026-04-01T10:00:00Z"
+    },
+    {
+      "id": "inv-002",
+      "balanceDue": 200,
+      "modifiedDate": "2026-04-02T10:00:00Z"
+    }
+  ]
+}
