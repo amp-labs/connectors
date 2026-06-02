@@ -131,7 +131,7 @@ func main() {
 
 		for _, field := range object.Fields {
 			schemas.Add(common.ModuleRoot, object.ObjectName, object.DisplayName,
-				object.URLPath, object.ResponseKey,
+				"/api/v2"+object.URLPath, object.ResponseKey,
 				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 
