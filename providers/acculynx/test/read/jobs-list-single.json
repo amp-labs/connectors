@@ -1,0 +1,12 @@
+{
+  "count": 1,
+  "pageSize": 2,
+  "pageStartIndex": 0,
+  "items": [
+    {
+      "id": "job-001",
+      "currentMilestone": "Lead",
+      "modifiedDate": "2026-04-01T10:00:00Z"
+    }
+  ]
+}

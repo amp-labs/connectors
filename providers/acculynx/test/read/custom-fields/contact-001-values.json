@@ -1,0 +1,25 @@
+{
+  "totalRecords": 2,
+  "recordStartIndex": 0,
+  "pageSize": 100,
+  "items": [
+    {
+      "id": "cf-c1-text",
+      "_link": "https://api.acculynx.com/api/v2/contacts/ctc_001/custom-fields/cf-c1-text",
+      "label": "Customer Preference",
+      "fieldType": "Text",
+      "values": ["White Roof"],
+      "formattedValues": ["White Roof"],
+      "modifiedDate": "2026-04-10T12:00:00Z"
+    },
+    {
+      "id": "cf-c1-options",
+      "_link": "https://api.acculynx.com/api/v2/contacts/ctc_001/custom-fields/cf-c1-options",
+      "label": "Preferred Contact Method",
+      "fieldType": "Text",
+      "values": ["Phone", "Email"],
+      "formattedValues": ["Phone", "Email"],
+      "modifiedDate": "2026-04-10T12:00:00Z"
+    }
+  ]
+}

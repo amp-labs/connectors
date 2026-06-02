@@ -1,0 +1,22 @@
+{
+  "totalRecords": 2,
+  "recordStartIndex": 0,
+  "pageSize": 100,
+  "pageNumber": 1,
+  "items": [
+    {
+      "id": "ctc_001",
+      "_link": "https://api.acculynx.com/api/v2/contacts/ctc_001",
+      "firstName": "Carol",
+      "lastName": "Customer",
+      "modifiedDate": "2026-04-10T12:00:00Z"
+    },
+    {
+      "id": "ctc_002",
+      "_link": "https://api.acculynx.com/api/v2/contacts/ctc_002",
+      "firstName": "Dave",
+      "lastName": "Donor",
+      "modifiedDate": "2026-04-11T12:00:00Z"
+    }
+  ]
+}

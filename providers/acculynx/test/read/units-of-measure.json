@@ -1,0 +1,12 @@
+{
+  "unitsOfMeasure": [
+    {
+      "id": "EA",
+      "name": "Each"
+    },
+    {
+      "id": "SF",
+      "name": "Square Feet"
+    }
+  ]
+}

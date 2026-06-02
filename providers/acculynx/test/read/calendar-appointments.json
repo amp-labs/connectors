@@ -1,0 +1,12 @@
+{
+  "count": 1,
+  "pageSize": 100,
+  "pageStartIndex": 0,
+  "items": [
+    {
+      "id": "appt-1",
+      "title": "Site visit",
+      "startDate": "2026-04-15T09:00:00Z"
+    }
+  ]
+}
