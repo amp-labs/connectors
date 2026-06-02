@@ -43,10 +43,10 @@ func (c *Connector) buildDeleteURL(params common.DeleteParams) (*urlbuilder.URL,
 
 	switch params.ObjectName {
 	case deletableJobsARRepresentative:
-		return urlbuilder.New(baseURL, apiVersionPrefix,
+		return urlbuilder.New(baseURL, c.modulePath(),
 			"jobs", params.RecordId, "representatives", "ar-owner")
 	case deletableJobsSalesRepresentative:
-		return urlbuilder.New(baseURL, apiVersionPrefix,
+		return urlbuilder.New(baseURL, c.modulePath(),
 			"jobs", params.RecordId, "representatives", "sales-owner")
 	default:
 		return nil, common.ErrOperationNotSupportedForObject

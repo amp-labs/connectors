@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/acculynx/metadata"
 )
 
 // AccuLynx write API references (all JSON; file-upload endpoints are excluded
@@ -132,17 +133,17 @@ func (c *Connector) buildWriteURL(
 	switch params.ObjectName {
 	// Top-level POSTs.
 	case objectContacts:
-		u, err := urlbuilder.New(baseURL, apiVersionPrefix, "contacts")
+		u, err := urlbuilder.New(baseURL, c.modulePath(), "contacts")
 
 		return u, http.MethodPost, err
 
 	case objectJobs:
-		u, err := urlbuilder.New(baseURL, apiVersionPrefix, "jobs")
+		u, err := urlbuilder.New(baseURL, c.modulePath(), "jobs")
 
 		return u, http.MethodPost, err
 
 	case "jobs/external-references":
-		u, err := urlbuilder.New(baseURL, apiVersionPrefix, "jobs", "external-references")
+		u, err := urlbuilder.New(baseURL, c.modulePath(), "jobs", "external-references")
 
 		return u, http.MethodPost, err
 
@@ -256,9 +257,16 @@ func (c *Connector) buildJobNestedURL(record map[string]any, segments ...string)
 		return nil, fmt.Errorf("%w: %s", errMissingParentID, parentIDKeyJobID)
 	}
 
-	path := append([]string{apiVersionPrefix, "jobs", jobID}, segments...)
+	path := append([]string{c.modulePath(), "jobs", jobID}, segments...)
 
 	return urlbuilder.New(c.ProviderInfo().BaseURL, path...)
+}
+
+// modulePath returns the module's URL prefix (e.g. "/api/v2") from schemas.json
+// root.path. Used by URL builders here that compose paths with dynamic record
+// IDs and therefore can't go through metadata.Schemas.LookupURLPath(objectName).
+func (c *Connector) modulePath() string {
+	return metadata.Schemas.LookupModuleURLPath(c.ProviderContext.Module())
 }
 
 // buildContactNestedURL extracts contactId from the record and builds a URL of
@@ -269,7 +277,7 @@ func (c *Connector) buildContactNestedURL(record map[string]any, segments ...str
 		return nil, fmt.Errorf("%w: %s", errMissingParentID, parentIDKeyContactID)
 	}
 
-	path := append([]string{apiVersionPrefix, "contacts", contactID}, segments...)
+	path := append([]string{c.modulePath(), "contacts", contactID}, segments...)
 
 	return urlbuilder.New(c.ProviderInfo().BaseURL, path...)
 }
