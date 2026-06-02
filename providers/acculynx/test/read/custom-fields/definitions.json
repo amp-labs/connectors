@@ -1,0 +1,43 @@
+{
+  "totalRecords": 3,
+  "recordStartIndex": 0,
+  "pageSize": 100,
+  "items": [
+    {
+      "id": "def-contact-text",
+      "_link": "https://api.acculynx.com/api/v2/company-settings/custom-fields/def-contact-text",
+      "label": "Customer Preference",
+      "entityType": "Contact",
+      "fieldType": "Text",
+      "isActive": true,
+      "options": [],
+      "modifiedDate": "2026-04-01T10:00:00Z",
+      "createdDate": "2026-01-01T10:00:00Z"
+    },
+    {
+      "id": "def-contact-options",
+      "_link": "https://api.acculynx.com/api/v2/company-settings/custom-fields/def-contact-options",
+      "label": "Preferred Contact Method",
+      "entityType": "Contact",
+      "fieldType": "Text",
+      "isActive": true,
+      "options": [
+        { "id": "opt-1", "value": "Phone", "isActive": true, "sortOrder": 1 },
+        { "id": "opt-2", "value": "Email", "isActive": true, "sortOrder": 2 }
+      ],
+      "modifiedDate": "2026-04-02T10:00:00Z",
+      "createdDate": "2026-01-02T10:00:00Z"
+    },
+    {
+      "id": "def-job-number",
+      "_link": "https://api.acculynx.com/api/v2/company-settings/custom-fields/def-job-number",
+      "label": "Estimated Squares",
+      "entityType": "Job",
+      "fieldType": "Number",
+      "isActive": true,
+      "options": [],
+      "modifiedDate": "2026-04-03T10:00:00Z",
+      "createdDate": "2026-01-03T10:00:00Z"
+    }
+  ]
+}
