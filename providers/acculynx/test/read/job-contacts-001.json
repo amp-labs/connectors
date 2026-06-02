@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "id": "jc-1",
+      "jobId": "job-001",
+      "firstName": "Carol",
+      "lastName": "Customer"
+    },
+    {
+      "id": "jc-2",
+      "jobId": "job-001",
+      "firstName": "Dan",
+      "lastName": "Decisionmaker"
+    }
+  ]
+}

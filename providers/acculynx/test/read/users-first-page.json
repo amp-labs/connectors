@@ -1,0 +1,23 @@
+{
+  "count": 5,
+  "pageSize": 2,
+  "pageStartIndex": 0,
+  "items": [
+    {
+      "id": "u1",
+      "displayName": "Alice Anderson",
+      "firstName": "Alice",
+      "lastName": "Anderson",
+      "email": "alice@example.com",
+      "status": "Active"
+    },
+    {
+      "id": "u2",
+      "displayName": "Bob Brown",
+      "firstName": "Bob",
+      "lastName": "Brown",
+      "email": "bob@example.com",
+      "status": "Active"
+    }
+  ]
+}
