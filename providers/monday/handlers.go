@@ -171,7 +171,7 @@ func parseItemsReadResponse(params common.ReadParams, resp *common.JSONHTTPRespo
 		resp,
 		extractItemsRecords,
 		makeItemsNextRecordsURL(limit),
-		marshalItemsReadResult,
+		common.MakeMarshaledDataFunc(itemReadRecordCustomFieldsTransformer),
 		params.Fields,
 	)
 }

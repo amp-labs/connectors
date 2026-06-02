@@ -1,20 +1,11 @@
 package monday
 
 import (
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
-func marshalItemsReadResult(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
-	for i := range records {
-		flattenItemColumnValues(records[i])
-	}
-
-	return common.GetMarshaledData(records, fields)
-}
-
-func extractItemsRecords(node *ajson.Node) ([]map[string]any, error) {
+func extractItemsRecords(node *ajson.Node) ([]*ajson.Node, error) {
 	dataNode, err := node.GetKey("data")
 	if err != nil {
 		return nil, err
@@ -26,7 +17,7 @@ func extractItemsRecords(node *ajson.Node) ([]map[string]any, error) {
 	}
 
 	if len(boards) == 0 {
-		return []map[string]any{}, nil
+		return []*ajson.Node{}, nil
 	}
 
 	itemsPage, err := jsonquery.New(boards[0]).ObjectOptional("items_page")
@@ -35,15 +26,10 @@ func extractItemsRecords(node *ajson.Node) ([]map[string]any, error) {
 	}
 
 	if itemsPage == nil {
-		return []map[string]any{}, nil
+		return []*ajson.Node{}, nil
 	}
 
-	records, err := jsonquery.New(itemsPage).ArrayOptional("items")
-	if err != nil {
-		return nil, err
-	}
-
-	return jsonquery.Convertor.ArrayToMap(records)
+	return jsonquery.New(itemsPage).ArrayOptional("items")
 }
 
 func makeItemsNextRecordsURL(limit int) func(*ajson.Node) (string, error) {

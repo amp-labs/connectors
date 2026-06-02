@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 // Field keys for board column values on items use cf_<columnId>.
@@ -168,6 +169,18 @@ func columnDefinitionsByID(columns []mondayColumnDefinition) map[string]mondayCo
 	return result
 }
 
+// normalizedValue picks the connector-facing value for a column_values entry.
+//
+// Monday often returns human-readable text alongside a JSON value string. Sample entries:
+//
+//	{"id": "status", "text": "Done", "type": "status", "value": "{\"index\":1,\"label\":\"Done\"}"}
+//	→ cf_status: "Done"
+//
+//	{"id": "numbers", "text": "42", "type": "numbers", "value": "42"}
+//	→ cf_numbers: "42"
+//
+//	{"id": "text", "text": "", "type": "text", "value": null}
+//	→ cf_text: nil
 func (v columnValue) normalizedValue() any {
 	if strings.TrimSpace(v.Text) != "" {
 		return v.Text
@@ -188,67 +201,41 @@ func (v columnValue) normalizedValue() any {
 	return v.Value
 }
 
-// flattenItemColumnValues promotes column_values entries to cf_<columnId> keys on the record map.
-func flattenItemColumnValues(object map[string]any) {
-	entries := parseColumnValuesFromMap(object)
-	applyFlattenedColumnValues(object, entries)
-}
-
-func parseColumnValuesFromMap(object map[string]any) []columnValue {
-	raw, ok := object["column_values"]
-	if !ok {
-		return nil
+// itemReadRecordCustomFieldsTransformer flattens column_values onto the record map
+// (keys cf_<columnId>) so they participate in field selection like other connectors.
+//
+// FlattenNestedFields is not used here: Monday returns column_values as an array of
+// {id, text, value, type}, not a single nested object whose keys should be promoted.
+func itemReadRecordCustomFieldsTransformer(node *ajson.Node) (map[string]any, error) {
+	root, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
 	}
 
-	slice, ok := raw.([]any)
-	if !ok || len(slice) == 0 {
-		return nil
+	entries, err := jsonquery.New(node).ArrayOptional("column_values")
+	if err != nil {
+		return nil, err
 	}
 
-	entries := make([]columnValue, 0, len(slice))
-
-	for _, item := range slice {
-		record, ok := item.(map[string]any)
-		if !ok {
-			continue
+	for _, entryNode := range entries {
+		field, err := jsonquery.ParseNode[columnValue](entryNode)
+		if err != nil {
+			return nil, err
 		}
 
-		id, _ := record["id"].(string)
-		if id == "" {
-			continue
-		}
-
-		entries = append(entries, columnValue{
-			ID:    id,
-			Text:  stringValue(record["text"]),
-			Value: record["value"],
-			Type:  stringValue(record["type"]),
-		})
-	}
-
-	return entries
-}
-
-func stringValue(v any) string {
-	if s, ok := v.(string); ok {
-		return s
-	}
-
-	return ""
-}
-
-func applyFlattenedColumnValues(object map[string]any, entries []columnValue) {
-	for _, field := range entries {
 		if field.ID == "" {
 			continue
 		}
 
-		object[CustomFieldKey(field.ID)] = field.normalizedValue()
+		root[CustomFieldKey(field.ID)] = field.normalizedValue()
 	}
+
+	return root, nil
 }
 
-// itemReadFieldsIncludeColumnValues reports whether the GraphQL query must request column_values.
-func itemReadFieldsIncludeColumnValues(fieldNames []string) bool {
+// itemReadCustomFieldsQueryNeedsColumnValues reports whether the items GraphQL query
+// must request column_values (only needed when callers ask for cf_* or column_values).
+func itemReadCustomFieldsQueryNeedsColumnValues(fieldNames []string) bool {
 	for _, fieldName := range fieldNames {
 		if strings.EqualFold(fieldName, "column_values") {
 			return true
@@ -262,8 +249,8 @@ func itemReadFieldsIncludeColumnValues(fieldNames []string) bool {
 	return false
 }
 
-// prepareItemWriteRecordData maps cf_<columnId> keys into column_values JSON for Monday mutations.
-func prepareItemWriteRecordData(
+// prepareItemWriteCustomFieldsRecordData maps cf_<columnId> keys into column_values JSON for Monday mutations.
+func prepareItemWriteCustomFieldsRecordData(
 	record map[string]any,
 	columns map[string]mondayColumnDefinition,
 ) (map[string]any, error) {
@@ -332,19 +319,16 @@ func formatColumnValueForAPI(columnType string, value any) any {
 		}
 	case "checkbox":
 		if b, ok := value.(bool); ok {
-			return map[string]any{"checked": strconvBool(b)}
+			checked := "false"
+			if b {
+				checked = "true"
+			}
+
+			return map[string]any{"checked": checked}
 		}
 	}
 
 	return value
-}
-
-func strconvBool(b bool) string {
-	if b {
-		return "true"
-	}
-
-	return "false"
 }
 
 func copyItemWriteRecordExcludingCustomFields(record map[string]any) map[string]any {

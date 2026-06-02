@@ -2,52 +2,59 @@ package monday
 
 import (
 	"testing"
+
+	"github.com/spyzhov/ajson"
 )
 
 func TestCustomFieldKey(t *testing.T) {
 	t.Parallel()
 
-	columnID := "status"
-	if got := CustomFieldKey(columnID); got != "cf_status" {
+	if got := CustomFieldKey("status"); got != "cf_status" {
 		t.Fatalf("CustomFieldKey: got %q want cf_status", got)
 	}
 }
 
-func TestItemReadFieldsIncludeColumnValues(t *testing.T) {
+func TestItemReadCustomFieldsQueryNeedsColumnValues(t *testing.T) {
 	t.Parallel()
 
-	if !itemReadFieldsIncludeColumnValues([]string{"name", "cf_status"}) {
+	if !itemReadCustomFieldsQueryNeedsColumnValues([]string{"name", "cf_status"}) {
 		t.Fatal("expected column_values inclusion for cf_ field")
 	}
 
-	if itemReadFieldsIncludeColumnValues([]string{"name", "id"}) {
+	if itemReadCustomFieldsQueryNeedsColumnValues([]string{"name", "id"}) {
 		t.Fatal("did not expect column_values inclusion")
 	}
 }
 
-func TestFlattenItemColumnValues(t *testing.T) {
+func TestItemReadRecordCustomFieldsTransformer(t *testing.T) {
 	t.Parallel()
 
-	obj := map[string]any{
+	node, err := ajson.Unmarshal([]byte(`{
 		"id": "1",
-		"column_values": []any{
-			map[string]any{"id": "status", "text": "Done", "type": "status"},
-			map[string]any{"id": "numbers", "text": "42", "type": "numbers"},
-		},
+		"column_values": [
+			{"id": "status", "text": "Done", "type": "status"},
+			{"id": "numbers", "text": "42", "type": "numbers"}
+		]
+	}`))
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	flattenItemColumnValues(obj)
-
-	if obj[CustomFieldKey("status")] != "Done" {
-		t.Fatalf("status: got %#v", obj[CustomFieldKey("status")])
+	obj, err := itemReadRecordCustomFieldsTransformer(node)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	if obj[CustomFieldKey("numbers")] != "42" {
-		t.Fatalf("numbers: got %#v", obj[CustomFieldKey("numbers")])
+	if obj["cf_status"] != "Done" {
+		t.Fatalf("status: got %#v", obj["cf_status"])
+	}
+
+	if obj["cf_numbers"] != "42" {
+		t.Fatalf("numbers: got %#v", obj["cf_numbers"])
 	}
 }
 
-func TestPrepareItemWriteRecordData(t *testing.T) {
+func TestPrepareItemWriteCustomFieldsRecordData(t *testing.T) {
 	t.Parallel()
 
 	columns := map[string]mondayColumnDefinition{
@@ -56,13 +63,13 @@ func TestPrepareItemWriteRecordData(t *testing.T) {
 	}
 
 	record := map[string]any{
-		"board_id": "123",
-		"name":     "Task",
+		"board_id":  "123",
+		"name":      "Task",
 		"cf_status": "Working on it",
 		"cf_text":   "hello",
 	}
 
-	prepared, err := prepareItemWriteRecordData(record, columns)
+	prepared, err := prepareItemWriteCustomFieldsRecordData(record, columns)
 	if err != nil {
 		t.Fatal(err)
 	}

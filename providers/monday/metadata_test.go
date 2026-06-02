@@ -40,12 +40,48 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 		}
 	}`
 
+	boardsIntrospectionResponse := `{
+		"data": {
+			"__type": {
+				"name": "Board",
+				"fields": [
+					{"name": "id", "type": {"name": "ID", "kind": "SCALAR"}},
+					{"name": "name", "type": {"name": "String", "kind": "SCALAR"}}
+				]
+			}
+		}
+	}`
+
 	tests := []testroutines.Metadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:  "Boards metadata does not fetch column definitions",
+			Input: []string{"boards"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.Check(func(_ http.ResponseWriter, r *http.Request) bool {
+					return requestBodyContains(r, "__type")
+				}),
+				Then: mockserver.Response(http.StatusOK, []byte(boardsIntrospectionResponse)),
+				Else: mockserver.Response(http.StatusTeapot, []byte(`{"error":"unexpected request"}`)),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"boards": {
+						DisplayName: "Boards",
+						Fields: map[string]common.FieldMetadata{
+							"id":   {DisplayName: "id", ValueType: common.ValueTypeOther, ProviderType: ""},
+							"name": {DisplayName: "name", ValueType: common.ValueTypeOther, ProviderType: ""},
+						},
+					},
+				},
+			},
 		},
 		{
 			Name:  "Items metadata merges board column definitions",

@@ -58,7 +58,12 @@ func buildItemsReadQuery(params common.ReadParams) (string, error) {
 		cursor = params.NextPage.String()
 	}
 
-	return getItemsQuery(boardID, limit, cursor, true), nil
+	return getItemsQuery(
+		boardID,
+		limit,
+		cursor,
+		itemReadCustomFieldsQueryNeedsColumnValues(params.Fields.List()),
+	), nil
 }
 
 func buildPaginatedReadQuery(params common.ReadParams) (string, error) {

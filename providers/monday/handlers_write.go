@@ -61,7 +61,7 @@ func (c *Connector) buildItemsWriteMutation(
 		return "", err
 	}
 
-	prepared, err := prepareItemWriteRecordData(recordData, columnDefinitionsByID(columns))
+	prepared, err := prepareItemWriteCustomFieldsRecordData(recordData, columnDefinitionsByID(columns))
 	if err != nil {
 		return "", err
 	}
