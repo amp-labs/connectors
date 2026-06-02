@@ -72,7 +72,7 @@ func (c *Connector) fetchSingleRecord(
 	objectName, recordID string,
 	fieldSet datautils.StringSet,
 ) (common.ReadResultRow, error) {
-	u, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersionPrefix, objectName, recordID)
+	u, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.modulePath(), objectName, recordID)
 	if err != nil {
 		return common.ReadResultRow{}, err
 	}
