@@ -43,7 +43,7 @@ var objectReadSpecs = datautils.NewDefaultMap(map[string]objectReadSpec{
 	"supplements/items":     {pagination: paginationOffsetRecord},
 	"supplements/notations": {pagination: paginationOffsetRecord},
 	"jobs/estimates":        {pagination: paginationOffsetRecord},
-	"jobs/history":          {pagination: paginationOffsetRecord},
+	"jobs/history":          {pagination: paginationOffsetRecord, timeKey: "date"},
 	"jobs/representatives":  {pagination: paginationOffsetRecord},
 	"company-settings/job-file-settings/document-folders":    {pagination: paginationOffsetRecord},
 	"company-settings/job-file-settings/insurance-companies": {pagination: paginationOffsetRecord},
@@ -112,6 +112,31 @@ func applyJobsIncrementalFilter(url *urlbuilder.URL, params common.ReadParams) {
 	}
 
 	url.WithQueryParam("dateFilterType", "ModifiedDate")
+
+	if !params.Since.IsZero() {
+		url.WithQueryParam("startDate", params.Since.Format(time.DateOnly))
+	}
+
+	if !params.Until.IsZero() {
+		url.WithQueryParam("endDate", params.Until.Format(time.DateOnly))
+	}
+}
+
+// applyHistoryDateWindow pushes Since/Until into AccuLynx's server-side
+// startDate/endDate filter for /jobs/{id}/history. Without this, an unbounded
+// read of a long-lived job's history can require tens of thousands of paged
+// requests; with it, the server returns only records inside the requested
+// window.
+//
+// AccuLynx requires YYYY-MM-DD format; passing time-of-day returns HTTP 400.
+func applyHistoryDateWindow(url *urlbuilder.URL, params common.ReadParams) {
+	if params.ObjectName != "jobs/history" {
+		return
+	}
+
+	if params.Since.IsZero() && params.Until.IsZero() {
+		return
+	}
 
 	if !params.Since.IsZero() {
 		url.WithQueryParam("startDate", params.Since.Format(time.DateOnly))

@@ -52,6 +52,18 @@ var customFieldsContact001ValuesResponse []byte
 //go:embed test/read/custom-fields/contact-002-values.json
 var customFieldsContact002ValuesResponse []byte
 
+//go:embed test/read/jobs-list-single.json
+var jobsListSingleResponse []byte
+
+//go:embed test/read/job-invoices-page1.json
+var jobInvoicesPage1Response []byte
+
+//go:embed test/read/job-invoices-page2.json
+var jobInvoicesPage2Response []byte
+
+//go:embed test/read/job-history.json
+var jobHistoryResponse []byte
+
 func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	t.Parallel()
 
@@ -310,6 +322,84 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Comparator: testroutines.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 3,
+				Done: true,
+			},
+		},
+		{
+			Name: "Read jobs/invoices follows NextPage per parent (paginated fan-out)",
+			Input: common.ReadParams{
+				ObjectName: "jobs/invoices",
+				Fields:     connectors.Fields("id", "balanceDue"),
+				PageSize:   2,
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsListSingleResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs/job-001/invoices"),
+							mockcond.QueryParam("pageNumber", "1"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobInvoicesPage1Response),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs/job-001/invoices"),
+							mockcond.QueryParam("pageNumber", "2"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobInvoicesPage2Response),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Done: true,
+			},
+		},
+		{
+			Name: "Read jobs/history pushes Since/Until to server-side startDate/endDate (date-only)",
+			Input: common.ReadParams{
+				ObjectName: "jobs/history",
+				Fields:     connectors.Fields("action", "date"),
+				Since:      time.Date(2026, 5, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 5, 15, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsListSingleResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs/job-001/history"),
+							mockcond.QueryParam("startDate", "2026-05-01"),
+							mockcond.QueryParam("endDate", "2026-05-15"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobHistoryResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 2,
 				Done: true,
 			},
 		},

@@ -157,7 +157,7 @@ type customFieldsResponse struct {
 func (c *Connector) fetchCustomFieldDefinitions(
 	ctx context.Context,
 ) (datautils.NamedLists[customFieldDefinition], error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersionPrefix, customFieldDefinitionsPath)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.modulePath(), customFieldDefinitionsPath)
 	if err != nil {
 		return nil, errors.Join(common.ErrResolvingCustomFields, err)
 	}
@@ -245,7 +245,7 @@ func (c *Connector) fetchCustomFieldValuesForRecord(
 	parentObject string,
 	parentID string,
 ) ([]customFieldValue, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersionPrefix, parentObject, parentID, "custom-fields")
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.modulePath(), parentObject, parentID, "custom-fields")
 	if err != nil {
 		return nil, err
 	}
