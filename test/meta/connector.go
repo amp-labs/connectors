@@ -23,11 +23,28 @@ var ( //nolint:gochecknoglobals
 		PathJSON:  "metadata.whatsappPhoneNumberId",
 		SuffixENV: "WHATSAPP_PHONE_NUMBER_ID",
 	}
+	// Optional: E.164 recipient for template message send integration test only.
+	fieldWhatsAppTo = credscanning.Field{
+		Name:      "whatsappTo",
+		PathJSON:  "metadata.whatsappTo",
+		SuffixENV: "WHATSAPP_TO",
+	}
 )
 
-func GetWhatsAppConnector(ctx context.Context) *metaconn.Connector {
+func loadWhatsAppCredentials() *credscanning.ProviderCredentials {
 	filePath := credscanning.LoadPath(providers.Meta)
-	reader := utils.MustCreateProvCredJSON(filePath, true, fieldWhatsAppAccountID, fieldWhatsAppPhoneNumberID)
+
+	return utils.MustCreateProvCredJSON(filePath, true,
+		fieldWhatsAppAccountID, fieldWhatsAppPhoneNumberID, fieldWhatsAppTo)
+}
+
+// GetWhatsAppTo returns the optional message recipient from meta-creds.json (metadata.whatsappTo) or META_WHATSAPP_TO.
+func GetWhatsAppTo() string {
+	return loadWhatsAppCredentials().Get(fieldWhatsAppTo)
+}
+
+func GetWhatsAppConnector(ctx context.Context) *metaconn.Connector {
+	reader := loadWhatsAppCredentials()
 
 	client, err := common.NewOAuthHTTPClient(ctx,
 		common.WithOAuthClient(http.DefaultClient),

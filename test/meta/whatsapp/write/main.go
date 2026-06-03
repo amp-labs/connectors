@@ -22,12 +22,11 @@ type messageTemplatePayload struct {
 	Components []map[string]any `json:"components"`
 }
 
-type textMessagePayload struct {
+type sendMessagePayload struct {
 	MessagingProduct string         `json:"messaging_product"`
-	RecipientType    string         `json:"recipient_type"`
 	To               string         `json:"to"`
 	Type             string         `json:"type"`
-	Text             map[string]any `json:"text"`
+	Template         map[string]any `json:"template,omitempty"`
 }
 
 func main() {
@@ -36,10 +35,10 @@ func main() {
 
 	utils.SetupLogging()
 	conn := connTest.GetWhatsAppConnector(ctx)
-	slog.Info("Running message template create")
-	runMessageTemplateCreate(ctx, conn)
-	slog.Info("Running text message create")
-	runTextMessageCreate(ctx, conn)
+	// slog.Info("Running message template create")
+	// runMessageTemplateCreate(ctx, conn)
+	slog.Info("Running template message send")
+	runTextMessageCreate(ctx, conn, connTest.GetWhatsAppTo())
 }
 
 func runMessageTemplateCreate(ctx context.Context, conn connectors.WriteConnector) {
@@ -63,32 +62,41 @@ func runMessageTemplateCreate(ctx context.Context, conn connectors.WriteConnecto
 	utils.DumpJSON(createRes, os.Stdout)
 }
 
-func runTextMessageCreate(ctx context.Context, conn connectors.WriteConnector) {
-	to := os.Getenv("WHATSAPP_TO")
+func runTextMessageCreate(ctx context.Context, conn connectors.WriteConnector, to string) {
 	if to == "" {
-		slog.Info("Skipping text message create (set WHATSAPP_TO to run)")
+		slog.Info("Skipping template message send (set metadata.whatsappTo in meta-creds.json or META_WHATSAPP_TO to run)")
 		return
 	}
 
 	createRes, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "messages",
-		RecordData: textMessagePayload{
+		RecordData: sendMessagePayload{
 			MessagingProduct: "whatsapp",
-			RecipientType:    "individual",
 			To:               to,
-			Type:             "text",
-			Text: map[string]any{
-				"preview_url": true,
-				"body": "As requested, here's the link to our latest product: " +
-					"https://www.meta.com/quest/quest-3/",
+			Type:             "template",
+			Template: map[string]any{
+				"name": "jaspers_market_order_confirmation_v1",
+				"language": map[string]any{
+					"code": "en_US",
+				},
+				"components": []map[string]any{
+					{
+						"type": "body",
+						"parameters": []map[string]any{
+							{"type": "text", "text": "John Doe"},
+							{"type": "text", "text": "123456"},
+							{"type": "text", "text": "Jun 4, 2026"},
+						},
+					},
+				},
 			},
 		},
 	})
 	if err != nil {
-		utils.Fail("error creating text message", "error", err)
+		utils.Fail("error sending template message", "error", err)
 	}
 	if !createRes.Success {
-		utils.Fail("failed to create text message", "response", createRes)
+		utils.Fail("failed to send template message", "response", createRes)
 	}
 	utils.DumpJSON(createRes, os.Stdout)
 }
