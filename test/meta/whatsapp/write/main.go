@@ -64,13 +64,18 @@ func runMessageTemplateCreate(ctx context.Context, conn connectors.WriteConnecto
 }
 
 func runTextMessageCreate(ctx context.Context, conn connectors.WriteConnector) {
+	to := os.Getenv("WHATSAPP_TO")
+	if to == "" {
+		slog.Info("Skipping text message create (set WHATSAPP_TO to run)")
+		return
+	}
 
 	createRes, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: "messages",
 		RecordData: textMessagePayload{
 			MessagingProduct: "whatsapp",
 			RecipientType:    "individual",
-			To:               "+16505551234",
+			To:               to,
 			Type:             "text",
 			Text: map[string]any{
 				"preview_url": true,
