@@ -45,6 +45,7 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 			continue
 		}
 
+		// Attach user association to flows
 		for _, flow := range flows {
 			if _, seen := aggregated[flow.Id]; seen {
 				continue

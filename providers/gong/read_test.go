@@ -271,71 +271,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			// Branch B behavior: aggregate flows across every user, dedupe shared
-			// flow (id 9000000000000099) which appears under both Alice and Bob.
-			Name: "Flows: aggregate across all users and dedupe by id",
-			Input: common.ReadParams{
-				ObjectName: "flows",
-				Fields:     connectors.Fields("id", "name", "visibility"),
-			},
-			Server: mockserver.Switch{
-				Setup: mockserver.ContentJSON(),
-				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/v2/users"),
-					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "get-records-users.json")),
-				}, {
-					If: mockcond.And{
-						mockcond.Path("/v2/flows"),
-						mockcond.QueryParam("flowOwnerEmail", "alice@example.com"),
-					},
-					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_alice.json")),
-				}, {
-					If: mockcond.And{
-						mockcond.Path("/v2/flows"),
-						mockcond.QueryParam("flowOwnerEmail", "bob@example.com"),
-					},
-					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_bob.json")),
-				}},
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 3,
-				Data: []common.ReadResultRow{{
-					Id: "9000000000000001",
-					Fields: map[string]any{
-						"name":       "Alice's Personal Outreach",
-						"visibility": "Personal",
-					},
-					Raw: map[string]any{
-						"id":         "9000000000000001",
-						"visibility": "Personal",
-					},
-				}, {
-					Id: "9000000000000002",
-					Fields: map[string]any{
-						"name":       "Bob's Personal Outreach",
-						"visibility": "Personal",
-					},
-					Raw: map[string]any{
-						"id":         "9000000000000002",
-						"visibility": "Personal",
-					},
-				}, {
-					Id: "9000000000000099",
-					Fields: map[string]any{
-						"name":       "Company-wide Sales Cadence",
-						"visibility": "Company",
-					},
-					Raw: map[string]any{
-						"id":         "9000000000000099",
-						"visibility": "Company",
-					},
-				}},
-				Done: true,
-			},
-			ExpectedErrs: nil,
-		},
-		{
 			Name: "Flows: AssociatedObjects=users attaches each Personal flow's owner",
 			Input: common.ReadParams{
 				ObjectName:        "flows",
@@ -368,9 +303,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					Id: "9000000000000001",
 					Fields: map[string]any{
 						"visibility": "Personal",
+						"id":         "9000000000000001",
 					},
 					Raw: map[string]any{
 						"visibility": "Personal",
+						"id":         "9000000000000001",
 					},
 					Associations: map[string][]common.Association{
 						"users": {{
@@ -384,24 +321,34 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					Id: "9000000000000002",
 					Fields: map[string]any{
 						"visibility": "Personal",
+						"id":         "9000000000000002",
 					},
 					Raw: map[string]any{
 						"visibility": "Personal",
+						"id":         "9000000000000002",
 					},
 					Associations: map[string][]common.Association{
 						"users": {{
 							ObjectId: "8000000000000002",
 							Raw: map[string]any{
+								"id":           "8000000000000002",
 								"emailAddress": "bob@example.com",
+								"firstName":    "Bob",
+								"lastName":     "Brown",
+								"active":       true,
+								"title":        "Sales Engineer",
 							},
 						}},
 					},
 				}, {
 					Id: "9000000000000099",
 					Fields: map[string]any{
+						"id":         "9000000000000099",
 						"visibility": "Company",
 					},
+
 					Raw: map[string]any{
+						"id":         "9000000000000099",
 						"visibility": "Company",
 					},
 					// Company flows: no user association.
