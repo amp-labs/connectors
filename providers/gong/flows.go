@@ -43,7 +43,8 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 		flows, err := c.fetchFlowsForUser(ctx, userEmail, config)
 		if err != nil || len(flows) == 0 {
 			// Some users may not have engage license or may not be added to flows
-			// we ignore these errors and continue
+			// we log the error and continue
+			fmt.Printf("failed to fetch flows for user %s: %v\n", userEmail, err)
 			continue
 		}
 
