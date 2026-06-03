@@ -358,6 +358,133 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Flows: users with multiple pages, every page's users get their flows fetched",
+			Input: common.ReadParams{
+				ObjectName: "flows",
+				Fields:     connectors.Fields("id", "name", "visibility"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					// users page 2 (cursor present) must be matched before the page 1 fallback
+					If: mockcond.And{
+						mockcond.Path("/v2/users"),
+						mockcond.QueryParam("cursor", "USERS_PAGE_2"),
+					},
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_users_page2.json")),
+				}, {
+					If:   mockcond.Path("/v2/users"),
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_users_page1.json")),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/v2/flows"),
+						mockcond.QueryParam("flowOwnerEmail", "alice@example.com"),
+					},
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_alice.json")),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/v2/flows"),
+						mockcond.QueryParam("flowOwnerEmail", "bob@example.com"),
+					},
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_bob.json")),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Data: []common.ReadResultRow{{
+					Id: "9000000000000001",
+					Fields: map[string]any{
+						"id":         "9000000000000001",
+						"visibility": "Personal",
+					},
+					Raw: map[string]any{
+						"id":         "9000000000000001",
+						"visibility": "Personal",
+					},
+				}, {
+					// bob lives on users page 2 — proves we followed the users cursor
+					Id: "9000000000000002",
+					Fields: map[string]any{
+						"id":         "9000000000000002",
+						"visibility": "Personal",
+					},
+					Raw: map[string]any{
+						"id":         "9000000000000002",
+						"visibility": "Personal",
+					},
+				}, {
+					Id: "9000000000000099",
+					Fields: map[string]any{
+						"id":         "9000000000000099",
+						"visibility": "Company",
+					},
+					Raw: map[string]any{
+						"id":         "9000000000000099",
+						"visibility": "Company",
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Flows: a single user's flows with multiple pages, all pages are fetched",
+			Input: common.ReadParams{
+				ObjectName: "flows",
+				Fields:     connectors.Fields("id", "name", "visibility"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					// alice flows page 2 (cursor present) must be matched before the page 1 fallback
+					If: mockcond.And{
+						mockcond.Path("/v2/flows"),
+						mockcond.QueryParam("flowOwnerEmail", "alice@example.com"),
+						mockcond.QueryParam("cursor", "FLOWS_PAGE_2"),
+					},
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_alice_page2.json")),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/v2/flows"),
+						mockcond.QueryParam("flowOwnerEmail", "alice@example.com"),
+					},
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_alice_page1.json")),
+				}, {
+					If:   mockcond.Path("/v2/users"),
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_users_alice_only.json")),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Id: "9000000000000001",
+					Fields: map[string]any{
+						"id":         "9000000000000001",
+						"visibility": "Personal",
+					},
+					Raw: map[string]any{
+						"id":         "9000000000000001",
+						"visibility": "Personal",
+					},
+				}, {
+					// this flow is only on page 2 — proves we followed the flows cursor
+					Id: "9000000000000003",
+					Fields: map[string]any{
+						"id":         "9000000000000003",
+						"visibility": "Personal",
+					},
+					Raw: map[string]any{
+						"id":         "9000000000000003",
+						"visibility": "Personal",
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name:  "Successful read transcripts using POST",
 			Input: common.ReadParams{ObjectName: "transcripts", Fields: connectors.Fields("callid")},
 			Server: mockserver.Conditional{

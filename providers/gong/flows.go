@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
 )
 
@@ -131,34 +133,19 @@ func attachUserToPersonalFlow(flow *common.ReadResultRow, user common.ReadResult
 	)
 }
 
-// fetchAllUsers retrieves all users from the /users endpoint.
+// fetchAllUsers retrieves every user from the /users endpoint, following
+// pagination so users beyond the first page are not missed.
 func (c *Connector) fetchAllUsers(ctx context.Context) ([]common.ReadResultRow, error) {
 	url, err := c.getReadURL(objectNameUsers)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := c.Client.Get(ctx, url.String())
-	if err != nil {
-		return nil, err
-	}
-
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, objectNameUsers)
-
-	result, err := common.ParseResult(res,
-		common.ExtractRecordsFromPath(responseFieldName),
-		getNextRecordsURL,
-		common.GetMarshaledData,
-		nil,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return result.Data, nil
+	return c.fetchAllPages(ctx, url, objectNameUsers, nil)
 }
 
-// fetchFlowsForUser fetches flows for a specific user email.
+// fetchFlowsForUser fetches every flow for a specific user email, following
+// pagination so a user with many flows does not lose the overflow.
 func (c *Connector) fetchFlowsForUser(ctx context.Context, userEmail string, config common.ReadParams,
 ) ([]common.ReadResultRow, error) {
 	url, err := c.getReadURL(objectNameFlows)
@@ -168,22 +155,46 @@ func (c *Connector) fetchFlowsForUser(ctx context.Context, userEmail string, con
 
 	url.WithQueryParam("flowOwnerEmail", userEmail)
 
-	res, err := c.Client.Get(ctx, url.String())
-	if err != nil {
-		return nil, err
+	return c.fetchAllPages(ctx, url, objectNameFlows, config.Fields)
+}
+
+// fetchAllPages issues GET requests against url, following Gong's records.cursor
+// until none is returned, and accumulates every page of rows.
+func (c *Connector) fetchAllPages(
+	ctx context.Context,
+	url *urlbuilder.URL,
+	objectName string,
+	fields datautils.Set[string],
+) ([]common.ReadResultRow, error) {
+	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, objectName)
+
+	var rows []common.ReadResultRow
+
+	for {
+		res, err := c.Client.Get(ctx, url.String())
+		if err != nil {
+			return nil, err
+		}
+
+		result, err := common.ParseResult(res,
+			common.ExtractRecordsFromPath(responseFieldName),
+			getNextRecordsURL,
+			common.GetMarshaledData,
+			fields,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		rows = append(rows, result.Data...)
+
+		if result.NextPage == "" {
+			break
+		}
+
+		// Re-request with the next cursor; flowOwnerEmail (if set) is preserved on url.
+		url.WithQueryParam("cursor", result.NextPage.String())
 	}
 
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, objectNameFlows)
-
-	result, err := common.ParseResult(res,
-		common.ExtractRecordsFromPath(responseFieldName),
-		getNextRecordsURL,
-		common.GetMarshaledData,
-		config.Fields,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return result.Data, nil
+	return rows, nil
 }

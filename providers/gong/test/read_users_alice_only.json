@@ -1,0 +1,18 @@
+{
+  "requestId": "users-alice-only",
+  "records": {
+    "totalRecords": 1,
+    "currentPageSize": 1,
+    "currentPageNumber": 0
+  },
+  "users": [
+    {
+      "id": "8000000000000001",
+      "emailAddress": "alice@example.com",
+      "firstName": "Alice",
+      "lastName": "Anderson",
+      "active": true,
+      "title": "Account Executive"
+    }
+  ]
+}
