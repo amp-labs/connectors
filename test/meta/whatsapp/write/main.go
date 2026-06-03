@@ -35,8 +35,8 @@ func main() {
 
 	utils.SetupLogging()
 	conn := connTest.GetWhatsAppConnector(ctx)
-	// slog.Info("Running message template create")
-	// runMessageTemplateCreate(ctx, conn)
+	slog.Info("Running message template create")
+	runMessageTemplateCreate(ctx, conn)
 	slog.Info("Running template message send")
 	runTextMessageCreate(ctx, conn, connTest.GetWhatsAppTo())
 }
