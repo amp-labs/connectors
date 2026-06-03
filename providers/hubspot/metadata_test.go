@@ -99,14 +99,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							},
 
 							// Float.
+							// associatedcompanyid is a number property carrying
+							// referencedObjectType="COMPANY", so it surfaces as
+							// a reference to companies rather than a raw float.
 							"associatedcompanyid": {
 								DisplayName:  "Primary Associated Company ID",
-								ValueType:    "float",
+								ValueType:    "reference",
 								ProviderType: "number.number",
 								ReadOnly:     new(false),
 								IsCustom:     new(false),
 								IsRequired:   new(false),
 								Values:       nil,
+								ReferenceTo:  []string{"companies"},
 							},
 							"hubspotscore": {
 								DisplayName:  "HubSpot Score",
@@ -504,6 +508,123 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 							"eventType":  {DisplayName: "eventType"},
 							"occurredAt": {DisplayName: "occurredAt"},
 							"id":         {DisplayName: "id"},
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// CON-3293: a property carrying referencedObjectType="OWNER"
+			// (HubSpot's name for users) must surface as a reference to
+			// users rather than a generic singleSelect, even though its
+			// underlying type/fieldType is enumeration/select.
+			Name:  "Property with referencedObjectType=OWNER becomes a reference to users",
+			Input: []string{"contacts"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If: mockcond.Path("/crm/v3/properties/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, `{
+						"results": [{
+							"name": "hubspot_owner_id",
+							"label": "Contact owner",
+							"type": "enumeration",
+							"fieldType": "select",
+							"referencedObjectType": "OWNER",
+							"options": [
+								{"label": "Sarah Chen", "value": "12345"},
+								{"label": "Tom Rodriguez", "value": "67890"}
+							],
+							"hubspotDefined": true,
+							"modificationMetadata": {"readOnlyValue": false}
+						}]
+					}`),
+				}, {
+					If:   mockcond.Path("/crm/pipelines/2026-03/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, "{}"),
+				}, {
+					If:   mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, "{}"),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "contacts",
+						Fields: map[string]common.FieldMetadata{
+							"hubspot_owner_id": {
+								DisplayName:  "Contact owner",
+								ValueType:    "reference",
+								ProviderType: "enumeration.select",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+								Values: []common.FieldValue{{
+									Value:        "12345",
+									DisplayValue: "Sarah Chen",
+								}, {
+									Value:        "67890",
+									DisplayValue: "Tom Rodriguez",
+								}},
+								ReferenceTo: []string{"users"},
+							},
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// CON-3293: an unrecognized referencedObjectType (e.g. a HubSpot
+			// custom-object FQN like "p12345_my_object") falls through to a
+			// lowercased passthrough so downstream consumers still see a
+			// usable reference name instead of losing the field entirely.
+			Name:  "Property with custom referencedObjectType passes through lowercased",
+			Input: []string{"contacts"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If: mockcond.Path("/crm/v3/properties/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, `{
+						"results": [{
+							"name": "custom_link_id",
+							"label": "Linked Custom Object",
+							"type": "number",
+							"fieldType": "number",
+							"referencedObjectType": "P12345_CUSTOM_OBJECT",
+							"options": [],
+							"hubspotDefined": false,
+							"modificationMetadata": {"readOnlyValue": false}
+						}]
+					}`),
+				}, {
+					If:   mockcond.Path("/crm/pipelines/2026-03/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, "{}"),
+				}, {
+					If:   mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, "{}"),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "contacts",
+						Fields: map[string]common.FieldMetadata{
+							"custom_link_id": {
+								DisplayName:  "Linked Custom Object",
+								ValueType:    "reference",
+								ProviderType: "number.number",
+								ReadOnly:     new(false),
+								IsCustom:     new(true),
+								IsRequired:   new(false),
+								Values:       nil,
+								ReferenceTo:  []string{"p12345_custom_object"},
+							},
 						},
 					},
 				},

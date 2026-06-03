@@ -262,8 +262,12 @@ type fieldDescription struct {
 	FieldType string `json:"fieldType"`
 	// IsBuiltIn indicates whether the field is HubSpot-defined (built-in).
 	// If false or omitted, the field is custom.
-	IsBuiltIn            bool                      `json:"hubspotDefined"`
-	Options              []fieldEnumerationOption  `json:"options"`
+	IsBuiltIn bool                     `json:"hubspotDefined"`
+	Options   []fieldEnumerationOption `json:"options"`
+	// ReferencedObjectType, when set, marks the property as a foreign key to
+	// another HubSpot object (e.g. "OWNER", "COMPANY"). It overrides ValueType
+	// to ValueTypeReference in transformToFieldMetadata.
+	ReferencedObjectType string                    `json:"referencedObjectType"`
 	ModificationMetadata fieldModificationMetadata `json:"modificationMetadata"`
 }
 
@@ -314,6 +318,18 @@ func (f fieldDescription) transformToFieldMetadata() common.FieldMetadata {
 		valueType = common.ValueTypeOther
 	}
 
+	// Properties carrying a referencedObjectType are foreign keys to another
+	// HubSpot object (e.g. hubspot_owner_id → users, associatedcompanyid →
+	// companies). Surface that to consumers via ValueTypeReference + ReferenceTo
+	// so field-mapping UIs can render an object picker rather than a dropdown.
+	// Values are preserved so callers still get the available option list.
+	var referenceTo []string
+
+	if f.ReferencedObjectType != "" {
+		valueType = common.ValueTypeReference
+		referenceTo = []string{resolveReferencedObjectName(f.ReferencedObjectType)}
+	}
+
 	return common.FieldMetadata{
 		DisplayName:  f.Label,
 		ValueType:    valueType,
@@ -322,8 +338,9 @@ func (f fieldDescription) transformToFieldMetadata() common.FieldMetadata {
 		IsCustom:     new(!f.IsBuiltIn),
 		// IsRequired is not known from current struct,
 		// info is acquired by different API call and set by fetchRequiredFieldsBestEffort.
-		IsRequired: nil,
-		Values:     values,
+		IsRequired:  nil,
+		Values:      values,
+		ReferenceTo: referenceTo,
 	}
 }
 

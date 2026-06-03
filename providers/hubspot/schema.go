@@ -1,5 +1,7 @@
 package hubspot
 
+import "strings"
+
 // KnownObjectTypes
 // https://developers.hubspot.com/docs/guides/api/crm/understanding-the-crm#object-type-ids
 var KnownObjectTypes = map[string]string{ // nolint:gochecknoglobals
@@ -25,4 +27,48 @@ var KnownObjectTypes = map[string]string{ // nolint:gochecknoglobals
 	"0-69":  "subscriptions",
 	"0-27":  "tasks",
 	"0-115": "users",
+}
+
+// referencedObjectTypeMap translates the values HubSpot returns in a property's
+// `referencedObjectType` (uppercase singular, e.g. "OWNER") into the object
+// names this connector exposes (matching KnownObjectTypes values).
+//
+// Used by ListObjectMetadata when populating common.FieldMetadata.ReferenceTo
+// for reference-typed fields.
+var referencedObjectTypeMap = map[string]string{ // nolint:gochecknoglobals
+	"APPOINTMENT":     "appointments",
+	"CALL":            "calls",
+	"COMMUNICATION":   "communications",
+	"COMPANY":         "companies",
+	"CONTACT":         "contacts",
+	"COURSE":          "courses",
+	"DEAL":            "deals",
+	"EMAIL":           "emails",
+	"LEAD":            "leads",
+	"LINE_ITEM":       "line_items",
+	"LISTING":         "listings",
+	"MARKETING_EVENT": "marketing_events",
+	"MEETING":         "meetings",
+	"NOTE":            "notes",
+	"OWNER":           "users",
+	"POSTAL_MAIL":     "postal_mail",
+	"PRODUCT":         "products",
+	"QUOTE":           "quotes",
+	"SERVICE":         "services",
+	"SUBSCRIPTION":    "subscriptions",
+	"TASK":            "tasks",
+	"TICKET":          "tickets",
+}
+
+// resolveReferencedObjectName maps a HubSpot referencedObjectType value to the
+// object name this connector uses. For known core CRM types it returns the
+// mapped name from referencedObjectTypeMap. For anything else (custom-object
+// FQNs like "p123_my_object", future types we don't know yet) it returns the
+// lowercased input so downstream consumers still get a usable reference name.
+func resolveReferencedObjectName(hsType string) string {
+	if name, ok := referencedObjectTypeMap[hsType]; ok {
+		return name
+	}
+
+	return strings.ToLower(hsType)
 }
