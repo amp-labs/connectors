@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/gong/metadata"
@@ -41,17 +42,29 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 		}
 
 		flows, err := c.fetchFlowsForUser(ctx, userEmail, config)
-		if err != nil || len(flows) == 0 {
-			// Some users may not have engage license or may not be added to flows
-			// we log the error and continue
-			fmt.Printf("failed to fetch flows for user %s: %v\n", userEmail, err)
+		if err != nil {
+			// A user without an engage license (or not added to any flow) errors
+			// here. We skip them so one user can't fail the whole sync, and log it
+			// so a genuine failure (5xx / rate-limit / network) is still visible.
+			logging.Logger(ctx).Warn("could not fetch flows for user, skipping",
+				"user", userEmail, "error", err.Error())
+
+			continue
+		}
+
+		if len(flows) == 0 {
 			continue
 		}
 
 		mergeUserFlows(aggregated, flows, user, includeUserAssoc)
 	}
 
+	if len(aggregated) == 0 {
+		return emptyFlowsResult(), nil
+	}
+
 	data := make([]common.ReadResultRow, 0, len(aggregated))
+
 	for _, flow := range aggregated {
 		data = append(data, flow)
 	}
