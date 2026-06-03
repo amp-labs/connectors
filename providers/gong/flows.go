@@ -16,7 +16,7 @@ import (
 // appear in multiple users' result sets while personal flows are unique to their owner.
 // Some users may not have engage license or may not be added to flows, so we handle errors gracefully.
 // ref: https://gong.app.gong.io/settings/api/documentation#get-/v2/flows
-func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { // nolint:cyclop,lll
+func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { // nolint:lll
 	users, err := c.fetchAllUsers(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch users: %w", err)
@@ -28,8 +28,8 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 
 	includeUserAssoc := wantsUserAssociation(config.AssociatedObjects)
 
-	// Aggregate flows across all users, keyed by id to dedupe shared/company flows
-	// that surface in multiple users' result sets.
+	// Collect every user's flows into one map keyed by flow id.
+	// Company and shared flows show up for many users, so the map drops the repeats.
 	aggregated := make(map[string]common.ReadResultRow)
 
 	for _, user := range users {
@@ -45,18 +45,7 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 			continue
 		}
 
-		// Attach user association to flows
-		for _, flow := range flows {
-			if _, seen := aggregated[flow.Id]; seen {
-				continue
-			}
-
-			if includeUserAssoc {
-				attachUserToPersonalFlow(&flow, user)
-			}
-
-			aggregated[flow.Id] = flow
-		}
+		mergeUserFlows(aggregated, flows, user, includeUserAssoc)
 	}
 
 	data := make([]common.ReadResultRow, 0, len(aggregated))
@@ -86,6 +75,28 @@ func emptyFlowsResult() *common.ReadResult {
 	}
 }
 
+// mergeUserFlows adds a user's flows to the aggregate, skipping ids already
+// collected and attaching the owning user to personal flows when requested.
+func mergeUserFlows(
+	aggregated map[string]common.ReadResultRow,
+	flows []common.ReadResultRow,
+	owner common.ReadResultRow,
+	includeUserAssoc bool,
+) {
+	for _, flow := range flows {
+		_, seen := aggregated[flow.Id]
+		if seen {
+			continue
+		}
+
+		if includeUserAssoc {
+			attachUserToPersonalFlow(&flow, owner)
+		}
+
+		aggregated[flow.Id] = flow
+	}
+}
+
 // wantsUserAssociation reports whether the caller asked for user records to be
 // attached alongside each flow.
 func wantsUserAssociation(associatedObjects []string) bool {
@@ -99,8 +110,8 @@ func wantsUserAssociation(associatedObjects []string) bool {
 	return false
 }
 
-// attachUserToPersonalFlow attaches the owning user as an association if the flow
-// has Personal visibility. Shared and Company flows are not user-specific.
+// attachUserToPersonalFlow links a flow to the user who owns it, but only for
+// personal flows. Company and shared flows aren't tied to one person, so we skip them.
 func attachUserToPersonalFlow(flow *common.ReadResultRow, user common.ReadResultRow) {
 	visibility, _ := flow.Raw["visibility"].(string)
 	if !strings.EqualFold(visibility, "Personal") {
