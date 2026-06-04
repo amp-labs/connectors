@@ -43,11 +43,11 @@ var noSuchColumnRe = regexp.MustCompile(
 	`No such column '([^']*)' on (?:entity '([^']*)'|sobject of type (\w+))`)
 
 // fieldNotFoundGuidance explains the two causes of a "No such column" error
-// (incorrect field name, or missing field-level visibility) and how to fix
-// each. It is appended to every formatted field-not-found message.
+// (incorrect field name, or missing field-level visibility) It is appended to
+// every formatted field-not-found message.
 //
 //nolint:lll
-const fieldNotFoundGuidance = " This usually means either the field name is incorrect (custom field names must end in '__c'), or the connected Salesforce user lacks field-level visibility for this field. To resolve it, verify the field's API name, or grant the user 'Visible' access to the field via their profile or a permission set."
+const fieldNotFoundGuidance = " This usually means either the field name is incorrect (custom field names must end in '__c'), or the connected Salesforce user lacks field-level visibility for this field."
 
 // formatFieldNotFoundMessage turns a Salesforce "No such column" error into a
 // customer-facing message: it restates the problem in Salesforce admin
@@ -88,7 +88,13 @@ type fieldNotFoundError struct {
 }
 
 func (e *fieldNotFoundError) Error() string { return e.msg }
-func (e *fieldNotFoundError) Unwrap() error { return common.ErrBadRequest }
+
+// Unwrap returns both sentinels so callers can match the specific
+// ErrFieldNotFound case while existing errors.Is(err, ErrBadRequest) checks
+// continue to hold.
+func (e *fieldNotFoundError) Unwrap() []error {
+	return []error{common.ErrFieldNotFound, common.ErrBadRequest}
+}
 
 func interpretJSONError(res *http.Response, body []byte) error { // nolint:cyclop
 	var errs []jsonError
