@@ -35,6 +35,16 @@ var KnownObjectTypes = map[string]string{ // nolint:gochecknoglobals
 //
 // Used by ListObjectMetadata when populating common.FieldMetadata.ReferenceTo
 // for reference-typed fields.
+//
+// Provenance: HubSpot does not publish a closed enum of valid
+// `referencedObjectType` values; the Properties API spec and Ruby SDK both
+// treat the field as a free-form string. This map was composed by hand. The
+// target object names (values) mirror KnownObjectTypes above 1:1; the keys
+// follow HubSpot's general singular-uppercase enum convention.
+//
+// Note: both OWNER and USER map to "users" — HubSpot has no separate Owner
+// object (owners are users, type ID 0-115); the USER entry is a defensive
+// alias since HubSpot doesn't document a closed enum.
 var referencedObjectTypeMap = map[string]string{ // nolint:gochecknoglobals
 	"APPOINTMENT":     "appointments",
 	"CALL":            "calls",
@@ -58,6 +68,7 @@ var referencedObjectTypeMap = map[string]string{ // nolint:gochecknoglobals
 	"SUBSCRIPTION":    "subscriptions",
 	"TASK":            "tasks",
 	"TICKET":          "tickets",
+	"USER":            "users",
 }
 
 // resolveReferencedObjectName maps a HubSpot referencedObjectType value to the

@@ -632,6 +632,59 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			// Follow-up to CON-3293: USER is mapped explicitly so the
+			// lowercase fallback doesn't yield "user" (singular) instead of
+			// our "users" object name.
+			Name:  "Property with referencedObjectType=USER becomes a reference to users",
+			Input: []string{"contacts"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If: mockcond.Path("/crm/v3/properties/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, `{
+						"results": [{
+							"name": "hs_created_by_user_id",
+							"label": "Created by user ID",
+							"type": "number",
+							"fieldType": "number",
+							"referencedObjectType": "USER",
+							"options": [],
+							"hubspotDefined": true,
+							"modificationMetadata": {"readOnlyValue": true}
+						}]
+					}`),
+				}, {
+					If:   mockcond.Path("/crm/pipelines/2026-03/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, "{}"),
+				}, {
+					If:   mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, "{}"),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "contacts",
+						Fields: map[string]common.FieldMetadata{
+							"hs_created_by_user_id": {
+								DisplayName:  "Created by user ID",
+								ValueType:    "reference",
+								ProviderType: "number.number",
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+								Values:       nil,
+								ReferenceTo:  []string{"users"},
+							},
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
