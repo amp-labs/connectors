@@ -69,9 +69,7 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 	return req, nil
 }
 
-// buildWriteURL routes to one of:
-//   - POST /v25.0/{phone-number-id}/messages
-//   - POST /v25.0/{whatsapp-account-id}/message_templates
+// buildWriteURL routes phone-number-scoped and WABA-scoped objects under /v25.0/{id}/...
 func (a *Adapter) buildWriteURL(params common.WriteParams) (*urlbuilder.URL, error) {
 	baseURL := a.ModuleInfo().BaseURL
 
@@ -138,6 +136,18 @@ func extractWriteRecordID(objectName string, body *ajson.Node) (string, error) {
 		return jsonquery.New(arr[0]).StrWithDefault("id", "")
 
 	case "message_templates":
+		return jsonquery.New(body).StrWithDefault("id", "")
+
+	case "phone_numbers":
+		id, err := jsonquery.New(body, "successful_creation", "value").StrWithDefault("id", "")
+		if err != nil {
+			return "", err
+		}
+
+		if id != "" {
+			return id, nil
+		}
+
 		return jsonquery.New(body).StrWithDefault("id", "")
 
 	default:

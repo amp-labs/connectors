@@ -24,6 +24,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 
 	messageCreateResponse := testutils.DataFromFile(t, "message-create.json")
 	messageTemplateCreateResponse := testutils.DataFromFile(t, "message-template-create.json")
+	phoneNumberCreateResponse := testutils.DataFromFile(t, "phone-number-create.json")
 
 	tests := []testroutines.Write{
 		{
@@ -113,6 +114,43 @@ func TestWrite(t *testing.T) { //nolint:funlen
 					"id":       "2450146205448663",
 					"status":   "PENDING",
 					"category": "MARKETING",
+				},
+			},
+		},
+		{
+			Name: "Create phone number uses WABA scoped URL",
+			Input: common.WriteParams{
+				ObjectName: "phone_numbers",
+				RecordData: map[string]any{
+					"cc":            "1",
+					"phone_number":  "14195551518",
+					"verified_name": "Lucky Shrub",
+				},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodPOST(),
+							mockcond.Path("/v25.0/" + testWhatsAppAccountID + "/phone_numbers"),
+						},
+						Then: mockserver.Response(http.StatusOK, phoneNumberCreateResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "1906385232743451",
+				Data: map[string]any{
+					"successful_creation": map[string]any{
+						"summary": "Phone number successfully created",
+						"value": map[string]any{
+							"id": "1906385232743451",
+						},
+					},
 				},
 			},
 		},
