@@ -34,7 +34,9 @@ type SubscribeReceiveEventsSuite struct {
 	// Webhook may be called more if there are already some subscriptions that would intervene.
 	// There is no way to protect against these side effects.
 	ExpectedWebhookCalls int
-	Operations           []ConnectorOperation
+	// WaitBeforeSearch adds a delay after Subscription was created. OPTIONAL.
+	WaitBeforeSearch time.Duration
+	Operations       []ConnectorOperation
 	// WebhookRouter allows a list of alternative request handling by the webhook handler.
 	// When conditions are met for the Route that handler is executed.
 	// If there are no custom routes or none match then default webhook handling will take place.
@@ -135,6 +137,11 @@ func ValidateSubscribeReceiveEvents(
 
 	// Register a defer function to clean up the successful subscription at the end of the script.
 	defer cleanupSubscription(ctx, conn, suite, subscriptionResult)()
+
+	if suite.WaitBeforeSearch != 0 {
+		fmt.Println("... waiting")
+		time.Sleep(suite.WaitBeforeSearch)
+	}
 
 	fmt.Println("============== Invoking connector.Write/Delete() ==================")
 	for _, trigger := range suite.Operations {
