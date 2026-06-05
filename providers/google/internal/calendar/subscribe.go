@@ -9,6 +9,7 @@ import (
 	"slices"
 	"sync"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -19,6 +20,12 @@ import (
 // calendarMaxConcurrentWatches bounds the number of watch/stop calls issued in
 // parallel so we don't trip Google Calendar's per-user rate limits.
 const calendarMaxConcurrentWatches = 4
+
+// Compile-time interface conformance checks.
+var (
+	_ connectors.SubscribeConnector              = &Adapter{}
+	_ connectors.SubscriptionMaintainerConnector = &Adapter{}
+)
 
 // objectWatchPaths maps supported subscribe objects to their watch URL paths.
 //
@@ -219,6 +226,36 @@ func (a *Adapter) RunScheduledMaintenance(
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
 	return a.UpdateSubscription(ctx, params, previousResult)
+}
+
+// VerifyWebhookMessage is not yet implemented for Google Calendar.
+//
+// Verification (comparing the X-Goog-Channel-Token header against a stored token) is
+// being delivered in a separate PR. Until then this refuses verification rather than
+// asserting authenticity it never checked — callers must not treat unverified messages
+// as trusted.
+func (a *Adapter) VerifyWebhookMessage(
+	ctx context.Context,
+	request *common.WebhookRequest,
+	params *common.VerificationParams,
+) (bool, error) {
+	return false, common.ErrNotImplemented
+}
+
+// GetRecordsByIds is not yet implemented for Google Calendar.
+//
+// Calendar push notifications deliver an empty body — only headers are sent (X-Goog-Resource-State,
+// X-Goog-Resource-ID, etc.). There is no record payload to enrich from; fetching what actually
+// changed requires a follow-up API read (e.g. events.list). That strategy is being delivered in a
+// separate PR alongside verification.
+func (a *Adapter) GetRecordsByIds( //nolint:revive
+	ctx context.Context,
+	objectName string,
+	recordIds []string, //nolint:revive
+	fields []string,
+	associations []string,
+) ([]common.ReadResultRow, error) {
+	return nil, common.ErrNotImplemented
 }
 
 // watchResult pairs a created watch channel with the object it belongs to so the
