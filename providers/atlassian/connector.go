@@ -1,14 +1,15 @@
 package atlassian
 
 import (
+	"context"
+
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/atlassian/internal/jira"
 )
-
-const apiVersion = "3"
 
 type Connector struct {
 	// Basic connector.
@@ -17,6 +18,8 @@ type Connector struct {
 	// Require params.
 	common.RequireAuthenticatedClient
 	common.RequireWorkspace
+
+	Jira *jira.Adapter
 
 	workspace string
 }
@@ -31,12 +34,60 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 		workspace: params.Workspace,
 	}
 
-	connector.SetErrorHandler(interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-		HTML: &interpreter.DirectFaultyResponder{Callback: connector.interpretHTMLError},
-	}.Handle)
+	if connector.Module() == providers.ModuleAtlassianJira {
+		adapter, err := jira.NewAdapter(params)
+		if err != nil {
+			return nil, err
+		}
+
+		connector.Jira = adapter
+	}
 
 	return connector, nil
+}
+
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context, objectNames []string,
+) (*connectors.ListObjectMetadataResult, error) {
+	if c.Jira != nil {
+		return c.Jira.ListObjectMetadata(ctx, objectNames)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
+	if c.Jira != nil {
+		return c.Jira.Read(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) Write(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error) {
+	if c.Jira != nil {
+		return c.Jira.Write(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
+	if c.Jira != nil {
+		return c.Jira.Delete(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) SetUnitTestBaseURL(url string) {
+	// Module independent functionality.
+	c.Connector.SetUnitTestBaseURL(url)
+
+	// Replace base for respective module.
+	if c.Jira != nil {
+		c.Jira.SetUnitTestBaseURL(url)
+	}
 }
 
 // URL allows to get list of sites associated with auth token.
@@ -48,12 +99,4 @@ func (c *Connector) getAccessibleSitesURL() (*urlbuilder.URL, error) {
 	}
 
 	return urlbuilder.New(url.Origin(), "oauth/token/accessible-resources")
-}
-
-// URL format for providers.ModuleAtlassianJira follows structure applicable to Oauth2 Atlassian apps:
-// https://developer.atlassian.com/cloud/jira/platform/rest/v2/intro/#other-integrations
-func (c *Connector) getModuleURL(path ...string) (*urlbuilder.URL, error) {
-	path = append([]string{apiVersion}, path...)
-
-	return urlbuilder.New(c.ModuleInfo().BaseURL, path...)
 }

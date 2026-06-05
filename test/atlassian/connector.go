@@ -17,7 +17,7 @@ var fieldCloudID = credscanning.Field{
 	SuffixENV: "CLOUD_ID",
 }
 
-func GetAtlassianConnector(ctx context.Context) *atlassian.Connector {
+func GetJiraConnector(ctx context.Context) *atlassian.Connector {
 	return makeAtlassianConnector(ctx, providers.ModuleAtlassianJira)
 }
 
