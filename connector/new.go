@@ -95,6 +95,7 @@ import (
 	"github.com/amp-labs/connectors/providers/livestorm"
 	"github.com/amp-labs/connectors/providers/loxo"
 	"github.com/amp-labs/connectors/providers/marketo"
+	"github.com/amp-labs/connectors/providers/meta"
 	"github.com/amp-labs/connectors/providers/microsoft"
 	"github.com/amp-labs/connectors/providers/mixmax"
 	"github.com/amp-labs/connectors/providers/monday"
@@ -246,6 +247,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Livestorm:                  wrapper(newLivestormConnector),
 	providers.Loxo:                       wrapper(newLoxoConnector),
 	providers.Marketo:                    wrapper(newMarketoConnector),
+	providers.Meta:                       wrapper(newMetaConnector),
 	providers.Microsoft:                  wrapper(newMicrosoftConnector),
 	providers.MicrosoftClientCredentials: wrapper(newMicrosoftClientCredentialsConnector),
 	providers.Mixmax:                     wrapper(newMixmaxConnector),
@@ -470,6 +472,12 @@ func newMarketoConnector(
 		marketo.WithWorkspace(params.Workspace),
 		marketo.WithAuthenticatedClient(params.AuthenticatedClient),
 	)
+}
+
+func newMetaConnector(
+	params common.ConnectorParams,
+) (*meta.Connector, error) {
+	return meta.NewConnector(params)
 }
 
 func newMicrosoftConnector(
