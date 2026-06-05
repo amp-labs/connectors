@@ -1,0 +1,51 @@
+{
+  "results": [
+    {
+      "_links": {},
+      "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+      "body": {},
+      "createdAt": "2026-02-25T05:18:12.185Z",
+      "id": "33390597",
+      "spaceId": "196612",
+      "status": "current",
+      "title": "4th post",
+      "version": {}
+    },
+    {
+      "_links": {},
+      "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+      "body": {},
+      "createdAt": "2026-02-25T05:18:01.014Z",
+      "id": "33456129",
+      "spaceId": "196612",
+      "status": "current",
+      "title": "3rd post",
+      "version": {}
+    },
+    {
+      "_links": {},
+      "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+      "body": {},
+      "createdAt": "2026-02-25T05:17:45.747Z",
+      "id": "33292310",
+      "spaceId": "196612",
+      "status": "current",
+      "title": "2nd post",
+      "version": {}
+    },
+    {
+      "_links": {},
+      "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+      "body": {},
+      "createdAt": "2026-02-25T05:17:34.013Z",
+      "id": "33423361",
+      "spaceId": "196612",
+      "status": "current",
+      "title": "1st post",
+      "version": {}
+    }
+  ],
+  "_links": {
+    "base": "https://withampersand-team-oqo0hkaj.atlassian.net/wiki"
+  }
+}
