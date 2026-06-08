@@ -8,22 +8,22 @@ import (
 )
 
 type (
-	SearchType = TestCase[common.SearchParams, *common.SearchResult]
+	searchType = TestCase[common.SearchParams, *common.SearchResult]
 	// Search is a test suite useful for testing connectors.SearchConnector interface.
-	Search SearchType
+	Search searchType
 )
 
 // Run provides a procedure to test connectors.SearchConnector
-func (r Search) Run(t *testing.T, builder ConnectorBuilder[connectors.SearchConnector]) {
+func (s Search) Run(t *testing.T, builder ConnectorBuilder[connectors.SearchConnector]) {
 	t.Helper()
 	t.Cleanup(func() {
-		SearchType(r).Close()
+		searchType(s).Close()
 	})
 
-	conn := builder.Build(t, r.Name)
-	searchParams := prepareSearchParams(r.Server.URL, r.Input)
+	conn := builder.Build(t, s.Name)
+	searchParams := prepareSearchParams(s.Server.URL, searchType(s).PrepareInput())
 	output, err := conn.Search(t.Context(), searchParams)
-	SearchType(r).Validate(t, err, output)
+	searchType(s).Validate(t, err, output)
 }
 
 // This enables tests where we want to specify NextPage. Since we are dealing with mock-server
@@ -36,7 +36,7 @@ func (r Search) Run(t *testing.T, builder ConnectorBuilder[connectors.SearchConn
 //	}
 func prepareSearchParams(serverURL string, params common.SearchParams) *common.SearchParams {
 	params.NextPage = common.NextPageToken(
-		resolveTestServerURL(params.NextPage.String(), serverURL),
+		ResolveTestServerURL(params.NextPage.String(), serverURL),
 	)
 
 	return &params

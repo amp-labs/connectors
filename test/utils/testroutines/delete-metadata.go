@@ -9,9 +9,9 @@ import (
 )
 
 type (
-	DeleteMetadataType = TestCase[*common.DeleteMetadataParams, *common.DeleteMetadataResult]
+	deleteMetadataType = TestCase[*common.DeleteMetadataParams, *common.DeleteMetadataResult]
 	// DeleteMetadata is a test suite useful for testing connectors.DeleteMetadataConnector interface.
-	DeleteMetadata DeleteMetadataType
+	DeleteMetadata deleteMetadataType
 )
 
 // Run provides a procedure to test connectors.DeleteMetadataConnector.
@@ -25,10 +25,10 @@ func (m DeleteMetadata) RunWithContext(t *testing.T, ctx context.Context,
 ) {
 	t.Helper()
 	t.Cleanup(func() {
-		DeleteMetadataType(m).Close()
+		deleteMetadataType(m).Close()
 	})
 
 	conn := builder.Build(t, m.Name)
-	output, err := conn.DeleteMetadata(ctx, m.Input)
-	DeleteMetadataType(m).Validate(t, err, output)
+	output, err := conn.DeleteMetadata(ctx, deleteMetadataType(m).PrepareInput())
+	deleteMetadataType(m).Validate(t, err, output)
 }

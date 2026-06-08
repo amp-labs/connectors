@@ -9,16 +9,16 @@ import (
 )
 
 type (
-	PostAuthInfoType = TestCase[any, *common.PostAuthInfo]
+	postAuthInfoType = TestCase[any, *common.PostAuthInfo]
 	// PostAuthInfo is a test suite useful for testing connectors.AuthMetadataConnector interface.
-	PostAuthInfo PostAuthInfoType
+	PostAuthInfo postAuthInfoType
 )
 
 // Run provides a procedure to test connectors.AuthMetadataConnector
 func (r PostAuthInfo) Run(t *testing.T, builder ConnectorBuilder[connectors.AuthMetadataConnector]) {
 	t.Helper()
 	t.Cleanup(func() {
-		PostAuthInfoType(r).Close()
+		postAuthInfoType(r).Close()
 	})
 
 	r.Comparator = func(serverURL string, actual, expected *common.PostAuthInfo) *testutils.CompareResult {
@@ -48,5 +48,5 @@ func (r PostAuthInfo) Run(t *testing.T, builder ConnectorBuilder[connectors.Auth
 
 	conn := builder.Build(t, r.Name)
 	output, err := conn.GetPostAuthInfo(t.Context())
-	PostAuthInfoType(r).Validate(t, err, output)
+	postAuthInfoType(r).Validate(t, err, output)
 }

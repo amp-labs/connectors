@@ -8,22 +8,22 @@ import (
 )
 
 type (
-	ReadType = TestCase[common.ReadParams, *common.ReadResult]
+	readType = TestCase[common.ReadParams, *common.ReadResult]
 	// Read is a test suite useful for testing connectors.ReadConnector interface.
-	Read ReadType
+	Read readType
 )
 
 // Run provides a procedure to test connectors.ReadConnector
 func (r Read) Run(t *testing.T, builder ConnectorBuilder[connectors.ReadConnector]) {
 	t.Helper()
 	t.Cleanup(func() {
-		ReadType(r).Close()
+		readType(r).Close()
 	})
 
 	conn := builder.Build(t, r.Name)
-	readParams := prepareReadParams(r.Server.URL, r.Input)
+	readParams := prepareReadParams(r.Server.URL, readType(r).PrepareInput())
 	output, err := conn.Read(t.Context(), readParams)
-	ReadType(r).Validate(t, err, output)
+	readType(r).Validate(t, err, output)
 }
 
 // This enables tests where we want to specify NextPage. Since we are dealing with mock-server
@@ -36,7 +36,7 @@ func (r Read) Run(t *testing.T, builder ConnectorBuilder[connectors.ReadConnecto
 //	}
 func prepareReadParams(serverURL string, config common.ReadParams) common.ReadParams {
 	config.NextPage = common.NextPageToken(
-		resolveTestServerURL(config.NextPage.String(), serverURL),
+		ResolveTestServerURL(config.NextPage.String(), serverURL),
 	)
 
 	return config

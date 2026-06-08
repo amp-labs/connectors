@@ -441,7 +441,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseUserInfo := testutils.DataFromFile(t, "metadata/write/user-info.json")
 	duplicatePermissionAssignment := testutils.DataFromFile(t, "metadata/write/err-duplicate-permission-assignment.json")
 
-	tests := []testroutines.UpsertMetadata{
+	tests := []testroutines.TestCaseUpsertMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -678,7 +678,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 func TestUpsertMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	tests := []testroutines.UpsertMetadata{
+	tests := []testroutines.TestCaseUpsertMetadata{
 		{
 			Name: "Access token must be injected into the context",
 			Input: &common.UpsertMetadataParams{
