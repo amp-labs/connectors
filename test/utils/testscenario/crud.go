@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -61,6 +62,10 @@ func (p Property) isZero() bool {
 	return p.Key == "" && p.Value == ""
 }
 
+func (p Property) String() string {
+	return fmt.Sprintf("{ %v : %v }", p.Key, p.Value)
+}
+
 // ValidateCreateUpdateDelete is a comprehensive test scenario utilizing Read/Write/Delete connector operations.
 //
 // Flow:
@@ -69,7 +74,8 @@ func (p Property) isZero() bool {
 // 3. Update the object using the "UP" payload.
 // 4. Read again and verify updates took effect.
 // 5. Delete the object at the end.
-func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorCRUD, objectName string,
+func ValidateCreateUpdateDelete[CP, UP any](
+	ctx context.Context, conn ConnectorCRUD, objectName string,
 	createPayload CP, updatePayload UP, suite CRUDTestSuite,
 ) {
 	fmt.Println("> TEST Create/Update/Delete", objectName)
@@ -114,7 +120,7 @@ func ValidateCreateUpdateDelete[CP, UP any](ctx context.Context, conn ConnectorC
 
 	// UPDATE
 	fmt.Println("Updating some object properties")
-	err = updateObject(ctx, conn, objectName, objectID, &updatePayload)
+	_, err = updateObject(ctx, conn, objectName, objectID, &updatePayload)
 	failOnError(err)
 	fmt.Println("Validate object has changed accordingly")
 
@@ -181,7 +187,7 @@ func getRecordIdentifierValue(object map[string]any, key string) string {
 }
 
 func createObject[CP any](
-	ctx context.Context, conn ConnectorCRUD, objectName string, payload *CP,
+	ctx context.Context, conn connectors.WriteConnector, objectName string, payload *CP,
 ) (*common.WriteResult, error) {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: objectName,
@@ -199,8 +205,10 @@ func createObject[CP any](
 	return res, nil
 }
 
-func readObjects(ctx context.Context, conn ConnectorCRUD,
-	objectName string, fields datautils.StringSet, since time.Time) (*common.ReadResult, error) {
+func readObjects(
+	ctx context.Context, conn connectors.ReadConnector,
+	objectName string, fields datautils.StringSet, since time.Time,
+) (*common.ReadResult, error) {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: objectName,
 		Fields:     fields,
@@ -247,22 +255,22 @@ func searchObjectRecord(res *common.ReadResult, key, value string) (*objectRecor
 }
 
 func updateObject[UP any](
-	ctx context.Context, conn ConnectorCRUD, objectName string, objectID string, payload *UP,
-) error {
+	ctx context.Context, conn connectors.WriteConnector, objectName string, objectID string, payload *UP,
+) (*common.WriteResult, error) {
 	res, err := conn.Write(ctx, common.WriteParams{
 		ObjectName: objectName,
 		RecordId:   objectID,
 		RecordData: payload,
 	})
 	if err != nil {
-		return fmt.Errorf("error updating object: %w", err)
+		return nil, fmt.Errorf("error updating object: %w", err)
 	}
 
 	if !res.Success {
-		return errors.New("failed to update an object")
+		return nil, errors.New("failed to update an object")
 	}
 
-	return nil
+	return res, nil
 }
 
 func removeObject(ctx context.Context, conn ConnectorCRUD, objectName string, objectID string) error {
@@ -283,6 +291,21 @@ func removeObject(ctx context.Context, conn ConnectorCRUD, objectName string, ob
 
 func failOnError(err error) {
 	if err != nil {
-		utils.Fail("fatal", "error", err)
+		utils.Fail("[test failed]", "error", err)
 	}
+}
+
+// printError prints error and returns true if error is not nil.
+func printError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	fmt.Println("[test failed]", "error", err.Error())
+	if httpError, ok := errors.AsType[*common.HTTPError](err); ok {
+		utils.DumpJSON(httpError.Body, os.Stdout)
+		return true
+	}
+
+	return true
 }
