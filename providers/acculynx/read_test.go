@@ -346,7 +346,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						If: mockcond.And{
 							mockcond.MethodGET(),
 							mockcond.Path("/api/v2/jobs/job-001/invoices"),
-							mockcond.QueryParam("pageNumber", "1"),
+							mockcond.QueryParam("pageStartIndex", "0"),
 						},
 						Then: mockserver.Response(http.StatusOK, jobInvoicesPage1Response),
 					},
@@ -354,7 +354,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						If: mockcond.And{
 							mockcond.MethodGET(),
 							mockcond.Path("/api/v2/jobs/job-001/invoices"),
-							mockcond.QueryParam("pageNumber", "2"),
+							mockcond.QueryParam("pageStartIndex", "2"),
 						},
 						Then: mockserver.Response(http.StatusOK, jobInvoicesPage2Response),
 					},
