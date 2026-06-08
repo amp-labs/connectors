@@ -17,6 +17,10 @@ type TestCase[Input any, Output any] struct {
 	Name string
 	// Input passed to the tested method.
 	Input Input
+	// InputMutator optionally transforms the input using the mock server before
+	// the test executes. Call PrepareInput to obtain the final input with this
+	// transformation applied.
+	InputMutator InputMutator[Input]
 	// Mock Server which connector will call.
 	Server *httptest.Server
 	// Custom Comparator of how expected output agrees with actual output.
@@ -25,6 +29,27 @@ type TestCase[Input any, Output any] struct {
 	Expected Output
 	// ExpectedErrs is a list of errors that must be present in error output.
 	ExpectedErrs []error
+}
+
+// None can be used to indicate no Input or no Output type.
+type None struct{}
+
+// InputMutator optionally transforms the test input before it is passed to the
+// method under test.
+//
+// It is useful when the input needs to depend on the mock server state, for
+// example when embedding the server URL into request bodies, headers, or other
+// fields that cannot be known until the test server is created.
+//
+// If nil, the original Input value is used unchanged.
+type InputMutator[Input any] func(server *httptest.Server, input Input) Input
+
+func (c TestCase[Input, Output]) PrepareInput() Input {
+	if c.InputMutator == nil {
+		return c.Input
+	}
+
+	return c.InputMutator(c.Server, c.Input)
 }
 
 func (c TestCase[Input, Output]) Close() {

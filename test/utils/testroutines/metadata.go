@@ -8,19 +8,19 @@ import (
 )
 
 type (
-	MetadataType = TestCase[[]string, *common.ListObjectMetadataResult]
+	metadataType = TestCase[[]string, *common.ListObjectMetadataResult]
 	// Metadata is a test suite useful for testing connectors.ObjectMetadataConnector interface.
-	Metadata MetadataType
+	Metadata metadataType
 )
 
 // Run provides a procedure to test connectors.ObjectMetadataConnector
 func (m Metadata) Run(t *testing.T, builder ConnectorBuilder[connectors.ObjectMetadataConnector]) {
 	t.Helper()
 	t.Cleanup(func() {
-		MetadataType(m).Close()
+		metadataType(m).Close()
 	})
 
 	conn := builder.Build(t, m.Name)
-	output, err := conn.ListObjectMetadata(t.Context(), m.Input)
-	MetadataType(m).Validate(t, err, output)
+	output, err := conn.ListObjectMetadata(t.Context(), metadataType(m).PrepareInput())
+	metadataType(m).Validate(t, err, output)
 }

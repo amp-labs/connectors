@@ -8,19 +8,19 @@ import (
 )
 
 type (
-	DeleteType = TestCase[common.DeleteParams, *common.DeleteResult]
+	deleteType = TestCase[common.DeleteParams, *common.DeleteResult]
 	// Delete is a test suite useful for testing connectors.DeleteConnector interface.
-	Delete DeleteType
+	Delete deleteType
 )
 
 // Run provides a procedure to test connectors.DeleteConnector
 func (d Delete) Run(t *testing.T, builder ConnectorBuilder[connectors.DeleteConnector]) {
 	t.Helper()
 	t.Cleanup(func() {
-		DeleteType(d).Close()
+		deleteType(d).Close()
 	})
 
 	conn := builder.Build(t, d.Name)
-	output, err := conn.Delete(t.Context(), d.Input)
-	DeleteType(d).Validate(t, err, output)
+	output, err := conn.Delete(t.Context(), deleteType(d).PrepareInput())
+	deleteType(d).Validate(t, err, output)
 }

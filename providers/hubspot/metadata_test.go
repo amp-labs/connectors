@@ -720,7 +720,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	payloadUpdateInterests := testutils.DataFromFile(t, "custom/update/6-payload-update-property-interests.json")
 	responseUpdateInterests := testutils.DataFromFile(t, "custom/update/7-response-update-property-interests.json")
 
-	tests := []testroutines.UpsertMetadata{
+	tests := []testroutines.TestCaseUpsertMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
