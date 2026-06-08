@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/batch"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/metadata"
 )
 
@@ -25,6 +26,8 @@ type Connector struct {
 	components.Reader
 	components.Writer
 	components.Deleter
+
+	batchAdapter *batch.Adapter // used for connectors.BatchRecordReaderConnector capabilities.
 
 	clientID string
 }
@@ -82,6 +85,8 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 			ErrorHandler:  errorHandler,
 		},
 	)
+
+	connector.batchAdapter = batch.NewAdapter(connector.JSONHTTPClient(), connector.ProviderInfo(), clientID)
 
 	return connector, nil
 }
