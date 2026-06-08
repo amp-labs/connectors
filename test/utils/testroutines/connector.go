@@ -3,7 +3,12 @@
 package testroutines
 
 import (
+	"context"
 	"testing"
+
+	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/components"
 )
 
 // ConnectorBuilder is a callback method to construct and configure connector for testing.
@@ -17,4 +22,67 @@ func (builder ConnectorBuilder[C]) Build(t *testing.T, testCaseName string) C {
 	}
 
 	return conn
+}
+
+// TestableWebhookMessageVerifier is the minimal interface for a connector that can verify webhook messages.
+type TestableWebhookMessageVerifier interface {
+	VerifyWebhookMessage(
+		ctx context.Context,
+		request *common.WebhookRequest,
+		params *common.VerificationParams,
+	) (bool, error)
+}
+
+// TestableSubscriptionCreator is the minimal interface for a connector that can create subscriptions.
+type TestableSubscriptionCreator interface {
+	Subscribe(
+		ctx context.Context,
+		params common.SubscribeParams,
+	) (*common.SubscriptionResult, error)
+}
+
+// TestableSubscriptionUpdater is the minimal interface for a connector that can update subscriptions.
+type TestableSubscriptionUpdater interface {
+	UpdateSubscription(
+		ctx context.Context,
+		params common.SubscribeParams,
+		previousResult *common.SubscriptionResult,
+	) (*common.SubscriptionResult, error)
+}
+
+// TestableSubscriptionRemover is the minimal interface for a connector that can delete subscriptions.
+type TestableSubscriptionRemover interface {
+	DeleteSubscription(
+		ctx context.Context,
+		previousResult common.SubscriptionResult,
+	) error
+}
+
+// Compile-time assertion that the minimal subscription interfaces
+// satisfy connectors.SubscribeConnector.
+//
+// Each connector asserts only the interfaces it implements.
+// If connectors.SubscribeConnector changes, the compiler forces updates,
+// causing dependent connectors to fail in tests.
+//
+// Enables incremental, method-by-method implementation with full compatibility and testing.
+var (
+	_ connectors.SubscribeConnector = (*dummySubscribeConnector)(nil)
+)
+
+// dummySubscribeConnector composes the minimal subscription interfaces and
+// required base behavior. It has no implementations and exists purely for
+// compile-time interface verification.
+type dummySubscribeConnector struct {
+	// Base.
+	connectors.BatchRecordReaderConnector
+
+	// Decomposed interfaces (primary).
+	TestableWebhookMessageVerifier
+	TestableSubscriptionCreator
+	TestableSubscriptionUpdater
+	TestableSubscriptionRemover
+
+	// Supporting helpers (secondary).
+	components.SubscriptionInputOutput[any, any]
 }
