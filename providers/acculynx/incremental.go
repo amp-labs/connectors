@@ -53,12 +53,17 @@ var objectReadSpecs = datautils.NewDefaultMap(map[string]objectReadSpec{
 	"company-settings/job-file-settings/work-types":          {pagination: paginationOffsetRecord},
 	"company-settings/leads/lead-sources":                    {pagination: paginationOffsetRecord},
 
+	// pageStartIndex is the AccuLynx-side offset for these endpoints, advanced
+	// by the per-page record count (see advancePagination). Verified via
+	// metadata/queryParamStats.json — pageNumber is not an accepted param on
+	// any /api/v2 list endpoint, so previously routing these through
+	// paginationPageNumber caused the connector to loop on page 1 (AccuLynx
+	// silently ignores pageNumber and returns the first page every time).
 	"estimates":              {pagination: paginationOffsetPage},
 	"calendars/appointments": {pagination: paginationOffsetPage},
-
-	"contacts":               {pagination: paginationPageNumber},
-	"contacts/contact-types": {pagination: paginationPageNumber},
-	"jobs/invoices":          {pagination: paginationPageNumber},
+	"contacts":               {pagination: paginationOffsetPage},
+	"contacts/contact-types": {pagination: paginationOffsetPage},
+	"jobs/invoices":          {pagination: paginationOffsetPage},
 
 	"acculynx/countries":        {pagination: paginationNone},
 	"acculynx/units-of-measure": {pagination: paginationNone},
