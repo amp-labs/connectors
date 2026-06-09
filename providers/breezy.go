@@ -8,7 +8,7 @@ func init() {
 	SetInfo(Breezy, ProviderInfo{
 		DisplayName: "Breezy HR",
 		AuthType:    ApiKey,
-		BaseURL:     "https://api.breezy.hr/v3",
+		BaseURL:     "https://api.breezy.hr",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
