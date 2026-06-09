@@ -10,10 +10,6 @@ import (
 )
 
 const (
-	// dataAPIPath is the version prefix for the ZoomInfo GTM Data API. All
-	// search/lookup/enrich endpoints hang off BaseURL + "/" + dataAPIPath.
-	dataAPIPath = "gtm/data/v1"
-
 	// jsonAPIMediaType is the media type ZoomInfo's Data API speaks. Several
 	// endpoints (e.g. intent, lookup) reject "application/json" with a 406, so
 	// every request must advertise JSON:API for both Accept and Content-Type.

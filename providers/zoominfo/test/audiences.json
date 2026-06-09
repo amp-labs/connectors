@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "id": "aud_12345",
+      "type": "Audience",
+      "attributes": {
+        "name": "Q1 Target Accounts",
+        "type": "COMPANY",
+        "rowCount": 1280,
+        "createdAt": "2025-01-02T10:00:00Z",
+        "updatedAt": "2025-03-15T12:30:00Z"
+      }
+    }
+  ],
+  "meta": {
+    "totalResults": 1,
+    "page": {
+      "number": 1,
+      "total": 1
+    }
+  }
+}

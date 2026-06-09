@@ -1,0 +1,11 @@
+{
+  "data": {
+    "id": "settings_1",
+    "type": "CustomerSettings",
+    "attributes": {
+      "timezone": "America/New_York",
+      "defaultMotion": "PROSPECTING",
+      "enrichmentEnabled": true
+    }
+  }
+}

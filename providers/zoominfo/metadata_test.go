@@ -15,15 +15,18 @@ import (
 )
 
 const (
-	objContacts        = "contacts"
-	objCompanyRankings = "company-rankings"
+	objCompanyRankings  = "company-rankings"
+	objAudiences        = "audiences"
+	objCustomerSettings = "customer-settings"
 )
 
-func TestListObjectMetadata(t *testing.T) { // nolint:funlen
+func TestListObjectMetadata(t *testing.T) { // nolint:funlen,maintidx
 	t.Parallel()
 
 	contactsResponse := testutils.DataFromFile(t, "contacts.json")
 	companyRankingsResponse := testutils.DataFromFile(t, "company-rankings.json")
+	audiencesResponse := testutils.DataFromFile(t, "audiences.json")
+	customerSettingsResponse := testutils.DataFromFile(t, "customer-settings.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -33,7 +36,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:  "Describe a search object and a lookup object via sampling",
+			Name:  "Search (POST) and lookup (GET) objects sampled from data[]",
 			Input: []string{objContacts, objCompanyRankings},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -65,6 +68,43 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 							"id":   {DisplayName: "id", ValueType: common.ValueTypeString},
 							"type": {DisplayName: "type", ValueType: common.ValueTypeString},
 							"name": {DisplayName: "name", ValueType: common.ValueTypeString},
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "GET list object and singleton object sampled correctly",
+			Input: []string{objAudiences, objCustomerSettings},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/gtm/studio/v1/audiences"),
+					Then: mockserver.Response(http.StatusOK, audiencesResponse),
+				}, {
+					If:   mockcond.Path("/gtm/copilot/v1/customer-settings"),
+					Then: mockserver.Response(http.StatusOK, customerSettingsResponse),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					objAudiences: {
+						DisplayName: "Audiences",
+						Fields: map[string]common.FieldMetadata{
+							"id":       {DisplayName: "id", ValueType: common.ValueTypeString},
+							"name":     {DisplayName: "name", ValueType: common.ValueTypeString},
+							"rowCount": {DisplayName: "rowCount", ValueType: common.ValueTypeFloat},
+						},
+					},
+					objCustomerSettings: {
+						DisplayName: "Customer Settings",
+						Fields: map[string]common.FieldMetadata{
+							"id":                {DisplayName: "id", ValueType: common.ValueTypeString},
+							"timezone":          {DisplayName: "timezone", ValueType: common.ValueTypeString},
+							"enrichmentEnabled": {DisplayName: "enrichmentEnabled", ValueType: common.ValueTypeBoolean},
 						},
 					},
 				},
