@@ -65,7 +65,7 @@ func (c *Connector) buildSearchMetadataRequest(
 	// One record is enough to sample the field set.
 	url.WithQueryParam("page[size]", metadataPageSize)
 
-	return c.newJSONAPIPostRequest(ctx, url, def.searchType)
+	return c.newJSONAPIPostRequest(ctx, url, def.searchType, def.sampleCriteria)
 }
 
 func (c *Connector) buildEnrichMetadataRequest(
@@ -81,7 +81,7 @@ func (c *Connector) buildEnrichMetadataRequest(
 		return nil, err
 	}
 
-	return c.newJSONAPIPostRequest(ctx, url, def.enrichType)
+	return c.newJSONAPIPostRequest(ctx, url, def.enrichType, nil)
 }
 
 func (c *Connector) buildLookupMetadataRequest(
@@ -110,19 +110,25 @@ func (c *Connector) buildGetMetadataRequest(
 	return c.newJSONAPIGetRequest(ctx, url)
 }
 
-// newJSONAPIPostRequest builds a POST request carrying a minimal JSON:API
-// envelope with empty criteria. Objects that require input (e.g. enrich,
-// contacts/intent search) will return a descriptive 4xx, which the schema
-// provider records per-object in ListObjectMetadataResult.Errors.
+// newJSONAPIPostRequest builds a POST request carrying a JSON:API envelope with
+// the given attributes (a nil map is encoded as {}). Objects that still require
+// input beyond what we seed (e.g. most enrich endpoints, intent search) return a
+// descriptive 4xx, which the schema provider records per-object in
+// ListObjectMetadataResult.Errors.
 func (c *Connector) newJSONAPIPostRequest(
 	ctx context.Context,
 	url *urlbuilder.URL,
 	resourceType string,
+	attributes map[string]any,
 ) (*http.Request, error) {
+	if attributes == nil {
+		attributes = map[string]any{}
+	}
+
 	payload, err := json.Marshal(searchRequestBody{
 		Data: searchRequestData{
 			Type:       resourceType,
-			Attributes: map[string]any{},
+			Attributes: attributes,
 		},
 	})
 	if err != nil {

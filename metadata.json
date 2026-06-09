@@ -1,0 +1,1450 @@
+{
+  "Errors": {
+    "audience-folders": "response data is missing expected values: no records returned to sample fields for \"audience-folders\"",
+    "audiences": "response data is missing expected values: no records returned to sample fields for \"audiences\"",
+    "company-lookalikes": "HTTP status 500: server error: {\"detail\":\"Internal server error. Please try again\",\"title\":\"Internal Server Error\",\"errors\":[{\"id\":\"f22cc680-1426-4ad8-ba72-382c00f76400\",\"code\":\"CPAPI0001\",\"detail\":\"Internal server error. Please try again\",\"status\":\"500\",\"title\":\"Internal Server Error\"}]}",
+    "contact-lookalikes": "HTTP status 400: caller error: {\"error\":\"Bad Request\",\"path\":\"/api/v1/contacts/lookalikes\",\"status\":400,\"timestamp\":\"2026-06-09T15:56:34.443+00:00\"}",
+    "contact-recommendations": "HTTP status 400: caller error: {\"error\":\"Bad Request\",\"path\":\"/api/v1/contacts/recommendations\",\"status\":400,\"timestamp\":\"2026-06-09T15:56:34.753+00:00\"}",
+    "contacts": "HTTP status 400: caller error: {\"detail\":\"You must enter at least one valid input criterion other than contactAccuracyScoreMin and contactAccuracyScoreMax\",\"errors\":[{\"code\":\"PFAPI0004\",\"detail\":\"Bad Request\",\"id\":\"88678fed-2c8c-4275-ae2e-75001aff5373\",\"source\":{\"pointer\":\"/data/attributes\"},\"status\":\"400\"}],\"title\":\"Bad Request\"}",
+    "customer-buyer-personas": "response data is missing expected values: no records returned to sample fields for \"customer-buyer-personas\"",
+    "customer-competitors": "response data is missing expected values: no records returned to sample fields for \"customer-competitors\"",
+    "customer-settings": "HTTP status 404: retryable error: {\"detail\":\"Resource not found\",\"title\":\"Not Found\",\"errors\":[{\"id\":\"ef6f7872-a624-427b-b860-cc8677360a26\",\"code\":\"CPAPI0007\",\"detail\":\"Resource not found\",\"status\":\"404\",\"title\":\"Not Found\"}]}",
+    "enrich-companies": "HTTP status 400: caller error: {\"detail\":\"One or more fields have validation errors\",\"errors\":[{\"code\":\"PFAPI0002\",\"detail\":\"size must be between 1 and 25\",\"id\":\"b465cb63-d311-46ee-a5ab-90121d6524ae\",\"source\":{\"pointer\":\"/data/attributes/matchCompanyInput\"},\"status\":\"400\"}],\"title\":\"Validation Error\"}",
+    "enrich-contacts": "HTTP status 400: caller error: {\"detail\":\"One or more fields have validation errors\",\"errors\":[{\"code\":\"PFAPI0002\",\"detail\":\"size must be between 1 and 25\",\"id\":\"87cc3081-e684-4b32-8f68-0fc00e886aa6\",\"source\":{\"pointer\":\"/data/attributes/matchPersonInput\"},\"status\":\"400\"}],\"title\":\"Validation Error\"}",
+    "enrich-corporate-hierarchy": "HTTP status 400: caller error: {\"detail\":\"One or more fields have validation errors\",\"errors\":[{\"code\":\"PFAPI0002\",\"detail\":\"size must be between 1 and 25\",\"id\":\"1547c469-1d5b-482e-bf09-061a0f528896\",\"source\":{\"pointer\":\"/data/attributes/matchCompanyInput\"},\"status\":\"400\"}],\"title\":\"Validation Error\"}",
+    "enrich-hashtags": "HTTP status 400: caller error: {\"detail\":\"You must enter at least one valid input criterion\",\"errors\":[{\"code\":\"PFAPI0004\",\"detail\":\"Bad Request\",\"id\":\"df1fd416-208b-4052-b7f4-23fd7722b5da\",\"source\":{\"pointer\":\"/data/attributes\"},\"status\":\"400\"}],\"title\":\"Bad Request\"}",
+    "enrich-intent": "HTTP status 400: caller error: {\"detail\":\"Bad Request\",\"errors\":[{\"code\":\"PFAPI0004\",\"detail\":\"Missing required inputs, please provide a value for at least one of ['companyName','companyId','companyWebsite'].\",\"id\":\"c3d2272a-cb20-4fc4-bf41-3ee513bd92f1\",\"source\":{\"pointer\":\"/data/attributes\"},\"status\":\"400\"}],\"title\":\"Bad Request\"}",
+    "enrich-news": "HTTP status 400: caller error: {\"detail\":\"There is not sufficient info for your request. Please provide at least one input field\",\"errors\":[{\"code\":\"PFAPI0004\",\"detail\":\"Bad Request\",\"id\":\"951e86d9-ddf9-4164-b66e-8a4c230c1b49\",\"source\":{\"pointer\":\"/data/attributes\"},\"status\":\"400\"}],\"title\":\"Bad Request\"}",
+    "enrich-org-charts": "HTTP status 400: caller error: {\"detail\":\"There is not sufficient info for your request. Please provide at least one input field\",\"errors\":[{\"code\":\"PFAPI0004\",\"detail\":\"Bad Request\",\"id\":\"75aaa575-aaf8-4ee4-8ef8-5cb1ae313871\",\"source\":{\"pointer\":\"/data/attributes\"},\"status\":\"400\"}],\"title\":\"Bad Request\"}",
+    "enrich-scoops": "HTTP status 400: caller error: {\"detail\":\"There is not sufficient info for your request. Please provide at least one input field\",\"errors\":[{\"code\":\"PFAPI0004\",\"detail\":\"Bad Request\",\"id\":\"843f43b5-e9e5-4017-8233-4ce366c2fca2\",\"source\":{\"pointer\":\"/data/attributes\"},\"status\":\"400\"}],\"title\":\"Bad Request\"}",
+    "enrich-technologies": "HTTP status 400: caller error: {\"detail\":\"You must enter at least one valid input criterion\",\"errors\":[{\"code\":\"PFAPI0004\",\"detail\":\"Bad Request\",\"id\":\"79e59d16-8b76-40c4-8d50-6a6ab2cef7d5\",\"source\":{\"pointer\":\"/data/attributes\"},\"status\":\"400\"}],\"title\":\"Bad Request\"}",
+    "ideal-company-profile": "response data is missing expected values: no records returned to sample fields for \"ideal-company-profile\"",
+    "intent": "HTTP status 400: caller error: {\"detail\":\"Bad Request\",\"errors\":[{\"code\":\"PFAPI0004\",\"detail\":\"There is not sufficient info for your request. Please provide at least one input field.\",\"id\":\"7a442338-e7af-43bd-b946-8eddb1ae073f\",\"source\":{\"pointer\":\"/data/attributes\"},\"status\":\"400\"}],\"title\":\"Bad Request\"}",
+    "products": "response data is missing expected values: no records returned to sample fields for \"products\"",
+    "tech-products": "HTTP status 400: caller error: {\"detail\":\"TECH_PRODUCTS lookup requires at least one of 'vendor', 'category', and 'parentCategory' filters.\",\"errors\":[{\"code\":\"PFAPI0002\",\"detail\":\"TECH_PRODUCTS lookup requires at least one of 'vendor', 'category', and 'parentCategory' filters.\",\"id\":\"18d3c417-a6fd-434f-aa51-e2a55bdccf88\",\"status\":\"400\"}],\"title\":\"Missing Required Filters\"}"
+  },
+  "Result": {
+    "board-members": {
+      "DisplayName": "Board Members",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "buying-groups": {
+      "DisplayName": "Buying Groups",
+      "Fields": {
+        "accessLevel": {
+          "DisplayName": "accessLevel",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "isDefault": {
+          "DisplayName": "isDefault",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "boolean",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "personas": {
+          "DisplayName": "personas",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "other",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "companies": {
+      "DisplayName": "Companies",
+      "Fields": {
+        "city": {
+          "DisplayName": "city",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "country": {
+          "DisplayName": "country",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "employeeCount": {
+          "DisplayName": "employeeCount",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "revenue": {
+          "DisplayName": "revenue",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "state": {
+          "DisplayName": "state",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "website": {
+          "DisplayName": "website",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "company-rankings": {
+      "DisplayName": "Company Rankings",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "company-types": {
+      "DisplayName": "Company Types",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "continents": {
+      "DisplayName": "Continents",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "countries": {
+      "DisplayName": "Countries",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "departments": {
+      "DisplayName": "Departments",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "employee-count": {
+      "DisplayName": "Employee Count",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "hashtags": {
+      "DisplayName": "Hashtags",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "industries": {
+      "DisplayName": "Industries",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "intent-topics": {
+      "DisplayName": "Intent Topics",
+      "Fields": {
+        "category": {
+          "DisplayName": "category",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "department": {
+          "DisplayName": "department",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "description": {
+          "DisplayName": "description",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "jobFunction": {
+          "DisplayName": "jobFunction",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "job-functions": {
+      "DisplayName": "Job Functions",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "job-titles": {
+      "DisplayName": "Job Titles",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "order": {
+          "DisplayName": "order",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "management-levels": {
+      "DisplayName": "Management Levels",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "metro-regions": {
+      "DisplayName": "Metro Regions",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "naics-codes": {
+      "DisplayName": "Naics Codes",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "news": {
+      "DisplayName": "News",
+      "Fields": {
+        "categories": {
+          "DisplayName": "categories",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "other",
+          "Values": []
+        },
+        "company": {
+          "DisplayName": "company",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "other",
+          "Values": []
+        },
+        "description": {
+          "DisplayName": "description",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "domain": {
+          "DisplayName": "domain",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "imageUrl": {
+          "DisplayName": "imageUrl",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "pageDate": {
+          "DisplayName": "pageDate",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "title": {
+          "DisplayName": "title",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "url": {
+          "DisplayName": "url",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "news-categories": {
+      "DisplayName": "News Categories",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "revenue-ranges": {
+      "DisplayName": "Revenue Ranges",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "scoop-departments": {
+      "DisplayName": "Scoop Departments",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "scoop-topics": {
+      "DisplayName": "Scoop Topics",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "scoop-types": {
+      "DisplayName": "Scoop Types",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "scoops": {
+      "DisplayName": "Scoops",
+      "Fields": {
+        "company": {
+          "DisplayName": "company",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "other",
+          "Values": []
+        },
+        "description": {
+          "DisplayName": "description",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "link": {
+          "DisplayName": "link",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "linkText": {
+          "DisplayName": "linkText",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "originalPublishedDate": {
+          "DisplayName": "originalPublishedDate",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "publishedDate": {
+          "DisplayName": "publishedDate",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "topics": {
+          "DisplayName": "topics",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "other",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "types": {
+          "DisplayName": "types",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "other",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "sic-codes": {
+      "DisplayName": "Sic Codes",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "states": {
+      "DisplayName": "States",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "sub-unit-types": {
+      "DisplayName": "Sub Unit Types",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "tech-categories": {
+      "DisplayName": "Tech Categories",
+      "Fields": {
+        "categories": {
+          "DisplayName": "categories",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "other",
+          "Values": []
+        },
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "tech-skills": {
+      "DisplayName": "Tech Skills",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "tech-vendors": {
+      "DisplayName": "Tech Vendors",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "usage": {
+      "DisplayName": "Usage",
+      "Fields": {
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "usage": {
+          "DisplayName": "usage",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "other",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    },
+    "years-of-experience": {
+      "DisplayName": "Years Of Experience",
+      "Fields": {
+        "id": {
+          "DisplayName": "id",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "name": {
+          "DisplayName": "name",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        },
+        "type": {
+          "DisplayName": "type",
+          "IsCustom": null,
+          "IsRequired": null,
+          "ProviderType": "",
+          "ReadOnly": null,
+          "ReferenceTo": [],
+          "ValueType": "string",
+          "Values": []
+        }
+      },
+      "FieldsMap": {}
+    }
+  }
+}

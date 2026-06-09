@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "id": "news_98765",
+      "type": "News",
+      "attributes": {
+        "title": "Acme Corp announces new funding round",
+        "url": "https://example.com/acme-funding",
+        "pageDate": "2025-02-10",
+        "company": {
+          "id": 344589814,
+          "name": "Acme Corp"
+        }
+      }
+    }
+  ],
+  "meta": {
+    "totalResults": 1,
+    "page": {
+      "number": 1,
+      "total": 1
+    }
+  }
+}

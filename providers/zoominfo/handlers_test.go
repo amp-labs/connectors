@@ -15,6 +15,7 @@ import (
 )
 
 const (
+	objNews             = "news"
 	objCompanyRankings  = "company-rankings"
 	objAudiences        = "audiences"
 	objCustomerSettings = "customer-settings"
@@ -24,6 +25,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,maintidx
 	t.Parallel()
 
 	contactsResponse := testutils.DataFromFile(t, "contacts.json")
+	newsResponse := testutils.DataFromFile(t, "news.json")
 	companyRankingsResponse := testutils.DataFromFile(t, "company-rankings.json")
 	audiencesResponse := testutils.DataFromFile(t, "audiences.json")
 	customerSettingsResponse := testutils.DataFromFile(t, "customer-settings.json")
@@ -37,12 +39,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,maintidx
 		},
 		{
 			Name:  "Search (POST) and lookup (GET) objects sampled from data[]",
-			Input: []string{objContacts, objCompanyRankings},
+			Input: []string{objContacts, objNews, objCompanyRankings},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/gtm/data/v1/contacts/search"),
+					If: mockcond.And{
+						mockcond.Path("/gtm/data/v1/contacts/search"),
+						mockcond.Body(`{"data":{"type":"ContactSearch","attributes":{"lastUpdatedDateAfter":"1970-01-01"}}}`),
+					},
 					Then: mockserver.Response(http.StatusOK, contactsResponse),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/gtm/data/v1/news/search"),
+						mockcond.Body(`{"data":{"type":"NewsSearch","attributes":{"pageDateMin":"1970-01-01"}}}`),
+					},
+					Then: mockserver.Response(http.StatusOK, newsResponse),
 				}, {
 					If:   mockcond.Path("/gtm/data/v1/lookup/company-rankings"),
 					Then: mockserver.Response(http.StatusOK, companyRankingsResponse),
@@ -60,6 +71,16 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,maintidx
 							"lastName":  {DisplayName: "lastName", ValueType: common.ValueTypeString},
 							"jobTitle":  {DisplayName: "jobTitle", ValueType: common.ValueTypeString},
 							"hasEmail":  {DisplayName: "hasEmail", ValueType: common.ValueTypeBoolean},
+						},
+					},
+					objNews: {
+						DisplayName: "News",
+						Fields: map[string]common.FieldMetadata{
+							"id":       {DisplayName: "id", ValueType: common.ValueTypeString},
+							"type":     {DisplayName: "type", ValueType: common.ValueTypeString},
+							"title":    {DisplayName: "title", ValueType: common.ValueTypeString},
+							"url":      {DisplayName: "url", ValueType: common.ValueTypeString},
+							"pageDate": {DisplayName: "pageDate", ValueType: common.ValueTypeString},
 						},
 					},
 					objCompanyRankings: {

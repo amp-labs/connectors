@@ -53,17 +53,31 @@ type searchDef struct {
 	searchType string
 	// displayName is the human-readable object name.
 	displayName string
+	// sampleCriteria seeds the metadata-sampling request's attributes. Some
+	// search endpoints (e.g. contacts) reject empty criteria with a 400 ("at
+	// least one valid input criterion"), so we pass an epoch lastUpdatedDateAfter
+	// — effectively "everything since 1970" — which returns records to sample
+	// fields from. Endpoints that sample fine with empty criteria leave this nil.
+	sampleCriteria map[string]any
 }
 
 // searchObjects enumerates the POST /{resource}/search endpoints, keyed by the
 // resource path segment. data.type strings are taken from the ZoomInfo API
 // reference (https://docs.zoominfo.com/reference).
 var searchObjects = map[string]searchDef{ //nolint:gochecknoglobals
-	objContacts:  {searchType: "ContactSearch", displayName: "Contacts"},
+	objContacts: {
+		searchType:     "ContactSearch",
+		displayName:    "Contacts",
+		sampleCriteria: map[string]any{"lastUpdatedDateAfter": "1970-01-01"},
+	},
 	objCompanies: {searchType: "CompanySearch", displayName: "Companies"},
 	"scoops":     {searchType: "ScoopSearch", displayName: "Scoops"},
-	"news":       {searchType: "NewsSearch", displayName: "News"},
-	"intent":     {searchType: "IntentSearch", displayName: "Intent"},
+	"news": {
+		searchType:     "NewsSearch",
+		displayName:    "News",
+		sampleCriteria: map[string]any{"pageDateMin": "1970-01-01"},
+	},
+	"intent": {searchType: "IntentSearch", displayName: "Intent"},
 }
 
 // lookupObjects enumerates the GET /lookup/{fieldName} reference-data endpoints.
@@ -260,6 +274,29 @@ func displayNameFor(objectName string) string {
 	default:
 		return naming.CapitalizeFirstLetterEveryWord(replaceHyphens(objectName))
 	}
+}
+
+// SupportedObjectNames returns every object the connector can describe, sorted.
+func SupportedObjectNames() []string {
+	names := make([]string, 0, len(searchObjects)+len(lookupObjects)+len(enrichObjects)+len(getObjects))
+
+	for name := range searchObjects {
+		names = append(names, name)
+	}
+
+	names = append(names, lookupObjects...)
+
+	for name := range enrichObjects {
+		names = append(names, name)
+	}
+
+	for name := range getObjects {
+		names = append(names, name)
+	}
+
+	slices.Sort(names)
+
+	return names
 }
 
 func replaceHyphens(s string) string {
