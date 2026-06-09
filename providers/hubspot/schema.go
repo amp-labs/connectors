@@ -35,6 +35,16 @@ var KnownObjectTypes = map[string]string{ // nolint:gochecknoglobals
 //
 // Used by ListObjectMetadata when populating common.FieldMetadata.ReferenceTo
 // for reference-typed fields.
+//
+// Provenance: HubSpot does not publish a closed enum of valid
+// `referencedObjectType` values; the Properties API spec and Ruby SDK both
+// treat the field as a free-form string. This map was composed by hand. The
+// target object names (values) mirror KnownObjectTypes above 1:1; the keys
+// follow HubSpot's general singular-uppercase enum convention.
+//
+// Note: both OWNER and USER map to "users" — HubSpot has no separate Owner
+// object (owners are users, type ID 0-115); the USER entry is a defensive
+// alias since HubSpot doesn't document a closed enum.
 var referencedObjectTypeMap = map[string]string{ // nolint:gochecknoglobals
 	"APPOINTMENT":     "appointments",
 	"CALL":            "calls",
@@ -58,17 +68,20 @@ var referencedObjectTypeMap = map[string]string{ // nolint:gochecknoglobals
 	"SUBSCRIPTION":    "subscriptions",
 	"TASK":            "tasks",
 	"TICKET":          "tickets",
+	"USER":            "users",
 }
 
 // resolveReferencedObjectName maps a HubSpot referencedObjectType value to the
 // object name this connector uses. For known core CRM types it returns the
 // mapped name from referencedObjectTypeMap. For anything else (custom-object
 // FQNs like "p123_my_object", future types we don't know yet) it returns the
-// lowercased input so downstream consumers still get a usable reference name.
+// lowercased input with a trailing "s" — a deliberately naive pluralizer that
+// keeps the fallback consistent with the plural naming convention used by the
+// known mappings (companies, contacts, deals, etc.).
 func resolveReferencedObjectName(hsType string) string {
 	if name, ok := referencedObjectTypeMap[hsType]; ok {
 		return name
 	}
 
-	return strings.ToLower(hsType)
+	return strings.ToLower(hsType) + "s"
 }

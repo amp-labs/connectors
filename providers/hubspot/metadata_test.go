@@ -581,9 +581,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		{
 			// CON-3293: an unrecognized referencedObjectType (e.g. a HubSpot
 			// custom-object FQN like "p12345_my_object") falls through to a
-			// lowercased passthrough so downstream consumers still see a
-			// usable reference name instead of losing the field entirely.
-			Name:  "Property with custom referencedObjectType passes through lowercased",
+			// lowercased+pluralized passthrough so downstream consumers still
+			// see a usable reference name (consistent with the plural naming
+			// used by the known mappings) instead of losing the field entirely.
+			Name:  "Property with custom referencedObjectType passes through lowercased+pluralized",
 			Input: []string{"contacts"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -623,7 +624,60 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								IsCustom:     new(true),
 								IsRequired:   new(false),
 								Values:       nil,
-								ReferenceTo:  []string{"p12345_custom_object"},
+								ReferenceTo:  []string{"p12345_custom_objects"},
+							},
+						},
+					},
+				},
+				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// Follow-up to CON-3293: USER is mapped explicitly so the
+			// lowercase fallback doesn't yield "user" (singular) instead of
+			// our "users" object name.
+			Name:  "Property with referencedObjectType=USER becomes a reference to users",
+			Input: []string{"contacts"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If: mockcond.Path("/crm/v3/properties/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, `{
+						"results": [{
+							"name": "hs_created_by_user_id",
+							"label": "Created by user ID",
+							"type": "number",
+							"fieldType": "number",
+							"referencedObjectType": "USER",
+							"options": [],
+							"hubspotDefined": true,
+							"modificationMetadata": {"readOnlyValue": true}
+						}]
+					}`),
+				}, {
+					If:   mockcond.Path("/crm/pipelines/2026-03/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, "{}"),
+				}, {
+					If:   mockcond.Path("/crm-object-schemas/2026-03/schemas/contacts"),
+					Then: mockserver.ResponseString(http.StatusOK, "{}"),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "contacts",
+						Fields: map[string]common.FieldMetadata{
+							"hs_created_by_user_id": {
+								DisplayName:  "Created by user ID",
+								ValueType:    "reference",
+								ProviderType: "number.number",
+								ReadOnly:     new(true),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+								Values:       nil,
+								ReferenceTo:  []string{"users"},
 							},
 						},
 					},
