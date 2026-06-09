@@ -1,0 +1,19 @@
+{
+  "requestId": "flows-alice-page-2",
+  "records": {
+    "totalRecords": 2,
+    "currentPageSize": 1,
+    "currentPageNumber": 1
+  },
+  "flows": [
+    {
+      "id": "9000000000000003",
+      "name": "Alice's Second Flow",
+      "folderId": "7000000000000003",
+      "folderName": "My Folder",
+      "visibility": "Personal",
+      "creationDate": "2025-01-17T12:00:00Z",
+      "exclusive": false
+    }
+  ]
+}
