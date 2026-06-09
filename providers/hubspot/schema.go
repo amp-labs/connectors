@@ -75,11 +75,13 @@ var referencedObjectTypeMap = map[string]string{ // nolint:gochecknoglobals
 // object name this connector uses. For known core CRM types it returns the
 // mapped name from referencedObjectTypeMap. For anything else (custom-object
 // FQNs like "p123_my_object", future types we don't know yet) it returns the
-// lowercased input so downstream consumers still get a usable reference name.
+// lowercased input with a trailing "s" — a deliberately naive pluralizer that
+// keeps the fallback consistent with the plural naming convention used by the
+// known mappings (companies, contacts, deals, etc.).
 func resolveReferencedObjectName(hsType string) string {
 	if name, ok := referencedObjectTypeMap[hsType]; ok {
 		return name
 	}
 
-	return strings.ToLower(hsType)
+	return strings.ToLower(hsType) + "s"
 }

@@ -581,9 +581,10 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		{
 			// CON-3293: an unrecognized referencedObjectType (e.g. a HubSpot
 			// custom-object FQN like "p12345_my_object") falls through to a
-			// lowercased passthrough so downstream consumers still see a
-			// usable reference name instead of losing the field entirely.
-			Name:  "Property with custom referencedObjectType passes through lowercased",
+			// lowercased+pluralized passthrough so downstream consumers still
+			// see a usable reference name (consistent with the plural naming
+			// used by the known mappings) instead of losing the field entirely.
+			Name:  "Property with custom referencedObjectType passes through lowercased+pluralized",
 			Input: []string{"contacts"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -623,7 +624,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								IsCustom:     new(true),
 								IsRequired:   new(false),
 								Values:       nil,
-								ReferenceTo:  []string{"p12345_custom_object"},
+								ReferenceTo:  []string{"p12345_custom_objects"},
 							},
 						},
 					},
