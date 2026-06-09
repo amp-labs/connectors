@@ -25,12 +25,12 @@ func init() {
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1780944000/media/breezy.hr_1780944000.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1780944000/media/breezy.hr_1780944000.svg",
+				IconURL: "",
+				LogoURL: "",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1780944000/media/breezy.hr_1780944000.jpg",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1780944000/media/breezy.hr_1780944000.svg",
+				IconURL: "",
+				LogoURL: "",
 			},
 		},
 		Support: Support{
