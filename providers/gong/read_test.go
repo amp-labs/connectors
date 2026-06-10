@@ -271,6 +271,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
+			// Bob is fetched first (read_users_bob_first.json) and his result set
+			// includes alice's flow 9000000000000001 as "Shared", because Gong
+			// reports visibility relative to the queried email. Alice is fetched
+			// second and sees that same id as "Personal". Expecting flow ...001 to
+			// come out "Personal" with alice attached proves the dedup prefers the
+			// owner's copy instead of keeping the non-owner's "Shared" one.
 			Name: "Flows: AssociatedObjects=users attaches each Personal flow's owner",
 			Input: common.ReadParams{
 				ObjectName:        "flows",
@@ -281,7 +287,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
 					If:   mockcond.Path("/v2/users"),
-					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "get-records-users.json")),
+					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_users_bob_first.json")),
 				}, {
 					If: mockcond.And{
 						mockcond.Path("/v2/flows"),
