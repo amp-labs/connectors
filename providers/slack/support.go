@@ -47,12 +47,15 @@ var objectsReadViaPost = datautils.NewSet( //nolint:gochecknoglobals
 // to the JSON field used for comparison. Slack has no server-side date filter params,
 // so filtering is done in memory after each page is fetched. All Slack timestamps are
 // Unix epoch seconds.
+//
+// Some objects are excluded from connector-side filtering because the filtering would miss
+// records that should be returned for clients:
+//   - users.conversations (field: "created")
 var objectsWithConnectorSideFilter = datautils.Map[string, string]{ //nolint:gochecknoglobals
-	"conversations":       "updated",
-	"files":               "created",
-	"usergroups":          "date_update",
-	"users.conversations": "created",
-	"users":               "updated",
+	"conversations": "updated",
+	"files":         "created",
+	"usergroups":    "date_update",
+	"users":         "updated",
 }
 
 // objectsUsingAddSuffix contains write objects whose Slack API endpoint uses the ".add" method suffix.
