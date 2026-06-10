@@ -26,6 +26,7 @@ import (
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/braintree"
 	"github.com/amp-labs/connectors/providers/braze"
+	"github.com/amp-labs/connectors/providers/breezy"
 	"github.com/amp-labs/connectors/providers/breakcold"
 	"github.com/amp-labs/connectors/providers/brevo"
 	"github.com/amp-labs/connectors/providers/calendly"
@@ -176,6 +177,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Blueshift:                  wrapper(newBlueshiftConnector),
 	providers.Braintree:                  wrapper(newBraintreeConnector),
 	providers.Braze:                      wrapper(newBrazeConnector),
+	providers.Breezy:                     wrapper(newBreezyConnector),
 	providers.Breakcold:                  wrapper(newBreakcoldConnector),
 	providers.Brevo:                      wrapper(newBrevoConnector),
 	providers.Calendly:                   wrapper(newCalendlyConnector),
@@ -996,6 +998,12 @@ func newXeroConnector(
 	params common.ConnectorParams,
 ) (*xero.Connector, error) {
 	return xero.NewConnector(params)
+}
+
+func newBreezyConnector(
+	params common.ConnectorParams,
+) (*breezy.Connector, error) {
+	return breezy.NewConnector(params)
 }
 
 func newBreakcoldConnector(
