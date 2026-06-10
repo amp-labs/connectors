@@ -22,6 +22,17 @@ func init() {
 			SuccessStatusCodes: []int{http.StatusOK},
 			Url:                "https://api.breezy.hr/v3/companies",
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "company_id",
+					DisplayName: "Company ID",
+					DocsURL:     "https://developer.breezy.hr/reference/customer-guide",
+					Prompt: "Copy the company `_id` from GET /v3/companies. " +
+						"Required for company-scoped objects such as webhook endpoints and position writes.",
+				},
+			},
+		},
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
