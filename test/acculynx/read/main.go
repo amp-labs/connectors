@@ -91,6 +91,18 @@ func main() {
 	if err := testIncrementalRead(ctx, conn, "jobs"); err != nil {
 		slog.Error(err.Error())
 	}
+
+	// Regression: platform sends Since set + Until zero on backfills. /jobs
+	// and /jobs/{id}/history return HTTP 400 when only one of startDate /
+	// endDate is sent. Exercise the exact param shape here so a regression
+	// surfaces in live testing rather than in production.
+	for _, obj := range []string{"jobs", "jobs/history"} {
+		slog.Info("Testing backfill-shape incremental read (Since set, Until zero)", "object", obj)
+
+		if err := testBackfillShapeRead(ctx, conn, obj); err != nil {
+			slog.Error(err.Error())
+		}
+	}
 }
 
 func testRead(ctx context.Context, conn *acculynx.Connector, objectName string) error {
@@ -172,6 +184,35 @@ func testIncrementalRead(ctx context.Context, conn *acculynx.Connector, objectNa
 	}
 
 	slog.Info("Incremental read result", "object", objectName, "rows", res.Rows)
+	utils.DumpJSON(res, os.Stdout)
+
+	return nil
+}
+
+// testBackfillShapeRead mirrors the platform's backfill param shape: Since set,
+// Until zero. Before the date-filter fix, this combination produced HTTP 400
+// from AccuLynx ("Start Date and End Date do not have the same format").
+func testBackfillShapeRead(ctx context.Context, conn *acculynx.Connector, objectName string) error {
+	since := time.Now().AddDate(0, 0, -15)
+
+	params := common.ReadParams{
+		ObjectName: objectName,
+		Fields:     connectors.Fields("id"),
+		Since:      since,
+		// Until intentionally left as zero value.
+	}
+
+	slog.Info("Reading with backfill shape",
+		"object", objectName,
+		"since", since.Format(time.RFC3339),
+		"until", "zero")
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		return fmt.Errorf("error reading %s with backfill shape: %w", objectName, err)
+	}
+
+	slog.Info("Backfill-shape read result", "object", objectName, "rows", res.Rows)
 	utils.DumpJSON(res, os.Stdout)
 
 	return nil
