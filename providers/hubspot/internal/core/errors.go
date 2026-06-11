@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -12,6 +13,12 @@ import (
 // HubSpot returns 477 while a hub is being migrated between data hosting locations.
 // Migrations resolve in hours, so it is a retryable error.
 const hubspotMigrationStatusCode = 477
+
+// invalidPaginationCursorMessageSubstring is the message HubSpot returns when its
+// search/list APIs reject the supplied pagination cursor as unparseable.
+// This is caused by the pagination cursor being not the appropriate type
+// for the API (because Search and List APIs use different pagination tokens).
+const invalidPaginationCursorMessageSubstring = "Cannot deserialize value of type `int` from String "
 
 // InterpretJSONError interprets the error response from Hubspot
 // as per https://developers.hubspot.com/docs/api/error-handling.
@@ -24,8 +31,12 @@ func InterpretJSONError(res *http.Response, body []byte) error {
 	}
 
 	switch res.StatusCode {
-	// Hubspot sends us a 400 when the search endpoint returns over 10K records.
 	case http.StatusBadRequest:
+		if strings.Contains(apiError.Message, invalidPaginationCursorMessageSubstring) {
+			return common.NewHTTPError(res.StatusCode, body, headers,
+				createError(common.ErrInvalidPaginationCursor, apiError))
+		}
+	// Hubspot sends us a 400 when the search endpoint returns over 10K records,
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrBadRequest, apiError))
 	case http.StatusUnauthorized:
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrAccessToken, apiError))

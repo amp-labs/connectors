@@ -82,6 +82,11 @@ var (
 	// ErrCursorGone is returned when a cursor used for pagination is no longer valid.
 	ErrCursorGone error = newClassedErr("pagination cursor gone or expired", ErrorClassCursorGone)
 
+	// ErrInvalidPaginationCursor is returned when the provider rejected a pagination cursor
+	// as malformed/unparseable (e.g. HubSpot returning "Cannot deserialize value of type `int`
+	// from String ...")
+	ErrInvalidPaginationCursor error = errors.New("pagination cursor has an invalid format")
+
 	// ErrResultsLimitExceeded is returned when a search query exceeds the provider's
 	// maximum result limit (e.g., HubSpot's 10,000 record search limit).
 	ErrResultsLimitExceeded error = newClassedErr("results limit exceeded", ErrorClassRateLimited)
