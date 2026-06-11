@@ -19,7 +19,7 @@ import (
 // appear in multiple users' result sets while personal flows are unique to their owner.
 // Some users may not have engage license or may not be added to flows, so we handle errors gracefully.
 // ref: https://gong.app.gong.io/settings/api/documentation#get-/v2/flows
-func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { // nolint:lll
+func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) { // nolint:lll,cyclop
 	users, err := c.fetchAllUsers(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch users: %w", err)
