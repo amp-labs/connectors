@@ -73,6 +73,10 @@ var (
 	// ErrBadRequest is returned when we get a 400 response from the provider.
 	ErrBadRequest error = newClassedErr("bad request", ErrorClassBadRequest)
 
+	// ErrFieldNotFound is returned when a requested field was not found or is not
+	// accessible on the object. It is a subset of ErrBadRequest.
+	ErrFieldNotFound = errors.New("field not found or not accessible")
+
 	// ErrConflict is returned when we get a 409 response from the provider.
 	ErrConflict = errors.New("conflict")
 
