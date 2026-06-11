@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"maps"
 	"net/http"
@@ -14,33 +13,28 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
-// searchRequestBody is the JSON:API envelope for a POST search/enrich call.
-type searchRequestBody struct {
-	Data searchRequestData `json:"data"`
-}
-
-type searchRequestData struct {
-	Type       string         `json:"type"`
-	Attributes map[string]any `json:"attributes"`
-}
-
-// buildSingleObjectMetadataRequest constructs a sampling request for one object.
+// buildSingleObjectMetadataRequest constructs the metadata request for one object.
 // The request shape depends on the object kind:
-//   - search: POST {dataAPIPath}/{resource}/search with a JSON:API body and page[size]=1
-//   - lookup: GET  {dataAPIPath}/lookup/{fieldName}
-//   - enrich: POST {dataAPIPath}/{segments...}/enrich with a JSON:API body
-//   - get:    GET  {segments...} (segments carry their own version prefix)
+//   - search: GET {dataAPIPath}/lookup/search?filter[entity]={entity}&filter[fieldType]=output
+//   - enrich: GET {dataAPIPath}/lookup/enrich?filter[entity]={entity}&filter[fieldType]=output
+//     (both describe the declared output schema — no live sampling)
+//   - lookup: GET {dataAPIPath}/lookup/{fieldName}   (sample one record)
+//   - get:    GET {segments...}                       (sample one record)
 func (c *Connector) buildSingleObjectMetadataRequest(
 	ctx context.Context,
 	objectName string,
 ) (*http.Request, error) {
 	switch kindOf(objectName) {
 	case kindSearch:
-		return c.buildSearchMetadataRequest(ctx, objectName)
+		return c.buildLookupFieldsRequest(ctx, "search", searchObjects[objectName].entity)
+	case kindEnrich:
+		if def := enrichObjects[objectName]; def.sample != nil {
+			return c.buildEnrichSampleRequest(ctx, def.sample)
+		}
+
+		return c.buildLookupFieldsRequest(ctx, segEnrich, enrichObjects[objectName].entity)
 	case kindLookup:
 		return c.buildLookupMetadataRequest(ctx, objectName)
-	case kindEnrich:
-		return c.buildEnrichMetadataRequest(ctx, objectName)
 	case kindGet:
 		return c.buildGetMetadataRequest(ctx, objectName)
 	case kindUnknown:
@@ -50,45 +44,62 @@ func (c *Connector) buildSingleObjectMetadataRequest(
 	}
 }
 
-func (c *Connector) buildSearchMetadataRequest(
+// buildEnrichSampleRequest POSTs an enrich endpoint with seed criteria so its
+// response can be sampled for fields — the fallback for entities lacking
+// lookup/enrich support.
+func (c *Connector) buildEnrichSampleRequest(
 	ctx context.Context,
-	objectName string,
+	sample *enrichSample,
 ) (*http.Request, error) {
-	def := searchObjects[objectName]
-
-	// The object name is the resource path segment (e.g. "contacts").
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, dataAPIPath, objectName, "search")
-	if err != nil {
-		return nil, err
-	}
-
-	// One record is enough to sample the field set.
-	url.WithQueryParam("page[size]", metadataPageSize)
-
-	return c.newJSONAPIPostRequest(ctx, url, def.searchType, def.sampleCriteria)
-}
-
-func (c *Connector) buildEnrichMetadataRequest(
-	ctx context.Context,
-	objectName string,
-) (*http.Request, error) {
-	def := enrichObjects[objectName]
-
-	segments := append([]string{dataAPIPath}, def.segments...)
+	segments := append([]string{dataAPIPath}, sample.segments...)
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, segments...)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.newJSONAPIPostRequest(ctx, url, def.enrichType, nil)
+	payload, err := json.Marshal(enrichRequest{
+		Data: enrichRequestData{Type: sample.enrichType, Attributes: sample.seed},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(payload))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Accept", jsonAPIMediaType)
+	req.Header.Set("Content-Type", jsonAPIMediaType)
+
+	return req, nil
+}
+
+// buildLookupFieldsRequest discovers an entity's output fields via the
+// lookup/{operation} endpoint (operation is "search" or "enrich"). These
+// endpoints describe an entity's fields directly — deterministic and without
+// needing criteria, match input, or live data.
+func (c *Connector) buildLookupFieldsRequest(
+	ctx context.Context,
+	operation, entity string,
+) (*http.Request, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, dataAPIPath, segLookup, operation)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam(filterEntityParam, entity)
+	url.WithQueryParam(filterFieldTypeParam, outputFieldType)
+
+	return c.newJSONAPIGetRequest(ctx, url)
 }
 
 func (c *Connector) buildLookupMetadataRequest(
 	ctx context.Context,
 	objectName string,
 ) (*http.Request, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, dataAPIPath, "lookup", objectName)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, dataAPIPath, segLookup, objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -110,42 +121,6 @@ func (c *Connector) buildGetMetadataRequest(
 	return c.newJSONAPIGetRequest(ctx, url)
 }
 
-// newJSONAPIPostRequest builds a POST request carrying a JSON:API envelope with
-// the given attributes (a nil map is encoded as {}). Objects that still require
-// input beyond what we seed (e.g. most enrich endpoints, intent search) return a
-// descriptive 4xx, which the schema provider records per-object in
-// ListObjectMetadataResult.Errors.
-func (c *Connector) newJSONAPIPostRequest(
-	ctx context.Context,
-	url *urlbuilder.URL,
-	resourceType string,
-	attributes map[string]any,
-) (*http.Request, error) {
-	if attributes == nil {
-		attributes = map[string]any{}
-	}
-
-	payload, err := json.Marshal(searchRequestBody{
-		Data: searchRequestData{
-			Type:       resourceType,
-			Attributes: attributes,
-		},
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(payload))
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Accept", jsonAPIMediaType)
-	req.Header.Set("Content-Type", jsonAPIMediaType)
-
-	return req, nil
-}
-
 func (c *Connector) newJSONAPIGetRequest(ctx context.Context, url *urlbuilder.URL) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
@@ -157,15 +132,57 @@ func (c *Connector) newJSONAPIGetRequest(ctx context.Context, url *urlbuilder.UR
 	return req, nil
 }
 
-// parseSingleObjectMetadataResponse infers an object's fields from the first
-// record of a JSON:API response. ZoomInfo returns either a "data" array (most
-// endpoints) or a singleton "data" object (e.g. customer-settings); both are
-// handled. Record fields nested under "attributes" are promoted to the top level
-// (mirroring how Read will flatten them) alongside top-level keys like "id".
+// enrichRequest is the JSON:API envelope POSTed when sampling an enrich endpoint.
+type enrichRequest struct {
+	Data enrichRequestData `json:"data"`
+}
+
+type enrichRequestData struct {
+	Type       string         `json:"type"`
+	Attributes map[string]any `json:"attributes"`
+}
+
+// fieldListResponse is the lookup/{search,enrich} payload: a list of field
+// descriptors under data[].attributes.fieldName.
+type fieldListResponse struct {
+	Data []struct {
+		Attributes struct {
+			FieldName string `json:"fieldName"`
+		} `json:"attributes"`
+	} `json:"data"`
+}
+
+// parseSingleObjectMetadataResponse builds an object's metadata. Search and most
+// enrich objects come from the lookup/{search,enrich} endpoints (a declared list
+// of output field names); every other kind — plus the sampled-enrich fallback
+// (hashtags, technologies) — is sampled from the first returned record.
 func (c *Connector) parseSingleObjectMetadataResponse(
 	ctx context.Context,
 	objectName string,
 	request *http.Request,
+	response *common.JSONHTTPResponse,
+) (*common.ObjectMetadata, error) {
+	switch kindOf(objectName) {
+	case kindSearch:
+		return parseFieldListResponse(objectName, response)
+	case kindEnrich:
+		if enrichObjects[objectName].sample != nil {
+			return parseSampledRecordResponse(objectName, response)
+		}
+
+		return parseFieldListResponse(objectName, response)
+	case kindLookup, kindGet, kindUnknown:
+		return parseSampledRecordResponse(objectName, response)
+	default:
+		return parseSampledRecordResponse(objectName, response)
+	}
+}
+
+// parseFieldListResponse builds metadata from a lookup/{search,enrich} output-field
+// list. These endpoints return field names (and descriptions) but no type
+// information, so ValueType is left as "other".
+func parseFieldListResponse(
+	objectName string,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	metadata := &common.ObjectMetadata{
@@ -173,7 +190,45 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		Fields:      make(common.FieldsMetadata),
 	}
 
-	record, err := firstRecord(response, objectName)
+	resp, err := common.UnmarshalJSON[fieldListResponse](response)
+	if err != nil {
+		return nil, common.ErrFailedToUnmarshalBody
+	}
+
+	if len(resp.Data) == 0 {
+		return nil, common.ErrMissingExpectedValues
+	}
+
+	for _, field := range resp.Data {
+		name := field.Attributes.FieldName
+		if name == "" {
+			continue
+		}
+
+		metadata.Fields[name] = common.FieldMetadata{
+			DisplayName: name,
+			ValueType:   common.ValueTypeOther,
+		}
+	}
+
+	return metadata, nil
+}
+
+// parseSampledRecordResponse infers an object's fields from the first record of a
+// JSON:API response. ZoomInfo returns either a "data" array (most endpoints) or a
+// singleton "data" object (e.g. customer-settings); both are handled. Record
+// fields nested under "attributes" are promoted to the top level (mirroring how
+// Read will flatten them) alongside top-level keys like "id".
+func parseSampledRecordResponse(
+	objectName string,
+	response *common.JSONHTTPResponse,
+) (*common.ObjectMetadata, error) {
+	metadata := &common.ObjectMetadata{
+		DisplayName: displayNameFor(objectName),
+		Fields:      make(common.FieldsMetadata),
+	}
+
+	record, err := firstRecord(response)
 	if err != nil {
 		return nil, err
 	}
@@ -193,43 +248,27 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 // It relies on jsonquery's typed errors rather than inspecting the raw node:
 // ArrayOptional reports ErrNotArray for a singleton object, which is the signal
 // to fall back to ObjectOptional.
-func firstRecord(response *common.JSONHTTPResponse, objectName string) (map[string]any, error) {
+func firstRecord(response *common.JSONHTTPResponse) (map[string]any, error) {
 	body, ok := response.Body()
 	if !ok {
 		return nil, common.ErrEmptyJSONHTTPResponse
 	}
 
 	records, err := jsonquery.New(body).ArrayOptional("data")
-
-	switch {
-	case err == nil:
-		if len(records) == 0 {
-			return nil, fmt.Errorf("%w: no records returned to sample fields for %q",
-				common.ErrMissingExpectedValues, objectName)
-		}
-
-		rows, err := jsonquery.Convertor.ArrayToMap(records)
-		if err != nil {
-			return nil, err
-		}
-
-		return rows[0], nil
-	case errors.Is(err, jsonquery.ErrNotArray):
-		// Singleton data{} shape (e.g. customer-settings).
-		node, err := jsonquery.New(body).ObjectOptional("data")
-		if err != nil {
-			return nil, err
-		}
-
-		if node == nil {
-			return nil, fmt.Errorf("%w: missing \"data\" for %q",
-				common.ErrMissingExpectedValues, objectName)
-		}
-
-		return jsonquery.Convertor.ObjectToMap(node)
-	default:
+	if err != nil {
 		return nil, err
 	}
+
+	rows, err := jsonquery.Convertor.ArrayToMap(records)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(rows) == 0 {
+		return nil, common.ErrMissingExpectedValues
+	}
+
+	return rows[0], nil
 }
 
 // flattenRecord promotes the contents of a JSON:API record's "attributes" object

@@ -2,23 +2,16 @@ package zoominfo
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
 
-const (
-	// jsonAPIMediaType is the media type ZoomInfo's Data API speaks. Several
-	// endpoints (e.g. intent, lookup) reject "application/json" with a 406, so
-	// every request must advertise JSON:API for both Accept and Content-Type.
-	jsonAPIMediaType = "application/vnd.api+json"
-
-	// metadataPageSize limits sampling requests to a single record — that's all
-	// we need to infer an object's fields.
-	metadataPageSize = "1"
-)
+// jsonAPIMediaType is the media type ZoomInfo's Data API speaks. Several
+// endpoints (e.g. intent, lookup) reject "application/json" with a 406, so
+// every request must advertise JSON:API for both Accept and Content-Type.
+const jsonAPIMediaType = "application/vnd.api+json"
 
 type Connector struct {
 	// Basic connector
@@ -48,9 +41,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
-			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
-			}.Handle,
+			ErrorHandler:  common.InterpretError,
 		},
 	)
 

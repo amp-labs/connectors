@@ -16,11 +16,27 @@ const (
 	agentAPIPath   = "gtm/agent/v1"
 )
 
-// Path segments reused across multiple endpoint definitions.
+// Object/path/entity segments reused across multiple endpoint definitions.
 const (
 	objContacts  = "contacts"
 	objCompanies = "companies"
+	objNews      = "news"
+	objIntent    = "intent"
 	segEnrich    = "enrich"
+
+	entityContact = "contact"
+	entityCompany = "company"
+	entityScoop   = "scoop"
+)
+
+// Constants for the lookup/{search,enrich} field-discovery endpoints.
+const (
+	segLookup = "lookup"
+	// outputFieldType is the filter value that returns an entity's output
+	// (response) fields — the fields a search/enrich returns.
+	outputFieldType      = "output"
+	filterEntityParam    = "filter[entity]"
+	filterFieldTypeParam = "filter[fieldType]"
 )
 
 // objectKind classifies how an object's metadata (and, later, reads) are
@@ -48,36 +64,23 @@ const (
 // registered doubles as the URL path segment (e.g. "contacts" ->
 // POST /gtm/data/v1/contacts/search).
 type searchDef struct {
-	// searchType is the JSON:API data.type sent in the search request body
-	// (e.g. "ContactSearch").
-	searchType string
+	// entity is the singular entity name used by the lookup/search field-discovery
+	// endpoint (e.g. "contact" for the "contacts" object).
+	entity string
 	// displayName is the human-readable object name.
 	displayName string
-	// sampleCriteria seeds the metadata-sampling request's attributes. Some
-	// search endpoints (e.g. contacts) reject empty criteria with a 400 ("at
-	// least one valid input criterion"), so we pass an epoch lastUpdatedDateAfter
-	// — effectively "everything since 1970" — which returns records to sample
-	// fields from. Endpoints that sample fine with empty criteria leave this nil.
-	sampleCriteria map[string]any
 }
 
-// searchObjects enumerates the POST /{resource}/search endpoints, keyed by the
-// resource path segment. data.type strings are taken from the ZoomInfo API
-// reference (https://docs.zoominfo.com/reference).
+// searchObjects enumerates the search objects, keyed by the resource path segment
+// used for reads. Their metadata is discovered via the lookup/search endpoint
+// (GET /gtm/data/v1/lookup/search?filter[entity]={entity}&filter[fieldType]=output)
+// rather than by sampling live records — see buildSearchMetadataRequest.
 var searchObjects = map[string]searchDef{ //nolint:gochecknoglobals
-	objContacts: {
-		searchType:     "ContactSearch",
-		displayName:    "Contacts",
-		sampleCriteria: map[string]any{"lastUpdatedDateAfter": "1970-01-01"},
-	},
-	objCompanies: {searchType: "CompanySearch", displayName: "Companies"},
-	"scoops":     {searchType: "ScoopSearch", displayName: "Scoops"},
-	"news": {
-		searchType:     "NewsSearch",
-		displayName:    "News",
-		sampleCriteria: map[string]any{"pageDateMin": "1970-01-01"},
-	},
-	"intent": {searchType: "IntentSearch", displayName: "Intent"},
+	objContacts:  {entity: entityContact, displayName: "Contacts"},
+	objCompanies: {entity: entityCompany, displayName: "Companies"},
+	"scoops":     {entity: entityScoop, displayName: "Scoops"},
+	objNews:      {entity: objNews, displayName: "News"},
+	objIntent:    {entity: objIntent, displayName: "Intent"},
 }
 
 // lookupObjects enumerates the GET /lookup/{fieldName} reference-data endpoints.
@@ -110,64 +113,53 @@ var lookupObjects = []string{ //nolint:gochecknoglobals
 	"states",
 	"sub-unit-types",
 	"tech-categories",
-	"tech-products",
 	"tech-skills",
 	"tech-vendors",
 	"years-of-experience",
 }
 
-// enrichDef describes a ZoomInfo enrich object.
+// enrichDef describes a ZoomInfo enrich object. By default its fields are
+// discovered via the lookup/enrich endpoint (using entity). When sample is set,
+// fields are instead discovered by POSTing the enrich endpoint with seed criteria
+// and sampling the response — used for entities ZoomInfo's lookup/enrich does not
+// describe yet (hashtags, technologies).
 type enrichDef struct {
-	// segments are the path segments under dataAPIPath, ending with "enrich"
-	// (e.g. {"companies","org-chart","enrich"}).
-	segments []string
-	// enrichType is the JSON:API data.type for the enrich request body
-	// (e.g. "ContactEnrich").
-	enrichType string
+	// entity is the singular entity name used by the lookup/enrich field-discovery
+	// endpoint (e.g. "contact", "orgChart", "corporate-hierarchy").
+	entity string
 	// displayName is the human-readable object name.
 	displayName string
+	// sample, when non-nil, overrides lookup/enrich with POST-enrich sampling.
+	sample *enrichSample
 }
 
-// enrichObjects enumerates the POST /{...}/enrich endpoints. Object names are
-// prefixed "enrich-" so they don't collide with the search objects of the same
-// resource (e.g. "contacts" search vs "enrich-contacts"). Paths and data.type
-// strings are verified against https://docs.zoominfo.com/reference.
+// enrichSample describes how to sample an enrich endpoint for field discovery.
+type enrichSample struct {
+	// segments are the path segments under dataAPIPath, ending with "enrich".
+	segments []string
+	// enrichType is the JSON:API data.type for the request body.
+	enrichType string
+	// seed is the request attributes (input criteria) the endpoint requires.
+	seed map[string]any
+}
+
+// enrichObjects enumerates the enrich objects, keyed by object name (prefixed
+// "enrich-" so they don't collide with the search object of the same resource,
+// e.g. "contacts" search vs "enrich-contacts"). Most are discovered via the
+// lookup/enrich endpoint
+// (GET /gtm/data/v1/lookup/enrich?filter[entity]={entity}&filter[fieldType]=output);
+// hashtags and technologies use POST-enrich sampling instead because ZoomInfo
+// returns "enrich output fields are not supported yet" for those entities.
+// Entity values and paths are verified against https://docs.zoominfo.com/reference
+// (note the inconsistent casing: "orgChart" is camelCase, "corporate-hierarchy" is kebab-case).
 var enrichObjects = map[string]enrichDef{ //nolint:gochecknoglobals
-	"enrich-contacts": {
-		segments: []string{objContacts, segEnrich}, enrichType: "ContactEnrich", displayName: "Enrich Contacts",
-	},
-	"enrich-companies": {
-		segments: []string{objCompanies, segEnrich}, enrichType: "CompanyEnrich", displayName: "Enrich Companies",
-	},
-	"enrich-scoops": {
-		segments: []string{"scoops", segEnrich}, enrichType: "ScoopEnrich", displayName: "Enrich Scoops",
-	},
-	"enrich-news": {
-		segments: []string{"news", segEnrich}, enrichType: "NewsEnrich", displayName: "Enrich News",
-	},
-	"enrich-intent": {
-		segments: []string{"intent", segEnrich}, enrichType: "IntentEnrich", displayName: "Enrich Intent",
-	},
-	"enrich-corporate-hierarchy": {
-		segments:    []string{objCompanies, "corporate-hierarchy", segEnrich},
-		enrichType:  "CorporateHierarchyEnrich",
-		displayName: "Enrich Corporate Hierarchy",
-	},
-	"enrich-org-charts": {
-		segments:    []string{objCompanies, "org-chart", segEnrich},
-		enrichType:  "OrgChartEnrich",
-		displayName: "Enrich Org Charts",
-	},
-	"enrich-technologies": {
-		segments:    []string{objCompanies, "technologies", segEnrich},
-		enrichType:  "TechnologyEnrich",
-		displayName: "Enrich Technologies",
-	},
-	"enrich-hashtags": {
-		segments:    []string{objCompanies, "hashtags", segEnrich},
-		enrichType:  "HashtagEnrich",
-		displayName: "Enrich Hashtags",
-	},
+	"enrich-contacts":            {entity: entityContact, displayName: "Enrich Contacts"},
+	"enrich-companies":           {entity: entityCompany, displayName: "Enrich Companies"},
+	"enrich-scoops":              {entity: entityScoop, displayName: "Enrich Scoops"},
+	"enrich-news":                {entity: objNews, displayName: "Enrich News"},
+	"enrich-intent":              {entity: objIntent, displayName: "Enrich Intent"},
+	"enrich-org-charts":          {entity: "orgChart", displayName: "Enrich Org Charts"},
+	"enrich-corporate-hierarchy": {entity: "corporate-hierarchy", displayName: "Enrich Corporate Hierarchy"},
 }
 
 // getDef describes an object fetched via a plain GET against a fixed path.
@@ -200,20 +192,6 @@ var getObjects = map[string]getDef{ //nolint:gochecknoglobals
 	},
 	"products": {
 		segments: []string{copilotAPIPath, "products"}, displayName: "Products",
-	},
-	"customer-settings": {
-		segments: []string{copilotAPIPath, "customer-settings"}, displayName: "Customer Settings",
-	},
-
-	// Lookalikes & recommendations (require filter inputs).
-	"company-lookalikes": {
-		segments: []string{copilotAPIPath, objCompanies, "lookalikes"}, displayName: "Company Lookalikes",
-	},
-	"contact-lookalikes": {
-		segments: []string{copilotAPIPath, objContacts, "lookalikes"}, displayName: "Contact Lookalikes",
-	},
-	"contact-recommendations": {
-		segments: []string{copilotAPIPath, objContacts, "recommendations"}, displayName: "Contact Recommendations",
 	},
 
 	// Agent surface.
@@ -274,29 +252,6 @@ func displayNameFor(objectName string) string {
 	default:
 		return naming.CapitalizeFirstLetterEveryWord(replaceHyphens(objectName))
 	}
-}
-
-// SupportedObjectNames returns every object the connector can describe, sorted.
-func SupportedObjectNames() []string {
-	names := make([]string, 0, len(searchObjects)+len(lookupObjects)+len(enrichObjects)+len(getObjects))
-
-	for name := range searchObjects {
-		names = append(names, name)
-	}
-
-	names = append(names, lookupObjects...)
-
-	for name := range enrichObjects {
-		names = append(names, name)
-	}
-
-	for name := range getObjects {
-		names = append(names, name)
-	}
-
-	slices.Sort(names)
-
-	return names
 }
 
 func replaceHyphens(s string) string {

@@ -14,21 +14,18 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
+// objContacts is defined in objects.go (package-level).
 const (
-	objNews             = "news"
-	objCompanyRankings  = "company-rankings"
-	objAudiences        = "audiences"
-	objCustomerSettings = "customer-settings"
+	objEnrichContacts  = "enrich-contacts"
+	objCompanyRankings = "company-rankings"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen,maintidx
 	t.Parallel()
 
-	contactsResponse := testutils.DataFromFile(t, "contacts.json")
-	newsResponse := testutils.DataFromFile(t, "news.json")
+	contactFieldsResponse := testutils.DataFromFile(t, "lookup-search-contact-output.json")
+	enrichContactFieldsResponse := testutils.DataFromFile(t, "lookup-enrich-contact-output.json")
 	companyRankingsResponse := testutils.DataFromFile(t, "company-rankings.json")
-	audiencesResponse := testutils.DataFromFile(t, "audiences.json")
-	customerSettingsResponse := testutils.DataFromFile(t, "customer-settings.json")
 
 	tests := []testroutines.Metadata{
 		{
@@ -38,22 +35,24 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,maintidx
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:  "Search (POST) and lookup (GET) objects sampled from data[]",
-			Input: []string{objContacts, objNews, objCompanyRankings},
+			Name:  "Search and enrich objects via lookup output fields; lookup object sampled",
+			Input: []string{objContacts, objEnrichContacts, objCompanyRankings},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
 					If: mockcond.And{
-						mockcond.Path("/gtm/data/v1/contacts/search"),
-						mockcond.Body(`{"data":{"type":"ContactSearch","attributes":{"lastUpdatedDateAfter":"1970-01-01"}}}`),
+						mockcond.Path("/gtm/data/v1/lookup/search"),
+						mockcond.QueryParam("filter[entity]", "contact"),
+						mockcond.QueryParam("filter[fieldType]", "output"),
 					},
-					Then: mockserver.Response(http.StatusOK, contactsResponse),
+					Then: mockserver.Response(http.StatusOK, contactFieldsResponse),
 				}, {
 					If: mockcond.And{
-						mockcond.Path("/gtm/data/v1/news/search"),
-						mockcond.Body(`{"data":{"type":"NewsSearch","attributes":{"pageDateMin":"1970-01-01"}}}`),
+						mockcond.Path("/gtm/data/v1/lookup/enrich"),
+						mockcond.QueryParam("filter[entity]", "contact"),
+						mockcond.QueryParam("filter[fieldType]", "output"),
 					},
-					Then: mockserver.Response(http.StatusOK, newsResponse),
+					Then: mockserver.Response(http.StatusOK, enrichContactFieldsResponse),
 				}, {
 					If:   mockcond.Path("/gtm/data/v1/lookup/company-rankings"),
 					Then: mockserver.Response(http.StatusOK, companyRankingsResponse),
@@ -65,22 +64,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,maintidx
 					objContacts: {
 						DisplayName: "Contacts",
 						Fields: map[string]common.FieldMetadata{
-							"id":        {DisplayName: "id", ValueType: common.ValueTypeString},
-							"type":      {DisplayName: "type", ValueType: common.ValueTypeString},
-							"firstName": {DisplayName: "firstName", ValueType: common.ValueTypeString},
-							"lastName":  {DisplayName: "lastName", ValueType: common.ValueTypeString},
-							"jobTitle":  {DisplayName: "jobTitle", ValueType: common.ValueTypeString},
-							"hasEmail":  {DisplayName: "hasEmail", ValueType: common.ValueTypeBoolean},
+							"firstName":       {DisplayName: "firstName", ValueType: common.ValueTypeOther},
+							"lastName":        {DisplayName: "lastName", ValueType: common.ValueTypeOther},
+							"companyId":       {DisplayName: "companyId", ValueType: common.ValueTypeOther},
+							"managementLevel": {DisplayName: "managementLevel", ValueType: common.ValueTypeOther},
 						},
 					},
-					objNews: {
-						DisplayName: "News",
+					objEnrichContacts: {
+						DisplayName: "Enrich Contacts",
 						Fields: map[string]common.FieldMetadata{
-							"id":       {DisplayName: "id", ValueType: common.ValueTypeString},
-							"type":     {DisplayName: "type", ValueType: common.ValueTypeString},
-							"title":    {DisplayName: "title", ValueType: common.ValueTypeString},
-							"url":      {DisplayName: "url", ValueType: common.ValueTypeString},
-							"pageDate": {DisplayName: "pageDate", ValueType: common.ValueTypeString},
+							"id":    {DisplayName: "id", ValueType: common.ValueTypeOther},
+							"email": {DisplayName: "email", ValueType: common.ValueTypeOther},
+							"phone": {DisplayName: "phone", ValueType: common.ValueTypeOther},
 						},
 					},
 					objCompanyRankings: {
@@ -89,43 +84,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,maintidx
 							"id":   {DisplayName: "id", ValueType: common.ValueTypeString},
 							"type": {DisplayName: "type", ValueType: common.ValueTypeString},
 							"name": {DisplayName: "name", ValueType: common.ValueTypeString},
-						},
-					},
-				},
-				Errors: nil,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:  "GET list object and singleton object sampled correctly",
-			Input: []string{objAudiences, objCustomerSettings},
-			Server: mockserver.Switch{
-				Setup: mockserver.ContentJSON(),
-				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/gtm/studio/v1/audiences"),
-					Then: mockserver.Response(http.StatusOK, audiencesResponse),
-				}, {
-					If:   mockcond.Path("/gtm/copilot/v1/customer-settings"),
-					Then: mockserver.Response(http.StatusOK, customerSettingsResponse),
-				}},
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
-			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{
-					objAudiences: {
-						DisplayName: "Audiences",
-						Fields: map[string]common.FieldMetadata{
-							"id":       {DisplayName: "id", ValueType: common.ValueTypeString},
-							"name":     {DisplayName: "name", ValueType: common.ValueTypeString},
-							"rowCount": {DisplayName: "rowCount", ValueType: common.ValueTypeFloat},
-						},
-					},
-					objCustomerSettings: {
-						DisplayName: "Customer Settings",
-						Fields: map[string]common.FieldMetadata{
-							"id":                {DisplayName: "id", ValueType: common.ValueTypeString},
-							"timezone":          {DisplayName: "timezone", ValueType: common.ValueTypeString},
-							"enrichmentEnabled": {DisplayName: "enrichmentEnabled", ValueType: common.ValueTypeBoolean},
 						},
 					},
 				},
