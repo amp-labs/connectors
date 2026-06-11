@@ -41,6 +41,11 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 			continue
 		}
 
+		// Only fetch flows for active users.
+		if active, _ := user.Raw["active"].(bool); !active {
+			continue
+		}
+
 		flows, err := c.fetchFlowsForUser(ctx, userEmail, config)
 		if err != nil {
 			// A user without an engage license (or not added to any flow) errors
