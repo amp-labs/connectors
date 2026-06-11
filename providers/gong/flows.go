@@ -57,6 +57,8 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 		}
 
 		mergeUserFlows(aggregated, flows, user, includeUserAssoc)
+		// Temp solution to only fetch one user's flows to prevent API consumption issues.
+		break
 	}
 
 	if len(aggregated) == 0 {
