@@ -31,6 +31,9 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
+		SubscribeRequirements: &SubscribeRequirements{
+			SubscribeByAPI: new(false),
+		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1724225856/media/wo2jw59mssz2pk1eczur.png",
@@ -43,6 +46,14 @@ func init() {
 		},
 		PostAuthInfoNeeded: true,
 		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					DisplayName: "Signing Secret",
+					DocsURL:     "https://docs.slack.dev/authentication/verifying-requests-from-slack/#validating-a-request",
+					Name:        "signingSecret",
+					Prompt:      "Grab your Slack 'Signing Secret', available in the app admin panel under Basic Info.",
+				},
+			},
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "teamId",

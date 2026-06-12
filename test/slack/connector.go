@@ -2,7 +2,6 @@ package slack
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
@@ -12,21 +11,21 @@ import (
 	"golang.org/x/oauth2"
 )
 
+var signingSecretField = credscanning.Field{
+	Name:      "signingSecret",
+	PathJSON:  "metadata.signingSecret",
+	SuffixENV: "SIGNING_SECRET",
+}
+
 func NewConnector(ctx context.Context) *slack.Connector {
 	filePath := credscanning.LoadPath(providers.Slack)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
-
-	client, err := common.NewOAuthHTTPClient(ctx,
-		common.WithOAuthClient(http.DefaultClient),
-		common.WithOAuthConfig(getConfig(reader)),
-		common.WithOAuthToken(reader.GetOauthToken()),
-	)
-	if err != nil {
-		utils.Fail(err.Error())
-	}
+	reader := utils.MustCreateProvCredJSON(filePath, true, signingSecretField)
 
 	conn, err := slack.NewConnector(common.ConnectorParams{
-		AuthenticatedClient: client,
+		AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
+		Metadata: map[string]string{
+			"signingSecret": reader.Get(signingSecretField),
+		},
 	})
 	if err != nil {
 		utils.Fail("create slack connector", "error: ", err)

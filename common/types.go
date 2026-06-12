@@ -163,6 +163,9 @@ var (
 
 	// ErrSubscriptionEventList is returned by CollapsedSubscriptionEvent.SubscriptionEventList.
 	ErrSubscriptionEventList = errors.New("failed creating []common.SubscriptionEvent")
+
+	// ErrMissingHeader indicates that a required header is missing in HTTP response.
+	ErrMissingHeader = errors.New("missing header")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
