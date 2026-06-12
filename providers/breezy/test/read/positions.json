@@ -1,0 +1,9 @@
+[
+  {
+    "_id": "pos001",
+    "name": "Software Engineer",
+    "type": "fullTime",
+    "state": "published",
+    "department": "Engineering"
+  }
+]

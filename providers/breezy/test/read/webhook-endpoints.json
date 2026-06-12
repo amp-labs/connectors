@@ -1,0 +1,11 @@
+{
+  "data": [
+    {
+      "id": "wh001",
+      "url": "https://example.com/webhook",
+      "description": "Production webhook",
+      "status": "active",
+      "enabled": true
+    }
+  ]
+}
