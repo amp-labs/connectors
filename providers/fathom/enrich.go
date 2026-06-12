@@ -12,17 +12,30 @@ import (
 	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
+const (
+	fieldDefaultSummary = "default_summary"
+	fieldTranscript     = "transcript"
+	fieldRecordingID    = "recording_id"
+)
+
 // Fathom has conservative rate limits for the recordings API.
 // https://developers.fathom.ai/api-overview#heavy-requests-rate-limits
 const maxConcurrentMeetingRecordingFetch = 4
 
+// enrichMeetingsWithRecordings fetches default_summary and/or transcript for each
+// meeting row from the recordings API. OAuth-connected apps cannot use
+// include_summary or include_transcript on the list-meetings endpoint, so these
+// fields are loaded per recording instead.
+//
+// Rows are mutated in place: each row's Fields and Raw maps are updated with the
+// fetched values. Fetches run concurrently, capped at maxConcurrentMeetingRecordingFetch.
 func (c *Connector) enrichMeetingsWithRecordings(
 	ctx context.Context,
 	rows []common.ReadResultRow,
 	fields datautils.StringSet,
 ) error {
-	needsSummary := fields.Has("default_summary")
-	needsTranscript := fields.Has("transcript")
+	needsSummary := fields.Has(fieldDefaultSummary)
+	needsTranscript := fields.Has(fieldTranscript)
 
 	if !needsSummary && !needsTranscript {
 		return nil
@@ -45,8 +58,8 @@ func (c *Connector) enrichMeetingsWithRecordings(
 					return fmt.Errorf("fetching summary for recording %s: %w", recordingID, err)
 				}
 
-				rows[idx].Fields["default_summary"] = summary
-				rows[idx].Raw["default_summary"] = summary
+				rows[idx].Fields[fieldDefaultSummary] = summary
+				rows[idx].Raw[fieldDefaultSummary] = summary
 			}
 
 			if needsTranscript {
@@ -55,8 +68,8 @@ func (c *Connector) enrichMeetingsWithRecordings(
 					return fmt.Errorf("fetching transcript for recording %s: %w", recordingID, err)
 				}
 
-				rows[idx].Fields["transcript"] = transcript
-				rows[idx].Raw["transcript"] = transcript
+				rows[idx].Fields[fieldTranscript] = transcript
+				rows[idx].Raw[fieldTranscript] = transcript
 			}
 
 			return nil
@@ -67,9 +80,9 @@ func (c *Connector) enrichMeetingsWithRecordings(
 }
 
 func recordingIDFromRaw(raw map[string]any) (string, error) {
-	value, ok := raw["recording_id"]
+	value, ok := raw[fieldRecordingID]
 	if !ok || value == nil {
-		return "", fmt.Errorf("%w: recording_id", common.ErrMissingExpectedValues)
+		return "", fmt.Errorf("%w: %s", common.ErrMissingExpectedValues, fieldRecordingID)
 	}
 
 	switch id := value.(type) {
@@ -82,7 +95,7 @@ func recordingIDFromRaw(raw map[string]any) (string, error) {
 	case json.Number:
 		return id.String(), nil
 	default:
-		return "", fmt.Errorf("unexpected recording_id type %T", value)
+		return "", fmt.Errorf("unexpected %s type %T", fieldRecordingID, value)
 	}
 }
 

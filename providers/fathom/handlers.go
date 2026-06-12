@@ -129,8 +129,7 @@ func (c *Connector) parseReadResponse(
 		return nil, err
 	}
 
-	if params.ObjectName == "meetings" &&
-		(params.Fields.Has("default_summary") || params.Fields.Has("transcript")) {
+	if params.ObjectName == "meetings" {
 		if err := c.enrichMeetingsWithRecordings(ctx, result.Data, params.Fields); err != nil {
 			return nil, err
 		}
