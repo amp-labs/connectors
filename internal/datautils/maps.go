@@ -35,6 +35,20 @@ func (m Map[K, V]) ShallowCopy() Map[K, V] {
 	return result
 }
 
+// ShallowSubset creates a shallow subset of the map containing only the specified keys.
+// It copies references to the values for the given keys without cloning nested or
+// referenced objects. Use this when you need a smaller map containing specific entries,
+// not deep copies of the values.
+func (m Map[K, V]) ShallowSubset(keys []K) Map[K, V] {
+	result := make(Map[K, V])
+
+	for _, key := range keys {
+		result[key] = m[key]
+	}
+
+	return result
+}
+
 func init() {
 	gob.Register(Map[string, any]{})
 }

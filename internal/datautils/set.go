@@ -137,3 +137,22 @@ func (s Set[T]) HasExtra(allowed Set[T]) bool {
 
 	return false
 }
+
+// Equals checks if two sets are equal by comparing their contents.
+// Two sets are considered equal if they have the same length and contain
+// exactly the same elements.
+func (s Set[T]) Equals(other Set[T]) bool {
+	// Must be of the same length.
+	if len(s) != len(other) {
+		return false
+	}
+
+	// Every key must be present.
+	for key := range s {
+		if !other.Has(key) {
+			return false
+		}
+	}
+
+	return true
+}

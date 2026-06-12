@@ -88,7 +88,7 @@ var (
 
 	// ErrInvalidPaginationCursor is returned when the provider rejected a pagination cursor
 	// as malformed/unparseable (e.g. HubSpot returning "Cannot deserialize value of type `int`
-	// from String ...")
+	// from String ...").
 	ErrInvalidPaginationCursor error = errors.New("pagination cursor has an invalid format")
 
 	// ErrResultsLimitExceeded is returned when a search query exceeds the provider's
@@ -853,7 +853,7 @@ type SubscriptionRegistrationParams struct {
 type ObjectEvents struct {
 	// ["create", "update", "delete"] our regular CRUD operation events
 	// we translate to provider-specific names contact.creation
-	Events []SubscriptionEventType
+	Events SubscriptionEventTypes
 	// ["email", "fax"] fields to watch for an update subscription
 	WatchFields []string
 	// true if all fields should be watched for an update subscription
@@ -862,6 +862,44 @@ type ObjectEvents struct {
 	// any non CRUD operations with provider specific event names
 	// eg)  ["contact.merged"] for hubspot or ["jira_issue:restored", "jira_issue:archived"] for jira.
 	PassThroughEvents []string
+}
+
+// SubscriptionEventTypes is a list of subscription event types representing the operations to subscribe to.
+type SubscriptionEventTypes []SubscriptionEventType
+
+// Equals checks if two SubscriptionEventTypes lists contain the same event types.
+// The comparison is order-independent.
+func (t SubscriptionEventTypes) Equals(otherTypes SubscriptionEventTypes) bool {
+	if len(t) != len(otherTypes) {
+		return false
+	}
+
+	first := datautils.NewSetFromList(t)
+	second := datautils.NewSetFromList(otherTypes)
+
+	return first.Equals(second)
+}
+
+// Equals checks if two ObjectEvents configurations are identical.
+// All fields must match: WatchFieldsAll, Events, WatchFields, and PassThroughEvents.
+func (o ObjectEvents) Equals(other ObjectEvents) bool {
+	if o.WatchFieldsAll != other.WatchFieldsAll {
+		return false
+	}
+
+	if !o.Events.Equals(other.Events) {
+		return false
+	}
+
+	if !datautils.NewSetFromList(o.WatchFields).Equals(datautils.NewSetFromList(other.WatchFields)) {
+		return false
+	}
+
+	if !datautils.NewSetFromList(o.PassThroughEvents).Equals(datautils.NewSetFromList(other.PassThroughEvents)) {
+		return false
+	}
+
+	return true
 }
 
 type ObjectName string
