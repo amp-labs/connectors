@@ -12,7 +12,7 @@ func init() {
 			Header: &ApiKeyOptsHeader{
 				Name: "X-Api-Key",
 			},
-			DocsURL: "https://docs.fathom.ai",
+			DocsURL: "https://developers.fathom.ai/quickstart",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
