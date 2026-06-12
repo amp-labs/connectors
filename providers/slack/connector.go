@@ -26,20 +26,16 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(providers.Slack, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	authMetadata := NewAuthMetadataVars(params.Metadata)
-
-	connector.teamId = authMetadata.TeamId
-
-	return connector, nil
+	return components.Init(providers.Slack, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	authMetadata := NewAuthMetadataVars(params.Metadata)
+
+	connector := &Connector{
+		Connector: base,
+		teamId:    authMetadata.TeamId,
+	}
 
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(
 		connector.HTTPClient().Client,

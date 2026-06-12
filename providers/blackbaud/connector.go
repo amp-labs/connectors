@@ -29,19 +29,14 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	// Create base connector with provider info
-	conn, err := components.Initialize(providers.Blackbaud, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.SubscriptionKey = params.Metadata["bbApiSubscriptionKey"]
-
-	return conn, nil
+	return components.Init(providers.Blackbaud, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	connector := &Connector{
+		Connector:       base,
+		SubscriptionKey: params.Metadata["bbApiSubscriptionKey"],
+	}
 
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(

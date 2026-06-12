@@ -37,10 +37,10 @@ type Connector struct {
 
 // NewConnector creates a new AccuLynx connector.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.AccuLynx, params, constructor)
+	return components.Init(providers.AccuLynx, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(

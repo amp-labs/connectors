@@ -36,61 +36,59 @@ type Connector struct {
 
 // NewConnector creates a new Gusto connector for the production environment.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.Gusto, params, constructor(params))
+	return components.Init(providers.Gusto, params, constructor)
 }
 
 // NewDemoConnector creates a new Gusto connector for the sandbox/demo environment.
 func NewDemoConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.GustoDemo, params, constructor(params))
+	return components.Init(providers.GustoDemo, params, constructor)
 }
 
-func constructor(params common.ConnectorParams) func(*components.Connector) (*Connector, error) {
-	return func(base *components.Connector) (*Connector, error) {
-		authMetadata := NewAuthMetadataVars(params.Metadata)
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	authMetadata := NewAuthMetadataVars(params.Metadata)
 
-		connector := &Connector{
-			Connector: base,
-			companyId: authMetadata.CompanyId,
-		}
-
-		connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
-			connector.ProviderContext.Module(),
-			metadata.Schemas,
-		)
-
-		connector.Reader = reader.NewHTTPReader(
-			connector.HTTPClient().Client,
-			components.NewEmptyEndpointRegistry(),
-			connector.ProviderContext.Module(),
-			operations.ReadHandlers{
-				BuildRequest:  connector.buildReadRequest,
-				ParseResponse: connector.parseReadResponse,
-				ErrorHandler:  common.InterpretError,
-			},
-		)
-
-		connector.Writer = writer.NewHTTPWriter(
-			connector.HTTPClient().Client,
-			components.NewEmptyEndpointRegistry(),
-			connector.ProviderContext.Module(),
-			operations.WriteHandlers{
-				BuildRequest:  connector.buildWriteRequest,
-				ParseResponse: connector.parseWriteResponse,
-				ErrorHandler:  common.InterpretError,
-			},
-		)
-
-		connector.Deleter = deleter.NewHTTPDeleter(
-			connector.HTTPClient().Client,
-			components.NewEmptyEndpointRegistry(),
-			connector.ProviderContext.Module(),
-			operations.DeleteHandlers{
-				BuildRequest:  connector.buildDeleteRequest,
-				ParseResponse: connector.parseDeleteResponse,
-				ErrorHandler:  common.InterpretError,
-			},
-		)
-
-		return connector, nil
+	connector := &Connector{
+		Connector: base,
+		companyId: authMetadata.CompanyId,
 	}
+
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
+		connector.ProviderContext.Module(),
+		metadata.Schemas,
+	)
+
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	return connector, nil
 }

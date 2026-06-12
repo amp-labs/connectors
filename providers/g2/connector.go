@@ -44,22 +44,16 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(providers.G2, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	connector.productId = params.Metadata["subjectProductId"]
-
-	return connector, nil
+	return components.Init(providers.G2, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
 			ExpectedMetadataKeys: []string{"subjectProductId"},
 		},
+		productId: params.Metadata["subjectProductId"],
 	}
 
 	// Set the metadata provider for the connector

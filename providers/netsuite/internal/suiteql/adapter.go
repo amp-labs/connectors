@@ -20,15 +20,15 @@ type Adapter struct {
 }
 
 func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
-	return components.Initialize(providers.Netsuite, params, constructor)
+	return components.Init(providers.Netsuite, params, constructor)
 }
 
 // NewAdapterForProvider creates an adapter for a given provider (e.g. NetsuiteM2M).
 func NewAdapterForProvider(provider providers.Provider, params common.ConnectorParams) (*Adapter, error) {
-	return components.Initialize(provider, params, constructor)
+	return components.Init(provider, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Adapter, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{
 		Connector: base,
 	}

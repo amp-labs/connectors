@@ -27,11 +27,11 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.Capsule, params, constructor)
+	return components.Init(providers.Capsule, params, constructor)
 }
 
 // nolint:funlen
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 	}

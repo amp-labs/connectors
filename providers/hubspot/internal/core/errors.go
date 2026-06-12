@@ -15,7 +15,7 @@ import (
 const hubspotMigrationStatusCode = 477
 
 // invalidPaginationCursorMessageSubstring is the message HubSpot returns when its
-// search/list APIs reject the supplied pagination cursor as unparseable.
+// search/list APIs reject the supplied pagination cursor as unparsable.
 // This is caused by the pagination cursor being not the appropriate type
 // for the API (because Search and List APIs use different pagination tokens).
 const invalidPaginationCursorMessageSubstring = "Cannot deserialize value of type"
@@ -36,7 +36,7 @@ func InterpretJSONError(res *http.Response, body []byte) error {
 			return common.NewHTTPError(res.StatusCode, body, headers,
 				createError(common.ErrInvalidPaginationCursor, apiError))
 		}
-	// Hubspot sends us a 400 when the search endpoint returns over 10K records,
+		// Hubspot sends us a 400 when the search endpoint returns over 10K records,
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrBadRequest, apiError))
 	case http.StatusUnauthorized:
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrAccessToken, apiError))

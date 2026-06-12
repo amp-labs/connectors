@@ -47,10 +47,10 @@ var _ connectors.WebhookVerifierConnector = &Connector{}
 // NewConnector returns a new Hubspot connector.
 // Hubspot connector still owns CRM functionality. Not every CRM feature is located under `crm` package.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.Hubspot, params, constructor)
+	return components.Init(providers.Hubspot, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 	}

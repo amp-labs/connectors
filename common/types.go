@@ -88,7 +88,7 @@ var (
 
 	// ErrInvalidPaginationCursor is returned when the provider rejected a pagination cursor
 	// as malformed/unparseable (e.g. HubSpot returning "Cannot deserialize value of type `int`
-	// from String ...")
+	// from String ...").
 	ErrInvalidPaginationCursor error = errors.New("pagination cursor has an invalid format")
 
 	// ErrResultsLimitExceeded is returned when a search query exceeds the provider's

@@ -33,8 +33,8 @@ type Connector struct {
 
 // NewConnector creates a new NetSuite M2M connector.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(providers.NetsuiteM2M, params,
-		func(base *components.Connector) (*Connector, error) {
+	connector, err := components.Init(providers.NetsuiteM2M, params,
+		func(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
 			return &Connector{Connector: base}, nil
 		},
 	)

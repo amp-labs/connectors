@@ -29,7 +29,7 @@ type Connector struct {
 
 // NewConnector.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	conn, err := components.Initialize(providers.Xero, params, constructor)
+	conn, err := components.Init(providers.Xero, params, constructor)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return conn, nil
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(

@@ -66,19 +66,19 @@ type Connector struct {
 //   - Figure out permissions needed for write.
 //   - Pagination.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(providers.Snowflake, params, constructor)
+	connector, err := components.Init(providers.Snowflake, params, constructor)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize connector: %w", err)
 	}
 
-	if err := connector.setup(context.Background(), params); err != nil {
+	if err = connector.setup(context.Background(), params); err != nil {
 		return nil, fmt.Errorf("failed to setup connector: %w", err)
 	}
 
 	return connector, nil
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
 	connector.SchemaProvider = schema.NewDelegateSchemaProvider(connector.listObjectMetadata)

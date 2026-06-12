@@ -44,21 +44,17 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	conn, err := components.Initialize(providers.Calendly, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	authMetadata := NewAuthMetadataVars(params.Metadata)
-
-	conn.orgURI = authMetadata.OrganizationURI
-	conn.userURI = authMetadata.UserURI
-
-	return conn, nil
+	return components.Init(providers.Calendly, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	authMetadata := NewAuthMetadataVars(params.Metadata)
+
+	connector := &Connector{
+		Connector: base,
+		orgURI:    authMetadata.OrganizationURI,
+		userURI:   authMetadata.UserURI,
+	}
 
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), schemas)

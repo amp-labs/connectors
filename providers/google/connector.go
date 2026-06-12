@@ -46,8 +46,8 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 // provider name. This allows twin providers like GoogleWorkspaceDelegation to reuse the
 // same connector implementation with a different auth configuration.
 func NewConnectorForProvider(provider providers.Provider, params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(provider, params,
-		func(base *components.Connector) (*Connector, error) {
+	connector, err := components.Init(provider, params,
+		func(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
 			return &Connector{Connector: base}, nil
 		},
 	)

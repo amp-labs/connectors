@@ -33,29 +33,21 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	// Create base connector with provider info
-	conn, err := components.Initialize(providers.SnapchatAds, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.Client = &common.JSONHTTPClient{
-		HTTPClient: &common.HTTPClient{
-			Client: params.AuthenticatedClient,
-		},
-	}
-
-	authMetadata := NewAuthMetadataVars(params.Metadata)
-
-	conn.organizationId = authMetadata.OrganizationId
-
-	return conn, nil
+	return components.Init(providers.SnapchatAds, params, constructor)
 }
 
 // nolint:funlen
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	authMetadata := NewAuthMetadataVars(params.Metadata)
+
 	connector := &Connector{
 		Connector: base,
+		Client: &common.JSONHTTPClient{
+			HTTPClient: &common.HTTPClient{
+				Client: params.AuthenticatedClient,
+			},
+		},
+		organizationId: authMetadata.OrganizationId,
 	}
 
 	// Set the metadata provider for the connector
