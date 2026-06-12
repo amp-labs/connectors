@@ -54,7 +54,7 @@ func main() {
 	// Deploy the apex trigger.
 	fmt.Println("====== Deploying Apex Trigger ======")
 
-	zipData, err := salesforce.ConstructApexTriggerZipForCDC(salesforce.ApexTriggerParams{
+	zipData, err := salesforce.ConstructApexTriggerZipForCDC(ctx, salesforce.ApexTriggerParams{
 		ObjectName:  objectName,
 		TriggerName: triggerName,
 		WatchFields: []string{"Email", "Phone"},

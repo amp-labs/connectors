@@ -3,12 +3,14 @@ package metadata
 import (
 	"archive/zip"
 	"bytes"
+	"context"
 	"encoding/xml"
 	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
@@ -114,7 +116,7 @@ func ValidateApexTriggerParams(params ApexTriggerParams, indicatorFieldName stri
 // The variant (CDC vs filtered-read) is selected from params.IndicatorField.ValueType:
 //   - common.FieldTypeBoolean    → CDC (assign rec.<field> = fieldChanged)
 //   - common.FieldTypeDateTime   → filtered-read (if (fieldChanged) rec.<field> = System.now())
-func ConstructApexTrigger(params ApexTriggerParams) ([]byte, error) {
+func ConstructApexTrigger(ctx context.Context, params ApexTriggerParams) ([]byte, error) {
 	handlerClassName, err := GenerateApexHandlerClassName(params.TriggerName)
 	if err != nil {
 		return nil, err
@@ -138,6 +140,14 @@ func ConstructApexTrigger(params ApexTriggerParams) ([]byte, error) {
 
 	testClassCode := generateTestClassCode(testClassName, handlerClassName, params)
 	testClassMetaXML := generateClassMetaXML()
+
+	logging.Logger(ctx).Info("constructed apex trigger code",
+		"object", params.ObjectName,
+		"trigger", params.TriggerName,
+		"triggerCode", triggerCode,
+		"handlerCode", handlerCode,
+		"testClassCode", testClassCode,
+	)
 
 	return createTriggerDeployZip(
 		params.TriggerName, triggerCode, triggerMetaXML,

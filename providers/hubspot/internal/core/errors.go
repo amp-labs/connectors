@@ -15,7 +15,7 @@ import (
 const hubspotMigrationStatusCode = 477
 
 // invalidPaginationCursorMessageSubstring is the message HubSpot returns when its
-// search/list APIs reject the supplied pagination cursor as unparseable.
+// search/list APIs reject the supplied pagination cursor as unparsable.
 // This is caused by the pagination cursor being not the appropriate type
 // for the API (because Search and List APIs use different pagination tokens).
 const invalidPaginationCursorMessageSubstring = "Cannot deserialize value of type"

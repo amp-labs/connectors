@@ -114,7 +114,7 @@ func deleteCheckboxField(ctx context.Context, conn *salesforce.Connector) {
 }
 
 func deployTrigger(ctx context.Context, conn *salesforce.Connector, triggerName string) {
-	zipData, err := salesforce.ConstructApexTriggerZipForCDC(salesforce.ApexTriggerParams{
+	zipData, err := salesforce.ConstructApexTriggerZipForCDC(ctx, salesforce.ApexTriggerParams{
 		ObjectName:  objectName,
 		TriggerName: triggerName,
 		IndicatorField: common.FieldDefinition{

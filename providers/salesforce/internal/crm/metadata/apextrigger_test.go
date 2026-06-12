@@ -296,7 +296,7 @@ func TestConstructApexTriggerUnsupportedIndicatorType(t *testing.T) {
 		WatchFields: []string{"Email"},
 	}
 
-	if _, err := ConstructApexTrigger(params); !errors.Is(err, errUnsupportedIndicatorTy) {
+	if _, err := ConstructApexTrigger(t.Context(), params); !errors.Is(err, errUnsupportedIndicatorTy) {
 		t.Errorf("expected errUnsupportedIndicatorTy, got %v", err)
 	}
 }
@@ -314,7 +314,7 @@ func TestConstructApexTriggerZipFileList(t *testing.T) {
 		WatchFields: []string{"Email"},
 	}
 
-	zipData, err := ConstructApexTrigger(params)
+	zipData, err := ConstructApexTrigger(t.Context(), params)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -343,7 +343,7 @@ func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
 		WatchFields: []string{"Email", "Phone"},
 	}
 
-	zipData, err := ConstructApexTrigger(params)
+	zipData, err := ConstructApexTrigger(t.Context(), params)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -429,7 +429,7 @@ func TestConstructApexTriggerForFilteredReadContent(t *testing.T) {
 		WatchFields: []string{"Email", "Phone"},
 	}
 
-	zipData, err := ConstructApexTrigger(params)
+	zipData, err := ConstructApexTrigger(t.Context(), params)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -485,7 +485,7 @@ func TestConstructApexTriggerHandlerSingleField(t *testing.T) {
 		WatchFields: []string{"LastName"},
 	}
 
-	zipData, err := ConstructApexTrigger(params)
+	zipData, err := ConstructApexTrigger(t.Context(), params)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -520,7 +520,7 @@ func TestConstructApexTriggerBundlesTestClass(t *testing.T) { //nolint:funlen
 		WatchFields: []string{"Email", "Phone"},
 	}
 
-	zipData, err := ConstructApexTrigger(params)
+	zipData, err := ConstructApexTrigger(t.Context(), params)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
