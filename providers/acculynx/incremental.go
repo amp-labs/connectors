@@ -116,15 +116,10 @@ func applyJobsIncrementalFilter(url *urlbuilder.URL, params common.ReadParams) {
 		return
 	}
 
+	since, until := pairedDateWindow(params.Since, params.Until)
 	url.WithQueryParam("dateFilterType", "ModifiedDate")
-
-	if !params.Since.IsZero() {
-		url.WithQueryParam("startDate", params.Since.Format(time.DateOnly))
-	}
-
-	if !params.Until.IsZero() {
-		url.WithQueryParam("endDate", params.Until.Format(time.DateOnly))
-	}
+	url.WithQueryParam("startDate", since.Format(time.DateOnly))
+	url.WithQueryParam("endDate", until.Format(time.DateOnly))
 }
 
 // applyHistoryDateWindow pushes Since/Until into AccuLynx's server-side
@@ -143,11 +138,28 @@ func applyHistoryDateWindow(url *urlbuilder.URL, params common.ReadParams) {
 		return
 	}
 
-	if !params.Since.IsZero() {
-		url.WithQueryParam("startDate", params.Since.Format(time.DateOnly))
+	since, until := pairedDateWindow(params.Since, params.Until)
+	url.WithQueryParam("startDate", since.Format(time.DateOnly))
+	url.WithQueryParam("endDate", until.Format(time.DateOnly))
+}
+
+// pairedDateWindow normalizes a Since/Until pair so both bounds are always
+// present. AccuLynx returns HTTP 400 ("Start Date and End Date do not have
+// the same format") on /jobs and /jobs/{id}/history when only one of
+// startDate / endDate is sent. Missing bounds default to:
+//   - Until → time.Now().UTC()
+//   - Since → Unix epoch (predates AccuLynx; safely covers all history)
+//
+// The connector-side time filter still enforces precise bounds on the
+// response, so widening upstream when a bound is missing is safe.
+func pairedDateWindow(since, until time.Time) (time.Time, time.Time) {
+	if until.IsZero() {
+		until = time.Now().UTC()
 	}
 
-	if !params.Until.IsZero() {
-		url.WithQueryParam("endDate", params.Until.Format(time.DateOnly))
+	if since.IsZero() {
+		since = time.Unix(0, 0).UTC()
 	}
+
+	return since, until
 }
