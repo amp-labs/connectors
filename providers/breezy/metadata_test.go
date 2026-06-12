@@ -15,13 +15,6 @@ func TestListObjectMetadata(t *testing.T) {
 
 	tests := []testroutines.Metadata{
 		{
-			Name:         "Empty objects returns missing objects error",
-			Input:        nil,
-			Server:       mockserver.Dummy(),
-			Expected:     nil,
-			ExpectedErrs: []error{common.ErrMissingObjects},
-		},
-		{
 			Name:       "Successful metadata for recruiting objects",
 			Input:      []string{"companies", "positions", "candidates", "webhook_endpoints"},
 			Server:     mockserver.Dummy(),
@@ -92,6 +85,13 @@ func TestListObjectMetadata(t *testing.T) {
 				Errors: map[string]error{},
 			},
 			ExpectedErrs: nil,
+		},
+		{
+			Name:         "Empty objects returns missing objects error",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			Expected:     nil,
+			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
 			Name:       "Unsupported object returns object not supported error",
