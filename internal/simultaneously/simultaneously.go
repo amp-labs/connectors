@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"runtime/debug"
 	"sync"
-	"time"
 
 	"github.com/amp-labs/connectors/common/contexts"
 )
@@ -51,53 +50,6 @@ func DoCtx(ctx context.Context, maxConcurrent int, callback ...Job) error {
 	errs := exec.collectResults(len(callback))
 
 	return combineErrors(errs)
-}
-
-// DoCtxWithWaitInterval runs the given functions in parallel, in batches of maxConcurrent,
-// waiting waitIntervalMS (milliseconds) between each batch.
-// If waitIntervalMS is less than 1, this behaves identically to DoCtx.
-func DoCtxWithWaitInterval(
-	ctx context.Context, maxConcurrent int, waitIntervalMS int, callback ...Job,
-) error {
-	if waitIntervalMS < 1 {
-		return DoCtx(ctx, maxConcurrent, callback...)
-	}
-
-	if maxConcurrent < 1 {
-		maxConcurrent = len(callback)
-	}
-
-	for start := 0; start < len(callback); start += maxConcurrent {
-		end := start + maxConcurrent
-		if end > len(callback) {
-			end = len(callback)
-		}
-
-		batch := callback[start:end]
-		if err := DoCtx(ctx, len(batch), batch...); err != nil {
-			return err
-		}
-
-		if end < len(callback) {
-			if err := waitBetweenBatches(ctx, waitIntervalMS); err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-func waitBetweenBatches(ctx context.Context, waitIntervalMS int) error {
-	timer := time.NewTimer(time.Duration(waitIntervalMS) * time.Millisecond)
-	defer timer.Stop()
-
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-	case <-timer.C:
-		return nil
-	}
 }
 
 // executor manages the concurrent execution of callback functions.
