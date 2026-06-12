@@ -103,9 +103,7 @@ var searchObjects = map[string]searchDef{ //nolint:gochecknoglobals
 		untilField:  "pageDateMax",
 	},
 	// NOTE: the "intent" search object is intentionally NOT registered. Intent
-	// search requires a "topics" criterion that this connector cannot supply
-	// (reads filter by time only, via Since/Until), so it is neither readable nor
-	// describable here. (enrich-intent and the intent-topics lookup are unaffected.)
+	// search requires a "topics" criterion.
 }
 
 // lookupObjects enumerates the GET /lookup/{fieldName} reference-data endpoints.
@@ -183,20 +181,10 @@ type getDef struct {
 	paginated bool
 }
 
-// Incremental note: among GET objects, only audience-folders documents an
-// updated-since filter (filter[updatedAfter]). It is intentionally NOT wired up
-// because it is broken server-side: ZoomInfo reflects the timestamp into its own
-// links.first pagination URL formatted as a locale string ("1/1/20, 12:00 AM"),
-// whose space is an illegal URL character, so every such request 400s (verified
-// live 2026-06-11). Revisit if ZoomInfo fixes it. All other GET objects expose no
-// date filter at all.
-
-// getObjects enumerates GET endpoints that return a JSON:API resource (either a
-// data[] list or a singleton data{}). Several of these are entitlement-gated and
+// getObjects enumerates GET endpoints that return a JSON:API resource
+// data[] list. Several of these are entitlement-gated and
 // will return 403 unless the account has the relevant product; the paths are
-// verified against https://docs.zoominfo.com/reference. Lookalike/recommendation
-// endpoints additionally require filter inputs, so sampling them without criteria
-// surfaces a descriptive 4xx recorded per-object.
+// verified against https://docs.zoominfo.com/reference.
 var getObjects = map[string]getDef{ //nolint:gochecknoglobals
 	"usage": {segments: []string{dataAPIPath, "users", "usage"}, displayName: "Usage"},
 
