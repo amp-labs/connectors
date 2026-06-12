@@ -67,20 +67,45 @@ type searchDef struct {
 	// entity is the singular entity name used by the lookup/search field-discovery
 	// endpoint (e.g. "contact" for the "contacts" object).
 	entity string
+	// searchType is the JSON:API data.type sent in the POST /{resource}/search
+	// request body used for reads (e.g. "ContactSearch").
+	searchType string
 	// displayName is the human-readable object name.
 	displayName string
+	sinceField  string
+	untilField  string
 }
 
 // searchObjects enumerates the search objects, keyed by the resource path segment
-// used for reads. Their metadata is discovered via the lookup/search endpoint
-// (GET /gtm/data/v1/lookup/search?filter[entity]={entity}&filter[fieldType]=output)
-// rather than by sampling live records — see buildSearchMetadataRequest.
+// used for reads (POST /gtm/data/v1/{resource}/search). Metadata is discovered via
+// the lookup/search endpoint (see buildSearchMetadataRequest); reads POST the
+// search endpoint with the caller's criteria.
 var searchObjects = map[string]searchDef{ //nolint:gochecknoglobals
-	objContacts:  {entity: entityContact, displayName: "Contacts"},
-	objCompanies: {entity: entityCompany, displayName: "Companies"},
-	"scoops":     {entity: entityScoop, displayName: "Scoops"},
-	objNews:      {entity: objNews, displayName: "News"},
-	objIntent:    {entity: objIntent, displayName: "Intent"},
+	objContacts: {
+		entity:      entityContact,
+		searchType:  "ContactSearch",
+		displayName: "Contacts",
+		sinceField:  "lastUpdatedDateAfter",
+	},
+	objCompanies: {entity: entityCompany, searchType: "CompanySearch", displayName: "Companies"},
+	"scoops": {
+		entity:      entityScoop,
+		searchType:  "ScoopSearch",
+		displayName: "Scoops",
+		sinceField:  "publishedStartDate",
+		untilField:  "publishedEndDate",
+	},
+	objNews: {
+		entity:      objNews,
+		searchType:  "NewsSearch",
+		displayName: "News",
+		sinceField:  "pageDateMin",
+		untilField:  "pageDateMax",
+	},
+	// NOTE: the "intent" search object is intentionally NOT registered. Intent
+	// search requires a "topics" criterion that this connector cannot supply
+	// (reads filter by time only, via Since/Until), so it is neither readable nor
+	// describable here. (enrich-intent and the intent-topics lookup are unaffected.)
 }
 
 // lookupObjects enumerates the GET /lookup/{fieldName} reference-data endpoints.
@@ -118,40 +143,23 @@ var lookupObjects = []string{ //nolint:gochecknoglobals
 	"years-of-experience",
 }
 
-// enrichDef describes a ZoomInfo enrich object. By default its fields are
-// discovered via the lookup/enrich endpoint (using entity). When sample is set,
-// fields are instead discovered by POSTing the enrich endpoint with seed criteria
-// and sampling the response — used for entities ZoomInfo's lookup/enrich does not
-// describe yet (hashtags, technologies).
+// enrichDef describes a ZoomInfo enrich object whose fields are discovered via the
+// lookup/enrich endpoint (using entity).
 type enrichDef struct {
 	// entity is the singular entity name used by the lookup/enrich field-discovery
 	// endpoint (e.g. "contact", "orgChart", "corporate-hierarchy").
 	entity string
 	// displayName is the human-readable object name.
 	displayName string
-	// sample, when non-nil, overrides lookup/enrich with POST-enrich sampling.
-	sample *enrichSample
-}
-
-// enrichSample describes how to sample an enrich endpoint for field discovery.
-type enrichSample struct {
-	// segments are the path segments under dataAPIPath, ending with "enrich".
-	segments []string
-	// enrichType is the JSON:API data.type for the request body.
-	enrichType string
-	// seed is the request attributes (input criteria) the endpoint requires.
-	seed map[string]any
 }
 
 // enrichObjects enumerates the enrich objects, keyed by object name (prefixed
 // "enrich-" so they don't collide with the search object of the same resource,
-// e.g. "contacts" search vs "enrich-contacts"). Most are discovered via the
+// e.g. "contacts" search vs "enrich-contacts"). Each is discovered via the
 // lookup/enrich endpoint
-// (GET /gtm/data/v1/lookup/enrich?filter[entity]={entity}&filter[fieldType]=output);
-// hashtags and technologies use POST-enrich sampling instead because ZoomInfo
-// returns "enrich output fields are not supported yet" for those entities.
-// Entity values and paths are verified against https://docs.zoominfo.com/reference
-// (note the inconsistent casing: "orgChart" is camelCase, "corporate-hierarchy" is kebab-case).
+// (GET /gtm/data/v1/lookup/enrich?filter[entity]={entity}&filter[fieldType]=output).
+// Entity values are verified against https://docs.zoominfo.com/reference (note the
+// inconsistent casing: "orgChart" is camelCase, "corporate-hierarchy" is kebab-case).
 var enrichObjects = map[string]enrichDef{ //nolint:gochecknoglobals
 	"enrich-contacts":            {entity: entityContact, displayName: "Enrich Contacts"},
 	"enrich-companies":           {entity: entityCompany, displayName: "Enrich Companies"},
@@ -169,7 +177,19 @@ type getDef struct {
 	segments []string
 	// displayName is the human-readable object name.
 	displayName string
+	// paginated reports whether the endpoint accepts page[number]/page[size]
+	// (verified against the docs). Sending page params to an endpoint that does
+	// not support them risks a 4xx, so this is opt-in.
+	paginated bool
 }
+
+// Incremental note: among GET objects, only audience-folders documents an
+// updated-since filter (filter[updatedAfter]). It is intentionally NOT wired up
+// because it is broken server-side: ZoomInfo reflects the timestamp into its own
+// links.first pagination URL formatted as a locale string ("1/1/20, 12:00 AM"),
+// whose space is an illegal URL character, so every such request 400s (verified
+// live 2026-06-11). Revisit if ZoomInfo fixes it. All other GET objects expose no
+// date filter at all.
 
 // getObjects enumerates GET endpoints that return a JSON:API resource (either a
 // data[] list or a singleton data{}). Several of these are entitlement-gated and
@@ -195,12 +215,12 @@ var getObjects = map[string]getDef{ //nolint:gochecknoglobals
 	},
 
 	// Agent surface.
-	"agent-teams": {segments: []string{agentAPIPath, "agent-teams"}, displayName: "Agent Teams"},
-	"pulses":      {segments: []string{agentAPIPath, "pulses"}, displayName: "Pulses"},
+	"agent-teams": {segments: []string{agentAPIPath, "agent-teams"}, displayName: "Agent Teams", paginated: true},
+	"pulses":      {segments: []string{agentAPIPath, "pulses"}, displayName: "Pulses", paginated: true},
 
 	// GTM Studio audiences.
-	"audiences":        {segments: []string{studioAPIPath, "audiences"}, displayName: "Audiences"},
-	"audience-folders": {segments: []string{studioAPIPath, "folders"}, displayName: "Audience Folders"},
+	"audiences":        {segments: []string{studioAPIPath, "audiences"}, displayName: "Audiences", paginated: true},
+	"audience-folders": {segments: []string{studioAPIPath, "folders"}, displayName: "Audience Folders", paginated: true},
 }
 
 // kindOf returns the objectKind for the given object name, or kindUnknown if the

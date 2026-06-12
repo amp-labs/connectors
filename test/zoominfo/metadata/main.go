@@ -14,7 +14,7 @@ func main() {
 
 	conn := connTest.GetZoomInfoConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"products", "contacts", "companies", "news", "intent"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"products", "contacts", "companies", "news", "scoops"})
 	if err != nil {
 		log.Fatal(err)
 	}
