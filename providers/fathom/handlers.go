@@ -118,13 +118,25 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	return common.ParseResult(
+	result, err := common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath("items"),
 		nextRecordsURL(),
 		common.GetMarshaledData,
 		params.Fields,
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.ObjectName == "meetings" &&
+		(params.Fields.Has("default_summary") || params.Fields.Has("transcript")) {
+		if err := c.enrichMeetingsWithRecordings(ctx, result.Data, params.Fields); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, nil
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
