@@ -161,7 +161,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 		},
 		{
 			Name:  "Lookup object reads a single unpaginated page",
-			Input: common.ReadParams{ObjectName: "industries", Fields: connectors.Fields("name")},
+			Input: common.ReadParams{ObjectName: objIndustries, Fields: connectors.Fields("name")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.Path("/gtm/data/v1/lookup/industries"),
