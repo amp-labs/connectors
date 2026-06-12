@@ -15,7 +15,7 @@ type Connector struct {
 
 	components.SchemaProvider
 
-	// CompanyID scopes company-level API paths (e.g. webhook endpoints, position writes).
+	// CompanyID scopes company-level API paths (e.g. positions, webhook endpoints).
 	CompanyID string
 }
 

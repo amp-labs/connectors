@@ -39,9 +39,9 @@
         },
         "positions": {
           "displayName": "Positions",
-          "path": "/positions",
+          "path": "/company/{company_id}/positions",
           "responseKey": "",
-          "docs": "https://developer.breezy.hr/reference/company-positions-add",
+          "docs": "https://developer.breezy.hr/reference/company-positions",
           "fields": {
             "_id": {
               "displayName": "Position Id",
@@ -97,79 +97,6 @@
               "displayName": "Tags",
               "valueType": "other",
               "providerType": "array"
-            },
-            "creation_date": {
-              "displayName": "Creation Date",
-              "valueType": "datetime",
-              "providerType": "datetime"
-            },
-            "updated_date": {
-              "displayName": "Updated Date",
-              "valueType": "datetime",
-              "providerType": "datetime"
-            }
-          }
-        },
-        "candidates": {
-          "displayName": "Candidates",
-          "path": "/candidates",
-          "responseKey": "",
-          "docs": "https://developer.breezy.hr/reference/model-candidate",
-          "fields": {
-            "_id": {
-              "displayName": "Candidate Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "meta_id": {
-              "displayName": "Meta Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "name": {
-              "displayName": "Name",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "email_address": {
-              "displayName": "Email Address",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "phone_number": {
-              "displayName": "Phone Number",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "headline": {
-              "displayName": "Headline",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "summary": {
-              "displayName": "Summary",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "origin": {
-              "displayName": "Origin",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "tags": {
-              "displayName": "Tags",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "stage": {
-              "displayName": "Stage",
-              "valueType": "other",
-              "providerType": "object"
-            },
-            "source": {
-              "displayName": "Source",
-              "valueType": "other",
-              "providerType": "object"
             },
             "creation_date": {
               "displayName": "Creation Date",
