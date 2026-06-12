@@ -95,7 +95,7 @@ func recordingIDFromRaw(raw map[string]any) (string, error) {
 	case json.Number:
 		return id.String(), nil
 	default:
-		return "", fmt.Errorf("unexpected %s type %T", fieldRecordingID, value)
+		return "", fmt.Errorf("%w: %T", ErrUnexpectedRecordingIDType, value)
 	}
 }
 
@@ -118,17 +118,17 @@ func (c *Connector) fetchRecordingSummary(ctx context.Context, recordingID strin
 	}
 
 	if body == nil {
-		return nil, nil
+		return map[string]any{}, nil
 	}
 
 	summary, ok := (*body)["summary"]
 	if !ok || summary == nil {
-		return nil, nil
+		return map[string]any{}, nil
 	}
 
 	summaryMap, ok := summary.(map[string]any)
 	if !ok {
-		return nil, fmt.Errorf("unexpected summary type %T", summary)
+		return nil, fmt.Errorf("%w: %T", ErrUnexpectedSummaryType, summary)
 	}
 
 	return summaryMap, nil
@@ -137,7 +137,9 @@ func (c *Connector) fetchRecordingSummary(ctx context.Context, recordingID strin
 // fetchRecordingTranscript fetches the transcript for a given recording ID.
 // https://developers.fathom.ai/api-reference/recordings/get-transcript
 func (c *Connector) fetchRecordingTranscript(ctx context.Context, recordingID string) (any, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, restAPIPrefix, apiVersion, "recordings", recordingID, "transcript")
+	url, err := urlbuilder.New(
+		c.ProviderInfo().BaseURL, restAPIPrefix, apiVersion, "recordings", recordingID, "transcript",
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -153,12 +155,12 @@ func (c *Connector) fetchRecordingTranscript(ctx context.Context, recordingID st
 	}
 
 	if body == nil {
-		return nil, nil
+		return []any{}, nil
 	}
 
 	transcript, ok := (*body)["transcript"]
-	if !ok {
-		return nil, nil
+	if !ok || transcript == nil {
+		return []any{}, nil
 	}
 
 	return transcript, nil
