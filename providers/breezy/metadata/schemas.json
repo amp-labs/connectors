@@ -6,7 +6,7 @@
       "objects": {
         "companies": {
           "displayName": "Companies",
-          "path": "/v3/companies",
+          "path": "/companies",
           "responseKey": "",
           "docs": "https://developer.breezy.hr/reference/companies",
           "fields": {
@@ -39,7 +39,7 @@
         },
         "positions": {
           "displayName": "Positions",
-          "path": "/v3/positions",
+          "path": "/positions",
           "responseKey": "",
           "docs": "https://developer.breezy.hr/reference/company-positions-add",
           "fields": {
@@ -112,7 +112,7 @@
         },
         "candidates": {
           "displayName": "Candidates",
-          "path": "/v3/candidates",
+          "path": "/candidates",
           "responseKey": "",
           "docs": "https://developer.breezy.hr/reference/model-candidate",
           "fields": {
@@ -185,7 +185,7 @@
         },
         "webhook_endpoints": {
           "displayName": "Webhook Endpoints",
-          "path": "/v3/company/{company_id}/webhook_endpoints",
+          "path": "/company/{company_id}/webhook_endpoints",
           "responseKey": "data",
           "docs": "https://developer.breezy.hr/reference/company-webhook-endpoints",
           "fields": {
