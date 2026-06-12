@@ -19,8 +19,11 @@ const (
 )
 
 // Fathom has conservative rate limits for the recordings API.
-// https://developers.fathom.ai/api-overview#heavy-requests-rate-limits
-const maxConcurrentMeetingRecordingFetch = 4
+// According to https://developers.fathom.ai/api-overview#heavy-requests-rate-limits
+// "During periods of elevated activity this limit may be adjusted down to 5 every 60 seconds."
+// Each job is potentially 2 API calls (transcript and summary),
+// so we cap concurrency at 2 (4 API calls) to avoid hitting the rate limit.
+const maxConcurrentMeetingRecordingFetch = 2
 
 // enrichMeetingsWithRecordings fetches default_summary and/or transcript for each
 // meeting row from the recordings API. OAuth-connected apps cannot use
@@ -76,7 +79,7 @@ func (c *Connector) enrichMeetingsWithRecordings(
 		}
 	}
 
-	return simultaneously.DoCtx(ctx, maxConcurrentMeetingRecordingFetch, jobs...)
+	return simultaneously.DoCtxWithWaitInterval(ctx, maxConcurrentMeetingRecordingFetch, 1000, jobs...)
 }
 
 func recordingIDFromRaw(raw map[string]any) (string, error) {
