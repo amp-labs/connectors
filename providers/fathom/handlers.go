@@ -15,9 +15,8 @@ import (
 )
 
 const (
-	restAPIPrefix  = "external"
-	apiVersion     = "v1"
-	objectMeetings = "meetings"
+	restAPIPrefix = "external"
+	apiVersion    = "v1"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -26,7 +25,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
-	if objectName == objectMeetings {
+	if objectName == "meetings" {
 		// This will add query parameters to include additional data fields
 		// in the meetings API response.
 		addMeetingsQueryParams(url)
@@ -92,7 +91,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	if params.ObjectName == objectMeetings {
+	if params.ObjectName == "meetings" {
 		// This will add query parameters to include additional data fields
 		// in the meetings API response.
 		addMeetingsQueryParams(url)
@@ -119,24 +118,13 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	result, err := common.ParseResult(
+	return common.ParseResult(
 		response,
 		common.ExtractRecordsFromPath("items"),
 		nextRecordsURL(),
 		common.GetMarshaledData,
 		params.Fields,
 	)
-	if err != nil {
-		return nil, err
-	}
-
-	if params.ObjectName == objectMeetings {
-		if err := c.enrichMeetingsWithRecordings(ctx, result.Data, params.Fields); err != nil {
-			return nil, err
-		}
-	}
-
-	return result, nil
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
