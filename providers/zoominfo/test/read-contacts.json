@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "id": "1",
+      "type": "Contact",
+      "attributes": {
+        "firstName": "Ada",
+        "lastName": "Lovelace",
+        "jobTitle": "Engineer"
+      }
+    },
+    {
+      "id": "2",
+      "type": "Contact",
+      "attributes": {
+        "firstName": "Alan",
+        "lastName": "Turing",
+        "jobTitle": "Scientist"
+      }
+    }
+  ],
+  "meta": {
+    "totalResults": 250,
+    "page": {
+      "number": 2,
+      "total": 3
+    }
+  }
+}
