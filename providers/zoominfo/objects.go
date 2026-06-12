@@ -29,6 +29,26 @@ const (
 	entityScoop   = "scoop"
 )
 
+// Object names shared between the read (getObjects) and write (writeObjects)
+// registries, plus their JSON:API resource types, hoisted to constants to avoid
+// repeated string literals.
+const (
+	objCustomerBuyerPersonas = "customer-buyer-personas"
+	objCustomerCompetitors   = "customer-competitors"
+	objIdealCompanyProfile   = "ideal-company-profile"
+	objProducts              = "products"
+	objAudiences             = "audiences"
+	objAudienceFolders       = "audience-folders"
+	objIndustries            = "industries"
+
+	typeAudience             = "Audience"
+	typeCustomerBuyerPersona = "CustomerBuyerPersona"
+
+	// attributesField is the JSON:API key whose contents are flattened to the
+	// record's top level.
+	attributesField = "attributes"
+)
+
 // Constants for the lookup/{search,enrich} field-discovery endpoints.
 const (
 	segLookup = "lookup"
@@ -120,7 +140,7 @@ var lookupObjects = []string{ //nolint:gochecknoglobals
 	"departments",
 	"employee-count",
 	"hashtags",
-	"industries",
+	objIndustries,
 	"intent-topics",
 	"job-functions",
 	"job-titles",
@@ -189,17 +209,17 @@ var getObjects = map[string]getDef{ //nolint:gochecknoglobals
 	"usage": {segments: []string{dataAPIPath, "users", "usage"}, displayName: "Usage"},
 
 	// GTM Copilot configuration (entitlement-gated).
-	"customer-buyer-personas": {
-		segments: []string{copilotAPIPath, "customer-buyer-personas"}, displayName: "Customer Buyer Personas",
+	objCustomerBuyerPersonas: {
+		segments: []string{copilotAPIPath, objCustomerBuyerPersonas}, displayName: "Customer Buyer Personas",
 	},
-	"customer-competitors": {
-		segments: []string{copilotAPIPath, "customer-competitors"}, displayName: "Customer Competitors",
+	objCustomerCompetitors: {
+		segments: []string{copilotAPIPath, objCustomerCompetitors}, displayName: "Customer Competitors",
 	},
-	"ideal-company-profile": {
-		segments: []string{copilotAPIPath, "ideal-company-profile"}, displayName: "Ideal Company Profile",
+	objIdealCompanyProfile: {
+		segments: []string{copilotAPIPath, objIdealCompanyProfile}, displayName: "Ideal Company Profile",
 	},
-	"products": {
-		segments: []string{copilotAPIPath, "products"}, displayName: "Products",
+	objProducts: {
+		segments: []string{copilotAPIPath, objProducts}, displayName: "Products",
 	},
 
 	// Agent surface.
@@ -207,8 +227,62 @@ var getObjects = map[string]getDef{ //nolint:gochecknoglobals
 	"pulses":      {segments: []string{agentAPIPath, "pulses"}, displayName: "Pulses", paginated: true},
 
 	// GTM Studio audiences.
-	"audiences":        {segments: []string{studioAPIPath, "audiences"}, displayName: "Audiences", paginated: true},
-	"audience-folders": {segments: []string{studioAPIPath, "folders"}, displayName: "Audience Folders", paginated: true},
+	objAudiences:       {segments: []string{studioAPIPath, objAudiences}, displayName: "Audiences", paginated: true},
+	objAudienceFolders: {segments: []string{studioAPIPath, "folders"}, displayName: "Audience Folders", paginated: true},
+}
+
+// writeStyle classifies how an object's create/update is issued.
+type writeStyle int
+
+const (
+	// styleUpsert: a single POST to the collection both creates and updates; the
+	// id of an existing record is carried in the JSON:API body (data.id). Used by
+	// the GTM Copilot configuration objects.
+	styleUpsert writeStyle = iota
+	// styleCreateUpdate: POST the collection to create, PATCH {collection}/{id} to
+	// update. Used by the GTM Studio objects.
+	styleCreateUpdate
+)
+
+// writeDef describes a writable (create/update/delete) ZoomInfo object.
+type writeDef struct {
+	// segments are the collection path segments after BaseURL, including the
+	// version prefix (e.g. {copilotAPIPath, "customer-buyer-personas"}).
+	segments []string
+	// recordType is the JSON:API data.type for the request body.
+	recordType string
+	// style selects the create/update mechanism.
+	style writeStyle
+}
+
+// writeObjects enumerates objects that support create/update/delete. Delete is
+// always DELETE {collection}/{id} (204 on success) regardless of style. Paths,
+// data.type strings, and styles are verified against https://docs.zoominfo.com/reference.
+// All are entitlement-gated (api:gtm-config:manage / api:audience:manage).
+var writeObjects = map[string]writeDef{ //nolint:gochecknoglobals
+	// GTM Copilot configuration — upsert (data.id in body for update).
+	objCustomerBuyerPersonas: {
+		segments:   []string{copilotAPIPath, objCustomerBuyerPersonas},
+		recordType: typeCustomerBuyerPersona,
+		style:      styleUpsert,
+	},
+	objCustomerCompetitors: {
+		segments: []string{copilotAPIPath, objCustomerCompetitors}, recordType: "CustomerCompetitor", style: styleUpsert,
+	},
+	objIdealCompanyProfile: {
+		segments: []string{copilotAPIPath, objIdealCompanyProfile}, recordType: "IdealCompanySegment", style: styleUpsert,
+	},
+	objProducts: {
+		segments: []string{copilotAPIPath, objProducts}, recordType: "OrganizationOffering", style: styleUpsert,
+	},
+
+	// GTM Studio — create (POST) / update (PATCH {id}).
+	objAudiences: {
+		segments: []string{studioAPIPath, objAudiences}, recordType: typeAudience, style: styleCreateUpdate,
+	},
+	objAudienceFolders: {
+		segments: []string{studioAPIPath, "folders"}, recordType: "Folder", style: styleCreateUpdate,
+	},
 }
 
 // kindOf returns the objectKind for the given object name, or kindUnknown if the
