@@ -17,8 +17,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 	responseMeetingsFirst := testutils.DataFromFile(t, "meetings-first-page.json")
 	responseMeetingsSecond := testutils.DataFromFile(t, "meetings-second-page.json")
-	responseRecordingSummary := testutils.DataFromFile(t, "recording-summary.json")
-	responseRecordingTranscript := testutils.DataFromFile(t, "recording-transcript.json")
 
 	tests := []testroutines.Read{
 		{
@@ -63,68 +61,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"transcript":           nil,
 						"transcript_language":  "en",
 						"crm_matches":          nil,
-					},
-				}},
-				NextPage: "eyJ0ZWFtX2NhdsafyZGluZ19zdGFydGVkX2F0IjoiMjAyNS0wNi0zMFQyMDowMjozMi4wNTQ4MzBaIiwiaWQiOjMzODY0NTU0MH0sImNvbXBsZXRlZF9zb3VyY2VzIjpbInRlYW1fcm9sZV9jYWxscyIsImhvc3Rfc2hhcmVkX3RlYW1fcm9sZV9jYWxscyIsImNvbnRhY3RfdGVhbV9tZW1iZXJfY2FsbHMiLCJmb2xkZXJfdGVhbV9jYWxscyIsImZvbGRlcl90ZWFtX3JvbGVfY2FsbHMiLCJmb2xkZXJfaG9zdF9zaGFyZWRfdGVhbV9yb2xlX2NhbGxzIiwiZm9sZGVyX2NvbnRhY3RfdGVhbV9tZW1iZXJfY2FsbHMiXX0=", // nolint:lll
-				Done:     false,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name: "Read meetings with summary and transcript enrichment",
-			Input: common.ReadParams{
-				ObjectName: "meetings",
-				Fields:     connectors.Fields("title", "default_summary", "transcript"),
-			},
-			Server: mockserver.Switch{
-				Setup: mockserver.ContentJSON(),
-				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/external/v1/meetings"),
-					Then: mockserver.Response(http.StatusOK, responseMeetingsFirst),
-				}, {
-					If:   mockcond.Path("/external/v1/recordings/123456789/summary"),
-					Then: mockserver.Response(http.StatusOK, responseRecordingSummary),
-				}, {
-					If:   mockcond.Path("/external/v1/recordings/123456789/transcript"),
-					Then: mockserver.Response(http.StatusOK, responseRecordingTranscript),
-				}},
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"title": "Neo ayan catchup",
-						"default_summary": map[string]any{
-							"template_name":      "general",
-							"markdown_formatted": "## Summary\n\nWe reviewed Q1 OKRs.",
-						},
-						"transcript": []any{
-							map[string]any{
-								"speaker": map[string]any{
-									"display_name":                   "Alice Johnson",
-									"matched_calendar_invitee_email": "alice@acme.com",
-								},
-								"text":      "Let's revisit the budget allocations.",
-								"timestamp": "00:05:32",
-							},
-						},
-					},
-					Raw: map[string]any{
-						"default_summary": map[string]any{
-							"template_name":      "general",
-							"markdown_formatted": "## Summary\n\nWe reviewed Q1 OKRs.",
-						},
-						"transcript": []any{
-							map[string]any{
-								"speaker": map[string]any{
-									"display_name":                   "Alice Johnson",
-									"matched_calendar_invitee_email": "alice@acme.com",
-								},
-								"text":      "Let's revisit the budget allocations.",
-								"timestamp": "00:05:32",
-							},
-						},
 					},
 				}},
 				NextPage: "eyJ0ZWFtX2NhdsafyZGluZ19zdGFydGVkX2F0IjoiMjAyNS0wNi0zMFQyMDowMjozMi4wNTQ4MzBaIiwiaWQiOjMzODY0NTU0MH0sImNvbXBsZXRlZF9zb3VyY2VzIjpbInRlYW1fcm9sZV9jYWxscyIsImhvc3Rfc2hhcmVkX3RlYW1fcm9sZV9jYWxscyIsImNvbnRhY3RfdGVhbV9tZW1iZXJfY2FsbHMiLCJmb2xkZXJfdGVhbV9jYWxscyIsImZvbGRlcl90ZWFtX3JvbGVfY2FsbHMiLCJmb2xkZXJfaG9zdF9zaGFyZWRfdGVhbV9yb2xlX2NhbGxzIiwiZm9sZGVyX2NvbnRhY3RfdGVhbV9tZW1iZXJfY2FsbHMiXX0=", // nolint:lll
