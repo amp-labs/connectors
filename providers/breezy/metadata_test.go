@@ -121,7 +121,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 			Module:              common.ModuleRoot,
 			AuthenticatedClient: mockutils.NewClient(),
 			Metadata: map[string]string{
-				"company_id": "abc123def456",
+				"company_id": "testCompanyID",
 			},
 		},
 	)
