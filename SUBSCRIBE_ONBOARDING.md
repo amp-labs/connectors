@@ -21,18 +21,24 @@ lives in the per-PR guides — see [Writing the PRs](#writing-the-prs) at the bo
 ## The big picture
 
 A "subscribe-capable" connector does up to four things, each behind its own interface. The interfaces
-form a ladder — each extends the one below it — so you only implement the rungs your provider needs.
+build on one another, so you only implement the rungs your provider needs. `RegisterSubscribeConnector`
+and `SubscriptionMaintainerConnector` each extend `SubscribeConnector` **independently** (neither
+extends the other) — a provider can implement either, both, or neither.
 
 ```
-SubscriptionMaintainerConnector   (renews expiring subscriptions — provider-specific, if needed)
-        ▲ extends
-RegisterSubscribeConnector        (one-time per-installation setup, e.g. Salesforce → EventBridge — provider-specific, if needed)
-        ▲ extends
-SubscribeConnector                (create / update / delete subscriptions)
-        ▲ extends
-WebhookVerifierConnector          (verify incoming webhook signatures)
-        ▲ extends
-Connector + BatchRecordReaderConnector   (base client + fetch records by id for webhook enrichment)
+RegisterSubscribeConnector          SubscriptionMaintainerConnector
+(one-time setup, e.g. Salesforce    (renews expiring subscriptions)
+ → EventBridge)
+   provider-specific, if needed        provider-specific, if needed
+            ▲                                  ▲
+            └─────────── both extend ──────────┘
+                            │
+              SubscribeConnector            (create / update / delete subscriptions)
+                            ▲ extends
+              WebhookVerifierConnector       (verify incoming webhook signatures)
+                            ▲ extends
+              Connector + BatchRecordReaderConnector
+                                  (base client + fetch records by id for webhook enrichment)
 ```
 
 All four interfaces are defined in [`connectors.go`](./connectors.go). Note that
