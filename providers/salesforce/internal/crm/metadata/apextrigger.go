@@ -141,7 +141,7 @@ func ConstructApexTrigger(ctx context.Context, params ApexTriggerParams) ([]byte
 	testClassCode := generateTestClassCode(testClassName, handlerClassName, params)
 	testClassMetaXML := generateClassMetaXML()
 
-	logging.Logger(ctx).Info("constructed apex trigger code",
+	logging.Logger(ctx).Debug("constructed apex trigger code",
 		"object", params.ObjectName,
 		"trigger", params.TriggerName,
 		"triggerCode", triggerCode,
