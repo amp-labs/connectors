@@ -118,7 +118,9 @@ If your provider reuses another provider's connector implementation (same `*Conn
 register the same constructor in `connector/new.go` for both provider keys so the twin shares the
 implementation. Declare `Support.Subscribe` and `SubscribeRequirements` directly on the twin's
 `providers/<twin>.go` (mirroring the original) so the twin carries its own subscribe metadata. The
-canonical example is **SalesforceJWT**, which shares the Salesforce connector and modules.
+canonical example is **[SalesforceJWT](../../providers/salesforceJWT.go)**, which shares the
+**[Salesforce](../../providers/salesforce.go)** connector and modules — compare the two `ProviderInfo`
+declarations.
 
 ## Files
 
