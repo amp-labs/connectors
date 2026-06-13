@@ -1,7 +1,7 @@
 # PR 3 — Subscribe / Update / Delete (`SubscribeConnector`)
 
-> Part of the [Subscribe Onboarding PR Process](../../SUBSCRIBE_PR_PROCESS.md). Shared concepts:
-> [`SUBSCRIBE_ONBOARDING.md`](../../SUBSCRIBE_ONBOARDING.md).
+> Part of the [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
+> [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
 **Required.** Stacks on [PR 2](./pr-2-verification.md).
 
@@ -172,7 +172,7 @@ environment.
 
 ## Reference
 
-- [The big picture](../../SUBSCRIBE_ONBOARDING.md#the-big-picture) · [Core types](../../SUBSCRIBE_ONBOARDING.md#core-types)
+- [The big picture](../../SUBSCRIBE_REFERENCES.md#the-big-picture) · [Core types](../../SUBSCRIBE_REFERENCES.md#core-types)
 - [`providers/salesloft/subscribe.go`](../../providers/salesloft/subscribe.go),
   [`providers/outreach/subscribe.go`](../../providers/outreach/subscribe.go),
   [`test/outreach/subscribe/subscribe.go`](../../test/outreach/subscribe/subscribe.go)

@@ -1,7 +1,7 @@
 # PR 4 — Registration (`RegisterSubscribeConnector`) *(provider-specific, if needed)*
 
-> Part of the [Subscribe Onboarding PR Process](../../SUBSCRIBE_PR_PROCESS.md). Shared concepts:
-> [`SUBSCRIBE_ONBOARDING.md`](../../SUBSCRIBE_ONBOARDING.md).
+> Part of the [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
+> [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
 > **Provider-specific — implement only if needed.** Most providers do not need registration. Add this
 > PR only when the provider requires a one-time, installation-level setup step shared by all object
@@ -116,5 +116,5 @@ cleanly:
 
 ## Reference
 
-- [Core types](../../SUBSCRIBE_ONBOARDING.md#core-types)
+- [Core types](../../SUBSCRIBE_REFERENCES.md#core-types)
 - [`providers/salesforce/register.go`](../../providers/salesforce/register.go)

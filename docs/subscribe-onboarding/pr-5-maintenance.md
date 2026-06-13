@@ -1,7 +1,7 @@
 # PR 5 — Maintenance (`SubscriptionMaintainerConnector`) *(provider-specific, if needed)*
 
-> Part of the [Subscribe Onboarding PR Process](../../SUBSCRIBE_PR_PROCESS.md). Implementation
-> reference: [`SUBSCRIBE_ONBOARDING.md`](../../SUBSCRIBE_ONBOARDING.md).
+> Part of the [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Implementation
+> reference: [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
 **Optional — skip this PR unless** the provider's subscriptions/watches expire after a TTL and must be
 periodically renewed. Most providers do not.
@@ -55,4 +55,4 @@ And set `SubscribeRequirements.Maintenance: new(true)`.
 
 ## Reference
 
-- [The big picture](../../SUBSCRIBE_ONBOARDING.md#the-big-picture) · [Core types](../../SUBSCRIBE_ONBOARDING.md#core-types)
+- [The big picture](../../SUBSCRIBE_REFERENCES.md#the-big-picture) · [Core types](../../SUBSCRIBE_REFERENCES.md#core-types)
