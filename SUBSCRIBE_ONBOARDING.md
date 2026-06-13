@@ -611,6 +611,10 @@ See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for credential setup (`creds.json`) a
 
 ## Recommended PR breakdown
 
+> For the full PR workflow — per-PR scope, files, checklists, reviewer focus, and how to manage the
+> stack — see [**`SUBSCRIBE_PR_PROCESS.md`**](./SUBSCRIBE_PR_PROCESS.md). The summary below is enough to
+> get started.
+
 Land subscribe support as a **stack** of small, reviewable PRs. Each PR is stacked on the one below it,
 and the provider stays **gated off** until everything is implemented and verified — so every PR in the
 stack is a safe no-op until the final `Enable` PR at the top.
