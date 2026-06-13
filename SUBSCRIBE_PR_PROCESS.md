@@ -59,119 +59,18 @@ last.
 
 ## PR-by-PR
 
-Each PR below lists its **scope**, the **files** it typically touches, and a **checklist**. Link the
-relevant section of [`SUBSCRIBE_ONBOARDING.md`](./SUBSCRIBE_ONBOARDING.md) in your PR description so
-reviewers have the context.
+Each PR has its own focused guide — open the one you're writing. They share a structure: goal, what to
+implement, files, step-by-step, an example, a checklist, and reviewer focus. Link the relevant
+[`SUBSCRIBE_ONBOARDING.md`](./SUBSCRIBE_ONBOARDING.md) section in your PR description too.
 
-### PR 1 — Metadata scaffold + factory wiring *(base)*
-
-**Scope.** Establish the provider in the catalog with subscribe **gated off**, and make sure the
-connector is constructible. Zero behavioral change.
-
-**Files.**
-- `providers/<provider>.go` — declare `SubscribeRequirements`, but keep `Support.Subscribe: false` and
-  `SubscribeByAPI: new(false)`.
-- `connector/new.go` — add the `new<Provider>Connector` constructor + map entry **only if the provider
-  is brand-new** (most providers already have one for read/write).
-
-**Checklist.**
-- [ ] `Support.Subscribe` is `false` and `SubscribeByAPI` is `new(false)` (or unset).
-- [ ] `SubscribeRequirements` reflects the provider's intended shape (`Registration` / `PostProcess` /
-      `Maintenance` set only if applicable).
-- [ ] `make build` / `go build ./...` passes; no behavior change.
-
-→ Reference: [Provider metadata](./SUBSCRIBE_ONBOARDING.md#provider-metadata),
-[Factory wiring](./SUBSCRIBE_ONBOARDING.md#factory-wiring).
-
-### PR 2 — Verification
-
-**Scope.** Webhook signature verification and the typed events the caller will parse.
-
-**Files.** `providers/<provider>/subscribeEvent.go` (or similar) — `VerifyWebhookMessage`, the provider
-`VerificationParams` struct, and the event type(s) implementing `SubscriptionEvent`
-(+ `SubscriptionUpdateEvent` / `CollapsedSubscriptionEvent` as needed).
-
-**Checklist.**
-- [ ] `var _ connectors.WebhookVerifierConnector = &Connector{}` assertion present.
-- [ ] `VerifyWebhookMessage` validates the signature with constant-time compare (`hmac.Equal`); returns
-      `false` (not an error) for untrusted requests.
-- [ ] Each event method (`EventType`, `ObjectName`, `RecordId`, `EventTimeStampNano`, `RawEventName`,
-      `Workspace`, `PreLoadData`) implemented and unit-tested against a captured real payload.
-- [ ] Unit tests cover valid / invalid / missing-signature cases.
-
-→ Reference: [Verification](./SUBSCRIBE_ONBOARDING.md#verification),
-[Event types](./SUBSCRIBE_ONBOARDING.md#event-types).
-
-### PR 3 — Subscribe / Update / Delete
-
-**Scope.** Programmatic subscription lifecycle.
-
-**Files.** `providers/<provider>/subscribe.go` — `Subscribe`, `UpdateSubscription`,
-`DeleteSubscription`, `EmptySubscriptionParams`, `EmptySubscriptionResult`, plus the provider
-`Request` / `Result` structs. Plus a manual harness at `test/<provider>/subscribe/subscribe.go`.
-
-**Checklist.**
-- [ ] `var _ connectors.SubscribeConnector = &Connector{}` assertion present.
-- [ ] `Subscribe` rolls back partially-created subscriptions on error.
-- [ ] `UpdateSubscription` reconciles `previousResult` → desired state.
-- [ ] `DeleteSubscription` tears down everything in `previousResult`.
-- [ ] `Empty*` return instances with the provider-specific `.Request` / `.Result` populated.
-- [ ] Manual harness runs against a real sandbox and a webhook is received + verified end-to-end.
-
-→ Reference: [Interface reference](./SUBSCRIBE_ONBOARDING.md#interface-reference),
-[Testing](./SUBSCRIBE_ONBOARDING.md#testing).
-
-### PR 4 — Registration *(provider-specific, if needed)*
-
-**Skip this PR unless** the provider needs a one-time, installation-level setup shared by all object
-subscriptions (Salesforce is the canonical case).
-
-**Scope.** `RegisterSubscribeConnector`.
-
-**Files.** `providers/<provider>/register.go` (or similar) — `Register`, `DeleteRegistration`,
-`EmptyRegistrationParams`, `EmptyRegistrationResult`, plus rollback. Set
-`SubscribeRequirements.Registration: new(true)` (and `PostProcess: new(true)` if a third-party setup
-step is involved).
-
-**Checklist.**
-- [ ] `Register` rolls back its own partial work on failure and sets `Status` accordingly
-      (`Success` / `Failed` / `FailedToRollback`).
-- [ ] `DeleteRegistration` tears down resources in reverse order.
-- [ ] If `PostProcess` applies, `RegistrationResult.Result` carries the data the post-processor needs.
-
-→ Reference: [Registration](./SUBSCRIBE_ONBOARDING.md#registration-salesforce-example).
-
-### PR 5 — Maintenance *(provider-specific, if needed)*
-
-**Skip this PR unless** the provider's subscriptions/watches expire after a TTL and must be renewed.
-
-**Scope.** `SubscriptionMaintainerConnector`.
-
-**Files.** `providers/<provider>/...` — `RunScheduledMaintenance`. Set
-`SubscribeRequirements.Maintenance: new(true)`.
-
-**Checklist.**
-- [ ] `RunScheduledMaintenance` renews the subscription in `previousResult` and returns refreshed state.
-
-→ Reference: [Maintenance](./SUBSCRIBE_ONBOARDING.md#maintenance).
-
-### PR 6 — Enable the provider *(top)*
-
-**Scope.** A one-line switch that turns the provider on.
-
-**Files.** `providers/<provider>.go` — flip `Support.Subscribe: true` and `SubscribeByAPI: new(true)`.
-
-**Checklist.**
-- [ ] All prerequisite PRs (verification, subscribe, and any needed registration/maintenance) are
-      merged.
-- [ ] End-to-end verified in a sandbox.
-- [ ] Trivial to revert (single-line change).
-
-> The caller also needs a small configuration change to consume the new provider — supplying the
-> per-installation verification params and subscribe request payload your connector expects. That
-> change lives outside this repo and lands after this stack.
-
----
+| # | PR | Guide | Required? |
+|---|----|-------|-----------|
+| 1 | Metadata scaffold + factory wiring | [pr-1-metadata-and-factory.md](./docs/subscribe-onboarding/pr-1-metadata-and-factory.md) | ✅ |
+| 2 | Verification | [pr-2-verification.md](./docs/subscribe-onboarding/pr-2-verification.md) | ✅ |
+| 3 | Subscribe / Update / Delete | [pr-3-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-3-subscribe-update-delete.md) | ✅ |
+| 4 | Registration | [pr-4-registration.md](./docs/subscribe-onboarding/pr-4-registration.md) | ⬜ if needed |
+| 5 | Maintenance | [pr-5-maintenance.md](./docs/subscribe-onboarding/pr-5-maintenance.md) | ⬜ if needed |
+| 6 | Enable the provider | [pr-6-enable.md](./docs/subscribe-onboarding/pr-6-enable.md) | ✅ (last) |
 
 ## Why gate, and on which flags
 
