@@ -7,9 +7,7 @@
 > PR only when the provider requires a one-time, installation-level setup step shared by all object
 > subscriptions (Salesforce is the canonical case).
 
-Builds on [PR 3](./pr-3-subscribe-update-delete.md). It has **no dependency** on
-[PR 5 (Maintenance)](./pr-5-maintenance.md) — neither interface extends the other — so do either, both,
-or neither, in any order. You can keep them as separate branches off PR 3 or stack them; either is fine.
+Builds on [PR 3](./pr-3-subscribe-update-delete.md).
 
 ## Goal
 
