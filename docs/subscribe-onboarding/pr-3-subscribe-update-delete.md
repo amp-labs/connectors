@@ -94,8 +94,23 @@ rollback pattern.
 
 ## Testing
 
-1. **Compile-time assertion** — `var _ connectors.SubscribeConnector = &Connector{}` so a missing method
-   fails the build.
+1. **Compile-time assertions** — in `subscribe.go`, keep
+   `var _ connectors.SubscribeConnector = &Connector{}` so a missing method fails the build. In your
+   test file, also assert the **decomposed per-method interfaces** from
+   [`test/utils/testroutines`](../../test/utils/testroutines/connector.go) — one per subscription
+   method. They let each method be verified independently and are what the subscription CUD / update
+   test scenarios consume (in particular `TestableSubscriptionUpdater` for the update path):
+
+   ```go
+   // <provider>_test.go  (testroutines imports "testing", so keep these in a _test.go file)
+   import "github.com/amp-labs/connectors/test/utils/testroutines"
+
+   var (
+       _ testroutines.TestableSubscriptionCreator = &Connector{} // Subscribe
+       _ testroutines.TestableSubscriptionUpdater = &Connector{} // UpdateSubscription
+       _ testroutines.TestableSubscriptionRemover = &Connector{} // DeleteSubscription
+   )
+   ```
 2. **Manual end-to-end harness** — add `test/<provider>/subscribe/subscribe.go`, a small `main` that
    loads creds, builds the connector, and calls `Subscribe` against a real sandbox. Model it on
    [`test/outreach/subscribe/subscribe.go`](../../test/outreach/subscribe/subscribe.go):
@@ -121,7 +136,9 @@ environment.
 
 ## Checklist
 
-- [ ] `var _ connectors.SubscribeConnector = &Connector{}` assertion present.
+- [ ] `var _ connectors.SubscribeConnector = &Connector{}` assertion present in `subscribe.go`.
+- [ ] Decomposed test assertions present (`TestableSubscriptionCreator` / `TestableSubscriptionUpdater`
+      / `TestableSubscriptionRemover`) so Subscribe, Update, and Delete are each verified independently.
 - [ ] `Subscribe` rolls back partially-created subscriptions on error.
 - [ ] `UpdateSubscription` reconciles `previous` → desired state (handles additions and removals).
 - [ ] `DeleteSubscription` tears down everything in `previous.Result`.
