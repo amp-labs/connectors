@@ -6,10 +6,7 @@
 **Optional — skip this PR unless** the provider's subscriptions/watches expire after a TTL and must be
 periodically renewed. Most providers do not.
 
-Builds on [PR 3](./pr-3-subscribe-update-delete.md). It has **no dependency** on
-[PR 4 (Registration)](./pr-4-registration.md) — neither interface extends the other — so do either,
-both, or neither, in any order. You can keep them as separate branches off PR 3 or stack them; either
-is fine.
+Builds on [PR 3](./pr-3-subscribe-update-delete.md).
 
 ## Goal
 
