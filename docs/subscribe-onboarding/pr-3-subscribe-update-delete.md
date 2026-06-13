@@ -92,6 +92,21 @@ See [`providers/salesloft/subscribe.go`](../../providers/salesloft/subscribe.go)
 [`providers/outreach/subscribe.go`](../../providers/outreach/subscribe.go) for the parallel-create-with-
 rollback pattern.
 
+## Serialization
+
+The caller **persists your `SubscriptionResult` and reads it back later** (for updates, deletes, and to
+build verification params), so it serializes/deserializes the value you place in the `Result any` field
+— and likewise the `Request any` in `SubscribeParams`. Deserialization targets the concrete type your
+`EmptySubscriptionResult()` / `EmptySubscriptionParams()` return, so those structs must round-trip
+cleanly:
+
+- **Export every field** and give it a JSON tag — unexported fields are silently dropped.
+- **Prefer Go native types** (`string`, `int`, `bool`, `time.Time`, and slices/maps/nested structs of
+  those). Avoid `any`/`interface{}`, function values, channels, and types that need custom
+  (un)marshaling; they don't survive the round trip reliably.
+- Anything you'll need later — a provider subscription id, or a secret the webhook verifier will use —
+  must live in `Result`; if it isn't serialized, it's gone.
+
 ## Testing
 
 1. **Compile-time assertions** — in `subscribe.go`, keep
@@ -143,6 +158,8 @@ environment.
 - [ ] `UpdateSubscription` reconciles `previous` → desired state (handles additions and removals).
 - [ ] `DeleteSubscription` tears down everything in `previous.Result`.
 - [ ] `Empty*` populate the provider-specific `.Request` / `.Result`.
+- [ ] `Request` / `Result` structs round-trip through serialization: exported fields with JSON tags,
+      Go native types.
 - [ ] `SubscriptionResult.ObjectEvents` reflects the actual post-operation state.
 - [ ] Manual harness runs against a real sandbox; a triggered change yields a verified webhook
       end-to-end.
