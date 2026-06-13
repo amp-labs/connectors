@@ -81,13 +81,17 @@ implement, files, step-by-step, an example, a checklist, and reviewer focus. Lin
 
 The caller activates a provider from its metadata:
 
-- The **API subscribe** path is gated on `SubscribeRequirements.SubscribeByAPI`.
-- The **manual / UI-subscription** path is gated on `Support.Subscribe`.
+- `Support.Subscribe` is the **master gate** — it must be `true` for the provider to subscribe at all,
+  whether via API or manual/UI configuration. This is the flag that gates the API subscribe path too.
+- `SubscribeRequirements.SubscribeByAPI` is **not a gate** — it just tells the caller *whether the
+  programmatic (API) approach is available*. With `Support.Subscribe` on, `SubscribeByAPI: true` →
+  subscribe via API; `false` → the provider is configured manually in its UI (UI Subscription only).
 
-Keeping **both** off until PR 6 means none of the intermediate PRs can affect production, even after
-they merge. That's what makes incremental merging safe. Flip both on together in the final PR. (The
-*requirement* flags — `Registration` / `PostProcess` / `Maintenance` — are only consulted once subscribe
-is active, so declaring them earlier is harmless.)
+Keeping `Support.Subscribe` off until PR 6 means none of the intermediate PRs can affect production,
+even after they merge. That's what makes incremental merging safe. In the final PR, flip
+`Support.Subscribe` on (plus `SubscribeByAPI` for API providers). (The *requirement* flags —
+`Registration` / `PostProcess` / `Maintenance` — are only consulted once subscribe is active, so
+declaring them earlier is harmless.)
 
 ---
 
