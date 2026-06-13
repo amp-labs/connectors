@@ -98,7 +98,8 @@ flag into this PR.
 - [ ] `Register` rolls back its own partial work on failure and sets `Status` correctly.
 - [ ] `DeleteRegistration` tears resources down in reverse order.
 - [ ] `EmptyRegistrationParams` / `EmptyRegistrationResult` populate the provider-specific structs.
-- [ ] `Registration: new(true)` set (+ `PostProcess: new(true)` if applicable).
+- [ ] `Registration: new(true)` set (+ `PostProcess: new(true)` if applicable), each with a code
+      comment linking the provider docs that justify it.
 - [ ] `RegistrationResult.Result` carries everything `Subscribe` and any post-processor need.
 
 ## Reviewer focus

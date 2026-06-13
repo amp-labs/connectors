@@ -47,7 +47,8 @@ And set `SubscribeRequirements.Maintenance: new(true)`.
 
 - [ ] `var _ connectors.SubscriptionMaintainerConnector = &Connector{}` assertion present.
 - [ ] `RunScheduledMaintenance` renews the subscription in `previous` and returns refreshed state.
-- [ ] `Maintenance: new(true)` set in the provider metadata.
+- [ ] `Maintenance: new(true)` set in the provider metadata, with a code comment linking the provider
+      docs that justify it (e.g. the subscription TTL / renewal cadence).
 
 ## Reviewer focus
 

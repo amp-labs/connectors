@@ -124,6 +124,7 @@ Part of the subscribe onboarding stack for `<provider>`. See SUBSCRIBE_PR_PROCES
 
 - [ ] Scope limited to this stack rung (one interface / concern)
 - [ ] Provider remains gated off (Support.Subscribe / SubscribeByAPI unchanged) — except the Enable PR
+- [ ] Any SubscribeRequirements flag set to new(true) has a code comment linking the provider docs
 - [ ] Compile-time interface assertion added (if this PR adds an interface)
 - [ ] Unit tests added/updated
 - [ ] Manual sandbox verification (where applicable)

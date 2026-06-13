@@ -27,6 +27,7 @@ Support: Support{
     Subscribe: true, // was false
 },
 SubscribeRequirements: &SubscribeRequirements{
+    // <provider> supports creating webhook subscriptions via API: <link to provider docs>
     SubscribeByAPI: new(true), // was new(false)
     // Registration / PostProcess / Maintenance already set by their PRs
 },
@@ -43,7 +44,8 @@ For a **UI Subscription only** provider (no API subscribe), set `Support.Subscri
 
 - [ ] All prerequisite PRs merged.
 - [ ] End-to-end verified in a sandbox (subscribe → receive webhook → verify).
-- [ ] Change is a single-line flip, trivial to revert.
+- [ ] `SubscribeByAPI: new(true)` has a code comment linking the provider docs that justify it.
+- [ ] Change is just the flag flip, trivial to revert.
 
 ## Reviewer focus
 

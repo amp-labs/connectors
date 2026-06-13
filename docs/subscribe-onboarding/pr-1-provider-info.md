@@ -55,6 +55,12 @@ Set `Registration` / `PostProcess` / `Maintenance` to `new(true)` **only if** th
 them (their respective PRs). These requirement flags are harmless while gated off — they're only
 consulted once subscribe is active.
 
+> **Always link the provider docs.** Whenever you set a `SubscribeRequirements` flag to `new(true)`,
+> precede it with a code comment linking the provider documentation that establishes it — that the
+> provider supports API subscriptions, requires registration, needs a post-process setup step, or
+> expires subscriptions on a schedule. Reviewers rely on these links to verify each flag, so a PR that
+> adds a flag without a doc link should not pass review.
+
 ### Examples from real providers
 
 Salesloft (API subscribe, no registration/maintenance/post-process — shown here in its final enabled
@@ -64,6 +70,8 @@ form):
 // providers/salesloft.go
 Support: Support{ Read: true, Write: true, Proxy: true, Subscribe: true },
 SubscribeRequirements: &SubscribeRequirements{
+    // Salesloft supports creating webhook subscriptions via API:
+    // https://developers.salesloft.com/docs/platform/webhooks
     SubscribeByAPI: new(true),
 },
 ```
@@ -75,8 +83,14 @@ Salesforce declares it **per module** (`ModuleSalesforceCRM` only) — note othe
 // providers/salesforce.go (within ModuleSalesforceCRM)
 Support: Support{ Subscribe: true, /* ... */ },
 SubscribeRequirements: &SubscribeRequirements{
+    // One-time EventRelay/EventChannel setup per installation:
+    // https://developer.salesforce.com/docs/platform/pub-sub-api/guide/event-relay-intro.html
     Registration:   new(true),
+    // AWS EventBridge wiring after subscribe (done outside the connector):
+    // https://developer.salesforce.com/docs/platform/pub-sub-api/guide/aws-event-relay.html
     PostProcess:    new(true),
+    // Subscriptions created via the Salesforce API:
+    // https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html
     SubscribeByAPI: new(true),
 },
 ```
@@ -132,6 +146,8 @@ declarations.
 - [ ] `Support.Subscribe` is `false` and `SubscribeByAPI` is `new(false)` (or unset).
 - [ ] `SubscribeRequirements` reflects the provider's intended shape; `Registration` / `PostProcess` /
       `Maintenance` set only if applicable.
+- [ ] Every `SubscribeRequirements` flag set to `new(true)` has a code comment linking the provider
+      docs that justify it.
 - [ ] For multi-module providers, subscribe declared on the right module(s); others stay
       `Subscribe: false`.
 - [ ] Factory entry added **iff** the provider was not already registered.
