@@ -29,19 +29,20 @@ verification, metadata, factory wiring, worked examples), see the companion refe
 
 ## The stack
 
-PRs 1–3 are a linear stack and mirror the interface ladder. PRs 4 and 5 are **optional and
-independent** — `RegisterSubscribeConnector` and `SubscriptionMaintainerConnector` each extend
-`SubscribeConnector` (not each other), so each branches off PR 3 on its own, in any order or in
-parallel. `Enable` merges last, once PR 3 and any needed PR 4 / PR 5 are in.
+PRs 1–3 are a linear stack and mirror the interface ladder. PRs 4 and 5 are **optional** and have
+**no dependency on each other** — `RegisterSubscribeConnector` and `SubscriptionMaintainerConnector`
+each extend `SubscribeConnector` (not each other). Because neither depends on the other, the order is
+up to you: branch each off PR 3, or stack them in a line if that fits your workflow — either is fine.
+`Enable` merges last, once PR 3 and any needed PR 4 / PR 5 are in.
 
 ```
   Enable the provider (PR 6)   flip Support.Subscribe + SubscribeByAPI on
         ▲ merge last, after PR 3 (+ PR 4 / PR 5 if used)
         │
-  Registration (PR 4)          Maintenance (PR 5)     ← optional & independent;
-  RegisterSubscribeConnector   SubscriptionMaintainer    each branches off PR 3,
-  (if needed)                  (if needed)               not off each other
-        └──────────── both branch off ───────────┘
+  Registration (PR 4)          Maintenance (PR 5)     ← optional; no dependency between
+  RegisterSubscribeConnector   SubscriptionMaintainer    them — branch each off PR 3, or
+  (if needed)                  (if needed)               stack them; either is fine
+        └──────────── both build on ─────────────┘
                           │
   Subscribe / Update / Delete (PR 3)   SubscribeConnector
         ▲ stacked on
@@ -92,20 +93,23 @@ is active, so declaring them earlier is harmless.)
 
 ## Managing the stack
 
-Branch PRs 1→2→3 in a line. PRs 4 and 5, if needed, each branch off PR 3 independently (siblings, any
-order). Enable branches last, once PR 3 and any needed PR 4 / PR 5 are merged:
+Branch PRs 1→2→3 in a line. PRs 4 and 5, if needed, both build on PR 3; since they have no dependency
+on each other you can branch each off PR 3 (siblings, any order) **or** stack them in a line — whatever
+fits your workflow. Enable branches last, once PR 3 and any needed PR 4 / PR 5 are merged. One possible
+layout:
 
 ```
 main
  └─ subscribe/<provider>/provider-info     (PR 1)
      └─ subscribe/<provider>/verify         (PR 2)
          └─ subscribe/<provider>/subscribe   (PR 3)
-             ├─ subscribe/<provider>/registration  (PR 4, if needed) ┐ optional,
-             ├─ subscribe/<provider>/maintenance    (PR 5, if needed) ┘ independent
+             ├─ subscribe/<provider>/registration  (PR 4, if needed) ┐ optional; no dependency
+             ├─ subscribe/<provider>/maintenance    (PR 5, if needed) ┘ between them
              └─ subscribe/<provider>/enable          (PR 6, merge last)
 ```
 
-- PRs 4 and 5 don't depend on each other — implement either, both, or neither, in any order.
+- PRs 4 and 5 have no dependency on each other — implement either, both, or neither, in any order.
+  Keeping them as siblings off PR 3 (shown above) or stacking them one-on-the-other are both fine.
 - If you use **Graphite**, PRs 1–3 are a normal `gt create` stack; PRs 4/5 are branches off PR 3.
   Submit with `gt submit --stack`.
 - With plain git, branch each PR off its parent and rebase the upstack when a lower PR changes.
