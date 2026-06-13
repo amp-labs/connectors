@@ -6,8 +6,9 @@
 **Optional — skip this PR unless** the provider's subscriptions/watches expire after a TTL and must be
 periodically renewed. Most providers do not.
 
-Stacks on [PR 3](./pr-3-subscribe-update-delete.md) (or [PR 4](./pr-4-registration.md) if the provider
-also registers).
+Branches off [PR 3](./pr-3-subscribe-update-delete.md). Independent of
+[PR 4 (Registration)](./pr-4-registration.md) — they don't depend on each other; do either, both, or
+neither, in any order.
 
 ## Goal
 

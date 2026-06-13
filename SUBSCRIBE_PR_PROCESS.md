@@ -29,21 +29,25 @@ verification, metadata, factory wiring, worked examples), see the companion refe
 
 ## The stack
 
-PRs are stacked bottom-to-top and mirror the interface ladder. The base merges first; `Enable` merges
-last.
+PRs 1–3 are a linear stack and mirror the interface ladder. PRs 4 and 5 are **optional and
+independent** — `RegisterSubscribeConnector` and `SubscriptionMaintainerConnector` each extend
+`SubscribeConnector` (not each other), so each branches off PR 3 on its own, in any order or in
+parallel. `Enable` merges last, once PR 3 and any needed PR 4 / PR 5 are in.
 
 ```
-  Enable the provider          flip Support.Subscribe + SubscribeByAPI on   ← merge last (top)
+  Enable the provider (PR 6)   flip Support.Subscribe + SubscribeByAPI on
+        ▲ merge last, after PR 3 (+ PR 4 / PR 5 if used)
+        │
+  Registration (PR 4)          Maintenance (PR 5)     ← optional & independent;
+  RegisterSubscribeConnector   SubscriptionMaintainer    each branches off PR 3,
+  (if needed)                  (if needed)               not off each other
+        └──────────── both branch off ───────────┘
+                          │
+  Subscribe / Update / Delete (PR 3)   SubscribeConnector
         ▲ stacked on
-  Maintenance                  SubscriptionMaintainerConnector              (if needed)
+  Verification (PR 2)                  WebhookVerifierConnector
         ▲ stacked on
-  Registration                 RegisterSubscribeConnector                   (if needed)
-        ▲ stacked on
-  Subscribe / Update / Delete  SubscribeConnector
-        ▲ stacked on
-  Verification                 WebhookVerifierConnector
-        ▲ stacked on
-  ProviderInfo + SubscribeRequirements (gated off)             ← base, merge first (bottom)
+  ProviderInfo + SubscribeRequirements (PR 1, gated off)   ← base, merge first
 ```
 
 | # | PR | Adds | Required? |
@@ -88,19 +92,23 @@ is active, so declaring them earlier is harmless.)
 
 ## Managing the stack
 
-Create the branches bottom-up so each is based on the previous one:
+Branch PRs 1→2→3 in a line. PRs 4 and 5, if needed, each branch off PR 3 independently (siblings, any
+order). Enable branches last, once PR 3 and any needed PR 4 / PR 5 are merged:
 
 ```
 main
- └─ subscribe/<provider>/provider-info   (PR 1)
-     └─ subscribe/<provider>/verify       (PR 2)
-         └─ subscribe/<provider>/subscribe (PR 3)
-             └─ ... registration / maintenance if needed
-                 └─ subscribe/<provider>/enable (PR 6)
+ └─ subscribe/<provider>/provider-info     (PR 1)
+     └─ subscribe/<provider>/verify         (PR 2)
+         └─ subscribe/<provider>/subscribe   (PR 3)
+             ├─ subscribe/<provider>/registration  (PR 4, if needed) ┐ optional,
+             ├─ subscribe/<provider>/maintenance    (PR 5, if needed) ┘ independent
+             └─ subscribe/<provider>/enable          (PR 6, merge last)
 ```
 
-- If you use **Graphite**, this is a normal `gt create` stack; submit with `gt submit --stack`.
-- With plain git, branch each PR off the previous branch and rebase the upstack when a lower PR changes.
+- PRs 4 and 5 don't depend on each other — implement either, both, or neither, in any order.
+- If you use **Graphite**, PRs 1–3 are a normal `gt create` stack; PRs 4/5 are branches off PR 3.
+  Submit with `gt submit --stack`.
+- With plain git, branch each PR off its parent and rebase the upstack when a lower PR changes.
 - When a lower PR gets review changes, restack everything above it before re-pushing.
 - You don't have to wait for PR 1 to merge before opening PR 2 — open the whole stack and let review
   proceed in parallel; merge bottom-up as each is approved.
