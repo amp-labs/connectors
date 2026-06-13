@@ -116,25 +116,27 @@ func GenerateApexTriggerNameForRead(objectName string) (string, error) {
 // ConstructApexTriggerZipForCDC builds a zipped deployment package for an APEX trigger that sets
 // a boolean checkbox field to true/false when any of the specified watch fields change.
 // The returned zip bytes are ready for DeployMetadataZip.
-func ConstructApexTriggerZipForCDC(params metadata.ApexTriggerParams, checkboxFieldName string) ([]byte, error) {
+func ConstructApexTriggerZipForCDC(
+	ctx context.Context, params metadata.ApexTriggerParams, checkboxFieldName string,
+) ([]byte, error) {
 	if err := metadata.ValidateApexTriggerParams(params, checkboxFieldName); err != nil {
 		return nil, err
 	}
 
-	return metadata.ConstructApexTrigger(params)
+	return metadata.ConstructApexTrigger(ctx, params)
 }
 
 // ConstructApexTriggerZipForFilteredRead builds a zipped deployment package for an APEX trigger
 // that sets a datetime field to System.now() when any of the specified watch fields change.
 // The returned zip bytes are ready for DeployMetadataZip.
 func ConstructApexTriggerZipForFilteredRead(
-	params metadata.ApexTriggerParams, timestampFieldName string,
+	ctx context.Context, params metadata.ApexTriggerParams, timestampFieldName string,
 ) ([]byte, error) {
 	if err := metadata.ValidateApexTriggerParams(params, timestampFieldName); err != nil {
 		return nil, err
 	}
 
-	return metadata.ConstructApexTrigger(params)
+	return metadata.ConstructApexTrigger(ctx, params)
 }
 
 // buildApexTriggerZips constructs zip deployment packages for each object's apex
@@ -142,12 +144,13 @@ func ConstructApexTriggerZipForFilteredRead(
 // internally by metadata.ConstructApexTrigger from the per-object params; the
 // variant (CDC vs filtered-read) is selected from params.IndicatorField.ValueType.
 func buildApexTriggerZips(
+	ctx context.Context,
 	triggerParams map[common.ObjectName]*metadata.ApexTriggerParams,
 ) (map[common.ObjectName][]byte, error) {
 	zipDataMap := make(map[common.ObjectName][]byte, len(triggerParams))
 
 	for objName, params := range triggerParams {
-		zipData, err := metadata.ConstructApexTrigger(*params)
+		zipData, err := metadata.ConstructApexTrigger(ctx, *params)
 		if err != nil {
 			return nil, fmt.Errorf("failed to construct apex trigger zip for %s: %w", objName, err)
 		}
@@ -183,7 +186,7 @@ func (c *Connector) deployApexTriggersForCDC(
 		}, nil
 	}
 
-	zipDataMap, err := buildApexTriggerZips(triggerParams)
+	zipDataMap, err := buildApexTriggerZips(ctx, triggerParams)
 	if err != nil {
 		return nil, err
 	}
@@ -664,7 +667,7 @@ func (c *Connector) redeployExistingApexTriggers(
 		delete(diff.apexTriggersExisting, objName)
 	}
 
-	zipDataMap, err := buildApexTriggerZips(triggerParams)
+	zipDataMap, err := buildApexTriggerZips(ctx, triggerParams)
 	if err != nil {
 		return err
 	}

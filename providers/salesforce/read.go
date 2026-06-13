@@ -123,7 +123,7 @@ func (c *Connector) DeployApexTriggersForFilteredRead( //nolint:unused
 		}, nil
 	}
 
-	zipDataMap, err := buildApexTriggerZips(triggerParams)
+	zipDataMap, err := buildApexTriggerZips(ctx, triggerParams)
 	if err != nil {
 		return nil, err
 	}
