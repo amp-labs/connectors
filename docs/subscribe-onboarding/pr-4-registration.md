@@ -83,11 +83,28 @@ Key points: `Register` **rolls back its own partial work** on failure and report
 (`Success` / `Failed` / `FailedToRollback`); `DeleteRegistration` tears resources down in reverse
 order.
 
+## Serialization
+
+The caller **persists your `RegistrationResult` and reads it back later** (for `Subscribe` and for
+deletion), so it serializes/deserializes the value you place in the `Result any` field — and likewise
+the `Request any` in `SubscriptionRegistrationParams`. Deserialization targets the concrete type your
+`EmptyRegistrationResult()` / `EmptyRegistrationParams()` return, so those structs must round-trip
+cleanly:
+
+- **Export every field** and give it a JSON tag — unexported fields are silently dropped.
+- **Prefer Go native types** (`string`, `int`, `bool`, `time.Time`, and slices/maps/nested structs of
+  those). Avoid `any`/`interface{}`, function values, channels, and types that need custom
+  (un)marshaling; they don't survive the round trip reliably.
+- Anything a later step needs — the registration ref, created-resource ids — must live in `Result`; if
+  it isn't serialized, it's gone.
+
 ## Checklist
 
 - [ ] `Register` rolls back its own partial work on failure and sets `Status` correctly.
 - [ ] `DeleteRegistration` tears resources down in reverse order.
 - [ ] `EmptyRegistrationParams` / `EmptyRegistrationResult` populate the provider-specific structs.
+- [ ] `RegistrationParams` / result structs round-trip through serialization: exported fields with JSON
+      tags, Go native types.
 - [ ] `Registration: new(true)` set in `ProviderInfo` (PR 1), with a code comment linking the provider
       docs that justify it.
 - [ ] `RegistrationResult.Result` carries everything `Subscribe` needs.
