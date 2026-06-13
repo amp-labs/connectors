@@ -1,4 +1,4 @@
-# PR 1 — `ProviderInfo` & `SubscribeRequirements` *(base)*
+# PR 1 — `ProviderInfo` + Factory wiring *(base)*
 
 > Part of the [Subscribe Onboarding PR Process](../../SUBSCRIBE_PR_PROCESS.md). Shared concepts:
 > [`SUBSCRIBE_ONBOARDING.md`](../../SUBSCRIBE_ONBOARDING.md).
@@ -8,8 +8,9 @@
 ## Goal
 
 Declare the provider's subscribe metadata on its `ProviderInfo` — `Support.Subscribe` and
-`SubscribeRequirements` — with the activation flags **gated off**. This PR changes **no runtime
-behavior**; it's a safe no-op until the final [`Enable`](./pr-6-enable.md) PR.
+`SubscribeRequirements` — with the activation flags **gated off**, and wire the connector into the
+factory if it's brand-new. This PR changes **no runtime behavior**; it's a safe no-op until the final
+[`Enable`](./pr-6-enable.md) PR.
 
 ## What you implement
 
