@@ -87,6 +87,35 @@ complete, readable implementation.
 
 ## Verification
 
+`VerifyWebhookMessage(ctx, request *common.WebhookRequest, params *common.VerificationParams)` receives
+two objects, both populated by the caller:
+
+**`request *common.WebhookRequest`** — the raw incoming webhook HTTP request, exactly as the provider
+sent it:
+
+```go
+type WebhookRequest struct {
+    Headers http.Header  // request headers — the signature header lives here
+    Body    []byte       // raw request body — verify over these exact bytes, don't re-marshal
+    URL     string       // request URL (some providers sign method + url + body)
+    Method  string       // HTTP method
+}
+```
+
+**`params *common.VerificationParams`** — a thin wrapper whose single `Param any` field carries your
+provider-specific verification struct:
+
+```go
+type VerificationParams struct{ Param any }   // e.g. Param = &SalesloftVerificationParams{Secret: ...}
+```
+
+The caller fills `Param` per installation; cast it back to your type with `common.AssertType`. The
+values inside (a signing secret, a token, an account ref, …) come from whatever your connector
+persisted — **anything your `Subscribe` returns in the `SubscriptionResult` is available to the caller
+to thread back here.** So if the provider issues a signing secret at subscribe time, return it in the
+`SubscriptionResult` (PR 3), and the caller will supply it back through `VerificationParams.Param` when
+it calls `VerifyWebhookMessage`.
+
 Implement `VerifyWebhookMessage` on your `*Connector`. The pattern (from
 [`providers/salesloft/subscribeEvent.go`](../../providers/salesloft/subscribeEvent.go)):
 
