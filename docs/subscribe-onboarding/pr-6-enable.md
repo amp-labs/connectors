@@ -29,7 +29,7 @@ Support: Support{
 SubscribeRequirements: &SubscribeRequirements{
     // <provider> supports creating webhook subscriptions via API: <link to provider docs>
     SubscribeByAPI: new(true), // was new(false)
-    // Registration / PostProcess / Maintenance already set by their PRs
+    // Registration / PostProcess / Maintenance already set earlier in the stack
 },
 ```
 

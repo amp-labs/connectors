@@ -51,15 +51,30 @@ SubscribeRequirements: &SubscribeRequirements{
 },
 ```
 
-Set `Registration` / `PostProcess` / `Maintenance` to `new(true)` **only if** the provider will need
-them (their respective PRs). These requirement flags are harmless while gated off — they're only
-consulted once subscribe is active.
+Set `Registration` / `PostProcess` / `Maintenance` to `new(true)` **only if** the provider needs them.
+These requirement flags are harmless while gated off — they're only consulted once subscribe is active.
+`Registration` and `Maintenance` each pair with a connector interface implemented in its own PR
+([PR 4](./pr-4-registration.md) / [PR 5](./pr-5-maintenance.md)). **`PostProcess` has no connector code
+at all** — it's a pure indicator declared here; see [PostProcess](#postprocess-indicator-only) below.
 
 > **Always link the provider docs.** Whenever you set a `SubscribeRequirements` flag to `new(true)`,
 > precede it with a code comment linking the provider documentation that establishes it — that the
 > provider supports API subscriptions, requires registration, needs a post-process setup step, or
 > expires subscriptions on a schedule. Reviewers rely on these links to verify each flag, so a PR that
 > adds a flag without a doc link should not pass review.
+
+### PostProcess (indicator only)
+
+`PostProcess` covers **any setup that must happen in a third-party system the connector has no access
+to** — for example, Salesforce subscriptions require AWS EventBridge wiring. It is **independent of
+registration**: Salesforce happens to need both, but a provider can require one without the other.
+
+The post-process logic itself lives in **server-side code**, not in the connector — there is **no
+connector method or interface** for it. The connector's entire contribution is to **indicate whether it
+is required**, by setting `SubscribeRequirements.PostProcess: new(true)` in `ProviderInfo` here (with
+the doc-link comment above). If a post-process step will need data the connector produces (e.g. an id
+created during [registration](./pr-4-registration.md) or returned by `Subscribe`), make sure that data
+is returned in the corresponding result so the server side can consume it.
 
 ### Examples from real providers
 
