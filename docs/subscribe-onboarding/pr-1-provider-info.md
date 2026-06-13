@@ -136,7 +136,7 @@ declarations.
       `Subscribe: false`.
 - [ ] Factory entry added **iff** the provider was not already registered.
 - [ ] Twin providers (if any) declare their own metadata.
-- [ ] `go build ./...` passes; no behavioral change.
+- [ ] No behavioral change (the provider stays gated off).
 
 ## Reviewer focus
 
