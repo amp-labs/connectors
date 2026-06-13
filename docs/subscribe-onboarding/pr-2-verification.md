@@ -1,9 +1,9 @@
 # PR 2 — Verification (`WebhookVerifierConnector`)
 
-> Part of the [Subscribe Onboarding PR Process](../../SUBSCRIBE_PR_PROCESS.md). Implementation
-> reference: [`SUBSCRIBE_ONBOARDING.md`](../../SUBSCRIBE_ONBOARDING.md).
+> Part of the [Subscribe Onboarding PR Process](../../SUBSCRIBE_PR_PROCESS.md). Shared concepts:
+> [`SUBSCRIBE_ONBOARDING.md`](../../SUBSCRIBE_ONBOARDING.md).
 
-**Required.** Stacks on [PR 1](./pr-1-metadata-and-factory.md).
+**Required.** Stacks on [PR 1](./pr-1-provider-info.md).
 
 ## Goal
 
@@ -12,61 +12,130 @@ webhooks.
 
 ## What you implement
 
-- `WebhookVerifierConnector.VerifyWebhookMessage` on your `*Connector`.
-- A provider-specific `VerificationParams` struct (the caller fills it in per installation).
-- One or more event types implementing `common.SubscriptionEvent` (and
-  `SubscriptionUpdateEvent` / `CollapsedSubscriptionEvent` where applicable).
+`WebhookVerifierConnector` (defined in [`connectors.go`](../../connectors.go)):
 
-## Files
+```go
+VerifyWebhookMessage(
+    ctx context.Context,
+    request *common.WebhookRequest,
+    params *common.VerificationParams,
+) (bool, error)
+```
 
-- `providers/<provider>/subscribeEvent.go` (or similarly named) — verification + event types.
+Return `true` to allow webhook processing, `false` to reject as untrusted, and an `error` only for
+*unexpected* failures.
 
-## Steps
+Plus a provider-specific `VerificationParams` struct (the caller fills it in per installation) and one
+or more event types.
 
-1. Add the compile-time assertion: `var _ connectors.WebhookVerifierConnector = &Connector{}`.
-2. Implement `VerifyWebhookMessage`: pull params via `common.AssertType`, read the signature header,
-   recompute over `req.Body`, compare with `hmac.Equal`. Return `false` (not error) for untrusted
-   requests.
-3. Implement the event type's methods. `PreLoadData` runs first and receives the request headers/body —
-   stash anything the other methods need.
+Files: `providers/<provider>/subscribeEvent.go` (or similarly named).
 
-## Example
+## Event types
+
+When a webhook arrives, the caller casts the raw payload into your typed events and asks them
+provider-agnostic questions (what object? what record id? create or update?). Implement these
+interfaces (from `common/types.go`) on a provider event type:
+
+```go
+type Event interface {
+    RawMap() (map[string]any, error)
+}
+
+type SubscriptionEvent interface {
+    Event
+    EventType() (SubscriptionEventType, error)
+    RawEventName() (string, error)
+    ObjectName() (string, error)
+    Workspace() (string, error)
+    RecordId() (string, error)
+    EventTimeStampNano() (int64, error)
+    PreLoadData(data *SubscriptionEventPreLoadData) error  // called first; receives request headers/body
+}
+
+type SubscriptionUpdateEvent interface {  // implement if the provider reports which fields changed
+    SubscriptionEvent
+    UpdatedFields() ([]string, error)
+}
+
+type CollapsedSubscriptionEvent interface {  // when one webhook payload fans out to N events
+    Event
+    SubscriptionEventList() ([]SubscriptionEvent, error)
+}
+```
+
+Salesloft models all three with a `map[string]any`:
 
 ```go
 type SubscriptionEvent map[string]any
-
-type AcmeVerificationParams struct {
-    Secret string `json:"secret,omitempty"`
-}
+type CollapsedSubscriptionEvent map[string]any
 
 var (
-    _ connectors.WebhookVerifierConnector = &Connector{}
-    _ common.SubscriptionEvent            = SubscriptionEvent{}
+    _ common.SubscriptionEvent          = SubscriptionEvent{}
+    _ common.SubscriptionUpdateEvent    = SubscriptionEvent{}
+    _ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 )
-
-func (c *Connector) VerifyWebhookMessage(
-    ctx context.Context, req *common.WebhookRequest, params *common.VerificationParams,
-) (bool, error) {
-    vp, err := common.AssertType[*AcmeVerificationParams](params.Param)
-    if err != nil {
-        return false, err
-    }
-    sig := req.Headers.Get("X-Acme-Signature")
-    if sig == "" {
-        return false, ErrMissingSignature
-    }
-    expected := hex.EncodeToString(hmacSHA256(vp.Secret, req.Body))
-    return hmac.Equal([]byte(sig), []byte(expected)), nil
-}
-
-func (e SubscriptionEvent) EventType() (common.SubscriptionEventType, error) { /* ... */ }
-func (e SubscriptionEvent) ObjectName() (string, error)                      { /* ... */ }
-func (e SubscriptionEvent) RecordId() (string, error)                        { /* ... */ }
-// ...RawEventName, Workspace, EventTimeStampNano, RawMap, PreLoadData
 ```
+
+- **`CollapsedSubscriptionEvent`** is the raw payload as it arrives. `SubscriptionEventList()` splits it
+  into individual `SubscriptionEvent`s. Salesloft sends one record per webhook, so it returns a
+  single-element slice; Salesforce/Zoho batch many events into one payload and fan out here.
+- **`PreLoadData`** runs first for every event and is handed the request headers/body — use it to stash
+  anything (e.g. an event-name header) the other methods need.
 
 See [`providers/salesloft/subscribeEvent.go`](../../providers/salesloft/subscribeEvent.go) for a
 complete, readable implementation.
+
+## Verification
+
+Implement `VerifyWebhookMessage` on your `*Connector`. The pattern (from
+[`providers/salesloft/subscribeEvent.go`](../../providers/salesloft/subscribeEvent.go)):
+
+1. Pull your provider-specific params out of `params.Param` with `common.AssertType`.
+2. Read the signature header from `req.Headers`.
+3. Recompute the expected signature over `req.Body` (and sometimes method/url/timestamp) with the
+   shared secret, and compare with `hmac.Equal`.
+
+```go
+type SalesloftVerificationParams struct {
+    Secret string `json:"secret,omitempty"`
+}
+
+var _ connectors.WebhookVerifierConnector = &Connector{}
+
+func (c *Connector) VerifyWebhookMessage(ctx context.Context,
+    req *common.WebhookRequest, params *common.VerificationParams,
+) (bool, error) {
+    if req == nil || params == nil {
+        return false, fmt.Errorf("%w: request and params cannot be nil", errMissingParams)
+    }
+
+    vp, err := common.AssertType[*SalesloftVerificationParams](params.Param)
+    if err != nil {
+        return false, fmt.Errorf("%w: %w", errMissingParams, err)
+    }
+
+    signature := req.Headers.Get("x-salesloft-signature")
+    if signature == "" {
+        return false, fmt.Errorf("%w: missing signature header", ErrMissingSignature)
+    }
+
+    sigBytes, err := hex.DecodeString(signature)
+    if err != nil {
+        return false, fmt.Errorf("%w: invalid signature format", ErrInvalidSignature)
+    }
+
+    if !hmac.Equal(sigBytes, computeSignature(vp.Secret, req.Body)) {
+        return false, fmt.Errorf("%w: signature mismatch", ErrInvalidSignature)
+    }
+    return true, nil
+}
+```
+
+The provider-specific `*VerificationParams` struct (here `SalesloftVerificationParams`) is populated
+per installation by the caller and passed through `common.VerificationParams.Param`. Hubspot and
+Outreach show HMAC-SHA256 variants; Salesloft uses HMAC-SHA1. For UI Subscription only providers whose
+events carry no provider signature, verification is bypassed by the caller rather than implemented here
+(still implement it if the provider does sign its webhooks).
 
 ## Checklist
 
@@ -76,7 +145,7 @@ complete, readable implementation.
 - [ ] All `SubscriptionEvent` methods implemented; `SubscriptionUpdateEvent` /
       `CollapsedSubscriptionEvent` added where the provider needs them.
 - [ ] Unit tests cover valid / invalid / missing-signature, plus each event method against a captured
-      real payload.
+      real payload (table-driven; see `test/utils/testroutines/`).
 
 ## Reviewer focus
 
@@ -86,5 +155,5 @@ complete, readable implementation.
 
 ## Reference
 
-- [Verification](../../SUBSCRIBE_ONBOARDING.md#verification)
-- [Event types](../../SUBSCRIBE_ONBOARDING.md#event-types)
+- [Core types](../../SUBSCRIBE_ONBOARDING.md#core-types)
+- [`providers/salesloft/subscribeEvent.go`](../../providers/salesloft/subscribeEvent.go)

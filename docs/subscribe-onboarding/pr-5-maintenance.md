@@ -55,4 +55,4 @@ And set `SubscribeRequirements.Maintenance: new(true)`.
 
 ## Reference
 
-- [Maintenance](../../SUBSCRIBE_ONBOARDING.md#maintenance)
+- [The big picture](../../SUBSCRIBE_ONBOARDING.md#the-big-picture) · [Core types](../../SUBSCRIBE_ONBOARDING.md#core-types)
