@@ -217,6 +217,10 @@ type ReadParams struct {
 
 	// PageSize specifies the # of records to request when making a read request.
 	PageSize int // optional
+
+	// Additional options for the read operation that the connector may support.
+	// This optional map is used for bespoke connector-specific parameters.
+	Opts map[string]any // optional
 }
 
 func (p ReadParams) IsFirstPage() bool {
