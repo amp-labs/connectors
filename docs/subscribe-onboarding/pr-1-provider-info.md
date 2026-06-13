@@ -112,10 +112,12 @@ SubscribeRequirements: &SubscribeRequirements{
 
 ## Gating rule
 
-> The caller activates a provider based on these flags: the API path is gated on `SubscribeByAPI`, the
-> manual / UI-subscription path on `Support.Subscribe`. **Keep both off** for the entire stack and flip
-> them on only in the final [`Enable`](./pr-6-enable.md) PR. That's what keeps every intermediate PR a
-> safe no-op even after it merges.
+> `Support.Subscribe` is the **master gate** — it must be `true` for the provider to subscribe at all
+> (via API *or* manual/UI). `SubscribeByAPI` is **not a gate**; it only tells the caller whether the
+> programmatic API approach is available (`true`) or the provider is configured manually in its UI
+> (`false`). **Keep `Support.Subscribe` off** for the entire stack and flip it on (plus `SubscribeByAPI`
+> for API providers) only in the final [`Enable`](./pr-6-enable.md) PR — that's what keeps every
+> intermediate PR a safe no-op even after it merges.
 
 ## Factory wiring *(brand-new providers only)*
 
