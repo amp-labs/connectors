@@ -40,10 +40,25 @@ For a **UI Subscription only** provider (no API subscribe), set `Support.Subscri
 
 - `providers/<provider>.go` — the activation flags only.
 
+## Live testing (required)
+
+Because this PR turns the provider on, it must be verified **live on Ampersand** — not just with the
+local harness from PR 3.
+
+1. Install the provider on **Ampersand**. The **MailMonkey demo app** is a convenient test app for this.
+2. Create an installation and subscribe.
+3. Trigger a change in the provider so it emits a **real webhook**, and confirm it is delivered
+   end-to-end. To receive and inspect deliveries without standing up your own endpoint, use
+   **[Svix Play](https://play.svix.com/)** (free) as the webhook receiver.
+4. **Attach a screenshot of the actual delivered webhook to the PR.** This is required.
+
 ## Checklist
 
 - [ ] All prerequisite PRs merged.
-- [ ] End-to-end verified in a sandbox (subscribe → receive webhook → verify).
+- [ ] Live-tested on **Ampersand**: installed (e.g. via the MailMonkey demo app), created an
+      installation, subscribed, and received a **real webhook** end-to-end (Svix Play works as the
+      receiver).
+- [ ] **Screenshot of the actual delivered webhook attached to the PR.**
 - [ ] `SubscribeByAPI: new(true)` has a code comment linking the provider docs that justify it.
 - [ ] Change is just the flag flip, trivial to revert.
 
