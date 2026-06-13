@@ -56,5 +56,5 @@ For a **UI Subscription only** provider (no API subscribe), set `Support.Subscri
 
 ## Reference
 
-- [PR 1 — ProviderInfo & SubscribeRequirements](./pr-1-provider-info.md) (the flags you're flipping)
+- [PR 1 — ProviderInfo + Factory wiring](./pr-1-provider-info.md) (the flags you're flipping)
 - [Why gate, and on which flags](../../SUBSCRIBE_PR_PROCESS.md#why-gate-and-on-which-flags)

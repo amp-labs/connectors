@@ -47,12 +47,12 @@ parallel. `Enable` merges last, once PR 3 and any needed PR 4 / PR 5 are in.
         ▲ stacked on
   Verification (PR 2)                  WebhookVerifierConnector
         ▲ stacked on
-  ProviderInfo + SubscribeRequirements (PR 1, gated off)   ← base, merge first
+  ProviderInfo + factory wiring (PR 1, gated off)          ← base, merge first
 ```
 
 | # | PR | Adds | Required? |
 |---|----|------|-----------|
-| 1 | ProviderInfo & SubscribeRequirements | subscribe metadata (gated off); factory entry if brand-new | ✅ |
+| 1 | ProviderInfo + Factory wiring | subscribe metadata (gated off); factory entry if brand-new | ✅ |
 | 2 | Verification | `WebhookVerifierConnector` + event types | ✅ |
 | 3 | Subscribe / Update / Delete | `SubscribeConnector` | ✅ |
 | 4 | Registration | `RegisterSubscribeConnector` | ⬜ if needed |
@@ -69,7 +69,7 @@ implement, files, step-by-step, an example, a checklist, and reviewer focus. Lin
 
 | # | PR | Guide | Required? |
 |---|----|-------|-----------|
-| 1 | ProviderInfo & SubscribeRequirements | [pr-1-provider-info.md](./docs/subscribe-onboarding/pr-1-provider-info.md) | ✅ |
+| 1 | ProviderInfo + Factory wiring | [pr-1-provider-info.md](./docs/subscribe-onboarding/pr-1-provider-info.md) | ✅ |
 | 2 | Verification | [pr-2-verification.md](./docs/subscribe-onboarding/pr-2-verification.md) | ✅ |
 | 3 | Subscribe / Update / Delete | [pr-3-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-3-subscribe-update-delete.md) | ✅ |
 | 4 | Registration | [pr-4-registration.md](./docs/subscribe-onboarding/pr-4-registration.md) | ⬜ if needed |
