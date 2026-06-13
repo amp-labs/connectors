@@ -7,9 +7,9 @@
 > PR only when the provider requires a one-time, installation-level setup step shared by all object
 > subscriptions (Salesforce → AWS EventBridge is the canonical case).
 
-Branches off [PR 3](./pr-3-subscribe-update-delete.md). Independent of
-[PR 5 (Maintenance)](./pr-5-maintenance.md) — they don't depend on each other; do either, both, or
-neither, in any order.
+Builds on [PR 3](./pr-3-subscribe-update-delete.md). It has **no dependency** on
+[PR 5 (Maintenance)](./pr-5-maintenance.md) — neither interface extends the other — so do either, both,
+or neither, in any order. You can keep them as separate branches off PR 3 or stack them; either is fine.
 
 ## Goal
 
