@@ -1,10 +1,11 @@
 # PR 4 — Registration (`RegisterSubscribeConnector`) *(provider-specific, if needed)*
 
-> Part of the [Subscribe Onboarding PR Process](../../SUBSCRIBE_PR_PROCESS.md). Implementation
-> reference: [`SUBSCRIBE_ONBOARDING.md`](../../SUBSCRIBE_ONBOARDING.md).
+> Part of the [Subscribe Onboarding PR Process](../../SUBSCRIBE_PR_PROCESS.md). Shared concepts:
+> [`SUBSCRIBE_ONBOARDING.md`](../../SUBSCRIBE_ONBOARDING.md).
 
-**Optional — skip this PR unless** the provider needs a one-time, installation-level setup step shared
-by all object subscriptions (Salesforce → AWS EventBridge is the canonical case). Most providers do not.
+> **Provider-specific — implement only if needed.** Most providers do not need registration. Add this
+> PR only when the provider requires a one-time, installation-level setup step shared by all object
+> subscriptions (Salesforce → AWS EventBridge is the canonical case).
 
 Stacks on [PR 3](./pr-3-subscribe-update-delete.md).
 
@@ -15,33 +16,27 @@ object subscription off of.
 
 ## What you implement
 
-`RegisterSubscribeConnector` on your `*Connector`:
+`RegisterSubscribeConnector` (defined in [`connectors.go`](../../connectors.go)) on your `*Connector`:
 
 ```go
-Register(ctx, params common.SubscriptionRegistrationParams) (*common.RegistrationResult, error)
-DeleteRegistration(ctx, previous common.RegistrationResult) error
+Register(ctx context.Context, params common.SubscriptionRegistrationParams) (*common.RegistrationResult, error)
+DeleteRegistration(ctx context.Context, previousResult common.RegistrationResult) error
 EmptyRegistrationParams() *common.SubscriptionRegistrationParams
 EmptyRegistrationResult() *common.RegistrationResult
 ```
 
-And set `SubscribeRequirements.Registration: new(true)` (and `PostProcess: new(true)` if a third-party
-setup step is involved).
+`Register` is a one-time per-installation operation that creates shared infrastructure (`Subscribe`
+later hangs each object subscription off it). It must roll back its own partial work on failure and set
+`Status` accordingly.
 
-## Files
+And set `SubscribeRequirements.Registration: new(true)` in [PR 1](./pr-1-provider-info.md)'s metadata
+(and `PostProcess: new(true)` if a third-party setup step is involved).
 
-- `providers/<provider>/register.go` — the four methods + rollback + `RegistrationParams` / result data.
-- `providers/<provider>.go` — flip the `Registration` (and maybe `PostProcess`) requirement flag.
-
-## Steps
-
-1. Define `RegistrationParams` (carried in `SubscriptionRegistrationParams.Request`) and the result data
-   struct (stored in `RegistrationResult.Result`).
-2. `Register`: validate params, create the resources, and on failure **roll back your own partial work**
-   and set `Status` (`Success` / `Failed` / `FailedToRollback`).
-3. `DeleteRegistration`: tear resources down in reverse creation order.
-4. `Empty*`: return instances with the provider-specific `.Request` / `.Result` populated.
+Files: `providers/<provider>/register.go` (or similar) and `providers/<provider>.go` (flag).
 
 ## Example
+
+From [`providers/salesforce/register.go`](../../providers/salesforce/register.go):
 
 ```go
 type RegistrationParams struct {
@@ -50,14 +45,29 @@ type RegistrationParams struct {
     AwsNamedCredentialArn string `json:"awsNamedCredentialArn" validate:"required"`
 }
 
+type ResultData struct {
+    EventChannel     *EventChannel     `validate:"required"`
+    NamedCredential  *NamedCredential  `validate:"required"`
+    EventRelayConfig *EventRelayConfig `validate:"required"`
+}
+
+func (c *Connector) EmptyRegistrationParams() *common.SubscriptionRegistrationParams {
+    return &common.SubscriptionRegistrationParams{Request: &RegistrationParams{}}
+}
+func (c *Connector) EmptyRegistrationResult() *common.RegistrationResult {
+    return &common.RegistrationResult{Result: &ResultData{}}
+}
+
 func (c *Connector) Register(
     ctx context.Context, params common.SubscriptionRegistrationParams,
 ) (*common.RegistrationResult, error) {
-    result, err := c.register(ctx, params.Request.(*RegistrationParams))
+    sfParams, ok := params.Request.(*RegistrationParams)
+    // ...create resources...
+    result, err := c.register(ctx, sfParams)
     if err != nil {
-        if rb := c.rollbackRegister(ctx, result); rb != nil {
+        if rollbackErr := c.rollbackRegister(ctx, result); rollbackErr != nil {
             return &common.RegistrationResult{Status: common.RegistrationStatusFailedToRollback},
-                errors.Join(rb, err)
+                errors.Join(rollbackErr, err)
         }
         return &common.RegistrationResult{Status: common.RegistrationStatusFailed}, err
     }
@@ -69,20 +79,23 @@ func (c *Connector) Register(
 }
 ```
 
-See [`providers/salesforce/register.go`](../../providers/salesforce/register.go).
+Key points: `Register` **rolls back its own partial work** on failure and reports `Status`
+(`Success` / `Failed` / `FailedToRollback`); `DeleteRegistration` tears resources down in reverse
+order.
 
-## PostProcess note
+## PostProcess
 
-If the provider needs a third-party setup step the connector can't perform itself (e.g. AWS
-EventBridge), that work is done **outside the connector** by the caller. Your only obligation is to
-return the data the post-processor needs in `RegistrationResult.Result`. Set
-`SubscribeRequirements.PostProcess: new(true)`; there's no connector method to implement, so fold it
-into this PR.
+`PostProcess` work (e.g. wiring AWS EventBridge after Salesforce subscribes) is performed **outside the
+connector** by the caller. The connector's only obligation is to **return the data the post-processor
+needs** in `RegistrationResult.Result` (for Salesforce, the `EventChannel` id, etc.). Set
+`SubscribeRequirements.PostProcess: new(true)`; there's no connector method to implement, so fold the
+flag into this PR.
 
 ## Checklist
 
 - [ ] `Register` rolls back its own partial work on failure and sets `Status` correctly.
-- [ ] `DeleteRegistration` tears down in reverse order.
+- [ ] `DeleteRegistration` tears resources down in reverse order.
+- [ ] `EmptyRegistrationParams` / `EmptyRegistrationResult` populate the provider-specific structs.
 - [ ] `Registration: new(true)` set (+ `PostProcess: new(true)` if applicable).
 - [ ] `RegistrationResult.Result` carries everything `Subscribe` and any post-processor need.
 
@@ -93,4 +106,5 @@ into this PR.
 
 ## Reference
 
-- [Registration (Salesforce example)](../../SUBSCRIBE_ONBOARDING.md#registration-salesforce-example)
+- [Core types](../../SUBSCRIBE_ONBOARDING.md#core-types)
+- [`providers/salesforce/register.go`](../../providers/salesforce/register.go)

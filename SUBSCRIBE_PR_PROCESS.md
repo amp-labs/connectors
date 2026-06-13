@@ -43,12 +43,12 @@ last.
         ▲ stacked on
   Verification                 WebhookVerifierConnector
         ▲ stacked on
-  Metadata scaffold (gated off) + factory wiring               ← base, merge first (bottom)
+  ProviderInfo + SubscribeRequirements (gated off)             ← base, merge first (bottom)
 ```
 
 | # | PR | Adds | Required? |
 |---|----|------|-----------|
-| 1 | Metadata scaffold + factory wiring | provider metadata (gated off), connector registration | ✅ |
+| 1 | ProviderInfo & SubscribeRequirements | subscribe metadata (gated off); factory entry if brand-new | ✅ |
 | 2 | Verification | `WebhookVerifierConnector` + event types | ✅ |
 | 3 | Subscribe / Update / Delete | `SubscribeConnector` | ✅ |
 | 4 | Registration | `RegisterSubscribeConnector` | ⬜ if needed |
@@ -65,7 +65,7 @@ implement, files, step-by-step, an example, a checklist, and reviewer focus. Lin
 
 | # | PR | Guide | Required? |
 |---|----|-------|-----------|
-| 1 | Metadata scaffold + factory wiring | [pr-1-metadata-and-factory.md](./docs/subscribe-onboarding/pr-1-metadata-and-factory.md) | ✅ |
+| 1 | ProviderInfo & SubscribeRequirements | [pr-1-provider-info.md](./docs/subscribe-onboarding/pr-1-provider-info.md) | ✅ |
 | 2 | Verification | [pr-2-verification.md](./docs/subscribe-onboarding/pr-2-verification.md) | ✅ |
 | 3 | Subscribe / Update / Delete | [pr-3-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-3-subscribe-update-delete.md) | ✅ |
 | 4 | Registration | [pr-4-registration.md](./docs/subscribe-onboarding/pr-4-registration.md) | ⬜ if needed |
@@ -92,7 +92,7 @@ Create the branches bottom-up so each is based on the previous one:
 
 ```
 main
- └─ subscribe/<provider>/metadata        (PR 1)
+ └─ subscribe/<provider>/provider-info   (PR 1)
      └─ subscribe/<provider>/verify       (PR 2)
          └─ subscribe/<provider>/subscribe (PR 3)
              └─ ... registration / maintenance if needed
@@ -129,6 +129,6 @@ Part of the subscribe onboarding stack for `<provider>`. See SUBSCRIBE_PR_PROCES
 | Want to… | Go to |
 |----------|-------|
 | Understand the interfaces & types | [`SUBSCRIBE_ONBOARDING.md`](./SUBSCRIBE_ONBOARDING.md) |
-| See a worked example | [acme example](./SUBSCRIBE_ONBOARDING.md#a-worked-example-adding-acme) |
+| See a worked example | the **Example** section in each per-PR guide (e.g. [PR 3](./docs/subscribe-onboarding/pr-3-subscribe-update-delete.md#example)) |
 | Know what each PR contains | [PR-by-PR](#pr-by-pr) above |
 | Know the merge order | [The stack](#the-stack) above |
