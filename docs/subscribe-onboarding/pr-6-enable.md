@@ -1,7 +1,7 @@
 # PR 6 — Enable the provider *(top)*
 
-> Part of the [Subscribe Onboarding PR Process](../../SUBSCRIBE_PR_PROCESS.md). Implementation
-> reference: [`SUBSCRIBE_ONBOARDING.md`](../../SUBSCRIBE_ONBOARDING.md).
+> Part of the [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Implementation
+> reference: [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
 **Required, last.** The top of the stack — a one-line switch that turns the provider on.
 
@@ -74,4 +74,4 @@ local harness from PR 3.
 ## Reference
 
 - [PR 1 — ProviderInfo + Factory wiring](./pr-1-provider-info.md) (the flags you're flipping)
-- [Why gate, and on which flags](../../SUBSCRIBE_PR_PROCESS.md#why-gate-and-on-which-flags)
+- [Why gate, and on which flags](../../CONTRIBUTING_SUBSCRIBE_ACTION.md#why-gate-and-on-which-flags)

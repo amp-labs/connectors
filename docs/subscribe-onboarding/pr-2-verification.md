@@ -1,7 +1,7 @@
 # PR 2 — Verification (`WebhookVerifierConnector`)
 
-> Part of the [Subscribe Onboarding PR Process](../../SUBSCRIBE_PR_PROCESS.md). Shared concepts:
-> [`SUBSCRIBE_ONBOARDING.md`](../../SUBSCRIBE_ONBOARDING.md).
+> Part of the [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
+> [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
 **Required.** Stacks on [PR 1](./pr-1-provider-info.md).
 
@@ -184,5 +184,5 @@ events carry no provider signature, verification is bypassed by the caller rathe
 
 ## Reference
 
-- [Core types](../../SUBSCRIBE_ONBOARDING.md#core-types)
+- [Core types](../../SUBSCRIBE_REFERENCES.md#core-types)
 - [`providers/salesloft/subscribeEvent.go`](../../providers/salesloft/subscribeEvent.go)

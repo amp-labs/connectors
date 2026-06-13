@@ -1,11 +1,11 @@
-# Subscribe Onboarding — PR Process
+# Contributing a Subscribe Action
 
 How to **ship** subscribe support for a new provider as a clean stack of pull requests.
 
 This doc is about *process*: how to slice the work, what each PR contains, the order to merge them, and
 what reviewers should check. For the *implementation* details (interfaces, types, event parsing,
 verification, metadata, factory wiring, worked examples), see the companion reference:
-[**`SUBSCRIBE_ONBOARDING.md`**](./SUBSCRIBE_ONBOARDING.md).
+[**`SUBSCRIBE_REFERENCES.md`**](./SUBSCRIBE_REFERENCES.md).
 
 ---
 
@@ -20,7 +20,7 @@ verification, metadata, factory wiring, worked examples), see the companion refe
    new code until you flip the switch. This means you can merge the stack incrementally without waiting
    for the whole feature to be done.
 4. **One interface per PR.** The interfaces form a ladder (see
-   [The big picture](./SUBSCRIBE_ONBOARDING.md#the-big-picture)); add one rung per PR.
+   [The big picture](./SUBSCRIBE_REFERENCES.md#the-big-picture)); add one rung per PR.
 5. **Only build what the provider needs.** `RegisterSubscribeConnector` and
    `SubscriptionMaintainerConnector` are **provider-specific** — most providers skip them. Don't add a
    PR for a rung the provider doesn't require.
@@ -66,7 +66,7 @@ up to you: branch each off PR 3, or stack them in a line if that fits your workf
 
 Each PR has its own focused guide — open the one you're writing. They share a structure: goal, what to
 implement, files, step-by-step, an example, a checklist, and reviewer focus. Link the relevant
-[`SUBSCRIBE_ONBOARDING.md`](./SUBSCRIBE_ONBOARDING.md) section in your PR description too.
+[`SUBSCRIBE_REFERENCES.md`](./SUBSCRIBE_REFERENCES.md) section in your PR description too.
 
 | # | PR | Guide | Required? |
 |---|----|-------|-----------|
@@ -128,7 +128,7 @@ main
 ```markdown
 ## Subscribe onboarding — <Provider> — [PR N: <name>]
 
-Part of the subscribe onboarding stack for `<provider>`. See SUBSCRIBE_PR_PROCESS.md.
+Part of the subscribe onboarding stack for `<provider>`. See CONTRIBUTING_SUBSCRIBE_ACTION.md.
 
 - [ ] Scope limited to this stack rung (one interface / concern)
 - [ ] Provider remains gated off (Support.Subscribe / SubscribeByAPI unchanged) — except the Enable PR
@@ -136,7 +136,7 @@ Part of the subscribe onboarding stack for `<provider>`. See SUBSCRIBE_PR_PROCES
 - [ ] Compile-time interface assertion added (if this PR adds an interface)
 - [ ] Unit tests added/updated
 - [ ] Manual sandbox verification (where applicable)
-- [ ] Linked the relevant SUBSCRIBE_ONBOARDING.md section
+- [ ] Linked the relevant SUBSCRIBE_REFERENCES.md section
 ```
 
 ---
@@ -145,7 +145,7 @@ Part of the subscribe onboarding stack for `<provider>`. See SUBSCRIBE_PR_PROCES
 
 | Want to… | Go to |
 |----------|-------|
-| Understand the interfaces & types | [`SUBSCRIBE_ONBOARDING.md`](./SUBSCRIBE_ONBOARDING.md) |
+| Understand the interfaces & types | [`SUBSCRIBE_REFERENCES.md`](./SUBSCRIBE_REFERENCES.md) |
 | See a worked example | the **Example** section in each per-PR guide (e.g. [PR 3](./docs/subscribe-onboarding/pr-3-subscribe-update-delete.md#example)) |
 | Know what each PR contains | [PR-by-PR](#pr-by-pr) above |
 | Know the merge order | [The stack](#the-stack) above |

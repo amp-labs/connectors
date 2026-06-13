@@ -1,6 +1,6 @@
-# Onboarding a New Provider to Subscribe
+# Subscribe Action — Reference
 
-This is the **overview** for adding **Subscribe** support (webhook subscriptions) to a provider in the
+This is the **reference** for adding **Subscribe** support (webhook subscriptions) to a provider in the
 `github.com/amp-labs/connectors` library — the shared concepts that apply across the whole effort:
 the interface ladder, the core types, and the shapes real providers take.
 
@@ -107,11 +107,10 @@ type RegistrationResult struct {
 Event type constants (`common/types.go`):
 
 ```go
-SubscriptionEventTypeCreate            = "create"
-SubscriptionEventTypeUpdate            = "update"
-SubscriptionEventTypeDelete            = "delete"
-SubscriptionEventTypeAssociationUpdate = "associationUpdate"
-SubscriptionEventTypeOther             = "other"
+SubscriptionEventTypeCreate = "create"
+SubscriptionEventTypeUpdate = "update"
+SubscriptionEventTypeDelete = "delete"
+SubscriptionEventTypeOther  = "other"
 ```
 
 ---
@@ -130,7 +129,7 @@ SubscriptionEventTypeOther             = "other"
 
 Ship subscribe support as a stack of small, gated-off PRs. The process — principles, the stack diagram,
 merge order, gating, and how to manage the stack — is in
-[**`SUBSCRIBE_PR_PROCESS.md`**](./SUBSCRIBE_PR_PROCESS.md).
+[**`CONTRIBUTING_SUBSCRIBE_ACTION.md`**](./CONTRIBUTING_SUBSCRIBE_ACTION.md).
 
 Each PR has its own focused guide with the full implementation detail for that step (interface
 signatures, examples, files, checklist, reviewer focus):
