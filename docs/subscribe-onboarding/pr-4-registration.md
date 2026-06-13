@@ -5,7 +5,12 @@
 
 > **Provider-specific — implement only if needed.** Most providers do not need registration. Add this
 > PR only when the provider requires a one-time, installation-level setup step shared by all object
-> subscriptions (Salesforce → AWS EventBridge is the canonical case).
+> subscriptions (Salesforce is the canonical case).
+>
+> **Not to be confused with PostProcess.** Registration is a connector-side step (the `Register`
+> method). [PostProcess](./pr-1-provider-info.md#postprocess-indicator-only) is a separate, independent
+> concept — third-party setup performed by **server-side code**, with the connector only flagging it in
+> `ProviderInfo`. A provider may need either without the other; PostProcess is not part of this PR.
 
 Builds on [PR 3](./pr-3-subscribe-update-delete.md). It has **no dependency** on
 [PR 5 (Maintenance)](./pr-5-maintenance.md) — neither interface extends the other — so do either, both,
@@ -31,8 +36,8 @@ EmptyRegistrationResult() *common.RegistrationResult
 later hangs each object subscription off it). It must roll back its own partial work on failure and set
 `Status` accordingly.
 
-And set `SubscribeRequirements.Registration: new(true)` in [PR 1](./pr-1-provider-info.md)'s metadata
-(and `PostProcess: new(true)` if a third-party setup step is involved).
+And set `SubscribeRequirements.Registration: new(true)` in [PR 1](./pr-1-provider-info.md)'s
+`ProviderInfo`.
 
 Files: `providers/<provider>/register.go` (or similar) and `providers/<provider>.go` (flag).
 
@@ -85,22 +90,16 @@ Key points: `Register` **rolls back its own partial work** on failure and report
 (`Success` / `Failed` / `FailedToRollback`); `DeleteRegistration` tears resources down in reverse
 order.
 
-## PostProcess
-
-`PostProcess` work (e.g. wiring AWS EventBridge after Salesforce subscribes) is performed **outside the
-connector** by the caller. The connector's only obligation is to **return the data the post-processor
-needs** in `RegistrationResult.Result` (for Salesforce, the `EventChannel` id, etc.). Set
-`SubscribeRequirements.PostProcess: new(true)`; there's no connector method to implement, so fold the
-flag into this PR.
-
 ## Checklist
 
 - [ ] `Register` rolls back its own partial work on failure and sets `Status` correctly.
 - [ ] `DeleteRegistration` tears resources down in reverse order.
 - [ ] `EmptyRegistrationParams` / `EmptyRegistrationResult` populate the provider-specific structs.
-- [ ] `Registration: new(true)` set (+ `PostProcess: new(true)` if applicable), each with a code
-      comment linking the provider docs that justify it.
-- [ ] `RegistrationResult.Result` carries everything `Subscribe` and any post-processor need.
+- [ ] `Registration: new(true)` set in `ProviderInfo` (PR 1), with a code comment linking the provider
+      docs that justify it.
+- [ ] `RegistrationResult.Result` carries everything `Subscribe` needs — and, if the provider also uses
+      [PostProcess](./pr-1-provider-info.md#postprocess-indicator-only), any data that server-side step
+      will consume.
 
 ## Reviewer focus
 
