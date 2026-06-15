@@ -73,6 +73,10 @@ var (
 	// ErrBadRequest is returned when we get a 400 response from the provider.
 	ErrBadRequest error = newClassedErr("bad request", ErrorClassBadRequest)
 
+	// ErrFieldNotFound is returned when a requested field was not found or is not
+	// accessible on the object. It is a subset of ErrBadRequest.
+	ErrFieldNotFound = errors.New("field not found or not accessible")
+
 	// ErrConflict is returned when we get a 409 response from the provider.
 	ErrConflict = errors.New("conflict")
 
@@ -81,6 +85,11 @@ var (
 
 	// ErrCursorGone is returned when a cursor used for pagination is no longer valid.
 	ErrCursorGone error = newClassedErr("pagination cursor gone or expired", ErrorClassCursorGone)
+
+	// ErrInvalidPaginationCursor is returned when the provider rejected a pagination cursor
+	// as malformed/unparseable (e.g. HubSpot returning "Cannot deserialize value of type `int`
+	// from String ...")
+	ErrInvalidPaginationCursor error = errors.New("pagination cursor has an invalid format")
 
 	// ErrResultsLimitExceeded is returned when a search query exceeds the provider's
 	// maximum result limit (e.g., HubSpot's 10,000 record search limit).

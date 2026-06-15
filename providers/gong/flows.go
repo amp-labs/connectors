@@ -57,6 +57,8 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 		}
 
 		mergeUserFlows(aggregated, flows, user, includeUserAssoc)
+		// Temp solution to only fetch one user's flows to prevent API consumption issues.
+		break
 	}
 
 	if len(aggregated) == 0 {
@@ -91,8 +93,17 @@ func emptyFlowsResult() *common.ReadResult {
 	}
 }
 
-// mergeUserFlows adds a user's flows to the aggregate, skipping ids already
-// collected and attaching the owning user to personal flows when requested.
+// mergeUserFlows adds a user's flows to the aggregate, deduplicating by id and
+// attaching the owning user to personal flows when requested.
+//
+// Gong reports visibility relative to the queried email: a flow reads "Personal"
+// only in its owner's result set and "Shared" for everyone else who can see it.
+// The same flow id therefore shows up in several users' results with different
+// visibility, and users are fetched in an arbitrary order. So we can't just keep
+// the first copy we see: if a non-owner is fetched first we'd store the "Shared"
+// copy and never attach the owner. When this user owns the flow (their copy says
+// "Personal") we prefer that copy, overwriting any "Shared" one stored earlier,
+// so the owner association is reliable no matter what order users come back in.
 func mergeUserFlows(
 	aggregated map[string]common.ReadResultRow,
 	flows []common.ReadResultRow,
@@ -100,8 +111,11 @@ func mergeUserFlows(
 	includeUserAssoc bool,
 ) {
 	for _, flow := range flows {
-		_, seen := aggregated[flow.Id]
-		if seen {
+		visibility, _ := flow.Raw["visibility"].(string)
+		ownsFlow := strings.EqualFold(visibility, "Personal")
+
+		// Already collected and this isn't the owner's copy: nothing to add.
+		if _, seen := aggregated[flow.Id]; seen && !ownsFlow {
 			continue
 		}
 
