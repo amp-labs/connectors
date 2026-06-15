@@ -220,8 +220,12 @@ type ReadParams struct {
 
 	// Additional options for the read operation that the connector may support.
 	// This optional map is used for bespoke connector-specific parameters.
-	Opts map[string]any // optional
+	Opts ReadParamOpts // optional
 }
+
+// Each connector that supports ReadParams.Opts should define its own type and assert it.
+// e.g. gong.ReadParamOpts
+type ReadParamOpts any
 
 func (p ReadParams) IsFirstPage() bool {
 	return p.NextPage.String() == ""
