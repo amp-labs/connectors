@@ -9,15 +9,15 @@
 
 Builds on [PR 2](./pr-2-verification.md). When a provider needs registration, it comes **before**
 [Subscribe (PR 4)](./pr-4-subscribe-update-delete.md): `Subscribe` consumes the registration result
-(`params.RegistrationResult`), so the shared infrastructure must exist first. (Note: the
+(`params.RegistrationResult`), so that shared resource must exist first. (Note: the
 `connectors.RegisterSubscribeConnector` interface *embeds* `SubscribeConnector`, so the full
 compile-time assertion is satisfied once Subscribe lands in PR 4 — this PR adds the `Register` /
 `DeleteRegistration` methods.)
 
 ## Goal
 
-Implement the one-time registration that creates the shared infrastructure `Subscribe` then hangs each
-object subscription off of.
+Implement the one-time registration that creates a **shared resource across objects** — the thing
+`Subscribe` then hangs each object subscription off of.
 
 ## What you implement
 
@@ -30,9 +30,9 @@ EmptyRegistrationParams() *common.SubscriptionRegistrationParams
 EmptyRegistrationResult() *common.RegistrationResult
 ```
 
-`Register` is a one-time per-installation operation that creates shared infrastructure (`Subscribe`
-later hangs each object subscription off it). It must roll back its own partial work on failure and set
-`Status` accordingly.
+`Register` is a one-time per-installation operation that creates a shared resource used across all
+objects (`Subscribe` later hangs each object subscription off it). It must roll back its own partial
+work on failure and set `Status` accordingly.
 
 And set `SubscribeRequirements.Registration: new(true)` in [PR 1](./pr-1-provider-info.md)'s
 `ProviderInfo`.

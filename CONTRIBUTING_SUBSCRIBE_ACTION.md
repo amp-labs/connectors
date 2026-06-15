@@ -33,9 +33,9 @@ verification, metadata, factory wiring, worked examples), see the companion refe
 
 The stack is **linear** — each PR builds on the one below it. Registration (PR 3) and Maintenance
 (PR 5) are **optional**; include them only if the provider needs them. Their positions are fixed by
-dependency: **Registration comes before Subscribe** (it creates the shared infrastructure `Subscribe`
-consumes), and **Maintenance comes after Subscribe** (it renews what Subscribe created). `Enable` is
-always last.
+dependency: **Registration comes before Subscribe** (it creates a shared resource that all object
+subscriptions hang off of, which `Subscribe` consumes), and **Maintenance comes after Subscribe** (it
+renews what Subscribe created). `Enable` is always last.
 
 ```
   Enable the provider (PR 6)             flip Support.Subscribe + SubscribeByAPI on   ← merge last
@@ -44,7 +44,7 @@ always last.
         ▲
   Subscribe / Update / Delete (PR 4)     SubscribeConnector
         ▲
-  Registration (PR 3, if needed)         RegisterSubscribeConnector — creates infra Subscribe uses
+  Registration (PR 3, if needed)         RegisterSubscribeConnector — shared resource across objects
         ▲
   Verification (PR 2)                    WebhookVerifierConnector
         ▲
