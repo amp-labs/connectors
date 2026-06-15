@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	ServiceNow "github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/test/servicenow"
 )
@@ -32,7 +33,7 @@ func run() error {
 		return err
 	}
 
-	err = testUpdateCase(ctx, conn)
+	err = testCreateCase(ctx, conn)
 	if err != nil {
 		return err
 	}
@@ -52,6 +53,8 @@ func testCreateLead(ctx context.Context, conn *ServiceNow.Connector) error {
 			"short_description": "Interested in premium plan",
 			"state":             "1",
 			"company":           "Withampersand",
+			"first_name":        "Mohammed",
+			"last_name":         "Salah",
 		},
 	}
 
@@ -74,9 +77,25 @@ func testCreateLead(ctx context.Context, conn *ServiceNow.Connector) error {
 }
 
 func testUpdateLead(ctx context.Context, conn *ServiceNow.Connector) error {
+	// Fetch a real lead id from the instance rather than hardcoding one, so the
+	// update targets an existing record.
+	read, err := conn.Read(ctx, common.ReadParams{
+		ObjectName: "lead",
+		Fields:     datautils.NewStringSet("sys_id"),
+	})
+	if err != nil {
+		return fmt.Errorf("reading a lead to update: %w", err)
+	}
+
+	if len(read.Data) == 0 {
+		return fmt.Errorf("no lead found to update")
+	}
+
+	recordID, _ := read.Data[0].Fields["sys_id"].(string)
+
 	params := common.WriteParams{
 		ObjectName: "lead",
-		RecordId:   "6a2f6fbb83f02210290fed70deaad320",
+		RecordId:   recordID,
 		RecordData: map[string]any{
 			"company": "Ampersand",
 		},
@@ -99,12 +118,12 @@ func testUpdateLead(ctx context.Context, conn *ServiceNow.Connector) error {
 	return nil
 }
 
-func testUpdateCase(ctx context.Context, conn *ServiceNow.Connector) error {
+func testCreateCase(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "case",
-		RecordId:   "280ffff1c0a8000b0083f5395b44bc97",
 		RecordData: map[string]any{
-			"priority": "2",
+			"short_description": "Customer reported a billing discrepancy",
+			"priority":          "2",
 		},
 	}
 
@@ -133,7 +152,6 @@ func testCreateContact(ctx context.Context, conn *ServiceNow.Connector) error {
 			"agent_status": "On break",
 			"city":         "Liverpool",
 			"company":      "Withampersand",
-			"country":      "UK",
 			"email":        "ywnwa@lfc.com",
 			"first_name":   "Mohammed",
 			"last_name":    "Salah",
