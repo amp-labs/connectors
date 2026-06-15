@@ -49,10 +49,10 @@ by id after a webhook event arrives.
 
 | Interface | Methods you add | When you need it | PR |
 |-----------|-----------------|------------------|----|
-| `WebhookVerifierConnector` | `VerifyWebhookMessage` | Provider signs its webhooks (almost always). | [PR 2](./docs/subscribe-onboarding/pr-2-verification.md) |
-| `SubscribeConnector` | `Subscribe`, `UpdateSubscription`, `DeleteSubscription`, `EmptySubscriptionParams`, `EmptySubscriptionResult` | Provider lets you create subscriptions programmatically via API. | [PR 3](./docs/subscribe-onboarding/pr-3-subscribe-update-delete.md) |
-| `RegisterSubscribeConnector` | `Register`, `DeleteRegistration`, `EmptyRegistrationParams`, `EmptyRegistrationResult` | **Provider-specific, if needed** — only when the provider needs a one-time, installation-level setup shared by all object subscriptions. | [PR 4](./docs/subscribe-onboarding/pr-4-registration.md) |
-| `SubscriptionMaintainerConnector` | `RunScheduledMaintenance` | **Provider-specific, if needed** — only when subscriptions/watches expire after a TTL and must be renewed on a schedule. | [PR 5](./docs/subscribe-onboarding/pr-5-maintenance.md) |
+| `WebhookVerifierConnector` | `VerifyWebhookMessage` | Provider signs its webhooks (almost always). | [PR&nbsp;2](./docs/subscribe-onboarding/pr-2-verification.md) |
+| `SubscribeConnector` | `Subscribe`, `UpdateSubscription`, `DeleteSubscription`, `EmptySubscriptionParams`, `EmptySubscriptionResult` | Provider lets you create subscriptions programmatically via API. | [PR&nbsp;3](./docs/subscribe-onboarding/pr-3-subscribe-update-delete.md) |
+| `RegisterSubscribeConnector` | `Register`, `DeleteRegistration`, `EmptyRegistrationParams`, `EmptyRegistrationResult` | **Provider-specific, if needed** — only when the provider needs a one-time, installation-level setup shared by all object subscriptions. | [PR&nbsp;4](./docs/subscribe-onboarding/pr-4-registration.md) |
+| `SubscriptionMaintainerConnector` | `RunScheduledMaintenance` | **Provider-specific, if needed** — only when subscriptions/watches expire after a TTL and must be renewed on a schedule. | [PR&nbsp;5](./docs/subscribe-onboarding/pr-5-maintenance.md) |
 
 ### How the caller uses `ProviderInfo`
 
@@ -67,9 +67,9 @@ provider declares subscribe metadata in its `ProviderInfo` (in `providers/<provi
 
 At runtime the caller reads this metadata to pick the path (API vs. manual) and to decide which of the
 optional steps (registration, post-process, scheduled maintenance) to run — it never hard-codes
-per-provider behavior. That's why declaring `ProviderInfo` is the first PR ([PR 1](./docs/subscribe-onboarding/pr-1-provider-info.md))
+per-provider behavior. That's why declaring `ProviderInfo` is the first PR ([PR&nbsp;1](./docs/subscribe-onboarding/pr-1-provider-info.md))
 and why a provider stays dormant until those flags are flipped on. The fields are detailed in
-[Core types](#core-types) and [PR 1](./docs/subscribe-onboarding/pr-1-provider-info.md).
+[Core types](#core-types) and [PR&nbsp;1](./docs/subscribe-onboarding/pr-1-provider-info.md).
 
 A "UI Subscription only" provider (subscriptions configured in the provider's own UI, e.g. Hubspot/Gong)
 only implements `WebhookVerifierConnector` — the caller reads its events but never calls `Subscribe`.
