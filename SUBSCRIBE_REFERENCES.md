@@ -54,6 +54,23 @@ by id after a webhook event arrives.
 | `RegisterSubscribeConnector` | `Register`, `DeleteRegistration`, `EmptyRegistrationParams`, `EmptyRegistrationResult` | **Provider-specific, if needed** — only when the provider needs a one-time, installation-level setup shared by all object subscriptions. | [PR 4](./docs/subscribe-onboarding/pr-4-registration.md) |
 | `SubscriptionMaintainerConnector` | `RunScheduledMaintenance` | **Provider-specific, if needed** — only when subscriptions/watches expire after a TTL and must be renewed on a schedule. | [PR 5](./docs/subscribe-onboarding/pr-5-maintenance.md) |
 
+### How the caller uses `ProviderInfo`
+
+The interfaces above are the *how* — the code that talks to the provider. **`ProviderInfo` is what the
+caller reads to know *whether* and *how* to use them.** Alongside implementing the interfaces, every
+provider declares subscribe metadata in its `ProviderInfo` (in `providers/<provider>.go`):
+
+- **`Support.Subscribe`** — the master switch: does this provider support subscribe at all?
+- **`SubscribeRequirements`** — the shape of that support: `SubscribeByAPI` (subscribe via API vs.
+  manual UI configuration), and whether the provider needs `Registration`, `PostProcess`, or
+  `Maintenance`.
+
+At runtime the caller reads this metadata to pick the path (API vs. manual) and to decide which of the
+optional steps (registration, post-process, scheduled maintenance) to run — it never hard-codes
+per-provider behavior. That's why declaring `ProviderInfo` is the first PR ([PR 1](./docs/subscribe-onboarding/pr-1-provider-info.md))
+and why a provider stays dormant until those flags are flipped on. The fields are detailed in
+[Core types](#core-types) and [PR 1](./docs/subscribe-onboarding/pr-1-provider-info.md).
+
 A "UI Subscription only" provider (subscriptions configured in the provider's own UI, e.g. Hubspot/Gong)
 only implements `WebhookVerifierConnector` — the caller reads its events but never calls `Subscribe`.
 
