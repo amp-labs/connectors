@@ -1,7 +1,7 @@
 # PR 5 — Maintenance (`SubscriptionMaintainerConnector`) *(provider-specific, if needed)*
 
-> Part of the [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Implementation
-> reference: [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
+> Part of [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
+> [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
 **Optional — skip this PR unless** the provider's subscriptions/watches expire after a TTL and must be
 periodically renewed. Most providers do not.
@@ -20,7 +20,7 @@ Implement the scheduled renewal that keeps an expiring subscription alive.
 RunScheduledMaintenance(
     ctx context.Context,
     params common.SubscribeParams,
-    previous *common.SubscriptionResult,
+    previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error)
 ```
 
@@ -34,9 +34,9 @@ And set `SubscribeRequirements.Maintenance: new(true)`.
 ## Steps
 
 1. Add `var _ connectors.SubscriptionMaintainerConnector = &Connector{}`.
-2. Implement `RunScheduledMaintenance`: renew/refresh the subscription described by `previous` (it
-   carries provider-specific identifiers, timestamps, expiry) and return the **updated** state. `params`
-   is typically identical to the currently active configuration.
+2. Implement `RunScheduledMaintenance`: renew/refresh the subscription described by `previousResult`
+   (it carries provider-specific identifiers, timestamps, expiry) and return the **updated** state.
+   `params` is typically identical to the currently active configuration.
 3. Set `Maintenance: new(true)` in the provider metadata.
 
 > The renewal **cadence** is configured by the caller, not in the connector.
@@ -44,7 +44,7 @@ And set `SubscribeRequirements.Maintenance: new(true)`.
 ## Checklist
 
 - [ ] `var _ connectors.SubscriptionMaintainerConnector = &Connector{}` assertion present.
-- [ ] `RunScheduledMaintenance` renews the subscription in `previous` and returns refreshed state.
+- [ ] `RunScheduledMaintenance` renews the subscription in `previousResult` and returns refreshed state.
 - [ ] `Maintenance: new(true)` set in the provider metadata, with a code comment linking the provider
       docs that justify it (e.g. the subscription TTL / renewal cadence).
 

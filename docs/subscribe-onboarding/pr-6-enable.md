@@ -1,7 +1,7 @@
 # PR 6 — Enable the provider *(top)*
 
-> Part of the [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Implementation
-> reference: [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
+> Part of [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
+> [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
 **Required, last.** The top of the stack — a one-line switch that turns the provider on.
 

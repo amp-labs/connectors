@@ -1,6 +1,6 @@
 # PR 1 — `ProviderInfo` + Factory wiring *(base)*
 
-> Part of the [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
+> Part of [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
 > [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
 **Required.** This is the base of the stack — everything else stacks on it.
@@ -113,11 +113,11 @@ SubscribeRequirements: &SubscribeRequirements{
 ## Gating rule
 
 > `Support.Subscribe` is the **master gate** — it must be `true` for the provider to subscribe at all
-> (via API *or* manual/UI). `SubscribeByAPI` is **not a gate**; it only tells the caller whether the
-> programmatic API approach is available (`true`) or the provider is configured manually in its UI
-> (`false`). **Keep `Support.Subscribe` off** for the entire stack and flip it on (plus `SubscribeByAPI`
-> for API providers) only in the final [`Enable`](./pr-6-enable.md) PR — that's what keeps every
-> intermediate PR a safe no-op even after it merges.
+> (via API or manual/UI); `SubscribeByAPI` then says whether the programmatic API approach is available.
+> (Today the server keys the API path off `SubscribeByAPI`; enforcing `Support.Subscribe` as the master
+> gate for the API path too is planned server-side work.) **Keep both off** for the entire stack and
+> flip them on only in the final [`Enable`](./pr-6-enable.md) PR — that's what keeps every intermediate
+> PR a safe no-op even after it merges.
 
 ## Factory wiring *(brand-new providers only)*
 

@@ -1,6 +1,6 @@
 # PR 4 — Registration (`RegisterSubscribeConnector`) *(provider-specific, if needed)*
 
-> Part of the [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
+> Part of [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
 > [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
 > **Provider-specific — implement only if needed.** Most providers do not need registration. Add this
@@ -91,7 +91,7 @@ the `Request any` in `SubscriptionRegistrationParams`. Deserialization targets t
 `EmptyRegistrationResult()` / `EmptyRegistrationParams()` return, so those structs must round-trip
 cleanly:
 
-- **Export every field** and give it a JSON tag — unexported fields are silently dropped.
+- **Export every field** — unexported fields are silently dropped. Add JSON tags to control the serialized names (recommended).
 - **Prefer Go native types** (`string`, `int`, `bool`, `time.Time`, and slices/maps/nested structs of
   those). Avoid `any`/`interface{}`, function values, channels, and types that need custom
   (un)marshaling; they don't survive the round trip reliably.

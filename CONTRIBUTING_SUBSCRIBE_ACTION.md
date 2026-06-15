@@ -82,16 +82,17 @@ implement, files, step-by-step, an example, a checklist, and reviewer focus. Lin
 The caller activates a provider from its metadata:
 
 - `Support.Subscribe` is the **master gate** — it must be `true` for the provider to subscribe at all,
-  whether via API or manual/UI configuration. This is the flag that gates the API subscribe path too.
-- `SubscribeRequirements.SubscribeByAPI` is **not a gate** — it just tells the caller *whether the
-  programmatic (API) approach is available*. With `Support.Subscribe` on, `SubscribeByAPI: true` →
-  subscribe via API; `false` → the provider is configured manually in its UI (UI Subscription only).
+  via API or manual/UI. (Today the server keys the *API* path off `SubscribeByAPI`; enforcing
+  `Support.Subscribe` as the master gate for the API path too is planned server-side work.)
+- `SubscribeRequirements.SubscribeByAPI` says **whether the programmatic (API) approach is available**:
+  `true` → subscribe via the connector's API; with `Support.Subscribe` on but `SubscribeByAPI` off →
+  the provider is configured manually in its UI (UI Subscription only).
 
-Keeping `Support.Subscribe` off until PR 6 means none of the intermediate PRs can affect production,
-even after they merge. That's what makes incremental merging safe. In the final PR, flip
-`Support.Subscribe` on (plus `SubscribeByAPI` for API providers). (The *requirement* flags —
-`Registration` / `PostProcess` / `Maintenance` — are only consulted once subscribe is active, so
-declaring them earlier is harmless.)
+Keep **both `Support.Subscribe` and `SubscribeByAPI` off** for the entire stack so none of the
+intermediate PRs can affect production, even after they merge — that's what makes incremental merging
+safe. In the final PR, flip `Support.Subscribe` on (plus `SubscribeByAPI` for API providers). (The
+*requirement* flags — `Registration` / `PostProcess` / `Maintenance` — are only consulted once subscribe
+is active, so declaring them earlier is harmless.)
 
 ---
 
@@ -126,9 +127,9 @@ main
 ## PR description checklist (copy into each PR)
 
 ```markdown
-## Subscribe onboarding — <Provider> — [PR N: <name>]
+## Subscribe Action — <Provider> — [PR N: <name>]
 
-Part of the subscribe onboarding stack for `<provider>`. See CONTRIBUTING_SUBSCRIBE_ACTION.md.
+Part of the Subscribe Action stack for `<provider>`. See CONTRIBUTING_SUBSCRIBE_ACTION.md.
 
 - [ ] Scope limited to this stack rung (one interface / concern)
 - [ ] Provider remains gated off (Support.Subscribe / SubscribeByAPI unchanged) — except the Enable PR
