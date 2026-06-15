@@ -148,11 +148,11 @@ SubscriptionEventTypeOther  = "other"
 
 ## PostProcess
 
-Some providers need a **third-party setup step** to receive webhooks that the **connector cannot
-perform itself** — because that step happens in a *different* system than the one the connector
-authenticates to. The connector holds a token for *its* provider (say, Salesforce); the extra setup
-lives in another provider's system (AWS EventBridge for Salesforce, a Google Pub/Sub topic for Gmail),
-which that token can't touch. That cross-provider setup is **PostProcess**.
+PostProcess is needed when subscribing requires a **second set of credentials** that the connector's
+token doesn't hold. The connector authenticates to *its* provider (say, Salesforce), but the setup step
+needs access to a **different** system (e.g. AWS EventBridge) — credentials the connector can't supply.
+Whenever completing subscribe requires extra credentials / access beyond the connector's token, that
+step is **PostProcess**.
 
 How it plays out:
 
