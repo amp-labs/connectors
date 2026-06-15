@@ -3,7 +3,6 @@ package servicenow
 import (
 	"context"
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -18,12 +17,6 @@ import (
 // with AND. Only equality is supported in common.SearchFilter today, which maps
 // cleanly onto the `field=value` form.
 func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error) {
-	// Search filters a list response, so it is only available for objects whose
-	// collection can be listed.
-	if !slices.Contains(readSupportedObjects, params.ObjectName) {
-		return nil, fmt.Errorf("%w: %s does not support search", common.ErrOperationNotSupportedForObject, params.ObjectName)
-	}
-
 	url, err := c.constructSearchURL(params)
 	if err != nil {
 		return nil, err
@@ -35,8 +28,8 @@ func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*c
 	}
 
 	return common.ParseResult(resp,
-		common.ExtractRecordsFromPath("result"),
-		getNextRecordsURL(resp),
+		recordsFunc(params.ObjectName),
+		getNextRecordsURL(resp, c.ProviderInfo().BaseURL),
 		common.GetMarshaledData,
 		params.Fields,
 	)
