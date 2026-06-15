@@ -1,6 +1,6 @@
 # PR 3 — Subscribe / Update / Delete (`SubscribeConnector`)
 
-> Part of the [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
+> Part of [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
 > [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
 **Required.** Stacks on [PR 2](./pr-2-verification.md).
@@ -100,7 +100,7 @@ build verification params), so it serializes/deserializes the value you place in
 `EmptySubscriptionResult()` / `EmptySubscriptionParams()` return, so those structs must round-trip
 cleanly:
 
-- **Export every field** and give it a JSON tag — unexported fields are silently dropped.
+- **Export every field** — unexported fields are silently dropped. Add JSON tags to control the serialized names (recommended).
 - **Prefer Go native types** (`string`, `int`, `bool`, `time.Time`, and slices/maps/nested structs of
   those). Avoid `any`/`interface{}`, function values, channels, and types that need custom
   (un)marshaling; they don't survive the round trip reliably.

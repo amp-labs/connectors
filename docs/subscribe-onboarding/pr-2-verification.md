@@ -1,6 +1,6 @@
 # PR 2 — Verification (`WebhookVerifierConnector`)
 
-> Part of the [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
+> Part of [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
 > [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
 **Required.** Stacks on [PR 1](./pr-1-provider-info.md).
