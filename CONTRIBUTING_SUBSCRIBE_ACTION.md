@@ -93,18 +93,17 @@ implement, files, step-by-step, an example, a checklist, and reviewer focus. Lin
 
 The caller activates a provider from its metadata:
 
-- `Support.Subscribe` is the **master gate** — it must be `true` for the provider to subscribe at all,
-  via API or manual/UI. (Today the server keys the *API* path off `SubscribeByAPI`; enforcing
-  `Support.Subscribe` as the master gate for the API path too is planned server-side work.)
+- `Support.Subscribe` is the **gate** — it must be `true` for the provider to subscribe at all (via API
+  or manual/UI).
 - `SubscribeRequirements.SubscribeByAPI` says **whether the programmatic (API) approach is available**:
-  `true` → subscribe via the connector's API; with `Support.Subscribe` on but `SubscribeByAPI` off →
-  the provider is configured manually in its UI (UI Subscription only).
+  `true` → subscribe via the connector's API; `false` → the provider is configured manually in its UI
+  (UI Subscription only).
 
-Keep **both `Support.Subscribe` and `SubscribeByAPI` off** for the entire stack so none of the
-intermediate PRs can affect production, even after they merge — that's what makes incremental merging
-safe. In the final PR, flip `Support.Subscribe` on (plus `SubscribeByAPI` for API providers). (The
-*requirement* flags — `Registration` / `PostProcess` / `Maintenance` — are only consulted once subscribe
-is active, so declaring them earlier is harmless.)
+Keep **`Support.Subscribe` off** for the entire stack so none of the intermediate PRs can affect
+production, even after they merge — that's what makes incremental merging safe. In the final PR, flip
+`Support.Subscribe` on (plus `SubscribeByAPI` for API providers). (The *requirement* flags —
+`Registration` / `PostProcess` / `Maintenance` — are only consulted once subscribe is active, so
+declaring them earlier is harmless.)
 
 ---
 
