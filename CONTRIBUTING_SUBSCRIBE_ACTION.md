@@ -19,8 +19,10 @@ verification, metadata, factory wiring, worked examples), see the companion refe
    the final `Enable` PR. Every intermediate PR is a safe no-op in production — nothing calls into your
    new code until you flip the switch. This means you can merge the stack incrementally without waiting
    for the whole feature to be done.
-4. **One interface per PR.** The interfaces form a ladder (see
-   [The big picture](./SUBSCRIBE_REFERENCES.md#the-big-picture)); add one rung per PR.
+4. **One interface per PR.** Each PR adds a single interface's methods (verification, registration,
+   subscribe, maintenance). See [The big picture](./SUBSCRIBE_REFERENCES.md#the-big-picture) for how the
+   interfaces relate (note: PR order is sequenced by dependency, not by the interface ladder — see
+   [The stack](#the-stack)).
 5. **Only build what the provider needs.** `RegisterSubscribeConnector` and
    `SubscriptionMaintainerConnector` are **provider-specific** — most providers skip them. Don't add a
    PR for a rung the provider doesn't require.
@@ -29,35 +31,38 @@ verification, metadata, factory wiring, worked examples), see the companion refe
 
 ## The stack
 
-PRs 1–3 are a linear stack and mirror the interface ladder. PRs 4 and 5 are **optional** and have
-**no dependency on each other** — `RegisterSubscribeConnector` and `SubscriptionMaintainerConnector`
-each extend `SubscribeConnector` (not each other). Because neither depends on the other, the order is
-up to you: branch each off PR 3, or stack them in a line if that fits your workflow — either is fine.
-`Enable` merges last, once PR 3 and any needed PR 4 / PR 5 are in.
+The stack is **linear** — each PR builds on the one below it. Registration (PR 3) and Maintenance
+(PR 5) are **optional**; include them only if the provider needs them. Their positions are fixed by
+dependency: **Registration comes before Subscribe** (it creates the shared infrastructure `Subscribe`
+consumes), and **Maintenance comes after Subscribe** (it renews what Subscribe created). `Enable` is
+always last.
 
 ```
-  Enable the provider (PR 6)   flip Support.Subscribe + SubscribeByAPI on
-        ▲ merge last, after PR 3 (+ PR 4 / PR 5 if used)
-        │
-  Registration (PR 4)          Maintenance (PR 5)     ← optional; no dependency between
-  RegisterSubscribeConnector   SubscriptionMaintainer    them — branch each off PR 3, or
-  (if needed)                  (if needed)               stack them; either is fine
-        └──────────── both build on ─────────────┘
-                          │
-  Subscribe / Update / Delete (PR 3)   SubscribeConnector
-        ▲ stacked on
-  Verification (PR 2)                  WebhookVerifierConnector
-        ▲ stacked on
+  Enable the provider (PR 6)             flip Support.Subscribe + SubscribeByAPI on   ← merge last
+        ▲
+  Maintenance (PR 5, if needed)          SubscriptionMaintainerConnector — renews after subscribe
+        ▲
+  Subscribe / Update / Delete (PR 4)     SubscribeConnector
+        ▲
+  Registration (PR 3, if needed)         RegisterSubscribeConnector — creates infra Subscribe uses
+        ▲
+  Verification (PR 2)                    WebhookVerifierConnector
+        ▲
   ProviderInfo + factory wiring (PR 1, gated off)          ← base, merge first
 ```
+
+> The PR order is not the same as the interface ladder. `RegisterSubscribeConnector` *embeds*
+> `SubscribeConnector`, yet registration is *sequenced before* subscribe because its result is an input
+> to `Subscribe`. (The full `RegisterSubscribeConnector` compile-time assertion is therefore added once
+> Subscribe lands in PR 4.)
 
 | # | PR | Adds | Required? |
 |---|----|------|-----------|
 | 1 | ProviderInfo + Factory wiring | subscribe metadata (gated off); factory entry if brand-new | ✅ |
 | 2 | Verification | `WebhookVerifierConnector` + event types | ✅ |
-| 3 | Subscribe / Update / Delete | `SubscribeConnector` | ✅ |
-| 4 | Registration | `RegisterSubscribeConnector` | ⬜ if needed |
-| 5 | Maintenance | `SubscriptionMaintainerConnector` | ⬜ if needed |
+| 3 | Registration | `RegisterSubscribeConnector` — before Subscribe | ⬜ if needed |
+| 4 | Subscribe / Update / Delete | `SubscribeConnector` | ✅ |
+| 5 | Maintenance | `SubscriptionMaintainerConnector` — after Subscribe | ⬜ if needed |
 | 6 | Enable the provider | flips the gate on | ✅ (last) |
 
 ---
@@ -72,8 +77,8 @@ implement, files, step-by-step, an example, a checklist, and reviewer focus. Lin
 |---|----|-------|-----------|
 | 1 | ProviderInfo + Factory wiring | [pr-1-provider-info.md](./docs/subscribe-onboarding/pr-1-provider-info.md) | ✅ |
 | 2 | Verification | [pr-2-verification.md](./docs/subscribe-onboarding/pr-2-verification.md) | ✅ |
-| 3 | Subscribe / Update / Delete | [pr-3-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-3-subscribe-update-delete.md) | ✅ |
-| 4 | Registration | [pr-4-registration.md](./docs/subscribe-onboarding/pr-4-registration.md) | ⬜ if needed |
+| 3 | Registration | [pr-3-registration.md](./docs/subscribe-onboarding/pr-3-registration.md) | ⬜ if needed |
+| 4 | Subscribe / Update / Delete | [pr-4-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-4-subscribe-update-delete.md) | ✅ |
 | 5 | Maintenance | [pr-5-maintenance.md](./docs/subscribe-onboarding/pr-5-maintenance.md) | ⬜ if needed |
 | 6 | Enable the provider | [pr-6-enable.md](./docs/subscribe-onboarding/pr-6-enable.md) | ✅ (last) |
 
@@ -98,25 +103,22 @@ is active, so declaring them earlier is harmless.)
 
 ## Managing the stack
 
-Branch PRs 1→2→3 in a line. PRs 4 and 5, if needed, both build on PR 3; since they have no dependency
-on each other you can branch each off PR 3 (siblings, any order) **or** stack them in a line — whatever
-fits your workflow. Enable branches last, once PR 3 and any needed PR 4 / PR 5 are merged. One possible
-layout:
+Branch each PR off the one below it: PR 1 → 2 → 3 → 4 → 5 → 6. Skip PR 3 (Registration) and/or PR 5
+(Maintenance) if the provider doesn't need them — the chain just closes up.
 
 ```
 main
- └─ subscribe/<provider>/provider-info     (PR 1)
-     └─ subscribe/<provider>/verify         (PR 2)
-         └─ subscribe/<provider>/subscribe   (PR 3)
-             ├─ subscribe/<provider>/registration  (PR 4, if needed) ┐ optional; no dependency
-             ├─ subscribe/<provider>/maintenance    (PR 5, if needed) ┘ between them
-             └─ subscribe/<provider>/enable          (PR 6, merge last)
+ └─ subscribe/<provider>/provider-info       (PR 1)
+     └─ subscribe/<provider>/verify           (PR 2)
+         └─ subscribe/<provider>/registration  (PR 3, if needed)
+             └─ subscribe/<provider>/subscribe   (PR 4)
+                 └─ subscribe/<provider>/maintenance  (PR 5, if needed)
+                     └─ subscribe/<provider>/enable     (PR 6, merge last)
 ```
 
-- PRs 4 and 5 have no dependency on each other — implement either, both, or neither, in any order.
-  Keeping them as siblings off PR 3 (shown above) or stacking them one-on-the-other are both fine.
-- If you use **Graphite**, PRs 1–3 are a normal `gt create` stack; PRs 4/5 are branches off PR 3.
-  Submit with `gt submit --stack`.
+- Skip PR 3 / PR 5 entirely when the provider doesn't need registration / maintenance; the next PR
+  just branches off whatever precedes it.
+- If you use **Graphite**, this is a normal `gt create` stack; submit with `gt submit --stack`.
 - With plain git, branch each PR off its parent and rebase the upstack when a lower PR changes.
 - When a lower PR gets review changes, restack everything above it before re-pushing.
 - You don't have to wait for PR 1 to merge before opening PR 2 — open the whole stack and let review
@@ -147,6 +149,6 @@ Part of the Subscribe Action stack for `<provider>`. See CONTRIBUTING_SUBSCRIBE_
 | Want to… | Go to |
 |----------|-------|
 | Understand the interfaces & types | [`SUBSCRIBE_REFERENCES.md`](./SUBSCRIBE_REFERENCES.md) |
-| See a worked example | the **Example** section in each per-PR guide (e.g. [PR 3](./docs/subscribe-onboarding/pr-3-subscribe-update-delete.md#example)) |
+| See a worked example | the **Example** section in each per-PR guide (e.g. [PR 4](./docs/subscribe-onboarding/pr-4-subscribe-update-delete.md#example)) |
 | Know what each PR contains | [PR-by-PR](#pr-by-pr) above |
 | Know the merge order | [The stack](#the-stack) above |

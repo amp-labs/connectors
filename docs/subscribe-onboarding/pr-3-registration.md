@@ -1,4 +1,4 @@
-# PR 4 — Registration (`RegisterSubscribeConnector`) *(provider-specific, if needed)*
+# PR 3 — Registration (`RegisterSubscribeConnector`) *(provider-specific, if needed)*
 
 > Part of [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
 > [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
@@ -7,7 +7,12 @@
 > PR only when the provider requires a one-time, installation-level setup step shared by all object
 > subscriptions (Salesforce is the canonical case).
 
-Builds on [PR 3](./pr-3-subscribe-update-delete.md).
+Builds on [PR 2](./pr-2-verification.md). When a provider needs registration, it comes **before**
+[Subscribe (PR 4)](./pr-4-subscribe-update-delete.md): `Subscribe` consumes the registration result
+(`params.RegistrationResult`), so the shared infrastructure must exist first. (Note: the
+`connectors.RegisterSubscribeConnector` interface *embeds* `SubscribeConnector`, so the full
+compile-time assertion is satisfied once Subscribe lands in PR 4 — this PR adds the `Register` /
+`DeleteRegistration` methods.)
 
 ## Goal
 
