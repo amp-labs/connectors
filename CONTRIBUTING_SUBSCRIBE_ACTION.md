@@ -15,7 +15,7 @@ verification, metadata, factory wiring, worked examples), see the companion refe
    able to understand a PR without holding the whole feature in their head.
 2. **Safest-first.** Start with the change that carries zero behavioral risk (metadata, gated off) and
    end with the one-line switch that turns the provider on.
-3. **Gated off until the end.** The provider's subscribe flags stay `false` for the entire stack except
+3. **Gated off until the end.** `Support.Subscribe` (the gate) stays `false` for the entire stack except
    the final `Enable` PR. Every intermediate PR is a safe no-op in production — nothing calls into your
    new code until you flip the switch. This means you can merge the stack incrementally without waiting
    for the whole feature to be done.
@@ -38,7 +38,7 @@ subscriptions hang off of, which `Subscribe` consumes), and **Maintenance comes 
 renews what Subscribe created). `Enable` is always last.
 
 ```
-  Enable the provider (PR 6)             flip Support.Subscribe + SubscribeByAPI on   ← merge last
+  Enable the provider (PR 6)             flip Support.Subscribe on   ← merge last
         ▲
   Maintenance (PR 5, if needed)          SubscriptionMaintainerConnector — renews after subscribe
         ▲
@@ -101,7 +101,7 @@ The caller activates a provider from its metadata:
 
 Keep **`Support.Subscribe` off** for the entire stack so none of the intermediate PRs can affect
 production, even after they merge — that's what makes incremental merging safe. In the final PR, flip
-`Support.Subscribe` on (plus `SubscribeByAPI` for API providers). (The *requirement* flags —
+`Support.Subscribe` on. (The *requirement* flags —
 `Registration` / `PostProcess` / `Maintenance` — are only consulted once subscribe is active, so
 declaring them earlier is harmless.)
 
@@ -140,7 +140,7 @@ main
 Part of the Subscribe Action stack for `<provider>`. See CONTRIBUTING_SUBSCRIBE_ACTION.md.
 
 - [ ] Scope limited to this stack rung (one interface / concern)
-- [ ] Provider remains gated off (Support.Subscribe / SubscribeByAPI unchanged) — except the Enable PR
+- [ ] Provider remains gated off (Support.Subscribe stays false) — except the Enable PR
 - [ ] Any SubscribeRequirements flag set to new(true) has a code comment linking the provider docs
 - [ ] Compile-time interface assertion added (if this PR adds an interface)
 - [ ] Unit tests added/updated
