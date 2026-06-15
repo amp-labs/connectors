@@ -7,12 +7,14 @@ import (
 	"fmt"
 	"net/http"
 	"slices"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/spyzhov/ajson"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -90,6 +92,26 @@ func (c *Connector) constructReadURL(params common.ReadParams) (string, error) {
 		return "", err
 	}
 
+	// Offset-paginated objects (e.g. the Knowledge and Change APIs) page via offset
+	// rather than the Link header, so seed the first page's window here. Some accept
+	// a page-size param (limitKey); others (Change) only take an offset.
+	if pg, ok := offsetPaginationOf(params.ObjectName); ok {
+		if pg.limitKey != "" {
+			url.WithQueryParam(pg.limitKey, strconv.Itoa(offsetPageSize))
+		}
+
+		url.WithQueryParam(pg.offsetKey, "0")
+	} else if pp, ok := pagePaginationOf(params.ObjectName); ok {
+		url.WithQueryParam(pp.perPageKey, strconv.Itoa(offsetPageSize))
+		url.WithQueryParam(pp.pageKey, "1")
+	}
+
+	// Incremental read: filter by sys_updated_on when Since/Until are set and the
+	// object's list endpoint accepts sysparm_query.
+	if query := incrementalQuery(params); query != "" {
+		url.WithQueryParam("sysparm_query", query)
+	}
+
 	return url.String(), nil
 }
 
@@ -108,9 +130,18 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	// Objects that paginate via limit/offset (e.g. the Knowledge API) advance the
+	// window from the request URL; everything else follows the Link header.
+	nextPage := getNextRecordsURL(response, c.ProviderInfo().BaseURL)
+	if _, ok := offsetPaginationOf(params.ObjectName); ok {
+		nextPage = offsetNextPage(params.ObjectName, request)
+	} else if _, ok := pagePaginationOf(params.ObjectName); ok {
+		nextPage = pageNextPage(params.ObjectName, request)
+	}
+
 	return common.ParseResult(response,
 		recordsFunc(params.ObjectName),
-		getNextRecordsURL(response, c.ProviderInfo().BaseURL),
+		nextPage,
 		common.GetMarshaledData,
 		params.Fields,
 	)
@@ -160,8 +191,9 @@ func (c *Connector) parseWriteResponse(
 
 	result, err := body.GetKey("result")
 	if err != nil {
-		// No "result" field (e.g. an empty body). The write still succeeded.
-		return &common.WriteResult{Success: true}, nil //nolint: nilerr
+		// No "result" envelope. Some APIs (lead and other TMF/Open APIs) return the
+		// created record as a bare top-level object, so recover sys_id from the root.
+		return c.writeResultFromRecord(ctx, params, body) //nolint: nilerr
 	}
 
 	// Some scoped APIs (e.g. Contact, Consumer) return only the new record's sys_id
@@ -178,18 +210,29 @@ func (c *Connector) parseWriteResponse(
 
 	// Most APIs (Table API and the like) return the written record object:
 	// {"result": {...}}.
-	if !result.IsObject() {
+	return c.writeResultFromRecord(ctx, params, result)
+}
+
+// writeResultFromRecord builds a WriteResult from a record object node, capturing
+// its fields as Data and its sys_id as the RecordId. A node that isn't an object,
+// or that carries no sys_id, still yields a successful result.
+func (c *Connector) writeResultFromRecord(
+	ctx context.Context,
+	params common.WriteParams,
+	record *ajson.Node,
+) (*common.WriteResult, error) {
+	if !record.IsObject() {
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	data, err := jsonquery.Convertor.ObjectToMap(result)
+	data, err := jsonquery.Convertor.ObjectToMap(record)
 	if err != nil {
 		logging.Logger(ctx).Error("failed to convert result object to map", "object", params.ObjectName, "err", err.Error())
 
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	recordID, err := jsonquery.New(result).StringOptional("sys_id")
+	recordID, err := jsonquery.New(record).StringOptional("sys_id")
 	if err != nil || recordID == nil {
 		return &common.WriteResult{ //nolint: nilerr
 			Success: true,
