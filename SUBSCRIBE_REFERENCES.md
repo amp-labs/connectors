@@ -47,11 +47,15 @@ All four interfaces are defined in [`connectors.go`](./connectors.go). Note that
 (no `Read`/pagination) — only `GetRecordsByIds`, which the caller uses to fetch a record's full state
 by id after a webhook event arrives.
 
+This ladder is about *interface embedding*, **not PR/build order**. Although `RegisterSubscribeConnector`
+embeds `SubscribeConnector`, registration is *sequenced before* subscribe in the PR stack because the
+registration result is an input to `Subscribe` — see [the PR stack](./CONTRIBUTING_SUBSCRIBE_ACTION.md#the-stack).
+
 | Interface | Methods you add | When you need it | PR |
 |-----------|-----------------|------------------|----|
 | `WebhookVerifierConnector` | `VerifyWebhookMessage` | Provider signs its webhooks (almost always). | [PR&nbsp;2](./docs/subscribe-onboarding/pr-2-verification.md) |
-| `SubscribeConnector` | `Subscribe`, `UpdateSubscription`, `DeleteSubscription`, `EmptySubscriptionParams`, `EmptySubscriptionResult` | Provider lets you create subscriptions programmatically via API. | [PR&nbsp;3](./docs/subscribe-onboarding/pr-3-subscribe-update-delete.md) |
-| `RegisterSubscribeConnector` | `Register`, `DeleteRegistration`, `EmptyRegistrationParams`, `EmptyRegistrationResult` | **Provider-specific, if needed** — only when the provider needs a one-time, installation-level setup shared by all object subscriptions. | [PR&nbsp;4](./docs/subscribe-onboarding/pr-4-registration.md) |
+| `RegisterSubscribeConnector` | `Register`, `DeleteRegistration`, `EmptyRegistrationParams`, `EmptyRegistrationResult` | **Provider-specific, if needed** — only when the provider needs a one-time, installation-level setup shared by all object subscriptions (lands *before* Subscribe). | [PR&nbsp;3](./docs/subscribe-onboarding/pr-3-registration.md) |
+| `SubscribeConnector` | `Subscribe`, `UpdateSubscription`, `DeleteSubscription`, `EmptySubscriptionParams`, `EmptySubscriptionResult` | Provider lets you create subscriptions programmatically via API. | [PR&nbsp;4](./docs/subscribe-onboarding/pr-4-subscribe-update-delete.md) |
 | `SubscriptionMaintainerConnector` | `RunScheduledMaintenance` | **Provider-specific, if needed** — only when subscriptions/watches expire after a TTL and must be renewed on a schedule. | [PR&nbsp;5](./docs/subscribe-onboarding/pr-5-maintenance.md) |
 
 ### How the caller uses `ProviderInfo`
@@ -155,7 +159,7 @@ signatures, examples, files, checklist, reviewer focus):
 |---|----|-------|-----------|
 | 1 | ProviderInfo + Factory wiring | [pr-1-provider-info.md](./docs/subscribe-onboarding/pr-1-provider-info.md) | ✅ |
 | 2 | Verification | [pr-2-verification.md](./docs/subscribe-onboarding/pr-2-verification.md) | ✅ |
-| 3 | Subscribe / Update / Delete | [pr-3-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-3-subscribe-update-delete.md) | ✅ |
-| 4 | Registration | [pr-4-registration.md](./docs/subscribe-onboarding/pr-4-registration.md) | ⬜ if needed |
+| 3 | Registration | [pr-3-registration.md](./docs/subscribe-onboarding/pr-3-registration.md) | ⬜ if needed |
+| 4 | Subscribe / Update / Delete | [pr-4-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-4-subscribe-update-delete.md) | ✅ |
 | 5 | Maintenance | [pr-5-maintenance.md](./docs/subscribe-onboarding/pr-5-maintenance.md) | ⬜ if needed |
 | 6 | Enable the provider | [pr-6-enable.md](./docs/subscribe-onboarding/pr-6-enable.md) | ✅ (last) |

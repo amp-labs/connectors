@@ -14,8 +14,8 @@ Flip the activation flags so the caller starts driving subscribe for this provid
 All prerequisite PRs are merged:
 
 - [PR 2 — Verification](./pr-2-verification.md)
-- [PR 3 — Subscribe / Update / Delete](./pr-3-subscribe-update-delete.md)
-- [PR 4 — Registration](./pr-4-registration.md) *(only if the provider needs it)*
+- [PR 3 — Registration](./pr-3-registration.md) *(only if the provider needs it)*
+- [PR 4 — Subscribe / Update / Delete](./pr-4-subscribe-update-delete.md)
 - [PR 5 — Maintenance](./pr-5-maintenance.md) *(only if the provider needs it)*
 
 ## What you implement

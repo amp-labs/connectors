@@ -1,9 +1,11 @@
-# PR 3 — Subscribe / Update / Delete (`SubscribeConnector`)
+# PR 4 — Subscribe / Update / Delete (`SubscribeConnector`)
 
 > Part of [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
 > [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
-**Required.** Stacks on [PR 2](./pr-2-verification.md).
+**Required.** Stacks on [PR 2](./pr-2-verification.md) — or on [PR 3 (Registration)](./pr-3-registration.md)
+when the provider needs registration, since `Subscribe` consumes the registration result
+(`params.RegistrationResult`), so registration lands first.
 
 ## Goal
 

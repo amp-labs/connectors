@@ -6,7 +6,7 @@
 **Optional — skip this PR unless** the provider's subscriptions/watches expire after a TTL and must be
 periodically renewed. Most providers do not.
 
-Builds on [PR 3](./pr-3-subscribe-update-delete.md).
+Builds on [PR 4](./pr-4-subscribe-update-delete.md).
 
 ## Goal
 

@@ -54,7 +54,7 @@ SubscribeRequirements: &SubscribeRequirements{
 Set `Registration` / `PostProcess` / `Maintenance` to `new(true)` **only if** the provider needs them.
 These requirement flags are harmless while gated off — they're only consulted once subscribe is active.
 `Registration` and `Maintenance` each pair with a connector interface implemented in its own PR
-([PR 4](./pr-4-registration.md) / [PR 5](./pr-5-maintenance.md)). **`PostProcess` has no connector code
+([PR 3](./pr-3-registration.md) / [PR 5](./pr-5-maintenance.md)). **`PostProcess` has no connector code
 at all** — it's a pure indicator declared here; see [PostProcess](#postprocess-indicator-only) below.
 
 > **Always link the provider docs.** Whenever you set a `SubscribeRequirements` flag to `new(true)`,
@@ -73,7 +73,7 @@ The post-process logic itself lives in **server-side code**, not in the connecto
 connector method or interface** for it. The connector's entire contribution is to **indicate whether it
 is required**, by setting `SubscribeRequirements.PostProcess: new(true)` in `ProviderInfo` here (with
 the doc-link comment above). If a post-process step will need data the connector produces (e.g. an id
-created during [registration](./pr-4-registration.md) or returned by `Subscribe`), make sure that data
+created during [registration](./pr-3-registration.md) or returned by `Subscribe`), make sure that data
 is returned in the corresponding result so the server side can consume it.
 
 ### Examples from real providers
