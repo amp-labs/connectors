@@ -28,8 +28,8 @@ func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*c
 	}
 
 	return common.ParseResult(resp,
-		common.ExtractRecordsFromPath("result"),
-		getNextRecordsURL(resp),
+		recordsFunc(params.ObjectName),
+		getNextRecordsURL(resp, c.ProviderInfo().BaseURL),
 		common.GetMarshaledData,
 		params.Fields,
 	)
