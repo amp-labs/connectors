@@ -131,9 +131,9 @@ Run your tests:
 Refer the `smartleadV2` connector as a reference. 
 </Note>
 
-## Adding Subscribe (Webhook) Support
+## Adding a Subscribe Connector
 
-To add webhook **Subscribe** support to a provider, follow the dedicated guide:
+To add a **Subscribe Connector** (webhook subscriptions) to a provider, follow the dedicated guide:
 [**Contributing a Subscribe Action**](./CONTRIBUTING_SUBSCRIBE_ACTION.md). It explains how to ship the
 work as a small stack of PRs (with a focused per-PR guide for each step), and links the shared
 interfaces, types, and concepts in [SUBSCRIBE_REFERENCES.md](./SUBSCRIBE_REFERENCES.md).
