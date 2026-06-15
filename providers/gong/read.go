@@ -10,7 +10,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-type ReadParamOpts struct { 
+type ReadParamsOpts struct { 
   ReadFlowsForAllUsers bool // Whether to read for all users, or just read company flows.
 }
 
