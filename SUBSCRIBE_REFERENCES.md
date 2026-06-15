@@ -146,6 +146,30 @@ SubscriptionEventTypeOther  = "other"
 
 ---
 
+## PostProcess
+
+Some providers need a **third-party setup step** to receive webhooks that the **connector cannot
+perform itself** — because that step happens in a *different* system than the one the connector
+authenticates to. The connector holds a token for *its* provider (say, Salesforce); the extra setup
+lives in another provider's system (AWS EventBridge for Salesforce, a Google Pub/Sub topic for Gmail),
+which that token can't touch. That cross-provider setup is **PostProcess**.
+
+How it plays out:
+
+- The connector **does not implement PostProcess** — there is no connector method or interface for it.
+  The post-process logic lives in **server-side code** (Ampersand's platform), which holds the
+  credentials/access for the other system.
+- The connector's only contribution is to **declare it** — set `SubscribeRequirements.PostProcess: new(true)`
+  in `ProviderInfo` — and to **return any data the post-process step needs** in its `Subscribe` /
+  `Register` result (e.g. an id created during registration), so the server side can use it.
+
+> **Consult Ampersand staff before you start.** PostProcess spans two systems and has no standard
+> connector pattern. If your provider needs it, flag it to Ampersand staff **ahead of time** so they
+> can advise how to proceed — the post-process work itself is done on the server side, and there may be
+> no connector-side PR for it at all.
+
+---
+
 ## Writing the PRs
 
 Ship subscribe support as a stack of small, gated-off PRs. The process — principles, the stack diagram,
