@@ -7,7 +7,7 @@
 
 ## Goal
 
-Flip the activation flags so the caller starts driving subscribe for this provider.
+Flip the gate (`Support.Subscribe`) so the caller starts driving subscribe for this provider.
 
 ## Prerequisites
 
@@ -66,5 +66,5 @@ local harness from PR 3.
 
 ## Reference
 
-- [PR 1 — ProviderInfo + Factory wiring](./pr-1-provider-info.md) (the flags you're flipping)
+- [PR 1 — ProviderInfo + Factory wiring](./pr-1-provider-info.md) (where the flag you're flipping is declared)
 - [Why gate, and on which flags](../../CONTRIBUTING_SUBSCRIBE_ACTION.md#why-gate-and-on-which-flags)
