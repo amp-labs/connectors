@@ -76,6 +76,10 @@ the doc-link comment above). If a post-process step will need data the connector
 created during [registration](./pr-3-registration.md) or returned by `Subscribe`), make sure that data
 is returned in the corresponding result so the server side can consume it.
 
+> **Consult Ampersand staff ahead of time** if your provider needs PostProcess — it spans two systems
+> and the work is done server-side, so coordinate before you build. See
+> [PostProcess in the reference](../../SUBSCRIBE_REFERENCES.md#postprocess).
+
 ### Examples from real providers
 
 Salesloft (API subscribe, no registration/maintenance/post-process — shown here in its final enabled

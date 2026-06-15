@@ -82,6 +82,13 @@ implement, files, step-by-step, an example, a checklist, and reviewer focus. Lin
 | 5 | Maintenance | [pr-5-maintenance.md](./docs/subscribe-onboarding/pr-5-maintenance.md) | ⬜ if needed |
 | 6 | Enable the provider | [pr-6-enable.md](./docs/subscribe-onboarding/pr-6-enable.md) | ✅ (last) |
 
+> **PostProcess is not a connector PR.** Some providers need a third-party setup step the connector
+> can't perform — it lives in a *different* provider's system than the connector authenticates to (e.g.
+> Salesforce → AWS EventBridge). That's **PostProcess**: you only **declare it** as a flag in PR 1
+> (`SubscribeRequirements.PostProcess`); the logic itself is server-side, so there's typically **no
+> connector-side PR** for it. If your provider needs it, **consult Ampersand staff ahead of time** —
+> see [PostProcess](./SUBSCRIBE_REFERENCES.md#postprocess).
+
 ## Why gate, and on which flags
 
 The caller activates a provider from its metadata:
