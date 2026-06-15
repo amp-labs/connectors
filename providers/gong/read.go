@@ -10,6 +10,10 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+type ReadParamsOpts struct { 
+  ReadFlowsForAllUsers bool // Whether to read for all users, or just read company flows.
+}
+
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
