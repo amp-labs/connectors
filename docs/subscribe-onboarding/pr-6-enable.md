@@ -20,25 +20,19 @@ All prerequisite PRs are merged:
 
 ## What you implement
 
-In `providers/<provider>.go`, flip the gate:
+In `providers/<provider>.go`, flip the gate — `Support.Subscribe`. That's the only change:
 
 ```go
 Support: Support{
-    Subscribe: true, // was false
+    Subscribe: true, // was false — the gate
 },
-SubscribeRequirements: &SubscribeRequirements{
-    // <provider> supports creating webhook subscriptions via API: <link to provider docs>
-    SubscribeByAPI: new(true), // was new(false)
-    // Registration / PostProcess / Maintenance already set earlier in the stack
-},
+// SubscribeRequirements (SubscribeByAPI, Registration, …) were already declared in PR 1;
+// nothing changes here.
 ```
-
-For a **UI Subscription only** provider (no API subscribe), set `Support.Subscribe: true` and leave
-`SubscribeByAPI` off.
 
 ## Files
 
-- `providers/<provider>.go` — the activation flags only.
+- `providers/<provider>.go` — `Support.Subscribe` only.
 
 ## Live testing (required)
 
@@ -59,8 +53,7 @@ local harness from PR 3.
       installation, subscribed, and received a **real webhook** end-to-end (Svix Play works as the
       receiver).
 - [ ] **Screenshot of the actual delivered webhook attached to the PR.**
-- [ ] `SubscribeByAPI: new(true)` has a code comment linking the provider docs that justify it.
-- [ ] Change is just the flag flip, trivial to revert.
+- [ ] Change is just the `Support.Subscribe` flip, trivial to revert.
 
 ## Reviewer focus
 

@@ -36,17 +36,20 @@ type SubscribeRequirements struct {
 }
 ```
 
-In **this** PR, keep the activation flags off:
+In **this** PR, keep `Support.Subscribe` off — it's the gate (see [Gating rule](#gating-rule) below).
+Declare the rest of `SubscribeRequirements` at its real value; with the gate off the provider stays
+dormant regardless:
 
 ```go
-// providers/<provider>.go — gated OFF
+// providers/<provider>.go — gated OFF (Support.Subscribe is the gate)
 Support: Support{
     Read:      true,
     Write:     true,
-    Subscribe: false, // ← flip to true in PR 6
+    Subscribe: false, // ← the gate; flip to true in PR 6
 },
 SubscribeRequirements: &SubscribeRequirements{
-    SubscribeByAPI: new(false), // ← flip to new(true) in PR 6
+    // <provider> supports creating webhook subscriptions via API: <link to provider docs>
+    SubscribeByAPI: new(true), // the provider's real capability; omit/false for UI-Subscription-only
     // Registration / PostProcess / Maintenance: new(true) only if the provider will need them
 },
 ```
@@ -118,9 +121,9 @@ SubscribeRequirements: &SubscribeRequirements{
 
 > `Support.Subscribe` is the **gate** — it must be `true` for the provider to subscribe at all (via API
 > or manual/UI); `SubscribeByAPI` says whether the programmatic API approach is available. **Keep
-> `Support.Subscribe` off** for the entire stack and flip it on (plus `SubscribeByAPI` for API
-> providers) only in the final [`Enable`](./pr-6-enable.md) PR — that's what keeps every intermediate
-> PR a safe no-op even after it merges.
+> `Support.Subscribe` off** for the entire stack and flip it on only in the final
+> [`Enable`](./pr-6-enable.md) PR — that's what keeps every intermediate PR a safe no-op even after it
+> merges.
 
 ## Factory wiring *(brand-new providers only)*
 
@@ -163,7 +166,7 @@ declarations.
 
 ## Checklist
 
-- [ ] `Support.Subscribe` is `false` and `SubscribeByAPI` is `new(false)` (or unset).
+- [ ] `Support.Subscribe` is `false` (the gate stays off).
 - [ ] `SubscribeRequirements` reflects the provider's intended shape; `Registration` / `PostProcess` /
       `Maintenance` set only if applicable.
 - [ ] Every `SubscribeRequirements` flag set to `new(true)` has a code comment linking the provider
