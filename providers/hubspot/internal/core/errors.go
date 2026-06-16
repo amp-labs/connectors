@@ -36,7 +36,7 @@ func InterpretJSONError(res *http.Response, body []byte) error {
 			return common.NewHTTPError(res.StatusCode, body, headers,
 				createError(common.ErrInvalidPaginationCursor, apiError))
 		}
-	// Hubspot sends us a 400 when the search endpoint returns over 10K records,
+		// Hubspot sends us a 400 when the search endpoint returns over 10K records,
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrBadRequest, apiError))
 	case http.StatusUnauthorized:
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrAccessToken, apiError))

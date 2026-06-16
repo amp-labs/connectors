@@ -224,7 +224,7 @@ type ReadParams struct {
 }
 
 // Each connector that supports ReadParams.Opts should define its own type and assert it.
-// e.g. gong.ReadParamOpts
+// e.g. gong.ReadParamOpts.
 type ReadParamsOpts any
 
 func (p ReadParams) IsFirstPage() bool {
