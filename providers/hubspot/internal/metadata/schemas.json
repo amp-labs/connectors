@@ -146,6 +146,11 @@
               "valueType": "string",
               "providerType": "String"
             },
+            "id": {
+              "displayName": "Campaign ID (GUID)",
+              "valueType": "string",
+              "providerType": "String"
+            },
             "hs_budget_items_sum_amount": {
               "displayName": "The sum of all budget items",
               "valueType": "string",
