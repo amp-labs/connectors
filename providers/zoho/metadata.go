@@ -96,6 +96,10 @@ func (c *Connector) ListObjectMetadata( // nolint:wsl_v5
 		return c.servicedeskplusAdapter.ListObjectMetadata(ctx, objectNames)
 	}
 
+	if c.isMailModule() {
+		return c.mailAdapter.ListObjectMetadata(ctx, objectNames)
+	}
+
 	if len(objectNames) == 0 {
 		return nil, common.ErrMissingObjects
 	}

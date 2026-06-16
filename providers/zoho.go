@@ -9,6 +9,7 @@ const (
 	ModuleZohoProjects        common.ModuleID = "projects"
 	ModuleZohoBugTracker      common.ModuleID = "bugtracker"
 	ModuleZohoServiceDeskPlus common.ModuleID = "servicedeskplus"
+	ModuleZohoMail            common.ModuleID = "mail"
 )
 
 // nolint: funlen
@@ -109,6 +110,16 @@ func init() {
 			ModuleZohoServiceDeskPlus: {
 				BaseURL:     "https://{{.zoho_servicedeskplus_domain}}",
 				DisplayName: "Zoho ServiceDeskPlus",
+				Support: Support{
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
+			ModuleZohoMail: {
+				// E.g mail.zoho.com, mail.zoho.eu, mail.zoho.in, mail.zoho.com.au, mail.zoho.jp, mail.zoho.ae etc.
+				BaseURL:     "https://{{.zoho_mail_domain}}",
+				DisplayName: "Zoho Mail",
 				Support: Support{
 					Read:      false,
 					Subscribe: false,

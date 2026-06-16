@@ -1,0 +1,22 @@
+{
+  "status": {
+    "code": 200,
+    "description": "success"
+  },
+  "data": [
+    {
+      "accountId": "2554907000000008002",
+      "accountDisplayName": "John Doe",
+      "primaryEmailAddress": "john@zylker.com",
+      "mailboxAddress": "john@zylker.com",
+      "incomingBlocked": false,
+      "type": "Mail",
+      "sendMailDetails": [
+        {
+          "sendMailId": "2554907000000008002",
+          "fromAddress": "john@zylker.com"
+        }
+      ]
+    }
+  ]
+}

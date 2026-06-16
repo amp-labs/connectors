@@ -22,4 +22,8 @@ var supportedModules = common.Modules{ //nolint: gochecknoglobals
 		ID:    providers.ModuleZohoDesk,
 		Label: "zoho Desk",
 	},
+	providers.ModuleZohoMail: common.Module{
+		ID:    providers.ModuleZohoMail,
+		Label: "zoho Mail",
+	},
 }
