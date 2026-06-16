@@ -29,7 +29,8 @@ func init() {
 					DisplayName: "Company ID",
 					DocsURL:     "https://developer.breezy.hr/reference/customer-guide",
 					Prompt: "Copy the company `_id` from GET /v3/companies. " +
-						"Required for company-scoped reads and writes such as positions and webhook endpoints.",
+						"Required for company-scoped objects such as positions, pipelines, categories, " +
+						"departments, questionnaires, templates, and webhook endpoints.",
 				},
 			},
 		},
