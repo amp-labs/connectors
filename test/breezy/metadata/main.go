@@ -17,6 +17,11 @@ func main() {
 	m, err := conn.ListObjectMetadata(ctx, []string{
 		"companies",
 		"positions",
+		"pipelines",
+		"categories",
+		"departments",
+		"questionnaires",
+		"templates",
 		"webhook_endpoints",
 	})
 	if err != nil {
