@@ -234,7 +234,27 @@ func (c *Connector) buildMarketingReadURL(
 		// This object does not have such query params. For consistency, it is reflected here.
 		// Sending non-existent query params is not considered an error by provider.
 	} else {
-		url.WithQueryParam("properties", strings.Join(params.Fields.List(), ","))
+		fields := params.Fields.List()
+
+		if params.ObjectName == core.ObjectMarketingCampaigns {
+			// The Campaigns API rejects "id" in the properties param ("Forbidden
+			// properties: [id]") because "id" is the record identifier returned at the
+			// top level of the response, not a campaign property. Drop it from the
+			// requested properties; the GUID still comes back at the top level and is
+			// surfaced into Fields by the FlattenNestedFields record transformer.
+			filtered := make([]string, 0, len(fields))
+			for _, f := range fields {
+				if strings.EqualFold(f, "id") {
+					continue
+				}
+
+				filtered = append(filtered, f)
+			}
+
+			fields = filtered
+		}
+
+		url.WithQueryParam("properties", strings.Join(fields, ","))
 		url.WithQueryParam("sort", "-updatedAt") // newest first
 	}
 
