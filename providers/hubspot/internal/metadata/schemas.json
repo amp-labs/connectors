@@ -147,7 +147,7 @@
               "providerType": "String"
             },
             "id": {
-              "displayName": "Campaign ID (GUID)",
+              "displayName": "Campaign ID",
               "valueType": "string",
               "providerType": "String"
             },
