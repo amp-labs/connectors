@@ -9,24 +9,20 @@ import (
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/breezy/metadata"
 	"github.com/spyzhov/ajson"
-)
-
-const (
-	// Breezy API references:
-	// - Companies: https://developer.breezy.hr/reference/companies
-	// - Positions: https://developer.breezy.hr/reference/company-positions
-	// - Webhook endpoints: https://developer.breezy.hr/reference/company-webhook-endpoints
-	objectCompanies        = "companies"
-	objectPositions        = "positions"
-	objectWebhookEndpoints = "webhook_endpoints"
 )
 
 // nolint:gochecknoglobals
 var supportedReadObjects = datautils.NewStringSet(
 	objectCompanies,
 	objectPositions,
+	objectPipelines,
+	objectCategories,
+	objectDepartments,
+	objectQuestionnaires,
+	objectTemplates,
 	objectWebhookEndpoints,
 )
 
@@ -81,6 +77,12 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
+	if params.ObjectName == objectPositions && params.Filter != "" {
+		// Positions API defaults to state=published; Filter supplies draft, archived, etc.
+		// https://developer.breezy.hr/reference/company-positions
+		endpointURL.WithQueryParam("state", params.Filter)
+	}
+
 	return endpointURL, nil
 }
 
@@ -90,27 +92,68 @@ func (c *Connector) parseReadResponse(
 	_ *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	records, err := recordsForRead(c, params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
 	return common.ParseResult(
 		resp,
-		c.recordsFunc(params.ObjectName),
+		records,
 		noNextPage,
-		readhelper.MakeMarshaledDataFuncWithId(nil, idFieldForObject(params.ObjectName)),
+		readhelper.MakeGetMarshaledDataWithId(idFieldForObject(params.ObjectName)),
 		params.Fields,
 	)
 }
 
-func (c *Connector) recordsFunc(objectName string) common.NodeRecordsFunc {
-	return common.MakeRecordsFunc(
-		metadata.Schemas.LookupArrayFieldName(c.ProviderContext.Module(), objectName),
-	)
+func recordsForRead(c *Connector, objectName string) (common.RecordsFunc, error) {
+	switch objectName {
+	case objectPipelines:
+		// Pipelines payload is an object-of-objects (not a JSON array), so we must flatten it.
+		// https://developer.breezy.hr/reference/company-pipelines
+		return extractPipelinesRecords(), nil
+	default:
+		recordsKey := metadata.Schemas.LookupArrayFieldName(c.ProviderContext.Module(), objectName)
+
+		return common.ExtractOptionalRecordsFromPath(recordsKey), nil
+	}
 }
 
 func idFieldForObject(objectName string) readhelper.IdFieldQuery {
 	switch objectName {
-	case objectCompanies, objectPositions:
+	case objectCompanies, objectPositions, objectPipelines,
+		objectDepartments, objectQuestionnaires, objectTemplates:
 		return readhelper.NewIdField("_id")
+	case objectCategories, objectWebhookEndpoints:
+		return readhelper.NewIdField("id")
 	default:
 		return readhelper.NewIdField("id")
+	}
+}
+
+func extractPipelinesRecords() common.RecordsFunc {
+	return func(node *ajson.Node) ([]map[string]any, error) {
+		m, err := jsonquery.Convertor.ObjectToMap(node)
+		if err != nil {
+			return nil, err
+		}
+
+		out := make([]map[string]any, 0, len(m))
+
+		for key, v := range m {
+			obj, ok := v.(map[string]any)
+			if !ok || obj == nil {
+				continue
+			}
+
+			if _, has := obj["_id"]; !has && key != "" {
+				obj["_id"] = key
+			}
+
+			out = append(out, obj)
+		}
+
+		return out, nil
 	}
 }
 
