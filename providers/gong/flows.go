@@ -31,6 +31,9 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 
 	includeUserAssoc := wantsUserAssociation(config.AssociatedObjects)
 
+	readOpts, isReadOptsOk := config.Opts.(ReadParamsOpts)
+	readAllUsers := isReadOptsOk && readOpts.ReadFlowsForAllUsers
+
 	// Collect every user's flows into one map keyed by flow id.
 	// Company and shared flows show up for many users, so the map drops the repeats.
 	aggregated := make(map[string]common.ReadResultRow)
@@ -61,9 +64,15 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 			continue
 		}
 
-		mergeUserFlows(aggregated, flows, user, includeUserAssoc)
-		// Temp solution to only fetch one user's flows to prevent API consumption issues.
-		break
+		// Company-only mode keeps just the "Company" visibility flows.
+		mergeUserFlows(aggregated, flows, user, includeUserAssoc, readAllUsers)
+
+		if !readAllUsers {
+			// When ReadFlowsForAllUsers is false,
+			// We only read flows with visiblity "Company". so we can break after the first user.
+			// We treat failed readOpts assertion as false ReadFlowsForAllUsers.
+			break
+		}
 	}
 
 	if len(aggregated) == 0 {
@@ -109,14 +118,24 @@ func emptyFlowsResult() *common.ReadResult {
 // copy and never attach the owner. When this user owns the flow (their copy says
 // "Personal") we prefer that copy, overwriting any "Shared" one stored earlier,
 // so the owner association is reliable no matter what order users come back in.
+//
+// When readAllUsers is false we are in company-only mode, so flows that aren't
+// "Company" visibility are dropped.
 func mergeUserFlows(
 	aggregated map[string]common.ReadResultRow,
 	flows []common.ReadResultRow,
 	owner common.ReadResultRow,
 	includeUserAssoc bool,
+	readAllUsers bool,
 ) {
 	for _, flow := range flows {
 		visibility, _ := flow.Raw["visibility"].(string)
+
+		// Company-only mode: skip anything that isn't a company flow.
+		if !readAllUsers && !strings.EqualFold(visibility, "Company") {
+			continue
+		}
+
 		ownsFlow := strings.EqualFold(visibility, "Personal")
 
 		// Already collected and this isn't the owner's copy: nothing to add.
