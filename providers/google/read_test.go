@@ -299,6 +299,92 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	}
 }
 
+func TestCalendarReadEventsForAllCalendars(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	responseCalendarList := testutils.DataFromFile(t, "calendar/read/all-calendars/calendarList.json")
+	responseEventsPrimary := testutils.DataFromFile(t, "calendar/read/all-calendars/events-primary.json")
+	responseEventsTeam := testutils.DataFromFile(t, "calendar/read/all-calendars/events-team.json")
+	responseEventsLastPage := testutils.DataFromFile(t, "calendar/read/events/2-last-page.json")
+
+	tests := []testroutines.Read{
+		{
+			Name: "Opts present but flag disabled reads only the primary calendar",
+			Input: common.ReadParams{
+				ObjectName: "events",
+				Fields:     connectors.Fields("id"),
+				Opts:       ReadParamsOpts{ReadEventsForAllCalendars: false},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/calendar/v3/calendars/primary/events"),
+				Then:  mockserver.Response(http.StatusOK, responseEventsLastPage),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"id": "p3nkh1hg41683vdhlcq4k12iso"},
+					Raw:    map[string]any{"iCalUID": "p3nkh1hg41683vdhlcq4k12iso@google.com"},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read events across all calendars merges and dedupes",
+			Input: common.ReadParams{
+				ObjectName: "events",
+				Fields:     connectors.Fields("id", "summary"),
+				Opts:       ReadParamsOpts{ReadEventsForAllCalendars: true},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If:   mockcond.Path("/calendar/v3/users/me/calendarList"),
+					Then: mockserver.Response(http.StatusOK, responseCalendarList),
+				}, {
+					If:   mockcond.Path("/calendar/v3/calendars/integration@test.com/events"),
+					Then: mockserver.Response(http.StatusOK, responseEventsPrimary),
+				}, {
+					If:   mockcond.Path("/calendar/v3/calendars/team@test.com/events"),
+					Then: mockserver.Response(http.StatusOK, responseEventsTeam),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				// event-shared appears on both calendars (same iCalUID) and is deduped.
+				Rows: 3,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"id": "event-a", "summary": "Standup"},
+					Raw:    map[string]any{"iCalUID": "event-a@google.com"},
+				}, {
+					Fields: map[string]any{"id": "event-shared", "summary": "All Hands"},
+					Raw:    map[string]any{"iCalUID": "event-shared@google.com"},
+				}, {
+					Fields: map[string]any{"id": "event-c", "summary": "Team Sync"},
+					Raw:    map[string]any{"iCalUID": "event-c@google.com"},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestCalendarConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
 func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
