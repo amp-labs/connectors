@@ -23,9 +23,9 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 	}
 
 	// Ensure identifiers are non-repeating.
-	identifiers := datautils.NewSetFromList(recordIds).List()
+	ids := datautils.NewSetFromList(recordIds).List()
 
-	batchResult, err := batch.Read[map[string]any](ctx, c.batchAdapter, objectName, identifiers)
+	batchResult, err := batch.Read[map[string]any](ctx, c.batchAdapter, objectName, ids)
 	if err != nil {
 		return nil, err
 	}

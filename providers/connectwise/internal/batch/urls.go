@@ -95,7 +95,7 @@ func withIdentifiers(baseURL *urlbuilder.URL, identifiers []string, maxURLLength
 //   - First identifier has no preceding comma
 //
 // Returns ErrURLNotEnoughSpace if a single identifier exceeds maxSpace.
-func groupIdentifiersBySpace(identifiers []string, maxSpace int) ([]identifierGroup, error) {
+func groupIdentifiersBySpace(ids []string, maxSpace int) ([]identifierGroup, error) {
 	var (
 		groups = make([]identifierGroup, 0)
 		group  = identifierGroup{
@@ -104,7 +104,7 @@ func groupIdentifiersBySpace(identifiers []string, maxSpace int) ([]identifierGr
 		}
 	)
 
-	for _, identifier := range identifiers {
+	for _, identifier := range ids {
 		partSize := len(identifier)
 		if group.TotalSize != 0 {
 			// Add comma size for non-first items: ',' becomes '%2C' (3 characters).

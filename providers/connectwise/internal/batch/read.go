@@ -8,6 +8,10 @@ import (
 	"github.com/amp-labs/connectors/internal/parallelfetch"
 )
 
+// maxConcurrency is the number of goroutines that can be spawned to run multiple requests in parallel.
+// The number 3 is chosen at random.
+const maxConcurrency = 3
+
 // Read performs a batch read for the requested object type and identifiers.
 func Read[B any](ctx context.Context,
 	adapter *Adapter,
@@ -42,7 +46,7 @@ func Read[B any](ctx context.Context,
 		}
 	}
 
-	result := parallelfetch.Execute(ctx, tasks, -1)
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrency)
 	if len(result.Errors) != 0 {
 		return nil, errors.Join(result.Errors.Values()...)
 	}
