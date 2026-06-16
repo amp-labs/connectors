@@ -1,0 +1,14 @@
+{
+  "default": {
+    "_id": "default",
+    "name": "Default Pipeline",
+    "type": "default",
+    "pipeline": []
+  },
+  "default_pool": {
+    "_id": "default_pool",
+    "name": "Default Pool",
+    "type": "pool",
+    "pipeline": []
+  }
+}

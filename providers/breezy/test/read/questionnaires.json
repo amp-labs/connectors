@@ -1,0 +1,14 @@
+[
+  {
+    "_id": "q001",
+    "name": "Test 1",
+    "sections": [],
+    "message_template": {
+      "body": "Hi [[candidate_first_name]]",
+      "type": "message"
+    },
+    "options": {
+      "move_to": {}
+    }
+  }
+]
