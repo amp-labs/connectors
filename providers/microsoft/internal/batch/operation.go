@@ -7,9 +7,12 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/simultaneously"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 )
+
+// maxConcurrency is the number of goroutines that can be spawned to run multiple requests in parallel.
+// The number 3 is chosen at random.
+const maxConcurrency = 3
 
 // ErrBatchResponse represents a failure returned by the Microsoft Graph Batch API
 // for an individual request within a batch.
@@ -61,98 +64,53 @@ func Execute[B any](ctx context.Context, strategy *Strategy, params *Params) *Re
 		Responses: make(map[RequestID]Envelope[B]),
 		Errors:    make(map[RequestID]Envelope[error]),
 	}
-	responseChannel := make(chan *responseWrapper[B], len(params.payloads))
-	errChannel := make(chan *datautils.Pair[RequestID, Envelope[error]], len(params.payloads))
 
-	// Chunk the list of payloads into consumable sizes, otherwise API will reject large number of requests.
-	// Save the output into the bundle.Raw and bundle.Response.
-	// In case of an error the bundle.Raw and bundle.Errors are populated.
+	// Break payloads into batches small enough for the API to accept.
 	payloadList := params.chunkPayloads()
 
-	callbacks := make([]simultaneously.Job, len(payloadList))
+	// Build a task per batch for parallel execution.
+	tasks := make([]parallelfetch.Task[int, []responseWrapper[B]], len(payloadList))
 	for index, payloads := range payloadList {
-		callbacks[index] = func(ctx context.Context) error {
-			batchRoutine(ctx, strategy, payloads, responseChannel, errChannel)
-
-			return nil
-		}
-	}
-
-	// Wait for all routines.
-	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
-		for _, payload := range params.payloads {
-			bundle.Errors[payload.RequestID] = Envelope[error]{
-				Status: connectorErrorStatus,
-				Data:   err,
+		tasks[index] = func(ctx context.Context) (int, *[]responseWrapper[B], error) {
+			res, err := strategy.performRequest(ctx, payloads)
+			if err != nil {
+				return index, nil, err
 			}
+
+			apiResponse, err := common.UnmarshalJSON[responses[B]](res)
+			if err != nil {
+				return index, nil, err
+			}
+
+			return index, &apiResponse.Responses, nil
 		}
 	}
 
-	// All routines are done. Close the channels.
-	close(responseChannel)
-	close(errChannel)
+	// Execute batch tasks with bounded concurrency and collect results.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrency)
 
-	for body := range responseChannel {
-		// Sort every response into either success or failure.
-		bundle.storeResponseBody(body)
-	}
+	for index, payloads := range payloadList {
+		if err, ok := result.Errors[index]; ok {
+			// The entire batch failed; mark every request in the batch with the batch error.
+			for _, payload := range payloads {
+				bundle.Errors[payload.RequestID] = Envelope[error]{
+					Status: connectorErrorStatus,
+					Data:   fmt.Errorf("batch request failed: %w", err),
+				}
+			}
 
-	for data := range errChannel {
-		requestID := data.Left
-		newEnvelope := data.Right
+			continue
+		}
 
-		if envelope, present := bundle.Errors[requestID]; !present {
-			bundle.Errors[requestID] = newEnvelope
-		} else {
-			// This is possible if `simultaneously.DoCtx` declared the error, then we combine both.
-			envelope.Data = fmt.Errorf("%w: %w", envelope.Data, newEnvelope.Data)
-			bundle.Errors[requestID] = envelope
+		// Process successful batch responses; individual entries may still contain errors.
+		if respBodies, ok := result.Records[index]; ok {
+			for _, wrapper := range respBodies {
+				bundle.storeResponseBody(&wrapper)
+			}
 		}
 	}
 
 	return bundle
-}
-
-func batchRoutine[B any](ctx context.Context,
-	strategy *Strategy,
-	payloads []*payloadRequest,
-	responseChannel chan<- *responseWrapper[B],
-	errChannel chan<- *datautils.Pair[RequestID, Envelope[error]],
-) {
-	res, err := strategy.performRequest(ctx, payloads)
-	if err != nil {
-		for _, payload := range payloads {
-			errChannel <- &datautils.Pair[RequestID, Envelope[error]]{
-				Left: payload.RequestID,
-				Right: Envelope[error]{
-					Status: connectorErrorStatus,
-					Data:   fmt.Errorf("batch request failed: %w", err),
-				},
-			}
-		}
-
-		return
-	}
-
-	apiResponse, err := common.UnmarshalJSON[responses[B]](res)
-	if err != nil {
-		for _, payload := range payloads {
-			errChannel <- &datautils.Pair[RequestID, Envelope[error]]{
-				Left: payload.RequestID,
-				Right: Envelope[error]{
-					Status: connectorErrorStatus,
-					Data:   fmt.Errorf("failed to unmarshal batch response: %w", err),
-				},
-			}
-		}
-
-		// Parsing output failed.
-		return
-	}
-
-	for _, wrapper := range apiResponse.Responses {
-		responseChannel <- &wrapper
-	}
 }
 
 func (s Strategy) performRequest(ctx context.Context, payloads []*payloadRequest) (*common.JSONHTTPResponse, error) {
