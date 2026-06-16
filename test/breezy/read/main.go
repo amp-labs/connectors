@@ -21,28 +21,32 @@ func main() {
 
 	conn := connTest.GetBreezyConnector(ctx)
 
-	slog.Info("=== Read companies ===")
-	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
-		ObjectName: "companies",
-		Fields:     connectors.Fields("_id", "name"),
-	})
+	objects := []struct {
+		name   string
+		fields []string
+	}{
+		{name: "companies", fields: []string{"_id", "name"}},
+		{name: "positions", fields: []string{"_id", "name", "state"}},
+		{name: "pipelines", fields: []string{"_id", "name"}},
+		{name: "categories", fields: []string{"id", "name"}},
+		{name: "departments", fields: []string{"_id", "name"}},
+		{name: "questionnaires", fields: []string{"_id", "name"}},
+		{name: "templates", fields: []string{"_id", "name"}},
+		{name: "webhook_endpoints", fields: []string{"id", "url", "status"}},
+	}
 
-	slog.Info("=== Read positions ===")
-	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
-		ObjectName: "positions",
-		Fields:     connectors.Fields("_id", "name", "state"),
-	})
-
-	slog.Info("=== Read webhook endpoints ===")
-	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
-		ObjectName: "webhook_endpoints",
-		Fields:     connectors.Fields("id", "url", "status"),
-	})
+	for _, obj := range objects {
+		slog.Info("=== Read " + obj.name + " ===")
+		testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+			ObjectName: obj.name,
+			Fields:     connectors.Fields(obj.fields...),
+		})
+	}
 
 	slog.Info("=== Metadata vs Read validation ===")
-	testscenario.ValidateMetadataContainsRead(ctx, conn, "companies", nil)
-	testscenario.ValidateMetadataContainsRead(ctx, conn, "positions", nil)
-	testscenario.ValidateMetadataContainsRead(ctx, conn, "webhook_endpoints", nil)
+	for _, obj := range objects {
+		testscenario.ValidateMetadataContainsRead(ctx, conn, obj.name, nil)
+	}
 
 	slog.Info("Breezy read tests completed successfully!")
 }

@@ -2,6 +2,7 @@ package breezy
 
 import (
 	"net/http"
+	"sort"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -13,13 +14,18 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-const testCompanyID = "abc123def456"
+const testCompanyID = "testCompanyID"
 
 func TestRead(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	responseCompanies := testutils.DataFromFile(t, "read/companies.json")
 	responsePositions := testutils.DataFromFile(t, "read/positions.json")
+	responsePipelines := testutils.DataFromFile(t, "read/pipelines.json")
+	responseCategories := testutils.DataFromFile(t, "read/categories.json")
+	responseDepartments := testutils.DataFromFile(t, "read/departments.json")
+	responseQuestionnaires := testutils.DataFromFile(t, "read/questionnaires.json")
+	responseTemplates := testutils.DataFromFile(t, "read/templates.json")
 	responseWebhookEndpoints := testutils.DataFromFile(t, "read/webhook-endpoints.json")
 
 	tests := []testroutines.Read{
@@ -72,7 +78,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 			},
 		},
 		{
-			Name:  "Read positions requires company_id metadata",
+			Name:  "Read positions",
 			Input: common.ReadParams{ObjectName: objectPositions, Fields: connectors.Fields("_id", "name")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -96,6 +102,214 @@ func TestRead(t *testing.T) { //nolint:funlen
 						"type":       "fullTime",
 						"state":      "published",
 						"department": "Engineering",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Read positions with state filter",
+			Input: common.ReadParams{
+				ObjectName: objectPositions,
+				Fields:     connectors.Fields("_id", "name", "state"),
+				Filter:     "draft",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/"+testCompanyID+"/positions"),
+					mockcond.QueryParam("state", "draft"),
+				},
+				Then: mockserver.Response(http.StatusOK, responsePositions),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"_id":   "pos001",
+						"name":  "Software Engineer",
+						"state": "published",
+					},
+					Raw: map[string]any{
+						"_id":        "pos001",
+						"name":       "Software Engineer",
+						"type":       "fullTime",
+						"state":      "published",
+						"department": "Engineering",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read pipelines (map response)",
+			Input: common.ReadParams{ObjectName: objectPipelines, Fields: connectors.Fields("_id", "name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/" + testCompanyID + "/pipelines"),
+				},
+				Then: mockserver.Response(http.StatusOK, responsePipelines),
+			}.Server(),
+			Comparator: comparatorSubsetReadOrderByID,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"_id":  "default",
+						"name": "Default Pipeline",
+					},
+					Raw: map[string]any{
+						"_id":      "default",
+						"name":     "Default Pipeline",
+						"type":     "default",
+						"pipeline": []any{},
+					},
+				}, {
+					Fields: map[string]any{
+						"_id":  "default_pool",
+						"name": "Default Pool",
+					},
+					Raw: map[string]any{
+						"_id":      "default_pool",
+						"name":     "Default Pool",
+						"type":     "pool",
+						"pipeline": []any{},
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read categories",
+			Input: common.ReadParams{ObjectName: objectCategories, Fields: connectors.Fields("id", "name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/" + testCompanyID + "/categories"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCategories),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":   "software",
+						"name": "Software Development",
+					},
+					Raw: map[string]any{
+						"id":   "software",
+						"name": "Software Development",
+					},
+				}, {
+					Fields: map[string]any{
+						"id":   "design",
+						"name": "Interactive Design",
+					},
+					Raw: map[string]any{
+						"id":   "design",
+						"name": "Interactive Design",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read departments",
+			Input: common.ReadParams{ObjectName: objectDepartments, Fields: connectors.Fields("_id", "name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/" + testCompanyID + "/departments"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseDepartments),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"_id":  "dept001",
+						"name": "Engineering",
+					},
+					Raw: map[string]any{
+						"_id":  "dept001",
+						"name": "Engineering",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read questionnaires",
+			Input: common.ReadParams{ObjectName: objectQuestionnaires, Fields: connectors.Fields("_id", "name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/" + testCompanyID + "/questionnaires"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseQuestionnaires),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"_id":  "q001",
+						"name": "Test 1",
+					},
+					Raw: map[string]any{
+						"_id":  "q001",
+						"name": "Test 1",
+						"sections": []any{},
+						"message_template": map[string]any{
+							"body": "Hi [[candidate_first_name]]",
+							"type": "message",
+						},
+						"options": map[string]any{
+							"move_to": map[string]any{},
+						},
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read templates",
+			Input: common.ReadParams{ObjectName: objectTemplates, Fields: connectors.Fields("_id", "name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/" + testCompanyID + "/templates"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseTemplates),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"_id":  "tpl001",
+						"name": "Welcome Email",
+					},
+					Raw: map[string]any{
+						"_id":  "tpl001",
+						"name": "Welcome Email",
+						"body": "Hello [[candidate_first_name]]",
 					},
 				}},
 				NextPage: "",
@@ -146,19 +360,47 @@ func TestRead(t *testing.T) { //nolint:funlen
 	}
 }
 
-func TestReadPositionsMissingCompanyID(t *testing.T) {
+func TestReadCompanyScopedMissingCompanyID(t *testing.T) {
 	t.Parallel()
 
-	tt := testroutines.Read{
-		Name:         "Read positions without company_id returns error",
-		Input:        common.ReadParams{ObjectName: objectPositions, Fields: connectors.Fields("_id")},
-		Server:       mockserver.Dummy(),
-		ExpectedErrs: []error{ErrMissingCompanyID},
+	tests := []struct {
+		name       string
+		objectName string
+	}{
+		{name: "positions", objectName: objectPositions},
+		{name: "pipelines", objectName: objectPipelines},
+		{name: "categories", objectName: objectCategories},
 	}
 
-	tt.Run(t, func() (connectors.ReadConnector, error) {
-		return constructTestConnectorWithoutCompanyID(tt.Server.URL)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			tt := testroutines.Read{
+				Name:         "company-scoped read without company_id returns error",
+				Input:        common.ReadParams{ObjectName: tc.objectName, Fields: connectors.Fields("_id")},
+				Server:       mockserver.Dummy(),
+				ExpectedErrs: []error{ErrMissingCompanyID},
+			}
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestConnectorWithoutCompanyID(tt.Server.URL)
+			})
+		})
+	}
+}
+
+func comparatorSubsetReadOrderByID(
+	serverURL string, actual, expected *common.ReadResult,
+) *testutils.CompareResult {
+	sort.Slice(actual.Data, func(i, j int) bool {
+		ai, _ := actual.Data[i].Fields["_id"].(string)
+		aj, _ := actual.Data[j].Fields["_id"].(string)
+
+		return ai < aj
 	})
+
+	return testroutines.ComparatorSubsetRead(serverURL, actual, expected)
 }
 
 func constructTestConnectorWithoutCompanyID(serverURL string) (*Connector, error) {
