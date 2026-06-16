@@ -15,8 +15,17 @@ func TestListObjectMetadata(t *testing.T) {
 
 	tests := []testroutines.Metadata{
 		{
-			Name:       "Successful metadata for recruiting objects",
-			Input:      []string{"companies", "positions", "webhook_endpoints"},
+			Name: "Successful metadata for recruiting objects",
+			Input: []string{
+				"companies",
+				"positions",
+				"pipelines",
+				"categories",
+				"departments",
+				"questionnaires",
+				"templates",
+				"webhook_endpoints",
+			},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -41,6 +50,81 @@ func TestListObjectMetadata(t *testing.T) {
 						Fields: map[string]common.FieldMetadata{
 							"_id": {
 								DisplayName:  "Position Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"pipelines": {
+						DisplayName: "Pipelines",
+						Fields: map[string]common.FieldMetadata{
+							"_id": {
+								DisplayName:  "Pipeline Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"categories": {
+						DisplayName: "Categories",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Category Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"departments": {
+						DisplayName: "Departments",
+						Fields: map[string]common.FieldMetadata{
+							"_id": {
+								DisplayName:  "Department Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"questionnaires": {
+						DisplayName: "Questionnaires",
+						Fields: map[string]common.FieldMetadata{
+							"_id": {
+								DisplayName:  "Questionnaire Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"templates": {
+						DisplayName: "Templates",
+						Fields: map[string]common.FieldMetadata{
+							"_id": {
+								DisplayName:  "Template Id",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
