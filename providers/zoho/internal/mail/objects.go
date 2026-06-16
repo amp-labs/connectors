@@ -25,9 +25,24 @@ type objectDescriptor struct {
 // (e.g. folders, labels, messages, and all organization-/group-scoped
 // resources), since dynamic URLs are not supported.
 var supportedObjects = map[string]objectDescriptor{ //nolint:gochecknoglobals
-	"accounts": {path: "api/accounts", recordsPath: []string{"data"}},
-	"tasks":    {path: "api/tasks/me", recordsPath: []string{"data"}},
-	"notes":    {path: "api/notes/me", recordsPath: []string{"data", "list"}},
+	"accounts":  {path: "api/accounts", recordsPath: []string{"data"}},
+	"signature": {path: "api/accounts/signature", recordsPath: []string{"data"}},
+
+	"tasks":              {path: "api/tasks/me", recordsPath: []string{"data", "tasks"}},
+	"tasks/groups":       {path: "api/tasks/groups", recordsPath: []string{"data", "groups"}},
+	"customStatus":       {path: "api/tasks/me/customStatus", recordsPath: []string{"data"}},
+	"links/groups":       {path: "api/links/groups", recordsPath: []string{"data"}},
+	"links/me":           {path: "api/links/me", recordsPath: []string{"data", "list"}},
+	"links/favorites":    {path: "api/links/favorites", recordsPath: []string{"data", "list"}},
+	"links":              {path: "api/links", recordsPath: []string{"data", "list"}},
+	"links/trash":        {path: "api/links/me/trash", recordsPath: []string{"data", "list"}},
+	"collections":        {path: "api/links/me/collections", recordsPath: []string{"data"}},
+	"groups/collections": {path: "api/links/groups/collections", recordsPath: []string{"data"}},
+	"notes":              {path: "api/notes/me", recordsPath: []string{"data", "list"}},
+	"notes/groups":       {path: "api/notes/groups", recordsPath: []string{"data"}},
+	"notes/books":        {path: "api/notes/me/books", recordsPath: []string{"data"}},
+	"notes/favorites":    {path: "api/notes/favorites", recordsPath: []string{"data", "list"}},
+	"notes/sharedtome":   {path: "api/notes/sharedtome", recordsPath: []string{"data", "list"}},
 }
 
 func lookupObject(objectName string) (objectDescriptor, error) {
