@@ -21,13 +21,17 @@ func main() {
 	utils.SetupLogging()
 
 	conn := zoho.GetZohoConnector(ctx, providers.ModuleZohoMail)
+	_, err := conn.GetPostAuthInfo(ctx)
+	if err != nil {
+		utils.Fail("error getting post-auth info for Zoho", "error", err)
+	}
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"notes"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"notes", "messages"})
 	if err != nil {
 		utils.Fail("error listing metadata for Zoho", "error", err)
 	}
 
 	// Print the results
-	utils.DumpJSON(m.Result, os.Stdout)
+	utils.DumpJSON(m, os.Stdout)
 	fmt.Println("Errors: ", m.Errors)
 }

@@ -113,9 +113,10 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) { // nolint: f
 	}
 
 	// Initialize the Mail adapter if applicable.
-	// In that case, metadata operations are delegated to it.
 	if isMailModule(moduleID) {
-		conn.mailAdapter, err = mail.NewAdapter(conn.Client, conn.moduleInfo, nil)
+		authMetadata := NewAuthMetadataVars(params.Metadata.Map)
+
+		conn.mailAdapter, err = mail.NewAdapter(conn.Client, conn.moduleInfo, authMetadata.MailAccountID)
 		if err != nil {
 			return nil, err
 		}

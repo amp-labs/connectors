@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
@@ -61,7 +62,7 @@ func (a *Adapter) retrieveSampleResponse(ctx context.Context, objectName string)
 		return nil, err
 	}
 
-	url, err := a.getAPIURL(obj.path)
+	url, err := a.buildObjectURL(obj)
 	if err != nil {
 		return nil, err
 	}
@@ -72,6 +73,17 @@ func (a *Adapter) retrieveSampleResponse(ctx context.Context, objectName string)
 	}
 
 	return parseMetadataResponse(objectName, obj, response)
+}
+
+func (a *Adapter) buildObjectURL(obj objectDescriptor) (*urlbuilder.URL, error) {
+
+	// Account-scoped endpoints require the Zoho Mail account id, which is resolved post-authentication (see GetPostAuthInfo). If the account id is not yet
+	// resolved, return an error.
+	if obj.accountScoped {
+		return a.getAccountScopedURL(obj.path)
+	}
+
+	return a.getAPIURL(obj.path)
 }
 
 func parseMetadataResponse(objectName string, obj objectDescriptor, resp *common.JSONHTTPResponse,

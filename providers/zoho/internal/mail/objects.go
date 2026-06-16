@@ -7,23 +7,19 @@ import (
 )
 
 // objectDescriptor describes how to list a Zoho Mail object.
-//
-// Only endpoints with a static path (no id such as accountId, zoid or zgid in
-// the URL) are supported. The records array does not live under a single
-// consistent key across Zoho Mail endpoints, so recordsPath spells out the full
-// key path to it (e.g. ["data"], ["list"], or ["data", "lists"]).
 type objectDescriptor struct {
-	// path is the static API path appended to the module BaseURL.
+	// path is the API path appended to the module BaseURL. For account-scoped
+	// objects it is the suffix that follows api/accounts/{accountId}/.
 	path string
 	// recordsPath is the full key path to the records array in the response.
 	recordsPath []string
+	// accountScoped indicates the endpoint lives under a specific Zoho Mail
+	// account, i.e. api/accounts/{accountId}/<path>. Such objects require the
+	// account id resolved post-authentication (see GetPostAuthInfo).
+	accountScoped bool
 }
 
 // supportedObjects maps object names to their listing endpoint.
-//
-// Excluded by design: any endpoint requiring an id in the path
-// (e.g. folders, labels, messages, and all organization-/group-scoped
-// resources), since dynamic URLs are not supported.
 var supportedObjects = map[string]objectDescriptor{ //nolint:gochecknoglobals
 	"accounts":  {path: "api/accounts", recordsPath: []string{"data"}},
 	"signature": {path: "api/accounts/signature", recordsPath: []string{"data"}},
@@ -43,6 +39,14 @@ var supportedObjects = map[string]objectDescriptor{ //nolint:gochecknoglobals
 	"notes/books":        {path: "api/notes/me/books", recordsPath: []string{"data"}},
 	"notes/favorites":    {path: "api/notes/favorites", recordsPath: []string{"data", "list"}},
 	"notes/sharedtome":   {path: "api/notes/sharedtome", recordsPath: []string{"data", "list"}},
+
+	// Account-scoped objects. The path is only the suffix after
+	// api/accounts/{accountId}/; the api/accounts/{accountId} prefix (accountId
+	// from post-auth) is added when building the URL. See GetPostAuthInfo and
+	// buildObjectURL.
+	"accounts/folders": {path: "folders", recordsPath: []string{"data"}, accountScoped: true},
+	"accounts/labels":  {path: "labels", recordsPath: []string{"data"}, accountScoped: true},
+	"messages":         {path: "messages/view", recordsPath: []string{"data"}, accountScoped: true},
 }
 
 func lookupObject(objectName string) (objectDescriptor, error) {
