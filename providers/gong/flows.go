@@ -64,7 +64,6 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 			continue
 		}
 
-		// Company-only mode keeps just the "Company" visibility flows.
 		mergeUserFlows(aggregated, flows, user, includeUserAssoc, readAllUsers)
 
 		if !readAllUsers {
