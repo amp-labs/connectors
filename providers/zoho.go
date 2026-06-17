@@ -131,7 +131,7 @@ func init() {
 				BaseURL:     "https://{{.zoho_mail_domain}}",
 				DisplayName: "Zoho Mail",
 				Support: Support{
-					Read:      true,
+					Read:      false,
 					Subscribe: false,
 					Write:     false,
 				},
