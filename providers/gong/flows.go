@@ -69,7 +69,7 @@ func (c *Connector) readFlows(ctx context.Context, config common.ReadParams) (*c
 
 		if !readAllUsers {
 			// When ReadFlowsForAllUsers is false,
-			// We only read flows with visibility "Company". so we can break after the first user.
+			// We only read flows with visibility "Company", so we only need to read flows from one user.
 			// We treat failed readOpts assertion as false ReadFlowsForAllUsers.
 			break
 		}
