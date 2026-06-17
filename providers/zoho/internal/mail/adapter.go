@@ -29,10 +29,6 @@ func NewAdapter(
 	}, nil
 }
 
-func (a *Adapter) SetAccountID(accountID string) {
-	a.accountID = accountID
-}
-
 func (a *Adapter) getAPIURL(path string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.BaseURL, path)
 }

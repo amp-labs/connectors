@@ -1,12 +1,8 @@
 package zoho
 
-// AuthMetadataVars holds the post-authentication metadata persisted for the
-// Zoho connector. Currently only the Zoho Mail module populates it, storing
-// the account id resolved from the /api/accounts endpoint.
 type AuthMetadataVars struct {
 	// MailAccountID is the Zoho Mail account id (type ZOHO_ACCOUNT) used in
-	// account-scoped Zoho Mail API paths. It is named explicitly for the Mail
-	// module so it is not confused with account ids from other Zoho modules.
+	// account-scoped Zoho Mail API paths.
 	MailAccountID string
 }
 
