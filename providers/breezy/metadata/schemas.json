@@ -1,0 +1,294 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "companies": {
+          "displayName": "Companies",
+          "path": "/companies",
+          "responseKey": "",
+          "docs": "https://developer.breezy.hr/reference/companies",
+          "fields": {
+            "_id": {
+              "displayName": "Company Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "friendly_id": {
+              "displayName": "Friendly Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "initial": {
+              "displayName": "Initial",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "member_count": {
+              "displayName": "Member Count",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "positions": {
+          "displayName": "Positions",
+          "path": "/company/{company_id}/positions",
+          "responseKey": "",
+          "docs": "https://developer.breezy.hr/reference/company-positions",
+          "fields": {
+            "_id": {
+              "displayName": "Position Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "State",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "department": {
+              "displayName": "Department",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category": {
+              "displayName": "Category",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "experience": {
+              "displayName": "Experience",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "education": {
+              "displayName": "Education",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "Location",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "creation_date": {
+              "displayName": "Creation Date",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_date": {
+              "displayName": "Updated Date",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "pipelines": {
+          "displayName": "Pipelines",
+          "path": "/company/{company_id}/pipelines",
+          "responseKey": "",
+          "docs": "https://developer.breezy.hr/reference/company-pipelines",
+          "fields": {
+            "_id": {
+              "displayName": "Pipeline Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pipeline": {
+              "displayName": "Pipeline",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "categories": {
+          "displayName": "Categories",
+          "path": "/company/{company_id}/categories",
+          "responseKey": "",
+          "docs": "https://developer.breezy.hr/reference/company-pipelines-1-1",
+          "fields": {
+            "id": {
+              "displayName": "Category Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "departments": {
+          "displayName": "Departments",
+          "path": "/company/{company_id}/departments",
+          "responseKey": "",
+          "docs": "https://developer.breezy.hr/reference/company-pipelines-1",
+          "fields": {
+            "_id": {
+              "displayName": "Department Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "questionnaires": {
+          "displayName": "Questionnaires",
+          "path": "/company/{company_id}/questionnaires",
+          "responseKey": "",
+          "docs": "https://developer.breezy.hr/reference/company-questionnaires",
+          "fields": {
+            "_id": {
+              "displayName": "Questionnaire Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sections": {
+              "displayName": "Sections",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "message_template": {
+              "displayName": "Message Template",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "options": {
+              "displayName": "Options",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "templates": {
+          "displayName": "Templates",
+          "path": "/company/{company_id}/templates",
+          "responseKey": "",
+          "docs": "https://developer.breezy.hr/reference/company-templates",
+          "fields": {
+            "_id": {
+              "displayName": "Template Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "body": {
+              "displayName": "Body",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "webhook_endpoints": {
+          "displayName": "Webhook Endpoints",
+          "path": "/company/{company_id}/webhook_endpoints",
+          "responseKey": "data",
+          "docs": "https://developer.breezy.hr/reference/company-webhook-endpoints",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "events": {
+              "displayName": "Events",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enabled": {
+              "displayName": "Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "secret_prefix": {
+              "displayName": "Secret Prefix",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "stats": {
+              "displayName": "Stats",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}
