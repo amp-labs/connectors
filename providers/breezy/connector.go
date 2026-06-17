@@ -20,20 +20,15 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	conn, err := components.Initialize(providers.Breezy, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	if params.Metadata != nil {
-		conn.CompanyID = params.Metadata["company_id"]
-	}
-
-	return conn, nil
+	return components.Init(providers.Breezy, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
+
+	if params.Metadata != nil {
+		connector.CompanyID = params.Metadata["company_id"]
+	}
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
 		connector.ProviderContext.Module(),
