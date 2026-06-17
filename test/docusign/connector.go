@@ -30,6 +30,25 @@ func GetDocusignConnector(ctx context.Context) *docusign.Connector {
 	return conn
 }
 
+func GetDocusignDeveloperConnector(ctx context.Context) *docusign.Connector {
+	filePath := credscanning.LoadPath(providers.DocusignDeveloper)
+	reader := utils.MustCreateProvCredJSON(filePath, true)
+
+	conn, err := docusign.NewConnector(
+		docusign.WithClient(ctx, http.DefaultClient, getDeveloperConfig(reader), reader.GetOauthToken()),
+		docusign.WithMetadata(map[string]string{
+			// This value can be obtained by following this API reference.
+			// https://developers.docusign.com/platform/auth/reference/user-info
+			"server": "demo",
+		}),
+	)
+	if err != nil {
+		utils.Fail("error creating connector", "error", err)
+	}
+
+	return conn
+}
+
 func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 	return &oauth2.Config{
 		ClientID:     reader.Get(credscanning.Fields.ClientId),
@@ -40,6 +59,20 @@ func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
 			TokenURL:  "https://account.docusign.com/oauth/token",
 			AuthStyle: oauth2.AuthStyleInParams,
 		},
-		Scopes: []string{},
+		Scopes: []string{"signature"},
+	}
+}
+
+func getDeveloperConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
+	return &oauth2.Config{
+		ClientID:     reader.Get(credscanning.Fields.ClientId),
+		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
+		RedirectURL:  "http://localhost:8080/callbacks/v1/oauth",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   "https://account-d.docusign.com/oauth/auth",
+			TokenURL:  "https://account-d.docusign.com/oauth/token",
+			AuthStyle: oauth2.AuthStyleInParams,
+		},
+		Scopes: []string{"signature"},
 	}
 }
