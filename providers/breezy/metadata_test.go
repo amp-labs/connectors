@@ -156,7 +156,7 @@ func TestListObjectMetadata(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name:         "Empty objects returns missing objects error",
+			Name:         "No objects returns missing objects error",
 			Input:        nil,
 			Server:       mockserver.Dummy(),
 			Expected:     nil,
