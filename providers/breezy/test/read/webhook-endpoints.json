@@ -5,7 +5,16 @@
       "url": "https://example.com/webhook",
       "description": "Production webhook",
       "status": "active",
-      "enabled": true
+      "enabled": true,
+      "updated_at": "2024-06-01T10:00:00Z"
+    },
+    {
+      "id": "wh002",
+      "url": "https://example.com/webhook-staging",
+      "description": "Staging webhook",
+      "status": "active",
+      "enabled": true,
+      "updated_at": "2024-06-20T08:00:00Z"
     }
   ]
 }

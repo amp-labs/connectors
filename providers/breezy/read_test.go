@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -90,18 +91,65 @@ func TestRead(t *testing.T) { //nolint:funlen
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 1,
+				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"_id":  "pos001",
 						"name": "Software Engineer",
 					},
 					Raw: map[string]any{
-						"_id":        "pos001",
-						"name":       "Software Engineer",
-						"type":       "fullTime",
-						"state":      "published",
-						"department": "Engineering",
+						"_id":          "pos001",
+						"name":         "Software Engineer",
+						"type":         "fullTime",
+						"state":        "published",
+						"department":   "Engineering",
+						"updated_date": "2024-06-01T10:00:00Z",
+					},
+				}, {
+					Fields: map[string]any{
+						"_id":  "pos002",
+						"name": "Product Manager",
+					},
+					Raw: map[string]any{
+						"_id":          "pos002",
+						"name":         "Product Manager",
+						"type":         "fullTime",
+						"state":        "published",
+						"department":   "Product",
+						"updated_date": "2024-06-15T12:00:00Z",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Read positions with Since filters connector-side",
+			Input: common.ReadParams{
+				ObjectName: objectPositions,
+				Fields:     connectors.Fields("_id", "name"),
+				Since:      time.Date(2024, 6, 10, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/" + testCompanyID + "/positions"),
+				},
+				Then: mockserver.Response(http.StatusOK, responsePositions),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"_id":  "pos002",
+						"name": "Product Manager",
+					},
+					Raw: map[string]any{
+						"_id":          "pos002",
+						"name":         "Product Manager",
+						"updated_date": "2024-06-15T12:00:00Z",
 					},
 				}},
 				NextPage: "",
@@ -126,7 +174,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 1,
+				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"_id":   "pos001",
@@ -134,11 +182,12 @@ func TestRead(t *testing.T) { //nolint:funlen
 						"state": "published",
 					},
 					Raw: map[string]any{
-						"_id":        "pos001",
-						"name":       "Software Engineer",
-						"type":       "fullTime",
-						"state":      "published",
-						"department": "Engineering",
+						"_id":          "pos001",
+						"name":         "Software Engineer",
+						"type":         "fullTime",
+						"state":        "published",
+						"department":   "Engineering",
+						"updated_date": "2024-06-01T10:00:00Z",
 					},
 				}},
 				NextPage: "",
@@ -329,7 +378,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 1,
+				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"id":  "wh001",
@@ -341,6 +390,53 @@ func TestRead(t *testing.T) { //nolint:funlen
 						"description": "Production webhook",
 						"status":      "active",
 						"enabled":     true,
+						"updated_at":  "2024-06-01T10:00:00Z",
+					},
+				}, {
+					Fields: map[string]any{
+						"id":  "wh002",
+						"url": "https://example.com/webhook-staging",
+					},
+					Raw: map[string]any{
+						"id":          "wh002",
+						"url":         "https://example.com/webhook-staging",
+						"description": "Staging webhook",
+						"status":      "active",
+						"enabled":     true,
+						"updated_at":  "2024-06-20T08:00:00Z",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Read webhook endpoints with Since filters connector-side",
+			Input: common.ReadParams{
+				ObjectName: objectWebhookEndpoints,
+				Fields:     connectors.Fields("id", "url"),
+				Since:      time.Date(2024, 6, 15, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/" + testCompanyID + "/webhook_endpoints"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseWebhookEndpoints),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":  "wh002",
+						"url": "https://example.com/webhook-staging",
+					},
+					Raw: map[string]any{
+						"id":         "wh002",
+						"url":        "https://example.com/webhook-staging",
+						"updated_at": "2024-06-20T08:00:00Z",
 					},
 				}},
 				NextPage: "",

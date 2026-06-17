@@ -2,6 +2,7 @@ package breezy
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -78,7 +79,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	if params.ObjectName == objectPositions && params.Filter != "" {
-		// Positions API defaults to state=published; Filter supplies draft, archived, etc.
+		// Provider-side state filter (draft, archived, published, etc.).
 		// https://developer.breezy.hr/reference/company-positions
 		endpointURL.WithQueryParam("state", params.Filter)
 	}
@@ -92,31 +93,82 @@ func (c *Connector) parseReadResponse(
 	_ *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	records, err := recordsForRead(c, params.ObjectName)
-	if err != nil {
-		return nil, err
-	}
-
-	return common.ParseResult(
+	return common.ParseResultFiltered(
+		params,
 		resp,
-		records,
-		noNextPage,
-		readhelper.MakeGetMarshaledDataWithId(idFieldForObject(params.ObjectName)),
+		nodeRecordsForRead(c, params.ObjectName),
+		makeFilterFunc(params),
+		readhelper.MakeMarshaledDataFuncWithId(nil, idFieldForObject(params.ObjectName)),
 		params.Fields,
 	)
 }
 
-func recordsForRead(c *Connector, objectName string) (common.RecordsFunc, error) {
+func nodeRecordsForRead(c *Connector, objectName string) common.NodeRecordsFunc {
 	switch objectName {
 	case objectPipelines:
-		// Pipelines payload is an object-of-objects (not a JSON array), so we must flatten it.
-		// https://developer.breezy.hr/reference/company-pipelines
-		return extractPipelinesRecords(), nil
+		return pipelineRecordNodes()
 	default:
 		recordsKey := metadata.Schemas.LookupArrayFieldName(c.ProviderContext.Module(), objectName)
 
-		return common.ExtractOptionalRecordsFromPath(recordsKey), nil
+		return func(node *ajson.Node) ([]*ajson.Node, error) {
+			return jsonquery.New(node).ArrayOptional(recordsKey)
+		}
 	}
+}
+
+func pipelineRecordNodes() common.NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
+		records, err := flattenPipelineRecords(node)
+		if err != nil {
+			return nil, err
+		}
+
+		return recordMapsToNodes(records)
+	}
+}
+
+func flattenPipelineRecords(node *ajson.Node) ([]map[string]any, error) {
+	m, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]map[string]any, 0, len(m))
+
+	for key, v := range m {
+		obj, ok := v.(map[string]any)
+		if !ok || obj == nil {
+			continue
+		}
+
+		if _, has := obj["_id"]; !has && key != "" {
+			obj["_id"] = key
+		}
+
+		out = append(out, obj)
+	}
+
+	return out, nil
+}
+
+func recordMapsToNodes(records []map[string]any) ([]*ajson.Node, error) {
+	out := make([]*ajson.Node, 0, len(records))
+
+	for _, record := range records {
+		raw, err := json.Marshal(record)
+		if err != nil {
+			return nil, err
+		}
+
+		node, err := ajson.Unmarshal(raw)
+		if err != nil {
+			return nil, err
+		}
+
+		out = append(out, node)
+	}
+
+	return out, nil
 }
 
 func idFieldForObject(objectName string) readhelper.IdFieldQuery {
@@ -128,32 +180,6 @@ func idFieldForObject(objectName string) readhelper.IdFieldQuery {
 		return readhelper.NewIdField("id")
 	default:
 		return readhelper.NewIdField("id")
-	}
-}
-
-func extractPipelinesRecords() common.RecordsFunc {
-	return func(node *ajson.Node) ([]map[string]any, error) {
-		m, err := jsonquery.Convertor.ObjectToMap(node)
-		if err != nil {
-			return nil, err
-		}
-
-		out := make([]map[string]any, 0, len(m))
-
-		for key, v := range m {
-			obj, ok := v.(map[string]any)
-			if !ok || obj == nil {
-				continue
-			}
-
-			if _, has := obj["_id"]; !has && key != "" {
-				obj["_id"] = key
-			}
-
-			out = append(out, obj)
-		}
-
-		return out, nil
 	}
 }
 

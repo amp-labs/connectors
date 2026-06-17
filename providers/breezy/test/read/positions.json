@@ -4,6 +4,15 @@
     "name": "Software Engineer",
     "type": "fullTime",
     "state": "published",
-    "department": "Engineering"
+    "department": "Engineering",
+    "updated_date": "2024-06-01T10:00:00Z"
+  },
+  {
+    "_id": "pos002",
+    "name": "Product Manager",
+    "type": "fullTime",
+    "state": "published",
+    "department": "Product",
+    "updated_date": "2024-06-15T12:00:00Z"
   }
 ]
