@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
@@ -37,7 +38,7 @@ func (a *Adapter) Read(ctx context.Context, config common.ReadParams) (*common.R
 		resp,
 		extractRecordsFromKeyPath(obj.recordsPath),
 		a.makeNextRecordsURL(url, obj),
-		common.GetMarshaledData,
+		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField(obj.objectIdKey)),
 		config.Fields,
 	)
 }

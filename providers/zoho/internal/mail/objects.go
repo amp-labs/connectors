@@ -21,6 +21,8 @@ type objectDescriptor struct {
 	// endpoint returns its full list in a single response (and rejects a
 	// "limit" query parameter).
 	pagination *pagination
+
+	objectIdKey string
 }
 
 // nextPageStyle declares how an endpoint reports its next page, so we read it
@@ -64,39 +66,39 @@ var (
 // supportedObjects maps object names to their listing endpoint.
 var supportedObjects = map[string]objectDescriptor{ //nolint:gochecknoglobals
 	// https://www.zoho.com/mail/help/api/get-all-users-accounts.html
-	"accounts": {path: "api/accounts", recordsPath: []string{"data"}},
+	"accounts": {path: "api/accounts", recordsPath: []string{"data"}, objectIdKey: "accountId"},
 	// https://www.zoho.com/mail/help/api/get-user-signature.html
-	"signature": {path: "api/accounts/signature", recordsPath: []string{"data"}},
+	"signature": {path: "api/accounts/signature", recordsPath: []string{"data"}, objectIdKey: "id"},
 	// https://www.zoho.com/mail/help/api/get-all-group-or-personal-tasks.html
-	"tasks": {path: "api/tasks/me", recordsPath: []string{"data", "tasks"}, pagination: taskPaging},
+	"tasks": {path: "api/tasks/me", recordsPath: []string{"data", "tasks"}, pagination: taskPaging, objectIdKey: "id"},
 	// https://www.zoho.com/mail/help/api/get-group-details.html
-	"tasks/groups": {path: "api/tasks/groups", recordsPath: []string{"data", "groups"}},
+	"tasks/groups": {path: "api/tasks/groups", recordsPath: []string{"data", "groups"}, objectIdKey: "id"},
 	// https://www.zoho.com/mail/help/api/get-custom-status-of-task.html
-	"customStatus": {path: "api/tasks/me/customStatus", recordsPath: []string{"data"}},
+	"customStatus": {path: "api/tasks/me/customStatus", recordsPath: []string{"data"}, objectIdKey: "statusId"},
 	// https://www.zoho.com/mail/help/api/get-all-link-groups.html
-	"links/groups": {path: "api/links/groups", recordsPath: []string{"data"}},
+	"links/groups": {path: "api/links/groups", recordsPath: []string{"data"}, objectIdKey: "groupId"},
 	// https://www.zoho.com/mail/help/api/get-all-bookmarks.html
-	"links/me": {path: "api/links/me", recordsPath: []string{"data", "list"}, pagination: linkPaging},
+	"links/me": {path: "api/links/me", recordsPath: []string{"data", "list"}, pagination: linkPaging, objectIdKey: "entityId"},
 	// https://www.zoho.com/mail/help/api/get-all-favorite-bookmarks-api.html
-	"links/favorites": {path: "api/links/favorites", recordsPath: []string{"data", "list"}, pagination: linkPaging},
+	"links/favorites": {path: "api/links/favorites", recordsPath: []string{"data", "list"}, pagination: linkPaging, objectIdKey: "entityId"},
 	// https://www.zoho.com/mail/help/api/get-all-bookmarks.html
-	"links": {path: "api/links/?action=view&view=sharedtome", recordsPath: []string{"data", "list"}, pagination: linkPaging}, //nolint:lll
+	"links": {path: "api/links/?action=view&view=sharedtome", recordsPath: []string{"data", "list"}, pagination: linkPaging, objectIdKey: "entityId"}, //nolint:lll
 	// https://www.zoho.com/mail/help/api/get-all-bookmarks-in-trash-api.html
-	"links/trash": {path: "api/links/me/trash", recordsPath: []string{"data", "list"}, pagination: linkPaging},
+	"links/trash": {path: "api/links/me/trash", recordsPath: []string{"data", "list"}, pagination: linkPaging, objectIdKey: "entityId"},
 	// https://www.zoho.com/mail/help/api/get-all-collections.html
-	"collections": {path: "api/links/me/collections", recordsPath: []string{"data"}},
+	"collections": {path: "api/links/me/collections", recordsPath: []string{"data"}, objectIdKey: "collectionId"},
 	// https://www.zoho.com/mail/help/api/get-all-group-collections-api.html
-	"groups/collections": {path: "api/links/groups/collections", recordsPath: []string{"data"}},
+	"groups/collections": {path: "api/links/groups/collections", recordsPath: []string{"data"}, objectIdKey: "groupId"},
 	// https://www.zoho.com/mail/help/api/get-all-notes.html
-	"notes": {path: "api/notes/me", recordsPath: []string{"data", "list"}, pagination: notePaging},
+	"notes": {path: "api/notes/me", recordsPath: []string{"data", "list"}, pagination: notePaging, objectIdKey: "entityId"},
 	// https://www.zoho.com/mail/help/api/get-all-groups.html
-	"notes/groups": {path: "api/notes/groups", recordsPath: []string{"data"}},
+	"notes/groups": {path: "api/notes/groups", recordsPath: []string{"data"}, objectIdKey: "groupId"},
 	// https://www.zoho.com/mail/help/api/get-all-books.html
-	"notes/books": {path: "api/notes/me/books", recordsPath: []string{"data"}},
+	"notes/books": {path: "api/notes/me/books", recordsPath: []string{"data"}, objectIdKey: "bookId"},
 	// https://www.zoho.com/mail/help/api/get-all-favourite-notes.html
-	"notes/favorites": {path: "api/notes/favorites", recordsPath: []string{"data", "list"}, pagination: notePaging},
+	"notes/favorites": {path: "api/notes/favorites", recordsPath: []string{"data", "list"}, pagination: notePaging, objectIdKey: "entityId"},
 	// https://www.zoho.com/mail/help/api/get-all-shared-notes.html
-	"notes/sharedtome": {path: "api/notes/sharedtome", recordsPath: []string{"data", "list"}, pagination: notePaging},
+	"notes/sharedtome": {path: "api/notes/sharedtome", recordsPath: []string{"data", "list"}, pagination: notePaging, objectIdKey: "entityId"},
 
 	// Account-scoped objects. The path is only the suffix after
 	// api/accounts/{accountId}/; the api/accounts/{accountId} prefix (accountId
@@ -104,11 +106,11 @@ var supportedObjects = map[string]objectDescriptor{ //nolint:gochecknoglobals
 	// objectURL.
 	//
 	// https://www.zoho.com/mail/help/api/get-all-folder-details.html
-	"accounts/folders": {path: "folders", recordsPath: []string{"data"}, accountScoped: true},
+	"accounts/folders": {path: "folders", recordsPath: []string{"data"}, accountScoped: true, objectIdKey: "folderId"},
 	// https://www.zoho.com/mail/help/api/get-all-label-details.html
-	"accounts/labels": {path: "labels", recordsPath: []string{"data"}, accountScoped: true},
+	"accounts/labels": {path: "labels", recordsPath: []string{"data"}, accountScoped: true, objectIdKey: "labelId"},
 	// https://www.zoho.com/mail/help/api/get-emails-list.html
-	"messages": {path: "messages/view", recordsPath: []string{"data"}, accountScoped: true, pagination: messagePaging},
+	"messages": {path: "messages/view", recordsPath: []string{"data"}, accountScoped: true, pagination: messagePaging, objectIdKey: "messageId"},
 }
 
 func lookupObject(objectName string) (objectDescriptor, error) {
