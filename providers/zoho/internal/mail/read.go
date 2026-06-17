@@ -9,11 +9,6 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-// Read lists records for a Zoho Mail object.
-//
-// Pagination is offset-based (see the pagination descriptor in objects.go). Zoho
-// Mail list endpoints don't support server-side time filtering, so Since/Until
-// (and Deleted/Filter) on ReadParams are ignored — every read is a full scan.
 func (a *Adapter) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
 		return nil, err
@@ -38,7 +33,7 @@ func (a *Adapter) Read(ctx context.Context, config common.ReadParams) (*common.R
 		resp,
 		extractRecordsFromKeyPath(obj.recordsPath),
 		a.makeNextRecordsURL(url, obj),
-		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField(obj.objectIdKey)),
+		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField(obj.recordIdKey)),
 		config.Fields,
 	)
 }
