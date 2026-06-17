@@ -16,6 +16,7 @@ const (
 	pageSize     = 100
 	timestampKey = "display_value"
 	timeLayout   = "Jan 2, 2006 03:04 PM"
+	idField      = "id"
 )
 
 type listInfo struct {
