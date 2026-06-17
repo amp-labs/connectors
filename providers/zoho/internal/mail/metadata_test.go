@@ -105,7 +105,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 			tc := testroutines.TestCase[[]string, *common.ListObjectMetadataResult](tt)
 			t.Cleanup(tc.Close)
 
-			adapter := constructTestAdapter(t, tt.Server.URL)
+			adapter := constructTestAdapter(t, tt.Server.URL, "")
 
 			output, err := adapter.ListObjectMetadata(t.Context(), tc.Input)
 			tc.Validate(t, err, output)
@@ -113,7 +113,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 	}
 }
 
-func constructTestAdapter(t *testing.T, baseURL string) *Adapter {
+func constructTestAdapter(t *testing.T, baseURL, accountID string) *Adapter {
 	t.Helper()
 
 	client := &common.JSONHTTPClient{
@@ -122,7 +122,7 @@ func constructTestAdapter(t *testing.T, baseURL string) *Adapter {
 		},
 	}
 
-	adapter, err := NewAdapter(client, &providers.ModuleInfo{BaseURL: baseURL}, "")
+	adapter, err := NewAdapter(client, &providers.ModuleInfo{BaseURL: baseURL}, accountID)
 	if err != nil {
 		t.Fatalf("failed to construct adapter: %v", err)
 	}
