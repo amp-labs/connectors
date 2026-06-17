@@ -7,7 +7,6 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-// Modules without a case don't need one, so an empty PostAuthInfo is returned.
 func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error) {
 	switch c.moduleID {
 	case providers.ModuleZohoMail:

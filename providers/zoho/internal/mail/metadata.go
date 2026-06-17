@@ -76,14 +76,28 @@ func (a *Adapter) retrieveSampleResponse(ctx context.Context, objectName string)
 }
 
 func (a *Adapter) buildObjectURL(obj objectDescriptor) (*urlbuilder.URL, error) {
-
-	// Account-scoped endpoints require the Zoho Mail account id, which is resolved post-authentication (see GetPostAuthInfo). If the account id is not yet
-	// resolved, return an error.
+	var (
+		url *urlbuilder.URL
+		err error
+	)
+	// Account-scoped endpoints require the Zoho Mail account id.
 	if obj.accountScoped {
-		return a.getAccountScopedURL(obj.path)
+		url, err = a.getAccountScopedURL(obj.path)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		url, err = a.getAPIURL(obj.path)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	return a.getAPIURL(obj.path)
+	if obj.supportsPagination {
+		url.WithQueryParam("limit", "1")
+	}
+
+	return url, nil
 }
 
 func parseMetadataResponse(objectName string, obj objectDescriptor, resp *common.JSONHTTPResponse,

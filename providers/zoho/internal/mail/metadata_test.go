@@ -1,8 +1,6 @@
 package mail
 
 import (
-	"context"
-	"errors"
 	"net/http"
 	"testing"
 
@@ -11,140 +9,107 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testroutines"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestListObjectMetadata(t *testing.T) {
+func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	accountsResponse := testutils.DataFromFile(t, "accounts.json")
+	notesResponse := testutils.DataFromFile(t, "notes.json")
 
-	t.Run("at least one object name must be provided", func(t *testing.T) {
-		t.Parallel()
-
-		adapter := constructTestAdapter(t, mockserver.Dummy().URL)
-
-		_, err := adapter.ListObjectMetadata(context.Background(), nil)
-		if !errors.Is(err, common.ErrMissingObjects) {
-			t.Fatalf("expected ErrMissingObjects, got %v", err)
-		}
-	})
-
-	t.Run("unsupported object collects per-object error", func(t *testing.T) {
-		t.Parallel()
-
-		adapter := constructTestAdapter(t, mockserver.Dummy().URL)
-
-		result, err := adapter.ListObjectMetadata(context.Background(), []string{"folders"})
-		if err != nil {
-			t.Fatalf("unexpected top-level error: %v", err)
-		}
-
-		if !errors.Is(result.Errors["folders"], common.ErrObjectNotSupported) {
-			t.Fatalf("expected ErrObjectNotSupported for folders, got %v", result.Errors["folders"])
-		}
-	})
-
-	t.Run("samples fields from accounts endpoint", func(t *testing.T) {
-		t.Parallel()
-
-		server := mockserver.Switch{
-			Setup: mockserver.ContentJSON(),
-			Cases: []mockserver.Case{{
-				If:   mockcond.Path("/api/accounts"),
-				Then: mockserver.Response(http.StatusOK, accountsResponse),
-			}},
-		}.Server()
-		defer server.Close()
-
-		adapter := constructTestAdapter(t, server.URL)
-
-		result, err := adapter.ListObjectMetadata(context.Background(), []string{"accounts"})
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
-
-		if e := result.Errors["accounts"]; e != nil {
-			t.Fatalf("unexpected per-object error: %v", e)
-		}
-
-		fields := result.Result["accounts"].Fields
-
-		assertFieldType(t, fields, "accountId", common.ValueTypeString)
-		assertFieldType(t, fields, "primaryEmailAddress", common.ValueTypeString)
-		assertFieldType(t, fields, "incomingBlocked", common.ValueTypeBoolean)
-		assertFieldType(t, fields, "sendMailDetails", common.ValueTypeOther)
-	})
-}
-
-// TestParseMetadataResponse_RecordPaths verifies records are located regardless of
-// which key (or nested key) holds the array across Zoho Mail endpoints.
-func TestParseMetadataResponse_RecordPaths(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name string
-		obj  objectDescriptor
-		body string
-	}{
+	tests := []testroutines.Metadata{
 		{
-			name: "top-level key",
-			obj:  objectDescriptor{recordsPath: []string{"data"}},
-			body: `{"status":{"code":200},"data":[{"id":"1","done":false}]}`,
+			Name:         "At least one object name must be provided",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			name: "different top-level key",
-			obj:  objectDescriptor{recordsPath: []string{"list"}},
-			body: `{"status":{"code":200},"list":[{"id":"1","done":false}]}`,
+			Name:       "Unsupported object collects per-object error",
+			Input:      []string{"folders"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Errors: map[string]error{
+					"folders": common.ErrObjectNotSupported,
+				},
+			},
+			ExpectedErrs: nil,
 		},
 		{
-			name: "nested key",
-			obj:  objectDescriptor{recordsPath: []string{"data", "lists"}},
-			body: `{"status":{"code":200},"data":{"lists":[{"id":"1","done":false}]}}`,
+			Name:  "Samples fields from a static endpoint",
+			Input: []string{"accounts"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/api/accounts"),
+					Then: mockserver.Response(http.StatusOK, accountsResponse),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"accounts": {
+						DisplayName: "accounts",
+						Fields: map[string]common.FieldMetadata{
+							"accountId":           {DisplayName: "accountId", ValueType: common.ValueTypeString},
+							"primaryEmailAddress": {DisplayName: "primaryEmailAddress", ValueType: common.ValueTypeString},
+							"incomingBlocked":     {DisplayName: "incomingBlocked", ValueType: common.ValueTypeBoolean},
+							"sendMailDetails":     {DisplayName: "sendMailDetails", ValueType: common.ValueTypeOther},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Samples fields from a nested, paginated endpoint",
+			Input: []string{"notes"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					// notes supports pagination, so the sampler must send limit=1.
+					If: mockcond.And{
+						mockcond.Path("/api/notes/me"),
+						mockcond.QueryParam("limit", "1"),
+					},
+					Then: mockserver.Response(http.StatusOK, notesResponse),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"notes": {
+						DisplayName: "notes",
+						Fields: map[string]common.FieldMetadata{
+							"entityId":   {DisplayName: "entityId", ValueType: common.ValueTypeString},
+							"title":      {DisplayName: "title", ValueType: common.ValueTypeString},
+							"isFavorite": {DisplayName: "isFavorite", ValueType: common.ValueTypeBoolean},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
 		},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			metadata, err := parseMetadataResponse("obj", tt.obj, newJSONResponse(t, tt.body))
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
+			tc := testroutines.TestCase[[]string, *common.ListObjectMetadataResult](tt)
+			t.Cleanup(tc.Close)
 
-			assertFieldType(t, metadata.Fields, "id", common.ValueTypeString)
-			assertFieldType(t, metadata.Fields, "done", common.ValueTypeBoolean)
+			adapter := constructTestAdapter(t, tt.Server.URL)
+
+			output, err := adapter.ListObjectMetadata(t.Context(), tc.Input)
+			tc.Validate(t, err, output)
 		})
-	}
-}
-
-func newJSONResponse(t *testing.T, body string) *common.JSONHTTPResponse {
-	t.Helper()
-
-	httpResp := &http.Response{
-		StatusCode: http.StatusOK,
-		Header:     http.Header{"Content-Type": []string{"application/json"}},
-	}
-
-	resp, err := common.ParseJSONResponse(context.Background(), httpResp, []byte(body))
-	if err != nil {
-		t.Fatalf("ParseJSONResponse: %v", err)
-	}
-
-	return resp
-}
-
-func assertFieldType(t *testing.T, fields common.FieldsMetadata, name string, want common.ValueType) {
-	t.Helper()
-
-	field, ok := fields[name]
-	if !ok {
-		t.Fatalf("expected field %q to be present", name)
-	}
-
-	if field.ValueType != want {
-		t.Fatalf("field %q: got value type %q, want %q", name, field.ValueType, want)
 	}
 }
 

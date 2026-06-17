@@ -26,7 +26,12 @@ func main() {
 		utils.Fail("error getting post-auth info for Zoho", "error", err)
 	}
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"notes", "messages"})
+	m, err := conn.ListObjectMetadata(ctx, []string{
+		"accounts",
+		"signature",
+		"tasks",
+		"messages",
+	})
 	if err != nil {
 		utils.Fail("error listing metadata for Zoho", "error", err)
 	}

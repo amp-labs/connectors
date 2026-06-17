@@ -17,36 +17,60 @@ type objectDescriptor struct {
 	// account, i.e. api/accounts/{accountId}/<path>. Such objects require the
 	// account id resolved post-authentication (see GetPostAuthInfo).
 	accountScoped bool
+	// supportsPagination indicates the endpoint accepts a "limit" query
+	// parameter. Endpoints that don't support it reject the request when it is
+	// sent, so "limit" must only be added when this is true.
+	supportsPagination bool
 }
 
 // supportedObjects maps object names to their listing endpoint.
 var supportedObjects = map[string]objectDescriptor{ //nolint:gochecknoglobals
-	"accounts":  {path: "api/accounts", recordsPath: []string{"data"}},
+	// https://www.zoho.com/mail/help/api/get-all-users-accounts.html
+	"accounts": {path: "api/accounts", recordsPath: []string{"data"}},
+	// https://www.zoho.com/mail/help/api/get-user-signature.html
 	"signature": {path: "api/accounts/signature", recordsPath: []string{"data"}},
-
-	"tasks":              {path: "api/tasks/me", recordsPath: []string{"data", "tasks"}},
-	"tasks/groups":       {path: "api/tasks/groups", recordsPath: []string{"data", "groups"}},
-	"customStatus":       {path: "api/tasks/me/customStatus", recordsPath: []string{"data"}},
-	"links/groups":       {path: "api/links/groups", recordsPath: []string{"data"}},
-	"links/me":           {path: "api/links/me", recordsPath: []string{"data", "list"}},
-	"links/favorites":    {path: "api/links/favorites", recordsPath: []string{"data", "list"}},
-	"links":              {path: "api/links", recordsPath: []string{"data", "list"}},
-	"links/trash":        {path: "api/links/me/trash", recordsPath: []string{"data", "list"}},
-	"collections":        {path: "api/links/me/collections", recordsPath: []string{"data"}},
+	// https://www.zoho.com/mail/help/api/get-all-group-or-personal-tasks.html
+	"tasks": {path: "api/tasks/me", recordsPath: []string{"data", "tasks"}, supportsPagination: true},
+	// https://www.zoho.com/mail/help/api/get-group-details.html
+	"tasks/groups": {path: "api/tasks/groups", recordsPath: []string{"data", "groups"}},
+	// https://www.zoho.com/mail/help/api/get-custom-status-of-task.html
+	"customStatus": {path: "api/tasks/me/customStatus", recordsPath: []string{"data"}},
+	// https://www.zoho.com/mail/help/api/get-all-link-groups.html
+	"links/groups": {path: "api/links/groups", recordsPath: []string{"data"}},
+	// https://www.zoho.com/mail/help/api/get-all-bookmarks.html
+	"links/me": {path: "api/links/me", recordsPath: []string{"data", "list"}, supportsPagination: true},
+	// https://www.zoho.com/mail/help/api/get-all-favorite-bookmarks-api.html
+	"links/favorites": {path: "api/links/favorites", recordsPath: []string{"data", "list"}, supportsPagination: true},
+	// https://www.zoho.com/mail/help/api/get-all-bookmarks.html
+	"links": {path: "api/links", recordsPath: []string{"data", "list"}, supportsPagination: true},
+	// https://www.zoho.com/mail/help/api/get-all-bookmarks-in-trash-api.html
+	"links/trash": {path: "api/links/me/trash", recordsPath: []string{"data", "list"}, supportsPagination: true},
+	// https://www.zoho.com/mail/help/api/get-all-collections.html
+	"collections": {path: "api/links/me/collections", recordsPath: []string{"data"}},
+	// https://www.zoho.com/mail/help/api/get-all-group-collections-api.html
 	"groups/collections": {path: "api/links/groups/collections", recordsPath: []string{"data"}},
-	"notes":              {path: "api/notes/me", recordsPath: []string{"data", "list"}},
-	"notes/groups":       {path: "api/notes/groups", recordsPath: []string{"data"}},
-	"notes/books":        {path: "api/notes/me/books", recordsPath: []string{"data"}},
-	"notes/favorites":    {path: "api/notes/favorites", recordsPath: []string{"data", "list"}},
-	"notes/sharedtome":   {path: "api/notes/sharedtome", recordsPath: []string{"data", "list"}},
+	// https://www.zoho.com/mail/help/api/get-all-notes.html
+	"notes": {path: "api/notes/me", recordsPath: []string{"data", "list"}, supportsPagination: true},
+	// https://www.zoho.com/mail/help/api/get-all-groups.html
+	"notes/groups": {path: "api/notes/groups", recordsPath: []string{"data"}},
+	// https://www.zoho.com/mail/help/api/get-all-books.html
+	"notes/books": {path: "api/notes/me/books", recordsPath: []string{"data"}},
+	// https://www.zoho.com/mail/help/api/get-all-favourite-notes.html
+	"notes/favorites": {path: "api/notes/favorites", recordsPath: []string{"data", "list"}, supportsPagination: true},
+	// https://www.zoho.com/mail/help/api/get-all-shared-notes.html
+	"notes/sharedtome": {path: "api/notes/sharedtome", recordsPath: []string{"data", "list"}, supportsPagination: true},
 
 	// Account-scoped objects. The path is only the suffix after
 	// api/accounts/{accountId}/; the api/accounts/{accountId} prefix (accountId
 	// from post-auth) is added when building the URL. See GetPostAuthInfo and
 	// buildObjectURL.
+	//
+	// https://www.zoho.com/mail/help/api/get-all-folder-details.html
 	"accounts/folders": {path: "folders", recordsPath: []string{"data"}, accountScoped: true},
-	"accounts/labels":  {path: "labels", recordsPath: []string{"data"}, accountScoped: true},
-	"messages":         {path: "messages/view", recordsPath: []string{"data"}, accountScoped: true},
+	// https://www.zoho.com/mail/help/api/get-all-label-details.html
+	"accounts/labels": {path: "labels", recordsPath: []string{"data"}, accountScoped: true},
+	// https://www.zoho.com/mail/help/api/get-emails-list.html
+	"messages": {path: "messages/view", recordsPath: []string{"data"}, accountScoped: true, supportsPagination: true},
 }
 
 func lookupObject(objectName string) (objectDescriptor, error) {
