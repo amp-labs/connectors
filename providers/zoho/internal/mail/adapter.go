@@ -14,7 +14,7 @@ type Adapter struct {
 	Client  *common.JSONHTTPClient
 	BaseURL string
 
-	// accountID is the Zoho Mail account id (type ZOHO_ACCOUNT) resolved
+	// accountID is the Zoho Mail account id (type ZOHO_ACCOUNT).
 	// It is required for account-scoped endpoints (e.g.folders, messages)
 	accountID string
 }

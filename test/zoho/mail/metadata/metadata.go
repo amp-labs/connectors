@@ -28,8 +28,6 @@ func main() {
 
 	m, err := conn.ListObjectMetadata(ctx, []string{
 		"accounts",
-		"signature",
-		"tasks",
 		"messages",
 	})
 	if err != nil {
