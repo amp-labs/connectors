@@ -365,6 +365,13 @@ func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
 	//    insert path is an early return because CREATE CDC events bypass the
 	//    channel-member filter expression unconditionally.
 	expectedHandler := `public class CDC_Lead_Handler {
+    // Records whose indicator this transaction has already initialized. Static
+    // state lives for the whole transaction and resets between transactions, so
+    // the loop below writes the "false" (no-change) value only once per record —
+    // a re-entrant before-update save from another flow or trigger can no longer
+    // reset an indicator that an earlier pass latched to true.
+    private static Set<Id> processedIds = new Set<Id>();
+
     public static void process(List<Lead> newRecs, List<Lead> oldRecs) {
         if (oldRecs == null) {
             // Insert: no-op for CDC purposes. CREATE events bypass the channel
@@ -377,7 +384,12 @@ func TestConstructApexTriggerForCDCContent(t *testing.T) { //nolint:funlen
             Lead oldRec = oldRecs[i];
             Boolean fieldChanged = (rec.Email != oldRec.Email) || (rec.Phone != oldRec.Phone);
 
-            rec.AmpTriggerSubscription__c = fieldChanged;
+            if (fieldChanged) {
+                rec.AmpTriggerSubscription__c = true;
+            } else if (!processedIds.contains(rec.Id)) {
+                rec.AmpTriggerSubscription__c = false;
+            }
+            processedIds.add(rec.Id);
         }
     }
 }
@@ -445,8 +457,9 @@ func TestConstructApexTriggerForFilteredReadContent(t *testing.T) {
 		t.Errorf("trigger code mismatch.\nGot:\n%s\nWant:\n%s", got, expectedTrigger)
 	}
 
-	// The handler differs from CDC: the indicator assignment is conditional on
-	// fieldChanged being true and writes System.now() instead of fieldChanged.
+	// The handler differs from CDC: it only ever advances the timestamp
+	// (System.now() when fieldChanged) and never resets it, so it needs no
+	// processedIds re-entrancy guard — unlike the latching Boolean/CDC variant.
 	expectedHandler := `public class Read_Lead_Handler {
     public static void process(List<Lead> newRecs, List<Lead> oldRecs) {
         if (oldRecs == null) {
@@ -495,11 +508,16 @@ func TestConstructApexTriggerHandlerSingleField(t *testing.T) {
 
 	for _, want := range []string{
 		"public class CDC_Contact_Handler",
+		"private static Set<Id> processedIds = new Set<Id>();",
 		"List<Contact> newRecs",
 		"List<Contact> oldRecs",
 		"if (oldRecs == null)",
 		"(rec.LastName != oldRec.LastName)",
-		"rec.AmpChanged__c = fieldChanged;",
+		"if (fieldChanged) {",
+		"rec.AmpChanged__c = true;",
+		"} else if (!processedIds.contains(rec.Id)) {",
+		"rec.AmpChanged__c = false;",
+		"processedIds.add(rec.Id);",
 	} {
 		if !strings.Contains(handler, want) {
 			t.Errorf("handler missing %q\nGot:\n%s", want, handler)
@@ -550,6 +568,7 @@ func TestConstructApexTriggerBundlesTestClass(t *testing.T) { //nolint:funlen
 		"private class Test_CDC_Lead",
 		"static void exerciseHandlerInsertNoop",
 		"static void exerciseHandlerUpdateBranch",
+		"static void exerciseHandlerUpdateNoChange",
 		"@isTest(SeeAllData=true)",
 		"static void coverTriggerDelegation",
 		"List<Lead> existing = [SELECT Id FROM Lead LIMIT 1]",
