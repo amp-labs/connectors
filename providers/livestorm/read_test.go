@@ -26,6 +26,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	eventsBody := testutils.DataFromFile(t, "read-events.json")
 	eventsMultipageBody := testutils.DataFromFile(t, "read-events-multipage.json")
 	peopleFirstPageBody := testutils.DataFromFile(t, "read-people-first-page.json")
+
 	peopleAttributesBody := testutils.DataFromFile(t, "read-people-attributes.json")
 
 	tests := []testroutines.Read{

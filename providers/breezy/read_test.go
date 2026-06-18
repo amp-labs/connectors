@@ -48,6 +48,70 @@ func TestRead(t *testing.T) { //nolint:funlen
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
+			Name:  "Zero records response",
+			Input: common.ReadParams{ObjectName: objectDepartments, Fields: connectors.Fields("_id", "name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/" + testCompanyID + "/departments"),
+				},
+				Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read/empty-array.json")),
+			}.Server(),
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Read webhook endpoints zero records response",
+			Input: common.ReadParams{ObjectName: objectWebhookEndpoints, Fields: connectors.Fields("id", "url")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/" + testCompanyID + "/webhook_endpoints"),
+				},
+				Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read/empty-webhook-endpoints.json")),
+			}.Server(),
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read positions with Since after all records returns empty",
+			Input: common.ReadParams{
+				ObjectName: objectPositions,
+				Fields:     connectors.Fields("_id", "name"),
+				Since:      time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/" + testCompanyID + "/positions"),
+				},
+				Then: mockserver.Response(http.StatusOK, responsePositions),
+			}.Server(),
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read webhook endpoints with Since after all records returns empty",
+			Input: common.ReadParams{
+				ObjectName: objectWebhookEndpoints,
+				Fields:     connectors.Fields("id", "url"),
+				Since:      time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/company/" + testCompanyID + "/webhook_endpoints"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseWebhookEndpoints),
+			}.Server(),
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
+			ExpectedErrs: nil,
+		},
+		{
 			Name:  "Read companies",
 			Input: common.ReadParams{ObjectName: objectCompanies, Fields: connectors.Fields("_id", "name")},
 			Server: mockserver.Conditional{

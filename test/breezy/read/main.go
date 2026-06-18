@@ -45,8 +45,40 @@ func main() {
 
 	slog.Info("=== Metadata vs Read validation ===")
 	for _, obj := range objects {
+		res, err := conn.Read(ctx, common.ReadParams{
+			ObjectName: obj.name,
+			Fields:     connectors.Fields(obj.fields...),
+		})
+		if err != nil {
+			utils.Fail("error reading from connector", "object", obj.name, "error", err)
+		}
+
+		if res.Rows == 0 {
+			validateMetadataSchemaOnly(ctx, conn, obj.name)
+
+			continue
+		}
+
 		testscenario.ValidateMetadataContainsRead(ctx, conn, obj.name, nil)
 	}
 
 	slog.Info("Breezy read tests completed successfully!")
+}
+
+func validateMetadataSchemaOnly(ctx context.Context, conn connectors.ObjectMetadataConnector, objectName string) {
+	metadata, err := conn.ListObjectMetadata(ctx, []string{objectName})
+	if err != nil {
+		utils.Fail("error listing metadata for connector", "object", objectName, "error", err)
+	}
+
+	objectMeta, ok := metadata.Result[objectName]
+	if !ok || len(objectMeta.Fields) == 0 {
+		utils.Fail("metadata schema has no fields", "object", objectName)
+	}
+
+	slog.Warn(
+		"Skipped metadata-vs-read payload check; read returned zero records",
+		"object", objectName,
+		"fieldCount", len(objectMeta.Fields),
+	)
 }
