@@ -57,6 +57,8 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	switch c.moduleID { // nolint: exhaustive
 	case providers.ModuleZohoDesk:
 		return c.writeDesk(ctx, config)
+	case providers.ModuleZohoMail:
+		return c.mailAdapter.Write(ctx, config)
 	default:
 		return c.writeCRM(ctx, config)
 	}

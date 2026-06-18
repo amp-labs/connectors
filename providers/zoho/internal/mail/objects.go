@@ -123,6 +123,62 @@ func lookupObject(objectName string) (objectDescriptor, error) {
 	return obj, nil
 }
 
+// writeDescriptor describes how to create a Zoho Mail object.
+type writeDescriptor struct {
+	// path is the create endpoint appended to the module BaseURL. For
+	// account-scoped objects it is the suffix that follows
+	// api/accounts/{accountId}/.
+	path string
+	// accountScoped indicates the endpoint lives under a specific Zoho Mail
+	// account, i.e. api/accounts/{accountId}/<path>. Such objects require the
+	// account id resolved post-authentication.
+	accountScoped bool
+	// recordIdKey is the key under the response "data" object that holds the
+	// created record's unique id.
+	recordIdKey string
+}
+
+// writableObjects contains all the supported objects.
+var writableObjects = map[string]writeDescriptor{ //nolint:gochecknoglobals
+
+	//https://www.zoho.com/mail/help/api/add-user-signature.html
+	"signature": {path: "api/accounts/signature", recordIdKey: "id"},
+
+	//https://www.zoho.com/mail/help/api/add-custom-status-to-task.html
+	"customStatus": {path: "api/tasks/me/customStatus", recordIdKey: "statusId"},
+
+	// https://www.zoho.com/mail/help/api/post-create-notes.html
+	"notes": {path: "api/notes/me", recordIdKey: "entityId"},
+	// https://www.zoho.com/mail/help/api/post-create-book.html
+	"notes/books": {path: "api/notes/me/books", recordIdKey: "bookId"},
+	// https://www.zoho.com/mail/help/api/post-add-new-task.html
+	"tasks": {path: "api/tasks/me", recordIdKey: "id"},
+	// https://www.zoho.com/mail/help/api/add-bookmark.html
+	"links/me": {path: "api/links/me", recordIdKey: "entityId"},
+	// https://www.zoho.com/mail/help/api/post-create-collection.html
+	"collections": {path: "api/links/me/collections", recordIdKey: "collectionId"},
+
+	// Account-scoped objects. The path is only the suffix after
+	// api/accounts/{accountId}/; the prefix (accountId from post-auth) is added
+	// when building the URL. See GetPostAuthInfo and writeURL.
+	//
+	// https://www.zoho.com/mail/help/api/post-create-new-folder.html
+	"accounts/folders": {path: "folders", accountScoped: true, recordIdKey: "folderId"},
+	// https://www.zoho.com/mail/help/api/post-create-new-label.html
+	"accounts/labels": {path: "labels", accountScoped: true, recordIdKey: "labelId"},
+	// https://www.zoho.com/mail/help/api/post-send-an-email.html
+	"messages": {path: "messages", accountScoped: true, recordIdKey: "messageId"},
+}
+
+func lookupWriteObject(objectName string) (writeDescriptor, error) {
+	obj, ok := writableObjects[objectName]
+	if !ok {
+		return writeDescriptor{}, fmt.Errorf("%w: %q", common.ErrObjectNotSupported, objectName)
+	}
+
+	return obj, nil
+}
+
 // extractRecordsFromKeyPath builds the records-extraction func from a full key
 // path (outer-to-inner). The last key is the array; the keys before it are the
 // objects to step through to reach it. E.g. ["data", "list"] reads the "list"
