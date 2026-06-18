@@ -50,11 +50,12 @@ func parseWriteResult(resp *common.JSONHTTPResponse, obj writeDescriptor) (*comm
 		return nil, err
 	}
 
+	// Some endpoints return an empty data object on success.
 	if data == nil {
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	// recordIdKey may be numeric (e.g. folderId), so read it as text.
+	// recordIdKey may be numeric (e.g. folderId), so read it as string.
 	recordID, err := jsonquery.New(data).TextWithDefault(obj.recordIdKey, "")
 	if err != nil {
 		return nil, err
