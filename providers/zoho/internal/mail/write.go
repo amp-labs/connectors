@@ -23,8 +23,10 @@ func (a *Adapter) Write(ctx context.Context, config common.WriteParams) (*common
 	}
 
 	write := a.Client.Post
+
 	if config.IsUpdate() {
 		url.AddPath(config.RecordId)
+
 		write = a.Client.Put
 	}
 

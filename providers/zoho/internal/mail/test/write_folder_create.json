@@ -1,0 +1,16 @@
+{
+  "status": {
+    "code": 201,
+    "description": "Created"
+  },
+  "data": {
+    "path": "/new",
+    "previousFolderId": "2560636000000076001",
+    "isArchived": 0,
+    "folderName": "new",
+    "imapAccess": true,
+    "folderType": "Inbox",
+    "URI": "https://mail.zoho.com/api/accounts/N****C0CM/folders/2560636000000076007",
+    "folderId": "2560636000000076007"
+  }
+}

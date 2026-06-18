@@ -29,6 +29,32 @@ func main() {
 		utils.Fail(err.Error())
 	}
 
+	taskID := create(ctx, conn, "tasks", map[string]any{
+		"title":       "Ampersand task",
+		"description": "created via the Zoho Mail write connector",
+	})
+	update(ctx, conn, "tasks", taskID, map[string]any{
+		"title": gofakeit.Sentence(3),
+	})
+
+	create(ctx, conn, "links/me", map[string]any{
+		"link":  "https://withampersand.com",
+		"title": "Ampersand",
+	})
+
+	create(ctx, conn, "accounts/folders", map[string]any{
+		"folderName": gofakeit.Word(),
+	})
+
+	labelID := create(ctx, conn, "accounts/labels", map[string]any{
+		"displayName": gofakeit.Word(),
+		"color":       "#FFFFFF",
+	})
+	update(ctx, conn, "accounts/labels", labelID, map[string]any{
+		"displayName": gofakeit.Word(),
+		"color":       "#000000",
+	})
+
 	create(ctx, conn, "signature", map[string]any{
 		"name":     gofakeit.Sentence(3),
 		"content":  "Regards, Ampersand.",
@@ -38,25 +64,6 @@ func main() {
 	create(ctx, conn, "customStatus", map[string]any{
 		"statusName":   "Ampersand status",
 		"statusColour": "#2E8BD2",
-	})
-
-	create(ctx, conn, "tasks", map[string]any{
-		"title":       "Ampersand task",
-		"description": "created via the Zoho Mail write connector",
-	})
-
-	create(ctx, conn, "links/me", map[string]any{
-		"link":  "https://withampersand.com",
-		"title": "Ampersand",
-	})
-
-	create(ctx, conn, "accounts/folders", map[string]any{
-		"folderName": "Ampersand",
-	})
-
-	create(ctx, conn, "accounts/labels", map[string]any{
-		"displayName": gofakeit.Word(),
-		"color":       "#FFFFFF",
 	})
 
 	create(ctx, conn, "messages", map[string]any{
@@ -69,7 +76,7 @@ func main() {
 	slog.Info("Write operations completed successfully.")
 }
 
-func create(ctx context.Context, conn *zoho.Connector, objectName string, data map[string]any) {
+func create(ctx context.Context, conn *zoho.Connector, objectName string, data map[string]any) string {
 	slog.Info("Creating " + objectName + "..")
 
 	result, err := conn.Write(ctx, common.WriteParams{
@@ -78,6 +85,23 @@ func create(ctx context.Context, conn *zoho.Connector, objectName string, data m
 	})
 	if err != nil {
 		utils.Fail("error writing to Zoho Mail", "object", objectName, "error", err)
+	}
+
+	utils.DumpJSON(result, os.Stdout)
+
+	return result.RecordId
+}
+
+func update(ctx context.Context, conn *zoho.Connector, objectName, recordID string, data map[string]any) {
+	slog.Info("Updating " + objectName + "..")
+
+	result, err := conn.Write(ctx, common.WriteParams{
+		ObjectName: objectName,
+		RecordId:   recordID,
+		RecordData: data,
+	})
+	if err != nil {
+		utils.Fail("error updating Zoho Mail", "object", objectName, "error", err)
 	}
 
 	utils.DumpJSON(result, os.Stdout)

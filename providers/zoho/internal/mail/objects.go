@@ -141,10 +141,10 @@ type writeDescriptor struct {
 // writableObjects contains all the supported objects.
 var writableObjects = map[string]writeDescriptor{ //nolint:gochecknoglobals
 
-	//https://www.zoho.com/mail/help/api/add-user-signature.html
+	// https://www.zoho.com/mail/help/api/add-user-signature.html
 	"signature": {path: "api/accounts/signature", recordIdKey: "id"},
 
-	//https://www.zoho.com/mail/help/api/add-custom-status-to-task.html
+	// https://www.zoho.com/mail/help/api/add-custom-status-to-task.html
 	"customStatus": {path: "api/tasks/me/customStatus", recordIdKey: "statusId"},
 
 	// https://www.zoho.com/mail/help/api/post-create-notes.html

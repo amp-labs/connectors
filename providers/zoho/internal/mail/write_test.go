@@ -8,10 +8,15 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestWrite(t *testing.T) { // nolint:funlen
+func TestWrite(t *testing.T) { // nolint:funlen,maintidx
 	t.Parallel()
+
+	noteCreateResponse := testutils.DataFromFile(t, "write_note_create.json")
+	taskCreateResponse := testutils.DataFromFile(t, "write_task_create.json")
+	folderCreateResponse := testutils.DataFromFile(t, "write_folder_create.json")
 
 	tests := []testroutines.Write{
 		{
@@ -33,16 +38,6 @@ func TestWrite(t *testing.T) { // nolint:funlen
 			ExpectedErrs: []error{common.ErrObjectNotSupported},
 		},
 		{
-			Name: "Update is not supported",
-			Input: common.WriteParams{
-				ObjectName: "notes",
-				RecordId:   "1781549700389120100",
-				RecordData: map[string]any{"title": "edited"},
-			},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
 			Name: "Create a note",
 			Input: common.WriteParams{
 				ObjectName: "notes",
@@ -55,13 +50,7 @@ func TestWrite(t *testing.T) { // nolint:funlen
 						mockcond.MethodPOST(),
 						mockcond.Path("/api/notes/me"),
 					},
-					Then: mockserver.ResponseString(http.StatusCreated, `{
-						"status": {"code": 201, "description": "Created"},
-						"data": {
-							"entityId": "1711974988431110001",
-							"URI": "https://mail.zoho.com/api/notes/me/1711974988431110001"
-						}
-					}`),
+					Then: mockserver.Response(http.StatusCreated, noteCreateResponse),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
@@ -69,6 +58,31 @@ func TestWrite(t *testing.T) { // nolint:funlen
 				Success:  true,
 				RecordId: "1711974988431110001",
 				Data:     map[string]any{"entityId": "1711974988431110001"},
+				Errors:   nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Create a task",
+			Input: common.WriteParams{
+				ObjectName: "tasks",
+				RecordData: map[string]any{"title": "Ampersand task"},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If: mockcond.And{
+						mockcond.MethodPOST(),
+						mockcond.Path("/api/tasks/me"),
+					},
+					Then: mockserver.Response(http.StatusOK, taskCreateResponse),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "48184000000093001",
+				Data:     map[string]any{"title": "Ampersand task"},
 				Errors:   nil,
 			},
 			ExpectedErrs: nil,
@@ -86,29 +100,41 @@ func TestWrite(t *testing.T) { // nolint:funlen
 						mockcond.MethodPOST(),
 						mockcond.Path("/api/accounts/" + testAccountID + "/folders"),
 					},
-					Then: mockserver.ResponseString(http.StatusCreated, `{
-						"status": {"code": 201, "description": "Created"},
-						"data": {"folderId": "2560636000000076001", "folderName": "new"}
-					}`),
+					Then: mockserver.Response(http.StatusCreated, folderCreateResponse),
 				}},
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "2560636000000076001",
+				RecordId: "2560636000000076007",
 				Data:     map[string]any{"folderName": "new"},
 				Errors:   nil,
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Account-scoped write needs the account id",
+			Name: "Update account folder",
 			Input: common.WriteParams{
 				ObjectName: "accounts/folders",
-				RecordData: map[string]any{"folderName": "new"},
+				RecordId:   "2560636000000076007",
+				RecordData: map[string]any{"mode": "rename", "folderName": "renamed"},
 			},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{ErrMissingAccountID},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If: mockcond.And{
+						mockcond.MethodPUT(),
+						mockcond.Path("/api/accounts/" + testAccountID + "/folders/2560636000000076007"),
+					},
+					Then: mockserver.ResponseString(http.StatusOK,
+						`{"status": {"code": 200, "description": "success"}}`),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetWrite,
+			// The rename endpoint returns status only (no data object), so we report
+			// success without a record id.
+			Expected:     &common.WriteResult{Success: true},
+			ExpectedErrs: nil,
 		},
 	}
 
@@ -120,14 +146,7 @@ func TestWrite(t *testing.T) { // nolint:funlen
 			tc := testroutines.TestCase[common.WriteParams, *common.WriteResult](tt)
 			t.Cleanup(tc.Close)
 
-			// The last case exercises the missing-account-id path, so its adapter
-			// is built without an account id.
-			accountID := testAccountID
-			if tt.Name == "Account-scoped write needs the account id" {
-				accountID = ""
-			}
-
-			adapter := constructTestAdapter(t, tt.Server.URL, accountID)
+			adapter := constructTestAdapter(t, tt.Server.URL, testAccountID)
 
 			output, err := adapter.Write(t.Context(), tc.Input)
 			tc.Validate(t, err, output)
