@@ -25,11 +25,10 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	// Create base connector with provider info
-	return components.Initialize(providers.Bentley, params, constructor)
+	return components.Init(providers.Bentley, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
 	connector.SchemaProvider = schema.NewCompositeSchemaProvider(

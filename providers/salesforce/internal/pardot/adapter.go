@@ -35,22 +35,16 @@ type Adapter struct {
 // adapter under a different provider name. Pass providers.Salesforce for the
 // default Salesforce connector.
 func NewAdapter(params *common.ConnectorParams, provider providers.Provider) (*Adapter, error) {
-	adapter, err := components.Initialize(provider, *params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	adapter.businessUnitID = params.Metadata[MetadataKeyBusinessUnitID]
-
-	return adapter, nil
+	return components.Init(provider, *params, constructor)
 }
 
-func constructor(base *components.Connector) (*Adapter, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
 			ExpectedMetadataKeys: []string{MetadataKeyBusinessUnitID},
 		},
+		businessUnitID: params.Metadata[MetadataKeyBusinessUnitID],
 	}
 
 	errorHandler := errorHandlerFunc

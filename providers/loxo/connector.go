@@ -34,23 +34,16 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	// Create base connector with provider info
-	conn, err := components.Initialize(providers.Loxo, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.AgencySlug = params.Metadata["agencySlug"]
-
-	return conn, nil
+	return components.Init(providers.Loxo, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
 			ExpectedMetadataKeys: []string{"agencySlug"},
 		},
+		AgencySlug: params.Metadata["agencySlug"],
 	}
 
 	// Set the metadata provider for the connector

@@ -39,23 +39,17 @@ type Adapter struct {
 }
 
 func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
-	conn, err := components.Initialize(providers.LinkedIn, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.AdAccountId = params.Metadata["adAccountId"]
-
-	return conn, nil
+	return components.Init(providers.LinkedIn, params, constructor)
 }
 
 // nolint:funlen
-func constructor(base *components.Connector) (*Adapter, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
 			ExpectedMetadataKeys: []string{"adAccountId"},
 		},
+		AdAccountId: params.Metadata["adAccountId"],
 	}
 
 	// LinkedIn's OpenAPI files only cover the adAnalytics object.

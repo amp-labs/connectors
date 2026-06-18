@@ -38,8 +38,8 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		params.Module = providers.ModuleGoTo
 	}
 
-	conn, err := components.Initialize(providers.GoTo, params,
-		func(base *components.Connector) (*Connector, error) {
+	conn, err := components.Init(providers.GoTo, params,
+		func(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
 			return &Connector{Connector: base}, nil
 		},
 	)

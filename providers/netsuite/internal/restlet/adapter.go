@@ -34,95 +34,93 @@ type Adapter struct {
 // NewAdapter creates a RESTlet adapter. It reads scriptId and deployId
 // from params.Metadata to construct the RESTlet URL.
 func NewAdapter(params common.ConnectorParams) (*Adapter, error) { //nolint:funlen
-	return newAdapter(providers.Netsuite, params)
+	return components.Init(providers.Netsuite, params, constructor)
 }
 
 // NewAdapterForProvider creates an adapter for a given provider (e.g. NetsuiteM2M).
 func NewAdapterForProvider(provider providers.Provider, params common.ConnectorParams) (*Adapter, error) {
-	return newAdapter(provider, params)
+	return components.Init(provider, params, constructor)
 }
 
-func newAdapter(provider providers.Provider, params common.ConnectorParams) (*Adapter, error) { //nolint:funlen
-	return components.Initialize(provider, params, func(base *components.Connector) (*Adapter, error) {
-		var scriptURL, scriptId, deployId string
+func constructor(params common.ConnectorParams, base *components.Connector) (*Adapter, error) { // nolint:funlen
+	var scriptURL, scriptId, deployId string
 
-		var ok bool //nolint:varnamelen
+	var ok bool //nolint:varnamelen
 
-		// If scriptURL is provided, use it to build the restlet URL.
-		scriptURL, ok = params.Metadata["scriptURL"]
-		if !ok {
-			// If scriptURL is not provided, use scriptId and deployId to build the restlet URL.
-			scriptId, ok = params.Metadata["scriptId"]
-			if !ok || scriptId == "" {
-				return nil, fmt.Errorf("%w: scriptId", ErrMissingMetadata)
-			}
-
-			deployId, ok = params.Metadata["deployId"]
-			if !ok || deployId == "" {
-				return nil, fmt.Errorf("%w: deployId", ErrMissingMetadata)
-			}
+	// If scriptURL is provided, use it to build the restlet URL.
+	scriptURL, ok = params.Metadata["scriptURL"]
+	if !ok {
+		// If scriptURL is not provided, use scriptId and deployId to build the restlet URL.
+		scriptId, ok = params.Metadata["scriptId"]
+		if !ok || scriptId == "" {
+			return nil, fmt.Errorf("%w: scriptId", ErrMissingMetadata)
 		}
 
-		baseURL := base.ModuleInfo().BaseURL
-
-		restletURL, err := buildRestletURL(baseURL, scriptURL, scriptId, deployId)
-		if err != nil {
-			return nil, fmt.Errorf("failed to build restlet URL: %w", err)
+		deployId, ok = params.Metadata["deployId"]
+		if !ok || deployId == "" {
+			return nil, fmt.Errorf("%w: deployId", ErrMissingMetadata)
 		}
+	}
 
-		adapter := &Adapter{
-			Connector:  base,
-			restletURL: restletURL,
-		}
+	baseURL := base.ModuleInfo().BaseURL
 
-		registry := components.NewEmptyEndpointRegistry()
-		httpClient := adapter.HTTPClient().Client
+	restletURL, err := buildRestletURL(baseURL, scriptURL, scriptId, deployId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build restlet URL: %w", err)
+	}
 
-		adapter.SchemaProvider = schema.NewObjectSchemaProvider(
-			httpClient,
-			schema.FetchModeSerial,
-			operations.SingleObjectMetadataHandlers{
-				BuildRequest:  adapter.buildObjectMetadataRequest,
-				ParseResponse: adapter.parseObjectMetadataResponse,
-				ErrorHandler:  common.InterpretError,
-			},
-		)
+	adapter := &Adapter{
+		Connector:  base,
+		restletURL: restletURL,
+	}
 
-		adapter.Reader = reader.NewHTTPReader(
-			httpClient,
-			registry,
-			adapter.ProviderContext.Module(),
-			operations.ReadHandlers{
-				BuildRequest:  adapter.buildReadRequest,
-				ParseResponse: adapter.parseReadResponse,
-				ErrorHandler:  common.InterpretError,
-			},
-		)
+	registry := components.NewEmptyEndpointRegistry()
+	httpClient := adapter.HTTPClient().Client
 
-		adapter.Writer = writer.NewHTTPWriter(
-			httpClient,
-			registry,
-			adapter.ProviderContext.Module(),
-			operations.WriteHandlers{
-				BuildRequest:  adapter.buildWriteRequest,
-				ParseResponse: adapter.parseWriteResponse,
-				ErrorHandler:  common.InterpretError,
-			},
-		)
+	adapter.SchemaProvider = schema.NewObjectSchemaProvider(
+		httpClient,
+		schema.FetchModeSerial,
+		operations.SingleObjectMetadataHandlers{
+			BuildRequest:  adapter.buildObjectMetadataRequest,
+			ParseResponse: adapter.parseObjectMetadataResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
 
-		adapter.Deleter = deleter.NewHTTPDeleter(
-			httpClient,
-			registry,
-			adapter.ProviderContext.Module(),
-			operations.DeleteHandlers{
-				BuildRequest:  adapter.buildDeleteRequest,
-				ParseResponse: adapter.parseDeleteResponse,
-				ErrorHandler:  common.InterpretError,
-			},
-		)
+	adapter.Reader = reader.NewHTTPReader(
+		httpClient,
+		registry,
+		adapter.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  adapter.buildReadRequest,
+			ParseResponse: adapter.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
 
-		return adapter, nil
-	})
+	adapter.Writer = writer.NewHTTPWriter(
+		httpClient,
+		registry,
+		adapter.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  adapter.buildWriteRequest,
+			ParseResponse: adapter.parseWriteResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	adapter.Deleter = deleter.NewHTTPDeleter(
+		httpClient,
+		registry,
+		adapter.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  adapter.buildDeleteRequest,
+			ParseResponse: adapter.parseDeleteResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	return adapter, nil
 }
 
 func buildRestletURL(baseURL, scriptURL, scriptId, deployId string) (string, error) {

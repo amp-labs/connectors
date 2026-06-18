@@ -38,8 +38,8 @@ type Connector struct {
 // NewConnector is a connector constructor.
 // API Reference: https://td2972271.app.netsuite.com/app/help/helpcenter.nl?fid=section_158151234003.html
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(providers.Netsuite, params,
-		func(base *components.Connector) (*Connector, error) {
+	connector, err := components.Init(providers.Netsuite, params,
+		func(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
 			return &Connector{Connector: base}, nil
 		},
 	)

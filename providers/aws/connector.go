@@ -32,28 +32,15 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	conn, err := components.Initialize(providers.AWS, params,
-		func(connector *components.Connector) (*Connector, error) {
-			var expectedMetadataKeys []string
-			if params.Module == providers.ModuleAWSIdentityCenter {
-				expectedMetadataKeys = []string{"region", "identityStoreId", "instanceARN"}
-			}
-
-			return constructor(connector, expectedMetadataKeys)
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.region = params.Metadata["region"]
-	conn.identityStoreId = params.Metadata["identityStoreId"]
-	conn.instanceARN = params.Metadata["instanceARN"]
-
-	return conn, nil
+	return components.Init(providers.AWS, params, constructor)
 }
 
-func constructor(base *components.Connector, expectedMetadataKeys []string) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) { // nolint:funlen
+	var expectedMetadataKeys []string
+	if params.Module == providers.ModuleAWSIdentityCenter {
+		expectedMetadataKeys = []string{"region", "identityStoreId", "instanceARN"}
+	}
+
 	connector := &Connector{
 		Connector: base,
 		RequireModule: common.RequireModule{
@@ -64,6 +51,9 @@ func constructor(base *components.Connector, expectedMetadataKeys []string) (*Co
 		RequireMetadata: common.RequireMetadata{
 			ExpectedMetadataKeys: expectedMetadataKeys,
 		},
+		region:          params.Metadata["region"],
+		identityStoreId: params.Metadata["identityStoreId"],
+		instanceARN:     params.Metadata["instanceARN"],
 	}
 
 	registry, err := components.NewEndpointRegistry(supportedOperations())

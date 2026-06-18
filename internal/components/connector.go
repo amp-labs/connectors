@@ -11,10 +11,6 @@ import (
 
 var ErrSupportNotConfigured = errors.New("support not configured")
 
-// ConnectorConstructor is a function that constructs a connector from a connector and an endpoint supportregistry.
-// TODO: Convert this to a type alias for easier usage when we go to go1.24: https://go.dev/doc/go1.24#language
-type ConnectorConstructor[T any] func(*Connector) (*T, error)
-
 // ConnectorConstructorWithParams is a function type for creating a connector instance
 // by building on a base Connector.
 //
@@ -48,21 +44,6 @@ var (
 	_ connectors.Connector      = (*Connector)(nil)
 	_ connectors.ProxyConnector = (*Connector)(nil)
 )
-
-// Initialize initializes a connector with the given provider and parameters
-// by using Connector as a base type. It runs the constructor with the connector
-// and returns the connector as the specified T type.
-//
-// Deprecated: use Init.
-func Initialize[T any](
-	provider providers.Provider,
-	params common.ConnectorParams,
-	constructor ConnectorConstructor[T],
-) (conn *T, err error) {
-	return Init(provider, params, func(_ common.ConnectorParams, connector *Connector) (*T, error) {
-		return constructor(connector)
-	})
-}
 
 // Init initializes a connector with the given provider and parameters
 // by using Connector as a base type. It runs the constructor with the connector

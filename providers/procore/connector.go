@@ -31,33 +31,20 @@ type Connector struct {
 const metadataKeyCompany = "company"
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	conn, err := components.Initialize(providers.Procore, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.companyId = params.Metadata[metadataKeyCompany]
-
-	return conn, nil
+	return components.Init(providers.Procore, params, constructor)
 }
 
 func NewSandboxConnector(params common.ConnectorParams) (*Connector, error) {
-	conn, err := components.Initialize(providers.ProcoreSandbox, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.companyId = params.Metadata[metadataKeyCompany]
-
-	return conn, nil
+	return components.Init(providers.ProcoreSandbox, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
 			ExpectedMetadataKeys: []string{metadataKeyCompany},
 		},
+		companyId: params.Metadata[metadataKeyCompany],
 	}
 
 	// Set the metadata provider for the connector

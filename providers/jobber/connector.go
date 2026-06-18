@@ -30,10 +30,10 @@ type Connector struct {
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
-	return components.Initialize(providers.Jobber, params, constructor)
+	return components.Init(providers.Jobber, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
 	// Set the metadata provider for the connector

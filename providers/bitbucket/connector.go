@@ -43,18 +43,14 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(providers.Bitbucket, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	connector.Workspace = params.Workspace
-
-	return connector, nil
+	return components.Init(providers.Bitbucket, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	connector := &Connector{
+		Connector: base,
+		Workspace: params.Workspace,
+	}
 
 	// Bitbucket's OpenAPI files don't cover all API resources,
 	// so we fall back to querying objects and populating fields.

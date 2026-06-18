@@ -88,10 +88,14 @@ type Connector struct {
 //	    },
 //	})
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(providers.BigQuery, params, constructor)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize connector: %w", err)
-	}
+	return components.Init(providers.BigQuery, params, constructor)
+}
+
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	connector := &Connector{Connector: base}
+
+	connector.SchemaProvider = schema.NewDelegateSchemaProvider(connector.listObjectMetadata)
+	connector.Reader = reader.NewDelegateReader(connector.Read)
 
 	if err := validateAndApplyAuth(connector, params); err != nil {
 		return nil, err
@@ -141,15 +145,6 @@ func extractMetadata(connector *Connector, params common.ConnectorParams) error 
 	connector.timestampColumn = tsCol
 
 	return nil
-}
-
-func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
-
-	connector.SchemaProvider = schema.NewDelegateSchemaProvider(connector.listObjectMetadata)
-	connector.Reader = reader.NewDelegateReader(connector.Read)
-
-	return connector, nil
 }
 
 // Close closes the BigQuery client connections.

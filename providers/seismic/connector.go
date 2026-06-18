@@ -42,12 +42,12 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	if params.Module == "" {
 		params.Module = providers.ModuleSeismicReporting
 	}
-	// Create base connector with provider info
-	return components.Initialize(providers.Seismic, params, constructor)
+
+	return components.Init(providers.Seismic, params, constructor)
 }
 
 // nolint:funlen
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
 	registry, err := components.NewEndpointRegistry(supportedOperations())

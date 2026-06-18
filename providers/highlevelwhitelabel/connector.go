@@ -45,19 +45,14 @@ const (
 //	While standard (non-white-label) apps are visible under the HighLevel domain based on
 //	distribution type but not under white-label domains.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	// Create base connector with provider info
-	conn, err := components.Initialize(providers.HighLevelWhiteLabel, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.locationId = params.Metadata[metadataKeyLocationID]
-
-	return conn, nil
+	return components.Init(providers.HighLevelWhiteLabel, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) { // nolint:funlen
+	connector := &Connector{
+		Connector:  base,
+		locationId: params.Metadata[metadataKeyLocationID],
+	}
 
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(

@@ -27,58 +27,56 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.Pipeliner, params, makeConstructor(params))
+	return components.Init(providers.Pipeliner, params, constructor)
 }
 
-func makeConstructor(params common.ConnectorParams) components.ConnectorConstructor[Connector] {
-	return func(base *components.Connector) (*Connector, error) {
-		connector := &Connector{
-			Connector: base,
-			workspace: params.Workspace,
-		}
-
-		connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
-
-		errorHandler := interpreter.ErrorHandler{
-			JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
-		}.Handle
-
-		connector.Reader = reader.NewHTTPReader(
-			connector.HTTPClient().Client,
-			components.NewEmptyEndpointRegistry(),
-			connector.ProviderContext.Module(),
-			operations.ReadHandlers{
-				BuildRequest:  connector.buildReadRequest,
-				ParseResponse: connector.parseReadResponse,
-				ErrorHandler:  errorHandler,
-			},
-		)
-
-		connector.Writer = writer.NewHTTPWriter(
-			connector.HTTPClient().Client,
-			components.NewEmptyEndpointRegistry(),
-			connector.ProviderContext.Module(),
-			operations.WriteHandlers{
-				BuildRequest:  connector.buildWriteRequest,
-				ParseResponse: connector.parseWriteResponse,
-				ErrorHandler:  errorHandler,
-			},
-		)
-
-		// Set the deleter for the connector
-		connector.Deleter = deleter.NewHTTPDeleter(
-			connector.HTTPClient().Client,
-			components.NewEmptyEndpointRegistry(),
-			connector.ProviderContext.Module(),
-			operations.DeleteHandlers{
-				BuildRequest:  connector.buildDeleteRequest,
-				ParseResponse: connector.parseDeleteResponse,
-				ErrorHandler:  errorHandler,
-			},
-		)
-
-		return connector, nil
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	connector := &Connector{
+		Connector: base,
+		workspace: params.Workspace,
 	}
+
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
+
+	errorHandler := interpreter.ErrorHandler{
+		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
+	}.Handle
+
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
+
+	// Set the deleter for the connector
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
+
+	return connector, nil
 }
 
 func (c *Connector) getURL(objectName, recordID string) (*urlbuilder.URL, error) {

@@ -24,8 +24,8 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(providers.LinkedIn, params,
-		func(base *components.Connector) (*Connector, error) {
+	connector, err := components.Init(providers.LinkedIn, params,
+		func(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
 			return &Connector{Connector: base}, nil
 		},
 	)

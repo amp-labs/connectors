@@ -43,11 +43,11 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 // to reuse the same connector implementation with a different auth
 // configuration.
 func NewConnectorForProvider(provider providers.Provider, params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(provider, params, constructor)
+	return components.Init(provider, params, constructor)
 }
 
 // nolint:funlen
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 	}

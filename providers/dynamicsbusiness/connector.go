@@ -40,25 +40,19 @@ const (
 )
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	conn, err := components.Initialize(providers.DynamicsBusinessCentral, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.tenantID = params.Workspace
-	conn.companyID = params.Metadata[metadataKeyCompanyID]
-	conn.environmentName = params.Metadata[metadataKeyEnvironmentName]
-
-	return conn, nil
+	return components.Init(providers.DynamicsBusinessCentral, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
 			ExpectedMetadataKeys: []string{metadataKeyCompanyID, metadataKeyEnvironmentName},
 		},
 		incrementalRegistry: datautils.NewCache[string, bool](),
+		tenantID:            params.Workspace,
+		companyID:           params.Metadata[metadataKeyCompanyID],
+		environmentName:     params.Metadata[metadataKeyEnvironmentName],
 	}
 
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(

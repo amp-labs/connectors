@@ -18,10 +18,10 @@ type Adapter struct {
 }
 
 func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
-	return components.Initialize(providers.LinkedIn, params, constructor)
+	return components.Init(providers.LinkedIn, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Adapter, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{
 		Connector: base,
 	}

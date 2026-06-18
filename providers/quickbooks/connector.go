@@ -48,29 +48,18 @@ func resolveWorkspace(params common.ConnectorParams) string {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	conn, err := components.Initialize(providers.QuickBooks, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.Workspace = resolveWorkspace(params)
-
-	return conn, nil
+	return components.Init(providers.QuickBooks, params, constructor)
 }
 
 func NewSandboxConnector(params common.ConnectorParams) (*Connector, error) {
-	conn, err := components.Initialize(providers.QuickbooksSandbox, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	conn.Workspace = resolveWorkspace(params)
-
-	return conn, nil
+	return components.Init(providers.QuickbooksSandbox, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	connector := &Connector{
+		Connector: base,
+		Workspace: resolveWorkspace(params),
+	}
 
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(
 		connector.HTTPClient().Client,

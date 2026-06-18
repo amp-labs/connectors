@@ -26,22 +26,16 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(providers.ConnectWise, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	connector.clientID = params.Metadata["clientId"]
-
-	return connector, nil
+	return components.Init(providers.ConnectWise, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
 			ExpectedMetadataKeys: []string{"clientId"},
 		},
+		clientID: params.Metadata["clientId"],
 	}
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)

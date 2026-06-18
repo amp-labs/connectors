@@ -43,7 +43,7 @@ const (
 )
 
 func NewAdapter(params common.ConnectorParams, accountKey string) (*Adapter, error) {
-	adapter, err := components.Initialize(providers.GoTo, params, constructor)
+	adapter, err := components.Init(providers.GoTo, params, constructor)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func NewAdapter(params common.ConnectorParams, accountKey string) (*Adapter, err
 	return adapter, nil
 }
 
-func constructor(base *components.Connector) (*Adapter, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{Connector: base}
 
 	adapter.SchemaProvider = schema.NewObjectSchemaProvider(

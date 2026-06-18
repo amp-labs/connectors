@@ -23,18 +23,10 @@ type Adapter struct {
 }
 
 func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
-	adapter, err := components.Initialize(providers.Meta, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	adapter.whatsappAccountId = params.Metadata[metadataKeyWhatsAppAccountID]
-	adapter.phoneNumberId = params.Metadata[metadataKeyPhoneNumberID]
-
-	return adapter, nil
+	return components.Init(providers.Meta, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Adapter, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
@@ -43,6 +35,8 @@ func constructor(base *components.Connector) (*Adapter, error) {
 				metadataKeyPhoneNumberID,
 			},
 		},
+		whatsappAccountId: params.Metadata[metadataKeyWhatsAppAccountID],
+		phoneNumberId:     params.Metadata[metadataKeyPhoneNumberID],
 	}
 
 	registry := components.NewEmptyEndpointRegistry()

@@ -24,10 +24,10 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.SageIntacct, params, constructor)
+	return components.Init(providers.SageIntacct, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(

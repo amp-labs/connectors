@@ -35,22 +35,16 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	connector, err := components.Initialize(providers.Copper, params, constructor)
-	if err != nil {
-		return nil, err
-	}
-
-	connector.userEmail = params.Metadata["userEmail"]
-
-	return connector, nil
+	return components.Init(providers.Copper, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
 			ExpectedMetadataKeys: []string{"userEmail"},
 		},
+		userEmail: params.Metadata["userEmail"],
 	}
 
 	errorHandler := interpreter.ErrorHandler{
