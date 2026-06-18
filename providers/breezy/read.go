@@ -2,7 +2,6 @@ package breezy
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -118,57 +117,28 @@ func nodeRecordsForRead(c *Connector, objectName string) common.NodeRecordsFunc 
 
 func pipelineRecordNodes() common.NodeRecordsFunc {
 	return func(node *ajson.Node) ([]*ajson.Node, error) {
-		records, err := flattenPipelineRecords(node)
+		if !node.IsObject() {
+			return nil, jsonquery.ErrNotObject
+		}
+
+		m, err := jsonquery.Convertor.ObjectToMap(node)
 		if err != nil {
 			return nil, err
 		}
 
-		return recordMapsToNodes(records)
-	}
-}
+		out := make([]*ajson.Node, 0, len(m))
 
-func flattenPipelineRecords(node *ajson.Node) ([]map[string]any, error) {
-	m, err := jsonquery.Convertor.ObjectToMap(node)
-	if err != nil {
-		return nil, err
-	}
+		for key := range m {
+			child, err := node.GetKey(key)
+			if err != nil || child == nil || !child.IsObject() {
+				continue
+			}
 
-	out := make([]map[string]any, 0, len(m))
-
-	for key, v := range m {
-		obj, ok := v.(map[string]any)
-		if !ok || obj == nil {
-			continue
+			out = append(out, child)
 		}
 
-		if _, has := obj["_id"]; !has && key != "" {
-			obj["_id"] = key
-		}
-
-		out = append(out, obj)
+		return out, nil
 	}
-
-	return out, nil
-}
-
-func recordMapsToNodes(records []map[string]any) ([]*ajson.Node, error) {
-	out := make([]*ajson.Node, 0, len(records))
-
-	for _, record := range records {
-		raw, err := json.Marshal(record)
-		if err != nil {
-			return nil, err
-		}
-
-		node, err := ajson.Unmarshal(raw)
-		if err != nil {
-			return nil, err
-		}
-
-		out = append(out, node)
-	}
-
-	return out, nil
 }
 
 func idFieldForObject(objectName string) readhelper.IdFieldQuery {
