@@ -1,6 +1,7 @@
 package breezy
 
 import (
+	"errors"
 	"net/http"
 	"sort"
 	"testing"
@@ -520,33 +521,15 @@ func TestRead(t *testing.T) { //nolint:funlen
 	}
 }
 
-func TestReadCompanyScopedMissingCompanyID(t *testing.T) {
+func TestNewConnectorRequiresCompanyIDMetadata(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		name       string
-		objectName string
-	}{
-		{name: "positions", objectName: objectPositions},
-		{name: "pipelines", objectName: objectPipelines},
-		{name: "categories", objectName: objectCategories},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-
-			tt := testroutines.Read{
-				Name:         "company-scoped read without company_id returns error",
-				Input:        common.ReadParams{ObjectName: tc.objectName, Fields: connectors.Fields("_id")},
-				Server:       mockserver.Dummy(),
-				ExpectedErrs: []error{ErrMissingCompanyID},
-			}
-
-			tt.Run(t, func() (connectors.ReadConnector, error) {
-				return constructTestConnectorWithoutCompanyID(tt.Server.URL)
-			})
-		})
+	_, err := NewConnector(common.ConnectorParams{
+		Module:              common.ModuleRoot,
+		AuthenticatedClient: mockutils.NewClient(),
+	})
+	if !errors.Is(err, common.ErrMissingMetadata) {
+		t.Fatalf("expected ErrMissingMetadata, got %v", err)
 	}
 }
 
@@ -561,20 +544,4 @@ func comparatorSubsetReadOrderByID(
 	})
 
 	return testroutines.ComparatorSubsetRead(serverURL, actual, expected)
-}
-
-func constructTestConnectorWithoutCompanyID(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(
-		common.ConnectorParams{
-			Module:              common.ModuleRoot,
-			AuthenticatedClient: mockutils.NewClient(),
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	connector.SetUnitTestBaseURL(serverURL)
-
-	return connector, nil
 }

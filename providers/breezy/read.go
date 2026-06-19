@@ -65,10 +65,6 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	if strings.Contains(path, companyIDPlaceholder) {
-		if c.CompanyID == "" {
-			return nil, ErrMissingCompanyID
-		}
-
 		path = resolveObjectPath(path, c.CompanyID)
 	}
 

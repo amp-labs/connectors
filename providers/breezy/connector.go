@@ -14,6 +14,7 @@ type Connector struct {
 	*components.Connector
 
 	common.RequireAuthenticatedClient
+	common.RequireMetadata
 
 	components.SchemaProvider
 	components.Reader
@@ -27,10 +28,12 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 }
 
 func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
-
-	if params.Metadata != nil {
-		connector.CompanyID = params.Metadata["company_id"]
+	connector := &Connector{
+		Connector: base,
+		RequireMetadata: common.RequireMetadata{
+			ExpectedMetadataKeys: []string{"company_id"},
+		},
+		CompanyID: params.Metadata["company_id"],
 	}
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
