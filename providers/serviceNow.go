@@ -5,8 +5,7 @@ const (
 	ServiceNowPKCE Provider = "serviceNowPKCE"
 )
 
-//nolint:lll
-func init() {
+func init() { //nolint:funlen
 	// ServiceNow configuration
 	SetInfo(ServiceNow, ProviderInfo{
 		DisplayName: "ServiceNow",
