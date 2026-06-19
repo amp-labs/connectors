@@ -197,7 +197,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 
-	connector.SetUnitTestBaseURL(serverURL)
+	connector.SetUnitTestMockServerBaseURL(serverURL)
 
 	return connector, nil
 }
