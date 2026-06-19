@@ -3,7 +3,6 @@ package breezy
 import (
 	"errors"
 	"net/http"
-	"sort"
 	"testing"
 	"time"
 
@@ -189,7 +188,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 			},
 		},
 		{
-			Name:  "Read pipelines (map response)",
+			Name:  "Read pipelines (default pipeline only)",
 			Input: common.ReadParams{ObjectName: objectPipelines, Fields: connectors.Fields("_id", "name")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -199,9 +198,9 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, responsePipelines),
 			}.Server(),
-			Comparator: comparatorSubsetReadOrderByID,
+			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 2,
+				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"_id":  "default",
@@ -211,17 +210,6 @@ func TestRead(t *testing.T) { //nolint:funlen
 						"_id":      "default",
 						"name":     "Default Pipeline",
 						"type":     "default",
-						"pipeline": []any{},
-					},
-				}, {
-					Fields: map[string]any{
-						"_id":  "default_pool",
-						"name": "Default Pool",
-					},
-					Raw: map[string]any{
-						"_id":      "default_pool",
-						"name":     "Default Pool",
-						"type":     "pool",
 						"pipeline": []any{},
 					},
 				}},
@@ -382,17 +370,4 @@ func TestNewConnectorRequiresCompanyIDMetadata(t *testing.T) {
 	if !errors.Is(err, common.ErrMissingMetadata) {
 		t.Fatalf("expected ErrMissingMetadata, got %v", err)
 	}
-}
-
-func comparatorSubsetReadOrderByID(
-	serverURL string, actual, expected *common.ReadResult,
-) *testutils.CompareResult {
-	sort.Slice(actual.Data, func(i, j int) bool {
-		ai, _ := actual.Data[i].Fields["_id"].(string)
-		aj, _ := actual.Data[j].Fields["_id"].(string)
-
-		return ai < aj
-	})
-
-	return testroutines.ComparatorSubsetRead(serverURL, actual, expected)
 }

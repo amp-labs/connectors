@@ -110,23 +110,14 @@ func pipelineRecordNodes() common.NodeRecordsFunc {
 			return nil, jsonquery.ErrNotObject
 		}
 
-		m, err := jsonquery.Convertor.ObjectToMap(node)
-		if err != nil {
-			return nil, err
+		// Breezy returns a map of pipeline id → pipeline object (e.g. default, default_pool).
+		// Serve the default hiring pipeline only; pool/custom variants can be added when needed.
+		child, err := node.GetKey("default")
+		if err != nil || child == nil || !child.IsObject() {
+			return nil, nil
 		}
 
-		out := make([]*ajson.Node, 0, len(m))
-
-		for key := range m {
-			child, err := node.GetKey(key)
-			if err != nil || child == nil || !child.IsObject() {
-				continue
-			}
-
-			out = append(out, child)
-		}
-
-		return out, nil
+		return []*ajson.Node{child}, nil
 	}
 }
 
