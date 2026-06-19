@@ -53,7 +53,10 @@ func main() {
 		}
 
 		if res.Rows == 0 {
-			validateMetadataSchemaOnly(ctx, conn, obj.name)
+			slog.Warn(
+				"Skipped metadata-vs-read payload check; read returned zero records",
+				"object", obj.name,
+			)
 
 			continue
 		}
@@ -61,23 +64,20 @@ func main() {
 		testscenario.ValidateMetadataContainsRead(ctx, conn, obj.name, nil)
 	}
 
+	slog.Info("=== Verify metadata exists for all objects ===")
+	for _, obj := range objects {
+		metadata, err := conn.ListObjectMetadata(ctx, []string{obj.name})
+		if err != nil {
+			utils.Fail("error listing metadata for connector", "object", obj.name, "error", err)
+		}
+
+		objectMeta, ok := metadata.Result[obj.name]
+		if !ok || len(objectMeta.Fields) == 0 {
+			utils.Fail("metadata schema has no fields", "object", obj.name)
+		}
+
+		slog.Info("Metadata defined", "object", obj.name, "fieldCount", len(objectMeta.Fields))
+	}
+
 	slog.Info("Breezy read tests completed successfully!")
-}
-
-func validateMetadataSchemaOnly(ctx context.Context, conn connectors.ObjectMetadataConnector, objectName string) {
-	metadata, err := conn.ListObjectMetadata(ctx, []string{objectName})
-	if err != nil {
-		utils.Fail("error listing metadata for connector", "object", objectName, "error", err)
-	}
-
-	objectMeta, ok := metadata.Result[objectName]
-	if !ok || len(objectMeta.Fields) == 0 {
-		utils.Fail("metadata schema has no fields", "object", objectName)
-	}
-
-	slog.Warn(
-		"Skipped metadata-vs-read payload check; read returned zero records",
-		"object", objectName,
-		"fieldCount", len(objectMeta.Fields),
-	)
 }
