@@ -9,5 +9,4 @@ const (
 	objectDepartments      = "departments"
 	objectQuestionnaires   = "questionnaires"
 	objectTemplates        = "templates"
-	objectWebhookEndpoints = "webhook_endpoints"
 )

@@ -15,8 +15,7 @@ import (
 // objects; we fetch the full list and filter in the connector (Salesfinity pattern).
 var objectTimeField = datautils.NewDefaultMap( //nolint:gochecknoglobals
 	datautils.Map[string, string]{
-		objectPositions:        "updated_date",
-		objectWebhookEndpoints: "updated_at",
+		objectPositions: "updated_date",
 	},
 	func(string) string { return "" },
 )

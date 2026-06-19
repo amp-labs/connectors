@@ -28,7 +28,6 @@ func TestRead(t *testing.T) { //nolint:funlen
 	responseDepartments := testutils.DataFromFile(t, "read/departments.json")
 	responseQuestionnaires := testutils.DataFromFile(t, "read/questionnaires.json")
 	responseTemplates := testutils.DataFromFile(t, "read/templates.json")
-	responseWebhookEndpoints := testutils.DataFromFile(t, "read/webhook-endpoints.json")
 
 	tests := []testroutines.Read{
 		{
@@ -63,20 +62,6 @@ func TestRead(t *testing.T) { //nolint:funlen
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Read webhook endpoints zero records response",
-			Input: common.ReadParams{ObjectName: objectWebhookEndpoints, Fields: connectors.Fields("id", "url")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v3/company/" + testCompanyID + "/webhook_endpoints"),
-				},
-				Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read/empty-webhook-endpoints.json")),
-			}.Server(),
-			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
-			ExpectedErrs: nil,
-		},
-		{
 			Name: "Read positions with Since after all records returns empty",
 			Input: common.ReadParams{
 				ObjectName: objectPositions,
@@ -90,24 +75,6 @@ func TestRead(t *testing.T) { //nolint:funlen
 					mockcond.Path("/v3/company/" + testCompanyID + "/positions"),
 				},
 				Then: mockserver.Response(http.StatusOK, responsePositions),
-			}.Server(),
-			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
-			ExpectedErrs: nil,
-		},
-		{
-			Name: "Read webhook endpoints with Since after all records returns empty",
-			Input: common.ReadParams{
-				ObjectName: objectWebhookEndpoints,
-				Fields:     connectors.Fields("id", "url"),
-				Since:      time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v3/company/" + testCompanyID + "/webhook_endpoints"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseWebhookEndpoints),
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
 			ExpectedErrs: nil,
@@ -386,84 +353,6 @@ func TestRead(t *testing.T) { //nolint:funlen
 						"_id":  "tpl001",
 						"name": "Welcome Email",
 						"body": "Hello [[candidate_first_name]]",
-					},
-				}},
-				NextPage: "",
-				Done:     true,
-			},
-		},
-		{
-			Name:  "Read webhook endpoints",
-			Input: common.ReadParams{ObjectName: objectWebhookEndpoints, Fields: connectors.Fields("id", "url")},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v3/company/" + testCompanyID + "/webhook_endpoints"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseWebhookEndpoints),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 2,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"id":  "wh001",
-						"url": "https://example.com/webhook",
-					},
-					Raw: map[string]any{
-						"id":          "wh001",
-						"url":         "https://example.com/webhook",
-						"description": "Production webhook",
-						"status":      "active",
-						"enabled":     true,
-						"updated_at":  "2024-06-01T10:00:00Z",
-					},
-				}, {
-					Fields: map[string]any{
-						"id":  "wh002",
-						"url": "https://example.com/webhook-staging",
-					},
-					Raw: map[string]any{
-						"id":          "wh002",
-						"url":         "https://example.com/webhook-staging",
-						"description": "Staging webhook",
-						"status":      "active",
-						"enabled":     true,
-						"updated_at":  "2024-06-20T08:00:00Z",
-					},
-				}},
-				NextPage: "",
-				Done:     true,
-			},
-		},
-		{
-			Name: "Read webhook endpoints with Since filters connector-side",
-			Input: common.ReadParams{
-				ObjectName: objectWebhookEndpoints,
-				Fields:     connectors.Fields("id", "url"),
-				Since:      time.Date(2024, 6, 15, 0, 0, 0, 0, time.UTC),
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v3/company/" + testCompanyID + "/webhook_endpoints"),
-				},
-				Then: mockserver.Response(http.StatusOK, responseWebhookEndpoints),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"id":  "wh002",
-						"url": "https://example.com/webhook-staging",
-					},
-					Raw: map[string]any{
-						"id":         "wh002",
-						"url":        "https://example.com/webhook-staging",
-						"updated_at": "2024-06-20T08:00:00Z",
 					},
 				}},
 				NextPage: "",

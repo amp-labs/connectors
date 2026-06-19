@@ -22,7 +22,6 @@ func main() {
 		"departments",
 		"questionnaires",
 		"templates",
-		"webhook_endpoints",
 	})
 	if err != nil {
 		log.Fatal("Error fetching metadata: ", err)

@@ -32,7 +32,6 @@ func main() {
 		{name: "departments", fields: []string{"_id", "name"}},
 		{name: "questionnaires", fields: []string{"_id", "name"}},
 		{name: "templates", fields: []string{"_id", "name"}},
-		{name: "webhook_endpoints", fields: []string{"id", "url", "status"}},
 	}
 
 	for _, obj := range objects {

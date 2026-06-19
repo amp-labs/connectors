@@ -23,7 +23,6 @@ var supportedReadObjects = datautils.NewStringSet(
 	objectDepartments,
 	objectQuestionnaires,
 	objectTemplates,
-	objectWebhookEndpoints,
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -136,7 +135,7 @@ func idFieldForObject(objectName string) readhelper.IdFieldQuery {
 	case objectCompanies, objectPositions, objectPipelines,
 		objectDepartments, objectQuestionnaires, objectTemplates:
 		return readhelper.NewIdField("_id")
-	case objectCategories, objectWebhookEndpoints:
+	case objectCategories:
 		return readhelper.NewIdField("id")
 	default:
 		return readhelper.NewIdField("id")

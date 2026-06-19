@@ -239,64 +239,6 @@
               "providerType": "string"
             }
           }
-        },
-        "webhook_endpoints": {
-          "displayName": "Webhook Endpoints",
-          "path": "/company/{company_id}/webhook_endpoints",
-          "responseKey": "data",
-          "docs": "https://developer.breezy.hr/reference/company-webhook-endpoints",
-          "fields": {
-            "id": {
-              "displayName": "Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "url": {
-              "displayName": "Url",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "description": {
-              "displayName": "Description",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "events": {
-              "displayName": "Events",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "status": {
-              "displayName": "Status",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "enabled": {
-              "displayName": "Enabled",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
-            "secret_prefix": {
-              "displayName": "Secret Prefix",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "created_at": {
-              "displayName": "Created At",
-              "valueType": "datetime",
-              "providerType": "datetime"
-            },
-            "updated_at": {
-              "displayName": "Updated At",
-              "valueType": "datetime",
-              "providerType": "datetime"
-            },
-            "stats": {
-              "displayName": "Stats",
-              "valueType": "other",
-              "providerType": "object"
-            }
-          }
         }
       }
     }
