@@ -112,8 +112,12 @@ func pipelineRecordNodes() common.NodeRecordsFunc {
 
 		// Breezy returns a map of pipeline id → pipeline object (e.g. default, default_pool).
 		// Serve the default hiring pipeline only; pool/custom variants can be added when needed.
-		child, err := node.GetKey("default")
-		if err != nil || child == nil || !child.IsObject() {
+		child, err := jsonquery.New(node).ObjectOptional("default")
+		if err != nil {
+			return nil, err
+		}
+
+		if child == nil {
 			return nil, nil
 		}
 
