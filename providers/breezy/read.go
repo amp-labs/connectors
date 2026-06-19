@@ -73,12 +73,6 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	if params.ObjectName == objectPositions && params.Filter != "" {
-		// Provider-side state filter (draft, archived, published, etc.).
-		// https://developer.breezy.hr/reference/company-positions
-		endpointURL.WithQueryParam("state", params.Filter)
-	}
-
 	return endpointURL, nil
 }
 

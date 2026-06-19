@@ -222,44 +222,6 @@ func TestRead(t *testing.T) { //nolint:funlen
 			},
 		},
 		{
-			Name: "Read positions with state filter",
-			Input: common.ReadParams{
-				ObjectName: objectPositions,
-				Fields:     connectors.Fields("_id", "name", "state"),
-				Filter:     "draft",
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodGET(),
-					mockcond.Path("/v3/company/"+testCompanyID+"/positions"),
-					mockcond.QueryParam("state", "draft"),
-				},
-				Then: mockserver.Response(http.StatusOK, responsePositions),
-			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 2,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"_id":   "pos001",
-						"name":  "Software Engineer",
-						"state": "published",
-					},
-					Raw: map[string]any{
-						"_id":          "pos001",
-						"name":         "Software Engineer",
-						"type":         "fullTime",
-						"state":        "published",
-						"department":   "Engineering",
-						"updated_date": "2024-06-01T10:00:00Z",
-					},
-				}},
-				NextPage: "",
-				Done:     true,
-			},
-		},
-		{
 			Name:  "Read pipelines (map response)",
 			Input: common.ReadParams{ObjectName: objectPipelines, Fields: connectors.Fields("_id", "name")},
 			Server: mockserver.Conditional{
