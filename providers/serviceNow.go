@@ -5,7 +5,8 @@ const (
 	ServiceNowPKCE Provider = "serviceNowPKCE"
 )
 
-func init() { //nolint:lll
+//nolint:lll
+func init() {
 	// ServiceNow configuration
 	SetInfo(ServiceNow, ProviderInfo{
 		DisplayName: "ServiceNow",
@@ -61,7 +62,7 @@ func init() { //nolint:lll
 
 	// ServiceNow configuration
 	SetInfo(ServiceNowPKCE, ProviderInfo{
-		DisplayName: "ServiceNow",
+		DisplayName: "ServiceNow PKCE",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.service-now.com",
 		Oauth2Opts: &Oauth2Opts{
