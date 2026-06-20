@@ -1,0 +1,11 @@
+{
+  "object": "list",
+  "url": "/v1/accounts",
+  "has_more": true,
+  "data": [
+    {
+      "id": "acct_1Nv0FGQ9RKHgCVdK",
+      "email": "jenny.rosen@example.com"
+    }
+  ]
+}

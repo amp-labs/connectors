@@ -2,55 +2,116 @@ package stripe
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/amp-labs/connectors/providers/stripe/metadata"
 	"github.com/spyzhov/ajson"
 )
 
-// Read retrieves a list of items for a given object.
-// Features:
-//   - NextPage: Supported for those objects that Stripe paginates.
-//   - Incremental Reading: The `Since` parameter is not supported.
-//   - AssociatedObjects: This parameter allows fetching nested objects. You need to specify list of fields to expand.
-//     For more details, refer to the Stripe documentation on expanding objects:
-//     https://docs.stripe.com/api/expanding_objects
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if err := config.ValidateParams(true); err != nil {
-		return nil, err
-	}
+const (
+	// maxReadConcurrency limits concurrent requests to avoid exceeding Stripe's rate limit of 100 requests/second.
+	// Set to 3 as a safe conservative value.
+	//
+	// Rate limit: [https://docs.stripe.com/rate-limits](https://docs.stripe.com/rate-limits)
+	maxReadConcurrency = 3
 
-	url, err := c.buildReadURL(config)
-	if err != nil {
-		return nil, err
-	}
+	// fieldConnectedAccountID is the field name used to store the connected account identifier
+	// in ReadResult.Data[*].Fields.
+	// This field is populated when ReadParamsOpts.ReadForAllConnectedAccounts is set to true.
+	fieldConnectedAccountID = "AMPERSAND-connectedAccountId"
+)
 
-	res, err := c.Client.Get(ctx, url.String())
-	if err != nil {
-		return nil, err
-	}
-
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, config.ObjectName)
-
-	return common.ParseResult(res,
-		makeGetRecords(responseFieldName),
-		makeNextRecordsURL(url),
-		common.MakeMarshaledDataFunc(flattenCustomFields),
-		config.Fields,
-	)
+// ReadParamsOpts defines optional parameters for the Read operation.
+type ReadParamsOpts struct {
+	// ReadForAllConnectedAccounts enables reading data from all connected accounts
+	// instead of only the main account. When true, the connector parallelizes reads
+	// across all connected accounts and adds the connected account ID to each result row.
+	ReadForAllConnectedAccounts bool
 }
 
-func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
-	if len(params.NextPage) != 0 {
-		// Next page
-		return urlbuilder.New(params.NextPage.String())
+// Read retrieves a list of records for a given object type.
+//
+// Supported features:
+//   - NextPage: Supports pagination for objects that Stripe paginates.
+//   - AssociatedObjects: Fetches nested objects by specifying fields to expand.
+//     See [Stripe expanding objects docs](https://docs.stripe.com/api/expanding_objects).
+//   - Incremental Reading: Not supported (the `Since` parameter is ignored).
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if err := params.ValidateParams(true); err != nil {
+		return nil, err
 	}
 
-	// First page
+	// Handle first-page reading for either:
+	// (1) main account, or
+	// (2) all connected accounts (if ReadForAllConnectedAccounts is true)
+	if params.IsFirstPage() {
+		return c.readFirstPage(ctx, params)
+	}
+
+	// Handle next-page reading for either:
+	// (1) main account (regular pagination)
+	aggregateToken, ok := readhelper.GetAggregateToken[string](params.NextPage)
+	if !ok {
+		url, err := urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+
+		return c.readRecords(ctx, params.ObjectName, params.Fields, url)
+	}
+
+	// (2) connected accounts (resume parallelized reads)
+	return c.readNextPageConnectedAccounts(ctx, params, aggregateToken)
+}
+
+// readFirstPage reads the first page of object records for either the main account
+// or all connected accounts (if ReadForAllConnectedAccounts is enabled).
+func (c *Connector) readFirstPage(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	url, err := c.buildFirstPageReadURL(params)
+	if err != nil {
+		return nil, err
+	}
+
+	if !isReadForConnectedAccounts(params) {
+		// Standard read for the current account.
+		return c.readRecords(ctx, params.ObjectName, params.Fields, url)
+	}
+
+	// Parallelized read across all connected accounts.
+	accountIDs, err := c.listAccounts(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	tasks := make([]parallelfetch.Task[string, common.ReadResult], len(accountIDs))
+	for index, accountID := range accountIDs {
+		// Each task reads records for a specific connected account
+		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
+			header := makeConnectedAccountHeader(accountID)
+			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url, header)
+
+			return accountID, result, err
+		}
+	}
+
+	return executeReadTasks(ctx, tasks)
+}
+
+// buildFirstPageReadURL constructs the API request URL for a Read operation.
+// It applies:
+//   - Pagination: adds "limit" query parameter
+//   - Incremental reading: adds "created[gte]" for objects supporting incremental reads
+//   - Object expansion: adds "expand[]" for nested objects (AssociatedObjects)
+//
+// See [Stripe expand documentation](https://docs.stripe.com/expand#how-it-works).
+func (c *Connector) buildFirstPageReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
 	url, err := c.getURL(params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -62,11 +123,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		url.WithQueryParam("created[gte]", strconv.FormatInt(params.Since.Unix(), 10))
 	}
 
-	// Deeply nested objects can be requested as part of a single API request.
-	// Example: Query parameter "expand[]=data.customer" will expand the nested customer object.
-	//
-	// For more details, refer to the Stripe documentation:
-	// https://docs.stripe.com/expand#how-it-works
+	// Expand nested objects by adding "data.<field>" to expand[] query parameter
 	if len(params.AssociatedObjects) != 0 {
 		expandTargets := make([]string, len(params.AssociatedObjects))
 		for index, associate := range params.AssociatedObjects {
@@ -79,15 +136,154 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	return url, nil
 }
 
-// makeGetRecords creates a NodeRecordsFunc that extracts records from the API response
-// using the specified field name. The field name corresponds to the array field in
-// Stripe's response that contains the list of records.
+// executeReadTasks runs multiple read tasks in parallel and aggregates their results.
+// Used when reading for multiple connected accounts.
+//
+// Behavior:
+//   - Each result row is marked with its source connected account ID via fieldConnectedAccountID
+//   - Returns an aggregated next page token if any individual read has more data
+//   - Joins all errors and returns them as a single error
+func executeReadTasks(ctx context.Context,
+	tasks []parallelfetch.Task[string, common.ReadResult],
+) (*common.ReadResult, error) {
+	result := parallelfetch.Execute(ctx, tasks, maxReadConcurrency)
+	if len(result.Errors) != 0 {
+		return nil, errors.Join(result.Errors.Values()...)
+	}
+
+	return readhelper.AggregateReadResults(
+		result.Records,
+		func(accountID string) string {
+			// Account ID uniquely identifies the source for next-page token resolution.
+			// This will be used to construct Headers for the next page read operation.
+			return accountID
+		},
+		func(accountID string, row *common.ReadResultRow) {
+			// Enhance fields to indicate what account this row is associated with.
+			row.Fields[fieldConnectedAccountID] = accountID
+		},
+	), nil
+}
+
+// readNextPageConnectedAccounts resumes paginated reads for connected accounts.
+// It uses an aggregate token to track the next page position for each account
+// and parallelizes the requests.
+func (c *Connector) readNextPageConnectedAccounts(ctx context.Context,
+	params common.ReadParams,
+	aggregateToken readhelper.AggregateNextPage[string],
+) (*common.ReadResult, error) {
+	tasks := make([]parallelfetch.Task[string, common.ReadResult], len(aggregateToken))
+	for index, token := range aggregateToken {
+		accountID := token.Context
+		nextPageToken := token.Value.String()
+
+		url, err := urlbuilder.New(nextPageToken)
+		if err != nil {
+			return nil, err
+		}
+
+		// Create parallel task for this account's next page
+		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
+			header := makeConnectedAccountHeader(accountID)
+			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url, header)
+
+			return accountID, result, err
+		}
+	}
+
+	return executeReadTasks(ctx, tasks)
+}
+
+// readRecords performs a GET request to the specified URL and parses the response.
+// Optional headers can be provided (e.g., for connected account authentication).
+func (c *Connector) readRecords(ctx context.Context,
+	objectName string,
+	selectedFields datautils.StringSet,
+	url *urlbuilder.URL,
+	headers ...common.Header,
+) (*common.ReadResult, error) {
+	res, err := c.Client.Get(ctx, url.String(), headers...)
+	if err != nil {
+		return nil, err
+	}
+
+	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, objectName)
+
+	return common.ParseResult(res,
+		makeGetRecords(responseFieldName),
+		makeNextRecordsURL(url),
+		readhelper.MakeMarshaledDataFuncWithId(flattenCustomFields, readhelper.IdFieldQuery{Field: "id"}),
+		selectedFields,
+	)
+}
+
+// makeGetRecords creates a NodeRecordsFunc that extracts records from Stripe's API response.
+// It retrieves the array field containing the list of records (e.g., "data" for most objects).
 func makeGetRecords(responseFieldName string) common.NodeRecordsFunc {
 	return func(node *ajson.Node) ([]*ajson.Node, error) {
 		return jsonquery.New(node).ArrayOptional(responseFieldName)
 	}
 }
 
+type accountsListResponse struct {
+	HasMore bool `json:"has_more"`
+	Data    []struct {
+		ID string `json:"id"`
+	} `json:"data"`
+}
+
+// listAccounts retrieves all connected account IDs for the main account.
+// It handles pagination internally to collect all accounts.
+//
+// See [Stripe accounts list documentation](https://docs.stripe.com/api/accounts/list).
+func (c *Connector) listAccounts(ctx context.Context) ([]string, error) {
+	url, err := c.getURL("accounts")
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+
+	accountIDs := make([]string, 0)
+
+	for {
+		res, err := c.Client.Get(ctx, url.String())
+		if err != nil {
+			return nil, err
+		}
+
+		accounts, err := common.UnmarshalJSON[accountsListResponse](res)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, item := range accounts.Data {
+			accountIDs = append(accountIDs, item.ID)
+		}
+
+		if !accounts.HasMore || len(accountIDs) == 0 {
+			return accountIDs, nil // => Desired return with collected ids.
+		}
+
+		// Prepare next page URL using the last account ID
+		lastItemID := accountIDs[len(accountIDs)-1]
+		url.WithQueryParam("starting_after", lastItemID)
+	}
+}
+
+// isReadForConnectedAccounts checks if ReadParams opts specify reading from
+// all connected accounts instead of the main account.
+func isReadForConnectedAccounts(params common.ReadParams) bool {
+	opts, ok := params.Opts.(ReadParamsOpts)
+	if !ok {
+		return false
+	}
+
+	return opts.ReadForAllConnectedAccounts
+}
+
+// incrementalObjects contains object names that support incremental reading
+// via the "created[gte]" query parameter.
 var incrementalObjects = datautils.NewSet( // nolint:gochecknoglobals
 	"accounts",
 	"application_fees",
