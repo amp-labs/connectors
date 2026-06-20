@@ -1,0 +1,19 @@
+{
+  "kind": "calendar#events",
+  "etag": "\"p33gdef\"",
+  "summary": "Team Calendar",
+  "items": [
+    {
+      "kind": "calendar#event",
+      "id": "event-shared-copy",
+      "iCalUID": "event-shared@google.com",
+      "summary": "All Hands"
+    },
+    {
+      "kind": "calendar#event",
+      "id": "event-c",
+      "iCalUID": "event-c@google.com",
+      "summary": "Team Sync"
+    }
+  ]
+}

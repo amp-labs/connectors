@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/google/internal/calendar"
 	"github.com/amp-labs/connectors/providers/google/internal/contacts"
+	"github.com/amp-labs/connectors/providers/google/internal/core"
 	"github.com/amp-labs/connectors/providers/google/internal/mail"
 )
 
@@ -16,6 +17,13 @@ var (
 	_ connectors.SubscribeConnector              = &Connector{}
 	_ connectors.SubscriptionMaintainerConnector = &Connector{}
 )
+
+// ReadParamsOpts are Google-specific options for common.ReadParams.Opts.
+// Assign a value of this type to ReadParams.Opts to opt into bespoke read behavior.
+//
+// It is defined in the shared internal/core package so individual Google modules
+// can consume it without importing this package (which would create a cycle).
+type ReadParamsOpts = core.ReadParamsOpts
 
 // GmailSubscribeRequest is the request payload for Gmail watch subscriptions.
 type GmailSubscribeRequest = mail.WatchRequest
