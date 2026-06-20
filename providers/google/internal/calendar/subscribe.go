@@ -7,12 +7,14 @@ import (
 	"net/http"
 	"net/url"
 	"slices"
+	"strconv"
 	"sync"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/google/uuid"
 )
@@ -242,12 +244,31 @@ func (a *Adapter) VerifyWebhookMessage(
 	return false, common.ErrNotImplemented
 }
 
-// GetRecordsByIds is not yet implemented for Google Calendar.
+// GetRecordsByIds fetches the events that changed since a server-supplied checkpoint.
 //
-// Calendar push notifications deliver an empty body — only headers are sent (X-Goog-Resource-State,
-// X-Goog-Resource-ID, etc.). There is no record payload to enrich from; fetching what actually
-// changed requires a follow-up API read (e.g. events.list). That strategy is being delivered in a
-// separate PR alongside verification.
+// # The recordIds convention (Calendar-specific)
+//
+// Calendar push notifications deliver an empty body — only headers are sent
+// (X-Goog-Resource-State, X-Goog-Resource-ID, etc.) — so they carry no record IDs to
+// enrich from. Rather than change the shared BatchRecordReaderConnector signature for a
+// Calendar-only need, the subscribe pipeline reuses recordIds to deliver the fetch window:
+//
+//	recordIds[0] is NOT an event ID. It is an RFC3339 timestamp in UTC with milliseconds,
+//	e.g. "2026-06-18T00:00:00.000Z" — the server's checkpoint of "changed since".
+//
+// It is used verbatim as the events.list updatedMin query param (it is already the exact
+// format Google expects, so no parsing or reformatting is done here). Persisting and
+// advancing the checkpoint, and de-duplicating across overlapping notifications, are the
+// server's responsibility — this method is a stateless read of one window.
+//
+// # What is fetched
+//
+//   - Only the "events" object is supported (other objects return ErrGetRecordNotSupportedForObject).
+//   - updatedMin filters by modification time, so edits to past or future events are all
+//     captured (unlike timeMin/timeMax, which filter by scheduled time).
+//   - showDeleted=true so deletions are returned as events with status:"cancelled".
+//
+// ref: https://developers.google.com/workspace/calendar/api/v3/reference/events/list
 func (a *Adapter) GetRecordsByIds( //nolint:revive
 	ctx context.Context,
 	objectName string,
@@ -255,7 +276,59 @@ func (a *Adapter) GetRecordsByIds( //nolint:revive
 	fields []string,
 	associations []string,
 ) ([]common.ReadResultRow, error) {
-	return nil, common.ErrNotImplemented
+	if objectName != objectNameEvents {
+		return nil, common.ErrGetRecordNotSupportedForObject
+	}
+
+	if len(recordIds) == 0 || recordIds[0] == "" {
+		return nil, fmt.Errorf("%w: recordIds[0] must be an updatedMin timestamp", errMissingParams)
+	}
+
+	updatedMin := recordIds[0]
+
+	url, err := a.getURL(objectNameEvents)
+	if err != nil {
+		return nil, fmt.Errorf("GetRecordsByIds: building URL: %w", err)
+	}
+
+	url.WithQueryParam("maxResults", strconv.Itoa(defaultPageSize))
+	url.WithQueryParam("showDeleted", "true")
+	url.WithQueryParam("updatedMin", updatedMin)
+
+	// Reuse the standard read parsing (record extraction, field marshaling, pagination).
+	readParams := common.ReadParams{
+		ObjectName: objectNameEvents,
+		Fields:     datautils.NewSetFromList(fields),
+	}
+
+	rows := make([]common.ReadResultRow, 0)
+
+	for pageURL := url.String(); pageURL != ""; {
+		request, err := http.NewRequestWithContext(ctx, http.MethodGet, pageURL, nil)
+		if err != nil {
+			return nil, fmt.Errorf("GetRecordsByIds: building request: %w", err)
+		}
+
+		response, err := a.JSONHTTPClient().Get(ctx, pageURL)
+		if err != nil {
+			return nil, fmt.Errorf("GetRecordsByIds: events.list: %w", err)
+		}
+
+		result, err := a.parseReadResponse(ctx, readParams, request, response)
+		if err != nil {
+			return nil, fmt.Errorf("GetRecordsByIds: parsing events: %w", err)
+		}
+
+		rows = append(rows, result.Data...)
+
+		if result.Done {
+			break
+		}
+
+		pageURL = result.NextPage.String()
+	}
+
+	return rows, nil
 }
 
 // watchResult pairs a created watch channel with the object it belongs to so the
