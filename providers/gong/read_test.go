@@ -275,10 +275,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			// Bob is fetched first (read_users_bob_first.json) and his result set
 			// includes alice's flow 9000000000000001 as "Shared", because Gong
 			// reports visibility relative to the queried email. Alice is fetched
-			// second and sees that same id as "Personal". Expecting flow ...001 to
-			// come out "Personal" with alice attached proves the dedup prefers the
-			// owner's copy instead of keeping the non-owner's "Shared" one.
-			Name: "Flows: ReadFlowsForAllUsers reads every user and attaches each Personal flow's owner",
+			// second and sees that same id as "Personal". Flow ...001 comes out
+			// "Personal" (the owner's copy wins) with BOTH alice (owner) and bob
+			// (shared) attached, proving we accumulate every user a flow shows up for.
+			Name: "Flows: ReadFlowsForAllUsers attaches the owner and shared users to each flow",
 			Input: common.ReadParams{
 				ObjectName:        "flows",
 				Fields:            connectors.Fields("id", "name", "visibility"),
@@ -317,11 +317,17 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"visibility": "Personal",
 						"id":         "9000000000000001",
 					},
+					// alice owns it (Personal) and bob has it Shared, so both are attached.
 					Associations: map[string][]common.Association{
 						"users": {{
 							ObjectId: "8000000000000001",
 							Raw: map[string]any{
 								"emailAddress": "alice@example.com",
+							},
+						}, {
+							ObjectId: "8000000000000002",
+							Raw: map[string]any{
+								"emailAddress": "bob@example.com",
 							},
 						}},
 					},
