@@ -24,7 +24,6 @@ func TestListObjectMetadata(t *testing.T) {
 				"departments",
 				"questionnaires",
 				"templates",
-				"webhook_endpoints",
 			},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -135,21 +134,6 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
-					"webhook_endpoints": {
-						DisplayName: "Webhook Endpoints",
-						Fields: map[string]common.FieldMetadata{
-							"id": {
-								DisplayName:  "Id",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-							"url": {
-								DisplayName:  "Url",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-						},
-					},
 				},
 				Errors: map[string]error{},
 			},
@@ -213,7 +197,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 
-	connector.SetUnitTestBaseURL(serverURL)
+	connector.SetUnitTestMockServerBaseURL(serverURL)
 
 	return connector, nil
 }
