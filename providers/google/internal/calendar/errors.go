@@ -2,6 +2,7 @@ package calendar
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -9,6 +10,12 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/providers/google/internal/core"
+)
+
+var (
+	errMissingParams              = errors.New("missing required parameters")
+	errInvalidRequestType         = errors.New("invalid request type")
+	errUnsupportedSubscribeObject = errors.New("unsupported subscribe object")
 )
 
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
