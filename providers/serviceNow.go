@@ -54,6 +54,7 @@ func init() { //nolint:funlen
 				{
 					Name:        "workspace",
 					DisplayName: "Instance",
+					Prompt:      "Please provide your instance ID — for example, dev1234 — taken from the URL https://dev1234.servicenow.com.", //nolint: lll
 				},
 			},
 		},
@@ -107,6 +108,7 @@ func init() { //nolint:funlen
 				{
 					Name:        "workspace",
 					DisplayName: "Instance",
+					Prompt:      "Please provide your instance Name — for example, dev1234 if your base URL: https://dev1234.service-now.com.", //nolint: lll
 				},
 			},
 		},
