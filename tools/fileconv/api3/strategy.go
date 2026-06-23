@@ -167,3 +167,9 @@ func (NestedIDPathIgnorer) IsPathMatching(path string) bool {
 
 	return true
 }
+
+type CustomPathMatcher func(path string) bool
+
+func (m CustomPathMatcher) IsPathMatching(path string) bool {
+	return m(path)
+}

@@ -1,0 +1,145 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "cs_test_b1XarwEFOA2WOPc3qNVi5AyT3WrKqikAItyIMekqKzAQtjROKaunDafsls",
+      "object": "checkout.session",
+      "adaptive_pricing": {
+        "enabled": true
+      },
+      "amount_subtotal": 5000,
+      "amount_total": 5000,
+      "automatic_tax": {
+        "enabled": false
+      },
+      "branding_settings": {
+        "background_color": "#ffffff",
+        "border_style": "rounded",
+        "button_color": "#0074d4",
+        "display_name": "Ampersand-2",
+        "font_family": "default"
+      },
+      "created": 1782147307,
+      "currency": "usd",
+      "custom_fields": [],
+      "custom_text": {
+      },
+      "customer_creation": "always",
+      "discounts": [],
+      "expires_at": 1782233707,
+      "line_items": {
+        "object": "list",
+        "data": [
+          {
+            "id": "li_1TlB7nES6gLOjP91ikt8jWPD",
+            "object": "item",
+            "amount_discount": 0,
+            "amount_subtotal": 2000,
+            "amount_tax": 0,
+            "amount_total": 2000,
+            "currency": "eur",
+            "description": "Gold Plan",
+            "metadata": {},
+            "price": {
+              "id": "price_1RoCpJES6gLOjP91RiFBv1hv",
+              "object": "price",
+              "active": true,
+              "billing_scheme": "per_unit",
+              "created": 1753316161,
+              "currency": "eur",
+              "livemode": false,
+              "metadata": {},
+              "product": "prod_SjgBtV8P0Rd4gU",
+              "recurring": {
+                "interval": "month",
+                "interval_count": 1,
+                "usage_type": "licensed"
+              },
+              "tax_behavior": "unspecified",
+              "type": "recurring",
+              "unit_amount": 1000,
+              "unit_amount_decimal": "1000"
+            },
+            "quantity": 2
+          },
+          {
+            "id": "li_1TlB7nES6gLOjP91hgS0nzfv",
+            "object": "item",
+            "amount_discount": 0,
+            "amount_subtotal": 3000,
+            "amount_tax": 0,
+            "amount_total": 3000,
+            "currency": "usd",
+            "description": "Silver Plan",
+            "metadata": {},
+            "price": {
+              "id": "price_1Qr3chES6gLOjP91rpK7p4YT",
+              "object": "price",
+              "active": true,
+              "billing_scheme": "per_unit",
+              "created": 1739219431,
+              "currency": "usd",
+              "livemode": false,
+              "metadata": {},
+              "product": "prod_RkYkOq1MQvhLzB",
+              "recurring": {
+                "interval": "month",
+                "interval_count": 1,
+                "usage_type": "licensed"
+              },
+              "tax_behavior": "unspecified",
+              "type": "recurring",
+              "unit_amount": 1000,
+              "unit_amount_decimal": "1000"
+            },
+            "quantity": 3
+          }
+        ],
+        "has_more": false,
+        "url": "/v1/checkout/sessions/cs_test_b1XarwEFOA2WOPc3qNVi5AyT3WrKqikAItyIMekqKzAQtjROKaunDafsls/line_items"
+      },
+      "livemode": false,
+      "managed_payments": {
+        "enabled": false
+      },
+      "metadata": {},
+      "mode": "subscription",
+      "payment_method_collection": "always",
+      "payment_method_configuration_details": {
+        "id": "pmc_1QjUoxES6gLOjP91vfOtIV9p"
+      },
+      "payment_method_options": {
+        "card": {
+          "request_three_d_secure": "automatic"
+        }
+      },
+      "payment_method_types": [
+        "card",
+        "link",
+        "cashapp"
+      ],
+      "payment_status": "unpaid",
+      "phone_number_collection": {
+        "enabled": false
+      },
+      "saved_payment_method_options": {
+        "allow_redisplay_filters": [
+          "always"
+        ],
+        "payment_method_remove": "disabled"
+      },
+      "shipping_options": [],
+      "status": "open",
+      "success_url": "https://www.google.com/",
+      "total_details": {
+        "amount_discount": 0,
+        "amount_shipping": 0,
+        "amount_tax": 0
+      },
+      "ui_mode": "hosted",
+      "url": "https://checkout.stripe.com/c/pay/cs_test_b1XarwEFOA2WOPc3qNVi5AyT3WrKqikAItyIMekqKzAQtjROKaunDafsls#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdicGRmZGhqaWBTZHdsZGtxJz8nZmprcXdqaScpJ2R1bE5gfCc%2FJ3VuWnFgdnFaMDRKfE19TUBWM2JJSm9VPDRrQXxydGd%2FYlVidn9vc3xCaU9yPUxNfXJGN3IxZ3RNYzZuXH10Ym1HR2FVYWtXS0EyXE5QfzBuMkhkSV1%2FYjFwUVR3QlBOUHA1NWxpV1dnSFJwJyknY3dqaFZgd3Ngdyc%2FcXdwYCknZ2RmbmJ3anBrYUZqaWp3Jz8nJmNjY2NjYycpJ2lkfGpwcVF8dWAnPydocGlxbFpscWBoJyknYGtkZ2lgVWlkZmBtamlhYHd2Jz9xd3BgeCUl"
+    }
+  ],
+  "has_more": false,
+  "url": "/v1/checkout/sessions"
+}

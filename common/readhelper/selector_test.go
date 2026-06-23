@@ -1,10 +1,10 @@
 package readhelper
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestSelectFields(t *testing.T) {
@@ -128,13 +128,131 @@ func TestSelectFields(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "nested arrays",
+			record: map[string]any{
+				"id": "msg1",
+				"payload": map[string]any{
+					"body": map[string]any{"data": "xyz", "size": 77},
+					"headers": map[string]any{
+						"From": "alice",
+					},
+					"food": []any{
+						map[string]any{"id": "001", "value": "Fish"},
+						map[string]any{"id": "002", "value": "Chicken"},
+					},
+				},
+			},
+			fields: datautils.NewStringSet("$['payload']['food'][*]['value']"),
+			expected: map[string]any{
+				"payload": map[string]any{
+					"food": []any{
+						map[string]any{"value": "Fish"},
+						map[string]any{"value": "Chicken"},
+					},
+				},
+			},
+		},
+		{
+			name: "multiple nested array fields",
+			record: map[string]any{
+				"items": []any{
+					map[string]any{
+						"id":   1,
+						"name": "one",
+						"tags": []any{
+							map[string]any{"key": "color", "val": "red"},
+							map[string]any{"key": "size", "val": "large"},
+						},
+					},
+					map[string]any{
+						"id":   2,
+						"name": "two",
+						"tags": []any{
+							map[string]any{"key": "color", "val": "blue"},
+						},
+					},
+				},
+			},
+			fields: datautils.NewStringSet("$['items'][*]['id']", "$['items'][*]['tags'][*]['key']"),
+			expected: map[string]any{
+				"items": []any{
+					map[string]any{
+						"id": 1,
+						"tags": []any{
+							map[string]any{"key": "color"},
+							map[string]any{"key": "size"},
+						},
+					},
+					map[string]any{
+						"id": 2,
+						"tags": []any{
+							map[string]any{"key": "color"},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Star can be used at the start and at the end of the path with no effect",
+			record: map[string]any{
+				"items": []any{
+					map[string]any{
+						"id":   1,
+						"name": "one",
+						"tags": []any{
+							map[string]any{"key": "color", "val": "red"},
+							map[string]any{"key": "size", "val": "large"},
+						},
+					},
+					map[string]any{
+						"id":   2,
+						"name": "two",
+						"tags": []any{
+							map[string]any{"key": "color", "val": "blue"},
+						},
+					},
+				},
+			},
+			fields:   datautils.NewStringSet("$[*]", "$['items'][*]['tags'][*]"),
+			expected: map[string]any{},
+		},
+		{
+			name: "Nested selection does not override a parent",
+			record: map[string]any{
+				"id": "msg1",
+				"payload": map[string]any{
+					"body": map[string]any{"data": "xyz", "size": 77},
+					"headers": map[string]any{
+						"From": "alice",
+					},
+					"food": []any{
+						map[string]any{"id": "001", "value": "Fish"},
+						map[string]any{"id": "002", "value": "Chicken"},
+					},
+				},
+			},
+			fields: datautils.NewStringSet("$['payload']", "$['payload']['food'][*]['value']"),
+			expected: map[string]any{
+				"payload": map[string]any{
+					"body": map[string]any{"data": "xyz", "size": 77},
+					"headers": map[string]any{
+						"From": "alice",
+					},
+					"food": []any{
+						map[string]any{"id": "001", "value": "Fish"},
+						map[string]any{"id": "002", "value": "Chicken"},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := SelectFields(tt.record, tt.fields)
-			if !reflect.DeepEqual(got, tt.expected) {
-				t.Errorf("SelectFields() = %#v, want %#v", got, tt.expected)
+			if diff := cmp.Diff(tt.expected, got); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}

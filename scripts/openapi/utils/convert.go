@@ -10,14 +10,14 @@ func ConvertMetadataFieldToFieldMetadataMapV2(field metadatadef.Field) staticsch
 	return staticschema.FieldMetadataMapV2{
 		field.Name: staticschema.FieldMetadata{
 			DisplayName:  field.Name,
-			ValueType:    getFieldValueType(field),
+			ValueType:    GetFieldValueType(field),
 			ProviderType: field.Type,
-			Values:       getFieldValueOptions(field),
+			Values:       GetFieldValueOptions(field),
 		},
 	}
 }
 
-func getFieldValueType(field metadatadef.Field) common.ValueType {
+func GetFieldValueType(field metadatadef.Field) common.ValueType {
 	switch field.Type {
 	case "integer":
 		return common.ValueTypeInt
@@ -35,7 +35,7 @@ func getFieldValueType(field metadatadef.Field) common.ValueType {
 	}
 }
 
-func getFieldValueOptions(field metadatadef.Field) staticschema.FieldValues {
+func GetFieldValueOptions(field metadatadef.Field) staticschema.FieldValues {
 	if len(field.ValueOptions) == 0 {
 		return nil
 	}
