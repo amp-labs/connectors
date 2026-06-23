@@ -77,10 +77,8 @@ func Init[T any](
 		conn = nil
 	})
 
-	// Default module is always the root module
-	if params.Module == "" {
-		params.Module = common.ModuleRoot
-	}
+	// Undeclared properties are set to empty values and default values.
+	params = prepareParams(params)
 
 	transport, err := NewTransport(provider, params)
 	if err != nil {
@@ -101,6 +99,20 @@ func Init[T any](
 	}
 
 	return conn, nil
+}
+
+func prepareParams(params common.ConnectorParams) common.ConnectorParams {
+	// Default module is always the root module
+	if params.Module == "" {
+		params.Module = common.ModuleRoot
+	}
+
+	// Init empty metadata map to avoid nil pointer dereference.
+	if params.Metadata == nil {
+		params.Metadata = make(map[string]string)
+	}
+
+	return params
 }
 
 // JSONHTTPClient returns the connector's JSON-capable HTTP client.
