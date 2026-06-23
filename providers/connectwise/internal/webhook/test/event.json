@@ -1,0 +1,16 @@
+{
+  "MessageId": "cb67323f-43ba-4ef6-b471-6bb90e62ab6a",
+  "FromUrl": "sandbox-na.myconnectwise.net",
+  "CompanyId": "myCompany",
+  "MemberId": "Cobalt",
+  "Action": "added",
+  "Type": "contact",
+  "ID": 57937,
+  "ProductInstanceId": "639c96cab2eb560001dd1324",
+  "PartnerId": "61ddc2817bcddc0001c74208",
+  "Entity": "{\"id\":57937,\"firstName\":\"Joshua Marvin\",\"relationship\":{\"_info\":{\"relationship_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/relationships/\"}},\"inactiveFlag\":false,\"marriedFlag\":false,\"childrenFlag\":false,\"portalSecurityLevel\":1,\"disablePortalLoginFlag\":true,\"unsubscribeFlag\":false,\"mobileGuid\":\"ec0a580c-18a4-4706-9ea5-c79a7c4a0fe8\",\"defaultBillingFlag\":false,\"defaultFlag\":false,\"_info\":{\"lastUpdated\":\"2026-06-04T17:54:53Z\",\"updatedBy\":\"Aurasell\",\"communications_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57937/communications\",\"notes_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57937/notes\",\"tracks_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57937/tracks\",\"portalSecurity_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57937/portalSecurity\",\"activities_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/sales/activities?conditions=contact/id=57937\",\"documents_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/system/documents?recordType=Contact&recordId=57937\",\"configurations_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/configurations?conditions=contact/id=57937\",\"tickets_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/service/tickets?conditions=contact/id=57937\",\"opportunities_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/sales/opportunities?conditions=contact/id=57937\",\"projects_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/project/projects?conditions=contact/id=57937\",\"image_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57937/image?lastModified=2026-06-04T17:54:53Z\"}}",
+  "Metadata": {
+    "key_url": "{{testServerURL}}/v2025_1//system/callbackkey/index.rails?companyName=myCompany&id=89966c04-9889-46ad-8d5e-421103aca922"
+  },
+  "CallbackObjectRecId": 26567
+}
