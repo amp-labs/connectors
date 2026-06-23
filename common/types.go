@@ -217,7 +217,15 @@ type ReadParams struct {
 
 	// PageSize specifies the # of records to request when making a read request.
 	PageSize int // optional
+
+	// Additional options for the read operation that the connector may support.
+	// This optional map is used for bespoke connector-specific parameters.
+	Opts ReadParamsOpts // optional
 }
+
+// Each connector that supports ReadParams.Opts should define its own type and assert it.
+// e.g. gong.ReadParamOpts.
+type ReadParamsOpts any
 
 func (p ReadParams) IsFirstPage() bool {
 	return p.NextPage.String() == ""

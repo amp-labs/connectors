@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	ServiceNow "github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/test/servicenow"
 )
@@ -22,17 +23,17 @@ func run() error {
 	ctx := context.Background()
 	conn := servicenow.GetServiceNowConnector(ctx)
 
-	err := testWriteIncidents(ctx, conn)
+	err := testCreateLead(ctx, conn)
 	if err != nil {
 		return err
 	}
 
-	err = testUpdateIncidents(ctx, conn)
+	err = testUpdateLead(ctx, conn)
 	if err != nil {
 		return err
 	}
 
-	err = testUpdateMailServer(ctx, conn)
+	err = testCreateCase(ctx, conn)
 	if err != nil {
 		return err
 	}
@@ -45,13 +46,15 @@ func run() error {
 	return nil
 }
 
-func testWriteIncidents(ctx context.Context, conn *ServiceNow.Connector) error {
+func testCreateLead(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "now/table/incident",
+		ObjectName: "lead",
 		RecordData: map[string]any{
-			"assigned_to": "1c741bd70b2322007518478d83673af3",
-			"urgency":     "1",
-			"comments":    "Elevating urgency, this is a blocking issue",
+			"short_description": "Interested in premium plan",
+			"state":             "1",
+			"company":           "Withampersand",
+			"first_name":        "Mohammed",
+			"last_name":         "Salah",
 		},
 	}
 
@@ -73,10 +76,26 @@ func testWriteIncidents(ctx context.Context, conn *ServiceNow.Connector) error {
 	return nil
 }
 
-func testUpdateIncidents(ctx context.Context, conn *ServiceNow.Connector) error {
+func testUpdateLead(ctx context.Context, conn *ServiceNow.Connector) error {
+	// Fetch a real lead id from the instance rather than hardcoding one, so the
+	// update targets an existing record.
+	read, err := conn.Read(ctx, common.ReadParams{
+		ObjectName: "lead",
+		Fields:     datautils.NewStringSet("sys_id"),
+	})
+	if err != nil {
+		return fmt.Errorf("reading a lead to update: %w", err)
+	}
+
+	if len(read.Data) == 0 {
+		return fmt.Errorf("no lead found to update")
+	}
+
+	recordID, _ := read.Data[0].Fields["sys_id"].(string)
+
 	params := common.WriteParams{
-		ObjectName: "now/table/incident",
-		RecordId:   "6a2f6fbb83f02210290fed70deaad320",
+		ObjectName: "lead",
+		RecordId:   recordID,
 		RecordData: map[string]any{
 			"company": "Ampersand",
 		},
@@ -99,12 +118,12 @@ func testUpdateIncidents(ctx context.Context, conn *ServiceNow.Connector) error 
 	return nil
 }
 
-func testUpdateMailServer(ctx context.Context, conn *ServiceNow.Connector) error {
+func testCreateCase(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "now/table/cmdb_ci_email_server",
-		RecordId:   "280ffff1c0a8000b0083f5395b44bc97",
+		ObjectName: "case",
 		RecordData: map[string]any{
-			"due_in": "2025-10-10",
+			"short_description": "Customer reported a billing discrepancy",
+			"priority":          "2",
 		},
 	}
 
@@ -127,13 +146,12 @@ func testUpdateMailServer(ctx context.Context, conn *ServiceNow.Connector) error
 
 func testCreateContact(ctx context.Context, conn *ServiceNow.Connector) error {
 	params := common.WriteParams{
-		ObjectName: "now/contact",
+		ObjectName: "contact",
 		RecordData: map[string]any{
 			"active":       true,
 			"agent_status": "On break",
 			"city":         "Liverpool",
 			"company":      "Withampersand",
-			"country":      "UK",
 			"email":        "ywnwa@lfc.com",
 			"first_name":   "Mohammed",
 			"last_name":    "Salah",

@@ -32,6 +32,6 @@ func main() {
 		utils.Fail("error reading from connector", "error", err)
 	}
 
-	slog.Info("Reading...")
+	slog.Info("Reading events from primary calendars", "read events", res.Rows)
 	utils.DumpJSON(res, os.Stdout)
 }

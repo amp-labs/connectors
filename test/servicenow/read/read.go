@@ -24,11 +24,11 @@ func run() error {
 
 	conn := servicenow.GetServiceNowConnector(ctx)
 
-	if err := readIncidentsList(ctx, conn); err != nil {
+	if err := readLeads(ctx, conn); err != nil {
 		return err
 	}
 
-	if err := readEmailServer(ctx, conn); err != nil {
+	if err := readCases(ctx, conn); err != nil {
 		return err
 	}
 
@@ -43,10 +43,10 @@ func run() error {
 	return nil
 }
 
-func readIncidentsList(ctx context.Context, conn *serviceNow.Connector) error {
+func readLeads(ctx context.Context, conn *serviceNow.Connector) error {
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "now/table/incident",
-		Fields:     datautils.NewStringSet("parent", "upon_reject", "child_incidents"),
+		ObjectName: "lead",
+		Fields:     datautils.NewStringSet("number", "state", "short_description"),
 	})
 	if err != nil {
 		return err
@@ -64,10 +64,10 @@ func readIncidentsList(ctx context.Context, conn *serviceNow.Connector) error {
 	return nil
 }
 
-func readEmailServer(ctx context.Context, conn *serviceNow.Connector) error {
+func readCases(ctx context.Context, conn *serviceNow.Connector) error {
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "now/table/cmdb_ci_email_server",
-		Fields:     datautils.NewStringSet("operational_status", "sys_domain", "sys_class_name"),
+		ObjectName: "case",
+		Fields:     datautils.NewStringSet("number", "short_description", "priority"),
 	})
 	if err != nil {
 		return err
@@ -87,7 +87,7 @@ func readEmailServer(ctx context.Context, conn *serviceNow.Connector) error {
 
 func readContacts(ctx context.Context, conn *serviceNow.Connector) error {
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "now/contact",
+		ObjectName: "contact",
 		Fields:     datautils.NewStringSet("country", "last_login_device", "phone"),
 		// NextPage:   "https://dev212375.service-now.com/api/now/contact?\u0026sysparm_offset=10",
 	})
@@ -109,7 +109,7 @@ func readContacts(ctx context.Context, conn *serviceNow.Connector) error {
 
 func readNextPageContacts(ctx context.Context, conn *serviceNow.Connector) error {
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "now/contact",
+		ObjectName: "contact",
 		Fields:     datautils.NewStringSet("country", "last_login_device", "phone"),
 		NextPage:   "https://dev212375.service-now.com/api/now/contact?\u0026sysparm_offset=10",
 	})

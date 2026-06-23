@@ -1,0 +1,9 @@
+[
+  {
+    "_id": "abc123def456",
+    "name": "Acme Corp",
+    "friendly_id": "acme",
+    "initial": "A",
+    "member_count": 5
+  }
+]
