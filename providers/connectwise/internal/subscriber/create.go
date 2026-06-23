@@ -21,11 +21,18 @@ func (s Strategy) Subscribe(
 		return nil, err
 	}
 
-	input, err := s.TypedSubscriptionRequest(params)
+	request, err := s.TypedSubscriptionRequest(params)
 	if err != nil {
 		return nil, err
 	}
 
+	return s.createSubscription(ctx, request, params.SubscriptionEvents)
+}
+
+func (s Strategy) createSubscription(ctx context.Context,
+	request Request,
+	subscriptionEvents datautils.Map[common.ObjectName, common.ObjectEvents],
+) (*common.SubscriptionResult, error) {
 	url, err := s.getSubscriptionURL()
 	if err != nil {
 		return nil, err
@@ -33,11 +40,11 @@ func (s Strategy) Subscribe(
 
 	subscriptionURL := url.String()
 
-	tasks := make([]parallelfetch.Task[common.ObjectName, SubscriptionResource], len(params.SubscriptionEvents))
-
+	tasks := make([]parallelfetch.Task[common.ObjectName, SubscriptionResource], len(subscriptionEvents))
 	index := 0
-	for objectName := range params.SubscriptionEvents {
-		tasks[index], err = s.newTaskCreateSubscription(objectName, subscriptionURL, input)
+
+	for objectName := range subscriptionEvents {
+		tasks[index], err = s.newTaskCreateSubscription(objectName, subscriptionURL, request)
 		if err != nil {
 			return nil, err
 		}
@@ -50,7 +57,7 @@ func (s Strategy) Subscribe(
 
 	if len(createResult.Errors) != 0 {
 		// Some requests failed; initiate rollback.
-		return s.rollbackSubscriptionCreation(ctx, params, state, createResult)
+		return s.rollbackSubscriptionCreation(ctx, subscriptionEvents, state, createResult)
 	}
 
 	return &common.SubscriptionResult{
@@ -97,7 +104,7 @@ func getStateFromCreateResponse(
 // Returns appropriate status based on rollback success.
 func (s Strategy) rollbackSubscriptionCreation(
 	ctx context.Context,
-	params common.SubscribeParams,
+	subscriptionEvents datautils.Map[common.ObjectName, common.ObjectEvents],
 	state map[common.ObjectName]common.ObjectEvents,
 	partialCreation parallelfetch.Result[common.ObjectName, SubscriptionResource],
 ) (*common.SubscriptionResult, error) {
@@ -109,7 +116,7 @@ func (s Strategy) rollbackSubscriptionCreation(
 	removeResult := s.removeSubscriptionsByIDs(ctx, requestsRegistry.Keys())
 	if len(removeResult.Errors) == 0 {
 		// Full rollback succeeded.
-		objectNames := datautils.FromMap(params.SubscriptionEvents).Keys()
+		objectNames := datautils.FromMap(subscriptionEvents).Keys()
 
 		events := make(map[common.ObjectName]common.ObjectEvents)
 		for _, objectName := range objectNames {
@@ -133,7 +140,7 @@ func (s Strategy) rollbackSubscriptionCreation(
 		existingObjects.AddOne(objectName)
 	}
 
-	allObjects := datautils.FromMap(params.SubscriptionEvents).KeySet()
+	allObjects := datautils.FromMap(subscriptionEvents).KeySet()
 	removedObjects := allObjects.Subtract(existingObjects)
 
 	// Clear state for successfully removed objects.
@@ -157,7 +164,7 @@ func (s Strategy) rollbackSubscriptionCreation(
 
 func (s Strategy) newTaskCreateSubscription(objectName common.ObjectName,
 	url string,
-	input Request,
+	request Request,
 ) (parallelfetch.Task[common.ObjectName, SubscriptionResource], error) {
 	objectType, found := objectNameToWebhookObjectType[objectName]
 	if !found {
@@ -168,7 +175,7 @@ func (s Strategy) newTaskCreateSubscription(objectName common.ObjectName,
 		body := SubscriptionResource{
 			// Webhook must end with recordId without the value.
 			// The ConnectWise will append the record identifier as a raw string when sending the event.
-			WebhookURL:     input.WebhookURL + "?recordId=",
+			WebhookURL:     request.WebhookURL + "?recordId=",
 			ObjectType:     objectType,
 			ObjectLevel:    "owner",
 			PayloadVersion: messageVersion,
