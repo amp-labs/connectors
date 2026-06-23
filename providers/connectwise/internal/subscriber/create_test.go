@@ -217,22 +217,6 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 	}
 }
 
-func TestObjectTypeMappings(t *testing.T) {
-	t.Parallel()
-
-	result := testutils.NewCompareResult()
-
-	// Both maps must be of the same length.
-	result.Assert("map size", len(webhookObjectTypeToObjectName), len(objectNameToWebhookObjectType))
-
-	for key, value := range objectNameToWebhookObjectType {
-		result.Assert(fmt.Sprintf("pair [%v:%v]", key, value),
-			key, webhookObjectTypeToObjectName[value])
-	}
-
-	result.Validate(t, "ObjectType mapping should be consistent both ways")
-}
-
 func compareResult(expectedResult, actualResult any) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
 

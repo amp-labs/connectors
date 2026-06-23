@@ -1,0 +1,16 @@
+{
+  "Action": "updated",
+  "CallbackObjectRecId": 26604,
+  "CompanyId": "Cobalt",
+  "Entity": "{\"id\":57961,\"firstName\":\"Xzavier Sawayn\",\"relationship\":{\"_info\":{\"relationship_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/relationships/\"}},\"inactiveFlag\":false,\"marriedFlag\":false,\"childrenFlag\":false,\"disablePortalLoginFlag\":true,\"unsubscribeFlag\":false,\"mobileGuid\":\"1d8adb07-3b32-4ff4-8ec7-ef476e6b0dfd\",\"defaultBillingFlag\":false,\"defaultFlag\":false,\"_info\":{\"lastUpdated\":\"2026-06-09T21:59:49Z\",\"updatedBy\":\"Aurasell\",\"communications_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57961/communications\",\"notes_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57961/notes\",\"tracks_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57961/tracks\",\"portalSecurity_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57961/portalSecurity\",\"activities_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/sales/activities?conditions=contact/id=57961\",\"documents_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/system/documents?recordType=Contact&recordId=57961\",\"configurations_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/configurations?conditions=contact/id=57961\",\"tickets_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/service/tickets?conditions=contact/id=57961\",\"opportunities_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/sales/opportunities?conditions=contact/id=57961\",\"projects_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/project/projects?conditions=contact/id=57961\",\"image_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57961/image?lastModified=2026-06-09T21:59:49Z\"}}",
+  "FromUrl": "sandbox-na.myconnectwise.net",
+  "ID": 57961,
+  "MemberId": "Aurasell",
+  "MessageId": "6dd82302-5e46-47c0-8c84-702868125b76",
+  "Metadata": {
+    "key_url": "https://sandbox-na.myconnectwise.net/v2025_1//system/callbackkey/index.rails?companyName=Cobalt&id=e17e6674-42f6-4105-9cff-4cd6cb4e62e8"
+  },
+  "PartnerId": "61ddc2817bcddc0001c74208",
+  "ProductInstanceId": "639c96cab2eb560001dd1324",
+  "Type": "contact"
+}

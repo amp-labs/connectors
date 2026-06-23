@@ -1,0 +1,16 @@
+{
+  "Action": "deleted",
+  "CallbackObjectRecId": 26604,
+  "CompanyId": "Cobalt",
+  "Entity": null,
+  "FromUrl": "sandbox-na.myconnectwise.net",
+  "ID": 57962,
+  "MemberId": "Aurasell",
+  "MessageId": "824d99d2-33c0-4c56-9ded-d99d895a90e3",
+  "Metadata": {
+    "key_url": "https://sandbox-na.myconnectwise.net/v2025_1//system/callbackkey/index.rails?companyName=Cobalt&id=e17e6674-42f6-4105-9cff-4cd6cb4e62e8"
+  },
+  "PartnerId": "61ddc2817bcddc0001c74208",
+  "ProductInstanceId": "639c96cab2eb560001dd1324",
+  "Type": "contact"
+}
