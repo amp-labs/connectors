@@ -33,10 +33,7 @@ var (
 //
 //nolint:gochecknoglobals
 var objectWatchPaths = map[common.ObjectName]string{
-	objectNameEvents:       "calendars/primary/events/watch",
-	objectNameCalendarList: "users/me/calendarList/watch",
-	objectNameSettings:     "users/me/settings/watch",
-	objectNameACL:          "calendars/primary/acl/watch",
+	objectNameEvents: "calendars/primary/events/watch",
 }
 
 // WatchRequest is the caller-provided config for creating watch channels.
@@ -230,18 +227,62 @@ func (a *Adapter) RunScheduledMaintenance(
 	return a.UpdateSubscription(ctx, params, previousResult)
 }
 
-// VerifyWebhookMessage is not yet implemented for Google Calendar.
+// channelTokenHeader carries the arbitrary token we set on the watch channel
+// (WatchRequest.Token). Google echoes it verbatim on every push notification, so it
+// is the only request-bound value we can authenticate against — Calendar push bodies
+// are empty.
+const channelTokenHeader = "X-Goog-Channel-Token"
+
+// VerificationParams holds the parameters needed to verify a Google Calendar webhook.
 //
-// Verification (comparing the X-Goog-Channel-Token header against a stored token) is
-// being delivered in a separate PR. Until then this refuses verification rather than
-// asserting authenticity it never checked — callers must not treat unverified messages
-// as trusted.
+// ChannelToken is the token the caller registered on the channel when subscribing
+// (WatchRequest.Token); the incoming X-Goog-Channel-Token header is compared against it
+// verbatim. The connector is agnostic to the token's format — it compares whatever the
+// caller supplies.
+type VerificationParams struct {
+	ChannelToken string
+}
+
+// VerifyWebhookMessage verifies that a webhook message came from Google Calendar.
+// Like Zoho, Google does not sign the payload; instead we register a token of our choice
+// on the watch channel and Google echoes it back on every push notification. Unlike Zoho,
+// which carries the token in the response body, Calendar bodies are empty so the token
+// arrives in the X-Goog-Channel-Token header.
 func (a *Adapter) VerifyWebhookMessage(
-	ctx context.Context,
+	_ context.Context,
 	request *common.WebhookRequest,
 	params *common.VerificationParams,
 ) (bool, error) {
-	return false, common.ErrNotImplemented
+	calendarParams, err := common.AssertType[*VerificationParams](params.Param)
+	if err != nil {
+		return false, fmt.Errorf("invalid verification params: %w", err)
+	}
+
+	if calendarParams.ChannelToken == "" {
+		return false, fmt.Errorf("%w: %s", errFieldNotFound, "channelToken")
+	}
+
+	tokenStr, err := parseToken(request)
+	if err != nil {
+		return false, fmt.Errorf("error parsing token: %w", err)
+	}
+
+	return tokenStr == calendarParams.ChannelToken, nil
+}
+
+// parseToken extracts the channel token Google echoes back on each push notification.
+// Calendar delivers an empty body, so the token arrives in the X-Goog-Channel-Token header.
+func parseToken(request *common.WebhookRequest) (string, error) {
+	if request == nil {
+		return "", fmt.Errorf("%w: %s", errFieldNotFound, "webhook request")
+	}
+
+	token := request.Headers.Get(channelTokenHeader)
+	if token == "" {
+		return "", fmt.Errorf("%w: %s", errFieldNotFound, channelTokenHeader)
+	}
+
+	return token, nil
 }
 
 // GetRecordsByIds fetches the events that changed since a server-supplied checkpoint.

@@ -22,6 +22,7 @@ var (
 	errMissingParams              = errors.New("missing required parameters")
 	errInvalidRequestType         = errors.New("invalid request type")
 	errUnsupportedSubscribeObject = errors.New("unsupported subscribe object")
+	errFieldNotFound              = errors.New("field not found")
 )
 
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
