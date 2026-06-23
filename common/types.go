@@ -1010,6 +1010,62 @@ const (
 	SubscriptionStatusFailedToRollback SubscriptionStatus = "failed_to_rollback"
 )
 
+// Resolve combines multiple subscription statuses and returns the most severe status.
+// The priority order (from worst to best) is:
+//  1. failed_to_rollback (worst - error occurred AND cleanup failed)
+//  2. failed (error occurred but cleanup succeeded)
+//  3. pending (registration in progress)
+//  4. success (best - registration completed successfully)
+//
+// If any status in the input is failed_to_rollback, the result is failed_to_rollback.
+// If any status is failed (and no failed_to_rollback), the result is failed.
+// If all statuses are pending, the result is pending.
+// Only if all statuses are success, the result is success.
+//
+// Parameters:
+//   - others: One or more additional subscription statuses to merge with the current status
+//
+// Returns:
+//   - The most severe status among all inputs
+//
+// Example:
+//
+//	status := SubscriptionStatusSuccess
+//	status.Merge(SubscriptionStatusSuccess, SubscriptionStatusFailed) // returns SubscriptionStatusFailed
+func (s SubscriptionStatus) Resolve(others ...SubscriptionStatus) SubscriptionStatus {
+	if len(others) == 0 {
+		return s
+	}
+
+	// Define priority: lower number = higher priority (more severe)
+	priority := map[SubscriptionStatus]int{
+		SubscriptionStatusFailedToRollback: 1,
+		SubscriptionStatusFailed:           2, // nolint:mnd
+		SubscriptionStatusPending:          3, // nolint:mnd
+		SubscriptionStatusSuccess:          4, // nolint:mnd
+	}
+
+	// Start with the current status's priority
+	minPriority := priority[s]
+
+	// Find the most severe status (lowest priority number)
+	for _, other := range others {
+		if otherPriority := priority[other]; otherPriority < minPriority {
+			minPriority = otherPriority
+		}
+	}
+
+	// Return the status with the lowest priority number
+	for status, prio := range priority {
+		if prio == minPriority {
+			return status
+		}
+	}
+
+	// Fallback (should never reach here if all statuses are valid)
+	return s
+}
+
 type SearchFilter struct {
 	// multiple filters are joined by `and` by default.
 	FieldFilters []FieldFilter `json:"fieldFilters" validate:"required,dive"`

@@ -34,8 +34,8 @@ func (s Strategy) Subscribe(
 	subscriptionURL := url.String()
 
 	tasks := make([]parallelfetch.Task[common.ObjectName, SubscriptionResource], len(params.SubscriptionEvents))
-
 	index := 0
+
 	for objectName := range params.SubscriptionEvents {
 		tasks[index], err = s.newTaskCreateSubscription(objectName, subscriptionURL, input)
 		if err != nil {
