@@ -54,3 +54,23 @@ func (s SubscriptionInputOutput[I, O]) TypedSubscriptionRequest(params common.Su
 
 	return input, nil
 }
+
+// TypedSubscriptionResult extracts and casts subscription.Result into the concrete output type O.
+//
+// It provides a safe way to recover the typed result from the
+// non-generic SubscriptionResult, returning an error if the underlying
+// type does not match.
+func (s SubscriptionInputOutput[I, O]) TypedSubscriptionResult(subscription common.SubscriptionResult) (O, error) {
+	var output O
+
+	if subscription.Result != nil {
+		var ok bool
+
+		output, ok = subscription.Result.(O)
+		if !ok {
+			return output, fmt.Errorf("%w: expected %T, got %T", ErrInvalidSubscriptionRequestType, output, subscription.Result)
+		}
+	}
+
+	return output, nil
+}
