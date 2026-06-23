@@ -1,0 +1,14 @@
+{
+  "_id": "pos_new",
+  "name": "Proxy Test Position",
+  "type": "fullTime",
+  "state": "draft",
+  "description": "Created via connector test",
+  "department": "Engineering",
+  "location": {
+    "country": "US",
+    "state": "CA",
+    "city": "San Francisco",
+    "is_remote": true
+  }
+}
