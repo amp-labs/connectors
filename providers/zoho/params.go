@@ -18,6 +18,7 @@ type Option = func(params *parameters)
 type parameters struct {
 	paramsbuilder.Client
 	paramsbuilder.Module
+	paramsbuilder.Metadata
 
 	// location is the Zoho data center location (e.g., "us", "eu", "in", "au", "jp", "ca").
 	location string
@@ -68,5 +69,15 @@ func WithLocation(location string) Option {
 func WithDomains(domains *LocationDomains) Option {
 	return func(params *parameters) {
 		params.domains = domains
+	}
+}
+
+// WithMetadata sets the post-authentication metadata expected by the connector.
+//
+// It is optional: only the Zoho Mail module consumes it (the zohoMailAccountId
+// resolved by GetPostAuthInfo). Other modules ignore it.
+func WithMetadata(metadata map[string]string) Option {
+	return func(params *parameters) {
+		params.WithMetadata(metadata, nil)
 	}
 }
