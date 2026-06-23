@@ -1,0 +1,15 @@
+{
+  "status": {
+    "code": 200,
+    "description": "success"
+  },
+  "data": {
+    "id": "48184000000093001",
+    "title": "Ampersand task",
+    "description": "created via the Zoho Mail write connector",
+    "status": "In Progress",
+    "createdAt": "2018-03-28T17:13:40+05:30",
+    "modifiedTime": "2018-03-28T17:13:40+05:30",
+    "namespaceId": "54224987"
+  }
+}

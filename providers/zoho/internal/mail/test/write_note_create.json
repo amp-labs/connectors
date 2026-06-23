@@ -1,0 +1,10 @@
+{
+  "status": {
+    "code": 201,
+    "description": "Created"
+  },
+  "data": {
+    "entityId": "1711974988431110001",
+    "URI": "https://mail.zoho.com/api/notes/me/1711974988431110001"
+  }
+}

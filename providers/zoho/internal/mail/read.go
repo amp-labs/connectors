@@ -43,7 +43,7 @@ func (a *Adapter) buildReadURL(config common.ReadParams, obj objectDescriptor) (
 		return urlbuilder.New(string(config.NextPage))
 	}
 
-	url, err := a.objectURL(obj)
+	url, err := a.objectURL(obj.path, obj.accountScoped)
 	if err != nil {
 		return nil, err
 	}

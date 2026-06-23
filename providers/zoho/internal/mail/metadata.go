@@ -78,7 +78,7 @@ func (a *Adapter) retrieveSampleResponse(ctx context.Context, objectName string)
 // buildObjectURL builds the metadata-sampling URL: the object's base URL plus a
 // single-record limit on paginated endpoints (so we sample one record cheaply).
 func (a *Adapter) buildObjectURL(obj objectDescriptor) (*urlbuilder.URL, error) {
-	url, err := a.objectURL(obj)
+	url, err := a.objectURL(obj.path, obj.accountScoped)
 	if err != nil {
 		return nil, err
 	}
@@ -90,14 +90,14 @@ func (a *Adapter) buildObjectURL(obj objectDescriptor) (*urlbuilder.URL, error) 
 	return url, nil
 }
 
-// objectURL resolves an object's base listing URL, accounting for account-scoped
-// endpoints that need the post-auth account id in their path.
-func (a *Adapter) objectURL(obj objectDescriptor) (*urlbuilder.URL, error) {
-	if obj.accountScoped {
-		return a.getAccountScopedURL(obj.path)
+// objectURL resolves an object's base URL from its path, accounting for
+// account-scoped endpoints that need the post-auth account id in their path.
+func (a *Adapter) objectURL(path string, accountScoped bool) (*urlbuilder.URL, error) {
+	if accountScoped {
+		return a.getAccountScopedURL(path)
 	}
 
-	return a.getAPIURL(obj.path)
+	return a.getAPIURL(path)
 }
 
 func parseMetadataResponse(objectName string, obj objectDescriptor, resp *common.JSONHTTPResponse,
