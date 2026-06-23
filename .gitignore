@@ -148,5 +148,5 @@ output/
 /apex
 test/salesforce/apex/apex
 /subscribe
-subscriber
+./subscriber
 test/salesforce/subscribe/subscribe

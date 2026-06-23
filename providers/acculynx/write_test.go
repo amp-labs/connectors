@@ -3,6 +3,7 @@ package acculynx
 import (
 	_ "embed"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
@@ -487,22 +488,22 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.WriteConnector, error) {
-				return constructTestWriteConnector(tt.Server.URL)
+				return constructTestWriteConnector(tt.Server)
 			})
 		})
 	}
 }
 
-func constructTestWriteConnector(serverURL string) (*Connector, error) {
+func constructTestWriteConnector(server *httptest.Server) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		Module:              common.ModuleRoot,
-		AuthenticatedClient: &http.Client{},
+		AuthenticatedClient: server.Client(),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	connector.SetUnitTestBaseURL(serverURL)
+	connector.SetUnitTestMockServerBaseURL(server.URL)
 
 	return connector, nil
 }
