@@ -30,6 +30,9 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		SubscribeRequirements: &SubscribeRequirements{
+			SubscribeByAPI: new(false),
+		},
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{{
 				Name:         "region",

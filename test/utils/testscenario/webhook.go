@@ -80,7 +80,8 @@ func waitForWebhookURLInput(ctx context.Context) (string, bool) {
 //
 // Webhook handler will send webhookMessageResult using go channel.
 func startWebhookHandler(
-	ctx context.Context, conn ConnectorWebhookSubscriber,
+	ctx context.Context,
+	conn testroutines.TestableWebhookMessageVerifier,
 	router WebhookRouter,
 	verificationParams *common.VerificationParams,
 	messageChannel chan webhookMessageResult,
