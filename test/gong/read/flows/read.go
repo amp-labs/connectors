@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/gong"
 	connTest "github.com/amp-labs/connectors/test/gong"
 	"github.com/amp-labs/connectors/test/utils"
 )
@@ -27,6 +28,7 @@ func main() {
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "flows",
 		Fields:     connectors.Fields("id", "name", "visibility"),
+		Opts:       gong.ReadParamsOpts{ReadFlowsForAllUsers: true},
 	})
 	if err != nil {
 		utils.Fail("error reading from Gong", "error", err)
@@ -38,6 +40,7 @@ func main() {
 	resWithAssoc, err := conn.Read(ctx, common.ReadParams{
 		ObjectName:        "flows",
 		Fields:            connectors.Fields("id", "name", "visibility"),
+		Opts:              gong.ReadParamsOpts{ReadFlowsForAllUsers: true},
 		AssociatedObjects: []string{"users"},
 	})
 	if err != nil {
@@ -45,4 +48,17 @@ func main() {
 	}
 
 	utils.DumpJSON(resWithAssoc, os.Stdout)
+
+	slog.Info("Reading flows with ReadFlowsForAllUsers false")
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "flows",
+		Fields:     connectors.Fields("id", "name", "visibility"),
+		Opts:       gong.ReadParamsOpts{ReadFlowsForAllUsers: false},
+	})
+	if err != nil {
+		utils.Fail("error reading from Gong", "error", err)
+	}
+
+	utils.DumpJSON(res, os.Stdout)
+
 }

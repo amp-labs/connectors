@@ -2,6 +2,7 @@ package hubspot
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -261,7 +262,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Read marketing campaigns first page",
 			Input: common.ReadParams{
 				ObjectName: "marketing-campaigns",
-				Fields:     connectors.Fields("hs_name", "hs_notes", "hs_budget_items_sum_amount"),
+				Fields:     connectors.Fields("id", "hs_name", "hs_notes", "hs_budget_items_sum_amount"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -270,6 +271,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					mockcond.Path("/marketing/campaigns/2026-03"),
 					mockcond.QueryParam("limit", "100"),
 					mockcond.QueryParam("sort", "-updatedAt"),
+					mockcond.QueryParamsMissing("id"),
+					mockcond.Permute(
+						propertiesQueryParam(), "hs_name", "hs_notes", "hs_budget_items_sum_amount",
+					),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCampaignsFirst),
 			}.Server(),
@@ -278,6 +283,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
+						"id":                         "430318c4-abb7-4bf7-a75e-9c5fa8f475a6",
 						"hs_name":                    "Clothing Promotion",
 						"hs_notes":                   "Sports t-shirts and pants",
 						"hs_budget_items_sum_amount": "2.0",
@@ -295,6 +301,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Id: "430318c4-abb7-4bf7-a75e-9c5fa8f475a6",
 				}, {
 					Fields: map[string]any{
+						"id":      "36137b99-47a6-40fe-986d-839a5e3deebb",
 						"hs_name": "Breaking news",
 					},
 					Raw: map[string]any{
@@ -877,5 +884,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
+	}
+}
+
+func propertiesQueryParam() func(fields []string) mockcond.Condition {
+	return func(fields []string) mockcond.Condition {
+		return mockcond.QueryParam("properties", strings.Join(fields, ","))
 	}
 }

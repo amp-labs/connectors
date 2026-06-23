@@ -1,0 +1,19 @@
+{
+  "kind": "calendar#events",
+  "etag": "\"p33gabc\"",
+  "summary": "integration@test.com",
+  "items": [
+    {
+      "kind": "calendar#event",
+      "id": "event-a",
+      "iCalUID": "event-a@google.com",
+      "summary": "Standup"
+    },
+    {
+      "kind": "calendar#event",
+      "id": "event-shared",
+      "iCalUID": "event-shared@google.com",
+      "summary": "All Hands"
+    }
+  ]
+}

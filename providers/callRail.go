@@ -41,5 +41,12 @@ func init() {
 		Labels: &Labels{
 			LabelExperimental: LabelValueTrue,
 		},
+		Metadata: &ProviderMetadata{
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "accountId",
+				},
+			},
+		},
 	})
 }

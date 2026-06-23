@@ -127,7 +127,7 @@ func ConstructApexTrigger(ctx context.Context, params ApexTriggerParams) ([]byte
 		return nil, err
 	}
 
-	indicatorAssignment, err := indicatorAssignmentForType(params.IndicatorField)
+	indicatorAssignment, needsReentrancyGuard, err := indicatorAssignmentForType(params.IndicatorField)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +135,7 @@ func ConstructApexTrigger(ctx context.Context, params ApexTriggerParams) ([]byte
 	triggerCode := generateThinTriggerCode(params, handlerClassName)
 	triggerMetaXML := generateTriggerMetaXML()
 
-	handlerCode := generateHandlerClassCode(params, handlerClassName, indicatorAssignment)
+	handlerCode := generateHandlerClassCode(params, handlerClassName, indicatorAssignment, needsReentrancyGuard)
 	handlerMetaXML := generateClassMetaXML()
 
 	testClassCode := generateTestClassCode(testClassName, handlerClassName, params)
@@ -180,21 +180,47 @@ func ConstructDestructiveApexTrigger(triggerName string) ([]byte, error) {
 
 // indicatorAssignmentForType returns the Apex statement that assigns the
 // indicator field within the handler's per-record loop, dispatched by the
-// indicator's value type. Only Boolean (CDC) and Datetime (filtered-read)
-// are supported; all other FieldType values fall through to the default
-// case which returns errUnsupportedIndicatorTy.
+// indicator's value type, plus whether that statement needs the transaction's
+// re-entrancy guard (the processedIds Set) declared on the handler. Only
+// Boolean (CDC) and Datetime (filtered-read) are supported; all other
+// FieldType values fall through to the default case which returns
+// errUnsupportedIndicatorTy.
+//
+// Both variants are written to be safe under re-entrancy — any number of flows,
+// workflows, process builders, or other triggers re-saving the same record in
+// the same transaction:
+//
+//   - Boolean (CDC): the indicator latches. It is set true on ANY pass that
+//     observes a watched-field change, and false is written ONLY on the first
+//     pass for a record (guarded by processedIds). So a later no-op re-save
+//     cannot reset a true an earlier pass latched, and a watched change
+//     introduced by a downstream automation still flips it true. Without the
+//     guard, the original unconditional `rec.<field> = fieldChanged` reset the
+//     indicator to false on any re-entrant save whose Trigger.old already held
+//     the first pass's new values — the reported event-suppression bug.
+//
+//   - Datetime (filtered-read): the indicator only ever advances — it writes a
+//     fresh System.now() on any pass that observes a change and never clears.
+//     That is already re-entrancy and multi-automation safe (a no-op re-save
+//     leaves the prior timestamp; any pass observing a change advances the read
+//     cursor), so it needs no guard.
 //
 //nolint:exhaustive
-func indicatorAssignmentForType(field common.FieldDefinition) (string, error) {
+func indicatorAssignmentForType(field common.FieldDefinition) (string, bool, error) {
 	switch field.ValueType {
 	case common.FieldTypeBoolean:
-		return fmt.Sprintf("rec.%s = fieldChanged;", field.FieldName), nil
+		return fmt.Sprintf(`if (fieldChanged) {
+                rec.%s = true;
+            } else if (!processedIds.contains(rec.Id)) {
+                rec.%s = false;
+            }
+            processedIds.add(rec.Id);`, field.FieldName, field.FieldName), true, nil
 	case common.FieldTypeDateTime:
 		return fmt.Sprintf(`if (fieldChanged) {
                 rec.%s = System.now();
-            }`, field.FieldName), nil
+            }`, field.FieldName), false, nil
 	default:
-		return "", fmt.Errorf("%w: got %q", errUnsupportedIndicatorTy, field.ValueType)
+		return "", false, fmt.Errorf("%w: got %q", errUnsupportedIndicatorTy, field.ValueType)
 	}
 }
 
@@ -227,7 +253,21 @@ func generateThinTriggerCode(params ApexTriggerParams, handlerClassName string) 
 // would only affect the indicator's stored value on the new record — which no
 // supported consumer reads. The handler returns immediately on insert; the
 // indicator stays at the field's DefaultValue ("false").
-func generateHandlerClassCode(params ApexTriggerParams, handlerClassName, indicatorAssignment string) string {
+//
+// When needsReentrancyGuard is set (the CDC/Boolean variant), the handler
+// declares a transaction-scoped `processedIds` Set<Id> that the indicator
+// assignment uses to write the "false" (no-change) value at most once per
+// record per transaction. Apex static state lives for the whole transaction and
+// resets between transactions, so this lets the Boolean indicator latch: it is
+// set true on any pass that detects a watched-field change and reset to false
+// only on a record's first pass, never by a later re-entrant save. Keying on Id
+// (not a single Boolean) keeps large bulk DML correct — the trigger fires once
+// per 200-record chunk within one transaction, and every distinct record must
+// still be initialized. The Datetime/filtered-read variant only ever advances a
+// timestamp, so it needs no guard and the Set is omitted.
+func generateHandlerClassCode(
+	params ApexTriggerParams, handlerClassName, indicatorAssignment string, needsReentrancyGuard bool,
+) string {
 	updateConditions := make([]string, 0, len(params.WatchFields))
 	for _, field := range params.WatchFields {
 		updateConditions = append(updateConditions,
@@ -236,7 +276,19 @@ func generateHandlerClassCode(params ApexTriggerParams, handlerClassName, indica
 
 	updateExpr := strings.Join(updateConditions, " || ")
 
-	return fmt.Sprintf(`public class %s {
+	guardField := ""
+	if needsReentrancyGuard {
+		guardField = `
+    // Records whose indicator this transaction has already initialized. Static
+    // state lives for the whole transaction and resets between transactions, so
+    // the loop below writes the "false" (no-change) value only once per record —
+    // a re-entrant before-update save from another flow or trigger can no longer
+    // reset an indicator that an earlier pass latched to true.
+    private static Set<Id> processedIds = new Set<Id>();
+`
+	}
+
+	return fmt.Sprintf(`public class %s {%s
     public static void process(List<%s> newRecs, List<%s> oldRecs) {
         if (oldRecs == null) {
             // Insert: no-op for CDC purposes. CREATE events bypass the channel
@@ -253,7 +305,7 @@ func generateHandlerClassCode(params ApexTriggerParams, handlerClassName, indica
         }
     }
 }
-`, handlerClassName,
+`, handlerClassName, guardField,
 		params.ObjectName, params.ObjectName,
 		params.ObjectName, params.ObjectName, updateExpr, indicatorAssignment)
 }
@@ -288,6 +340,12 @@ func generateClassMetaXML() string {
 //     field on newRec only so (rec.<f> != oldRec.<f>) evaluates true and
 //     fieldChanged=true.
 //
+//   - `exerciseHandlerUpdateNoChange` invokes the handler with two identical
+//     in-memory records so fieldChanged=false. For the CDC variant this is the
+//     only deterministic (DML-free) path that covers the else-if branch writing
+//     the "false" indicator; without it those lines would depend on the
+//     best-effort SeeAllData path below finding an existing record.
+//
 //   - `coverTriggerDelegation` uses SeeAllData=true to find an existing
 //     record of the target object and fire `before update` on it. The
 //     record is already valid (it exists), so the update reliably reaches
@@ -297,11 +355,12 @@ func generateClassMetaXML() string {
 //     org's data. For orgs with zero records of the type, falls back to
 //     the generic makeRec()-based insert.
 //
-// Together these guarantee 100% coverage on the trigger (1/1) and the
-// handler (every line including the early-return and the Read variant's
-// conditional body) whenever the target object has at least one record in
-// the org — which covers full sandboxes and the vast majority of production
-// orgs. The fallback path remains best-effort for empty/new orgs.
+// Together the in-memory handler invocations guarantee full coverage of every
+// handler line — the early-return, both indicator branches (changed and
+// no-change), and the re-entrancy Set bookkeeping — without any DML, so handler
+// coverage no longer depends on the org having data. coverTriggerDelegation
+// then covers the trigger's single delegation line (1/1); it prefers an
+// existing record and falls back to a best-effort insert for empty/new orgs.
 func generateTestClassCode(testClassName, handlerClassName string, params ApexTriggerParams) string {
 	// Validation requires len(WatchFields) > 0; defend against generator misuse
 	// by falling back to an empty string (the resulting Apex still compiles —
@@ -325,9 +384,16 @@ func generateTestClassCode(testClassName, handlerClassName string, params ApexTr
 		handlerClassName,  // 11: update branch — handler.process call
 		params.ObjectName, // 12: update branch — List<X> for newRecs
 		params.ObjectName, // 13: update branch — List<X> for oldRecs
-		params.ObjectName, // 14: coverTriggerDelegation — List<X> for SOQL result
-		params.ObjectName, // 15: coverTriggerDelegation — FROM X in SOQL
-		params.ObjectName, // 16: coverTriggerDelegation — Schema.getGlobalDescribe lookup in makeRec
+		params.ObjectName, // 14: no-change branch — oldRec local type
+		params.ObjectName, // 15: no-change branch — oldRec new literal
+		params.ObjectName, // 16: no-change branch — newRec local type
+		params.ObjectName, // 17: no-change branch — newRec new literal
+		handlerClassName,  // 18: no-change branch — handler.process call
+		params.ObjectName, // 19: no-change branch — List<X> for newRecs
+		params.ObjectName, // 20: no-change branch — List<X> for oldRecs
+		params.ObjectName, // 21: coverTriggerDelegation — List<X> for SOQL result
+		params.ObjectName, // 22: coverTriggerDelegation — FROM X in SOQL
+		params.ObjectName, // 23: coverTriggerDelegation — Schema.getGlobalDescribe lookup in makeRec
 	)
 }
 
@@ -346,9 +412,16 @@ func generateTestClassCode(testClassName, handlerClassName string, params ApexTr
 //  11. handler class name — update-branch handler invocation
 //  12. object API name — update-branch List<X> for newRecs
 //  13. object API name — update-branch List<X> for oldRecs
-//  14. object API name — coverTriggerDelegation List<X> for SOQL result type
-//  15. object API name — coverTriggerDelegation FROM X in SOQL
-//  16. object API name — Schema.getGlobalDescribe lookup in makeRec
+//  14. object API name — no-change-branch oldRec local type
+//  15. object API name — no-change-branch oldRec new-literal
+//  16. object API name — no-change-branch newRec local type
+//  17. object API name — no-change-branch newRec new-literal
+//  18. handler class name — no-change-branch handler invocation
+//  19. object API name — no-change-branch List<X> for newRecs
+//  20. object API name — no-change-branch List<X> for oldRecs
+//  21. object API name — coverTriggerDelegation List<X> for SOQL result type
+//  22. object API name — coverTriggerDelegation FROM X in SOQL
+//  23. object API name — Schema.getGlobalDescribe lookup in makeRec
 const apexTestClassTemplate = `@isTest
 private class %s {
     @isTest
@@ -371,6 +444,21 @@ private class %s {
         %s oldRec = new %s();
         %s newRec = new %s();
         setWatchFieldValueIfPossible(newRec, '%s');
+        %s.process(new List<%s>{newRec}, new List<%s>{oldRec});
+    }
+
+    @isTest
+    static void exerciseHandlerUpdateNoChange() {
+        // Direct handler invocation where no watch field is mutated, so
+        // (rec.<watchField> != oldRec.<watchField>) is false → fieldChanged=false.
+        // For the CDC variant this is the only path that exercises the else-if
+        // branch that writes the "false" (no-change) indicator; for the Read
+        // variant the conditional body is simply skipped (still valid coverage).
+        // It runs in its own test method so the handler's static re-entrancy Set
+        // starts empty — otherwise a record processed earlier in the same
+        // transaction would already be in the Set and short-circuit the else-if.
+        %s oldRec = new %s();
+        %s newRec = new %s();
         %s.process(new List<%s>{newRec}, new List<%s>{oldRec});
     }
 

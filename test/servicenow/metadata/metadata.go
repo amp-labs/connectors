@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
 
 	"github.com/amp-labs/connectors/test/servicenow"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -21,14 +21,12 @@ func run() error {
 
 	conn := servicenow.GetServiceNowConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"now/table/incident", "now/contact", "now/consumer"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"incident", "problem", "contact", "consumer"})
 	if err != nil {
 		return err
 	}
 
-	// Print the results
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 
 	return nil
 }

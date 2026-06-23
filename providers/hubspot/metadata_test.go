@@ -414,6 +414,11 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 								ValueType:    "string",
 								ProviderType: "String",
 							},
+							"id": {
+								DisplayName:  "Campaign ID",
+								ValueType:    "string",
+								ProviderType: "String",
+							},
 						},
 					},
 					"marketing-emails": {

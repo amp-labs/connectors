@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -234,7 +235,27 @@ func (c *Connector) buildMarketingReadURL(
 		// This object does not have such query params. For consistency, it is reflected here.
 		// Sending non-existent query params is not considered an error by provider.
 	} else {
-		url.WithQueryParam("properties", strings.Join(params.Fields.List(), ","))
+		fields := params.Fields.List()
+
+		if params.ObjectName == core.ObjectMarketingCampaigns {
+			// The Campaigns API rejects "id" in the properties param ("Forbidden
+			// properties: [id]") because "id" is the record identifier returned at the
+			// top level of the response, not a campaign property. Drop it from the
+			// requested properties; the GUID still comes back at the top level and is
+			// surfaced into Fields by the FlattenNestedFields record transformer.
+			fields = slices.DeleteFunc(fields, func(f string) bool {
+				return strings.EqualFold(f, "id")
+			})
+		}
+
+		// Only set "properties" when at least one is requested. The Campaigns API
+		// rejects an empty properties param ("Forbidden properties: []"), which would
+		// otherwise happen when "id" was the only requested field and got filtered out
+		// above. Omitting it returns the record with its top-level fields (incl. id).
+		if len(fields) != 0 {
+			url.WithQueryParam("properties", strings.Join(fields, ","))
+		}
+
 		url.WithQueryParam("sort", "-updatedAt") // newest first
 	}
 

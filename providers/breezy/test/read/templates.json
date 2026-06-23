@@ -1,0 +1,7 @@
+[
+  {
+    "_id": "tpl001",
+    "name": "Welcome Email",
+    "body": "Hello [[candidate_first_name]]"
+  }
+]
