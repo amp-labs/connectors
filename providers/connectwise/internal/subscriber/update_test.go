@@ -32,14 +32,14 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 			Name: "SubscriptionStatusSuccess: Successfully update by creating one and removing one",
 			Input: testroutines.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
-					Request: Params{WebhookURL: "https://test.com/webhook"},
+					Request: Request{WebhookURL: "https://test.com/webhook"},
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 						"project/tickets": {Events: eventTypesCUD},
 					},
 				},
 				PreviousResult: &common.SubscriptionResult{
 					Result: Result{
-						ObjectWebhooks: map[common.ObjectName]SystemCallback{
+						ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
 							"contacts": {
 								ID:         26559,
 								WebhookURL: "https://test.com/webhook?recordId=",
@@ -73,7 +73,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
 				Result: Result{
-					ObjectWebhooks: map[common.ObjectName]SystemCallback{
+					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
 						"project/tickets": {
 							ID:         26552,
 							WebhookURL: "https://test.com/webhook?recordId=",
@@ -91,7 +91,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 			Name: "SubscriptionStatusFailed: Create fails (with rollback) and delete succeeds",
 			Input: testroutines.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
-					Request: Params{WebhookURL: "https://test.com/webhook"},
+					Request: Request{WebhookURL: "https://test.com/webhook"},
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 						"contacts":        {Events: eventTypesCUD},
 						"project/tickets": {Events: eventTypesCUD},
@@ -99,7 +99,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 				},
 				PreviousResult: &common.SubscriptionResult{
 					Result: Result{
-						ObjectWebhooks: map[common.ObjectName]SystemCallback{
+						ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
 							"contacts": {
 								ID:         26559,
 								WebhookURL: "https://test.com/webhook?recordId=",
@@ -127,7 +127,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
 				Result: Result{
-					ObjectWebhooks: map[common.ObjectName]SystemCallback{
+					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
 						"contacts": {
 							ID:         26559,
 							WebhookURL: "https://test.com/webhook?recordId=",
@@ -146,7 +146,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 			Name: "SubscriptionStatusFailedToRollback: Create fails and rollback fails",
 			Input: testroutines.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
-					Request: Params{WebhookURL: "https://test.com/webhook"},
+					Request: Request{WebhookURL: "https://test.com/webhook"},
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 						"contacts":        {Events: eventTypesCUD},
 						"project/tickets": {Events: eventTypesCUD},
@@ -185,7 +185,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
 				Result: Result{
-					ObjectWebhooks: map[common.ObjectName]SystemCallback{
+					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
 						"contacts": { // couldn't rollback creation.
 							ID:         26559,
 							WebhookURL: "https://test.com/webhook?recordId=",
