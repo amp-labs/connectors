@@ -1,4 +1,4 @@
-package connectWise
+package connectwise
 
 import (
 	"context"

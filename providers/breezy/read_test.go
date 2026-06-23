@@ -302,8 +302,8 @@ func TestRead(t *testing.T) { //nolint:funlen
 						"name": "Test 1",
 					},
 					Raw: map[string]any{
-						"_id":  "q001",
-						"name": "Test 1",
+						"_id":      "q001",
+						"name":     "Test 1",
 						"sections": []any{},
 						"message_template": map[string]any{
 							"body": "Hi [[candidate_first_name]]",

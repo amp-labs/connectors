@@ -5,16 +5,16 @@ import (
 	"log"
 	"os"
 
-	"github.com/amp-labs/connectors/test/connectWise"
+	connTest "github.com/amp-labs/connectors/test/connectwise"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
 	ctx := context.Background()
 
-	conn := connectWise.GetConnectWiseConnector(ctx)
+	conn := connTest.GetConnectWiseConnector(ctx)
 
-	metadata, err := conn.ListObjectMetadata(ctx, []string{"contacts"})
+	metadata, err := conn.ListObjectMetadata(ctx, []string{"companies"})
 	if err != nil {
 		log.Fatal(err)
 	}
