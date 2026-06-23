@@ -1,0 +1,12 @@
+{
+  "code": "InvalidObject",
+  "message": "callbackEntry object is invalid",
+  "errors": [
+    {
+      "code": "ObjectExists",
+      "message": "A matching callback entry already exists",
+      "resource": "callbackEntry",
+      "field": "objectId"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": 0,
+  "inactiveFlag": false,
+  "url": "https://test.com/webhook?recordId=",
+  "objectId": 0,
+  "type": "ticket",
+  "level": "owner",
+  "payloadVersion": "3.0.0",
+  "memberId": 0,
+  "isSelfSuppressedFlag": false,
+  "connectWiseID": ""
+}

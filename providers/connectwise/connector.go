@@ -13,10 +13,19 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/batch"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/metadata"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/subscriber"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/webhook"
 )
 
 const apiVersion = "v4_6_release/apis/3.0"
+
+// Type Exports.
+type (
+	SubscribeRequest     = subscriber.Request
+	SubscribeResponse    = subscriber.Result
+	SubscriptionResource = subscriber.SubscriptionResource
+	subscribeStrategy    = subscriber.Strategy
+)
 
 type Connector struct {
 	*components.Connector
@@ -29,6 +38,7 @@ type Connector struct {
 	components.Deleter
 	// TODO must use webhook.Verifier instead of webhook.NoopVerifier
 	*webhook.NoopVerifier
+	*subscribeStrategy
 
 	batchAdapter *batch.Adapter // used for connectors.BatchRecordReaderConnector capabilities.
 
@@ -91,6 +101,7 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 
 	connector.batchAdapter = batch.NewAdapter(connector.JSONHTTPClient(), connector.ProviderInfo(), clientID)
 	connector.NoopVerifier = webhook.NewVerifier(connector.JSONHTTPClient(), connector.ProviderInfo(), clientID)
+	connector.subscribeStrategy = subscriber.NewStrategy(connector.JSONHTTPClient(), connector.ProviderInfo(), clientID)
 
 	return connector, nil
 }

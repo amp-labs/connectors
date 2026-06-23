@@ -1,0 +1,17 @@
+{
+  "id": 26552,
+  "url": "https://test.com/webhook?recordId=",
+  "objectId": 1,
+  "type": "ticket",
+  "level": "owner",
+  "memberId": 243,
+  "payloadVersion": "3.0.0",
+  "inactiveFlag": false,
+  "isSoapCallbackFlag": false,
+  "isSelfSuppressedFlag": false,
+  "connectWiseID": "5a6f7d74-a45f-f111-aa6d-d25dfe3c7792",
+  "_info": {
+    "lastUpdated": "2026-06-03T23:32:20Z",
+    "updatedBy": "Cobalt"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "code": "InvalidObject",
+  "message": "callbackEntry object is invalid",
+  "errors": [
+    {
+      "code": "InvalidField",
+      "message": "Invalid URL",
+      "resource": "callbackEntry",
+      "field": "url"
+    },
+    {
+      "code": "InvalidObject",
+      "message": "Unrecognized level for type, see documentation for supported levels for each type",
+      "resource": "callbackEntry",
+      "field": "level"
+    }
+  ]
+}
