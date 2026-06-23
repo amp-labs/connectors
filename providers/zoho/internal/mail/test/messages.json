@@ -1,0 +1,18 @@
+{
+    "status": {
+        "code": 200,
+        "description": "success"
+    },
+    "data": [
+        {
+            "messageId": "1709876543210000001",
+            "subject": "Welcome to Zoho Mail",
+            "fromAddress": "alice@zylker.com",
+            "toAddress": "john@zylker.com",
+            "summary": "Thanks for signing up",
+            "folderId": "2554907000000008013",
+            "receivedTime": "1709876543210",
+            "hasAttachment": "0"
+        }
+    ]
+}

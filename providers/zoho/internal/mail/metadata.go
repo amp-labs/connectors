@@ -75,29 +75,29 @@ func (a *Adapter) retrieveSampleResponse(ctx context.Context, objectName string)
 	return parseMetadataResponse(objectName, obj, response)
 }
 
+// buildObjectURL builds the metadata-sampling URL: the object's base URL plus a
+// single-record limit on paginated endpoints (so we sample one record cheaply).
 func (a *Adapter) buildObjectURL(obj objectDescriptor) (*urlbuilder.URL, error) {
-	var (
-		url *urlbuilder.URL
-		err error
-	)
-	// Account-scoped endpoints require the Zoho Mail account id.
-	if obj.accountScoped {
-		url, err = a.getAccountScopedURL(obj.path)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		url, err = a.getAPIURL(obj.path)
-		if err != nil {
-			return nil, err
-		}
+	url, err := a.objectURL(obj)
+	if err != nil {
+		return nil, err
 	}
 
-	if obj.supportsPagination {
+	if obj.pagination != nil {
 		url.WithQueryParam("limit", "1")
 	}
 
 	return url, nil
+}
+
+// objectURL resolves an object's base listing URL, accounting for account-scoped
+// endpoints that need the post-auth account id in their path.
+func (a *Adapter) objectURL(obj objectDescriptor) (*urlbuilder.URL, error) {
+	if obj.accountScoped {
+		return a.getAccountScopedURL(obj.path)
+	}
+
+	return a.getAPIURL(obj.path)
 }
 
 func parseMetadataResponse(objectName string, obj objectDescriptor, resp *common.JSONHTTPResponse,

@@ -18,6 +18,8 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return c.read(ctx, config, nil)
 	case providers.ModuleZohoServiceDeskPlus:
 		return c.servicedeskplusAdapter.Read(ctx, config)
+	case providers.ModuleZohoMail:
+		return c.mailAdapter.Read(ctx, config)
 	default:
 		headers := constructHeaders(config)
 
