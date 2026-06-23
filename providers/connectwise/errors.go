@@ -2,6 +2,7 @@ package connectwise
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/common/interpreter"
 )
@@ -19,8 +20,18 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 // nolint:tagliatelle
 type ResponseError struct {
 	Message string `json:"message"`
+	Errors  []struct {
+		Message string `json:"message"`
+	} `json:"errors"`
 }
 
 func (r ResponseError) CombineErr(base error) error {
-	return fmt.Errorf("%w: %v", base, r.Message)
+	messages := make([]string, 1+len(r.Errors))
+
+	messages[0] = r.Message
+	for index, object := range r.Errors {
+		messages[index+1] = object.Message
+	}
+
+	return fmt.Errorf("%w: %v", base, strings.Join(messages, ": "))
 }
