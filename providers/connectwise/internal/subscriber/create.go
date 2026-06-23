@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/parallelfetch"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/webhook"
 )
 
 // maxConcurrency is the maximum number of goroutines that will run
@@ -78,7 +79,7 @@ func getStateFromCreateResponse(
 
 	for _, subscription := range subscriptions.Records {
 		// Map successful subscription to its events.
-		objectName := webhookObjectTypeToObjectName[subscription.ObjectType]
+		objectName := webhook.ObjectTypeToObjectName[subscription.ObjectType]
 		result[objectName] = common.ObjectEvents{
 			Events: []common.SubscriptionEventType{
 				common.SubscriptionEventTypeCreate,
@@ -166,7 +167,7 @@ func (s Strategy) newTaskCreateSubscription(objectName common.ObjectName,
 	url string,
 	request Request,
 ) (parallelfetch.Task[common.ObjectName, SubscriptionResource], error) {
-	objectType, found := objectNameToWebhookObjectType[objectName]
+	objectType, found := webhook.ObjectNameToObjectType[objectName]
 	if !found {
 		return nil, fmt.Errorf("%w: cannot subscribe to '%v' object", common.ErrObjectNotSupported, objectName)
 	}
@@ -223,47 +224,4 @@ type SubscriptionResource struct {
 	// IsSelfSuppressedFlag indicates whether the callback creator receives messages.
 	IsSelfSuppressedFlag bool   `json:"isSelfSuppressedFlag"`
 	ConnectWiseID        string `json:"connectWiseID"`
-}
-
-// objectNameToWebhookObjectType maps ConnectWise connector object names
-// to their corresponding callback/webhook object type names.
-var objectNameToWebhookObjectType = map[common.ObjectName]string{ // nolint:gochecknoglobals
-	"activities":      "activity",
-	"agreements":      "agreement",
-	"catalog":         "productcatalog",
-	"companies":       "company",
-	"configurations":  "configuration",
-	"contacts":        "contact",
-	"expense/entries": "expense",
-	"invoices":        "invoice",
-	// "service/tickets" also maps to Ticket.
-	// To avoid complex mapping only one ObjectName will be accepted by the Subscribe action.
-	"project/tickets":     "ticket",
-	"projects":            "project",
-	"purchaseorders":      "purchaseorder",
-	"sales/opportunities": "opportunity",
-	"schedule/entries":    "schedule",
-	// Not supported:
-	// Site:	"/company/companies/{parentId}/sites"
-	"system/members": "member",
-	"time/entries":   "time",
-}
-
-// webhookObjectTypeToObjectName is the reverse mapping of objectNameToWebhookObjectType.
-var webhookObjectTypeToObjectName = map[string]common.ObjectName{ // nolint:gochecknoglobals
-	"activity":       "activities",
-	"agreement":      "agreements",
-	"productcatalog": "catalog",
-	"company":        "companies",
-	"configuration":  "configurations",
-	"contact":        "contacts",
-	"expense":        "expense/entries",
-	"invoice":        "invoices",
-	"ticket":         "project/tickets",
-	"project":        "projects",
-	"purchaseorder":  "purchaseorders",
-	"opportunity":    "sales/opportunities",
-	"schedule":       "schedule/entries",
-	"member":         "system/members",
-	"time":           "time/entries",
 }

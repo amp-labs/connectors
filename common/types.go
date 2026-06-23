@@ -155,6 +155,11 @@ var (
 
 	// ErrProxyNotApplicable indicates that a proxy cannot be used in the given context.
 	ErrProxyNotApplicable = errors.New("proxy is not applicable in this context")
+
+	// ErrMissingField indicates that a required field is missing from a response body.
+	// This error is returned during response body inspection when attempting to extract
+	// important fields that are expected to be present but were not found.
+	ErrMissingField = errors.New("missing field")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.

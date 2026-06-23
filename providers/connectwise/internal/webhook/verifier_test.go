@@ -4,7 +4,7 @@ package webhook
 //	t.Parallel()
 //
 //	const signingKey = "test-signing-key"
-//	eventMessage := testutils.DataFromFile(t, "event.json")
+//	eventMessage := testutils.DataFromFile(t, "contact-create.json")
 //
 //	tests := []testroutines.TestCaseWebhookMessageVerification{
 //		{

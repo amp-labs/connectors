@@ -1,0 +1,16 @@
+{
+  "Action": "added",
+  "CallbackObjectRecId": 26604,
+  "CompanyId": "Cobalt",
+  "Entity": "{\"id\":57960,\"firstName\":\"Lillie Keebler\",\"relationship\":{\"_info\":{\"relationship_href\":\"https://sandbox-na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/relationships/\"}},\"inactiveFlag\":false,\"marriedFlag\":false,\"childrenFlag\":false,\"portalSecurityLevel\":1,\"disablePortalLoginFlag\":true,\"unsubscribeFlag\":false,\"mobileGuid\":\"2ddab73b-21b8-4e36-a4e3-efccf7093415\",\"defaultBillingFlag\":false,\"defaultFlag\":false,\"_info\":{\"lastUpdated\":\"2026-06-09T21:59:47Z\",\"updatedBy\":\"Aurasell\",\"communications_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57960/communications\",\"notes_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57960/notes\",\"tracks_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57960/tracks\",\"portalSecurity_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57960/portalSecurity\",\"activities_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/sales/activities?conditions=contact/id=57960\",\"documents_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/system/documents?recordType=Contact&recordId=57960\",\"configurations_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/configurations?conditions=contact/id=57960\",\"tickets_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/service/tickets?conditions=contact/id=57960\",\"opportunities_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/sales/opportunities?conditions=contact/id=57960\",\"projects_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/project/projects?conditions=contact/id=57960\",\"image_href\":\"https://na.myconnectwise.net/v2025_1//apis/3.0/company/contacts/57960/image?lastModified=2026-06-09T21:59:47Z\"}}",
+  "FromUrl": "sandbox-na.myconnectwise.net",
+  "ID": 57960,
+  "MemberId": "Aurasell",
+  "MessageId": "fbed4425-b1f3-425c-8bca-bb405891fc8e",
+  "Metadata": {
+    "key_url": "{{testServerURL}}/v2025_1//system/callbackkey/index.rails?companyName=myCompany&id=89966c04-9889-46ad-8d5e-421103aca922"
+  },
+  "PartnerId": "61ddc2817bcddc0001c74208",
+  "ProductInstanceId": "639c96cab2eb560001dd1324",
+  "Type": "contact"
+}

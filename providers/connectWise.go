@@ -31,7 +31,7 @@ func init() {
 			Write:     false,
 		},
 		SubscribeRequirements: &SubscribeRequirements{
-			SubscribeByAPI: new(false),
+			SubscribeByAPI: new(true),
 		},
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{{
