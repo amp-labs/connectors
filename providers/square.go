@@ -14,6 +14,9 @@ func init() {
 		Oauth2Opts: &Oauth2Opts{
 			GrantType: AuthorizationCode,
 			AuthURL:   "https://connect.squareup.com/oauth2/authorize",
+			// Square requires the `session` query param to be set to `true`
+			// to help ensure that sellers with multiple Square accounts use the correct account to authorize.
+			/// Ref: https://developer.squareup.com/docs/oauth-api/create-urls-for-square-authorization
 			AuthURLParams: map[string]string{
 				"session": "true",
 			},
