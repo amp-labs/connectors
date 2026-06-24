@@ -385,6 +385,91 @@ func TestCalendarReadEventsForAllCalendars(t *testing.T) { //nolint:funlen
 	}
 }
 
+func TestCalendarReadEventsDatabookOpts(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	responseCalendarList := testutils.DataFromFile(t, "calendar/read/series-masters/calendarList.json")
+	responseEvents := testutils.DataFromFile(t, "calendar/read/series-masters/events.json")
+	responseMaster := testutils.DataFromFile(t, "calendar/read/series-masters/master.json")
+
+	timeMin := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	timeMax := time.Date(2026, 4, 1, 0, 0, 0, 0, time.UTC)
+
+	tests := []testroutines.Read{
+		{
+			Name: "singleEvents opts set events.list params, dedupe by id, and fetch series masters",
+			Input: common.ReadParams{
+				ObjectName: "events",
+				Fields:     connectors.Fields("id", "summary"),
+				Opts: ReadParamsOpts{
+					ReadEventsForAllCalendars: true,
+					SingleEvents:              true,
+					ShowDeleted:               true,
+					FetchSeriesMasters:        true,
+					MaxResults:                250,
+					TimeMin:                   timeMin,
+					TimeMax:                   timeMax,
+				},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If:   mockcond.Path("/calendar/v3/users/me/calendarList"),
+					Then: mockserver.Response(http.StatusOK, responseCalendarList),
+				}, {
+					// events.get for the recurring series master (exact path, evaluated before the list case).
+					If:   mockcond.Path("/calendar/v3/calendars/integration@test.com/events/master-1"),
+					Then: mockserver.Response(http.StatusOK, responseMaster),
+				}, {
+					// events.list carries the Databook-style query params.
+					If: mockcond.And{
+						mockcond.Path("/calendar/v3/calendars/integration@test.com/events"),
+						mockcond.QueryParam("singleEvents", "true"),
+						mockcond.QueryParam("showDeleted", "true"),
+						mockcond.QueryParam("maxResults", "250"),
+						mockcond.QueryParam("timeMin", "2026-01-01T00:00:00.000Z"),
+						mockcond.QueryParam("timeMax", "2026-04-01T00:00:00.000Z"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseEvents),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				// Two instances share one iCalUID but have distinct ids, so dedupe-by-id keeps both;
+				// the standalone event and the separately fetched master are also kept (4 rows).
+				Rows: 4,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"id": "master-1_20260101T090000Z", "summary": "Standup"},
+					Raw:    map[string]any{"recurringEventId": "master-1"},
+				}, {
+					Fields: map[string]any{"id": "master-1_20260102T090000Z", "summary": "Standup"},
+					Raw:    map[string]any{"recurringEventId": "master-1"},
+				}, {
+					Fields: map[string]any{"id": "solo-1", "summary": "1:1"},
+					Raw:    map[string]any{"iCalUID": "solo-1@google.com"},
+				}, {
+					Fields: map[string]any{"id": "master-1", "summary": "Standup"},
+					Raw:    map[string]any{"recurrence": []any{"RRULE:FREQ=DAILY"}},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (connectors.ReadConnector, error) {
+				return constructTestCalendarConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
 func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 

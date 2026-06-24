@@ -1,0 +1,26 @@
+{
+  "kind": "calendar#events",
+  "summary": "integration@test.com",
+  "items": [
+    {
+      "kind": "calendar#event",
+      "id": "master-1_20260101T090000Z",
+      "iCalUID": "series-1@google.com",
+      "recurringEventId": "master-1",
+      "summary": "Standup"
+    },
+    {
+      "kind": "calendar#event",
+      "id": "master-1_20260102T090000Z",
+      "iCalUID": "series-1@google.com",
+      "recurringEventId": "master-1",
+      "summary": "Standup"
+    },
+    {
+      "kind": "calendar#event",
+      "id": "solo-1",
+      "iCalUID": "solo-1@google.com",
+      "summary": "1:1"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "calendar#event",
+  "id": "master-1",
+  "iCalUID": "series-1@google.com",
+  "summary": "Standup",
+  "recurrence": [
+    "RRULE:FREQ=DAILY"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "calendar#calendarList",
+  "items": [
+    {
+      "kind": "calendar#calendarListEntry",
+      "id": "integration@test.com",
+      "summary": "integration@test.com",
+      "primary": true,
+      "accessRole": "owner"
+    }
+  ]
+}
