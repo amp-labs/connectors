@@ -24,8 +24,13 @@ func init() {
 			},
 			Proxy:     true,
 			Read:      false,
-			Subscribe: false,
+			Subscribe: true,
 			Write:     false,
+		},
+		SubscribeRequirements: &SubscribeRequirements{
+			// AccuLynx supports creating webhook subscriptions via API.
+			// https://apidocs.acculynx.com/reference/postsubscription
+			SubscribeByAPI: new(true),
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
