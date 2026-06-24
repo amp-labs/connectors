@@ -528,6 +528,11 @@ func (c *Connector) UpdateSubscription(
 		}
 	}
 
+	// executeUpdateSubscription always returns a non-nil progress (created upfront)
+	// and a non-nil result (built via buildPartialUpdateResult on every error path),
+	// so using them in the error branch below cannot nil-panic.
+	// this suppresses the false positive.
+	// nosemgrep: trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable
 	result, progress, execErr := c.executeUpdateSubscription(ctx, params, previousResult, prevState, req)
 	if execErr != nil {
 		rollbackErr := c.rollbackUpdateSubscription(ctx, progress)
