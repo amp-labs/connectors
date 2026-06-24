@@ -38,7 +38,7 @@ func init() {
 				Name:         "region",
 				DisplayName:  "Region",
 				DefaultValue: "na",
-				DocsURL:      "https://developer.connectwise.com/Products/ConnectWise_PSA/Developer_Guide",
+				Prompt:       "The subdomain of your ConnectWise site (for example, 'na' for 'https://na.myconnectwise.net')",
 			}, {
 				Name:        "clientId",
 				DisplayName: "Client ID",

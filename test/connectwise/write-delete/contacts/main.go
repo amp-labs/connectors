@@ -19,7 +19,9 @@ type payload struct {
 	LastName  string `json:"lastName"`
 }
 
-type patchPayload []patchOperation
+type patchPayload struct {
+	Patch []patchOperation `json:"patch"`
+}
 
 type patchOperation struct {
 	Op    string `json:"op"`
@@ -78,7 +80,7 @@ func main() {
 			FirstName: firstName,
 			LastName:  lastName,
 		},
-		patchPayload{{
+		patchPayload{Patch: []patchOperation{{
 			// Not clear why this is needed. This was discovered by trial and error.
 			Op:    "replace",
 			Path:  "/customFields/1/value",
@@ -91,7 +93,7 @@ func main() {
 			Op:    "replace",
 			Path:  "/lastName",
 			Value: updatedLastName,
-		}},
+		}}},
 		testscenario.CRUDTestSuite{
 			ReadFields: datautils.NewSet("id", "firstName", "lastName"),
 			SearchBy: testscenario.Property{
