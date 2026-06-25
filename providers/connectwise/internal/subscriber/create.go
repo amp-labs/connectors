@@ -31,7 +31,7 @@ func (s Strategy) Subscribe(
 }
 
 func (s Strategy) createSubscription(ctx context.Context,
-	request Request,
+	request *Request,
 	subscriptionEvents datautils.Map[common.ObjectName, common.ObjectEvents],
 ) (*common.SubscriptionResult, error) {
 	url, err := s.getSubscriptionURL()
@@ -62,7 +62,7 @@ func (s Strategy) createSubscription(ctx context.Context,
 	}
 
 	return &common.SubscriptionResult{
-		Result: Result{
+		Result: &Result{
 			ObjectWebhooks: createResult.Records,
 		},
 		ObjectEvents: state,
@@ -125,7 +125,7 @@ func (s Strategy) rollbackSubscriptionCreation(
 		}
 
 		return &common.SubscriptionResult{
-			Result: Result{
+			Result: &Result{
 				ObjectWebhooks: make(map[common.ObjectName]SubscriptionResource),
 			},
 			ObjectEvents: events,
@@ -155,7 +155,7 @@ func (s Strategy) rollbackSubscriptionCreation(
 	}
 
 	return &common.SubscriptionResult{
-		Result: Result{
+		Result: &Result{
 			ObjectWebhooks: remainingWebhooks,
 		},
 		ObjectEvents: state,
@@ -165,7 +165,7 @@ func (s Strategy) rollbackSubscriptionCreation(
 
 func (s Strategy) newTaskCreateSubscription(objectName common.ObjectName,
 	url string,
-	request Request,
+	request *Request,
 ) (parallelfetch.Task[common.ObjectName, SubscriptionResource], error) {
 	objectType, found := webhook.ObjectNameToObjectType[objectName]
 	if !found {

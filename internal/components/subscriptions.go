@@ -7,7 +7,12 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var ErrInvalidSubscriptionRequestType = errors.New("request type of common.SubscribeParams is invalid")
+var (
+	ErrInvalidSubscriptionRequestType = errors.New("request type of common.SubscribeParams is invalid")
+	ErrInvalidSubscriptionResultType  = errors.New("result type of common.SubscriptionResult is invalid")
+	ErrMissingSubscriptionRequest     = errors.New("common.SubscribeParams.Request is missing")
+	ErrMissingSubscriptionResult      = errors.New("common.SubscriptionResult.Result is missing")
+)
 
 // SubscriptionInputOutput is a generic helper that provides out-of-the-box,
 // type-safe implementations of the EmptySubscriptionParams and
@@ -40,16 +45,14 @@ func (SubscriptionInputOutput[I, O]) EmptySubscriptionResult() *common.Subscript
 // It provides a safe way to recover the typed request from the
 // non-generic SubscribeParams, returning an error if the underlying
 // type does not match.
-func (s SubscriptionInputOutput[I, O]) TypedSubscriptionRequest(params common.SubscribeParams) (I, error) {
-	var input I
+func (s SubscriptionInputOutput[I, O]) TypedSubscriptionRequest(params common.SubscribeParams) (*I, error) {
+	if params.Request == nil {
+		return nil, ErrMissingSubscriptionRequest
+	}
 
-	if params.Request != nil {
-		var ok bool
-
-		input, ok = params.Request.(I)
-		if !ok {
-			return input, fmt.Errorf("%w: expected %T, got %T", ErrInvalidSubscriptionRequestType, input, params.Request)
-		}
+	input, ok := params.Request.(*I)
+	if !ok {
+		return nil, fmt.Errorf("%w: expected %T, got %T", ErrInvalidSubscriptionRequestType, input, params.Request)
 	}
 
 	return input, nil
@@ -60,16 +63,14 @@ func (s SubscriptionInputOutput[I, O]) TypedSubscriptionRequest(params common.Su
 // It provides a safe way to recover the typed result from the
 // non-generic SubscriptionResult, returning an error if the underlying
 // type does not match.
-func (s SubscriptionInputOutput[I, O]) TypedSubscriptionResult(subscription common.SubscriptionResult) (O, error) {
-	var output O
+func (s SubscriptionInputOutput[I, O]) TypedSubscriptionResult(subscription common.SubscriptionResult) (*O, error) {
+	if subscription.Result == nil {
+		return nil, ErrMissingSubscriptionResult
+	}
 
-	if subscription.Result != nil {
-		var ok bool
-
-		output, ok = subscription.Result.(O)
-		if !ok {
-			return output, fmt.Errorf("%w: expected %T, got %T", ErrInvalidSubscriptionRequestType, output, subscription.Result)
-		}
+	output, ok := subscription.Result.(*O)
+	if !ok {
+		return nil, fmt.Errorf("%w: expected %T, got %T", ErrInvalidSubscriptionResultType, output, subscription.Result)
 	}
 
 	return output, nil

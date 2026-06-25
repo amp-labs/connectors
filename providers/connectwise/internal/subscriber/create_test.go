@@ -41,7 +41,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 					"contacts":        {Events: eventTypesCUD},
 					"project/tickets": {Events: eventTypesCUD},
 				},
-				Request: Request{
+				Request: &Request{
 					WebhookURL: "https://test.com/webhook",
 				},
 			},
@@ -65,7 +65,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
-				Result: Result{
+				Result: &Result{
 					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
 						"project/tickets": {
 							ID:         26552,
@@ -104,7 +104,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 					"contacts":        {Events: eventTypesCUD},
 					"project/tickets": {Events: eventTypesCUD},
 				},
-				Request: Request{
+				Request: &Request{
 					WebhookURL: "https://test.com/webhook",
 				},
 			},
@@ -134,7 +134,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
-				Result: Result{
+				Result: &Result{
 					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
 						// Contacts webhook still exists.
 						"contacts": {
@@ -164,7 +164,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 					"contacts":        {Events: eventTypesCUD},
 					"project/tickets": {Events: eventTypesCUD},
 				},
-				Request: Request{
+				Request: &Request{
 					WebhookURL: "https://test.com/webhook",
 				},
 			},
@@ -194,7 +194,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
-				Result: Result{},
+				Result: &Result{},
 				ObjectEvents: map[common.ObjectName]common.ObjectEvents{
 					"contacts":        {}, // Contacts removed successfully.
 					"project/tickets": {},
@@ -220,12 +220,12 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 func compareResult(expectedResult, actualResult any) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
 
-	expectedOutput, ok := expectedResult.(Result)
+	expectedOutput, ok := expectedResult.(*Result)
 	if !ok {
 		result.AddDiff("expectedResult is not of type Result")
 	}
 
-	actualOutput, ok := actualResult.(Result)
+	actualOutput, ok := actualResult.(*Result)
 	if !ok {
 		result.AddDiff("actualResult is not of type Result")
 	}

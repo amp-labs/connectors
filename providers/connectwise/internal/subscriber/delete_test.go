@@ -17,7 +17,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name: "Failer to delete any callback",
 			Input: common.SubscriptionResult{
-				Result: Result{
+				Result: &Result{
 					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
 						"contacts":        {ID: 0},
 						"project/tickets": {ID: 0},
@@ -35,7 +35,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		{
 			Name: "Successfully remove subscriptions to contacts and tickets.",
 			Input: common.SubscriptionResult{
-				Result: Result{
+				Result: &Result{
 					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
 						"contacts":        {ID: 26571},
 						"project/tickets": {ID: 26572},
