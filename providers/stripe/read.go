@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
@@ -26,6 +27,9 @@ const (
 	// in ReadResult.Data[*].Fields.
 	// This field is populated when ReadParamsOpts.ReadForAllConnectedAccounts is set to true.
 	fieldConnectedAccountID = "AMPERSAND-connectedAccountId"
+
+	// CheckoutSession is an object that supports expanding nested list of line items.
+	objectNameCheckoutSession = "checkout/sessions"
 )
 
 // ReadParamsOpts defines optional parameters for the Read operation.
@@ -108,7 +112,10 @@ func (c *Connector) readFirstPage(ctx context.Context, params common.ReadParams)
 // It applies:
 //   - Pagination: adds "limit" query parameter
 //   - Incremental reading: adds "created[gte]" for objects supporting incremental reads
-//   - Object expansion: adds "expand[]" for nested objects (AssociatedObjects)
+//   - Object expansion: adds "expand[]" for LineItems fields of format:
+//     => "$['line_items']['currency']"
+//     => "$['line_items']['description']"
+//     => "$['line_items']['...']"
 //
 // See [Stripe expand documentation](https://docs.stripe.com/expand#how-it-works).
 func (c *Connector) buildFirstPageReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
@@ -123,14 +130,18 @@ func (c *Connector) buildFirstPageReadURL(params common.ReadParams) (*urlbuilder
 		url.WithQueryParam("created[gte]", strconv.FormatInt(params.Since.Unix(), 10))
 	}
 
-	// Expand nested objects by adding "data.<field>" to expand[] query parameter
-	if len(params.AssociatedObjects) != 0 {
-		expandTargets := make([]string, len(params.AssociatedObjects))
-		for index, associate := range params.AssociatedObjects {
-			expandTargets[index] = "data." + associate
-		}
+	expandTargets := make(datautils.Set[string])
 
-		url.WithQueryParamList("expand[]", expandTargets)
+	for field := range params.Fields {
+		// Only expanding LineItems is supported at the moment.
+		if strings.HasPrefix(field, "$['line_items']") || field == "line_items" {
+			expandTargets.AddOne("data.line_items")
+		}
+	}
+
+	if len(expandTargets) != 0 {
+		// Expand nested objects by adding "data.<field>" to expand[] query parameter
+		url.WithQueryParamList("expand[]", expandTargets.List())
 	}
 
 	return url, nil
@@ -209,10 +220,18 @@ func (c *Connector) readRecords(ctx context.Context,
 
 	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, objectName)
 
+	marshaller := readhelper.MakeMarshaledDataFuncWithId(flattenCustomFields, readhelper.IdFieldQuery{Field: "id"})
+	if objectName == objectNameCheckoutSession {
+		marshaller = readhelper.MakeMarshaledSelectedDataFunc(
+			checkoutSessionsEmbedLineItems,
+			jsonquery.Convertor.ObjectToMap, // raw already has line-items
+		)
+	}
+
 	return common.ParseResult(res,
 		makeGetRecords(responseFieldName),
 		makeNextRecordsURL(url),
-		readhelper.MakeMarshaledDataFuncWithId(flattenCustomFields, readhelper.IdFieldQuery{Field: "id"}),
+		marshaller,
 		selectedFields,
 	)
 }
@@ -328,3 +347,19 @@ var incrementalObjects = datautils.NewSet( // nolint:gochecknoglobals
 	"transfers",
 	"treasury/financial_accounts",
 )
+
+func checkoutSessionsEmbedLineItems(node *ajson.Node, fields []string) (map[string]any, string, error) {
+	root, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, "", err
+	}
+
+	identifier, err := jsonquery.New(node).StringRequired("id")
+	if err != nil {
+		return nil, "", err
+	}
+
+	selected := readhelper.SelectFields(root, datautils.NewSetFromList(fields))
+
+	return selected, identifier, nil
+}

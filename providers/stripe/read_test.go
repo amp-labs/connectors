@@ -24,7 +24,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCustomersFirstPage := testutils.DataFromFile(t, "read/customers/1-first-page.json")
 	responseCustomersLastPage := testutils.DataFromFile(t, "read/customers/2-last-page.json")
 	responseCustomersWithMetadata := testutils.DataFromFile(t, "read/customers/with-metadata.json")
-	responsePaymentsExpandedCustomer := testutils.DataFromFile(t, "read/payment_intents/expand_customer.json")
+	responseCheckoutSessionsWithItems := testutils.DataFromFile(t, "read/checkout-sessions/with-line-items.json")
 	responseInvoices := testutils.DataFromFile(t, "read/invoices/incremental.json")
 
 	tests := []testroutines.Read{
@@ -169,35 +169,42 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		{
 			Name: "Passing associated objects will trigger expandable query of nested objects",
 			Input: common.ReadParams{
-				ObjectName:        "payment_intents",
-				Fields:            connectors.Fields("capture_method"),
-				AssociatedObjects: []string{"application", "customer"},
+				ObjectName: "checkout/sessions",
+				Fields: connectors.Fields("object",
+					"$['line_items']['data'][*]['currency']",
+					"$['line_items']['data'][*]['description']",
+					"$['line_items']['url']"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
-					mockcond.Path("/v1/payment_intents"),
-					mockcond.QueryParam("expand[]", "data.customer"),
-					mockcond.QueryParam("expand[]", "data.application"),
+					mockcond.Path("/v1/checkout/sessions"),
+					mockcond.QueryParam("expand[]", "data.line_items"),
 				},
-				Then: mockserver.Response(http.StatusOK, responsePaymentsExpandedCustomer),
+				Then: mockserver.Response(http.StatusOK, responseCheckoutSessionsWithItems),
 			}.Server(),
 			Comparator: testroutines.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"capture_method": "automatic",
+						"object": "checkout.session",
+						"line_items": map[string]any{
+							"data": []any{
+								map[string]any{"currency": "eur", "description": "Gold Plan"},
+								map[string]any{"currency": "usd", "description": "Silver Plan"},
+							},
+							"url": "/v1/checkout/sessions/cs_test_b1XarwEFOA2WOPc3qNVi5AyT3WrKqikAItyIMekqKzAQtjROKaunDafsls/line_items", // nolint:lll
+						},
 					},
 					Raw: map[string]any{
-						"id":                 "pi_3QjoLeES6gLOjP910d0QwpzI",
-						"object":             "payment_intent",
-						"setup_future_usage": "off_session",
+						"id":                "cs_test_b1XarwEFOA2WOPc3qNVi5AyT3WrKqikAItyIMekqKzAQtjROKaunDafsls",
+						"customer_creation": "always",
 					},
-					Id: "pi_3QjoLeES6gLOjP910d0QwpzI",
+					Id: "cs_test_b1XarwEFOA2WOPc3qNVi5AyT3WrKqikAItyIMekqKzAQtjROKaunDafsls",
 				}},
-				NextPage: testroutines.URLTestServer + "/v1/payment_intents?expand%5B%5D=data.application&expand%5B%5D=data.customer&limit=100&starting_after=pi_3QjoLeES6gLOjP910d0QwpzI", // nolint:lll
-				Done:     false,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},

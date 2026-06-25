@@ -1378,6 +1378,81 @@
           "path": "checkout/sessions",
           "responseKey": "data",
           "fields": {
+            "$['line_items']['data'][*]['amount_discount']": {
+              "displayName": "Amount Discount of Line Item",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "$['line_items']['data'][*]['amount_subtotal']": {
+              "displayName": "Amount Subtotal of Line Item",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "$['line_items']['data'][*]['amount_tax']": {
+              "displayName": "Amount Tax of Line Item",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "$['line_items']['data'][*]['amount_total']": {
+              "displayName": "Amount Total of Line Item",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "$['line_items']['data'][*]['currency']": {
+              "displayName": "Currency of Line Item",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['line_items']['data'][*]['description']": {
+              "displayName": "Description of Line Item",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['line_items']['data'][*]['discounts']": {
+              "displayName": "Discounts of Line Item",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "$['line_items']['data'][*]['id']": {
+              "displayName": "Id of Line Item",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['line_items']['data'][*]['object']": {
+              "displayName": "Object of Line Item",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "item",
+                  "displayValue": "item"
+                }
+              ]
+            },
+            "$['line_items']['data'][*]['price']": {
+              "displayName": "Price of Line Item",
+              "valueType": "other"
+            },
+            "$['line_items']['data'][*]['quantity']": {
+              "displayName": "Quantity of Line Item",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "$['line_items']['data'][*]['taxes']": {
+              "displayName": "Taxes of Line Item",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "$['line_items']['has_more']": {
+              "displayName": "Has more",
+              "valueType": "boolean",
+              "providerType": "bool"
+            },
+            "$['line_items']['url']": {
+              "displayName": "LineItems URL next page",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "adaptive_pricing": {
               "displayName": "adaptive_pricing",
               "valueType": "other"
