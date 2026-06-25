@@ -116,9 +116,11 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.WriteParams{
 				ObjectName: "contacts",
 				RecordId:   "57919",
-				RecordData: []any{
-					map[string]any{"op": "replace", "path": "/firstName", "value": "Sims"},
-					map[string]any{"op": "replace", "path": "/customFields/1/value", "value": true},
+				RecordData: map[string]any{
+					"patch": []any{
+						map[string]any{"op": "replace", "path": "/firstName", "value": "Sims"},
+						map[string]any{"op": "replace", "path": "/customFields/1/value", "value": true},
+					},
 				},
 			},
 			Server: mockserver.Conditional{
