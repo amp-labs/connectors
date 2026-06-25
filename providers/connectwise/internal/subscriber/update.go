@@ -64,9 +64,9 @@ func (s Strategy) UpdateSubscription( // nolint:cyclop,funlen
 		return nil, err
 	}
 
-	result, ok := createSubsResult.Result.(Result)
+	result, ok := createSubsResult.Result.(*Result)
 	if !ok {
-		return nil, fmt.Errorf("%w: common.SubscriptionResult.Result cannot be cast to connectwise.Result",
+		return nil, fmt.Errorf("%w: common.SubscriptionResult.Result cannot be cast to *connectwise.Result",
 			common.ErrInvalidImplementation)
 	}
 
@@ -110,7 +110,7 @@ func (s Strategy) UpdateSubscription( // nolint:cyclop,funlen
 	combinedStatus := createSubsResult.Status.Resolve(removeStatus)
 
 	return &common.SubscriptionResult{
-		Result:       Result{ObjectWebhooks: combinedWebhooks},
+		Result:       &Result{ObjectWebhooks: combinedWebhooks},
 		ObjectEvents: combinedEvents,
 		Status:       combinedStatus,
 	}, nil

@@ -251,10 +251,23 @@ func ComparatorSubscriptionWithResult(
 	return func(_ string, actual, expected *common.SubscriptionResult) *testutils.CompareResult {
 		result := testutils.NewCompareResult()
 		result.Merge(mockutils.SubscriptionResultComparator.CompareWithoutResultArg(actual, expected))
-		result.Merge(resultComparator(expected.Result, actual.Result))
+
+		// Connector must return `Result` as a pointer.
+		// If that is the case we proceed with comparing these results.
+		if result.Assert("expected.Result must be pointer", true, isPointer(expected.Result)) &&
+			result.Assert("actual.Result must be pointer", true, isPointer(actual.Result)) {
+			result.Merge(resultComparator(expected.Result, actual.Result))
+		}
 
 		return result
 	}
+}
+
+func isPointer(v any) bool {
+	if v == nil {
+		return false
+	}
+	return reflect.ValueOf(v).Kind() == reflect.Ptr
 }
 
 func ComparatorSubscriptionWithoutResult(
