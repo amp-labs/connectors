@@ -1,11 +1,14 @@
 package testroutines
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -51,6 +54,34 @@ func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult)
 	return result
 }
 
+// ComparatorSubsetReadSorted is similar to ComparatorSubsetRead but the actual Rows are sorted using the identifiers.
+// This ensures that the rows returned by connector are in the same order for the testing purposes.
+// The test expectation should follow this imposed order.
+// This is important to preserve the indexes of the test reports.
+func ComparatorSubsetReadSorted(serverURL string, actual, expected *common.ReadResult) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+
+	if actual == nil && expected == nil {
+		return result
+	}
+
+	if actual == nil {
+		result.AddDiff("actual ReadResult is empty while expected something")
+		return result
+	}
+
+	if expected == nil {
+		result.AddDiff("expected ReadResult should not be empty")
+		return result
+	}
+
+	sort.Slice(actual.Data, func(i, j int) bool {
+		return actual.Data[i].Id > actual.Data[j].Id
+	})
+
+	return ComparatorSubsetRead(serverURL, actual, expected)
+}
+
 // ComparatorSubsetReadByIds compares two slices of ReadResultRow as a subset,
 // ignoring order and focusing only on relevant fields, raw data, associations, and identifiers.
 func ComparatorSubsetReadByIds(serverURL string, actual, expected []common.ReadResultRow) *testutils.CompareResult {
@@ -81,42 +112,37 @@ func ComparatorPagination(
 	serverURL string, actual *common.ReadResult, expected *common.ReadResult,
 ) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
-	expectedNextPage := ResolveTestServerURL(expected.NextPage.String(), serverURL)
-
-	if !compareNextPageToken(actual.NextPage.String(), expectedNextPage) {
-		result.Assert("NextPage", expectedNextPage, actual.NextPage.String())
-	}
-
 	result.Assert("Rows", expected.Rows, actual.Rows)
 	result.Assert("Done", expected.Done, actual.Done)
+
+	expectedNextPage := ResolveTestServerURL(expected.NextPage.String(), serverURL)
+	result.Merge(compareNextPageToken(actual.NextPage.String(), expectedNextPage))
 
 	return result
 }
 
-func compareNextPageToken(actual, expected string) bool {
-	if len(actual) == 0 && len(expected) == 0 {
-		return true
+func compareNextPageToken(actual, expected string) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+	if actual == "" && expected == "" {
+		return result
 	}
 
-	if !strings.HasPrefix(actual, "http") {
-		// Next page token is not a URL, compare raw text.
-		return actual == expected
+	if actual == expected {
+		// Raw text matches
+		return result
 	}
 
-	// We are dealing with URLs.
-	// Compare URLs ignoring the query parameter order or encoding.
-	// However, the "data content" must match.
-	actualURL, err := urlbuilder.New(actual)
-	if err != nil {
-		return false
+	if strings.HasPrefix(actual, "http") {
+		// We are dealing with URLs.
+		// Compare URLs ignoring the query parameter order or encoding.
+		// However, the "data content" must match.
+		result.Merge(compareHTTPURLs(expected, actual, nil))
+
+		return result
 	}
 
-	expectedURL, err := urlbuilder.New(expected)
-	if err != nil {
-		return false
-	}
-
-	return actualURL.Equals(expectedURL)
+	// The token could be an aggregate token, compare the JSON format.
+	return aggregateTokensMatch(expected, actual)
 }
 
 // ComparatorSubsetWrite compares two WriteResult objects, allowing partial
@@ -289,4 +315,76 @@ func mapIsSubsetMap(subset, superset map[string]any) bool {
 	}
 
 	return true
+}
+
+func compareHTTPURLs(expected string, actual string, index *int) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+	actualURL, err := urlbuilder.New(actual)
+	if err != nil {
+		if index == nil {
+			result.AddDiff("NextPage actual cannot be parsed as URL")
+		} else {
+			result.AddDiff("NextPage[%v] actual cannot be parsed as URL", *index)
+		}
+		return result
+	}
+
+	expectedURL, err := urlbuilder.New(expected)
+	if err != nil {
+		if index == nil {
+			result.AddDiff("NextPage expected cannot be parsed as URL")
+		} else {
+			result.AddDiff("NextPage[%v] expected cannot be parsed as URL", *index)
+		}
+		return result
+	}
+
+	if !actualURL.Equals(expectedURL) {
+		if index == nil {
+			result.AddDiff("NextPage URLs do not match actual(%v), expected(%v)", actualURL, expectedURL)
+		} else {
+			result.AddDiff("NextPage[%v] URLs do not match actual(%v), expected(%v)", *index, actualURL, expectedURL)
+		}
+	}
+
+	return result
+}
+
+func aggregateTokensMatch(expected string, actual string) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+	actualAgg := make(readhelper.AggregateNextPage[any], 0)
+	if err := json.Unmarshal([]byte(actual), &actualAgg); err != nil {
+		// It is not an aggregate.
+		result.AddDiff("NextPage mismatch actual(%v) expected(%v)", actual, expected)
+		return result
+	}
+
+	expectedAgg := make(readhelper.AggregateNextPage[any], 0)
+	if err := json.Unmarshal([]byte(expected), &expectedAgg); err != nil {
+		// It is not an aggregate.
+		result.AddDiff("NextPage mismatch actual(%v) expected(%v)", actual, expected)
+		return result
+	}
+
+	if !result.Assert("NextPage len(AggregateNextPage)", len(actualAgg), len(expectedAgg)) {
+		return result
+	}
+
+	sort.Slice(actualAgg, func(i, j int) bool {
+		return actualAgg[i].Value.String() < actualAgg[j].Value.String() ||
+			fmt.Sprintf("%v", actualAgg[i].Context) < fmt.Sprintf("%v", actualAgg[j].Context)
+	})
+
+	for index, actualToken := range actualAgg {
+		actualURL := actualToken.Value.String()
+		expectedURL := expectedAgg[index].Value.String()
+
+		if strings.HasPrefix(actualURL, "http") {
+			result.Merge(compareHTTPURLs(expectedURL, actualURL, new(index)))
+		}
+
+		result.Assert(fmt.Sprintf("NextPage[%v].Context", index), expectedAgg, actualAgg)
+	}
+
+	return result
 }

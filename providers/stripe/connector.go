@@ -60,3 +60,11 @@ func (c *Connector) setBaseURL(newURL string) {
 	c.BaseURL = newURL
 	c.Client.HTTPClient.Base = newURL
 }
+
+// https://docs.stripe.com/api/connected-accounts
+func makeConnectedAccountHeader(accountID string) common.Header {
+	return common.Header{
+		Key:   "Stripe-Account",
+		Value: accountID,
+	}
+}
