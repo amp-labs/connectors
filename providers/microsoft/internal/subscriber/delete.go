@@ -45,6 +45,52 @@ func (s Strategy) DeleteSubscription(
 	return nil
 }
 
+func (s Strategy) deleteSubscriptionsWithResult(ctx context.Context,
+	identifiers []string,
+	prevResult *Result,
+) (*common.SubscriptionResult, error) {
+	subscriptions, objectEvents := prevResult.getSubscriptionsByIDs(identifiers)
+
+	// Attempt removal of the requested subscriptions.
+	// If removal fails (non-nil err), the previous state is unchanged,
+	// and we return a failed result containing the initial state.
+	result, err := s.removeSubscriptionsByIDs(ctx, identifiers)
+	if err != nil {
+		return &common.SubscriptionResult{
+			Result:       &Result{Subscriptions: subscriptions},
+			ObjectEvents: objectEvents,
+			Status:       common.SubscriptionStatusFailed,
+		}, err
+	}
+
+	// If there were per-item errors, aggregate them into a single error.
+	status := common.SubscriptionStatusSuccess
+
+	if len(result.Errors) == 0 {
+		// Prune the initial state for every record.
+		for _, id := range identifiers {
+			objectEvents[subscriptions[id].ObjectName] = common.ObjectEvents{}
+			delete(subscriptions, id)
+		}
+	} else {
+		err = nil // must be empty anyway.
+		for _, errWrapper := range result.Errors {
+			err = errors.Join(err, errWrapper.Data)
+		}
+
+		// If aggregation produced an error, mark overall status as failed.
+		if err != nil {
+			status = common.SubscriptionStatusFailed
+		}
+	}
+
+	return &common.SubscriptionResult{
+		Result:       &Result{Subscriptions: subscriptions},
+		ObjectEvents: objectEvents,
+		Status:       status,
+	}, err
+}
+
 // removeSubscriptionsByIDs executes batch DELETE for given subscription IDs.
 // Generic helper; returns raw batch result for custom error handling.
 func (s Strategy) removeSubscriptionsByIDs(

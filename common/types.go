@@ -163,6 +163,11 @@ var (
 
 	// ErrSubscriptionEventList is returned by CollapsedSubscriptionEvent.SubscriptionEventList.
 	ErrSubscriptionEventList = errors.New("failed creating []common.SubscriptionEvent")
+
+	// ErrPrevSubscriptionResultInvalid is returned when the update subscription expects different shape of data
+	// from previous SubscriptionResult. This should not happen and it points to issues with implementation.
+	// Likely the result was not created properly by previous Create/Update step.
+	ErrPrevSubscriptionResultInvalid = errors.New("previous SubscriptionResult does not match expectations")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
