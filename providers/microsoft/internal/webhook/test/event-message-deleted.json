@@ -1,0 +1,18 @@
+{
+  "value": [
+    {
+      "changeType": "deleted",
+      "clientState": "me/messages",
+      "resource": "Users/ae87552f-48fc-4dec-9322-65040bf9fdfd/Messages/message_798",
+      "resourceData": {
+        "@odata.etag": "W/\"CQAAAA==\"",
+        "@odata.id": "Users/ae87552f-48fc-4dec-9322-65040bf9fdfd/Messages/message_798",
+        "@odata.type": "#Microsoft.Graph.Message",
+        "id": "message_798"
+      },
+      "subscriptionExpirationDateTime": "2026-04-29T18:23:14+00:00",
+      "subscriptionId": "3f3a6969-5d52-4c0f-bf4d-a6bb16952289",
+      "tenantId": "5c6241d0-74cc-48a2-b667-3eb0d738af72"
+    }
+  ]
+}

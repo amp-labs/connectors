@@ -160,6 +160,9 @@ var (
 	// This error is returned during response body inspection when attempting to extract
 	// important fields that are expected to be present but were not found.
 	ErrMissingField = errors.New("missing field")
+
+	// ErrSubscriptionEventList is returned by CollapsedSubscriptionEvent.SubscriptionEventList.
+	ErrSubscriptionEventList = errors.New("failed creating []common.SubscriptionEvent")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
