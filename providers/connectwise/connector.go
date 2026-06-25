@@ -26,8 +26,9 @@ type (
 	SubscriptionRequest        = subscriber.Request
 	SubscriptionResponse       = subscriber.Result
 	SubscriptionResource       = subscriber.SubscriptionResource
-	subscribeStrategy          = subscriber.Strategy
 )
+
+type subscribeStrategy = subscriber.Strategy
 
 type Connector struct {
 	*components.Connector

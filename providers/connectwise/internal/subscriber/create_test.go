@@ -217,29 +217,19 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 	}
 }
 
-func compareResult(expectedResult, actualResult any) *testutils.CompareResult {
+func compareResult(expectedResult, actualResult *Result) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
 
-	expectedOutput, ok := expectedResult.(*Result)
-	if !ok {
-		result.AddDiff("expectedResult is not of type Result")
-	}
-
-	actualOutput, ok := actualResult.(*Result)
-	if !ok {
-		result.AddDiff("actualResult is not of type Result")
-	}
-
 	if !result.Assert("Result.ObjectWebhooks length",
-		len(expectedOutput.ObjectWebhooks), len(actualOutput.ObjectWebhooks)) {
+		len(expectedResult.ObjectWebhooks), len(actualResult.ObjectWebhooks)) {
 		return result
 	}
 
-	for key, expectedValue := range expectedOutput.ObjectWebhooks {
-		actualValue, ok := actualOutput.ObjectWebhooks[key]
+	for key, expectedValue := range expectedResult.ObjectWebhooks {
+		actualValue, ok := actualResult.ObjectWebhooks[key]
 		if !ok {
 			actualKeys := make([]string, 0)
-			for name := range actualOutput.ObjectWebhooks {
+			for name := range actualResult.ObjectWebhooks {
 				actualKeys = append(actualKeys, name.String())
 			}
 			result.AddDiff("Result.ObjectWebhooks is missing key [%v], but have (%v)",

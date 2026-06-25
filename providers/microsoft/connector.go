@@ -13,15 +13,22 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/batch"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/metadata"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/subscriber"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/webhook"
 )
 
 const apiVersion = "v1.0"
 
+// Type Exports.
 type (
 	SubscriptionEvent          = webhook.Event
 	CollapsedSubscriptionEvent = webhook.CollapsedSubscriptionEvent
+	SubscriptionRequest        = subscriber.Request
+	SubscriptionResponse       = subscriber.Result
+	SubscriptionResource       = subscriber.SubscriptionResource
 )
+
+type subscribeStrategy = subscriber.Strategy
 
 type Connector struct {
 	// Basic connector
@@ -36,6 +43,7 @@ type Connector struct {
 	components.Writer
 	components.Deleter
 	*webhook.NoopVerifier
+	*subscribeStrategy
 
 	// Dependent services.
 	batchStrategy *batch.Strategy
@@ -109,6 +117,9 @@ func constructor(base *components.Connector) (*Connector, error) {
 	)
 
 	connector.NoopVerifier = webhook.NewVerifier(connector.JSONHTTPClient(), connector.ProviderInfo())
+	connector.batchStrategy = batch.NewStrategy(base.JSONHTTPClient(), base.ProviderInfo())
+	connector.subscribeStrategy = subscriber.NewStrategy(
+		base.JSONHTTPClient(), base.ProviderInfo(), connector.batchStrategy)
 
 	return connector, nil
 }
