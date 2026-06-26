@@ -78,9 +78,13 @@ func TestSubscriptionEvent_EventType(t *testing.T) {
 	}
 }
 
-func TestSubscriptionEvent_Workspace_ReturnsSubscriptionId(t *testing.T) {
+func TestSubscriptionEvent_Workspace_ReturnsEmpty(t *testing.T) {
 	t.Parallel()
 
+	// AccuLynx is consumer-URL routed, so Workspace must be empty even though the
+	// payload always carries a subscriptionId. A non-empty Workspace has no
+	// matching installation providerWorkspaceRef, which causes the receiver to
+	// accept the event but never route it to a destination.
 	evt := SubscriptionEvent{
 		eventFieldTopicName:      "job_created",
 		eventFieldSubscriptionID: "6541d9e1-12c1-45b8-b5bd-5ffa8849a4b8",
@@ -93,16 +97,7 @@ func TestSubscriptionEvent_Workspace_ReturnsSubscriptionId(t *testing.T) {
 
 	got, err := evt.Workspace()
 	assert.NilError(t, err)
-	assert.Equal(t, got, "6541d9e1-12c1-45b8-b5bd-5ffa8849a4b8")
-}
-
-func TestSubscriptionEvent_Workspace_MissingSubscriptionIdReturnsError(t *testing.T) {
-	t.Parallel()
-
-	evt := SubscriptionEvent{eventFieldTopicName: "job_created"}
-
-	_, err := evt.Workspace()
-	assert.Assert(t, errors.Is(err, errMissingSubscriptionID))
+	assert.Equal(t, got, "")
 }
 
 func TestSubscriptionEvent_RecordId_RoutesByObjectType(t *testing.T) {
@@ -308,7 +303,7 @@ func TestSubscriptionEvent_RealPayload_ContactAdded(t *testing.T) {
 
 	ws, err := evt.Workspace()
 	assert.NilError(t, err)
-	assert.Equal(t, ws, "6541d9e1-12c1-45b8-b5bd-5ffa8849a4b8")
+	assert.Equal(t, ws, "")
 
 	rid, err := evt.RecordId()
 	assert.NilError(t, err)
@@ -359,7 +354,7 @@ func TestSubscriptionEvent_RealPayload_JobMilestoneChanged(t *testing.T) {
 
 	ws, err := evt.Workspace()
 	assert.NilError(t, err)
-	assert.Equal(t, ws, "6541d9e1-12c1-45b8-b5bd-5ffa8849a4b8")
+	assert.Equal(t, ws, "")
 
 	rid, err := evt.RecordId()
 	assert.NilError(t, err)
@@ -437,9 +432,11 @@ func TestSubscriptionEvent_RecordId_CustomFieldStatusChanged_NoParentID(t *testi
 			assert.NilError(t, err)
 			assert.Assert(t, obj == objectContacts || obj == objectJobs)
 
+			// Workspace is always empty (consumer-URL routed), even though the
+			// payload carries a subscriptionId.
 			ws, err := evt.Workspace()
 			assert.NilError(t, err)
-			assert.Equal(t, ws, "sub-xyz")
+			assert.Equal(t, ws, "")
 
 			// But RecordId fails with the dedicated sentinel so consumers can skip enrichment.
 			_, err = evt.RecordId()

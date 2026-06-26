@@ -55,7 +55,6 @@ var (
 	errUnsupportedTopicName  = errors.New("acculynx event: topicName does not map to a supported object")
 	errMissingInnerEvent     = errors.New("acculynx event: missing inner event payload")
 	errMissingObjectWrapper  = errors.New("acculynx event: missing object wrapper inside event")
-	errMissingSubscriptionID = errors.New("acculynx event: missing subscriptionId")
 	errMissingRecordID       = errors.New("acculynx event: missing record id for topic")
 	errUnparsableEventTime   = errors.New("acculynx event: unparsable eventDateTime")
 	// errParentRecordIDUnavailable is returned for topics whose payload omits
@@ -128,15 +127,16 @@ func (e SubscriptionEvent) ObjectName() (string, error) {
 	}
 }
 
-// Workspace returns the top-level subscriptionId. AccuLynx enforces one
-// subscription per installation, making it a 1:1 proxy for the installation.
+// Workspace returns an empty string because AccuLynx subscriptions are
+// consumer-URL routed: each installation registers a unique, immutable
+// consumerUrl, so the receiver matches a webhook to its installation by that URL
+// — not by a workspace key. AccuLynx implements no GetPostAuthInfo, so no
+// installation carries a providerWorkspaceRef; returning a non-empty value here
+// (e.g. the subscriptionId) leaves the receiver with nothing to match, so it
+// accepts the event (HTTP 200) but never routes it to a destination. This
+// follows the URL-routed convention used by salesforce/housecallPro/outreach.
 func (e SubscriptionEvent) Workspace() (string, error) {
-	subID, ok := e[eventFieldSubscriptionID].(string)
-	if !ok || subID == "" {
-		return "", errMissingSubscriptionID
-	}
-
-	return subID, nil
+	return "", nil
 }
 
 // RecordId returns the affected contact/job id from event.<object>.id.
