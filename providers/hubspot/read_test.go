@@ -412,10 +412,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						mockcond.Path("/marketing/campaigns/2026-03/batch/read"),
 						mockcond.PermuteJSONBody(
 							`{"inputs":[%inputs]}`,
-							mockcond.PermuteSlot{Name: "inputs", NoQuotes: true, Values: []string{
+							mockcond.PermuteSlots{{Name: "inputs", NoQuotes: true, Values: []string{
 								`{"id":"430318c4-abb7-4bf7-a75e-9c5fa8f475a6"}`,
 								`{"id":"36137b99-47a6-40fe-986d-839a5e3deebb"}`,
-							}},
+							}}},
 						),
 					},
 					Then: mockserver.Response(http.StatusOK, responseCampaignsBatchOK),
@@ -588,10 +588,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						mockcond.Path("/crm/objects/2026-03/contacts/batch/read"),
 						mockcond.PermuteJSONBody(
 							`{"inputs":[%inputs]}`,
-							mockcond.PermuteSlot{Name: "inputs", NoQuotes: true, Values: []string{
+							mockcond.PermuteSlots{{Name: "inputs", NoQuotes: true, Values: []string{
 								`{"id":"110338039632"}`,
 								`{"id":"110323586992"}`,
-							}},
+							}}},
 						),
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsBatched),
