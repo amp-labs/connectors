@@ -1,0 +1,31 @@
+{
+  "responses": [
+    {
+      "id": "me/events",
+      "status": 200,
+      "headers": {
+        "Cache-Control": "no-cache",
+        "OData-Version": "4.0",
+        "Content-Type": "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8"
+      },
+      "body": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#subscriptions/$entity",
+        "id": "63b01115-ba3f-4db6-a1ef-793797ec340a",
+        "resource": "me/events",
+        "applicationId": "39d7eec8-2032-4dd3-959f-d92d8a4e2ad3",
+        "changeType": "created,deleted",
+        "clientState": "me/events",
+        "notificationUrl": "https://651c-46-150-81-5.ngrok-free.app/",
+        "notificationQueryOptions": null,
+        "lifecycleNotificationUrl": null,
+        "expirationDateTime": "2026-05-01T00:09:21.6065208Z",
+        "creatorId": "ae87552f-48fc-4dec-9322-65040bf9fdfd",
+        "includeResourceData": null,
+        "latestSupportedTlsVersion": "v1_2",
+        "encryptionCertificate": null,
+        "encryptionCertificateId": null,
+        "notificationUrlAppId": null
+      }
+    }
+  ]
+}
