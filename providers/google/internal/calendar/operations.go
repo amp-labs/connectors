@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/google/internal/core"
 	"github.com/spyzhov/ajson"
 )
 
@@ -51,24 +52,70 @@ func (a *Adapter) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error
 		return nil, err
 	}
 
-	url.WithQueryParam("maxResults", strconv.Itoa(defaultPageSize))
+	switch params.ObjectName {
+	case objectNameEvents:
+		applyEventsQueryParams(url, params)
+	case objectNameCalendarList:
+		url.WithQueryParam("maxResults", strconv.Itoa(defaultPageSize))
 
-	if params.ObjectName == objectNameCalendarList {
 		// This is the only object to support search by deleted items.
 		// https://developers.google.com/calendar/api/v3/reference/calendarList/list
 		if params.Deleted {
 			url.WithQueryParam("showDeleted", "true")
 		}
-	}
-
-	if params.ObjectName == objectNameEvents {
-		// https://developers.google.com/workspace/calendar/api/v3/reference/events/list
-		if !params.Since.IsZero() {
-			url.WithQueryParam("updatedMin", datautils.Time.FormatRFC3339inUTCWithMilliseconds(params.Since))
-		}
+	default:
+		url.WithQueryParam("maxResults", strconv.Itoa(defaultPageSize))
 	}
 
 	return url, nil
+}
+
+// applyEventsQueryParams sets the events.list query params shared by the primary-calendar
+// (buildReadURL) and all-calendars (buildEventsURLForCalendar) read paths.
+//
+// Defaults preserve the historical behavior: the default page size plus updatedMin derived
+// from ReadParams.Since. Additional tuning (time window, single-event expansion, deleted
+// events, ordering, event-type filter) is opt-in via the Google ReadParamsOpts carried on
+// ReadParams.Opts; an empty or mismatched Opts leaves only the defaults in place.
+//
+// https://developers.google.com/workspace/calendar/api/v3/reference/events/list
+func applyEventsQueryParams(url *urlbuilder.URL, params common.ReadParams) {
+	opts, _ := params.Opts.(core.ReadParamsOpts)
+
+	maxResults := defaultPageSize
+	if opts.MaxResults > 0 {
+		maxResults = opts.MaxResults
+	}
+
+	url.WithQueryParam("maxResults", strconv.Itoa(maxResults))
+
+	if !params.Since.IsZero() {
+		url.WithQueryParam("updatedMin", datautils.Time.FormatRFC3339inUTCWithMilliseconds(params.Since))
+	}
+
+	if !opts.TimeMin.IsZero() {
+		url.WithQueryParam("timeMin", datautils.Time.FormatRFC3339inUTCWithMilliseconds(opts.TimeMin))
+	}
+
+	if !opts.TimeMax.IsZero() {
+		url.WithQueryParam("timeMax", datautils.Time.FormatRFC3339inUTCWithMilliseconds(opts.TimeMax))
+	}
+
+	if opts.SingleEvents {
+		url.WithQueryParam("singleEvents", "true")
+	}
+
+	if opts.ShowDeleted {
+		url.WithQueryParam("showDeleted", "true")
+	}
+
+	if opts.OrderBy != "" {
+		url.WithQueryParam("orderBy", opts.OrderBy)
+	}
+
+	if len(opts.EventTypes) > 0 {
+		url.WithQueryParamList("eventTypes", opts.EventTypes)
+	}
 }
 
 func (a *Adapter) parseReadResponse(
