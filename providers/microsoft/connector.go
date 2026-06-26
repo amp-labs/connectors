@@ -19,7 +19,8 @@ import (
 const apiVersion = "v1.0"
 
 type (
-	EventCollection = webhook.EventCollection
+	SubscriptionEvent          = webhook.Event
+	CollapsedSubscriptionEvent = webhook.CollapsedSubscriptionEvent
 )
 
 type Connector struct {
@@ -34,6 +35,7 @@ type Connector struct {
 	components.Reader
 	components.Writer
 	components.Deleter
+	*webhook.NoopVerifier
 
 	// Dependent services.
 	batchStrategy *batch.Strategy
@@ -105,6 +107,8 @@ func constructor(base *components.Connector) (*Connector, error) {
 			ErrorHandler:  errorHandler,
 		},
 	)
+
+	connector.NoopVerifier = webhook.NewVerifier(connector.JSONHTTPClient(), connector.ProviderInfo())
 
 	return connector, nil
 }
