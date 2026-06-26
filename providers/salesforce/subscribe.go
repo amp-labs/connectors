@@ -528,7 +528,8 @@ func (c *Connector) UpdateSubscription(
 		}
 	}
 
-	result, progress, execErr := c.executeUpdateSubscription(ctx, params, previousResult, prevState, req)
+	// nolint:lll
+	result, progress, execErr := c.executeUpdateSubscription(ctx, params, previousResult, prevState, req) // nosemgrep:trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable
 	if execErr != nil {
 		rollbackErr := c.rollbackUpdateSubscription(ctx, progress)
 

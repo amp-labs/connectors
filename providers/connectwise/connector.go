@@ -21,10 +21,12 @@ const apiVersion = "v4_6_release/apis/3.0"
 
 // Type Exports.
 type (
-	SubscribeRequest     = subscriber.Request
-	SubscribeResponse    = subscriber.Result
-	SubscriptionResource = subscriber.SubscriptionResource
-	subscribeStrategy    = subscriber.Strategy
+	SubscriptionEvent          = webhook.Event
+	CollapsedSubscriptionEvent = webhook.CollapsedSubscriptionEvent
+	SubscriptionRequest        = subscriber.Request
+	SubscriptionResponse       = subscriber.Result
+	SubscriptionResource       = subscriber.SubscriptionResource
+	subscribeStrategy          = subscriber.Strategy
 )
 
 type Connector struct {
