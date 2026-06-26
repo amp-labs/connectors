@@ -1,0 +1,8 @@
+{
+  "id": "c27d2493-0518-48db-b994-6d43aa584355",
+  "method": "DELETE",
+  "url": "/subscriptions/c27d2493-0518-48db-b994-6d43aa584355",
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}
