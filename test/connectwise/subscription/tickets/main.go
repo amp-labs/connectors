@@ -30,7 +30,7 @@ func main() {
 		testscenario.SubscribeReceiveEventsSuite{
 			SubscribeParamBuilder: func(webhookURL string) *common.SubscribeParams {
 				return &common.SubscribeParams{
-					Request: &connectwise.SubscribeRequest{
+					Request: &connectwise.SubscriptionRequest{
 						WebhookURL: webhookURL,
 					},
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{

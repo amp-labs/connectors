@@ -9,9 +9,9 @@ import (
 )
 
 func TestEvent(t *testing.T) {
-	responseContactCreated := testutils.DataFromFileAs[Event](t, "contact-create.json")
-	responseContactUpdated := testutils.DataFromFileAs[Event](t, "contact-update.json")
-	responseContactDeleted := testutils.DataFromFileAs[Event](t, "contact-delete.json")
+	responseContactCreated := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "contact-create.json")
+	responseContactUpdated := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "contact-update.json")
+	responseContactDeleted := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "contact-delete.json")
 
 	for _, tt := range []testroutines.SubscriptionEventTestCase{
 		{
