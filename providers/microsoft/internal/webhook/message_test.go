@@ -8,9 +8,9 @@ import (
 )
 
 func TestEvent(t *testing.T) {
-	responseMessageCreated := testutils.DataFromFileAs[EventCollection](t, "event-message-created.json")
-	responseMessageUpdated := testutils.DataFromFileAs[EventCollection](t, "event-message-updated.json")
-	responseMessageDeleted := testutils.DataFromFileAs[EventCollection](t, "event-message-deleted.json")
+	responseMessageCreated := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "event-message-created.json")
+	responseMessageUpdated := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "event-message-updated.json")
+	responseMessageDeleted := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "event-message-deleted.json")
 
 	for _, tt := range []testroutines.SubscriptionEventTestCase{
 		{
