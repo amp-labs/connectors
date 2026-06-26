@@ -80,7 +80,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 								}]}],
 								"properties": [%props]
 							}`,
-							mockcond.PermuteSlot{Name: "props", Values: []string{"firstname", "lastname"}},
+							mockcond.PermuteSlots{{Name: "props", Values: []string{"firstname", "lastname"}}},
 						),
 					},
 					Then: mockserver.Response(http.StatusOK, responseContactsFirstPage),
