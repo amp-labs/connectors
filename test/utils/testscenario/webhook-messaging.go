@@ -7,29 +7,35 @@ import (
 	"os"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
 )
 
-// WebhookRouter holds a set of conditional HTTP routes that dispatch webhook requests
-// to different handlers based on the RoutingCondition.
+// WebhookRouter holds a set of conditional webhook handlers that dispatch webhook requests
+// to different handlers based on routing conditions.
 //
-// During webhook processing, each Route is tested in order; the first handler
-// whose condition returns true is called. If no condition matches, the default
-// behavior is to log the message as a JSON object to stdout.
+// During webhook processing, each handler is invoked in order; the first handler
+// that returns true (indicating it handled the request) stops the routing process.
+// If no handler returns true, the default handler is invoked.
 type WebhookRouter struct {
-	Routes []Route
+	// Handlers is the ordered list of webhook handlers. Each handler is invoked
+	// in order until one returns true (indicating the request was handled).
+	Routes []WebhookRouteFunc
 }
 
-// RoutingCondition is a predicate that decides whether a given HTTP request
-// should be routed to the associated handler. It returns true if the request
-// matches the condition (e.g., path, method, or header), and false otherwise.
-type RoutingCondition func(request *http.Request) bool
-
-// Route pairs a RoutingCondition with an HTTP handler function. If the condition returns
-// true for an incoming request, the handler is invoked by the webhook server.
-type Route datautils.Pair[RoutingCondition, http.HandlerFunc]
+// WebhookRouteFunc is the function signature for a single webhook route handler.
+//
+// It receives the HTTP response writer, the original HTTP request, and a fully
+// pre-read copy of the request body.
+//
+// IMPORTANT: requestBody is guaranteed to contain the complete request payload
+// and is safe to use without re-reading or consuming request.Body. The router
+// reads and buffers the body once before invoking any route handlers, ensuring
+// that all handlers receive the same byte slice.
+//
+// Notes:
+//   - Handlers must NOT read from request.Body.
+type WebhookRouteFunc func(writer http.ResponseWriter, request *http.Request, requestBody []byte) bool
 
 // RunWebhookConsumer starts a long‑running webhook consumer that listens for
 // incoming change‑notification messages from a provider and prints them to stdout.

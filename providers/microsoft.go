@@ -31,6 +31,9 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
+		SubscribeRequirements: &SubscribeRequirements{
+			SubscribeByAPI: new(true),
+		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328808/media/microsoft_1722328808.png",
