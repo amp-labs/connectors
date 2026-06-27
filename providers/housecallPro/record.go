@@ -66,5 +66,9 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 		out = append(out, rows...)
 	}
 
+	if objectName == "jobs" {
+		attachJobCustomer(out)
+	}
+
 	return out, nil
 }

@@ -25,6 +25,7 @@ func TestRead(t *testing.T) {
 	responseInvoices := testutils.DataFromFile(t, "invoice.json")
 	responseEmployees := testutils.DataFromFile(t, "read-employees.json")
 	responseRoutes := testutils.DataFromFile(t, "read-routes.json")
+	responseJobs := testutils.DataFromFile(t, "read-jobs.json")
 
 	tests := []testroutines.Read{
 		{
@@ -358,6 +359,58 @@ func TestRead(t *testing.T) {
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Read jobs attaches embedded customer as association",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id", "work_status", "updated_at"),
+				PageSize:   1,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/jobs"),
+					mockcond.QueryParam("page_size", "1"),
+					mockcond.QueryParam("sort_by", "updated_at"),
+					mockcond.QueryParam("sort_direction", "desc"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseJobs),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":          "job_00000000000000000000000000000001",
+							"work_status": "scheduled",
+							"updated_at":  "2026-01-02T00:00:00Z",
+						},
+						Raw: map[string]any{
+							"id":          "job_00000000000000000000000000000001",
+							"work_status": "scheduled",
+						},
+						Associations: map[string][]common.Association{
+							"customer": {
+								{
+									ObjectId: "cus_00000000000000000000000000000001",
+									Raw: map[string]any{
+										"id":         "cus_00000000000000000000000000000001",
+										"first_name": "Jane",
+										"last_name":  "Sample",
+										"email":      "jane.sample@example.com",
+									},
+								},
+							},
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+
 		{
 			Name: "Read invoices",
 			Input: common.ReadParams{
