@@ -42,7 +42,7 @@ func TestGetRecordsByIds_job_withCustomerAssociation(t *testing.T) {
 	rows, err := conn.GetRecordsByIds(t.Context(), "jobs",
 		[]string{"job_ac6f3efd11c14a5aa93e9fc0ab5354ab"},
 		[]string{"id", "work_status"},
-		[]string{"customer"},
+		[]string{"customers"},
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -52,7 +52,7 @@ func TestGetRecordsByIds_job_withCustomerAssociation(t *testing.T) {
 		t.Fatalf("expected 1 row, got %d", len(rows))
 	}
 
-	assocs := rows[0].Associations["customer"]
+	assocs := rows[0].Associations["customers"]
 	if len(assocs) != 1 || assocs[0].ObjectId != "cus_b0f661aa89324111b575da039c45e19f" {
 		t.Fatalf("unexpected customer association: %+v", rows[0].Associations)
 	}

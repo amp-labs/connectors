@@ -403,7 +403,7 @@ func TestRead(t *testing.T) {
 				ObjectName:        "jobs",
 				Fields:            connectors.Fields("id", "work_status", "updated_at"),
 				PageSize:          1,
-				AssociatedObjects: []string{"customer"},
+				AssociatedObjects: []string{"customers"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -430,7 +430,7 @@ func TestRead(t *testing.T) {
 							"work_status": "scheduled",
 						},
 						Associations: map[string][]common.Association{
-							"customer": {
+							"customers": {
 								{
 									ObjectId: "cus_00000000000000000000000000000001",
 									Raw: map[string]any{

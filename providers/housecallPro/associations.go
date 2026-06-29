@@ -5,7 +5,13 @@ import (
 	"github.com/amp-labs/connectors/common/readhelper"
 )
 
-const customerAssociation = "customer"
+const customerObject = "customers"
+
+var embeddedAssociationFields = map[string]map[string]string{ //nolint:gochecknoglobals
+	"jobs": {
+		customerObject: "customer",
+	},
+}
 
 func readMarshaller(params common.ReadParams) common.MarshalFromNodeFunc {
 	base := readhelper.MakeMarshaledDataFuncWithId(nil, readIDFieldByObject.Get(params.ObjectName))
@@ -22,23 +28,31 @@ func readMarshaller(params common.ReadParams) common.MarshalFromNodeFunc {
 
 // extractAssociations attaches related objects to rows for each requested association.
 func extractAssociations(objectName string, associatedObjects []string, rows []common.ReadResultRow) {
-	for _, assocObj := range associatedObjects {
-		if objectName == "jobs" && assocObj == customerAssociation {
-			attachJobCustomer(rows)
-		}
+	fieldByAssociation, ok := embeddedAssociationFields[objectName]
+	if !ok {
+		return
 	}
-}
 
-// attachJobCustomer attaches the customer object embedded on each job to its
-// Associations. Housecall Pro returns job.customer inline on GET /jobs.
-func attachJobCustomer(rows []common.ReadResultRow) {
-	for idx := range rows {
-		customer, ok := rows[idx].Raw[customerAssociation].(map[string]any)
-		if !ok || len(customer) == 0 {
+	for _, assocObj := range associatedObjects {
+		field, ok := fieldByAssociation[assocObj]
+		if !ok {
 			continue
 		}
 
-		id, _ := customer["id"].(string)
+		attachEmbeddedAssociation(rows, assocObj, field)
+	}
+}
+
+// attachEmbeddedAssociation attaches the object embedded under field on each row
+// to its Associations, keyed by the requested association name.
+func attachEmbeddedAssociation(rows []common.ReadResultRow, associationName, field string) {
+	for idx := range rows {
+		embedded, ok := rows[idx].Raw[field].(map[string]any)
+		if !ok || len(embedded) == 0 {
+			continue
+		}
+
+		id, _ := embedded["id"].(string)
 		if id == "" {
 			continue
 		}
@@ -47,9 +61,9 @@ func attachJobCustomer(rows []common.ReadResultRow) {
 			rows[idx].Associations = make(map[string][]common.Association)
 		}
 
-		rows[idx].Associations[customerAssociation] = []common.Association{{
+		rows[idx].Associations[associationName] = []common.Association{{
 			ObjectId: id,
-			Raw:      customer,
+			Raw:      embedded,
 		}}
 	}
 }

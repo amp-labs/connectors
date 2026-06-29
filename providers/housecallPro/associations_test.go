@@ -21,10 +21,16 @@ func TestExtractAssociationsSkipsWhenNotRequested(t *testing.T) {
 		Raw: map[string]any{"id": "job_2fad85ca2c6c43b7bdbc01f0d12ff1c4", "customer": customer},
 	}}
 
+	// No associations requested.
 	extractAssociations("jobs", nil, rows)
 	assert.Nil(t, rows[0].Associations)
 
-	extractAssociations("customers", []string{"customer"}, rows)
+	// Unknown association for jobs.
+	extractAssociations("jobs", []string{"unknown"}, rows)
+	assert.Nil(t, rows[0].Associations)
+
+	// Object that has no association mappings.
+	extractAssociations("customers", []string{customerObject}, rows)
 	assert.Nil(t, rows[0].Associations)
 }
 
@@ -41,13 +47,13 @@ func TestExtractAssociationsAttachesJobCustomer(t *testing.T) {
 		Raw: map[string]any{"id": "job_2fad85ca2c6c43b7bdbc01f0d12ff1c4", "customer": customer},
 	}}
 
-	extractAssociations("jobs", []string{"customer"}, rows)
+	extractAssociations("jobs", []string{customerObject}, rows)
 
-	require.Len(t, rows[0].Associations[customerAssociation], 1)
-	assert.Equal(t, "cus_b0f661aa89324111b575da039c45e19f", rows[0].Associations[customerAssociation][0].ObjectId)
+	require.Len(t, rows[0].Associations[customerObject], 1)
+	assert.Equal(t, "cus_b0f661aa89324111b575da039c45e19f", rows[0].Associations[customerObject][0].ObjectId)
 }
 
-func TestAttachJobCustomer(t *testing.T) {
+func TestAttachEmbeddedAssociation(t *testing.T) {
 	t.Parallel()
 
 	customer := map[string]any{
@@ -61,14 +67,14 @@ func TestAttachJobCustomer(t *testing.T) {
 		Raw: map[string]any{"id": "job_2fad85ca2c6c43b7bdbc01f0d12ff1c4", "customer": customer},
 	}}
 
-	attachJobCustomer(rows)
+	attachEmbeddedAssociation(rows, customerObject, "customer")
 
-	require.Len(t, rows[0].Associations[customerAssociation], 1)
-	assert.Equal(t, "cus_b0f661aa89324111b575da039c45e19f", rows[0].Associations[customerAssociation][0].ObjectId)
-	assert.Equal(t, customer, rows[0].Associations[customerAssociation][0].Raw)
+	require.Len(t, rows[0].Associations[customerObject], 1)
+	assert.Equal(t, "cus_b0f661aa89324111b575da039c45e19f", rows[0].Associations[customerObject][0].ObjectId)
+	assert.Equal(t, customer, rows[0].Associations[customerObject][0].Raw)
 }
 
-func TestAttachJobCustomerSkipsMissingOrEmpty(t *testing.T) {
+func TestAttachEmbeddedAssociationSkipsMissingOrEmpty(t *testing.T) {
 	t.Parallel()
 
 	rows := []common.ReadResultRow{
@@ -80,7 +86,7 @@ func TestAttachJobCustomerSkipsMissingOrEmpty(t *testing.T) {
 		}}},
 	}
 
-	attachJobCustomer(rows)
+	attachEmbeddedAssociation(rows, customerObject, "customer")
 
 	for i := range rows {
 		assert.Nil(t, rows[i].Associations, "row %d should have no associations", i)
