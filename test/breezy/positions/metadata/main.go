@@ -14,15 +14,7 @@ func main() {
 
 	conn := connTest.GetBreezyConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{
-		"companies",
-		"positions",
-		"pipelines",
-		"categories",
-		"departments",
-		"questionnaires",
-		"templates",
-	})
+	m, err := conn.ListObjectMetadata(ctx, []string{"positions"})
 	if err != nil {
 		log.Fatal("Error fetching metadata: ", err)
 	}

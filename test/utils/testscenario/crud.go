@@ -49,6 +49,9 @@ type CRUDTestSuite struct {
 	// ValidateUpdatedFields optionally verifies that updates took effect correctly.
 	// Use this when UpdatedFields is insufficient — for example, when validating nested arrays or objects.
 	ValidateUpdatedFields func(record map[string]any)
+
+	// PostCreate runs after create succeeds and before the first read/search. Optional.
+	PostCreate func(ctx context.Context, conn ConnectorCRUD, createResult *common.WriteResult) error
 }
 
 type Property struct {
@@ -84,6 +87,11 @@ func ValidateCreateUpdateDelete[CP, UP any](
 	fmt.Println("Creating", objectName)
 	createResult, err := createObject(ctx, conn, objectName, &createPayload)
 	failOnError(err)
+
+	if suite.PostCreate != nil {
+		err = suite.PostCreate(ctx, conn, createResult)
+		failOnError(err)
+	}
 
 	if suite.WaitBeforeSearch != 0 {
 		fmt.Println("... waiting")

@@ -1,0 +1,8 @@
+{
+  "_id": "pos001",
+  "name": "Software Engineer (Updated)",
+  "type": "fullTime",
+  "state": "published",
+  "description": "Updated via connector test",
+  "department": "Engineering"
+}
