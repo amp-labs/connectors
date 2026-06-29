@@ -360,11 +360,50 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read jobs attaches embedded customer as association",
+			Name: "Read jobs without customer association request",
 			Input: common.ReadParams{
 				ObjectName: "jobs",
 				Fields:     connectors.Fields("id", "work_status", "updated_at"),
 				PageSize:   1,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/jobs"),
+					mockcond.QueryParam("page_size", "1"),
+					mockcond.QueryParam("sort_by", "updated_at"),
+					mockcond.QueryParam("sort_direction", "desc"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseJobs),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":          "job_00000000000000000000000000000001",
+							"work_status": "scheduled",
+							"updated_at":  "2026-01-02T00:00:00Z",
+						},
+						Raw: map[string]any{
+							"id":          "job_00000000000000000000000000000001",
+							"work_status": "scheduled",
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read jobs attaches embedded customer as association",
+			Input: common.ReadParams{
+				ObjectName:        "jobs",
+				Fields:            connectors.Fields("id", "work_status", "updated_at"),
+				PageSize:          1,
+				AssociatedObjects: []string{"customer"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),

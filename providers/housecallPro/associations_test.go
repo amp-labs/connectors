@@ -8,6 +8,45 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestExtractAssociationsSkipsWhenNotRequested(t *testing.T) {
+	t.Parallel()
+
+	customer := map[string]any{
+		"id":         "cus_b0f661aa89324111b575da039c45e19f",
+		"first_name": "Walter",
+	}
+
+	rows := []common.ReadResultRow{{
+		Id:  "job_2fad85ca2c6c43b7bdbc01f0d12ff1c4",
+		Raw: map[string]any{"id": "job_2fad85ca2c6c43b7bdbc01f0d12ff1c4", "customer": customer},
+	}}
+
+	extractAssociations("jobs", nil, rows)
+	assert.Nil(t, rows[0].Associations)
+
+	extractAssociations("customers", []string{"customer"}, rows)
+	assert.Nil(t, rows[0].Associations)
+}
+
+func TestExtractAssociationsAttachesJobCustomer(t *testing.T) {
+	t.Parallel()
+
+	customer := map[string]any{
+		"id":         "cus_b0f661aa89324111b575da039c45e19f",
+		"first_name": "Walter",
+	}
+
+	rows := []common.ReadResultRow{{
+		Id:  "job_2fad85ca2c6c43b7bdbc01f0d12ff1c4",
+		Raw: map[string]any{"id": "job_2fad85ca2c6c43b7bdbc01f0d12ff1c4", "customer": customer},
+	}}
+
+	extractAssociations("jobs", []string{"customer"}, rows)
+
+	require.Len(t, rows[0].Associations[customerAssociation], 1)
+	assert.Equal(t, "cus_b0f661aa89324111b575da039c45e19f", rows[0].Associations[customerAssociation][0].ObjectId)
+}
+
 func TestAttachJobCustomer(t *testing.T) {
 	t.Parallel()
 

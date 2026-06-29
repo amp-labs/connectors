@@ -9,15 +9,24 @@ const customerAssociation = "customer"
 
 func readMarshaller(params common.ReadParams) common.MarshalFromNodeFunc {
 	base := readhelper.MakeMarshaledDataFuncWithId(nil, readIDFieldByObject.Get(params.ObjectName))
-	if params.ObjectName != "jobs" {
+	if len(params.AssociatedObjects) == 0 {
 		return base
 	}
 
 	return readhelper.ChainedMarshaller(base, func(rows []common.ReadResultRow) error {
-		attachJobCustomer(rows)
+		extractAssociations(params.ObjectName, params.AssociatedObjects, rows)
 
 		return nil
 	})
+}
+
+// extractAssociations attaches related objects to rows for each requested association.
+func extractAssociations(objectName string, associatedObjects []string, rows []common.ReadResultRow) {
+	for _, assocObj := range associatedObjects {
+		if objectName == "jobs" && assocObj == customerAssociation {
+			attachJobCustomer(rows)
+		}
+	}
 }
 
 // attachJobCustomer attaches the customer object embedded on each job to its

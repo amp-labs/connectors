@@ -10,6 +10,54 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 )
 
+func TestGetRecordsByIds_job_withCustomerAssociation(t *testing.T) {
+	t.Parallel()
+
+	payload := []byte(`{
+  "id": "job_ac6f3efd11c14a5aa93e9fc0ab5354ab",
+  "work_status": "needs scheduling",
+  "updated_at": "2026-04-02T15:20:38Z",
+  "customer": {
+    "id": "cus_b0f661aa89324111b575da039c45e19f",
+    "first_name": "Walter",
+    "last_name": "Whitman"
+  }
+}`)
+
+	server := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If: mockcond.And{
+			mockcond.Method(http.MethodGet),
+			mockcond.Path("/jobs/job_ac6f3efd11c14a5aa93e9fc0ab5354ab"),
+		},
+		Then: mockserver.Response(http.StatusOK, payload),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rows, err := conn.GetRecordsByIds(t.Context(), "jobs",
+		[]string{"job_ac6f3efd11c14a5aa93e9fc0ab5354ab"},
+		[]string{"id", "work_status"},
+		[]string{"customer"},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(rows) != 1 {
+		t.Fatalf("expected 1 row, got %d", len(rows))
+	}
+
+	assocs := rows[0].Associations["customer"]
+	if len(assocs) != 1 || assocs[0].ObjectId != "cus_b0f661aa89324111b575da039c45e19f" {
+		t.Fatalf("unexpected customer association: %+v", rows[0].Associations)
+	}
+}
+
 func TestGetRecordsByIds_job(t *testing.T) {
 	t.Parallel()
 
