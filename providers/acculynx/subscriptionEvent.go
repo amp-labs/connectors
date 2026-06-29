@@ -33,9 +33,19 @@ import (
 //	}
 type SubscriptionEvent map[string]any
 
+// CollapsedSubscriptionEvent is the raw AccuLynx webhook payload as received.
+// AccuLynx delivers exactly one event per request (a single topicName and a
+// single event.<object> wrapper), so the collapsed form expands to a one-element
+// list. This is the entry point the webhook processor uses to extract the
+// individual SubscriptionEvent(s) from a delivery; without it the processor
+// cannot turn an accepted webhook into a deliverable event. Mirrors the
+// single-event convention used by housecallPro/outreach.
+type CollapsedSubscriptionEvent map[string]any
+
 var (
-	_ common.SubscriptionEvent       = SubscriptionEvent{}
-	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+	_ common.SubscriptionEvent          = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent    = SubscriptionEvent{}
+	_ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 )
 
 const (
@@ -77,6 +87,20 @@ func (e SubscriptionEvent) PreLoadData(_ *common.SubscriptionEventPreLoadData) e
 // RawMap returns a defensive clone so callers don't mutate the original.
 func (e SubscriptionEvent) RawMap() (map[string]any, error) {
 	return maps.Clone(e), nil
+}
+
+// RawMap returns a defensive clone so callers don't mutate the original
+// (separate from SubscriptionEvent.RawMap because Go method sets are per-type;
+// CollapsedSubscriptionEvent must satisfy common.Event in its own right).
+func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(e), nil
+}
+
+// SubscriptionEventList expands the collapsed payload into the individual events
+// it contains. AccuLynx sends one event per webhook delivery, so this returns a
+// single-element list wrapping the payload as a SubscriptionEvent.
+func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
+	return []common.SubscriptionEvent{SubscriptionEvent(e)}, nil
 }
 
 // RawEventName returns AccuLynx's topicName verbatim (e.g. "job_created").
