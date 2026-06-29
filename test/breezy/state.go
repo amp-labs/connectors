@@ -1,3 +1,21 @@
+// Package breezy provides live-test helpers for the Breezy HR connector.
+//
+// # Position state helpers (test-only)
+//
+// PublishPosition and SetPositionState are integration-test utilities. They are not
+// part of any connector interface (Read/Write/Delete) and are not exposed to customers.
+//
+// Why they exist:
+//   - Breezy creates new positions in draft state.
+//   - The positions list endpoint defaults to state=published, so draft records are
+//     invisible to the connector Read used by ValidateCreateUpdateDelete.
+//   - PostCreate in the write-delete live test calls PublishPosition so the created
+//     record appears in the default list before read/update validation runs.
+//
+// The connector Delete operation uses the same state endpoint with state=archived
+// (soft delete). PublishPosition is the complementary test setup step (draft → published).
+//
+// API reference: https://developer.breezy.hr/reference/company-position-state-update
 package breezy
 
 import (
