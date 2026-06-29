@@ -11,8 +11,9 @@ import (
 	"github.com/amp-labs/connectors/internal/httpkit"
 )
 
-// Breezy has no DELETE for positions. Archiving removes the position from the default
-// published list (same practical outcome for integrations).
+// Delete is a soft delete: Breezy has no HTTP DELETE for positions. We archive via
+// PUT …/state with {"state":"archived"} so the job no longer appears in the default
+// published list. See providers/breezy/metadata/README.md.
 // https://developer.breezy.hr/reference/company-position-state-update
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
 	if err := params.ValidateParams(); err != nil {
