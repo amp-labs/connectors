@@ -1,6 +1,10 @@
 package httpkit
 
 import (
+	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/amp-labs/connectors/common"
 	lh "github.com/deiu/linkparser"
 )
@@ -28,4 +32,16 @@ func Status4xx(code int) bool {
 
 func Status5xx(code int) bool {
 	return 500 <= code && code < 600
+}
+
+func ExtractRequiredHeader(headers http.Header, name string) (string, error) {
+	if headers == nil {
+		return "", fmt.Errorf("%w: header '%v'", common.ErrMissingHeader, name)
+	}
+
+	if value := headers.Get(name); value != "" {
+		return strings.TrimSpace(value), nil
+	}
+
+	return "", fmt.Errorf("%w: header '%v'", common.ErrMissingHeader, strings.ToLower(name))
 }

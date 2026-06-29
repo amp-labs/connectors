@@ -1,0 +1,24 @@
+{
+  "token": "yO0sZ7JNeB5EXnVwNB3hvSCC",
+  "team_id": "T0B9P1UVDBL",
+  "api_app_id": "A0B9P2K0V7U",
+  "event": {
+    "type": "channel_deleted",
+    "channel": "C0B9UVACR4K",
+    "actor_id": "U0B9QSKKHU1",
+    "event_ts": "1781218098.007200"
+  },
+  "type": "event_callback",
+  "event_id": "Ev0BA4V2PXC4",
+  "event_time": 1781218098,
+  "authorizations": [
+    {
+      "enterprise_id": null,
+      "team_id": "T0B9P1UVDBL",
+      "user_id": "U0B9R8LFG1F",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false
+}

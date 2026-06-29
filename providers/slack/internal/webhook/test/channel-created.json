@@ -1,0 +1,60 @@
+{
+  "api_app_id": "A0B9P2K0V7U",
+  "authorizations": [
+    {
+      "enterprise_id": null,
+      "is_bot": true,
+      "is_enterprise_install": false,
+      "team_id": "T0B9P1UVDBL",
+      "user_id": "U0B9R8LFG1F"
+    }
+  ],
+  "event": {
+    "channel": {
+      "context_team_id": "T0B9P1UVDBL",
+      "created": 1781119866,
+      "creator": "U0B9R8LFG1F",
+      "id": "C0B9N5F9ULE",
+      "is_archived": false,
+      "is_channel": true,
+      "is_ext_shared": false,
+      "is_general": false,
+      "is_group": false,
+      "is_im": false,
+      "is_mpim": false,
+      "is_org_shared": false,
+      "is_pending_ext_shared": false,
+      "is_private": false,
+      "is_shared": false,
+      "name": "holidays",
+      "name_normalized": "holidays",
+      "parent_conversation": null,
+      "pending_connected_team_ids": [],
+      "pending_shared": [],
+      "previous_names": [],
+      "purpose": {
+        "creator": "",
+        "last_set": 0,
+        "value": ""
+      },
+      "shared_team_ids": [
+        "T0B9P1UVDBL"
+      ],
+      "topic": {
+        "creator": "",
+        "last_set": 0,
+        "value": ""
+      },
+      "unlinked": 0,
+      "updated": 1781119866987
+    },
+    "event_ts": "1781119867.013000",
+    "type": "channel_created"
+  },
+  "event_id": "Ev0B9TRVG4UU",
+  "event_time": 1781119867,
+  "is_ext_shared_channel": false,
+  "team_id": "T0B9P1UVDBL",
+  "token": "yO0sZ7JNeB5EXnVwNB3hvSCC",
+  "type": "event_callback"
+}

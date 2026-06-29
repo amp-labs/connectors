@@ -20,13 +20,18 @@ func NewChangeType(eventTypes []common.SubscriptionEventType) ChangeType {
 	result := make([]string, 0, 3) // nolint:mnd
 	requestedEvents := datautils.NewSetFromList(eventTypes)
 
-	for _, item := range []datautils.Pair[common.SubscriptionEventType, string]{
-		{Left: common.SubscriptionEventTypeCreate, Right: ChangeTypeCreated},
-		{Left: common.SubscriptionEventTypeUpdate, Right: ChangeTypeUpdated},
-		{Left: common.SubscriptionEventTypeDelete, Right: ChangeTypeDeleted},
+	type mapping struct {
+		EventType  common.SubscriptionEventType
+		ChangeType string
+	}
+
+	for _, item := range []mapping{
+		{EventType: common.SubscriptionEventTypeCreate, ChangeType: ChangeTypeCreated},
+		{EventType: common.SubscriptionEventTypeUpdate, ChangeType: ChangeTypeUpdated},
+		{EventType: common.SubscriptionEventTypeDelete, ChangeType: ChangeTypeDeleted},
 	} {
-		if requestedEvents.Has(item.Left) {
-			result = append(result, item.Right)
+		if requestedEvents.Has(item.EventType) {
+			result = append(result, item.ChangeType)
 		}
 	}
 
