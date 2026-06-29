@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	restAPIVersion       = "v3"
-	companyIDPlaceholder = "{company_id}"
+	restAPIVersion        = "v3"
+	companyIDPlaceholder  = "{company_id}"
 	positionIDPlaceholder = "{position_id}"
 
 	// Collection vs resource paths differ: POST …/positions, PUT …/position/{id}.

@@ -2,11 +2,11 @@ package slack
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testroutines"
@@ -136,22 +136,22 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop,main
 			t.Parallel()
 
 			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
+func constructTestConnector(server *httptest.Server) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
+		AuthenticatedClient: server.Client(),
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	// Preserve the /api path from the Slack base URL when redirecting to the mock server.
-	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	connector.SetUnitTestMockServerBaseURL(server.URL)
 
 	return connector, nil
 }

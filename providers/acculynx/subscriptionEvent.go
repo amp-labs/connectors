@@ -51,12 +51,12 @@ const (
 )
 
 var (
-	errMissingTopicName      = errors.New("acculynx event: missing topicName")
-	errUnsupportedTopicName  = errors.New("acculynx event: topicName does not map to a supported object")
-	errMissingInnerEvent     = errors.New("acculynx event: missing inner event payload")
-	errMissingObjectWrapper  = errors.New("acculynx event: missing object wrapper inside event")
-	errMissingRecordID       = errors.New("acculynx event: missing record id for topic")
-	errUnparsableEventTime   = errors.New("acculynx event: unparsable eventDateTime")
+	errMissingTopicName     = errors.New("acculynx event: missing topicName")
+	errUnsupportedTopicName = errors.New("acculynx event: topicName does not map to a supported object")
+	errMissingInnerEvent    = errors.New("acculynx event: missing inner event payload")
+	errMissingObjectWrapper = errors.New("acculynx event: missing object wrapper inside event")
+	errMissingRecordID      = errors.New("acculynx event: missing record id for topic")
+	errUnparsableEventTime  = errors.New("acculynx event: unparsable eventDateTime")
 	// errParentRecordIDUnavailable is returned for topics whose payload omits
 	// the parent contact/job id entirely (only the changed sub-object is sent).
 	errParentRecordIDUnavailable = errors.New(

@@ -48,7 +48,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	recordsArr, err := getSlackResponseRecords(body, objectName)
+	recordsArr, err := getResponseCollectionRecords(body, objectName)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 
 	return common.ParseResult(
 		response,
-		records(params.ObjectName),
+		recordsFunc(params.ObjectName),
 		nextRecordsURL(),
 		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,
