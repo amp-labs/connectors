@@ -10,13 +10,26 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// Event is a singular notification message within EventCollection.
+// CollapsedSubscriptionEvent represents the raw webhook payload.
+// This simply wraps the single event.
+type CollapsedSubscriptionEvent map[string]any
+
+// Event is a singular notification message.
 type Event map[string]any
 
 var (
-	_ common.SubscriptionEvent       = Event{}
-	_ common.SubscriptionUpdateEvent = Event{}
+	_ common.SubscriptionEvent          = Event{}
+	_ common.SubscriptionUpdateEvent    = Event{}
+	_ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 )
+
+func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(e), nil
+}
+
+func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
+	return []common.SubscriptionEvent{Event(e)}, nil
+}
 
 func (e Event) EventType() (common.SubscriptionEventType, error) {
 	eventName, err := e.RawEventName()

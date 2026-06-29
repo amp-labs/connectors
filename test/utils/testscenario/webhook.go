@@ -128,8 +128,9 @@ type webhookMessageResult struct {
 }
 
 // createWebhookHandler creates an HTTP handler function that verifies incoming webhook requests
-// using the connector's VerifyWebhookMessage method. After successful verification, the handler
-// invokes the provided callback function with the verified request body for further processing.
+// using the connector's VerifyWebhookMessage method (within defaultWebhookHandler).
+// After successful verification, the handler invokes the provided callback function
+// with the verified request body for further processing.
 //
 // The handler reads the request body, constructs a WebhookRequest from the HTTP request,
 // verifies the webhook signature using the connector's verification method, and on success
@@ -151,39 +152,34 @@ func createWebhookHandler(
 	messageChannel chan webhookMessageResult,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		bodyBytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			slog.Error("failed to read body", "error", err)
+			http.Error(w, "Error reading body", http.StatusBadRequest)
+			return
+		}
+
 		// Select best custom webhook handler.
 		for _, route := range router.Routes {
-			if matches := route.Left(r); matches {
-				// Invoke handler.
-				route.Right(w, r)
+			done := route(w, r, bodyBytes)
+			if done {
 				return
 			}
 		}
 
 		// DEFAULT route handling.
-		defaultWebhookHandler(w, r, conn, ctx, verificationParams, messageChannel)
+		defaultWebhookHandler(w, r, conn, ctx, bodyBytes, verificationParams, messageChannel)
 	}
 }
 
-func defaultWebhookHandler(
-	w http.ResponseWriter,
+func defaultWebhookHandler(w http.ResponseWriter,
 	r *http.Request,
 	conn testroutines.TestableWebhookMessageVerifier,
 	ctx context.Context,
+	body []byte,
 	verificationParams *common.VerificationParams,
 	messageChannel chan webhookMessageResult,
 ) {
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Error reading body", http.StatusBadRequest)
-		sendMessage(ctx, messageChannel, webhookMessageResult{
-			Error: fmt.Sprintf("error reading request body %v", err),
-		})
-
-		return
-	}
-
 	request := &common.WebhookRequest{
 		Headers: r.Header,
 		Body:    body,

@@ -48,7 +48,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 			Expected: false,
 			ExpectedErrs: []error{
 				common.ErrMissingHeader,
-				testutils.StringError("header 'X-Slack-Signature'"),
+				testutils.StringError("header 'x-slack-signature'"),
 			},
 		},
 		{
@@ -65,7 +65,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 			Expected: false,
 			ExpectedErrs: []error{
 				common.ErrMissingHeader,
-				testutils.StringError("header 'X-Slack-Request-Timestamp'"),
+				testutils.StringError("header 'x-slack-request-timestamp'"),
 			},
 		},
 		{

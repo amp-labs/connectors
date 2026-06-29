@@ -8,9 +8,9 @@ import (
 )
 
 func TestEvent(t *testing.T) {
-	responseConversationCreated := testutils.DataFromFileAs[Event](t, "channel-created.json")
-	responseConversationDeleted := testutils.DataFromFileAs[Event](t, "channel-deleted.json")
-	responseConversationArchived := testutils.DataFromFileAs[Event](t, "channel-archived.json")
+	responseConversationCreated := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "channel-created.json")
+	responseConversationDeleted := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "channel-deleted.json")
+	responseConversationArchived := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "channel-archived.json")
 
 	for _, tt := range []testroutines.SubscriptionEventTestCase{
 		{

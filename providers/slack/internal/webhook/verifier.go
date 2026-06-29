@@ -57,12 +57,12 @@ func (v Verifier) VerifyWebhookMessage(
 		return false, ErrSigningSecretIsNotSet
 	}
 
-	slackSignature, err := httpkit.ExtractHeader(request.Headers, "X-Slack-Signature")
+	slackSignature, err := httpkit.ExtractRequiredHeader(request.Headers, "X-Slack-Signature")
 	if err != nil {
 		return false, err
 	}
 
-	timestampStr, err := httpkit.ExtractHeader(request.Headers, "X-Slack-Request-Timestamp")
+	timestampStr, err := httpkit.ExtractRequiredHeader(request.Headers, "X-Slack-Request-Timestamp")
 	if err != nil {
 		return false, err
 	}

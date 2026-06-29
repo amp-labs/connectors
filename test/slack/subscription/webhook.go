@@ -1,35 +1,28 @@
 package subscription
 
 import (
+	"encoding/json"
 	"net/http"
 
-	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func NewWebhookRouter() testscenario.WebhookRouter {
 	return testscenario.WebhookRouter{
-		Routes: []testscenario.Route{subscriptionConfirmation},
+		Routes: []testscenario.WebhookRouteFunc{subscriptionConfirmation},
 	}
 }
 
-// Default handling.
 // https://docs.slack.dev/reference/events/url_verification/
-var subscriptionConfirmation = testscenario.Route{
-	// This route is executed when Microsoft is verifying that webhook is rechable.
-	Left: func(request *http.Request) bool {
-		body, err := httpkit.ReadJSONBody[requestBody](request)
-		if err != nil {
+var subscriptionConfirmation = testscenario.WebhookRouteFunc(
+	func(writer http.ResponseWriter, request *http.Request, data []byte) bool {
+		body := requestBody{}
+		if err := json.Unmarshal(data, &body); err != nil {
 			return false
 		}
 
-		return body.Challenge != ""
-	},
-	Right: func(writer http.ResponseWriter, request *http.Request) {
-		body, err := httpkit.ReadJSONBody[requestBody](request)
-		if err != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
-			return
+		if body.Challenge == "" {
+			return false
 		}
 
 		writer.WriteHeader(http.StatusOK)
@@ -37,8 +30,10 @@ var subscriptionConfirmation = testscenario.Route{
 
 		// Bypassing HTML escaping is ok for this being used for local testing.
 		_, _ = writer.Write([]byte(body.Challenge)) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
+
+		return true
 	},
-}
+)
 
 type requestBody struct {
 	Token     string `json:"token"`

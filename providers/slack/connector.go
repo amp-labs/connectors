@@ -11,6 +11,12 @@ import (
 	"github.com/amp-labs/connectors/providers/slack/internal/webhook"
 )
 
+// Type Exports.
+type (
+	SubscriptionEvent          = webhook.Event
+	CollapsedSubscriptionEvent = webhook.CollapsedSubscriptionEvent
+)
+
 type Connector struct {
 	// Basic connector
 	*components.Connector
