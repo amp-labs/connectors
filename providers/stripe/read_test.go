@@ -332,11 +332,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 3,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"AMPERSAND-connectedAccountId": "acct_1Nv0FGQ9RKHgCVdK",
-						"id":                           "cus_Rd3ODBxHt9M5xK",
+						"AMPERSAND-connectedAccountId": "acct_2c81631b20648a90",
+						"id":                           "cus_Rd3NKXxTV0Hzpp",
 					},
-					Raw: map[string]any{"email": "hayley.huffman@example.com"},
-					Id:  "cus_Rd3ODBxHt9M5xK",
+					Raw: map[string]any{"email": "sean.foster@example.com"},
+					Id:  "cus_Rd3NKXxTV0Hzpp",
 				}, {
 					Fields: map[string]any{
 						"AMPERSAND-connectedAccountId": "acct_1Nv0FGQ9RKHgCVdK",
@@ -346,11 +346,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Id:  "cus_Rd3NjdGWtynChD",
 				}, {
 					Fields: map[string]any{
-						"AMPERSAND-connectedAccountId": "acct_2c81631b20648a90",
-						"id":                           "cus_Rd3NKXxTV0Hzpp",
+						"AMPERSAND-connectedAccountId": "acct_1Nv0FGQ9RKHgCVdK",
+						"id":                           "cus_Rd3ODBxHt9M5xK",
 					},
-					Raw: map[string]any{"email": "sean.foster@example.com"},
-					Id:  "cus_Rd3NKXxTV0Hzpp",
+					Raw: map[string]any{"email": "hayley.huffman@example.com"},
+					Id:  "cus_Rd3ODBxHt9M5xK",
 				}},
 				// We are not done reading
 				NextPage: `[{

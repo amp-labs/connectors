@@ -44,7 +44,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetReadByIds,
+			Comparator: testroutines.ComparatorSortedSubsetReadByIds,
 			Expected: []common.ReadResultRow{{
 				Id:     "57920",
 				Fields: map[string]any{"firstname": "Maxime Schaefer [1]"},

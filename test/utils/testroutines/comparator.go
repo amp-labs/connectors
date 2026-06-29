@@ -58,6 +58,8 @@ func ComparatorSubsetRead(serverURL string, actual, expected *common.ReadResult)
 // This ensures that the rows returned by connector are in the same order for the testing purposes.
 // The test expectation should follow this imposed order.
 // This is important to preserve the indexes of the test reports.
+//
+// Sort: Ascending order of common.ReadResultRow.Id.
 func ComparatorSubsetReadSorted(serverURL string, actual, expected *common.ReadResult) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
 
@@ -76,16 +78,24 @@ func ComparatorSubsetReadSorted(serverURL string, actual, expected *common.ReadR
 	}
 
 	sort.Slice(actual.Data, func(i, j int) bool {
-		return actual.Data[i].Id > actual.Data[j].Id
+		return actual.Data[i].Id < actual.Data[j].Id
 	})
 
 	return ComparatorSubsetRead(serverURL, actual, expected)
 }
 
-// ComparatorSubsetReadByIds compares two slices of ReadResultRow as a subset,
-// ignoring order and focusing only on relevant fields, raw data, associations, and identifiers.
-func ComparatorSubsetReadByIds(serverURL string, actual, expected []common.ReadResultRow) *testutils.CompareResult {
-	return ComparatorSubsetRead(serverURL,
+// ComparatorSortedSubsetReadByIds compares two slices of ReadResultRow as a subset,
+// ignoring order and focusing only on relevant fields: raw data, associations, and identifiers.
+//
+// The `actual` slice is sorted by ID to ensure consistent output.
+// The `expected` slice must be pre-sorted in the desired order. We intentionally do not sort
+// `expected` so that mismatch logs can correctly report the index positions that differ.
+//
+// Sort: Ascending order of common.ReadResultRow.Id.
+func ComparatorSortedSubsetReadByIds(serverURL string,
+	actual, expected []common.ReadResultRow,
+) *testutils.CompareResult {
+	return ComparatorSubsetReadSorted(serverURL,
 		&common.ReadResult{
 			Rows: int64(len(actual)),
 			Data: actual,
