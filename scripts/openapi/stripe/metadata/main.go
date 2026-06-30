@@ -142,7 +142,7 @@ func addLineItems(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2
 
 		fieldDisplayName := strings.ReplaceAll(field.Name, "_", " ")
 		fieldDisplayName = api3.CapitalizeFirstLetterEveryWord(fieldDisplayName)
-		fieldDisplayName = fmt.Sprintf("%v of Line Item", fieldDisplayName)
+		fieldDisplayName = fmt.Sprintf("Line Item's %v", fieldDisplayName)
 
 		fieldV2 := staticschema.FieldMetadataMapV2{
 			fieldName: staticschema.FieldMetadata{
@@ -159,12 +159,12 @@ func addLineItems(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2
 	schemas.Add("", objectNameCheckoutSessions, "", "", "",
 		staticschema.FieldMetadataMapV2{
 			"$['line_items']['has_more']": staticschema.FieldMetadata{
-				DisplayName:  "Has more",
+				DisplayName:  "LineItem's Has more",
 				ValueType:    common.ValueTypeBoolean,
 				ProviderType: "bool",
 			},
 			"$['line_items']['url']": staticschema.FieldMetadata{
-				DisplayName:  "LineItems URL next page",
+				DisplayName:  "LineItem's URL next page",
 				ValueType:    common.ValueTypeString,
 				ProviderType: "string",
 			},

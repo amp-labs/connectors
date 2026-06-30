@@ -62,6 +62,32 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name:       "Checkout Sessions",
+			Input:      []string{"checkout/sessions"},
+			Server:     mockserver.Dummy(),
+			Comparator: testroutines.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"checkout/sessions": {
+						DisplayName: "Payment Pages Checkout Sessions",
+						Fields: map[string]common.FieldMetadata{
+							"$['line_items']['data'][*]['quantity']": {
+								DisplayName:  "Line Item's Quantity",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"currency": {
+								DisplayName:  "currency",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+				},
+				Errors: nil,
+			},
+		},
 	}
 
 	for _, tt := range tests {
