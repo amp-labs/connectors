@@ -10,6 +10,17 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
+// ArrayWildIndex represents a wildcard index in JSONPath notation.
+//
+// Normally, a concrete numeric index is used to access a specific array item.
+// For our connectors, we often need to match all items in an array, so `*` is used instead.
+//
+// Example:
+//
+//	"$['line_items']['data'][*]['description']"
+//	==> line_items[data][0,1,2, ... ][description]
+const ArrayWildIndex = "*"
+
 // SelectedFieldsFunc returns a whitelist of the original record, it handles the nested fields too.
 // Second output is the identifier of this record.
 type SelectedFieldsFunc func(node *ajson.Node, fields []string) (map[string]any, string, error)
@@ -101,12 +112,21 @@ func parseJSONPath(path string) []string {
 		return []string{path}
 	}
 
+	// A match is an array of tuples [][]string.
+	// Here is an example of some tuples:
+	//	[0]: "['line_items']"
+	//	[1]: "line_items"
+	//	[2]: ""
+	//
+	//	[0]: "[*]"
+	//	[1]: ""
+	//	[2]: "*"
 	keys := make([]string, 0, len(matches))
 	for _, m := range matches {
 		if len(m) > 1 && m[1] != "" {
 			keys = append(keys, m[1])
-		} else if len(m) > 2 && m[2] == "*" {
-			keys = append(keys, "*")
+		} else if len(m) > 2 && m[2] == ArrayWildIndex {
+			keys = append(keys, ArrayWildIndex)
 		}
 	}
 
@@ -141,7 +161,7 @@ func getNestedValue(root any, path []string) (any, bool) { // nolint:lll,cyclop
 		}
 
 		// If the next token is "*", the current value must be an array.
-		if len(path) > 1 && path[1] == "*" {
+		if len(path) > 1 && path[1] == ArrayWildIndex {
 			arr, ok := child.([]any)
 			if !ok {
 				return nil, false
@@ -238,7 +258,7 @@ func setNode(current any, path []string, value any) any { // nolint:cyclop
 
 func makeContainer(next string) any {
 	switch next {
-	case "*":
+	case ArrayWildIndex:
 		return []any{}
 	default:
 		return make(map[string]any)
