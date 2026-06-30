@@ -23,9 +23,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: true,
-			Write:     false,
+			Write:     true,
 		},
 		SubscribeRequirements: &SubscribeRequirements{
 			// AccuLynx supports creating webhook subscriptions via API.
