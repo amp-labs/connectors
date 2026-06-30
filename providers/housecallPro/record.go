@@ -66,5 +66,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 		out = append(out, rows...)
 	}
 
+	extractAssociations(objectName, associations, out)
+
 	return out, nil
 }

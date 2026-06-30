@@ -108,7 +108,7 @@ func (c *Connector) parseReadResponse(
 		resp,
 		common.MakeRecordsFunc(responseKey),
 		makeFilterFunc(params, reqURL),
-		readhelper.MakeMarshaledDataFuncWithId(nil, readIDFieldByObject.Get(params.ObjectName)),
+		readMarshaller(params),
 		params.Fields,
 	)
 }
