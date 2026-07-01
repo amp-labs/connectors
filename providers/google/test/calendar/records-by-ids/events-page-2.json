@@ -1,0 +1,16 @@
+{
+  "kind": "calendar#events",
+  "summary": "test@withampersand.com",
+  "updated": "2026-06-18T10:00:00.000Z",
+  "timeZone": "America/Los_Angeles",
+  "accessRole": "owner",
+  "items": [
+    {
+      "kind": "calendar#event",
+      "id": "evt-cancelled-1",
+      "status": "cancelled",
+      "created": "2026-06-01T09:42:17.000Z",
+      "updated": "2026-06-18T09:30:00.000Z"
+    }
+  ]
+}

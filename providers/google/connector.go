@@ -234,6 +234,10 @@ func (c *Connector) VerifyWebhookMessage(
 	request *common.WebhookRequest,
 	params *common.VerificationParams,
 ) (bool, error) {
+	if c.Calendar != nil {
+		return c.Calendar.VerifyWebhookMessage(ctx, request, params)
+	}
+
 	if c.Mail != nil {
 		return c.Mail.VerifyWebhookMessage(ctx, request, params)
 	}
@@ -247,6 +251,10 @@ func (c *Connector) GetRecordsByIds(ctx context.Context, // nolint: revive
 	fields []string,
 	associations []string,
 ) ([]common.ReadResultRow, error) {
+	if c.Calendar != nil {
+		return c.Calendar.GetRecordsByIds(ctx, objectName, recordIds, fields, associations)
+	}
+
 	if c.Mail != nil {
 		return c.Mail.GetRecordsByIds(ctx, objectName, recordIds, fields, associations)
 	}
@@ -276,7 +284,36 @@ type (
 	CalendarWatchRequest       = calendar.WatchRequest
 	CalendarWatchResponse      = calendar.WatchResponse
 	CalendarSubscriptionResult = calendar.CalendarSubscriptionResult
+	CalendarVerificationParams = calendar.VerificationParams
 )
+
+// CalendarVerifier is a standalone Google Calendar webhook verifier.
+//
+// The multiplexed *Connector dispatches VerifyWebhookMessage/GetRecordsByIds on
+// c.Calendar != nil, so a zero-value &Connector{} (one not initialized for the Calendar
+// module) falls through to ErrNotImplemented and silently drops the webhook. The server's
+// webhook config can point at a *CalendarVerifier instead, which always carries a Calendar
+// adapter and therefore verifies and enriches without depending on that dispatch.
+//
+// It embeds *calendar.Adapter, which already satisfies WebhookVerifierConnector
+// (VerifyWebhookMessage + GetRecordsByIds + the base Connector methods).
+type CalendarVerifier struct {
+	*calendar.Adapter
+}
+
+var _ connectors.WebhookVerifierConnector = (*CalendarVerifier)(nil)
+
+// NewCalendarVerifier builds a standalone Calendar webhook verifier. Unlike NewConnector,
+// it always initializes the Calendar adapter regardless of the configured module, so the
+// returned verifier is never in the nil-dispatch state described on CalendarVerifier.
+func NewCalendarVerifier(params common.ConnectorParams) (*CalendarVerifier, error) {
+	adapter, err := calendar.NewAdapter(params)
+	if err != nil {
+		return nil, err
+	}
+
+	return &CalendarVerifier{Adapter: adapter}, nil
+}
 
 // Re-exports of Gmail history.list types so external callers can use them
 // without importing the internal mail package.

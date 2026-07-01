@@ -1,0 +1,18 @@
+{
+  "kind": "calendar#events",
+  "summary": "test@withampersand.com",
+  "updated": "2026-06-18T10:00:00.000Z",
+  "timeZone": "America/Los_Angeles",
+  "accessRole": "owner",
+  "nextPageToken": "TOKEN2",
+  "items": [
+    {
+      "kind": "calendar#event",
+      "id": "evt-confirmed-1",
+      "status": "confirmed",
+      "summary": "Edited meeting",
+      "created": "2026-06-01T09:42:20.000Z",
+      "updated": "2026-06-18T09:00:00.000Z"
+    }
+  ]
+}

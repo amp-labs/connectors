@@ -7,11 +7,14 @@ import (
 	"net/http"
 	"net/url"
 	"slices"
+	"strconv"
 	"sync"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/google/uuid"
 )
@@ -20,14 +23,17 @@ import (
 // parallel so we don't trip Google Calendar's per-user rate limits.
 const calendarMaxConcurrentWatches = 4
 
+// Compile-time interface conformance checks.
+var (
+	_ connectors.SubscribeConnector              = &Adapter{}
+	_ connectors.SubscriptionMaintainerConnector = &Adapter{}
+)
+
 // objectWatchPaths maps supported subscribe objects to their watch URL paths.
 //
 //nolint:gochecknoglobals
 var objectWatchPaths = map[common.ObjectName]string{
-	objectNameEvents:       "calendars/primary/events/watch",
-	objectNameCalendarList: "users/me/calendarList/watch",
-	objectNameSettings:     "users/me/settings/watch",
-	objectNameACL:          "calendars/primary/acl/watch",
+	objectNameEvents: "calendars/primary/events/watch",
 }
 
 // WatchRequest is the caller-provided config for creating watch channels.
@@ -219,6 +225,153 @@ func (a *Adapter) RunScheduledMaintenance(
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
 	return a.UpdateSubscription(ctx, params, previousResult)
+}
+
+// channelTokenHeader carries the arbitrary token we set on the watch channel
+// (WatchRequest.Token). Google echoes it verbatim on every push notification, so it
+// is the only request-bound value we can authenticate against — Calendar push bodies
+// are empty.
+//
+//nolint:gosec // G101 false positive: this is an HTTP header name, not a credential.
+const channelTokenHeader = "X-Goog-Channel-Token"
+
+// VerificationParams holds the parameters needed to verify a Google Calendar webhook.
+//
+// ChannelToken is the token the caller registered on the channel when subscribing
+// (WatchRequest.Token); the incoming X-Goog-Channel-Token header is compared against it
+// verbatim. The connector is agnostic to the token's format — it compares whatever the
+// caller supplies.
+type VerificationParams struct {
+	ChannelToken string
+}
+
+// VerifyWebhookMessage verifies that a webhook message came from Google Calendar.
+// Like Zoho, Google does not sign the payload; instead we register a token of our choice
+// on the watch channel and Google echoes it back on every push notification. Unlike Zoho,
+// which carries the token in the response body, Calendar bodies are empty so the token
+// arrives in the X-Goog-Channel-Token header.
+func (a *Adapter) VerifyWebhookMessage(
+	_ context.Context,
+	request *common.WebhookRequest,
+	params *common.VerificationParams,
+) (bool, error) {
+	calendarParams, err := common.AssertType[*VerificationParams](params.Param)
+	if err != nil {
+		return false, fmt.Errorf("invalid verification params: %w", err)
+	}
+
+	if calendarParams.ChannelToken == "" {
+		return false, fmt.Errorf("%w: %s", errFieldNotFound, "channelToken")
+	}
+
+	tokenStr, err := parseToken(request)
+	if err != nil {
+		return false, fmt.Errorf("error parsing token: %w", err)
+	}
+
+	return tokenStr == calendarParams.ChannelToken, nil
+}
+
+// parseToken extracts the channel token Google echoes back on each push notification.
+// Calendar delivers an empty body, so the token arrives in the X-Goog-Channel-Token header.
+func parseToken(request *common.WebhookRequest) (string, error) {
+	if request == nil {
+		return "", fmt.Errorf("%w: %s", errFieldNotFound, "webhook request")
+	}
+
+	token := request.Headers.Get(channelTokenHeader)
+	if token == "" {
+		return "", fmt.Errorf("%w: %s", errFieldNotFound, channelTokenHeader)
+	}
+
+	return token, nil
+}
+
+// GetRecordsByIds fetches the events that changed since a server-supplied checkpoint.
+//
+// # The recordIds convention (Calendar-specific)
+//
+// Calendar push notifications deliver an empty body — only headers are sent
+// (X-Goog-Resource-State, X-Goog-Resource-ID, etc.) — so they carry no record IDs to
+// enrich from. Rather than change the shared BatchRecordReaderConnector signature for a
+// Calendar-only need, the subscribe pipeline reuses recordIds to deliver the fetch window:
+//
+//	recordIds[0] is NOT an event ID. It is an RFC3339 timestamp in UTC with milliseconds,
+//	e.g. "2026-06-18T00:00:00.000Z" — the server's checkpoint of "changed since".
+//
+// It is used verbatim as the events.list updatedMin query param (it is already the exact
+// format Google expects, so no parsing or reformatting is done here). Persisting and
+// advancing the checkpoint, and de-duplicating across overlapping notifications, are the
+// server's responsibility — this method is a stateless read of one window.
+//
+// # What is fetched
+//
+//   - Only the "events" object is supported (other objects return ErrGetRecordNotSupportedForObject).
+//   - updatedMin filters by modification time, so edits to past or future events are all
+//     captured (unlike timeMin/timeMax, which filter by scheduled time).
+//   - showDeleted=true so deletions are returned as events with status:"cancelled".
+//
+// ref: https://developers.google.com/workspace/calendar/api/v3/reference/events/list
+func (a *Adapter) GetRecordsByIds( //nolint:revive
+	ctx context.Context,
+	objectName string,
+	recordIds []string, //nolint:revive
+	fields []string,
+	associations []string,
+) ([]common.ReadResultRow, error) {
+	if objectName != objectNameEvents {
+		return nil, common.ErrGetRecordNotSupportedForObject
+	}
+
+	if len(recordIds) == 0 || recordIds[0] == "" {
+		return nil, fmt.Errorf("%w: recordIds[0] must be an updatedMin timestamp", errMissingParams)
+	}
+
+	updatedMin := recordIds[0]
+
+	url, err := a.getURL(objectNameEvents)
+	if err != nil {
+		return nil, fmt.Errorf("GetRecordsByIds: building URL: %w", err)
+	}
+
+	url.WithQueryParam("maxResults", strconv.Itoa(defaultPageSize))
+	url.WithQueryParam("showDeleted", "true")
+	url.WithQueryParam("updatedMin", updatedMin)
+
+	// Reuse the standard read parsing (record extraction, field marshaling, pagination).
+	readParams := common.ReadParams{
+		ObjectName: objectNameEvents,
+		Fields:     datautils.NewSetFromList(fields),
+	}
+
+	rows := make([]common.ReadResultRow, 0)
+
+	for pageURL := url.String(); pageURL != ""; {
+		request, err := http.NewRequestWithContext(ctx, http.MethodGet, pageURL, nil)
+		if err != nil {
+			return nil, fmt.Errorf("GetRecordsByIds: building request: %w", err)
+		}
+
+		response, err := a.JSONHTTPClient().Get(ctx, pageURL)
+		if err != nil {
+			return nil, fmt.Errorf("GetRecordsByIds: events.list: %w", err)
+		}
+
+		result, err := a.parseReadResponse(ctx, readParams, request, response)
+		if err != nil {
+			return nil, fmt.Errorf("GetRecordsByIds: parsing events: %w", err)
+		}
+
+		rows = append(rows, result.Data...)
+
+		if result.Done {
+			break
+		}
+
+		pageURL = result.NextPage.String()
+	}
+
+	return rows, nil
 }
 
 // watchResult pairs a created watch channel with the object it belongs to so the
