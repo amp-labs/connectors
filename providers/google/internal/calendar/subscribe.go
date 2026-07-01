@@ -231,6 +231,7 @@ func (a *Adapter) RunScheduledMaintenance(
 // (WatchRequest.Token). Google echoes it verbatim on every push notification, so it
 // is the only request-bound value we can authenticate against — Calendar push bodies
 // are empty.
+//
 //nolint:gosec // G101 false positive: this is an HTTP header name, not a credential.
 const channelTokenHeader = "X-Goog-Channel-Token"
 
