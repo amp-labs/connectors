@@ -12,13 +12,35 @@ import (
 	"github.com/amp-labs/connectors/common/xquery"
 )
 
-// BodyBytes returns a check expecting body to match template bytes.
-func BodyBytes(expected []byte) Check {
-	return Body(string(expected))
+type FieldIgnoreRule struct {
+	name  string
+	zooms []string
 }
 
-// Body returns a check expecting body to match template text.
-func Body(expected string) Check {
+// IgnoreBodyField creates a rule that ignores the specified field path during body comparison.
+//
+// Examples:
+//   - IgnoreBodyField("id")
+//   - IgnoreBodyField("id", "profile", "user") -- ignores 'profile.user.id'.
+func IgnoreBodyField(fieldName string, zoom ...string) FieldIgnoreRule {
+	return FieldIgnoreRule{
+		name:  fieldName,
+		zooms: zoom,
+	}
+}
+
+// BodyBytes returns a check that expects the request body to match the provided template bytes.
+//
+// If ignore rules are provided, they are applied when comparing JSON bodies.
+func BodyBytes(expected []byte, rules ...FieldIgnoreRule) Check {
+	return Body(string(expected), rules...)
+}
+
+// Body returns a check that expects the request body to match the provided template text.
+//
+// The body is compared as plain text, JSON, or XML. When JSON comparison is
+// used, any provided ignore rules are applied to nested fields before matching.
+func Body(expected string, rules ...FieldIgnoreRule) Check {
 	return func(w http.ResponseWriter, r *http.Request) bool {
 		reader := r.Body
 
@@ -31,7 +53,7 @@ func Body(expected string) Check {
 		r.Body = io.NopCloser(bytes.NewBuffer(body))
 
 		textEquals := textBodyMatch(body, expected)
-		jsonEquals := jsonBodyMatch(body, expected)
+		jsonEquals := jsonBodyMatch(body, expected, rules)
 		xmlEquals := xmlBodyMatch(body, expected)
 
 		return textEquals || jsonEquals || xmlEquals
@@ -53,13 +75,13 @@ func Body(expected string) Check {
 //
 // Multiple placeholders may be used in the same template. Each occurrence
 // of a placeholder receives the same permutation ordering.
-func PermuteJSONBody(template string, slots ...PermuteSlot) Condition {
+func PermuteJSONBody(template string, slots PermuteSlots, rules ...FieldIgnoreRule) Condition {
 	var build func(int, string) Condition
 
 	build = func(i int, current string) Condition {
 		// base case: all slots filled
 		if i == len(slots) {
-			return Body(current)
+			return Body(current, rules...)
 		}
 
 		slot := slots[i]
@@ -86,7 +108,7 @@ func PermuteJSONBody(template string, slots ...PermuteSlot) Condition {
 	return build(0, template)
 }
 
-func jsonBodyMatch(actual []byte, expected string) bool {
+func jsonBodyMatch(actual []byte, expected string, rules []FieldIgnoreRule) bool {
 	first := make(map[string]any)
 	if err := json.Unmarshal(actual, &first); err != nil {
 		return false
@@ -97,7 +119,58 @@ func jsonBodyMatch(actual []byte, expected string) bool {
 		return false
 	}
 
-	return reflect.DeepEqual(first, second)
+	firstObj := applyIgnoreRules(first, rules)
+	secondObj := applyIgnoreRules(second, rules)
+
+	return reflect.DeepEqual(firstObj, secondObj)
+}
+
+func applyIgnoreRules(entity any, rules []FieldIgnoreRule) any {
+	for _, rule := range rules {
+		entity = removePath(entity, rulePath(rule))
+	}
+
+	return entity
+}
+
+func rulePath(rule FieldIgnoreRule) []string {
+	path := make([]string, 0, 1+len(rule.zooms))
+	path = append(path, rule.zooms...)
+	path = append(path, rule.name)
+
+	return path
+}
+
+func removePath(v any, path []string) any {
+	if len(path) == 0 {
+		return v
+	}
+
+	switch current := v.(type) {
+	case map[string]any:
+		key := path[0]
+		if len(path) == 1 {
+			delete(current, key)
+			return current
+		}
+
+		next, ok := current[key]
+		if !ok {
+			return current
+		}
+
+		current[key] = removePath(next, path[1:])
+		return current
+
+	case []any:
+		for i := range current {
+			current[i] = removePath(current[i], path)
+		}
+		return current
+
+	default:
+		return v
+	}
 }
 
 func xmlBodyMatch(actual []byte, expected string) bool {
@@ -149,6 +222,8 @@ func render(values []string, quote bool) string {
 
 	return strings.Join(values, ",")
 }
+
+type PermuteSlots []PermuteSlot
 
 type PermuteSlot struct {
 	Name     string
