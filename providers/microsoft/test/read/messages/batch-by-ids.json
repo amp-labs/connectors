@@ -1,0 +1,193 @@
+{
+  "responses": [
+    {
+      "id": "me/messages_msg1",
+      "status": 200,
+      "headers": {
+        "Cache-Control": "private",
+        "Content-Type": "application/json; odata.metadata=minimal; odata.streaming=true; IEEE754Compatible=false; charset=utf-8"
+      },
+      "body": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/messages/$entity",
+        "@odata.etag": "W/\"msg1-etag\"",
+        "id": "msg1",
+        "createdDateTime": "2026-04-21T01:12:24Z",
+        "lastModifiedDateTime": "2026-04-21T01:12:24Z",
+        "changeKey": "msg1-changekey",
+        "categories": [],
+        "receivedDateTime": "2026-04-21T01:12:24Z",
+        "sentDateTime": "2026-04-21T01:12:24Z",
+        "hasAttachments": false,
+        "internetMessageId": "<msg1@test.com>",
+        "subject": "Hello",
+        "bodyPreview": "Hi there",
+        "importance": "normal",
+        "parentFolderId": "folder1",
+        "conversationId": "conv1",
+        "conversationIndex": "idx1",
+        "isDeliveryReceiptRequested": false,
+        "isReadReceiptRequested": false,
+        "isRead": true,
+        "isDraft": true,
+        "webLink": "https://outlook.office365.com/owa/?ItemID=msg1",
+        "inferenceClassification": "focused",
+        "body": {
+          "contentType": "text",
+          "content": "Hi there"
+        },
+        "sender": {
+          "emailAddress": {
+            "name": "Alice",
+            "address": "alice@test.com"
+          }
+        },
+        "from": {
+          "emailAddress": {
+            "name": "Alice",
+            "address": "alice@test.com"
+          }
+        },
+        "toRecipients": [
+          {
+            "emailAddress": {
+              "name": "Bob",
+              "address": "bob@test.com"
+            }
+          }
+        ],
+        "ccRecipients": [],
+        "bccRecipients": [],
+        "replyTo": [],
+        "flag": {
+          "flagStatus": "notFlagged"
+        }
+      }
+    },
+    {
+      "id": "me/messages_msg2",
+      "status": 200,
+      "headers": {
+        "Cache-Control": "private",
+        "Content-Type": "application/json; odata.metadata=minimal; odata.streaming=true; IEEE754Compatible=false; charset=utf-8"
+      },
+      "body": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/messages/$entity",
+        "@odata.etag": "W/\"msg2-etag\"",
+        "id": "msg2",
+        "createdDateTime": "2026-04-21T01:12:22Z",
+        "lastModifiedDateTime": "2026-04-21T01:12:22Z",
+        "changeKey": "msg2-changekey",
+        "categories": [],
+        "receivedDateTime": "2026-04-21T01:12:22Z",
+        "sentDateTime": "2026-04-21T01:12:22Z",
+        "hasAttachments": false,
+        "internetMessageId": "<msg2@test.com>",
+        "subject": "Meeting",
+        "bodyPreview": "See you soon",
+        "importance": "normal",
+        "parentFolderId": "folder1",
+        "conversationId": "conv2",
+        "conversationIndex": "idx2",
+        "isDeliveryReceiptRequested": false,
+        "isReadReceiptRequested": false,
+        "isRead": true,
+        "isDraft": true,
+        "webLink": "https://outlook.office365.com/owa/?ItemID=msg2",
+        "inferenceClassification": "focused",
+        "body": {
+          "contentType": "text",
+          "content": "See you soon"
+        },
+        "sender": {
+          "emailAddress": {
+            "name": "Charlie",
+            "address": "charlie@test.com"
+          }
+        },
+        "from": {
+          "emailAddress": {
+            "name": "Charlie",
+            "address": "charlie@test.com"
+          }
+        },
+        "toRecipients": [
+          {
+            "emailAddress": {
+              "name": "David",
+              "address": "david@test.com"
+            }
+          }
+        ],
+        "ccRecipients": [],
+        "bccRecipients": [],
+        "replyTo": [],
+        "flag": {
+          "flagStatus": "notFlagged"
+        }
+      }
+    },
+    {
+      "id": "me/messages_msg3",
+      "status": 200,
+      "headers": {
+        "Cache-Control": "private",
+        "Content-Type": "application/json; odata.metadata=minimal; odata.streaming=true; IEEE754Compatible=false; charset=utf-8"
+      },
+      "body": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/messages/$entity",
+        "@odata.etag": "W/\"msg3-etag\"",
+        "id": "msg3",
+        "createdDateTime": "2026-04-21T01:12:23Z",
+        "lastModifiedDateTime": "2026-04-21T01:12:23Z",
+        "changeKey": "msg3-changekey",
+        "categories": [],
+        "receivedDateTime": "2026-04-21T01:12:23Z",
+        "sentDateTime": "2026-04-21T01:12:23Z",
+        "hasAttachments": false,
+        "internetMessageId": "<msg3@test.com>",
+        "subject": "Lunch",
+        "bodyPreview": "Hungry?",
+        "importance": "normal",
+        "parentFolderId": "folder1",
+        "conversationId": "conv3",
+        "conversationIndex": "idx3",
+        "isDeliveryReceiptRequested": false,
+        "isReadReceiptRequested": false,
+        "isRead": true,
+        "isDraft": true,
+        "webLink": "https://outlook.office365.com/owa/?ItemID=msg3",
+        "inferenceClassification": "focused",
+        "body": {
+          "contentType": "text",
+          "content": "Hungry?"
+        },
+        "sender": {
+          "emailAddress": {
+            "name": "Eve",
+            "address": "eve@test.com"
+          }
+        },
+        "from": {
+          "emailAddress": {
+            "name": "Eve",
+            "address": "eve@test.com"
+          }
+        },
+        "toRecipients": [
+          {
+            "emailAddress": {
+              "name": "Frank",
+              "address": "frank@test.com"
+            }
+          }
+        ],
+        "ccRecipients": [],
+        "bccRecipients": [],
+        "replyTo": [],
+        "flag": {
+          "flagStatus": "notFlagged"
+        }
+      }
+    }
+  ]
+}
