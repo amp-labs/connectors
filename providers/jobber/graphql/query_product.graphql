@@ -1,0 +1,23 @@
+query Product($id: EncodedId!) {
+  product(id: $id) {
+    bookableType
+    category
+    defaultUnitCost
+    description
+    durationMinutes
+    id
+    internalUnitCost
+    markup
+    name
+    onlineBookingSortOrder
+    onlineBookingsEnabled
+    quantityRange{
+      maxQuantity
+      minQuantity
+      quantityEnabled
+    }
+    taxable
+    visible
+
+  }
+}

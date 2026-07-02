@@ -1,0 +1,14 @@
+mutation WebhookEndpointCreate($topic: WebHookTopicEnum!, $url: String!) {
+    webhookEndpointCreate(input: { topic: $topic, url: $url }) {
+        webhookEndpoint {
+            id
+            topic
+            url
+            createdAt
+        }
+        userErrors {
+            message
+            path
+        }
+    }
+}

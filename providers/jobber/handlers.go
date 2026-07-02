@@ -45,7 +45,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 
 	// Create the request body as a map
 	requestBody := map[string]string{
-		"query": query,
+		gqlQueryKey: query,
 	}
 
 	// Marshal the request body to JSON
@@ -152,7 +152,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	requestBody := map[string]string{
-		"query": query,
+		gqlQueryKey: query,
 	}
 
 	jsonBody, err := json.Marshal(requestBody)
@@ -207,14 +207,14 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	// Prepare request body with mutation & variables
 	requestBody := map[string]any{
-		"query": mutation,
-		"variables": map[string]any{
+		gqlQueryKey: mutation,
+		gqlVariablesKey: map[string]any{
 			"input": params.RecordData,
 		},
 	}
 
 	if params.RecordId != "" {
-		vars, ok := requestBody["variables"].(map[string]any)
+		vars, ok := requestBody[gqlVariablesKey].(map[string]any)
 		if ok {
 			vars["id"] = params.RecordId
 		}
@@ -338,8 +338,8 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 	}
 
 	requestBody := map[string]any{
-		"query": mutation,
-		"variables": map[string]string{
+		gqlQueryKey: mutation,
+		gqlVariablesKey: map[string]string{
 			"id": params.RecordId,
 		},
 	}

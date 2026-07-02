@@ -316,7 +316,6 @@ query TimeSheetEntryconnection{
       startAt
       ticking
       updatedAt
-      visitDurationTotal
     }
     pageInfo{
       endCursor
