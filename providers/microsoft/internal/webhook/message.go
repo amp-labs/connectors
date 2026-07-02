@@ -8,22 +8,22 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// EventCollection is a change notification sent by Microsoft Graph to the webhook.
+// CollapsedSubscriptionEvent is a change notification sent by Microsoft Graph to the webhook.
 // https://learn.microsoft.com/en-us/graph/change-notifications-delivery-webhooks?tabs=http#change-notification-example
-type EventCollection map[string]any
+type CollapsedSubscriptionEvent map[string]any
 
-// Event is a singular notification message within EventCollection.
+// Event is a singular notification message within CollapsedSubscriptionEvent.
 type Event map[string]any
 
 var (
-	_ common.CollapsedSubscriptionEvent = EventCollection{}
+	_ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 	_ common.SubscriptionEvent          = Event{}
 	_ common.SubscriptionUpdateEvent    = Event{}
 
 	ErrMissingField = errors.New("missing field")
 )
 
-func (c EventCollection) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
+func (c CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
 	value, ok := c["value"]
 	if !ok {
 		return nil, fmt.Errorf("%w: missing key 'value'", common.ErrSubscriptionEventList)
@@ -48,7 +48,7 @@ func (c EventCollection) SubscriptionEventList() ([]common.SubscriptionEvent, er
 	return events, nil
 }
 
-func (c EventCollection) RawMap() (map[string]any, error) {
+func (c CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
 	return maps.Clone(c), nil
 }
 
