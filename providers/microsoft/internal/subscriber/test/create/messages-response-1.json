@@ -1,0 +1,32 @@
+{
+  "responses": [
+    {
+      "id": "me/messages",
+      "status": 201,
+      "headers": {
+        "Location": "https://subscriptionstore.windows.net/1.0/NA/subscriptions('5917db81-22d5-426d-af91-e285927592b7')",
+        "Cache-Control": "no-cache",
+        "OData-Version": "4.0",
+        "Content-Type": "application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8"
+      },
+      "body": {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#subscriptions/$entity",
+        "id": "5917db81-22d5-426d-af91-e285927592b7",
+        "resource": "me/messages",
+        "applicationId": "39d7eec8-2032-4dd3-959f-d92d8a4e2ad3",
+        "changeType": "created,updated,deleted",
+        "clientState": "me/messages",
+        "notificationUrl": "https://test.com/webhook",
+        "notificationQueryOptions": null,
+        "lifecycleNotificationUrl": null,
+        "expirationDateTime": "2026-04-17T17:00:57Z",
+        "creatorId": "ae87552f-48fc-4dec-9322-65040bf9fdfd",
+        "includeResourceData": null,
+        "latestSupportedTlsVersion": "v1_2",
+        "encryptionCertificate": null,
+        "encryptionCertificateId": null,
+        "notificationUrlAppId": null
+      }
+    }
+  ]
+}
