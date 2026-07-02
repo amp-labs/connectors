@@ -281,8 +281,17 @@ func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMet
 	return result
 }
 
-func ComparatorSubscriptionWithResult(
-	resultComparator func(expectedResult, actualResult any) *testutils.CompareResult,
+// ComparatorSubscriptionWithResult returns a comparator for subscription results
+// that first compares the common SubscriptionResult fields and then compares the
+// nested Result values with the provided resultComparator.
+//
+// The generic type parameter R represents the concrete Result payload type.
+//
+// Both expected.Result and actual.Result must be pointers. Otherwise, this is not a valid
+// connector implementation.
+// If Result is of no importance use ComparatorSubscriptionWithoutResult.
+func ComparatorSubscriptionWithResult[R any](
+	resultComparator func(expectedResult, actualResult *R) *testutils.CompareResult,
 ) Comparator[*common.SubscriptionResult] {
 	return func(_ string, actual, expected *common.SubscriptionResult) *testutils.CompareResult {
 		result := testutils.NewCompareResult()
@@ -292,11 +301,21 @@ func ComparatorSubscriptionWithResult(
 		// If that is the case we proceed with comparing these results.
 		if result.Assert("expected.Result must be pointer", true, isPointer(expected.Result)) &&
 			result.Assert("actual.Result must be pointer", true, isPointer(actual.Result)) {
-			result.Merge(resultComparator(expected.Result, actual.Result))
+			result.Merge(resultComparator(expected.Result.(*R), actual.Result.(*R)))
 		}
 
 		return result
 	}
+}
+
+// ComparatorSubscriptionWithoutResult compares subscription results without inspecting
+// the nested Result payload. It is useful when the Result field is irrelevant for the test case.
+//
+// If Result data structure should be compared use ComparatorSubscriptionWithResult.
+func ComparatorSubscriptionWithoutResult(
+	_ string, actual, expected *common.SubscriptionResult,
+) *testutils.CompareResult {
+	return mockutils.SubscriptionResultComparator.CompareWithoutResultArg(actual, expected)
 }
 
 func isPointer(v any) bool {
@@ -304,12 +323,6 @@ func isPointer(v any) bool {
 		return false
 	}
 	return reflect.ValueOf(v).Kind() == reflect.Ptr
-}
-
-func ComparatorSubscriptionWithoutResult(
-	_ string, actual, expected *common.SubscriptionResult,
-) *testutils.CompareResult {
-	return mockutils.SubscriptionResultComparator.CompareWithoutResultArg(actual, expected)
 }
 
 func mapIsSubsetMap(subset, superset map[string]any) bool {

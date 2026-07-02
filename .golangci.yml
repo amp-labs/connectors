@@ -42,8 +42,10 @@ linters:
         # Use var-naming, but add a special rule to accept "Id" rather than forcing "ID"
         - name: var-naming
           arguments:
-            - - ID
-              - API
+            - [ Id, Api ] # AllowList
+            - [ ] # DenyList
+            # TODO set it to false/remove it. All cases must be in AllowList/DenyList. Apparently duplicates (ignoring case) in one category are not allowed.
+            - - skip-initialism-name-checks: true
           disabled: false
     # https://golangci-lint.run/docs/linters/configuration/#staticcheck
     staticcheck:
