@@ -369,6 +369,44 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Read customers for specific connected accounts",
+			Input: common.ReadParams{
+				ObjectName: "customers",
+				Fields:     connectors.Fields("id"),
+				Opts: ReadParamsOpts{
+					ReadForConnectedAccounts:    []string{"acct_2c81631b20648a90"},
+					ReadForAllConnectedAccounts: true, // ignored
+				},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.Path("/v1/customers"),
+						mockcond.Header(map[string][]string{
+							"Stripe-Account": {"acct_2c81631b20648a90"},
+						}),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCustomersLastPage),
+				}},
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetReadSorted,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"AMPERSAND-connectedAccountId": "acct_2c81631b20648a90",
+						"id":                           "cus_Rd3NKXxTV0Hzpp",
+					},
+					Raw: map[string]any{"email": "sean.foster@example.com"},
+					Id:  "cus_Rd3NKXxTV0Hzpp",
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name: "Aggregate next page token correctly navigates to the next page",
 			Input: common.ReadParams{
 				ObjectName: "customers",
