@@ -32,8 +32,9 @@ func InterpretError(res *http.Response, body []byte) error {
 		// Forbidden, not retryable
 		return NewHTTPError(res.StatusCode, body, headers, createError(ErrForbidden))
 	case http.StatusNotFound:
-		// Semantics are debatable (temporarily missing vs. permanently gone), but for now treat this as a retryable error
-		return NewHTTPError(res.StatusCode, body, headers, createError(ErrRetryable))
+		// Resource missing or access revoked — non-retryable (matches interpreter.DefaultStatusCodeMappingToErr).
+		return NewHTTPError(res.StatusCode, body, headers,
+			createError(fmt.Errorf("%w: %w", ErrBadRequest, ErrNotFound)))
 	case http.StatusTooManyRequests:
 		// Too many requests, retryable
 		return NewHTTPError(res.StatusCode, body, headers, createError(ErrRetryable))
