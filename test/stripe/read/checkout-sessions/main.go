@@ -30,9 +30,13 @@ func main() {
 			// "line_items",
 			"$['line_items']['data'][*]['currency']",
 			"$['line_items']['data'][*]['id']",
+			"$['line_items']['data'][*]['data']['price']['product']",
 			"$['line_items']['has_more']",
 			"$['line_items']['url']",
+			"$['customer']['email']",
+			"$['customer']['name']",
 		),
+		PageSize: 1,
 	})
 	if err != nil {
 		utils.Fail("error reading from provider", "error", err)
