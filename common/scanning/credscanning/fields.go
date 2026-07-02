@@ -186,9 +186,12 @@ func getFields(info providers.ProviderInfo,
 		withRequiredWorkspace = info.Oauth2Opts.ExplicitWorkspaceRequired
 	}
 
+	workspaceMode := optionalType
 	if info.RequiresWorkspace() || withRequiredWorkspace {
-		lists.Add(requiredType, Fields.Workspace)
+		workspaceMode = requiredType
 	}
+
+	lists.Add(workspaceMode, Fields.Workspace)
 
 	return lists, nil
 }
