@@ -70,12 +70,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"checkout/sessions": {
-						DisplayName: "Payment Pages Checkout Sessions",
+						DisplayName: "Payment Checkout Sessions",
 						Fields: map[string]common.FieldMetadata{
-							"$['line_items']['data'][*]['quantity']": {
-								DisplayName:  "Line Item's Quantity",
-								ValueType:    "int",
-								ProviderType: "integer",
+							"line_items": {
+								DisplayName:  "line_items",
+								ValueType:    "other",
+								ProviderType: "object",
 							},
 							"currency": {
 								DisplayName:  "currency",

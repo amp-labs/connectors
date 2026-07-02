@@ -286,7 +286,7 @@
           }
         },
         "balance/history": {
-          "displayName": "Balance History Transactions",
+          "displayName": "Balance Transactions",
           "path": "balance/history",
           "responseKey": "data",
           "fields": {
@@ -1374,85 +1374,10 @@
           }
         },
         "checkout/sessions": {
-          "displayName": "Payment Pages Checkout Sessions",
+          "displayName": "Payment Checkout Sessions",
           "path": "checkout/sessions",
           "responseKey": "data",
           "fields": {
-            "$['line_items']['data'][*]['amount_discount']": {
-              "displayName": "Line Item's Amount Discount",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "$['line_items']['data'][*]['amount_subtotal']": {
-              "displayName": "Line Item's Amount Subtotal",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "$['line_items']['data'][*]['amount_tax']": {
-              "displayName": "Line Item's Amount Tax",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "$['line_items']['data'][*]['amount_total']": {
-              "displayName": "Line Item's Amount Total",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "$['line_items']['data'][*]['currency']": {
-              "displayName": "Line Item's Currency",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "$['line_items']['data'][*]['description']": {
-              "displayName": "Line Item's Description",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "$['line_items']['data'][*]['discounts']": {
-              "displayName": "Line Item's Discounts",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "$['line_items']['data'][*]['id']": {
-              "displayName": "Line Item's Id",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "$['line_items']['data'][*]['object']": {
-              "displayName": "Line Item's Object",
-              "valueType": "singleSelect",
-              "providerType": "string",
-              "values": [
-                {
-                  "value": "item",
-                  "displayValue": "item"
-                }
-              ]
-            },
-            "$['line_items']['data'][*]['price']": {
-              "displayName": "Line Item's Price",
-              "valueType": "other"
-            },
-            "$['line_items']['data'][*]['quantity']": {
-              "displayName": "Line Item's Quantity",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "$['line_items']['data'][*]['taxes']": {
-              "displayName": "Line Item's Taxes",
-              "valueType": "other",
-              "providerType": "array"
-            },
-            "$['line_items']['has_more']": {
-              "displayName": "LineItem's Has more",
-              "valueType": "boolean",
-              "providerType": "bool"
-            },
-            "$['line_items']['url']": {
-              "displayName": "LineItem's URL next page",
-              "valueType": "string",
-              "providerType": "string"
-            },
             "adaptive_pricing": {
               "displayName": "adaptive_pricing",
               "valueType": "other"
@@ -2222,7 +2147,7 @@
           }
         },
         "climate/suppliers": {
-          "displayName": "Climate Suppliers",
+          "displayName": "Climate Removals Suppliers",
           "path": "climate/suppliers",
           "responseKey": "data",
           "fields": {
@@ -3467,7 +3392,7 @@
           }
         },
         "identity/verification_reports": {
-          "displayName": "Verification Reports",
+          "displayName": "Gelato Verification Reports",
           "path": "identity/verification_reports",
           "responseKey": "data",
           "fields": {
@@ -3564,7 +3489,7 @@
           }
         },
         "identity/verification_sessions": {
-          "displayName": "Verification Sessions",
+          "displayName": "Gelato Verification Sessions",
           "path": "identity/verification_sessions",
           "responseKey": "data",
           "fields": {
@@ -7587,7 +7512,7 @@
           }
         },
         "radar/value_lists": {
-          "displayName": "Radar Value Lists",
+          "displayName": "Radar List Lists",
           "path": "radar/value_lists",
           "responseKey": "data",
           "fields": {
@@ -7817,7 +7742,7 @@
           }
         },
         "reporting/report_runs": {
-          "displayName": "Financial Report Runs",
+          "displayName": "Financial Reporting Finance Report Runs",
           "path": "reporting/report_runs",
           "responseKey": "data",
           "fields": {
@@ -7879,7 +7804,7 @@
           }
         },
         "reporting/report_types": {
-          "displayName": "Financial Report Types",
+          "displayName": "Financial Reporting Finance Report Types",
           "path": "reporting/report_types",
           "responseKey": "data",
           "fields": {
@@ -9545,7 +9470,7 @@
           }
         },
         "terminal/configurations": {
-          "displayName": "Terminal Configuration Configurations",
+          "displayName": "Terminal Configurations",
           "path": "terminal/configurations",
           "responseKey": "data",
           "fields": {
@@ -9613,7 +9538,7 @@
           }
         },
         "terminal/locations": {
-          "displayName": "Terminal Locations",
+          "displayName": "Terminal Location Locations",
           "path": "terminal/locations",
           "responseKey": "data",
           "fields": {

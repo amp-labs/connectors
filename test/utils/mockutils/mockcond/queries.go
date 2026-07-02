@@ -20,20 +20,25 @@ func QueryParamsMissing(keys ...string) Check {
 }
 
 func queryParamsAreSubset(superset, subset url.Values) bool {
-	for param, values := range subset {
-		superValues := make(map[string]bool)
+	for param, expectedValues := range subset {
+		actualValues := make(map[string]bool)
 
-		strList, ok := superset[param]
+		values, ok := superset[param]
 		if !ok {
 			return false
 		}
 
-		for _, v := range strList {
-			superValues[v] = true
+		for _, v := range values {
+			actualValues[v] = true
 		}
 
-		for _, value := range values {
-			if _, found := superValues[value]; !found {
+		if len(actualValues) != len(expectedValues) {
+			// The query param lists must be of the same size.
+			return false
+		}
+
+		for _, value := range expectedValues {
+			if _, found := actualValues[value]; !found {
 				return false
 			}
 		}

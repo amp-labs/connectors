@@ -3,8 +3,8 @@ package stripe
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
@@ -124,7 +124,8 @@ func (c *Connector) buildFirstPageReadURL(params common.ReadParams) (*urlbuilder
 		return nil, err
 	}
 
-	url.WithQueryParam("limit", strconv.Itoa(DefaultPageSize))
+	pageSize := readhelper.PageSizeWithDefaultStr(params, strconv.Itoa(DefaultPageSize))
+	url.WithQueryParam("limit", pageSize)
 
 	if !params.Since.IsZero() && incrementalObjects.Has(params.ObjectName) {
 		url.WithQueryParam("created[gte]", strconv.FormatInt(params.Since.Unix(), 10))
@@ -132,10 +133,16 @@ func (c *Connector) buildFirstPageReadURL(params common.ReadParams) (*urlbuilder
 
 	expandTargets := make(datautils.Set[string])
 
-	for field := range params.Fields {
-		// Only expanding LineItems is supported at the moment.
-		if strings.HasPrefix(field, "$['line_items']") || field == "line_items" {
-			expandTargets.AddOne("data.line_items")
+	if expandableFields, ok := metadata.ExpandableFields[params.ObjectName]; ok {
+		for field := range params.Fields {
+			rawFieldName := getRawFieldName(field)
+
+			// If the requested field supports expansion, add it to the expand list
+			// so the provider can return the nested object in the response.
+			queryParam := fmt.Sprintf("data.%v", rawFieldName)
+			if expandableFields.Has(queryParam) {
+				expandTargets.AddOne(queryParam)
+			}
 		}
 	}
 
@@ -145,6 +152,15 @@ func (c *Connector) buildFirstPageReadURL(params common.ReadParams) (*urlbuilder
 	}
 
 	return url, nil
+}
+
+func getRawFieldName(field string) string {
+	keys := readhelper.ParseJSONPath(field)
+	if len(keys) > 0 {
+		return keys[0]
+	}
+
+	return field
 }
 
 // executeReadTasks runs multiple read tasks in parallel and aggregates their results.

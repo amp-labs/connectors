@@ -24,6 +24,11 @@
       "custom_fields": [],
       "custom_text": {
       },
+      "customer": {
+        "id": "cus_SjgAnioPjDxl0j",
+        "email": "eddy.buckley@company.com",
+        "name": "Eddy Buckley"
+      },
       "customer_creation": "always",
       "discounts": [],
       "expires_at": 1782233707,
