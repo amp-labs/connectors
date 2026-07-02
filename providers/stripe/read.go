@@ -34,6 +34,9 @@ const (
 
 // ReadParamsOpts defines optional parameters for the Read operation.
 type ReadParamsOpts struct {
+	// ReadForConnectedAccounts enables reading data for specified connected accounts.
+	// This takes precedence over ReadForAllConnectedAccounts.
+	ReadForConnectedAccounts []string
 	// ReadForAllConnectedAccounts enables reading data from all connected accounts
 	// instead of only the main account. When true, the connector parallelizes reads
 	// across all connected accounts and adds the connected account ID to each result row.
@@ -83,17 +86,32 @@ func (c *Connector) readFirstPage(ctx context.Context, params common.ReadParams)
 		return nil, err
 	}
 
-	if !isReadForConnectedAccounts(params) {
+	target := inferReadTarget(params)
+	switch target.Scope {
+	case ReadScopeMainAccount:
 		// Standard read for the current account.
 		return c.readRecords(ctx, params.ObjectName, params.Fields, url)
-	}
+	case ReadScopeSelectedConnectedAccounts:
+		return c.readForConnectedAccounts(ctx, params, url, target.AccountIDs)
+	case ReadScopeAllConnectedAccounts:
+		accountIDs, err := c.listAllAccounts(ctx)
+		if err != nil {
+			return nil, err
+		}
 
+		return c.readForConnectedAccounts(ctx, params, url, accountIDs)
+	default:
+		return nil, fmt.Errorf("%w: %v", ErrReadTargetUnknown, target.Scope)
+	}
+}
+
+func (c *Connector) readForConnectedAccounts(
+	ctx context.Context,
+	params common.ReadParams,
+	url *urlbuilder.URL,
+	accountIDs []string,
+) (*common.ReadResult, error) {
 	// Parallelized read across all connected accounts.
-	accountIDs, err := c.listAccounts(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	tasks := make([]parallelfetch.Task[string, common.ReadResult], len(accountIDs))
 	for index, accountID := range accountIDs {
 		// Each task reads records for a specific connected account
@@ -267,11 +285,11 @@ type accountsListResponse struct {
 	} `json:"data"`
 }
 
-// listAccounts retrieves all connected account IDs for the main account.
+// listAllAccounts retrieves all connected account IDs for the main account.
 // It handles pagination internally to collect all accounts.
 //
 // See [Stripe accounts list documentation](https://docs.stripe.com/api/accounts/list).
-func (c *Connector) listAccounts(ctx context.Context) ([]string, error) {
+func (c *Connector) listAllAccounts(ctx context.Context) ([]string, error) {
 	url, err := c.getURL("accounts")
 	if err != nil {
 		return nil, err
@@ -306,15 +324,39 @@ func (c *Connector) listAccounts(ctx context.Context) ([]string, error) {
 	}
 }
 
-// isReadForConnectedAccounts checks if ReadParams opts specify reading from
-// all connected accounts instead of the main account.
-func isReadForConnectedAccounts(params common.ReadParams) bool {
+type ReadScope int
+
+var ErrReadTargetUnknown = errors.New("unsupported read target")
+
+const (
+	ReadScopeMainAccount ReadScope = iota
+	ReadScopeSelectedConnectedAccounts
+	ReadScopeAllConnectedAccounts
+)
+
+type readTarget struct {
+	Scope      ReadScope
+	AccountIDs []string
+}
+
+func inferReadTarget(params common.ReadParams) readTarget {
 	opts, ok := params.Opts.(ReadParamsOpts)
 	if !ok {
-		return false
+		return readTarget{Scope: ReadScopeMainAccount}
 	}
 
-	return opts.ReadForAllConnectedAccounts
+	if len(opts.ReadForConnectedAccounts) > 0 {
+		return readTarget{
+			Scope:      ReadScopeSelectedConnectedAccounts,
+			AccountIDs: opts.ReadForConnectedAccounts,
+		}
+	}
+
+	if opts.ReadForAllConnectedAccounts {
+		return readTarget{Scope: ReadScopeAllConnectedAccounts}
+	}
+
+	return readTarget{Scope: ReadScopeMainAccount}
 }
 
 // incrementalObjects contains object names that support incremental reading
