@@ -1,0 +1,33 @@
+name: Automatically approve go.mod and go.sum changes
+on:
+  pull_request:
+    paths:
+      - 'go.mod'
+      - 'go.sum'
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: dorny/paths-filter@v4
+        id: changes
+        with:
+          filters: |
+            allowed:
+              - modified: 'go.mod'
+              - modified: 'go.sum'
+      - uses: dorny/paths-filter@v4
+        id: changes_inverted
+        with:
+          predicate-quantifier: every
+          filters: |
+            not_allowed:
+              - '!go.mod'
+              - '!go.sum'
+      - name: Approve PR
+        if: steps.changes.outputs.allowed == 'true' && steps.changes_inverted.outputs.not_allowed == 'false'
+        run: |
+          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }}/reviews" \
+            -d '{"event":"APPROVE"}'
