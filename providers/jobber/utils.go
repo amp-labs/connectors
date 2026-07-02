@@ -9,6 +9,10 @@ import (
 )
 
 const (
+	// apiVersion pins the Jobber GraphQL schema version.
+	// Before bumping it, verify the embedded queries and metadata still work:
+	// Jobber can remove fields even from already-served versions,
+	// and one unknown field fails an entire query.
 	apiVersion      = "2026-05-12"
 	defaultPageSize = 50
 
@@ -46,7 +50,7 @@ const (
 var objectNameMapping = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"appAlerts":                 "AppAlert",
 	"apps":                      "Application",
-	objectCapitalLoans:          "JobberPaymentsCpitalLoan",
+	objectCapitalLoans:          "JobberPaymentsCapitalLoan",
 	"clientEmails":              "Email",
 	"clientPhones":              "ClientPhoneNumber",
 	objectClients:               "Client",

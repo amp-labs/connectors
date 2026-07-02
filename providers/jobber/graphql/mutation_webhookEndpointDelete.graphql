@@ -1,0 +1,13 @@
+mutation WebhookEndpointDelete($ids: [EncodedId!]!) {
+    webhookEndpointDelete(webhookEndpointsIds: $ids) {
+        deletedWebhookEndpoints {
+            id
+            topic
+            url
+        }
+        userErrors {
+            message
+            path
+        }
+    }
+}
