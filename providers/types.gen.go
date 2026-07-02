@@ -395,6 +395,11 @@ type Oauth2Opts struct {
 	ExplicitWorkspaceRequired bool                `json:"explicitWorkspaceRequired"`
 	GrantType                 Oauth2OptsGrantType `json:"grantType"`
 
+	// KeepAliveInterval specifies how long between proactive token keep-alive refreshes for this provider.
+	// Uses Go duration syntax (e.g. "120h" for 5 days). Token-manager adds a random stagger on top.
+	// If empty, defaults to 24h.
+	KeepAliveInterval string `json:"keepAliveInterval,omitempty"`
+
 	// ScopeMappings Maps input scopes to their full OAuth scope values with template variable support. Scopes not in this map are passed through unchanged. Needed for some providers.
 	ScopeMappings map[string]string `json:"scopeMappings,omitempty"`
 
