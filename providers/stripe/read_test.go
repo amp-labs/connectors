@@ -173,13 +173,16 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Fields: connectors.Fields("object",
 					"$['line_items']['data'][*]['currency']",
 					"$['line_items']['data'][*]['description']",
-					"$['line_items']['url']"),
+					"$['line_items']['url']",
+					"$['customer']['email']",
+					"$['customer']['name']",
+				),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v1/checkout/sessions"),
-					mockcond.QueryParam("expand[]", "data.line_items"),
+					mockcond.QueryParam("expand[]", "data.line_items", "data.customer"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCheckoutSessionsWithItems),
 			}.Server(),
@@ -189,6 +192,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
 						"object": "checkout.session",
+						"customer": map[string]any{
+							"email": "eddy.buckley@company.com",
+							"name":  "Eddy Buckley",
+						},
 						"line_items": map[string]any{
 							"data": []any{
 								map[string]any{"currency": "eur", "description": "Gold Plan"},

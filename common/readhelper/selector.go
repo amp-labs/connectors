@@ -84,7 +84,7 @@ func SelectFields(
 	output := make(map[string]any)
 
 	for field := range fields {
-		path := parseJSONPath(field)
+		path := ParseJSONPath(field)
 		if value, ok := getNestedValue(record, path); ok {
 			setNestedValue(output, path, value)
 		}
@@ -93,7 +93,7 @@ func SelectFields(
 	return output
 }
 
-// parseJSONPath splits a JSONPath-like expression into path tokens.
+// ParseJSONPath splits a JSONPath-like expression into path tokens.
 //
 // Supported tokens are object keys in bracket form and array wildcards:
 //
@@ -102,7 +102,7 @@ func SelectFields(
 //
 // If the input does not contain any supported path tokens, the original
 // string is returned as a single-element path.
-func parseJSONPath(path string) []string {
+func ParseJSONPath(path string) []string {
 	// regex to match ['key'] or [*]
 	re := regexp.MustCompile(`\['([^']+)'\]|\[(\*)\]`)
 	matches := re.FindAllStringSubmatch(path, -1)
