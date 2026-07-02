@@ -1,0 +1,11 @@
+{
+  "data": {
+    "contacts": {
+      "items": [],
+      "pageInfo": {
+        "endCursor": null,
+        "hasNextPage": false
+      }
+    }
+  }
+}

@@ -1,0 +1,3 @@
+{
+  "query": "query Tasks {\n  tasks(\n    first: 2\n    \n    \n    \n  ) {\n    items {\n      assignee {\n        email\n        name\n        source\n      }\n      description\n      due\n      id\n      meetingId\n      status\n      title\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n"
+}

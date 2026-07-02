@@ -1,0 +1,3 @@
+{
+  "query": "query Meetings {\n  meetings(\n    first: 2\n    \n    \n    \n  ) {\n    items {\n      duration\n      endedAt\n      id\n      meetingType\n      meetingUrl\n      platformMeetingId\n      rawTranscript\n      source\n      startedAt\n      status\n      summaryCreated\n      topic\n      transcriptCreatedAt\n      transcriptId\n      transcriptLanguage\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n"
+}

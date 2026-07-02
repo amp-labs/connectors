@@ -1,0 +1,26 @@
+query Integrations {
+  integrations(
+    first: {{.First}}
+    {{if .After}}
+    after: "{{.After}}"
+    {{end}}
+    {{if .UpdatedAfter}}
+    updatedAfter: "{{.UpdatedAfter}}"
+    {{end}}
+    {{if .UpdatedBefore}}
+    updatedBefore: "{{.UpdatedBefore}}"
+    {{end}}
+  ) {
+    items {
+      accountEmail
+      id
+      insertedAt
+      kind
+      service
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
