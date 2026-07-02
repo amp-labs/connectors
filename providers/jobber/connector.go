@@ -26,6 +26,10 @@ type Connector struct {
 	components.Reader
 	components.Writer
 	components.Deleter
+
+	// Provides typed EmptySubscriptionParams/EmptySubscriptionResult for the
+	// SubscribeConnector interface.
+	components.SubscriptionInputOutput[SubscriptionRequest, SubscriptionResult]
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
