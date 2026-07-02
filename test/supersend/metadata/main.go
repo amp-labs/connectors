@@ -24,7 +24,7 @@ func main() {
 		"managed-domains",
 		"managed-mailboxes",
 		"placement-tests",
-		"auto/identitys",
+		"identities",
 		"conversation/latest-by-profile",
 	})
 	if err != nil {

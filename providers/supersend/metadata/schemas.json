@@ -697,10 +697,10 @@
             }
           }
         },
-        "auto/identitys": {
+        "identities": {
           "displayName": "Identities",
-          "path": "/auto/identitys",
-          "responseKey": "identities",
+          "path": "/identities",
+          "responseKey": "data",
           "fields": {
             "id": {
               "displayName": "id",

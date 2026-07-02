@@ -216,7 +216,7 @@ func TestWrite(t *testing.T) {
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/v1/auto/campaign"),
+					mockcond.Path("/v1/campaign"),
 				},
 				Then: mockserver.Response(http.StatusOK, createCampaignResponse),
 			}.Server(),

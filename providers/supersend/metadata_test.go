@@ -36,7 +36,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: []string{
 				"teams", "senders", "contact/all", "sender-profiles",
 				"labels", "campaigns/overview", "managed-domains", "managed-mailboxes",
-				"placement-tests", "auto/identitys", "conversation/latest-by-profile",
+				"placement-tests", "identities", "conversation/latest-by-profile",
 			},
 			Server:     mockserver.Dummy(),
 			Comparator: testroutines.ComparatorSubsetMetadata,
@@ -262,7 +262,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 						},
 					},
-					"auto/identitys": {
+					"identities": {
 						DisplayName: "Identities",
 						Fields: map[string]common.FieldMetadata{
 							"id": {

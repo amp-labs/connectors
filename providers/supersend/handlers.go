@@ -66,9 +66,9 @@ var objectWritePaths = map[string]writePathConfig{
 		deletePath: "", // No delete endpoint documented
 	},
 	"campaigns": {
-		createPath: "/v1/auto/campaign",
+		createPath: "/v1/campaign",
 		updatePath: "/v1/campaign",
-		deletePath: "/v1/auto/campaign",
+		deletePath: "/v1/campaign",
 	},
 	"contacts": {
 		createPath: "/v2/contacts",
