@@ -21,7 +21,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseOpportunityWithAccount := testutils.DataFromFile(t, "read-opportunity-with-account.json")
 	responseOpportunityWithContacts := testutils.DataFromFile(t, "read-opportunity-with-contacts.json")
 
-	tests := []testroutines.Search{
+	tests := []testroutines.TestCaseSearch{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -288,7 +288,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.SearchConnector, error) {
+			tt.Run(t, func() (testroutines.TestableSearcher, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

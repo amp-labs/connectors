@@ -49,6 +49,11 @@ type TestableDeleter interface {
 	Delete(ctx context.Context, params common.DeleteParams) (*common.DeleteResult, error)
 }
 
+// TestableSearcher is the minimal interface for a connector that can search records.
+type TestableSearcher interface {
+	Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error)
+}
+
 // TestableBatchReader is the minimal interface for a connector that can batch read records.
 type TestableBatchReader interface {
 	GetRecordsByIds(
