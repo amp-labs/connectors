@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -27,10 +27,10 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 		common.SubscriptionEventTypeDelete,
 	}
 
-	tests := []testroutines.TestCaseUpdateSubscription{
+	tests := []testconn.TestCaseUpdateSubscription{
 		{
 			Name: "SubscriptionStatusSuccess: Successfully update by creating one and removing one",
-			Input: testroutines.UpdateSubscriptionParams{
+			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					Request: &Request{WebhookURL: "https://test.com/webhook"},
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
@@ -70,7 +70,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 					Then: mockserver.Response(http.StatusNoContent),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
+			Comparator: testconn.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
 				Result: &Result{
 					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
@@ -89,7 +89,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name: "SubscriptionStatusFailed: Create fails (with rollback) and delete succeeds",
-			Input: testroutines.UpdateSubscriptionParams{
+			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					Request: &Request{WebhookURL: "https://test.com/webhook"},
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
@@ -124,7 +124,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 				},
 				Then: mockserver.Response(http.StatusBadRequest, errorCreateBadRequest1),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
+			Comparator: testconn.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
 				Result: &Result{
 					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
@@ -144,7 +144,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name: "SubscriptionStatusFailedToRollback: Create fails and rollback fails",
-			Input: testroutines.UpdateSubscriptionParams{
+			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					Request: &Request{WebhookURL: "https://test.com/webhook"},
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
@@ -182,7 +182,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 					Then: mockserver.Response(http.StatusBadRequest, deleteWebhookFailed),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
+			Comparator: testconn.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
 				Result: &Result{
 					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
@@ -208,7 +208,7 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableSubscriptionUpdater, error) {
+			tt.Run(t, func() (testconn.TestableSubscriptionUpdater, error) {
 				return constructTestStrategy(tt.Server)
 			})
 		})

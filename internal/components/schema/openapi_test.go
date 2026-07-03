@@ -8,13 +8,13 @@ import (
 	"github.com/amp-labs/connectors/internal/components/mocked"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestOpenAPI(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -25,7 +25,7 @@ func TestOpenAPI(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name:       "Unknown object requested",
 			Input:      []string{"someUnknownObject"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Errors: map[string]error{
 					"someUnknownObject": common.ErrObjectNotSupported,
@@ -36,7 +36,7 @@ func TestOpenAPI(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name:       "Successfully describe one object with metadata",
 			Input:      []string{"orders"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"orders": {
@@ -61,7 +61,7 @@ func TestOpenAPI(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL), nil
 			})
 		})

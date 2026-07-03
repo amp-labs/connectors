@@ -1,6 +1,6 @@
-// Package testroutines holds a collection of common test procedures.
+// Package testconn holds a collection of common test procedures.
 // They provide a framework to write mock tests.
-package testroutines
+package testconn
 
 import (
 	"context"

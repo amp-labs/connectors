@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -101,11 +101,11 @@ type (
 		query          string
 		includeDeleted bool
 	}
-	bulkQueryTestCaseType = testroutines.TestCase[bulkQueryInput, *GetJobInfoResult]
+	bulkQueryTestCaseType = testconn.TestCase[bulkQueryInput, *GetJobInfoResult]
 	bulkQueryTestCase     bulkQueryTestCaseType
 )
 
-func (c bulkQueryTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
+func (c bulkQueryTestCase) Run(t *testing.T, builder testconn.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
 	output, err := conn.BulkQuery(t.Context(), c.Input.query, c.Input.includeDeleted)

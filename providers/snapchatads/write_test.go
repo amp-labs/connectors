@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -18,7 +18,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	billingcentersResponse := testutils.DataFromFile(t, "write_billingcenters.json")
 	rolesResponse := testutils.DataFromFile(t, "write_roles.json")
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:  "Create a billingcenters as POST",
 			Input: common.WriteParams{ObjectName: "billingcenters", RecordData: "dummy"},
@@ -197,7 +197,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

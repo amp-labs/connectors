@@ -10,12 +10,12 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 type ConnectorWebhookSubscriber interface {
-	testroutines.TestableSubscriptionCreator
-	testroutines.TestableWebhookMessageVerifier
+	testconn.TestableSubscriptionCreator
+	testconn.TestableWebhookMessageVerifier
 	connectors.ReadConnector
 	connectors.WriteConnector
 	connectors.DeleteConnector
@@ -236,7 +236,7 @@ func cleanupSubscription(ctx context.Context,
 			return
 		}
 
-		remover, ok := conn.(testroutines.TestableSubscriptionRemover)
+		remover, ok := conn.(testconn.TestableSubscriptionRemover)
 		if !ok {
 			fmt.Println(
 				"REMINDER: subscription is still active and must be removed manually.\n" +

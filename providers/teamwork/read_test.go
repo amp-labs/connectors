@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -22,7 +22,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseNotebooksFirstPage := testutils.DataFromFile(t, "read/notebooks/1-first-page.json")
 	responseNotebooksSecondPage := testutils.DataFromFile(t, "read/notebooks/2-second-page.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:  "Error response is parsed",
 			Input: common.ReadParams{ObjectName: "companies", Fields: connectors.Fields("name")},
@@ -51,7 +51,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseCompaniesFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -71,7 +71,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"id": float64(1412778),
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/projects/api/v3/companies.json?" +
+				NextPage: testconn.URLTestServer + "/projects/api/v3/companies.json?" +
 					"page=2&pageSize=500&" +
 					"updatedAfter=2024-09-19T12:30:45Z",
 				Done: false,
@@ -112,14 +112,14 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseNotebooksFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{"name": "Second notebook"},
 					Raw:    map[string]any{"id": float64(305625)},
 				}},
-				NextPage: testroutines.URLTestServer + "/projects/api/v3/notebooks.json?page=2&pageSize=1",
+				NextPage: testconn.URLTestServer + "/projects/api/v3/notebooks.json?page=2&pageSize=1",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -129,7 +129,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "notebooks",
 				Fields:     connectors.Fields("name"),
-				NextPage:   testroutines.URLTestServer + "/projects/api/v3/notebooks.json?page=2&pageSize=1",
+				NextPage:   testconn.URLTestServer + "/projects/api/v3/notebooks.json?page=2&pageSize=1",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -140,7 +140,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseNotebooksSecondPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -159,7 +159,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

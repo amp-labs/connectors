@@ -6,13 +6,13 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -23,7 +23,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 			Name:       "Unknown object requested",
 			Input:      []string{"godzilla"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Errors: map[string]error{
 					"godzilla": common.ErrObjectNotSupported,
@@ -34,7 +34,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 			Name:       "Successfully describe multiple objects with metadata",
 			Input:      []string{"users", "groups"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"users": {
@@ -62,7 +62,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 			Name:       "Successfully describe multiple objects with metadata",
 			Input:      []string{"activities_report", "devices_groups"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"activities_report": {
@@ -113,7 +113,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 		// nolint:varnamelen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -19,7 +19,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 	accountsResponse := testutils.DataFromFile(t, "accounts.json")
 	notesResponse := testutils.DataFromFile(t, "notes.json")
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be provided",
 			Input:        nil,
@@ -30,7 +30,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 			Name:       "Unsupported object collects per-object error",
 			Input:      []string{"folders"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Errors: map[string]error{
 					"folders": common.ErrObjectNotSupported,
@@ -48,7 +48,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 					Then: mockserver.Response(http.StatusOK, accountsResponse),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"accounts": {
@@ -79,7 +79,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 					Then: mockserver.Response(http.StatusOK, notesResponse),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"notes": {
@@ -102,7 +102,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tc := testroutines.TestCase[[]string, *common.ListObjectMetadataResult](tt)
+			tc := testconn.TestCase[[]string, *common.ListObjectMetadataResult](tt)
 			t.Cleanup(tc.Close)
 
 			adapter := constructTestAdapter(t, tt.Server.URL, "")

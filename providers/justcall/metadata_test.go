@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -16,7 +16,7 @@ func TestListObjectMetadata(t *testing.T) {
 
 	responseCustomFields := testutils.DataFromFile(t, "read/sales_dialer_contacts/custom-fields.json")
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:  "Successful metadata for sales_dialer/contacts with custom fields",
 			Input: []string{"sales_dialer/contacts"},
@@ -25,7 +25,7 @@ func TestListObjectMetadata(t *testing.T) {
 				If:    mockcond.Path("/v2.1/sales_dialer/contacts/custom-fields"),
 				Then:  mockserver.Response(http.StatusOK, responseCustomFields),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"sales_dialer/contacts": {
@@ -55,7 +55,7 @@ func TestListObjectMetadata(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -19,7 +19,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 	okResponse := testutils.DataFromFile(t, "meetings.json")
 	unsupportedObjects := testutils.DataFromFile(t, "404.json")
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -34,7 +34,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusNotFound, unsupportedObjects),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Errors: map[string]error{
 					"butterflies": common.ErrRetryable,
@@ -49,7 +49,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, okResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"meetings": {
@@ -150,7 +150,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -177,7 +177,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	statesResponse := testutils.DataFromFile(t, "read-comm-handling-states.json")
 	contactsResponse := testutils.DataFromFile(t, "contacts.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -197,7 +197,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/restapi/v1.0/account/~/extension/~/address-book/contact"),
 				Then:  mockserver.Response(http.StatusOK, contactsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -231,7 +231,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/restapi/v1.0/account/~/extension/~/address-book/contact"),
 				Then:  mockserver.Response(http.StatusOK, statesResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -323,7 +323,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

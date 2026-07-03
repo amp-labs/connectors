@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -18,7 +18,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	writeContactsResponse := testutils.DataFromFile(t, "write/contacts.json")
 	writeLeadsResponse := testutils.DataFromFile(t, "write/leads.json")
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Object Name is required",
 			Server:       mockserver.Dummy(),
@@ -43,7 +43,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, writeContactsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "366638973",
@@ -77,7 +77,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, writeContactsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "366638973",
@@ -111,7 +111,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, writeLeadsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "78572651",
@@ -130,7 +130,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

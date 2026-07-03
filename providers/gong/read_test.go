@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -23,7 +23,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	fakeServerResp2 := testutils.DataFromFile(t, "read_cursor.json")
 	responseTranscripts := testutils.DataFromFile(t, "read_transcripts.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -109,7 +109,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:   mockcond.Body(`{"filter":{"fromDateTime":"2024-09-19T12:30:45Z"},"contentSelector":{"context":"Extended","exposedFields":{"parties":true, "media": true}}}`),
 				Then: mockserver.Response(http.StatusOK, fakeServerResp),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 2, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
@@ -145,7 +145,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				}`),
 				Then: mockserver.Response(http.StatusOK, fakeServerResp),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 2, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
@@ -304,7 +304,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_bob.json")),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 3,
 				Data: []common.ReadResultRow{{
@@ -405,7 +405,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_flows_bob.json")),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 3,
 				Data: []common.ReadResultRow{{
@@ -466,7 +466,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_users_alice_only.json")),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -492,7 +492,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/v2/calls/transcript"),
 				Then:  mockserver.Response(http.StatusOK, responseTranscripts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -516,7 +516,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

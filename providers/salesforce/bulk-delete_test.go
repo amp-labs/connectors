@@ -7,7 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -67,7 +67,7 @@ func TestBulkDelete(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 type bulkDeleteTestCase bulkWriteTestCase
 
-func (c bulkDeleteTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
+func (c bulkDeleteTestCase) Run(t *testing.T, builder testconn.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
 	output, err := conn.BulkDelete(t.Context(), c.Input)

@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 const (
@@ -81,7 +81,7 @@ func waitForWebhookURLInput(ctx context.Context) (string, bool) {
 // Webhook handler will send webhookMessageResult using go channel.
 func startWebhookHandler(
 	ctx context.Context,
-	conn testroutines.TestableWebhookMessageVerifier,
+	conn testconn.TestableWebhookMessageVerifier,
 	router WebhookRouter,
 	verificationParams *common.VerificationParams,
 	messageChannel chan webhookMessageResult,
@@ -146,7 +146,7 @@ type webhookMessageResult struct {
 // Returns an http.HandlerFunc that can be registered with an HTTP server.
 func createWebhookHandler(
 	ctx context.Context,
-	conn testroutines.TestableWebhookMessageVerifier,
+	conn testconn.TestableWebhookMessageVerifier,
 	router WebhookRouter,
 	verificationParams *common.VerificationParams,
 	messageChannel chan webhookMessageResult,
@@ -174,7 +174,7 @@ func createWebhookHandler(
 
 func defaultWebhookHandler(w http.ResponseWriter,
 	r *http.Request,
-	conn testroutines.TestableWebhookMessageVerifier,
+	conn testconn.TestableWebhookMessageVerifier,
 	ctx context.Context,
 	body []byte,
 	verificationParams *common.VerificationParams,

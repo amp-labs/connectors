@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -23,7 +23,7 @@ func TestGetRecordsByIds(t *testing.T) {
 
 	contactsResponse := testutils.DataFromFile(t, "contacts.json")
 
-	tests := []testroutines.TestCase[GetRecordsByIdsInput, []common.ReadResultRow]{
+	tests := []testconn.TestCase[GetRecordsByIdsInput, []common.ReadResultRow]{
 		{
 			Name: "Empty record IDs returns error",
 			Input: GetRecordsByIdsInput{

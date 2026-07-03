@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -24,7 +24,7 @@ func TestGetRecordsByIds(t *testing.T) {
 	callsResp := testutils.DataFromFile(t, "read.json")
 	usersResp := testutils.DataFromFile(t, "get-records-users.json")
 
-	tests := []testroutines.TestCase[GetRecordsByIdsInput, []common.ReadResultRow]{
+	tests := []testconn.TestCase[GetRecordsByIdsInput, []common.ReadResultRow]{
 		{
 			Name: "Calls by IDs POST to /v2/calls/extensive with callIds filter and contentSelector",
 			Input: GetRecordsByIdsInput{

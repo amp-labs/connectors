@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -17,7 +17,7 @@ func TestWrite(t *testing.T) {
 	respCreate := testutils.DataFromFile(t, "write-crm-lead-create.json")
 	respUpdate := testutils.DataFromFile(t, "write-crm-lead-update.json")
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name: "Create crm.lead successfully",
 			Input: common.WriteParams{
@@ -38,7 +38,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, respCreate),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "142",
@@ -64,7 +64,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, respUpdate),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "104",
@@ -89,7 +89,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, respCreate),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "142",
@@ -102,7 +102,7 @@ func TestWrite(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

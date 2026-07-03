@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -26,7 +26,7 @@ func TestWrite(t *testing.T) {
 	createSenderProfileResponse := testutils.DataFromFile(t, "write/create-sender-profile.json")
 	updateSenderProfileResponse := testutils.DataFromFile(t, "write/update-sender-profile.json")
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -72,7 +72,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, createTeamResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "team-123",
@@ -101,7 +101,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, createLabelResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "label-456",
@@ -131,7 +131,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, updateLabelResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "label-456",
@@ -161,7 +161,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, createSenderResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "sender-789",
@@ -190,7 +190,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, updateSenderResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "sender-789",
@@ -219,7 +219,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, createCampaignResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "campaign-001",
@@ -247,7 +247,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, updateCampaignResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "campaign-001",
@@ -277,7 +277,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, createContactResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "contact-001",
@@ -306,7 +306,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, updateContactResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "contact-001",
@@ -335,7 +335,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, createSenderProfileResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "sp-001",
@@ -363,7 +363,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, updateSenderProfileResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "sp-001",
@@ -380,7 +380,7 @@ func TestWrite(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

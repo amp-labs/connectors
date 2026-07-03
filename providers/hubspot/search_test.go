@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -22,7 +22,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 	responseContactsLastPage := testutils.DataFromFile(t, "search/contacts/2-second-page.json")
 	responseContactsToCompanies := testutils.DataFromFile(t, "search/contacts/contacts-to-companies.json")
 
-	tests := []testroutines.TestCaseSearch{
+	tests := []testconn.TestCaseSearch{
 		{
 			Name:         "Object name must be included",
 			Server:       mockserver.Dummy(),
@@ -93,7 +93,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 					Then: mockserver.Response(http.StatusOK, responseContactsToCompanies),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -162,7 +162,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 					Then: mockserver.Response(http.StatusOK, responseContactsToCompanies),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -199,7 +199,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableSearcher, error) {
+			tt.Run(t, func() (testconn.TestableSearcher, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -445,11 +445,11 @@ func TestReadUsingSearchAPI(t *testing.T) {
 }
 
 type (
-	SearchViaReadType = testroutines.TestCase[SearchParams, *common.ReadResult]
+	SearchViaReadType = testconn.TestCase[SearchParams, *common.ReadResult]
 	SearchViaRead     SearchViaReadType
 )
 
-func (r SearchViaRead) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
+func (r SearchViaRead) Run(t *testing.T, builder testconn.ConnectorBuilder[*Connector]) {
 	t.Helper()
 
 	t.Cleanup(func() {

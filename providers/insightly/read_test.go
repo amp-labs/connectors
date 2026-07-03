@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -22,7 +22,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseContacts := testutils.DataFromFile(t, "read/contacts/list.json")
 	responseFruits := testutils.DataFromFile(t, "read/fruits-custom-object/list.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -63,7 +63,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseLeadsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -89,7 +89,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						}},
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v3.1/Leads/Search?skip=500&top=500",
+				NextPage: testconn.URLTestServer + "/v3.1/Leads/Search?skip=500&top=500",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -99,7 +99,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "Leads",
 				Fields:     connectors.Fields("FIRST_NAME", "LAST_NAME"),
-				NextPage:   testroutines.URLTestServer + "/v3.1/Leads/Search?skip=500&top=500",
+				NextPage:   testconn.URLTestServer + "/v3.1/Leads/Search?skip=500&top=500",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -110,7 +110,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseLeadsSecondPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -125,7 +125,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						}},
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v3.1/Leads/Search?top=500&skip=1000",
+				NextPage: testconn.URLTestServer + "/v3.1/Leads/Search?top=500&skip=1000",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -135,7 +135,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "Leads",
 				Fields:     connectors.Fields("FIRST_NAME", "LAST_NAME"),
-				NextPage:   testroutines.URLTestServer + "/v3.1/Leads/Search?top=500&skip=1000",
+				NextPage:   testconn.URLTestServer + "/v3.1/Leads/Search?top=500&skip=1000",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -146,7 +146,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseLeadsLastPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     0,
 				Data:     []common.ReadResultRow{},
@@ -172,10 +172,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseLeadsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 2,
-				NextPage: testroutines.URLTestServer +
+				NextPage: testconn.URLTestServer +
 					"/v3.1/Leads/Search?skip=500&top=500&updated_after_utc=2024-03-04T08:22:56Z",
 				Done: false,
 			},
@@ -192,7 +192,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v3.1/Contacts/Search"),
 				Then:  mockserver.Response(http.StatusOK, responseContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -228,7 +228,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						},
 					},
 				}},
-				NextPage: testroutines.URLTestServer +
+				NextPage: testconn.URLTestServer +
 					"/v3.1/Contacts/Search?skip=500&top=500",
 				Done: false,
 			},
@@ -245,7 +245,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v3.1/Fruit__c/Search"),
 				Then:  mockserver.Response(http.StatusOK, responseFruits),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -291,7 +291,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						},
 					},
 				}},
-				NextPage: testroutines.URLTestServer +
+				NextPage: testconn.URLTestServer +
 					"/v3.1/Fruit__c/Search?skip=500&top=500",
 				Done: false,
 			},
@@ -304,7 +304,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

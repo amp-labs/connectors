@@ -1,4 +1,4 @@
-package testroutines
+package testconn
 
 import (
 	"net/http/httptest"

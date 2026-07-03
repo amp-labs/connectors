@@ -1,4 +1,4 @@
-package testroutines
+package testconn
 
 import (
 	"testing"
@@ -31,7 +31,7 @@ func (r TestCaseRead) Run(t *testing.T, builder ConnectorBuilder[TestableReader]
 //
 //	common.ReadParams{
 //		ObjectName: "tags",
-//		NextPage:   testroutines.URLTestServer + "/v1/tags?limit=100&skip=100",
+//		NextPage:   testconn.URLTestServer + "/v1/tags?limit=100&skip=100",
 //	}
 func prepareReadParams(serverURL string, config common.ReadParams) common.ReadParams {
 	config.NextPage = common.NextPageToken(

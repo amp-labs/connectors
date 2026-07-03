@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -18,7 +18,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	responseEventsFirst := testutils.DataFromFile(t, "events-first-page.json")
 	responseEventsSecond := testutils.DataFromFile(t, "events-second-page.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -39,7 +39,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/v1/events"),
 				Then:  mockserver.Response(http.StatusOK, responseEventsFirst),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -56,7 +56,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"dataUrl":   "",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v1/events?pageNumber=2&pageSize=100", // nolint:lll
+				NextPage: testconn.URLTestServer + "/v1/events?pageNumber=2&pageSize=100", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -64,13 +64,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 
 		{
 			Name:  "Successful read second page with chosen fields",
-			Input: common.ReadParams{ObjectName: "events", Fields: connectors.Fields("id", "domain", "topic"), NextPage: testroutines.URLTestServer + "/v1/events?pageNumber=2&pageSize=100"}, // nolint:lll
+			Input: common.ReadParams{ObjectName: "events", Fields: connectors.Fields("id", "domain", "topic"), NextPage: testconn.URLTestServer + "/v1/events?pageNumber=2&pageSize=100"}, // nolint:lll
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.Path("/v1/events"),
 				Then:  mockserver.Response(http.StatusOK, responseEventsSecond),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -86,7 +86,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"createdAt": "2025-07-03T11:52:08.818Z",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v1/events?pageNumber=3&pageSize=100", // nolint:lll
+				NextPage: testconn.URLTestServer + "/v1/events?pageNumber=3&pageSize=100", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -98,7 +98,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

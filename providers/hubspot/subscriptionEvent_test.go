@@ -3,25 +3,25 @@ package hubspot
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestSubscriptionEvent(t *testing.T) {
 	t.Parallel()
 
-	for _, tt := range []testroutines.TestCaseSubscriptionEvent{
+	for _, tt := range []testconn.TestCaseSubscriptionEvent{
 		{
 			Name: "Unsupported event",
 			Input: SubscriptionEvent{
 				"subscriptionType": "someObject.creation",
 			},
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					RawEventName: "someObject.creation",
 					EventType:    "create",
 				},
-				Err: testroutines.SubscriptionEventExpectedErr{
+				Err: testconn.SubscriptionEventExpectedErr{
 					EventType:          nil,
 					RawEventName:       nil,
 					ObjectName:         testutils.StringError("subscription is not supported for the object 'someObject'"),
@@ -36,11 +36,11 @@ func TestSubscriptionEvent(t *testing.T) {
 			Input: SubscriptionEvent{
 				"subscriptionType": "",
 			},
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType: "other",
 				},
-				Err: testroutines.SubscriptionEventExpectedErr{
+				Err: testconn.SubscriptionEventExpectedErr{
 					EventType:          testutils.StringError("unexpected subscription event type: ''"),
 					RawEventName:       nil,
 					ObjectName:         testutils.StringError("subscription is not supported for the object ''"),
@@ -56,13 +56,13 @@ func TestSubscriptionEvent(t *testing.T) {
 				"objectTypeId":     "0-1",
 				"subscriptionType": "importantContacts.creation",
 			},
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:    "create",
 					RawEventName: "importantContacts.creation",
 					ObjectName:   "contact",
 				},
-				Err: testroutines.SubscriptionEventExpectedErr{
+				Err: testconn.SubscriptionEventExpectedErr{
 					EventType:          nil,
 					RawEventName:       nil,
 					ObjectName:         nil,
@@ -80,8 +80,8 @@ func TestSubscriptionEvent(t *testing.T) {
 				"occurredAt":       1625097600000,
 				"portalId":         101,
 			},
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:          "create",
 					RawEventName:       "contact.creation",
 					ObjectName:         "contact",
@@ -100,8 +100,8 @@ func TestSubscriptionEvent(t *testing.T) {
 				"portalId":         101,
 				"occurredAt":       1625097600000,
 			},
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:          "update",
 					RawEventName:       "contact.propertyChange",
 					ObjectName:         "contact",
@@ -120,8 +120,8 @@ func TestSubscriptionEvent(t *testing.T) {
 				"portalId":         101,
 				"occurredAt":       1625097600000,
 			},
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:          "delete",
 					RawEventName:       "contact.deletion",
 					ObjectName:         "contact",

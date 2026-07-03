@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -22,7 +22,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseContactsEmptyPage := testutils.DataFromFile(t, "read/contacts/empty.json")
 	responseTasksLabelsFirstPage := testutils.DataFromFile(t, "read/tasks-labels/1-first-page.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -78,7 +78,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Then: mockserver.Response(http.StatusOK, nil),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -102,7 +102,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"mobile_number": "+33612345678",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v2/contacts/search?limit=100&offset=WyI0Il0=",
+				NextPage: testconn.URLTestServer + "/v2/contacts/search?limit=100&offset=WyI0Il0=",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -112,7 +112,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("last_name"),
-				NextPage:   testroutines.URLTestServer + "/v2/contacts/search?limit=100&offset=WyI0Il0=",
+				NextPage:   testconn.URLTestServer + "/v2/contacts/search?limit=100&offset=WyI0Il0=",
 				Since:      time.Date(2025, 8, 22, 8, 22, 56, 0, time.UTC),
 				Until:      time.Date(2025, 8, 25, 8, 32, 0, 0, time.UTC),
 			},
@@ -139,7 +139,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Then: mockserver.Response(http.StatusOK, nil),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -182,7 +182,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Then: mockserver.Response(http.StatusOK, nil),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     0,
 				Data:     []common.ReadResultRow{},
@@ -206,7 +206,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseTasksLabelsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -221,7 +221,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"rank":      float64(0),
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v2/tasks/labels?limit=100&offset=WyIwIiwiMyJd",
+				NextPage: testconn.URLTestServer + "/v2/tasks/labels?limit=100&offset=WyIwIiwiMyJd",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -231,7 +231,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "tasks/labels",
 				Fields:     connectors.Fields("name"),
-				NextPage:   testroutines.URLTestServer + "/v2/tasks/labels?limit=100&offset=WyIwIiwiMyJd",
+				NextPage:   testconn.URLTestServer + "/v2/tasks/labels?limit=100&offset=WyIwIiwiMyJd",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -245,11 +245,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				// Response doesn't matter for second page, reuse first page output.
 				Then: mockserver.Response(http.StatusOK, responseTasksLabelsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				Data:     []common.ReadResultRow{},
-				NextPage: testroutines.URLTestServer + "/v2/tasks/labels?limit=100&offset=WyIwIiwiMyJd",
+				NextPage: testconn.URLTestServer + "/v2/tasks/labels?limit=100&offset=WyIwIiwiMyJd",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -261,7 +261,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

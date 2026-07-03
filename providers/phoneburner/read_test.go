@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -27,7 +27,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	responseVoicemails := testutils.DataFromFile(t, "read/voicemails.json")
 	responseUnauthorized := testutils.DataFromFile(t, "read/error-unauthorized.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -57,7 +57,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -97,7 +97,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseContactsWithCustomFields),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -135,7 +135,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				NextPage: "",
@@ -168,7 +168,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseDialSessions),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -183,7 +183,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"call_count":     float64(0),
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/rest/1/dialsession?page=2&page_size=100",
+				NextPage: testconn.URLTestServer + "/rest/1/dialsession?page=2&page_size=100",
 				Done:     false,
 			},
 		},
@@ -199,7 +199,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseMembers),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -231,7 +231,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseTags),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -253,7 +253,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"title": "Tag #2",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/rest/1/tags?page=2&page_size=100",
+				NextPage: testconn.URLTestServer + "/rest/1/tags?page=2&page_size=100",
 				Done:     false,
 			},
 		},
@@ -273,7 +273,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseMembers),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     0,
 				NextPage: "",
@@ -292,7 +292,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseVoicemails),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -327,7 +327,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseVoicemails),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     0,
 				NextPage: "",
@@ -373,7 +373,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -394,5 +394,5 @@ func comparatorSubsetReadOrderByFolderID(
 		return ai < aj
 	})
 
-	return testroutines.ComparatorSubsetRead(serverURL, actual, expected)
+	return testconn.ComparatorSubsetRead(serverURL, actual, expected)
 }

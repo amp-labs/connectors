@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -23,7 +23,7 @@ func TestRead(t *testing.T) {
 	responseReadPeopleFirstPage := testutils.DataFromFile(t, "read-people-first-page.json")
 	responseReadPeopleSecondPage := testutils.DataFromFile(t, "read-people-second-page.json")
 	responseReadGroupsFiltered := testutils.DataFromFile(t, "read-groups-filtered.json")
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -50,7 +50,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "people",
 				Fields:     connectors.Fields("id", "displayName"),
-				NextPage:   testroutines.URLTestServer + "/v1/invalidpath",
+				NextPage:   testconn.URLTestServer + "/v1/invalidpath",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -89,7 +89,7 @@ func TestRead(t *testing.T) {
 				If:    mockcond.Path("/v1/people"),
 				Then:  mockserver.Response(http.StatusOK, responseReadPeople),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -125,7 +125,7 @@ func TestRead(t *testing.T) {
 					mockserver.Response(http.StatusOK, responseReadPeopleFirstPage),
 				),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -157,7 +157,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "people",
 				Fields:     connectors.Fields("id", "displayName", "emails"),
-				NextPage:   testroutines.URLTestServer + "/v1/people?max=1&cursor=next_cursor_token",
+				NextPage:   testconn.URLTestServer + "/v1/people?max=1&cursor=next_cursor_token",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -167,7 +167,7 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseReadPeopleSecondPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -209,7 +209,7 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseReadPeople),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -243,7 +243,7 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read-groups.json")),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -277,7 +277,7 @@ func TestRead(t *testing.T) {
 				If:    mockcond.Path("/v1/groups"),
 				Then:  mockserver.Response(http.StatusOK, responseReadGroupsFiltered),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -311,7 +311,7 @@ func TestRead(t *testing.T) {
 				If:    mockcond.Path("/v1/groups"),
 				Then:  mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read-groups.json")),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 0,
 				Data: []common.ReadResultRow{},
@@ -331,7 +331,7 @@ func TestRead(t *testing.T) {
 				If:    mockcond.Path("/v1/people"),
 				Then:  mockserver.Response(http.StatusOK, responseReadPeople),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -356,7 +356,7 @@ func TestRead(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -21,7 +21,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	errorTemplatesInvalidSince := testutils.DataFromFile(t, "read-templates-invalid-since.html")
 	errorInvalidRestMethod := testutils.DataFromFile(t, "error-wrong-method.html")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -67,11 +67,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/api/catalogs"),
 				Then:  mockserver.Response(http.StatusOK, responseCatalogsFirst),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				Data:     []common.ReadResultRow{},
-				NextPage: testroutines.URLTestServer + "/api/catalogs?pageSize=1&page=2", // nolint:lll
+				NextPage: testconn.URLTestServer + "/api/catalogs?pageSize=1&page=2", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -87,7 +87,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/api/catalogs"),
 				Then:  mockserver.Response(http.StatusOK, responseCatalogsLast),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				Data:     []common.ReadResultRow{},
@@ -116,7 +116,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -19,7 +19,7 @@ func TestReadCRM(t *testing.T) {
 	dealsResponse := testutils.DataFromFile(t, "deals.json")
 	dealProductsResponse := testutils.DataFromFile(t, "deal-products.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name: "Deals include products when products field is requested",
 			Input: common.ReadParams{
@@ -39,7 +39,7 @@ func TestReadCRM(t *testing.T) {
 					},
 				},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -95,7 +95,7 @@ func TestReadCRM(t *testing.T) {
 				If:    mockcond.Path("/api/v2/deals"),
 				Then:  mockserver.Response(http.StatusOK, dealsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -116,7 +116,7 @@ func TestReadCRM(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveCRM)
 			})
 		})
@@ -135,7 +135,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		Always: mockserver.Response(http.StatusOK, nextPageTest),
 	}.Server()
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Object Name Required",
 			Server:       mockserver.Dummy(),
@@ -151,7 +151,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name:         "NextPage URL construction",
 			Input:        common.ReadParams{ObjectName: "activities", Fields: connectors.Fields("id")},
 			Server:       server,
-			Comparator:   testroutines.ComparatorSubsetRead,
+			Comparator:   testconn.ComparatorSubsetRead,
 			ExpectedErrs: nil,
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -210,7 +210,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v1/leads"),
 				Then:  mockserver.Response(http.StatusOK, leads),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -251,7 +251,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveLegacy)
 			})
 		})

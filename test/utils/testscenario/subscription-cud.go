@@ -8,13 +8,13 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 type ConnectorSubscriptionManager interface {
-	testroutines.TestableSubscriptionCreator
-	testroutines.TestableSubscriptionUpdater
-	testroutines.TestableSubscriptionRemover
+	testconn.TestableSubscriptionCreator
+	testconn.TestableSubscriptionUpdater
+	testconn.TestableSubscriptionRemover
 }
 
 // SubscriptionCreateUpdateDelete is a test scenario utilizing

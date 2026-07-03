@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -13,12 +13,12 @@ func TestEvent(t *testing.T) {
 	responseContactUpdated := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "contact-update.json")
 	responseContactDeleted := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "contact-delete.json")
 
-	for _, tt := range []testroutines.TestCaseSubscriptionEvent{
+	for _, tt := range []testconn.TestCaseSubscriptionEvent{
 		{
 			Name:  "Created event",
 			Input: responseContactCreated,
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:    "create",
 					RawEventName: "added",
 					ObjectName:   "contacts",
@@ -29,8 +29,8 @@ func TestEvent(t *testing.T) {
 		{
 			Name:  "Updated event",
 			Input: responseContactUpdated,
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:    "update",
 					RawEventName: "updated",
 					ObjectName:   "contacts",
@@ -41,8 +41,8 @@ func TestEvent(t *testing.T) {
 		{
 			Name:  "Deleted event",
 			Input: responseContactDeleted,
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:    "delete",
 					RawEventName: "deleted",
 					ObjectName:   "contacts",

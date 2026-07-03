@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -20,7 +20,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	boardsResponse := testutils.DataFromFile(t, "boards.json")
 	mediaResponse := testutils.DataFromFile(t, "media.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -34,7 +34,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/v5/pins"),
 				Then:  mockserver.Response(http.StatusOK, pinsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -101,7 +101,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/v5/pins?bookmark=P2MxMDU0MzM0OTYyNzU0OTg0NjUzLjE3MTUzMzgzMDksLTF8NHwxMjE0NzA2NjAzMTA1Mz&page_size=250", // nolint:lll
+				NextPage: testconn.URLTestServer + "/v5/pins?bookmark=P2MxMDU0MzM0OTYyNzU0OTg0NjUzLjE3MTUzMzgzMDksLTF8NHwxMjE0NzA2NjAzMTA1Mz&page_size=250", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -114,7 +114,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/v5/boards"),
 				Then:  mockserver.Response(http.StatusOK, boardsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -145,7 +145,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/v5/boards?bookmark=P2MxMDU0MzM0OTYyNzU0OTg0NjUzLjE3MTUzMzgzMDksLTF8NHwxMjE0NzA2NjAzMTA1Mz&page_size=250", // nolint:lll
+				NextPage: testconn.URLTestServer + "/v5/boards?bookmark=P2MxMDU0MzM0OTYyNzU0OTg0NjUzLjE3MTUzMzgzMDksLTF8NHwxMjE0NzA2NjAzMTA1Mz&page_size=250", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -158,7 +158,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/v5/media"),
 				Then:  mockserver.Response(http.StatusOK, mediaResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -171,7 +171,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/v5/media?bookmark=P2MxMDU0MzM0OTYyNzU0OTg0NjUzLjE3MTUzMzgzMDksLTF8NHwxMjE0NzA2NjAzMTA1Mz&page_size=250", // nolint:lll
+				NextPage: testconn.URLTestServer + "/v5/media?bookmark=P2MxMDU0MzM0OTYyNzU0OTg0NjUzLjE3MTUzMzgzMDksLTF8NHwxMjE0NzA2NjAzMTA1Mz&page_size=250", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -182,7 +182,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

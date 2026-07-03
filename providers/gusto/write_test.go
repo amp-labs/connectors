@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 //go:embed test/write/employee-create.json
@@ -33,7 +33,7 @@ var earningTypeUpdateResponse []byte
 func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 	t.Parallel()
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -92,7 +92,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "emp_001",
@@ -126,7 +126,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "emp_001",
@@ -160,7 +160,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "loc_001",
@@ -196,7 +196,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "et_001",
@@ -241,7 +241,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "job_001",
@@ -282,7 +282,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "comp_001",
@@ -306,7 +306,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				// Cases that test ErrMissingCompanyID explicitly omit the metadata.
 				switch tt.Name {
 				case "Create employee without companyID returns ErrMissingCompanyID",

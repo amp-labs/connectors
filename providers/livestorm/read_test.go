@@ -12,7 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"github.com/go-test/deep"
 )
@@ -29,7 +29,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	peopleAttributesBody := testutils.DataFromFile(t, "read-people-attributes.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -68,11 +68,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, eventsBody),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				Done:     false,
-				NextPage: testroutines.URLTestServer + "/v1/events?page[number]=1&page[size]=100&filter[updated_since]=1735689600&filter[updated_until]=1735776000",
+				NextPage: testconn.URLTestServer + "/v1/events?page[number]=1&page[size]=100&filter[updated_since]=1735689600&filter[updated_until]=1735776000",
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
@@ -107,11 +107,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, eventsMultipageBody),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				Done:     false,
-				NextPage: testroutines.URLTestServer + "/v1/events?page[number]=1&page[size]=100",
+				NextPage: testconn.URLTestServer + "/v1/events?page[number]=1&page[size]=100",
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
@@ -145,7 +145,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, peopleFirstPageBody),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Done: true,
@@ -172,7 +172,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Read people offset pagination via meta.next_page absolute URL",
 			Input: common.ReadParams{
 				ObjectName: "people",
-				NextPage:   testroutines.URLTestServer + "/v1/people?page[number]=2&page[size]=100",
+				NextPage:   testconn.URLTestServer + "/v1/people?page[number]=2&page[size]=100",
 				Fields:     connectors.Fields("email"),
 			},
 			Server: mockserver.NewServer(func(w http.ResponseWriter, r *http.Request) {
@@ -189,11 +189,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 				_, _ = w.Write([]byte(body)) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 			}),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				Done:     false,
-				NextPage: testroutines.URLTestServer + "/v1/people?page[number]=3&page[size]=100",
+				NextPage: testconn.URLTestServer + "/v1/people?page[number]=3&page[size]=100",
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
@@ -226,7 +226,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, peopleAttributesBody),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Done: true,
@@ -250,7 +250,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Read events from NextPage token uses provided URL as-is",
 			Input: common.ReadParams{
 				ObjectName: objectEvents,
-				NextPage:   testroutines.URLTestServer + "/v1/events?page[number]=5&page[size]=100",
+				NextPage:   testconn.URLTestServer + "/v1/events?page[number]=5&page[size]=100",
 				Fields:     connectors.Fields("title"),
 			},
 			Server: mockserver.Conditional{
@@ -263,11 +263,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, eventsBody),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				Done:     false,
-				NextPage: testroutines.URLTestServer + "/v1/events?page[number]=1&page[size]=100",
+				NextPage: testconn.URLTestServer + "/v1/events?page[number]=1&page[size]=100",
 			},
 		},
 	}
@@ -277,7 +277,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

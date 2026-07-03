@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -38,7 +38,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	merchantAccountsResponse := testutils.DataFromFile(t, "read-merchantAccounts.json")
 	errorValidationResponse := testutils.DataFromFile(t, "read-error-validation.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -117,7 +117,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Done: true,
 			},
-			Comparator:   testroutines.ComparatorSubsetRead,
+			Comparator:   testconn.ComparatorSubsetRead,
 			ExpectedErrs: nil,
 		},
 		{
@@ -176,7 +176,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Done: true,
 			},
-			Comparator:   testroutines.ComparatorSubsetRead,
+			Comparator:   testconn.ComparatorSubsetRead,
 			ExpectedErrs: nil,
 		},
 		{
@@ -237,7 +237,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Done: true,
 			},
-			Comparator:   testroutines.ComparatorSubsetRead,
+			Comparator:   testconn.ComparatorSubsetRead,
 			ExpectedErrs: nil,
 		},
 		{
@@ -294,7 +294,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Done: true,
 			},
-			Comparator:   testroutines.ComparatorSubsetRead,
+			Comparator:   testconn.ComparatorSubsetRead,
 			ExpectedErrs: nil,
 		},
 		{
@@ -345,7 +345,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Done: true,
 			},
-			Comparator:   testroutines.ComparatorSubsetRead,
+			Comparator:   testconn.ComparatorSubsetRead,
 			ExpectedErrs: nil,
 		},
 	}
@@ -354,7 +354,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

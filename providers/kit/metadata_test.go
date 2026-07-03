@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -27,7 +27,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	tagsresponse := testutils.DataFromFile(t, "tags.json")
 	webhooksresponse := testutils.DataFromFile(t, "webhooks.json")
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "Object must be included",
 			Server:       mockserver.Dummy(),
@@ -70,7 +70,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					Then: mockserver.Response(http.StatusOK, webhooksresponse),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"broadcasts": {
@@ -199,7 +199,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -211,7 +211,7 @@ func TestListObjectMetadataWithCustomFields(t *testing.T) {
 
 	customfieldsresponse := testutils.DataFromFile(t, "custom_fields.json")
 
-	test := testroutines.TestCaseListObjectMetadata{
+	test := testconn.TestCaseListObjectMetadata{
 		Name:  "Successful metadata for subscribers with custom fields",
 		Input: []string{"subscribers"},
 		Server: mockserver.Conditional{
@@ -219,7 +219,7 @@ func TestListObjectMetadataWithCustomFields(t *testing.T) {
 			If:    mockcond.Path("/v4/custom_fields"),
 			Then:  mockserver.Response(http.StatusOK, customfieldsresponse),
 		}.Server(),
-		Comparator: testroutines.ComparatorSubsetMetadata,
+		Comparator: testconn.ComparatorSubsetMetadata,
 		Expected: &common.ListObjectMetadataResult{
 			Result: map[string]common.ObjectMetadata{
 				"subscribers": {
@@ -241,7 +241,7 @@ func TestListObjectMetadataWithCustomFields(t *testing.T) {
 		ExpectedErrs: nil,
 	}
 
-	test.Run(t, func() (testroutines.TestableMetadataReader, error) {
+	test.Run(t, func() (testconn.TestableMetadataReader, error) {
 		return constructTestConnector(test.Server.URL)
 	})
 }

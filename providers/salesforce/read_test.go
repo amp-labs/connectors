@@ -14,7 +14,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -27,7 +27,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseOpportunityWithAccount := testutils.DataFromFile(t, "read-opportunity-with-account.json")
 	responseOpportunityWithContacts := testutils.DataFromFile(t, "read-opportunity-with-contacts.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -96,7 +96,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseLeadsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     8,
 				NextPage: "/services/data/v60.0/query/01g3A00007lZwLKQA0-2000",
@@ -121,7 +121,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseListContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 20,
 				Data: []common.ReadResultRow{{
@@ -160,7 +160,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithAccount),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -230,7 +230,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -301,7 +301,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -321,7 +321,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		"Pardot-Business-Unit-Id": []string{"test-business-unit-id"},
 	}
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -376,7 +376,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseEmailsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -439,7 +439,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Fields:     connectors.Fields("name"),
 				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
 					time.FixedZone("UTC-8", -8*60*60)),
-				NextPage: testroutines.URLTestServer + "/api/v5/objects/emails?fields=id,name,subject,clientType,prospectId,listEmailId,updatedAt&nextPageToken=eyJvcmRlckJ5IjoiIiwiZmlsdGVycyI6W10sImxpbWl0IjoxLCJyZXN1bWVWYWx1ZSI6eyJpZCI6MzQyNzc4NjN9LCJwYWdlIjoyLCJyZWNDb3VudCI6MiwiZXhwaXJlVGltZSI6IjIwMjUtMDUtMTZUMjA6Mzc6MTMtMDc6MDAiLCJkZWxldGVkIjpudWxsfQ==", // nolint:lll
+				NextPage: testconn.URLTestServer + "/api/v5/objects/emails?fields=id,name,subject,clientType,prospectId,listEmailId,updatedAt&nextPageToken=eyJvcmRlckJ5IjoiIiwiZmlsdGVycyI6W10sImxpbWl0IjoxLCJyZXN1bWVWYWx1ZSI6eyJpZCI6MzQyNzc4NjN9LCJwYWdlIjoyLCJyZWNDb3VudCI6MiwiZXhwaXJlVGltZSI6IjIwMjUtMDUtMTZUMjA6Mzc6MTMtMDc6MDAiLCJkZWxldGVkIjpudWxsfQ==", // nolint:lll
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -475,7 +475,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseProspects),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 3,
 				Data: []common.ReadResultRow{{
@@ -530,7 +530,7 @@ func TestReadPardot(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnectorAccountEngagement(tt.Server.URL)
 			})
 		})

@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -20,7 +20,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	responseSendersLastPage := testutils.DataFromFile(t, "read/senders-last-page.json")
 	responseConversations := testutils.DataFromFile(t, "read/conversations.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -47,7 +47,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseTeams),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -95,7 +95,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseSendersFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -124,7 +124,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/v1/senders?limit=100&offset=100",
+				NextPage: testconn.URLTestServer + "/v1/senders?limit=100&offset=100",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -134,7 +134,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Input: common.ReadParams{
 				ObjectName: "senders",
 				Fields:     connectors.Fields("id", "email"),
-				NextPage:   testroutines.URLTestServer + "/v1/senders?limit=100&offset=200",
+				NextPage:   testconn.URLTestServer + "/v1/senders?limit=100&offset=200",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -145,7 +145,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseSendersLastPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -179,7 +179,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseConversations),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -228,7 +228,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseSendersFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -251,7 +251,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/v1/senders?limit=50&offset=50",
+				NextPage: testconn.URLTestServer + "/v1/senders?limit=50&offset=50",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -262,7 +262,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -16,7 +16,7 @@ func TestGetPostAuthInfo(t *testing.T) {
 
 	accountInfo := testutils.DataFromFile(t, "post-auth/account-info.json")
 
-	tests := []testroutines.TestCaseGetPostAuthInfo{
+	tests := []testconn.TestCaseGetPostAuthInfo{
 		{
 			Name: "Get post auth info",
 			Server: mockserver.Conditional{
@@ -38,7 +38,7 @@ func TestGetPostAuthInfo(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestablePostAuthMetadata, error) {
+			tt.Run(t, func() (testconn.TestablePostAuthMetadata, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

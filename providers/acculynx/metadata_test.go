@@ -9,13 +9,13 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -26,7 +26,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 			Name:       "Unknown object returns ErrObjectNotSupported",
 			Input:      []string{"nonexistent"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Errors: map[string]error{
 					"nonexistent": common.ErrObjectNotSupported,
@@ -49,7 +49,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 					},
 				},
 			},
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 		},
 		{
 			Name:   "Successfully describe top-level contacts object",
@@ -67,7 +67,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 					},
 				},
 			},
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 		},
 		{
 			Name:   "Slash-named nested object resolves correctly",
@@ -83,7 +83,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 					},
 				},
 			},
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 		},
 		{
 			Name:  "Contacts metadata enriched with custom field definitions",
@@ -101,7 +101,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"contacts": {
@@ -136,7 +136,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"jobs": {
@@ -181,7 +181,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 					},
 				},
 			},
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 		},
 	}
 
@@ -189,7 +189,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -207,11 +207,11 @@ func createBulkJobServer(
 }
 
 type (
-	bulkWriteTestCaseType = testroutines.TestCase[BulkOperationParams, *BulkOperationResult]
+	bulkWriteTestCaseType = testconn.TestCase[BulkOperationParams, *BulkOperationResult]
 	bulkWriteTestCase     bulkWriteTestCaseType
 )
 
-func (c bulkWriteTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
+func (c bulkWriteTestCase) Run(t *testing.T, builder testconn.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
 	output, err := conn.BulkWrite(t.Context(), c.Input)

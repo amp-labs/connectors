@@ -1,4 +1,4 @@
-# Package testroutines
+# Package testconn
 
 ## Purpose
 
@@ -8,11 +8,11 @@ This package provides base test case for creating `Test Suites`.
 
 Most common connector methods can be tested using:
 
-* testroutines.Read - Read
-* testroutines.Write - Write
-* testroutines.Metadata - ListObjectMetadata
-* testroutines.Delete - Delete
-* testroutines.BatchWrite - BatchWrite
+* testconn.Read - Read
+* testconn.Write - Write
+* testconn.Metadata - ListObjectMetadata
+* testconn.Delete - Delete
+* testconn.BatchWrite - BatchWrite
 
 They can be used as a template to declare your unique test case type.
 The main difference among them is
@@ -61,7 +61,7 @@ func TestRead(t *testing.T) {
   // ...
 
   // Suite definition
-  tests := []testroutines.Read{
+  tests := []testconn.Read{
     {
       Name:         "Title of the test",
       Input:        &common.ReadParams{} // This object represents `InputType`
@@ -91,7 +91,7 @@ Comparing just a few objects or a subset of fields is often sufficient. For exam
     Name: "Incremental read of conversations via search",
     Input: common.ReadParams{...},
     Server: mockserver.Conditional{...}.Server(),
-    Comparator: testroutines.ComparatorSubsetRead,
+    Comparator: testconn.ComparatorSubsetRead,
     Expected: &common.ReadResult{
         Rows: 1,
         Data: []common.ReadResultRow{{
@@ -104,13 +104,13 @@ Comparing just a few objects or a subset of fields is often sufficient. For exam
                 "ai_agent_participated": false,
             },
         }},
-        NextPage: testroutines.URLTestServer + "/conversations/search?starting_after=WzE3MjY3NTIxNDUwMDAsNSwyXQ==",
+        NextPage: testconn.URLTestServer + "/conversations/search?starting_after=WzE3MjY3NTIxNDUwMDAsNSwyXQ==",
         Done:     false,
     },
     ExpectedErrs: nil,
 }
 ```
 This approach ensures the test is concise while still validating the critical aspects of the behavior.
-It's important to note that any reference to the original connector BaseURL should be replaced with `testroutines.URLTestServer`
+It's important to note that any reference to the original connector BaseURL should be replaced with `testconn.URLTestServer`
 either in `ReadResult` or `ReadParams`.
 During runtime, this value will be correctly substituted, satisfying the intended behavior.

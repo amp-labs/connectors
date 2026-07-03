@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -18,7 +18,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,maintidx
 	taskCreateResponse := testutils.DataFromFile(t, "write_task_create.json")
 	folderCreateResponse := testutils.DataFromFile(t, "write_folder_create.json")
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Object name is required",
 			Input:        common.WriteParams{},
@@ -53,7 +53,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,maintidx
 					Then: mockserver.Response(http.StatusCreated, noteCreateResponse),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "1711974988431110001",
@@ -78,7 +78,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,maintidx
 					Then: mockserver.Response(http.StatusOK, taskCreateResponse),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "48184000000093001",
@@ -103,7 +103,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,maintidx
 					Then: mockserver.Response(http.StatusCreated, folderCreateResponse),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "2560636000000076007",
@@ -130,7 +130,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,maintidx
 						`{"status": {"code": 200, "description": "success"}}`),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			// The rename endpoint returns status only (no data object), so we report
 			// success without a record id.
 			Expected:     &common.WriteResult{Success: true},
@@ -143,7 +143,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tc := testroutines.TestCase[common.WriteParams, *common.WriteResult](tt)
+			tc := testconn.TestCase[common.WriteParams, *common.WriteResult](tt)
 			t.Cleanup(tc.Close)
 
 			adapter := constructTestAdapter(t, tt.Server.URL, testAccountID)

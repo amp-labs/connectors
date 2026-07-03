@@ -1,4 +1,4 @@
-package testroutines
+package testconn
 
 import (
 	"encoding/json"
@@ -112,7 +112,7 @@ func ComparatorSortedSubsetReadByIds(serverURL string,
 // Example:
 //
 //		common.ReadResult{
-//			NextPage: testroutines.URLTestServer + "/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTI="
+//			NextPage: testconn.URLTestServer + "/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTI="
 //	 }
 //
 // At runtime this may look as follows: http://127.0.0.1:38653/v3/contacts?cursor=bGltaXQ9MSZuZXh0PTI=.

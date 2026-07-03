@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -20,7 +20,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	requisitionFieldsResponse := testutils.DataFromFile(t, "requisition_fields.json")
 	usersResponse := testutils.DataFromFile(t, "users.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -39,7 +39,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/v1/opportunities"),
 				Then:  mockserver.Response(http.StatusOK, opportunitiesResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -100,7 +100,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/v1/opportunities?limit=100" +
+				NextPage: testconn.URLTestServer + "/v1/opportunities?limit=100" +
 					"&updated_at_start=1748822400000&updated_at_end=1751241600000" +
 					"&offset=%255B1%252C1750233409740%252C%252248dd4e94-fea0-4f9a-be5f-95b1853cbbbe%2522%255D",
 				Done: false,
@@ -143,7 +143,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/v1/users"),
 				Then:  mockserver.Response(http.StatusOK, usersResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -165,7 +165,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer +
+				NextPage: testconn.URLTestServer +
 					"/v1/users?limit=100&offset=%255B1733206956064%252C%2522c21d911f-8292-49b7-b135-f7cc233b43fd%2522%255D",
 				Done: false,
 			},
@@ -177,7 +177,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
