@@ -34,6 +34,11 @@ type TestableMetadataReader interface {
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error)
 }
 
+// TestableMetadataUpdater is the minimal interface for a connector that can update metadata.
+type TestableMetadataUpdater interface {
+	UpsertMetadata(ctx context.Context, params *common.UpsertMetadataParams) (*common.UpsertMetadataResult, error)
+}
+
 // TestableMetadataDeleter is the minimal interface for a connector that can delete metadata.
 type TestableMetadataDeleter interface {
 	DeleteMetadata(ctx context.Context, params *common.DeleteMetadataParams) (*common.DeleteMetadataResult, error)
