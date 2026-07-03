@@ -6,6 +6,7 @@ import (
 	"embed"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -30,20 +31,35 @@ type QueryParameters struct {
 	Fields        map[string]bool
 }
 
-func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	pageSize := maxPageSize
-	if params.PageSize > 0 {
-		pageSize = params.PageSize
-	}
-
-	fields := make(map[string]bool, len(params.Fields))
-	for field := range params.Fields {
+// nested relations are matched case-insensitively so templates can use exact schema names.
+func queryTemplateFields(objectName string, requested datautils.StringSet) map[string]bool {
+	fields := make(map[string]bool, len(requested))
+	for field := range requested {
 		fields[field] = true
 	}
 
+	for _, canonical := range optionalMetadataFields[objectName] {
+		for field := range requested {
+			if strings.EqualFold(field, canonical) {
+				fields[canonical] = true
+
+				break
+			}
+		}
+	}
+
+	return fields
+}
+
+func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+	first := maxPageSize
+	if params.PageSize > 0 && params.PageSize <= maxPageSize {
+		first = params.PageSize
+	}
+
 	queryParams := QueryParameters{
-		First:  pageSize,
-		Fields: fields,
+		First:  first,
+		Fields: queryTemplateFields(params.ObjectName, params.Fields),
 	}
 
 	if params.NextPage != "" {

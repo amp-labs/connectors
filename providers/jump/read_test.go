@@ -144,6 +144,60 @@ func TestRead(t *testing.T) {
 			},
 		},
 		{
+			Name: "Read tasks with case-insensitive nested field includes assignee in query",
+			Input: common.ReadParams{
+				ObjectName: "tasks",
+				Fields:     connectors.Fields("id", "title", "Assignee"),
+				PageSize:   2,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Method(http.MethodPost),
+					mockcond.Body(string(requestTasks)),
+				},
+				Then: mockserver.Response(http.StatusOK, tasksResponse),
+			}.Server(),
+			Comparator: testroutines.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":    "tsk_9e17843922b94782832",
+							"title": "TEST",
+						},
+						Raw: map[string]any{
+							"id":          "tsk_9e17843922b94782832",
+							"title":       "TEST",
+							"status":      "Todo",
+							"meetingId":   "mtg_fbff3264957a48b4888",
+							"description": "TEST",
+							"assignee": map[string]any{
+								"email":  "ada@example.com",
+								"name":   "Amperasnd Developer",
+								"source": "USER",
+							},
+						},
+					},
+					{
+						Fields: map[string]any{
+							"id":    "tsk_bde1c8b314e8459893e",
+							"title": "Send follow-up email",
+						},
+						Raw: map[string]any{
+							"id":        "tsk_bde1c8b314e8459893e",
+							"title":     "Send follow-up email",
+							"status":    "Todo",
+							"meetingId": "mtg_fbff3264957a48b4888",
+						},
+					},
+				},
+				NextPage: "g3QAAAACdwJpZG0AAAAXdHNrX2JkZTFjOGIzMTRlODQ1OTg5M2V3C2luc2VydGVkX2F0dAAAAA13C21pY3Jvc2Vjb25kaAJiAAJEgWEGdwZzZWNvbmRhCXcIY2FsZW5kYXJ3E0VsaXhpci5DYWxlbmRhci5JU093BW1vbnRoYQZ3Cl9fc3RydWN0X193D0VsaXhpci5EYXRlVGltZXcKdXRjX29mZnNldGEAdwpzdGRfb2Zmc2V0YQB3BHllYXJiAAAH6ncEaG91cmEXdwNkYXlhF3cJem9uZV9hYmJybQAAAANVVEN3Bm1pbnV0ZWESdwl0aW1lX3pvbmVtAAAAB0V0Yy9VVEM=",
+				Done:     false,
+			},
+		},
+		{
 			Name: "Successfully read meetings",
 			Input: common.ReadParams{
 				ObjectName: "meetings",
@@ -204,5 +258,19 @@ func TestRead(t *testing.T) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
+	}
+}
+
+func TestQueryTemplateFields(t *testing.T) {
+	t.Parallel()
+
+	fields := queryTemplateFields("tasks", connectors.Fields("id", "Assignee"))
+
+	if !fields["assignee"] {
+		t.Fatal("expected canonical assignee key for case-insensitive request")
+	}
+
+	if !fields["Assignee"] {
+		t.Fatal("expected original requested field key to be preserved")
 	}
 }
