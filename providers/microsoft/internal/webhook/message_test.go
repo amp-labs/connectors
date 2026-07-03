@@ -12,7 +12,7 @@ func TestEvent(t *testing.T) {
 	responseMessageUpdated := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "event-message-updated.json")
 	responseMessageDeleted := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "event-message-deleted.json")
 
-	for _, tt := range []testroutines.SubscriptionEventTestCase{
+	for _, tt := range []testroutines.TestCaseSubscriptionEvent{
 		{
 			Name:  "Created event",
 			Input: responseMessageCreated,

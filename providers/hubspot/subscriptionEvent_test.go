@@ -10,7 +10,7 @@ import (
 func TestSubscriptionEvent(t *testing.T) {
 	t.Parallel()
 
-	for _, tt := range []testroutines.SubscriptionEventTestCase{
+	for _, tt := range []testroutines.TestCaseSubscriptionEvent{
 		{
 			Name: "Unsupported event",
 			Input: SubscriptionEvent{

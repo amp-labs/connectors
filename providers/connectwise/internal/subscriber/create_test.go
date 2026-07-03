@@ -33,7 +33,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 		common.SubscriptionEventTypeDelete,
 	}
 
-	tests := []testroutines.TestCaseCreateSubscription{
+	tests := []testroutines.TestCaseSubscribe{
 		{
 			Name: "Creating subscription to contacts and tickets successfully",
 			Input: common.SubscribeParams{

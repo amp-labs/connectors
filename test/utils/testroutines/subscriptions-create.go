@@ -8,12 +8,12 @@ import (
 
 type (
 	createSubscriptionType = TestCase[common.SubscribeParams, *common.SubscriptionResult]
-	// TestCaseCreateSubscription is a test suite useful for testing part of connectors.SubscribeConnector interface.
-	TestCaseCreateSubscription createSubscriptionType
+	// TestCaseSubscribe is a test suite useful for testing part of connectors.SubscribeConnector interface.
+	TestCaseSubscribe createSubscriptionType
 )
 
 // Run provides a procedure to test connectors.SubscribeConnector
-func (s TestCaseCreateSubscription) Run(t *testing.T, builder ConnectorBuilder[TestableSubscriptionCreator]) {
+func (s TestCaseSubscribe) Run(t *testing.T, builder ConnectorBuilder[TestableSubscriptionCreator]) {
 	t.Helper()
 	t.Cleanup(func() {
 		createSubscriptionType(s).Close()

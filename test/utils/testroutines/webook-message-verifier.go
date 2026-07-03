@@ -8,8 +8,8 @@ import (
 
 type (
 	webhookMessageVerificationType = TestCase[WebhookMessageVerificationParams, bool]
-	// TestCaseWebhookMessageVerification is a test suite useful for testing connectors.WebhookVerifierConnector interface.
-	TestCaseWebhookMessageVerification webhookMessageVerificationType
+	// TestCaseVerifyWebhookMessage is a test suite useful for testing connectors.WebhookVerifierConnector interface.
+	TestCaseVerifyWebhookMessage webhookMessageVerificationType
 )
 
 type WebhookMessageVerificationParams struct {
@@ -18,7 +18,7 @@ type WebhookMessageVerificationParams struct {
 }
 
 // Run provides a procedure to test connectors.WebhookVerifierConnector
-func (r TestCaseWebhookMessageVerification) Run(t *testing.T,
+func (r TestCaseVerifyWebhookMessage) Run(t *testing.T,
 	builder ConnectorBuilder[TestableWebhookMessageVerifier],
 ) {
 	t.Helper()
