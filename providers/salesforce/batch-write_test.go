@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -35,7 +34,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		},
 	}}
 
-	tests := []testroutines.BatchWrite{
+	tests := []testroutines.TestCaseBatchWrite{
 		{
 			Name: "At least one object name must be queried",
 			Input: &common.BatchWriteParam{
@@ -195,7 +194,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.BatchWriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableBatchWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -226,7 +225,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		},
 	}}
 
-	tests := []testroutines.BatchWrite{
+	tests := []testroutines.TestCaseBatchWrite{
 		{
 			Name: "General high level error not tied to any record",
 			Input: &common.BatchWriteParam{
@@ -356,7 +355,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.BatchWriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableBatchWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

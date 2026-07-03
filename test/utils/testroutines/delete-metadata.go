@@ -4,24 +4,23 @@ import (
 	"context"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
 
 type (
 	deleteMetadataType = TestCase[*common.DeleteMetadataParams, *common.DeleteMetadataResult]
-	// DeleteMetadata is a test suite useful for testing connectors.DeleteMetadataConnector interface.
-	DeleteMetadata deleteMetadataType
+	// TestCaseDeleteMetadata is a test suite useful for testing connectors.DeleteMetadataConnector interface.
+	TestCaseDeleteMetadata deleteMetadataType
 )
 
 // Run provides a procedure to test connectors.DeleteMetadataConnector.
-func (m DeleteMetadata) Run(t *testing.T, builder ConnectorBuilder[connectors.DeleteMetadataConnector]) {
+func (m TestCaseDeleteMetadata) Run(t *testing.T, builder ConnectorBuilder[TestableMetadataDeleter]) {
 	m.RunWithContext(t, t.Context(), builder)
 }
 
 // RunWithContext provides a procedure to test connectors.DeleteMetadataConnector.
-func (m DeleteMetadata) RunWithContext(t *testing.T, ctx context.Context,
-	builder ConnectorBuilder[connectors.DeleteMetadataConnector],
+func (m TestCaseDeleteMetadata) RunWithContext(t *testing.T, ctx context.Context,
+	builder ConnectorBuilder[TestableMetadataDeleter],
 ) {
 	t.Helper()
 	t.Cleanup(func() {

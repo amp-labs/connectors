@@ -715,7 +715,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseDeleteFields := testutils.DataFromFile(t, "metadata/delete/delete-fields-response.xml")
 	responseFieldNotFound := testutils.DataFromFile(t, "metadata/delete/delete-field-not-found.xml")
 
-	tests := []testroutines.DeleteMetadata{
+	tests := []testroutines.TestCaseDeleteMetadata{
 		{
 			Name:         "At least one field must be provided",
 			Input:        nil,
@@ -777,7 +777,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 			ctx := common.WithAuthToken(t.Context(), "TEST_ACCESS_TOKEN")
 
-			tt.RunWithContext(t, ctx, func() (connectors.DeleteMetadataConnector, error) {
+			tt.RunWithContext(t, ctx, func() (testroutines.TestableMetadataDeleter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -787,7 +787,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 func TestDeleteMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	tests := []testroutines.DeleteMetadata{
+	tests := []testroutines.TestCaseDeleteMetadata{
 		{
 			Name: "Access token must be injected into the context",
 			Input: &common.DeleteMetadataParams{
@@ -805,7 +805,7 @@ func TestDeleteMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocogni
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.DeleteMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataDeleter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

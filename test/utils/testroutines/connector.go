@@ -24,6 +24,21 @@ func (builder ConnectorBuilder[C]) Build(t *testing.T, testCaseName string) C {
 	return conn
 }
 
+// TestableMetadataDeleter is the minimal interface for a connector that can delete metadata.
+type TestableMetadataDeleter interface {
+	DeleteMetadata(ctx context.Context, params *common.DeleteMetadataParams) (*common.DeleteMetadataResult, error)
+}
+
+// TestableDeleter is the minimal interface for a connector that can delete records.
+type TestableDeleter interface {
+	Delete(ctx context.Context, params common.DeleteParams) (*common.DeleteResult, error)
+}
+
+// TestableBatchWriter is the minimal interface for a connector that can batch write records.
+type TestableBatchWriter interface {
+	BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error)
+}
+
 // TestableWebhookMessageVerifier is the minimal interface for a connector that can verify webhook messages.
 type TestableWebhookMessageVerifier interface {
 	VerifyWebhookMessage(

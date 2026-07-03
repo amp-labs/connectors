@@ -3,18 +3,17 @@ package testroutines
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
 
 type (
 	deleteType = TestCase[common.DeleteParams, *common.DeleteResult]
-	// Delete is a test suite useful for testing connectors.DeleteConnector interface.
-	Delete deleteType
+	// TestCaseDelete is a test suite useful for testing connectors.DeleteConnector interface.
+	TestCaseDelete deleteType
 )
 
 // Run provides a procedure to test connectors.DeleteConnector
-func (d Delete) Run(t *testing.T, builder ConnectorBuilder[connectors.DeleteConnector]) {
+func (d TestCaseDelete) Run(t *testing.T, builder ConnectorBuilder[TestableDeleter]) {
 	t.Helper()
 	t.Cleanup(func() {
 		deleteType(d).Close()
