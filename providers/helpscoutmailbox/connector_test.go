@@ -141,7 +141,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 	conversations := testutils.DataFromFile(t, "conversations.json")
 	users := testutils.DataFromFile(t, "users.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:  "Successfully describe multiple objects with metadata",
 			Input: []string{"conversations", "users"},
@@ -216,7 +216,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

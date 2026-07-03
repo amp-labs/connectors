@@ -19,7 +19,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseAccountsMeta := testutils.DataFromFile(t, "metadata/read/accounts-sampled.json")
 	responseCustomObjMeta := testutils.DataFromFile(t, "metadata/read/custom-object-with-custom-fields.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -269,7 +269,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -285,7 +285,7 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 		"Pardot-Business-Unit-Id": []string{"test-business-unit-id"},
 	}
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -420,7 +420,7 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnectorAccountEngagement(tt.Server.URL)
 			})
 		})

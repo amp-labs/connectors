@@ -19,7 +19,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 	accountsResponse := testutils.DataFromFile(t, "accounts.json")
 	notesResponse := testutils.DataFromFile(t, "notes.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be provided",
 			Input:        nil,

@@ -3,7 +3,6 @@ package gotoconn
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
@@ -21,7 +20,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 	webinarsResponse := testutils.DataFromFile(t, "webinars.json")
 	sessionsResponse := testutils.DataFromFile(t, "sessions.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -92,7 +91,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
@@ -21,7 +20,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	success := testutils.DataFromFile(t, "currencies.json")
 	activityFields := testutils.DataFromFile(t, "activityFields.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be provided",
 			Input:        nil,
@@ -154,7 +153,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveLegacy)
 			})
 		})
@@ -166,7 +165,7 @@ func TestListObjectMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	dealsFields := testutils.DataFromFile(t, "dealsFields.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:  "A success API Response for Deals",
 			Input: []string{"deals"},
@@ -230,7 +229,7 @@ func TestListObjectMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveCRM)
 			})
 		})

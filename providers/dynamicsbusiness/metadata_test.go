@@ -5,7 +5,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -19,7 +18,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 	responseCustomers := testutils.DataFromFile(t, "metadata/customers.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be provided",
 			Input:        nil,
@@ -73,7 +72,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -17,7 +16,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	responseOpportunities := testutils.DataFromFile(t, "read/opportunities.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:       "Successful metadata for multiple objects",
 			Input:      []string{"me/contacts", "workflows"},
@@ -101,7 +100,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

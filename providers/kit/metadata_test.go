@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -28,7 +27,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	tagsresponse := testutils.DataFromFile(t, "tags.json")
 	webhooksresponse := testutils.DataFromFile(t, "webhooks.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:         "Object must be included",
 			Server:       mockserver.Dummy(),
@@ -200,7 +199,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -212,7 +211,7 @@ func TestListObjectMetadataWithCustomFields(t *testing.T) {
 
 	customfieldsresponse := testutils.DataFromFile(t, "custom_fields.json")
 
-	test := testroutines.Metadata{
+	test := testroutines.TestCaseListObjectMetadata{
 		Name:  "Successful metadata for subscribers with custom fields",
 		Input: []string{"subscribers"},
 		Server: mockserver.Conditional{
@@ -242,7 +241,7 @@ func TestListObjectMetadataWithCustomFields(t *testing.T) {
 		ExpectedErrs: nil,
 	}
 
-	test.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+	test.Run(t, func() (testroutines.TestableMetadataReader, error) {
 		return constructTestConnector(test.Server.URL)
 	})
 }

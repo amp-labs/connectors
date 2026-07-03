@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -17,7 +16,7 @@ func TestListObjectMetadata(t *testing.T) {
 
 	responseCustomFields := testutils.DataFromFile(t, "read/sales_dialer_contacts/custom-fields.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:  "Successful metadata for sales_dialer/contacts with custom fields",
 			Input: []string{"sales_dialer/contacts"},
@@ -56,7 +55,7 @@ func TestListObjectMetadata(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

@@ -24,6 +24,11 @@ func (builder ConnectorBuilder[C]) Build(t *testing.T, testCaseName string) C {
 	return conn
 }
 
+// TestableMetadataReader is the minimal interface for a connector that can read metadata.
+type TestableMetadataReader interface {
+	ListObjectMetadata(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error)
+}
+
 // TestableMetadataDeleter is the minimal interface for a connector that can delete metadata.
 type TestableMetadataDeleter interface {
 	DeleteMetadata(ctx context.Context, params *common.DeleteMetadataParams) (*common.DeleteMetadataResult, error)
