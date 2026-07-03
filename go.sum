@@ -28,8 +28,8 @@ github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapp
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.55.0/go.mod h1:Mf6O40IAyB9zR/1J8nGDDPirZQQPbYJni8Yisy7NTMc=
 github.com/PuerkitoBio/goquery v1.11.0 h1:jZ7pwMQXIITcUXNH83LLk+txlaEy6NVOfTuP43xxfqw=
 github.com/PuerkitoBio/goquery v1.11.0/go.mod h1:wQHgxUOU3JGuj3oD/QFfxUdlzW6xPHfqyHre6VMY4DQ=
-github.com/amp-labs/amp-common v0.0.0-20260702182809-46a0766d9c3b h1:/D7GtafCEi2Jf4zUwu2gNy9rjsuP5Xmydi7KBmqc7YE=
-github.com/amp-labs/amp-common v0.0.0-20260702182809-46a0766d9c3b/go.mod h1:brlGiqGV+b3kBszGhXkm6lPQzd+qy+7piuxRV/31nVY=
+github.com/amp-labs/amp-common v0.0.0-20260703003249-fc66edd36f7b h1:+kl4tBNdwNmge47NhdwStQUXXEmkb8tnDSClEs4Gp88=
+github.com/amp-labs/amp-common v0.0.0-20260703003249-fc66edd36f7b/go.mod h1:brlGiqGV+b3kBszGhXkm6lPQzd+qy+7piuxRV/31nVY=
 github.com/andybalholm/cascadia v1.3.3 h1:AG2YHrzJIm4BZ19iwJ/DAua6Btl3IwJX+VI4kktS1LM=
 github.com/andybalholm/cascadia v1.3.3/go.mod h1:xNd9bqTn98Ln4DwST8/nG+H0yuB8Hmgu1YHNnWw0GeA=
 github.com/antchfx/xmlquery v1.5.0 h1:uAi+mO40ZWfyU6mlUBxRVvL6uBNZ6LMU4M3+mQIBV4c=
