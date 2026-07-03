@@ -6,7 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -19,7 +18,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 
 	responseContacts := testutils.DataFromFile(t, "read/contacts-batch-by-ids.json")
 
-	tests := []testroutines.ReadByIds{
+	tests := []testroutines.TestCaseGetRecordsByIds{
 		{
 			Name:         "Empty record identifiers",
 			Server:       mockserver.Dummy(),
@@ -67,7 +66,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.BatchRecordReaderConnector, error) {
+			tt.Run(t, func() (testroutines.TestableBatchReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

@@ -49,6 +49,17 @@ type TestableDeleter interface {
 	Delete(ctx context.Context, params common.DeleteParams) (*common.DeleteResult, error)
 }
 
+// TestableBatchReader is the minimal interface for a connector that can batch read records.
+type TestableBatchReader interface {
+	GetRecordsByIds(
+		ctx context.Context,
+		objectName string,
+		recordIds []string,
+		fields []string,
+		associations []string,
+	) ([]common.ReadResultRow, error)
+}
+
 // TestableBatchWriter is the minimal interface for a connector that can batch write records.
 type TestableBatchWriter interface {
 	BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error)

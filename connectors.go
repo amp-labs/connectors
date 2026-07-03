@@ -203,9 +203,10 @@ type BatchRecordReaderConnector interface {
 	GetRecordsByIds(
 		ctx context.Context,
 		objectName string,
-		recordIds []string, //nolint:revive
+		recordIds []string,
 		fields []string,
-		associations []string) ([]common.ReadResultRow, error)
+		associations []string,
+	) ([]common.ReadResultRow, error)
 }
 
 // WebhookVerifierConnector defines the interface for connectors that can
