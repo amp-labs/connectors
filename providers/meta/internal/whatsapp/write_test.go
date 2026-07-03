@@ -5,7 +5,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -26,7 +25,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 	messageTemplateCreateResponse := testutils.DataFromFile(t, "message-template-create.json")
 	phoneNumberCreateResponse := testutils.DataFromFile(t, "phone-number-create.json")
 
-	tests := []testroutines.Write{
+	tests := []testroutines.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -160,7 +159,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.WriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableWriter, error) {
 				return constructTestAdapter(tt.Server)
 			})
 		})

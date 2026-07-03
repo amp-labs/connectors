@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -15,7 +14,7 @@ import (
 func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	tests := []testroutines.Write{
+	tests := []testroutines.TestCaseWrite{
 		// --- Contacts (POST/POST) ---
 		{
 			Name: "Create contact successfully",
@@ -440,7 +439,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.WriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableWriter, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

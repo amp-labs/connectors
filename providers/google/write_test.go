@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -19,7 +18,7 @@ func TestCalendarWrite(t *testing.T) { // nolint:funlen,cyclop
 	responseInsertCalendar := testutils.DataFromFile(t, "calendar/write/calendarList/new.json")
 	responseEvent := testutils.DataFromFile(t, "calendar/write/events/new.json")
 
-	tests := []testroutines.Write{
+	tests := []testroutines.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -127,7 +126,7 @@ func TestCalendarWrite(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.WriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableWriter, error) {
 				return constructTestCalendarConnector(tt.Server.URL)
 			})
 		})
@@ -140,7 +139,7 @@ func TestContactsWrite(t *testing.T) { // nolint:funlen,cyclop
 	responseContactGroups := testutils.DataFromFile(t, "contacts/write/contactGroups/new.json")
 	responseMyConnections := testutils.DataFromFile(t, "contacts/write/myConnections/new.json")
 
-	tests := []testroutines.Write{
+	tests := []testroutines.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -273,7 +272,7 @@ func TestContactsWrite(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.WriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableWriter, error) {
 				return constructTestContactsConnector(tt.Server.URL)
 			})
 		})
@@ -285,7 +284,7 @@ func TestMailWrite(t *testing.T) { // nolint:funlen,cyclop
 
 	responseDrafts := testutils.DataFromFile(t, "mail/write/drafts/new.json")
 
-	tests := []testroutines.Write{
+	tests := []testroutines.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -359,7 +358,7 @@ func TestMailWrite(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.WriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableWriter, error) {
 				return constructTestMailConnector(tt.Server.URL)
 			})
 		})

@@ -49,6 +49,11 @@ type TestableReader interface {
 	Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error)
 }
 
+// TestableWriter is the minimal interface for a connector that can write records.
+type TestableWriter interface {
+	Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error)
+}
+
 // TestableDeleter is the minimal interface for a connector that can delete records.
 type TestableDeleter interface {
 	Delete(ctx context.Context, params common.DeleteParams) (*common.DeleteResult, error)

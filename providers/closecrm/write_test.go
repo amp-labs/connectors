@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -19,7 +18,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	leadCreationResponse := testutils.DataFromFile(t, "create-lead.json")
 	updateLeadResponse := testutils.DataFromFile(t, "update-lead.json")
 
-	tests := []testroutines.Write{
+	tests := []testroutines.TestCaseWrite{
 		{
 			Name:         "Object Name is required",
 			Server:       mockserver.Dummy(),
@@ -136,7 +135,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.WriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

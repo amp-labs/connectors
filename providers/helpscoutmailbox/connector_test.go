@@ -229,7 +229,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	unsupportedResponse := testutils.DataFromFile(t, "unsupported.txt")
 
-	tests := []testroutines.Write{
+	tests := []testroutines.TestCaseWrite{
 		{
 			Name:         "Object Name is required",
 			Server:       mockserver.Dummy(),
@@ -300,7 +300,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.WriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
