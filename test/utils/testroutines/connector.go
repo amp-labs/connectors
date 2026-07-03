@@ -24,6 +24,11 @@ func (builder ConnectorBuilder[C]) Build(t *testing.T, testCaseName string) C {
 	return conn
 }
 
+// TestablePostAuthMetadata is the minimal interface for a connector that returns post auth metadata.
+type TestablePostAuthMetadata interface {
+	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
+}
+
 // TestableMetadataReader is the minimal interface for a connector that can read metadata.
 type TestableMetadataReader interface {
 	ListObjectMetadata(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error)
