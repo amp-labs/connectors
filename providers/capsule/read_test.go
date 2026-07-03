@@ -21,7 +21,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responsePartiesLastPage := testutils.DataFromFile(t, "read/parties/last-page.json")
 	responseProjects := testutils.DataFromFile(t, "read/projects/first-page.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:  "Error response is parsed",
 			Input: common.ReadParams{ObjectName: "categories", Fields: connectors.Fields("colour")},
@@ -161,7 +161,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

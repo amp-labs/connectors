@@ -21,7 +21,7 @@ func TestRead(t *testing.T) {
 	responseCallLogFirstPage := testutils.DataFromFile(t, "call-log.json")
 	responseCallLogLastPage := testutils.DataFromFile(t, "read-call-log-last-page.json")
 	responseContactListsCsv := testutils.DataFromFile(t, "contact-lists-csv.json")
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 
 		{
 			Name: "Read empty items",
@@ -341,7 +341,7 @@ func TestRead(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -25,7 +25,7 @@ func TestRead(t *testing.T) {
 		"not_4f7kQhLpMNBvxy": testutils.DataFromFile(t, "note_not_4f7kQhLpMNBvxy.json"),
 		"not_9b2xRwNsTLCfop": testutils.DataFromFile(t, "note_not_9b2xRwNsTLCfop.json"),
 	}
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name: "Read empty items",
 			Input: common.ReadParams{
@@ -478,7 +478,7 @@ func TestRead(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

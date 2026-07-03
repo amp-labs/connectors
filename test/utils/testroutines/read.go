@@ -3,18 +3,17 @@ package testroutines
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
 
 type (
 	readType = TestCase[common.ReadParams, *common.ReadResult]
-	// Read is a test suite useful for testing connectors.ReadConnector interface.
-	Read readType
+	// TestCaseRead is a test suite useful for testing connectors.ReadConnector interface.
+	TestCaseRead readType
 )
 
 // Run provides a procedure to test connectors.ReadConnector
-func (r Read) Run(t *testing.T, builder ConnectorBuilder[connectors.ReadConnector]) {
+func (r TestCaseRead) Run(t *testing.T, builder ConnectorBuilder[TestableReader]) {
 	t.Helper()
 	t.Cleanup(func() {
 		readType(r).Close()

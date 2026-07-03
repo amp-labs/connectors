@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
@@ -41,7 +40,7 @@ func TestRead(t *testing.T) {
 	  "url":"/v2/projects/proj_123/products"
 	}`)
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -230,7 +229,7 @@ func TestRead(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestReadConnector(tt.Server.URL, "proj_123")
 			})
 		})

@@ -19,7 +19,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	membersResponse := testutils.DataFromFile(t, "members.json")
 	rolesResponse := testutils.DataFromFile(t, "roles.json")
 	billingcentersResponse := testutils.DataFromFile(t, "billingcenters.json")
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:  "Read list of members",
 			Input: common.ReadParams{ObjectName: "members", Fields: connectors.Fields("")},
@@ -132,7 +132,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -23,7 +23,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCompanies := testutils.DataFromFile(t, "read/companies/with-custom-fields.json")
 	responseCustomFields := testutils.DataFromFile(t, "custom/fields.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -191,7 +191,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

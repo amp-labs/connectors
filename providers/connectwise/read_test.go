@@ -24,7 +24,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	linkHeaderRaw := "<" + nextPageRaw.String() + ">; rel=\"next\""
 	nextPageRelative := common.NextPageToken(testroutines.URLTestServer + "/v4_6_release/apis/3.0/company/contacts/?conditions=LastUpdated+%3e%3d+%5b2025-04-01T20%3a02%3a28Z%5d&pageSize=2&page=2")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -182,7 +182,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

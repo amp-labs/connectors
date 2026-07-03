@@ -39,6 +39,11 @@ type TestableMetadataDeleter interface {
 	DeleteMetadata(ctx context.Context, params *common.DeleteMetadataParams) (*common.DeleteMetadataResult, error)
 }
 
+// TestableReader is the minimal interface for a connector that can read records.
+type TestableReader interface {
+	Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error)
+}
+
 // TestableDeleter is the minimal interface for a connector that can delete records.
 type TestableDeleter interface {
 	Delete(ctx context.Context, params common.DeleteParams) (*common.DeleteResult, error)
