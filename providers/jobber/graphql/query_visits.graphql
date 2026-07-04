@@ -2,7 +2,19 @@ query VisitConnection{
   visits(
      first: {{.First}}
      {{if .After}}
-     after: {{.After}}
+     after: "{{.After}}"
+     {{end}}
+     {{if or .FromDate .ToDate}}
+     filter: {
+       createdAt: {
+         {{if .FromDate}}
+         after: "{{.FromDate}}"
+         {{end}}
+         {{if .ToDate}}
+         before: "{{.ToDate}}"
+         {{end}}
+       }
+     }
      {{end}}
   ){
     nodes{
@@ -222,5 +234,10 @@ query VisitConnection{
       teamReminderOffset
       title
     }
+    pageInfo{
+      endCursor
+      hasNextPage
+    }
+    totalCount
   }
 }
