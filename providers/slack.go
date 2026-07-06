@@ -14,7 +14,6 @@ func init() {
 			TokenURL:                  "https://slack.com/api/oauth.v2.access",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
-			KeepAliveInterval:         "120h",
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField:       "scope",
 				WorkspaceRefField: "workspace_name",

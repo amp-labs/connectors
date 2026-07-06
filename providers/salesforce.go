@@ -38,7 +38,6 @@ func init() { // nolint:funlen
 			TokenURL:                  "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
-			KeepAliveInterval:         "168h",
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField:  "id",
 				WorkspaceRefField: "instance_url",

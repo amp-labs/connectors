@@ -31,7 +31,6 @@ func init() {
 			TokenURL:                  "https://oauth2.googleapis.com/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
-			KeepAliveInterval:         "120h",
 			TokenMetadataFields: TokenMetadataFields{
 				ScopesField: "scope",
 			},
