@@ -195,6 +195,12 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	// GraphQL failures (throttling, validation) arrive with a 2xx status, so
+	// the operation's status-based error handler never runs; surface them here.
+	if err := interpretGraphQLError(resp); err != nil {
+		return nil, err
+	}
+
 	if params.ObjectName == objectJobs && !params.Since.IsZero() {
 		return c.parseJobsIncrementalReadResponse(params, resp)
 	}

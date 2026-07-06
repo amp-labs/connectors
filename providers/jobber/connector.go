@@ -36,11 +36,6 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	// Jobber's GraphQL API reports failures with a 200 status code; the
-	// interceptor rewrites the status of such responses so the error
-	// interpreter below processes them like regular HTTP errors.
-	connector.HTTPClient().Client = &graphqlErrorInterceptor{client: connector.HTTPClient().Client}
-
 	// Set the metadata provider for the connector
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(
 		connector.HTTPClient().Client,

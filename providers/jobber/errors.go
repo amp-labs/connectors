@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 
@@ -50,26 +49,11 @@ func (r ResponseError) CombineErr(base error) error {
 	return fmt.Errorf("%w: %v", base, strings.Join(messages, ", "))
 }
 
-// graphqlErrorInterceptor decorates the authenticated HTTP client so every
-// operation (read, write, delete, metadata) passes through responseHandler.
-// The components framework calls the client's Do directly, so a
-// common.HTTPClient.ResponseHandler would not be applied there.
-type graphqlErrorInterceptor struct {
-	client common.AuthenticatedHTTPClient
-}
-
-func (i *graphqlErrorInterceptor) Do(req *http.Request) (*http.Response, error) {
-	resp, err := i.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	return responseHandler(resp)
-}
-
-func (i *graphqlErrorInterceptor) CloseIdleConnections() {
-	i.client.CloseIdleConnections()
-}
+// graphqlErrorResponder formats GraphQL error payloads into typed errors,
+// reusing the same error schema as the standard (non-2xx) error handler.
+//
+//nolint:gochecknoglobals
+var graphqlErrorResponder = interpreter.NewFaultyResponder(errorFormats, nil)
 
 // graphqlResponse captures just enough of a GraphQL payload to decide
 // whether a 200 response is actually a failure.
@@ -82,37 +66,41 @@ type graphqlResponse struct {
 	Data json.RawMessage `json:"data"`
 }
 
-// responseHandler rewrites the status code of erroneous 200 responses so the
-// standard error interpreter takes over. GraphQL reports failures such as
-// throttling or validation errors with a 200 status, an "errors" array and a
-// missing or null "data" object. Partial successes (data alongside errors,
-// e.g. mutations reporting userErrors) pass through unchanged and are
-// handled by the parse functions.
-func responseHandler(resp *http.Response) (*http.Response, error) {
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+// interpretGraphQLError returns a typed error when a 2xx GraphQL response is
+// actually a failure. Jobber reports errors such as throttling or invalid
+// queries with a 200 status, an "errors" array and a missing or null "data"
+// object, so the operation's status-based error handler never fires. The read
+// path calls this explicitly. Partial successes (data alongside errors, e.g.
+// mutations reporting userErrors) return nil and are handled by the parse
+// functions themselves.
+//
+// The error code is mapped to an HTTP status so the shared FaultyResponder can
+// produce the same typed errors (ErrLimitExceeded, ErrAccessToken, ...) it
+// would for a genuine non-2xx response.
+func interpretGraphQLError(resp *common.JSONHTTPResponse) error {
+	node, ok := resp.Body()
+	if !ok {
+		return nil
 	}
 
-	// Reset body so downstream consumers can read it.
-	resp.Body = io.NopCloser(bytes.NewReader(body))
-
-	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
-		return resp, nil
-	}
+	body := node.Source()
 
 	var payload graphqlResponse
 	if err := json.Unmarshal(body, &payload); err != nil {
-		// Not a JSON payload; leave it for downstream handling.
-		return resp, nil // nolint:nilerr
+		return nil //nolint:nilerr
 	}
 
 	hasData := len(payload.Data) > 0 && !bytes.Equal(payload.Data, []byte("null"))
-	if len(payload.Errors) > 0 && !hasData {
-		resp.StatusCode = graphqlStatusCode(payload.Errors[0].Extensions.Code)
+	if len(payload.Errors) == 0 || hasData {
+		return nil
 	}
 
-	return resp, nil
+	synthetic := &http.Response{
+		StatusCode: graphqlStatusCode(payload.Errors[0].Extensions.Code),
+		Header:     http.Header{"Content-Type": []string{"application/json"}},
+	}
+
+	return graphqlErrorResponder.HandleErrorResponse(synthetic, body)
 }
 
 // graphqlStatusCode maps Jobber GraphQL error codes (extensions.code) to
