@@ -4,7 +4,7 @@ query JobConnection{
      {{if .After}}
      after: "{{.After}}"
      {{end}}
-     {{if .FromDate}}
+     {{if or .FromDate .ToDate}}
      sort: {
        key: UPDATED_AT
        direction: DESCENDING

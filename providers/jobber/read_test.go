@@ -249,11 +249,56 @@ func TestRead_IncrementalJobsDropsRecordsNewerThanUntil(t *testing.T) {
 	assert.Equal(t, res.NextPage.String(), "CURJ")
 }
 
+func TestRead_IncrementalJobsUntilOnlyFiltersAndSorts(t *testing.T) {
+	t.Parallel()
+
+	// Until without Since must still route through the client-side path: the
+	// query is sorted UPDATED_AT desc and records newer than Until are dropped.
+	// With no lower bound, pagination continues (no early cutoff possible).
+	srv := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If: mockcond.And{
+			mockcond.MethodPOST(),
+			bodyContains("UPDATED_AT"),
+			bodyContains("DESCENDING"),
+		},
+		Then: mockserver.ResponseString(http.StatusOK, `{
+			"data": {
+				"jobs": {
+					"nodes": [
+						{"id": "J3", "updatedAt": "2026-07-06T10:00:00Z"},
+						{"id": "J2", "updatedAt": "2026-07-04T10:00:00Z"},
+						{"id": "J1", "updatedAt": "2026-07-02T10:00:00Z"}
+					],
+					"pageInfo": {"endCursor": "CURJ", "hasNextPage": true},
+					"totalCount": 3
+				}
+			}
+		}`),
+	}.Server()
+	defer srv.Close()
+
+	conn, err := constructTestConnector(srv.URL)
+	assert.NilError(t, err)
+
+	res, err := conn.Read(context.Background(), common.ReadParams{
+		ObjectName: objectJobs,
+		Fields:     connectors.Fields("id"),
+		Until:      time.Date(2026, 7, 5, 0, 0, 0, 0, time.UTC),
+	})
+
+	assert.NilError(t, err)
+	assert.Equal(t, res.Rows, int64(2)) // J3 (07-06) dropped, J2 + J1 kept
+	assert.Equal(t, res.Data[0].Id, "J2")
+	assert.Equal(t, res.Data[1].Id, "J1")
+	assert.Equal(t, res.NextPage.String(), "CURJ") // no lower bound -> keep paging
+}
+
 func TestRead_FullJobsReadDoesNotSort(t *testing.T) {
 	t.Parallel()
 
-	// Without Since the query must not include the UPDATED_AT sort, keeping
-	// full reads on the API's default ordering.
+	// Without Since or Until the query must not include the UPDATED_AT sort,
+	// keeping full reads on the API's default ordering.
 	srv := mockserver.Conditional{
 		Setup: mockserver.ContentJSON(),
 		If:    bodyContains("UPDATED_AT"),

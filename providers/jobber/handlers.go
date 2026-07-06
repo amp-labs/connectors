@@ -201,7 +201,9 @@ func (c *Connector) parseReadResponse(
 		return nil, err
 	}
 
-	if params.ObjectName == objectJobs && !params.Since.IsZero() {
+	// Jobs have no server-side timestamp filter, so any Since/Until read goes
+	// through the client-side sort + cutoff path (see incremental.go).
+	if params.ObjectName == objectJobs && (!params.Since.IsZero() || !params.Until.IsZero()) {
 		return c.parseJobsIncrementalReadResponse(params, resp)
 	}
 
