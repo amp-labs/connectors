@@ -7,13 +7,13 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	tests := []testroutines.TestCaseDeleteSubscription{
+	tests := []testconn.TestCaseDeleteSubscription{
 		{
 			Name: "Failer to delete any callback",
 			Input: common.SubscriptionResult{
@@ -29,7 +29,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				If:    mockcond.MethodDELETE(),
 				Then:  mockserver.Response(http.StatusInternalServerError),
 			}.Server(),
-			Expected:     testroutines.None{},
+			Expected:     testconn.None{},
 			ExpectedErrs: []error{common.ErrServer},
 		},
 		{
@@ -60,7 +60,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 					Then: mockserver.Response(http.StatusNoContent),
 				}},
 			}.Server(),
-			Expected:     testroutines.None{},
+			Expected:     testconn.None{},
 			ExpectedErrs: nil,
 		},
 	}
@@ -70,7 +70,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableSubscriptionRemover, error) {
+			tt.Run(t, func() (testconn.TestableSubscriptionRemover, error) {
 				return constructTestStrategy(tt.Server)
 			})
 		})

@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -24,7 +24,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 	responseLists := testutils.DataFromFile(t, "read-lists-1-first-page.json")
 	responseEventDealClosed := testutils.DataFromFile(t, "read/events/e_deal_closed.json")
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -51,7 +51,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					Then: mockserver.ResponseString(http.StatusOK, `{"requiredProperties": ["mobilephone"]}`),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"contacts": {
@@ -237,7 +237,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					Then: mockserver.Response(http.StatusForbidden, metadataErrSchemaScopes),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"contacts": {
@@ -279,7 +279,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					Then: mockserver.ResponseString(http.StatusOK, `{}`),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"deals": {
@@ -343,7 +343,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				If:    mockcond.Path("/crm/v3/lists/search"),
 				Then:  mockserver.Response(http.StatusOK, responseLists),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"lists": {
@@ -381,7 +381,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				"marketing-events", "meeting-links",
 			},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"marketing-campaigns": {
@@ -488,7 +488,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				},
 				Then: mockserver.Response(http.StatusOK, responseEventDealClosed),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"AMPERSAND-event-occurrences-e_deal_closed": {
@@ -553,7 +553,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					Then: mockserver.ResponseString(http.StatusOK, "{}"),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"contacts": {
@@ -614,7 +614,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					Then: mockserver.ResponseString(http.StatusOK, "{}"),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"contacts": {
@@ -667,7 +667,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					Then: mockserver.ResponseString(http.StatusOK, "{}"),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"contacts": {
@@ -697,7 +697,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -778,7 +778,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	payloadUpdateInterests := testutils.DataFromFile(t, "custom/update/6-payload-update-property-interests.json")
 	responseUpdateInterests := testutils.DataFromFile(t, "custom/update/7-response-update-property-interests.json")
 
-	tests := []testroutines.TestCaseUpsertMetadata{
+	tests := []testconn.TestCaseUpsertMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -837,7 +837,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					Then: mockserver.Response(http.StatusCreated, responseBatchCreateProperties1),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetUpsertMetadata,
+			Comparator: testconn.ComparatorSubsetUpsertMetadata,
 			Expected: &common.UpsertMetadataResult{
 				Success: true,
 				Fields: map[string]map[string]common.FieldUpsertResult{
@@ -975,7 +975,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					Then: mockserver.Response(http.StatusOK, responseUpdateInterests),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetUpsertMetadata,
+			Comparator: testconn.ComparatorSubsetUpsertMetadata,
 			Expected: &common.UpsertMetadataResult{
 				Success: true,
 				Fields: map[string]map[string]common.FieldUpsertResult{
@@ -1032,7 +1032,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 			ctx := common.WithAuthToken(t.Context(), "TEST_ACCESS_TOKEN")
 
-			tt.RunWithContext(t, ctx, func() (testroutines.TestableMetadataUpdater, error) {
+			tt.RunWithContext(t, ctx, func() (testconn.TestableMetadataUpdater, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

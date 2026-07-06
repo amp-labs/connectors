@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -17,7 +17,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	createContactGroupResponse := testutils.DataFromFile(t, "create-contactGroups.json")
 	updateContactGroupResponse := testutils.DataFromFile(t, "update-contactGroups.json")
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Object Name is required",
 			Server:       mockserver.Dummy(),
@@ -101,7 +101,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

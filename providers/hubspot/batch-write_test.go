@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -34,7 +34,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		},
 	}}
 
-	tests := []testroutines.TestCaseBatchWrite{
+	tests := []testconn.TestCaseBatchWrite{
 		{
 			Name: "At least one object name must be queried",
 			Input: &common.BatchWriteParam{
@@ -66,7 +66,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusConflict, errConflictExisting),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetBatchWrite,
+			Comparator: testconn.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status:       common.BatchStatusFailure,
 				Errors:       []any{"Contact already exists"},
@@ -91,7 +91,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusBadRequest, nil),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetBatchWrite,
+			Comparator: testconn.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status:       common.BatchStatusFailure,
 				Errors:       []any{},
@@ -116,7 +116,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusBadRequest, errManyInvalidFields),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetBatchWrite,
+			Comparator: testconn.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status: common.BatchStatusFailure,
 				Errors: []any{
@@ -157,7 +157,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusMultiStatus, errPartialSuccess),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetBatchWrite,
+			Comparator: testconn.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status: common.BatchStatusPartial,
 				// objectWriteTraceId is removed from all errors (internal field)
@@ -206,7 +206,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseCreateContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetBatchWrite,
+			Comparator: testconn.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status: common.BatchStatusSuccess,
 				Errors: []any{},
@@ -239,7 +239,7 @@ func TestBatchCreate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableBatchWriter, error) {
+			tt.Run(t, func() (testconn.TestableBatchWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -270,7 +270,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		},
 	}}
 
-	tests := []testroutines.TestCaseBatchWrite{
+	tests := []testconn.TestCaseBatchWrite{
 		{
 			Name: "General high level error not tied to any record",
 			Input: &common.BatchWriteParam{
@@ -286,7 +286,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusBadRequest, errDuplicateIDs),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetBatchWrite,
+			Comparator: testconn.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status:       common.BatchStatusFailure,
 				Errors:       []any{"Duplicate IDs found in batch input: [123456]. IDs must be unique"},
@@ -311,7 +311,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusBadRequest, errManyInvalidFields),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetBatchWrite,
+			Comparator: testconn.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status: common.BatchStatusFailure,
 				Errors: []any{
@@ -366,7 +366,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusMultiStatus, errUpdatePartial),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetBatchWrite,
+			Comparator: testconn.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status: common.BatchStatusPartial,
 				// Top-level errors are sanitized (ids removed from context)
@@ -414,7 +414,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseUpdateContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetBatchWrite,
+			Comparator: testconn.ComparatorSubsetBatchWrite,
 			Expected: &common.BatchWriteResult{
 				Status: common.BatchStatusSuccess,
 				Errors: []any{},
@@ -447,7 +447,7 @@ func TestBatchUpdate(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableBatchWriter, error) {
+			tt.Run(t, func() (testconn.TestableBatchWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

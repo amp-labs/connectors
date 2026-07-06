@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -21,7 +21,7 @@ func TestRead(t *testing.T) {
 	responseCallLogFirstPage := testutils.DataFromFile(t, "call-log.json")
 	responseCallLogLastPage := testutils.DataFromFile(t, "read-call-log-last-page.json")
 	responseContactListsCsv := testutils.DataFromFile(t, "contact-lists-csv.json")
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 
 		{
 			Name: "Read empty items",
@@ -60,7 +60,7 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLog),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -98,7 +98,7 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLogFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -113,7 +113,7 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/v1/call-log?limit=100&sort=-updatedAt&page=2",
+				NextPage: testconn.URLTestServer + "/v1/call-log?limit=100&sort=-updatedAt&page=2",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -123,7 +123,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "call-log",
 				Fields:     connectors.Fields("_id", "updatedAt", "from"),
-				NextPage:   testroutines.URLTestServer + "/v1/call-log?limit=100&sort=-updatedAt&page=2",
+				NextPage:   testconn.URLTestServer + "/v1/call-log?limit=100&sort=-updatedAt&page=2",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -133,7 +133,7 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLogLastPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -171,7 +171,7 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLog),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -205,7 +205,7 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseContactListsCsv),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -254,7 +254,7 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLog),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -289,7 +289,7 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseCallLogFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 0,
 				Data: []common.ReadResultRow{}, // records filtered out
@@ -316,7 +316,7 @@ func TestRead(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseContactListsCsv),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -341,7 +341,7 @@ func TestRead(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

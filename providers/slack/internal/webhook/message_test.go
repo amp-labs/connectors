@@ -3,7 +3,7 @@ package webhook
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -12,12 +12,12 @@ func TestEvent(t *testing.T) {
 	responseConversationDeleted := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "channel-deleted.json")
 	responseConversationArchived := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "channel-archived.json")
 
-	for _, tt := range []testroutines.TestCaseSubscriptionEvent{
+	for _, tt := range []testconn.TestCaseSubscriptionEvent{
 		{
 			Name:  "Created event",
 			Input: responseConversationCreated,
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:          "create",
 					RawEventName:       "channel_created",
 					ObjectName:         "conversations",
@@ -30,8 +30,8 @@ func TestEvent(t *testing.T) {
 		{
 			Name:  "Deleted event",
 			Input: responseConversationDeleted,
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:          "delete",
 					RawEventName:       "channel_deleted",
 					ObjectName:         "conversations",
@@ -44,8 +44,8 @@ func TestEvent(t *testing.T) {
 		{
 			Name:  "Archived event",
 			Input: responseConversationArchived,
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:          "other",
 					RawEventName:       "channel_archive",
 					ObjectName:         "conversations",

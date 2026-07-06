@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -23,7 +23,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 	notesResponse := testutils.DataFromFile(t, "notes.json")
 	messagesResponse := testutils.DataFromFile(t, "messages.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Object name and fields are required",
 			Input:        common.ReadParams{ObjectName: "notes"},
@@ -46,7 +46,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 					Then: mockserver.Response(http.StatusOK, accountsResponse),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -79,7 +79,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 					Then: mockserver.Response(http.StatusOK, notesResponse),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -116,7 +116,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 					}`),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -124,7 +124,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 					Fields: map[string]any{"id": "t1"},
 					Raw:    map[string]any{"id": "t1"},
 				}},
-				NextPage: testroutines.URLTestServer + "/api/tasks/me?from=2&limit=2",
+				NextPage: testconn.URLTestServer + "/api/tasks/me?from=2&limit=2",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -147,7 +147,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 					Then: mockserver.Response(http.StatusOK, messagesResponse),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -161,7 +161,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 						"fromAddress": "alice@zylker.com",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/api/accounts/" + testAccountID + "/messages/view?start=2&limit=1",
+				NextPage: testconn.URLTestServer + "/api/accounts/" + testAccountID + "/messages/view?start=2&limit=1",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -173,7 +173,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tc := testroutines.TestCase[common.ReadParams, *common.ReadResult](tt)
+			tc := testconn.TestCase[common.ReadParams, *common.ReadResult](tt)
 			t.Cleanup(tc.Close)
 
 			adapter := constructTestAdapter(t, tt.Server.URL, testAccountID)

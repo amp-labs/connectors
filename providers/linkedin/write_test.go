@@ -11,13 +11,13 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestAdsWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -78,7 +78,7 @@ func TestAdsWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestAdsConnector(tt.Server)
 			})
 		})
@@ -88,7 +88,7 @@ func TestAdsWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 func TestPlatformWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -149,7 +149,7 @@ func TestPlatformWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestPlatformConnector(tt.Server)
 			})
 		})

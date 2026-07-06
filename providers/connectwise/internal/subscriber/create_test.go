@@ -12,7 +12,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -33,7 +33,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 		common.SubscriptionEventTypeDelete,
 	}
 
-	tests := []testroutines.TestCaseSubscribe{
+	tests := []testconn.TestCaseSubscribe{
 		{
 			Name: "Creating subscription to contacts and tickets successfully",
 			Input: common.SubscribeParams{
@@ -63,7 +63,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 					Then: mockserver.Response(http.StatusOK, responseWebhookForTickets),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
+			Comparator: testconn.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
 				Result: &Result{
 					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
@@ -132,7 +132,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 					Then: mockserver.Response(http.StatusBadRequest, deleteWebhookFailed),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
+			Comparator: testconn.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
 				Result: &Result{
 					ObjectWebhooks: map[common.ObjectName]SubscriptionResource{
@@ -192,7 +192,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 					Then: mockserver.Response(http.StatusNoContent),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubscriptionWithResult(compareResult),
+			Comparator: testconn.ComparatorSubscriptionWithResult(compareResult),
 			Expected: &common.SubscriptionResult{
 				Result: &Result{},
 				ObjectEvents: map[common.ObjectName]common.ObjectEvents{
@@ -210,7 +210,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableSubscriptionCreator, error) {
+			tt.Run(t, func() (testconn.TestableSubscriptionCreator, error) {
 				return constructTestStrategy(tt.Server)
 			})
 		})

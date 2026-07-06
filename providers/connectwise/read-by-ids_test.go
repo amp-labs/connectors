@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -18,7 +18,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 
 	responseContacts := testutils.DataFromFile(t, "read/contacts-batch-by-ids.json")
 
-	tests := []testroutines.TestCaseGetRecordsByIds{
+	tests := []testconn.TestCaseGetRecordsByIds{
 		{
 			Name:         "Empty record identifiers",
 			Server:       mockserver.Dummy(),
@@ -26,7 +26,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name: "Read contacts by identifiers",
-			Input: testroutines.ReadByIdsParams{
+			Input: testconn.ReadByIdsParams{
 				ObjectName: "contacts",
 				RecordIds:  []string{"57920", "57921", "57922"},
 				Fields:     []string{"firstName"},
@@ -43,7 +43,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSortedSubsetReadByIds,
+			Comparator: testconn.ComparatorSortedSubsetReadByIds,
 			Expected: []common.ReadResultRow{{
 				Id:     "57920",
 				Fields: map[string]any{"firstname": "Maxime Schaefer [1]"},
@@ -66,7 +66,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableBatchReader, error) {
+			tt.Run(t, func() (testconn.TestableBatchReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

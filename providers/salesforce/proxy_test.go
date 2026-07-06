@@ -4,13 +4,13 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestProxy(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	tests := []testroutines.Proxy{
+	tests := []testconn.Proxy{
 		{
 			Name: "Salesforce CRM Proxy",
 			Builder: func() (connectors.ProxyConnector, error) {

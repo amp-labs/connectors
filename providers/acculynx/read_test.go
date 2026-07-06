@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 //go:embed test/read/users-first-page.json
@@ -67,7 +67,7 @@ var jobHistoryResponse []byte
 func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	t.Parallel()
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -104,7 +104,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -126,7 +126,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						"status":      "Active",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/api/v2/users?pageSize=2&recordStartIndex=2",
+				NextPage: testconn.URLTestServer + "/api/v2/users?pageSize=2&recordStartIndex=2",
 				Done:     false,
 			},
 		},
@@ -136,7 +136,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				ObjectName: "users",
 				Fields:     connectors.Fields("id"),
 				PageSize:   2,
-				NextPage:   testroutines.URLTestServer + "/api/v2/users?pageSize=2&recordStartIndex=4",
+				NextPage:   testconn.URLTestServer + "/api/v2/users?pageSize=2&recordStartIndex=4",
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -151,7 +151,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				NextPage: "",
@@ -189,7 +189,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Done: true,
@@ -238,7 +238,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -319,7 +319,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 3,
 				Done: true,
@@ -361,7 +361,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 3,
 				Done: true,
@@ -397,7 +397,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Done: true,
@@ -430,7 +430,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Done: true,
@@ -455,7 +455,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Done: true,
@@ -467,7 +467,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestReadConnector(tt.Server.URL)
 			})
 		})

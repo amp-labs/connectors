@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -19,7 +19,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	currenciesResponse := testutils.DataFromFile(t, "currencies.json")
 	countriesResponse := testutils.DataFromFile(t, "countries.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -33,7 +33,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/integration-user-loxo-withampersand-com/people"),
 				Then:  mockserver.Response(http.StatusOK, peopleResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -65,7 +65,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer +
+				NextPage: testconn.URLTestServer +
 					"/integration-user-loxo-withampersand-com/people?" +
 					"per_page=100&scroll_id=5B313735363231393831313237352C302E302C313338383639335D",
 				Done: false,
@@ -111,7 +111,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/integration-user-loxo-withampersand-com/countries"),
 				Then:  mockserver.Response(http.StatusOK, countriesResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -125,7 +125,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/integration-user-loxo-withampersand-com/countries?" +
+				NextPage: testconn.URLTestServer + "/integration-user-loxo-withampersand-com/countries?" +
 					"per_page=100&page=101",
 				Done: false,
 			},
@@ -137,7 +137,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -12,7 +12,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -104,11 +104,11 @@ func constructTestStrategy(serverURL string) (*Strategy, error) {
 	return NewStrategy(transport.JSONHTTPClient(), transport.ProviderInfo()), nil
 }
 
-type testType[B any] = testroutines.TestCase[*Params, *Result[B]]
+type testType[B any] = testconn.TestCase[*Params, *Result[B]]
 type testSuite[B any] testType[B]
 
 // Run provides a procedure to test connectors.ObjectMetadataConnector
-func (s testSuite[B]) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Strategy]) {
+func (s testSuite[B]) Run(t *testing.T, builder testconn.ConnectorBuilder[*Strategy]) {
 	t.Helper()
 	t.Cleanup(func() {
 		testType[B](s).Close()

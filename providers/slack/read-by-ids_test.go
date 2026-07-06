@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -18,7 +18,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 	responseConversation1 := testutils.DataFromFile(t, "read/conversation-1.json")
 	responseConversation2 := testutils.DataFromFile(t, "read/conversation-2.json")
 
-	tests := []testroutines.TestCaseGetRecordsByIds{
+	tests := []testconn.TestCaseGetRecordsByIds{
 		{
 			Name:         "Empty record identifiers",
 			Server:       mockserver.Dummy(),
@@ -26,7 +26,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name: "Read conversations by identifiers",
-			Input: testroutines.ReadByIdsParams{
+			Input: testconn.ReadByIdsParams{
 				ObjectName: "conversations",
 				RecordIds:  []string{"C0BA24516MS", "C0B9V3RLZ4M"},
 				Fields:     []string{"name"},
@@ -49,7 +49,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 					Then: mockserver.Response(http.StatusOK, responseConversation2),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSortedSubsetReadByIds,
+			Comparator: testconn.ComparatorSortedSubsetReadByIds,
 			Expected: []common.ReadResultRow{{
 				Id:     "C0B9V3RLZ4M",
 				Fields: map[string]any{"name": "holidays"},
@@ -68,7 +68,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableBatchReader, error) {
+			tt.Run(t, func() (testconn.TestableBatchReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

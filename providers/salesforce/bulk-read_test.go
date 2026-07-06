@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -90,11 +90,11 @@ func TestBulkRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 }
 
 type (
-	bulkReadTestCaseType = testroutines.TestCase[common.ReadParams, *GetJobInfoResult]
+	bulkReadTestCaseType = testconn.TestCase[common.ReadParams, *GetJobInfoResult]
 	bulkReadTestCase     bulkReadTestCaseType
 )
 
-func (c bulkReadTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Connector]) {
+func (c bulkReadTestCase) Run(t *testing.T, builder testconn.ConnectorBuilder[*Connector]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
 	output, err := conn.BulkRead(t.Context(), c.Input)

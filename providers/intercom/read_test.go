@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -34,7 +34,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseNotesFirstPage := testutils.DataFromFile(t, "read-notes-1-first-page.json")
 	responseNotesSecondPage := testutils.DataFromFile(t, "read-notes-2-last-page.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -108,7 +108,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Header(testApiVersionHeader),
 				Then:  mockserver.Response(http.StatusOK, responseNotesSecondPage),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 1, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
@@ -120,7 +120,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseNotesFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     2,
 				NextPage: "https://api.intercom.io/contacts/6643703ffae7834d1792fd30/notes?per_page=2&page=2",
@@ -135,10 +135,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseContactsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
-				NextPage: testroutines.URLTestServer + "/contacts?per_page=60&starting_after=" +
+				NextPage: testconn.URLTestServer + "/contacts?per_page=60&starting_after=" +
 					"WzE3MTU2OTU2NzkwMDAsIjY2NDM3MDNmZmFlNzgzNGQxNzkyZmQzMCIsMl0=",
 				Done: false,
 			},
@@ -152,7 +152,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseNotesSecondPage),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 1, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
@@ -163,7 +163,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responseContactsThirdPage),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 1, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
@@ -178,7 +178,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/contacts"),
 				Then:  mockserver.Response(http.StatusOK, responseContactsSecondPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -197,7 +197,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"updated_at": float64(1715706939),
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/contacts?per_page=60&starting_after=" +
+				NextPage: testconn.URLTestServer + "/contacts?per_page=60&starting_after=" +
 					"Wy0xLCI2NjQzOWI5NDdiYjA5NWE2ODFmN2ZkOWUiLDNd",
 				Done: false,
 			},
@@ -214,7 +214,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/conversations"),
 				Then:  mockserver.Response(http.StatusOK, responseReadConversations),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -250,7 +250,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.BodyBytes(requestSearchConversations),
 				Then:  mockserver.Response(http.StatusOK, responseSearchConversations),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -265,7 +265,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"updated_at":            float64(1726752145),
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/conversations/search?starting_after=WzE3MjY3NTIxNDUwMDAsNSwyXQ==",
+				NextPage: testconn.URLTestServer + "/conversations/search?starting_after=WzE3MjY3NTIxNDUwMDAsNSwyXQ==",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -277,7 +277,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

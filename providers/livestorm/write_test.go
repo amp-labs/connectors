@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestWrite(t *testing.T) { //nolint:funlen
@@ -17,7 +17,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 	eventUpdateResp := []byte(`{"data":{"id":"evt_1","type":"events","attributes":{"title":"Updated"}}}`)
 	userCreateResp := []byte(`{"data":{"id":"usr_1","type":"users","attributes":{"email":"new@example.com"}}}`)
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -56,7 +56,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusCreated, eventCreateResp),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "evt_new",
@@ -85,7 +85,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, eventUpdateResp),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "evt_1",
@@ -113,7 +113,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusCreated, userCreateResp),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "usr_1",
@@ -134,7 +134,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

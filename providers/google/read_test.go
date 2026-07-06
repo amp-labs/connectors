@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -25,7 +25,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseEventsFirstPage := testutils.DataFromFile(t, "calendar/read/events/1-first-page.json")
 	responseEventsLastPage := testutils.DataFromFile(t, "calendar/read/events/2-last-page.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -74,7 +74,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/calendar/v3/users/me/calendarList"),
 				Then:  mockserver.Response(http.StatusOK, responseCalendarListFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 4,
 				Data: []common.ReadResultRow{{
@@ -110,7 +110,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"id": "en.indian#holiday@group.v.calendar.google.com",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/calendar/v3/users/me/calendarList?maxResults=3000" +
+				NextPage: testconn.URLTestServer + "/calendar/v3/users/me/calendarList?maxResults=3000" +
 					"&pageToken=EjAKDAjR0u-8BhCAjJaYAxIgdTpnY2FsK2dyb3VwOi8vaG9saWRheS9lbi5pbmRpYW4aHhIJBwYs8u00rJIAqsmIjAQNEgsIk9TvvAYQgM7SWQ==", // nolint:lll
 				Done: false,
 			},
@@ -130,7 +130,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseCalendarListLastPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -157,7 +157,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/calendar/v3/users/me/settings"),
 				Then:  mockserver.Response(http.StatusOK, responseSettingsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 10,
 				Data: []common.ReadResultRow{{
@@ -168,7 +168,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"value": "false",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/calendar/v3/users/me/settings?maxResults=3000" +
+				NextPage: testconn.URLTestServer + "/calendar/v3/users/me/settings?maxResults=3000" +
 					"&pageToken=CiEKCwoJL2NhbHVzZXIvEgQIAhIAGgxzaG93RGVjbGluZWQQoJLNg62eiwM=", // nolint:lll
 				Done: false,
 			},
@@ -185,7 +185,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/calendar/v3/users/me/settings"),
 				Then:  mockserver.Response(http.StatusOK, responseSettingsLastPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 3,
 				Data: []common.ReadResultRow{{
@@ -217,7 +217,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseEventsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 3,
 				Data: []common.ReadResultRow{{
@@ -248,7 +248,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"summary": "Meeting with Integration",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/calendar/v3/calendars/primary/events?maxResults=3000" +
+				NextPage: testconn.URLTestServer + "/calendar/v3/calendars/primary/events?maxResults=3000" +
 					"&updatedMin=2024-09-19T12:30:45.000Z" +
 					"&pageToken=CkAKMAouCgwIwcaswgYQmOig1QESHgocChptZDE1a3E3a3Y0cDF2aXV0YTNqaXAyaW5uZxoMCNfVwMMGENC33MkBwD4B", // nolint:lll
 				Done: false,
@@ -266,7 +266,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/calendar/v3/calendars/primary/events"),
 				Then:  mockserver.Response(http.StatusOK, responseEventsLastPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -292,7 +292,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestCalendarConnector(tt.Server.URL)
 			})
 		})
@@ -307,7 +307,7 @@ func TestCalendarReadEventsForAllCalendars(t *testing.T) { //nolint:funlen
 	responseEventsTeam := testutils.DataFromFile(t, "calendar/read/all-calendars/events-team.json")
 	responseEventsLastPage := testutils.DataFromFile(t, "calendar/read/events/2-last-page.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name: "Opts present but flag disabled reads only the primary calendar",
 			Input: common.ReadParams{
@@ -320,7 +320,7 @@ func TestCalendarReadEventsForAllCalendars(t *testing.T) { //nolint:funlen
 				If:    mockcond.Path("/calendar/v3/calendars/primary/events"),
 				Then:  mockserver.Response(http.StatusOK, responseEventsLastPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -352,7 +352,7 @@ func TestCalendarReadEventsForAllCalendars(t *testing.T) { //nolint:funlen
 					Then: mockserver.Response(http.StatusOK, responseEventsTeam),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				// event-shared appears on both calendars (same iCalUID) and is deduped.
 				Rows: 3,
@@ -378,7 +378,7 @@ func TestCalendarReadEventsForAllCalendars(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestCalendarConnector(tt.Server.URL)
 			})
 		})
@@ -395,7 +395,7 @@ func TestCalendarReadEventsDatabookOpts(t *testing.T) { //nolint:funlen
 	timeMin := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	timeMax := time.Date(2026, 4, 1, 0, 0, 0, 0, time.UTC)
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name: "singleEvents opts set events.list params, dedupe by id, and fetch series masters",
 			Input: common.ReadParams{
@@ -433,7 +433,7 @@ func TestCalendarReadEventsDatabookOpts(t *testing.T) { //nolint:funlen
 					Then: mockserver.Response(http.StatusOK, responseEvents),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				// Two instances share one iCalUID but have distinct ids, so dedupe-by-id keeps both;
 				// the standalone event and the separately fetched master are also kept (4 rows).
@@ -463,7 +463,7 @@ func TestCalendarReadEventsDatabookOpts(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestCalendarConnector(tt.Server.URL)
 			})
 		})
@@ -481,7 +481,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseMyConnectionsLastPage := testutils.DataFromFile(t, "contacts/read/myConnections/2-last-page.json")
 	responseOtherContacts := testutils.DataFromFile(t, "contacts/read/otherContacts/one-page.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -530,7 +530,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v1/contactGroups"),
 				Then:  mockserver.Response(http.StatusOK, responseContactGroupsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -554,7 +554,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"formattedName": "Friends",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v1/contactGroups?groupFields=name&pageSize=1000" +
+				NextPage: testconn.URLTestServer + "/v1/contactGroups?groupFields=name&pageSize=1000" +
 					"&pageToken=CAISDAjEt9vDBhDoq6i8Ag",
 				Done: false,
 			},
@@ -574,7 +574,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseContactGroupsLastPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -604,7 +604,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v1/people/me/connections"),
 				Then:  mockserver.Response(http.StatusOK, responseMyConnectionsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -616,7 +616,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"etag": "%EgUBAi43PRoEAQIFByIMZHUyb2I4ZWlGdVk9",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v1/people/me/connections?pageSize=1000" +
+				NextPage: testconn.URLTestServer + "/v1/people/me/connections?pageSize=1000" +
 					"&pageToken=GiAKHAgBagsIvd7bwwYQiLuICXILCLTe28MGEOChvEYQAg",
 				Done: false,
 			},
@@ -633,7 +633,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v1/people/me/connections"),
 				Then:  mockserver.Response(http.StatusOK, responseMyConnectionsLastPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -661,7 +661,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v1/otherContacts"),
 				Then:  mockserver.Response(http.StatusOK, responseOtherContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -685,7 +685,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestContactsConnector(tt.Server.URL)
 			})
 		})
@@ -704,7 +704,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseDraftMessageItem1 := testutils.DataFromFile(t, "mail/read/drafts/message-item-1.json")
 	responseDraftMessageItem2 := testutils.DataFromFile(t, "mail/read/drafts/message-item-2.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -759,7 +759,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseMessagesFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -809,7 +809,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Then: mockserver.Response(http.StatusOK, responseMessageItem),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -863,7 +863,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Then: mockserver.Response(http.StatusOK, responseDraftMessageItem2),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -959,7 +959,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestMailConnector(tt.Server.URL)
 			})
 		})

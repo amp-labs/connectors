@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -25,7 +25,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 	messageTemplateCreateResponse := testutils.DataFromFile(t, "message-template-create.json")
 	phoneNumberCreateResponse := testutils.DataFromFile(t, "phone-number-create.json")
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -69,7 +69,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "wamid.HBgLMTY0NjcwNDM1OTUVAgARGBI4MjZGRDA0OUE2OTQ3RkEyMzcA",
@@ -105,7 +105,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "2450146205448663",
@@ -139,7 +139,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "1906385232743451",
@@ -159,7 +159,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestAdapter(tt.Server)
 			})
 		})

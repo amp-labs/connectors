@@ -6,18 +6,18 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestListObjectMetadata(t *testing.T) {
 	t.Parallel()
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:       "Successful metadata for commerce objects",
 			Input:      []string{"accounts", "orders", "products", "subscriptions", "events-processed", "events-unprocessed"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"accounts": {
@@ -121,7 +121,7 @@ func TestListObjectMetadata(t *testing.T) {
 			Name:       "Unsupported object returns object not supported error",
 			Input:      []string{"accounts", "unknown_object"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"accounts": {
@@ -147,7 +147,7 @@ func TestListObjectMetadata(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -12,7 +12,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -24,7 +24,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCampaigns := testutils.DataFromFile(t, "read-campaigns.json")
 	responseTags := testutils.DataFromFile(t, "read-tags.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -100,7 +100,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				data := fmt.Sprintf("[%v]", strings.Join(manyCampaigns, ","))
 				_, _ = writer.Write([]byte(data)) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 			}),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     DefaultPageSize,
 				NextPage: "test-placeholder?limit=100&skip=800",
@@ -118,7 +118,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.ResponseString(http.StatusOK, "[]"),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
@@ -133,7 +133,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/api/v1/campaign/list"),
 				Then:  mockserver.Response(http.StatusOK, responseCampaigns),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -153,7 +153,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"name": "My Campaign",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/api/v1/campaign/list?limit=100&skip=100",
+				NextPage: testconn.URLTestServer + "/api/v1/campaign/list?limit=100&skip=100",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -169,7 +169,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/api/v1/custom-tag"),
 				Then:  mockserver.Response(http.StatusOK, responseTags),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -193,7 +193,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"description":     "High Delivery Accounts 2",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/api/v1/custom-tag?limit=100&skip=100",
+				NextPage: testconn.URLTestServer + "/api/v1/custom-tag?limit=100&skip=100",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -205,7 +205,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -27,7 +27,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCheckoutSessionsWithItems := testutils.DataFromFile(t, "read/checkout-sessions/with-line-items.json")
 	responseInvoices := testutils.DataFromFile(t, "read/invoices/incremental.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -83,7 +83,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v1/accounts"),
 				Then:  mockserver.Response(http.StatusOK, responseAccountsLastPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -109,7 +109,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v1/customers"),
 				Then:  mockserver.Response(http.StatusOK, responseCustomersFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -131,7 +131,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 					Id: "cus_Rd3NjdGWtynChD",
 				}},
-				NextPage: testroutines.URLTestServer + "/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD",
+				NextPage: testconn.URLTestServer + "/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -143,7 +143,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Fields:     connectors.Fields("name"),
 				NextPage:   "/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD",
 			},
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If:    mockcond.Path("/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD"),
@@ -186,7 +186,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseCheckoutSessionsWithItems),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -231,7 +231,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseInvoices),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -247,7 +247,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 					Id: "in_1RnN00ES6gLOjP91auKbmxwS",
 				}},
-				NextPage: testroutines.URLTestServer + "/v1/invoices?" +
+				NextPage: testconn.URLTestServer + "/v1/invoices?" +
 					"created[gte]=1753116395&limit=100&starting_after=in_1RnN00ES6gLOjP91auKbmxwS",
 				Done: false,
 			},
@@ -267,7 +267,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomersWithMetadata),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -334,7 +334,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Then: mockserver.Response(http.StatusOK, responseCustomersLastPage),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetReadSorted,
+			Comparator: testconn.ComparatorSubsetReadSorted,
 			Expected: &common.ReadResult{
 				Rows: 3,
 				Data: []common.ReadResultRow{{
@@ -362,7 +362,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				// We are not done reading
 				NextPage: `[{
 					"context": "acct_1Nv0FGQ9RKHgCVdK",
-					"value": "` + testroutines.URLTestServer + `/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD"
+					"value": "` + testconn.URLTestServer + `/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD"
 				}]`,
 				Done: false,
 			},
@@ -376,7 +376,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Opts:       ReadParamsOpts{ReadForAllConnectedAccounts: true},
 				NextPage: `[{
 					"context": "acct_1Nv0FGQ9RKHgCVdK",
-					"value": "` + testroutines.URLTestServer + `/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD"
+					"value": "` + testconn.URLTestServer + `/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD"
 				}]`,
 			},
 			Server: mockserver.Conditional{
@@ -391,7 +391,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseCustomersLastPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -414,7 +414,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

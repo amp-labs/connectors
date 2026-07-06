@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -21,7 +21,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 	successResponse := testutils.DataFromFile(t, "write/success.json")
 	errorResponse := testutils.DataFromFile(t, "write/error.json")
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -47,7 +47,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, createContactResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "12345",
@@ -73,7 +73,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, updateContactResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "12345",
@@ -95,7 +95,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, sendSMSResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "98765",
@@ -121,7 +121,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, updateCallResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "328951212",
@@ -143,7 +143,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, successResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success: true,
 				Data: map[string]any{
@@ -163,7 +163,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, successResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success: true,
 				Data: map[string]any{
@@ -183,7 +183,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, successResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success: true,
 				Data: map[string]any{
@@ -203,7 +203,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, successResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success: true,
 				Data: map[string]any{
@@ -218,7 +218,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

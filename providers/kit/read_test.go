@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -22,7 +22,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseEmptyPageTags := testutils.DataFromFile(t, "emptypage_tags.json")
 	responseEmailTemplates := testutils.DataFromFile(t, "email_templates.json")
 	responseSubscribers := testutils.DataFromFile(t, "subscribers.json")
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -86,7 +86,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/v4/custom_fields"),
 				Then:  mockserver.Response(http.StatusOK, responseNextPageCustomFields),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -100,7 +100,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer + "/v4/custom_fields?after=WzFd&per_page=500",
+				NextPage: testconn.URLTestServer + "/v4/custom_fields?after=WzFd&per_page=500",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -184,7 +184,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, responseSubscribers),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -220,7 +220,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

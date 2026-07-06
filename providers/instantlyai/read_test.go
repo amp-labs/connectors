@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -19,7 +19,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	customTagsResponse := testutils.DataFromFile(t, "custom-tags.json")
 	leadListsResponse := testutils.DataFromFile(t, "lead-lists.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -33,7 +33,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/api/v2/campaigns"),
 				Then:  mockserver.Response(http.StatusOK, campaignsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -48,7 +48,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer +
+				NextPage: testconn.URLTestServer +
 					"/api/v2/campaigns?limit=100&starting_after=0196d267-98dd-7720-b740-f132c2c547d9",
 				Done: false,
 			},
@@ -62,7 +62,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/api/v2/custom-tags"),
 				Then:  mockserver.Response(http.StatusOK, customTagsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -78,7 +78,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer +
+				NextPage: testconn.URLTestServer +
 					"/api/v2/custom-tags?limit=100&starting_after=01966b52-881d-76de-acb0-8b12432533f6",
 				Done: false,
 			},
@@ -92,7 +92,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/api/v2/lead-lists"),
 				Then:  mockserver.Response(http.StatusOK, leadListsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -108,7 +108,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: testroutines.URLTestServer +
+				NextPage: testconn.URLTestServer +
 					"/api/v2/lead-lists?limit=100&starting_after=01966b52-883f-760d-b7dc-cdd0fc3f7841",
 				Done: false,
 			},
@@ -120,7 +120,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

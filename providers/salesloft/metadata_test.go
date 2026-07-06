@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -17,7 +17,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseCustomFieldsFirstPage := testutils.DataFromFile(t, "read/custom-fields/first-page.json")
 	responseCustomFieldsSecondPage := testutils.DataFromFile(t, "read/custom-fields/last-page.json")
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -28,7 +28,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Name:       "Unknown object requested",
 			Input:      []string{"butterflies"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Errors: map[string]error{
 					"butterflies": common.ErrObjectNotSupported,
@@ -39,7 +39,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Name:       "Successfully describe one object with metadata",
 			Input:      []string{"activities/calls"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"activities/calls": {
@@ -63,7 +63,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Name:       "Successfully describe multiple objects with metadata",
 			Input:      []string{"account_tiers", "actions"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"account_tiers": {
@@ -131,7 +131,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					Then: mockserver.Response(http.StatusOK, responseCustomFieldsSecondPage),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"people": {
@@ -175,7 +175,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -6,13 +6,13 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestListObjectMetadata(t *testing.T) {
 	t.Parallel()
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -37,7 +37,7 @@ func TestListObjectMetadata(t *testing.T) {
 				},
 				Errors: nil,
 			},
-			Comparator:   testroutines.ComparatorSubsetMetadata,
+			Comparator:   testconn.ComparatorSubsetMetadata,
 			ExpectedErrs: nil,
 		},
 		{
@@ -57,7 +57,7 @@ func TestListObjectMetadata(t *testing.T) {
 				},
 				Errors: nil,
 			},
-			Comparator:   testroutines.ComparatorSubsetMetadata,
+			Comparator:   testconn.ComparatorSubsetMetadata,
 			ExpectedErrs: nil,
 		},
 		{
@@ -78,7 +78,7 @@ func TestListObjectMetadata(t *testing.T) {
 				},
 				Errors: nil,
 			},
-			Comparator:   testroutines.ComparatorSubsetMetadata,
+			Comparator:   testconn.ComparatorSubsetMetadata,
 			ExpectedErrs: nil,
 		},
 		{
@@ -111,7 +111,7 @@ func TestListObjectMetadata(t *testing.T) {
 				},
 				Errors: nil,
 			},
-			Comparator:   testroutines.ComparatorSubsetMetadata,
+			Comparator:   testconn.ComparatorSubsetMetadata,
 			ExpectedErrs: nil,
 		},
 	}
@@ -120,7 +120,7 @@ func TestListObjectMetadata(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

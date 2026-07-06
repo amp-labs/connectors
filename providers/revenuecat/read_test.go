@@ -11,7 +11,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestRead(t *testing.T) {
@@ -40,7 +40,7 @@ func TestRead(t *testing.T) {
 	  "url":"/v2/projects/proj_123/products"
 	}`)
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -69,7 +69,7 @@ func TestRead(t *testing.T) {
 				},
 				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -97,7 +97,7 @@ func TestRead(t *testing.T) {
 				},
 				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				NextPage: "",
@@ -121,10 +121,10 @@ func TestRead(t *testing.T) {
 				},
 				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     2,
-				NextPage: testroutines.URLTestServer + "/v2/projects/proj_123/products?starting_after=prod_2",
+				NextPage: testconn.URLTestServer + "/v2/projects/proj_123/products?starting_after=prod_2",
 				Done:     false,
 			},
 		},
@@ -149,7 +149,7 @@ func TestRead(t *testing.T) {
 				},
 				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -189,10 +189,10 @@ func TestRead(t *testing.T) {
 				},
 				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
-				NextPage: testroutines.URLTestServer + "/v2/projects/proj_123/products?starting_after=prod_1",
+				NextPage: testconn.URLTestServer + "/v2/projects/proj_123/products?starting_after=prod_1",
 				Done:     false,
 			},
 		},
@@ -201,7 +201,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "products",
 				Fields:     datautils.NewStringSet("id"),
-				NextPage:   testroutines.URLTestServer + "/v2/projects/proj_123/products?starting_after=prod_1",
+				NextPage:   testconn.URLTestServer + "/v2/projects/proj_123/products?starting_after=prod_1",
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -217,7 +217,7 @@ func TestRead(t *testing.T) {
 				},
 				Default: mockserver.ResponseString(500, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				NextPage: "",
@@ -229,7 +229,7 @@ func TestRead(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestReadConnector(tt.Server.URL, "proj_123")
 			})
 		})

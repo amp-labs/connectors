@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -19,7 +19,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	responseCustomersSecond := testutils.DataFromFile(t, "customers-second-page.json")
 	responseProducts := testutils.DataFromFile(t, "products.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -39,7 +39,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/customers"),
 				Then:  mockserver.Response(http.StatusOK, responseCustomersFirst),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -78,7 +78,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/customers"),
 				Then:  mockserver.Response(http.StatusOK, responseCustomersSecond),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				NextPage: "",
@@ -94,7 +94,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/products"),
 				Then:  mockserver.Response(http.StatusOK, responseProducts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -130,7 +130,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -21,7 +21,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseOpportunityWithAccount := testutils.DataFromFile(t, "read-opportunity-with-account.json")
 	responseOpportunityWithContacts := testutils.DataFromFile(t, "read-opportunity-with-contacts.json")
 
-	tests := []testroutines.TestCaseSearch{
+	tests := []testconn.TestCaseSearch{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -80,7 +80,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseLeadsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     8,
 				NextPage: "/services/data/v60.0/query/01g3A00007lZwLKQA0-2000",
@@ -106,7 +106,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseListContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 20,
 				Data: []common.ReadResultRow{{
@@ -146,7 +146,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithAccount),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -217,7 +217,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseOpportunityWithContacts),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -288,7 +288,7 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableSearcher, error) {
+			tt.Run(t, func() (testconn.TestableSearcher, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

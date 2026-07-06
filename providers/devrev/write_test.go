@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -42,7 +42,7 @@ func TestWrite(t *testing.T) {
 	responseRevUserCreate := testutils.DataFromFile(t, "write-rev-user-response.json")
 	responseAuthTokensCreate := testutils.DataFromFile(t, "write-auth-tokens-create-response.json")
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name: "Create article successfully",
 			Input: common.WriteParams{
@@ -59,7 +59,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusCreated, responseArticlesCreate),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "don:core:devrev:article/1",
@@ -88,7 +88,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusOK, responseArticlesUpdate),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "don:core:devrev:article/1",
@@ -117,7 +117,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusCreated, responseRevUserCreate),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "1b5d9e8e-6e12-4a0a-bf67-2a8e34c8e2aa",
@@ -153,7 +153,7 @@ func TestWrite(t *testing.T) {
 				},
 				Then: mockserver.Response(http.StatusCreated, responseAuthTokensCreate),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "",
@@ -174,7 +174,7 @@ func TestWrite(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

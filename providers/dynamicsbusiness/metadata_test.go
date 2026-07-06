@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -18,7 +18,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 	responseCustomers := testutils.DataFromFile(t, "metadata/customers.json")
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be provided",
 			Input:        nil,
@@ -44,7 +44,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					Then: mockserver.ResponseString(http.StatusNotFound, "{}"),
 				}},
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"customers": {
@@ -72,7 +72,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

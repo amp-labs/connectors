@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 //go:embed test/read/employees-first-page.json
@@ -33,7 +33,7 @@ const testCompanyID = "test-company-uuid"
 func TestRead(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -88,7 +88,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
@@ -118,7 +118,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 						"email":      "bob@example.com",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v1/companies/" + testCompanyID + "/employees?page=2&per=2",
+				NextPage: testconn.URLTestServer + "/v1/companies/" + testCompanyID + "/employees?page=2&per=2",
 				Done:     false,
 			},
 		},
@@ -128,7 +128,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				ObjectName: "employees",
 				Fields:     connectors.Fields("uuid"),
 				PageSize:   2,
-				NextPage:   testroutines.URLTestServer + "/v1/companies/" + testCompanyID + "/employees?page=2&per=2",
+				NextPage:   testconn.URLTestServer + "/v1/companies/" + testCompanyID + "/employees?page=2&per=2",
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -145,7 +145,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
 				NextPage: "",
@@ -171,7 +171,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -205,7 +205,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     0,
 				NextPage: "",
@@ -248,7 +248,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				// 2 jobs from emp_001 + 1 job from emp_002 = 3 total
 				Rows: 3,
@@ -271,7 +271,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 					},
 				}},
 				// Employee list had exactly 2 rows (== per=2), so there may be more employees.
-				NextPage: testroutines.URLTestServer + "/v1/companies/" + testCompanyID + "/employees?page=2&per=2",
+				NextPage: testconn.URLTestServer + "/v1/companies/" + testCompanyID + "/employees?page=2&per=2",
 				Done:     false,
 			},
 		},
@@ -294,7 +294,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected request"}`),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     0,
 				NextPage: "",
@@ -309,7 +309,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				noCompanyIDCases := map[string]bool{
 					"Company-scoped reads require companyId metadata":  true,
 					"Employee-scoped reads require companyId metadata": true,

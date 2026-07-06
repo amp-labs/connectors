@@ -12,7 +12,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -200,11 +200,11 @@ func constructTestStrategy(serverURL string) (*Strategy, error) {
 }
 
 type (
-	testCaseTypeBatchCreate = testroutines.TestCase[*BatchCreateParams, *BatchCreateResult]
+	testCaseTypeBatchCreate = testconn.TestCase[*BatchCreateParams, *BatchCreateResult]
 	batchCreateTestCase     testCaseTypeBatchCreate
 )
 
-func (c batchCreateTestCase) Run(t *testing.T, builder testroutines.ConnectorBuilder[*Strategy]) {
+func (c batchCreateTestCase) Run(t *testing.T, builder testconn.ConnectorBuilder[*Strategy]) {
 	t.Helper()
 	conn := builder.Build(t, c.Name)
 	output, err := conn.BatchCreate(t.Context(), c.Input)

@@ -15,7 +15,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -33,10 +33,10 @@ func TestVerifyWebhookMessage(t *testing.T) {
 	validSlackSignature := computeSlackSignature(testSigningKey, validTimestamp, string(eventMessage))
 	invalidSlackSignature := "mismatching-signature-from-provider"
 
-	tests := []testroutines.TestCaseVerifyWebhookMessage{
+	tests := []testconn.TestCaseVerifyWebhookMessage{
 		{
 			Name: "Missing signature header in input",
-			Input: testroutines.WebhookMessageVerificationParams{
+			Input: testconn.WebhookMessageVerificationParams{
 				Request: &common.WebhookRequest{
 					Headers: http.Header{
 						"X-Slack-Request-Timestamp": []string{validTimestamp},
@@ -53,7 +53,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 		},
 		{
 			Name: "Missing timestamp header in input",
-			Input: testroutines.WebhookMessageVerificationParams{
+			Input: testconn.WebhookMessageVerificationParams{
 				Request: &common.WebhookRequest{
 					Headers: http.Header{
 						"X-Slack-Signature": []string{validSlackSignature},
@@ -70,7 +70,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 		},
 		{
 			Name: "Invalid signature",
-			Input: testroutines.WebhookMessageVerificationParams{
+			Input: testconn.WebhookMessageVerificationParams{
 				Request: &common.WebhookRequest{
 					Headers: http.Header{
 						"X-Slack-Signature":         []string{invalidSlackSignature},
@@ -84,7 +84,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 		},
 		{
 			Name: "Invalid timestamp",
-			Input: testroutines.WebhookMessageVerificationParams{
+			Input: testconn.WebhookMessageVerificationParams{
 				Request: &common.WebhookRequest{
 					Headers: http.Header{
 						"X-Slack-Signature":         []string{validSlackSignature},
@@ -101,7 +101,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 		},
 		{
 			Name: "Valid signature",
-			Input: testroutines.WebhookMessageVerificationParams{
+			Input: testconn.WebhookMessageVerificationParams{
 				Request: &common.WebhookRequest{
 					Headers: http.Header{
 						"X-Slack-Signature":         []string{validSlackSignature},
@@ -119,7 +119,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableWebhookMessageVerifier, error) {
+			tt.Run(t, func() (testconn.TestableWebhookMessageVerifier, error) {
 				return constructTestVerifier(tt.Server)
 			})
 		})

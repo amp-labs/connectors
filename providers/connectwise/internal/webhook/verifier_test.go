@@ -6,10 +6,10 @@ package webhook
 //	const signingKey = "test-signing-key"
 //	eventMessage := testutils.DataFromFile(t, "contact-create.json")
 //
-//	tests := []testroutines.TestCaseWebhookMessageVerification{
+//	tests := []testconn.TestCaseWebhookMessageVerification{
 //		{
 //			Name: "Valid signature",
-//			Input: testroutines.WebhookMessageVerificationParams{
+//			Input: testconn.WebhookMessageVerificationParams{
 //				Request: &common.WebhookRequest{Body: eventMessage},
 //			},
 //			InputMutator: withSignatureHeader(signingKey),
@@ -30,7 +30,7 @@ package webhook
 //		},
 //		{
 //			Name: "Invalid signature",
-//			Input: testroutines.WebhookMessageVerificationParams{
+//			Input: testconn.WebhookMessageVerificationParams{
 //				Request: &common.WebhookRequest{
 //					Headers: http.Header{"x-content-signature": []string{"mismatching-signature-from-provider"}},
 //					Body:    eventMessage,
@@ -54,7 +54,7 @@ package webhook
 //		},
 //		{
 //			Name: "Missing signature header in input",
-//			Input: testroutines.WebhookMessageVerificationParams{
+//			Input: testconn.WebhookMessageVerificationParams{
 //				Request: &common.WebhookRequest{Body: eventMessage},
 //			},
 //			InputMutator: replaceServerURLInBody,
@@ -68,7 +68,7 @@ package webhook
 //		},
 //		{
 //			Name: "Fetch signing key fails",
-//			Input: testroutines.WebhookMessageVerificationParams{
+//			Input: testconn.WebhookMessageVerificationParams{
 //				Request: &common.WebhookRequest{Body: eventMessage},
 //			},
 //			InputMutator: withSignatureHeader(signingKey),
@@ -85,7 +85,7 @@ package webhook
 //		t.Run(tt.Name, func(t *testing.T) {
 //			t.Parallel()
 //
-//			tt.Run(t, func() (testroutines.TestableWebhookMessageVerifier, error) {
+//			tt.Run(t, func() (testconn.TestableWebhookMessageVerifier, error) {
 //				return constructTestVerifier(tt.Server)
 //			})
 //		})
@@ -108,19 +108,19 @@ package webhook
 //}
 //
 //func replaceServerURLInBody(
-//	server *httptest.Server, input testroutines.WebhookMessageVerificationParams,
-//) testroutines.WebhookMessageVerificationParams {
+//	server *httptest.Server, input testconn.WebhookMessageVerificationParams,
+//) testconn.WebhookMessageVerificationParams {
 //	// Body has the URL which should be stubbed so connector will make a call to the mock server.
 //	input.Request.Body = []byte(
-//		testroutines.ResolveTestServerURL(string(input.Request.Body), server.URL),
+//		testconn.ResolveTestServerURL(string(input.Request.Body), server.URL),
 //	)
 //	return input
 //}
 //
-//func withSignatureHeader(secretKey string) testroutines.InputMutator[testroutines.WebhookMessageVerificationParams] {
+//func withSignatureHeader(secretKey string) testconn.InputMutator[testconn.WebhookMessageVerificationParams] {
 //	return func(
-//		server *httptest.Server, input testroutines.WebhookMessageVerificationParams,
-//	) testroutines.WebhookMessageVerificationParams {
+//		server *httptest.Server, input testconn.WebhookMessageVerificationParams,
+//	) testconn.WebhookMessageVerificationParams {
 //		input = replaceServerURLInBody(server, input)
 //
 //		// The body changes between test runs so we must compute the signature ourselves.

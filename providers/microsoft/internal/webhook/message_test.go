@@ -3,7 +3,7 @@ package webhook
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -12,12 +12,12 @@ func TestEvent(t *testing.T) {
 	responseMessageUpdated := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "event-message-updated.json")
 	responseMessageDeleted := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "event-message-deleted.json")
 
-	for _, tt := range []testroutines.TestCaseSubscriptionEvent{
+	for _, tt := range []testconn.TestCaseSubscriptionEvent{
 		{
 			Name:  "Created event",
 			Input: responseMessageCreated,
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:    "create",
 					RawEventName: "created",
 					ObjectName:   "me/messages",
@@ -28,8 +28,8 @@ func TestEvent(t *testing.T) {
 		{
 			Name:  "Updated event",
 			Input: responseMessageUpdated,
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:    "update",
 					RawEventName: "updated",
 					ObjectName:   "me/messages",
@@ -40,8 +40,8 @@ func TestEvent(t *testing.T) {
 		{
 			Name:  "Deleted event",
 			Input: responseMessageDeleted,
-			Expected: []testroutines.SubscriptionEventExpected{{
-				Data: testroutines.SubscriptionEventExpectedData{
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
 					EventType:    "delete",
 					RawEventName: "deleted",
 					ObjectName:   "me/messages",

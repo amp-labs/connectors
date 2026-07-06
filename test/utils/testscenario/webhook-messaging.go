@@ -8,7 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 // WebhookRouter holds a set of conditional webhook handlers that dispatch webhook requests
@@ -49,7 +49,7 @@ type WebhookRouteFunc func(writer http.ResponseWriter, request *http.Request, re
 // is closed, the webhook server is shut down and the function returns.
 func RunWebhookConsumer(
 	ctx context.Context,
-	conn testroutines.TestableWebhookMessageVerifier,
+	conn testconn.TestableWebhookMessageVerifier,
 	webhookRouter WebhookRouter,
 	verificationParams *common.VerificationParams,
 ) {

@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -16,7 +16,7 @@ func TestDelete(t *testing.T) {
 
 	respUnlink := testutils.DataFromFile(t, "delete-crm-lead-unlink.json")
 
-	tests := []testroutines.TestCaseDelete{
+	tests := []testconn.TestCaseDelete{
 		{
 			Name: "Unlink crm.lead successfully",
 			Input: common.DeleteParams{
@@ -43,7 +43,7 @@ func TestDelete(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableDeleter, error) {
+			tt.Run(t, func() (testconn.TestableDeleter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

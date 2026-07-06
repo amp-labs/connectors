@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -20,7 +20,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 	groupsResponse := testutils.DataFromFile(t, "groups.json")
 	licensesResponse := testutils.DataFromFile(t, "licenses.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -47,7 +47,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, webinarsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -79,7 +79,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, sessionsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -112,7 +112,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, groupsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -145,7 +145,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, licensesResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -172,7 +172,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -16,7 +16,7 @@ func TestAdsDelete(t *testing.T) { // nolint:funlen,cyclop
 
 	errorNotFound := testutils.DataFromFile(t, "delete-missing-adAccounts.json")
 
-	tests := []testroutines.TestCaseDelete{
+	tests := []testconn.TestCaseDelete{
 		{
 			Name:         "Delete object must be included",
 			Server:       mockserver.Dummy(),
@@ -65,7 +65,7 @@ func TestAdsDelete(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableDeleter, error) {
+			tt.Run(t, func() (testconn.TestableDeleter, error) {
 				return constructTestAdsConnector(tt.Server)
 			})
 		})
@@ -75,7 +75,7 @@ func TestAdsDelete(t *testing.T) { // nolint:funlen,cyclop
 func TestPlatformDelete(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
 
-	tests := []testroutines.TestCaseDelete{
+	tests := []testconn.TestCaseDelete{
 		{
 			Name:  "Successful delete",
 			Input: common.DeleteParams{ObjectName: "posts", RecordId: "urn:li:share:7393604235420078080"},
@@ -99,7 +99,7 @@ func TestPlatformDelete(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableDeleter, error) {
+			tt.Run(t, func() (testconn.TestableDeleter, error) {
 				return constructTestPlatformConnector(tt.Server)
 			})
 		})

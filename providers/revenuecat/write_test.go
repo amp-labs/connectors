@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -21,7 +21,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 	respOffering := testutils.DataFromFile(t, "write/offering.json")
 	respProduct := testutils.DataFromFile(t, "write/product.json")
 
-	tests := []testroutines.TestCaseWrite{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -53,7 +53,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusCreated, respApp),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "app_xyz123",
@@ -75,7 +75,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, respApp),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "app_xyz123",
@@ -98,7 +98,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, respCustomer),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "cust_abc456",
@@ -119,7 +119,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusCreated, respEntitlement),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "entl_abc123",
@@ -141,7 +141,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, respEntitlement),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "entl_abc123",
@@ -162,7 +162,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusCreated, respWebhook),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "whi_xyz789",
@@ -184,7 +184,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, respWebhook),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "whi_xyz789",
@@ -205,7 +205,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusCreated, respOffering),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "ofng_abc789",
@@ -227,7 +227,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, respOffering),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "ofng_abc789",
@@ -249,7 +249,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusCreated, respProduct),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetWrite,
+			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
 				RecordId: "prod_xyz789",
@@ -261,7 +261,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
-			tt.Run(t, func() (testroutines.TestableWriter, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestReadConnector(tt.Server.URL, "proj_123")
 			})
 		})

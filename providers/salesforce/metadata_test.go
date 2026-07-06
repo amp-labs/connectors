@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -18,7 +18,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseAccountsMeta := testutils.DataFromFile(t, "metadata/read/accounts-sampled.json")
 	responseCustomObjMeta := testutils.DataFromFile(t, "metadata/read/custom-object-with-custom-fields.json")
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -45,7 +45,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				}]}`),
 				Then: mockserver.Response(http.StatusOK, responseOrgMeta),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"organization": {
@@ -156,7 +156,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				}]}`),
 				Then: mockserver.Response(http.StatusOK, responseCustomObjMeta),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"testobject15__c": {
@@ -215,7 +215,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				}]}`),
 				Then: mockserver.Response(http.StatusOK, responseAccountsMeta),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"account": {
@@ -268,7 +268,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -284,7 +284,7 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 		"Pardot-Business-Unit-Id": []string{"test-business-unit-id"},
 	}
 
-	tests := []testroutines.TestCaseListObjectMetadata{
+	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -295,7 +295,7 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 			Name:       "Successfully describe one object with metadata",
 			Input:      []string{"EmAiLs"},
 			Server:     mockserver.Dummy(),
-			Comparator: testroutines.ComparatorSubsetMetadata,
+			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"emails": {
@@ -359,7 +359,7 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 			) *testutils.CompareResult {
 				result := testutils.NewCompareResult()
 				// Usual subset comparison.
-				result.Merge(testroutines.ComparatorSubsetMetadata(serverURL, actual, expected))
+				result.Merge(testconn.ComparatorSubsetMetadata(serverURL, actual, expected))
 
 				// The "language" field must be excluded from the response.
 				if _, present := actual.Result["prospects"].Fields["language__c"]; present {
@@ -419,7 +419,7 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
+			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
 				return constructTestConnectorAccountEngagement(tt.Server.URL)
 			})
 		})
@@ -440,7 +440,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseUserInfo := testutils.DataFromFile(t, "metadata/write/user-info.json")
 	duplicatePermissionAssignment := testutils.DataFromFile(t, "metadata/write/err-duplicate-permission-assignment.json")
 
-	tests := []testroutines.TestCaseUpsertMetadata{
+	tests := []testconn.TestCaseUpsertMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -667,7 +667,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 			ctx := common.WithAuthToken(t.Context(), "TEST_ACCESS_TOKEN")
 
-			tt.RunWithContext(t, ctx, func() (testroutines.TestableMetadataUpdater, error) {
+			tt.RunWithContext(t, ctx, func() (testconn.TestableMetadataUpdater, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -677,7 +677,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 func TestUpsertMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	tests := []testroutines.TestCaseUpsertMetadata{
+	tests := []testconn.TestCaseUpsertMetadata{
 		{
 			Name: "Access token must be injected into the context",
 			Input: &common.UpsertMetadataParams{
@@ -700,7 +700,7 @@ func TestUpsertMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocogni
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataUpdater, error) {
+			tt.Run(t, func() (testconn.TestableMetadataUpdater, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -714,7 +714,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseDeleteFields := testutils.DataFromFile(t, "metadata/delete/delete-fields-response.xml")
 	responseFieldNotFound := testutils.DataFromFile(t, "metadata/delete/delete-field-not-found.xml")
 
-	tests := []testroutines.TestCaseDeleteMetadata{
+	tests := []testconn.TestCaseDeleteMetadata{
 		{
 			Name:         "At least one field must be provided",
 			Input:        nil,
@@ -776,7 +776,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 			ctx := common.WithAuthToken(t.Context(), "TEST_ACCESS_TOKEN")
 
-			tt.RunWithContext(t, ctx, func() (testroutines.TestableMetadataDeleter, error) {
+			tt.RunWithContext(t, ctx, func() (testconn.TestableMetadataDeleter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -786,7 +786,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 func TestDeleteMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	tests := []testroutines.TestCaseDeleteMetadata{
+	tests := []testconn.TestCaseDeleteMetadata{
 		{
 			Name: "Access token must be injected into the context",
 			Input: &common.DeleteMetadataParams{
@@ -804,7 +804,7 @@ func TestDeleteMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocogni
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableMetadataDeleter, error) {
+			tt.Run(t, func() (testconn.TestableMetadataDeleter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

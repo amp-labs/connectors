@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -19,7 +19,7 @@ func TestAdsRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	dmpEngagementSourceTypesResponse := testutils.DataFromFile(t, "dmpEngagementSourceTypes.json")
 	adAccountsResponse := testutils.DataFromFile(t, "adAccounts.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -147,7 +147,7 @@ func TestAdsRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				},
 				Then: mockserver.Response(http.StatusOK, adAccountsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -196,7 +196,7 @@ func TestAdsRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestAdsConnector(tt.Server)
 			})
 		})

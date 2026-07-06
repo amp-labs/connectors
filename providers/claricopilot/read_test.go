@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -19,7 +19,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	responseCallLast := testutils.DataFromFile(t, "calls-second-page.json")
 	responseScorecardTemplates := testutils.DataFromFile(t, "scorecardtemplates.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -40,7 +40,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/calls"),
 				Then:  mockserver.Response(http.StatusOK, responseCallFirst),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -61,7 +61,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"call_review_page_url": "https://copilot.clari.com/call/7549847e-4e97-4650-a20d-87791520e529",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/calls?limit=25&skip=1", // nolint:lll
+				NextPage: testconn.URLTestServer + "/calls?limit=25&skip=1", // nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -77,7 +77,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/calls"),
 				Then:  mockserver.Response(http.StatusOK, responseCallLast),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     2,
 				NextPage: "",
@@ -93,7 +93,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				If:    mockcond.Path("/scorecard-template"),
 				Then:  mockserver.Response(http.StatusOK, responseScorecardTemplates),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -121,7 +121,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

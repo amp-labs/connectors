@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -22,7 +22,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	since := time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC)
 	until := time.Date(2024, 10, 1, 23, 59, 59, 0, time.UTC)
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -50,7 +50,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, projectsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -98,7 +98,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, projectsResponse),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 2, Done: true},
 			ExpectedErrs: nil,
 		},
@@ -115,7 +115,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					mockserver.Response(http.StatusOK, projectsResponse),
 				),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     2,
 				NextPage: "https://api.procore.com/rest/v1.0/companies/" + testCompanyID + "/projects?page=2&per_page=100",
@@ -128,7 +128,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Input: common.ReadParams{
 				ObjectName: "company/projects",
 				Fields:     connectors.Fields("id"),
-				NextPage:   common.NextPageToken(testroutines.URLTestServer + "/rest/v1.0/companies/" + testCompanyID + "/projects?page=3&per_page=100"),
+				NextPage:   common.NextPageToken(testconn.URLTestServer + "/rest/v1.0/companies/" + testCompanyID + "/projects?page=3&per_page=100"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -139,7 +139,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, projectsResponse),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 2, Done: true},
 			ExpectedErrs: nil,
 		},
@@ -150,7 +150,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Fields:     connectors.Fields("id"),
 				Since:      since,
 				Until:      until,
-				NextPage: common.NextPageToken(testroutines.URLTestServer +
+				NextPage: common.NextPageToken(testconn.URLTestServer +
 					"/rest/v1.0/companies/" + testCompanyID + "/projects" +
 					"?filters%5Bupdated_at%5D=2024-10-01T00%3A00%3A00Z...2024-10-01T23%3A59%3A59Z" +
 					"&page=2&per_page=100"),
@@ -165,7 +165,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, projectsResponse),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 2, Done: true},
 			ExpectedErrs: nil,
 		},
@@ -180,7 +180,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				If:    mockcond.Path("/rest/v2.0/companies/" + testCompanyID + "/async_operations"),
 				Then:  mockserver.Response(http.StatusOK, operationsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -204,7 +204,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

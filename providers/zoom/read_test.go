@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -23,7 +23,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseRecordingsFirstPage := testutils.DataFromFile(t, "recordings-first-page.json")
 	responseRecordingsSecondPage := testutils.DataFromFile(t, "recordings-second-page.json")
 
-	tests := []testroutines.TestCaseRead{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -51,7 +51,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v2/users"),
 				Then:  mockserver.Response(http.StatusOK, responseUsersFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -66,7 +66,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"status":          "active",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v2/users?next_page_token=8V8HigQkzm2O5r9RUn31D9ZyJHgrmFfbLa2&page_size=300", //nolint:lll
+				NextPage: testconn.URLTestServer + "/v2/users?next_page_token=8V8HigQkzm2O5r9RUn31D9ZyJHgrmFfbLa2&page_size=300", //nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -81,7 +81,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v2/users"),
 				Then:  mockserver.Response(http.StatusOK, responseUsersSecondPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -110,7 +110,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v2/archive_files"),
 				Then:  mockserver.Response(http.StatusOK, responseArchiveFilesFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -125,7 +125,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"parent_meeting_id": "atsXxhSEQWit9t+U02HXNQ==",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v2/archive_files?next_page_token=At6eWnFZ1FB3arCXnRxqHLXKhbDW18yz2i2&page_size=300", //nolint:lll
+				NextPage: testconn.URLTestServer + "/v2/archive_files?next_page_token=At6eWnFZ1FB3arCXnRxqHLXKhbDW18yz2i2&page_size=300", //nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -140,7 +140,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v2/archive_files"),
 				Then:  mockserver.Response(http.StatusOK, responseArchiveFilesSecondPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -176,7 +176,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		//		},
 		//		Then: mockserver.Response(http.StatusOK, responseRecordingsFirstPage),
 		//	}.Server(),
-		//	Comparator: testroutines.ComparatorSubsetRead,
+		//	Comparator: testconn.ComparatorSubsetRead,
 		//	Expected: &common.ReadResult{
 		//		Rows: 1,
 		//		Data: []common.ReadResultRow{{
@@ -193,7 +193,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		//				"recording_count": float64(22),
 		//			},
 		//		}},
-		//		NextPage: common.NextPageToken(testroutines.URLTestServer + "/v2/users/me/recordings?" +
+		//		NextPage: common.NextPageToken(testconn.URLTestServer + "/v2/users/me/recordings?" +
 		//			"from=" + time.Now().AddDate(0, 0, -29).Format("2006-01-02") + "&next_page_token=Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3&page_size=300&to=" + time.Now().Format("2006-01-02")), //nolint:lll
 		//		Done: false,
 		//	},
@@ -209,7 +209,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If:    mockcond.Path("/v2/users/me/recordings"),
 				Then:  mockserver.Response(http.StatusOK, responseRecordingsSecondPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -248,7 +248,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseRecordingsFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -265,7 +265,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"recording_count": float64(22),
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v2/users/me/recordings?" +
+				NextPage: testconn.URLTestServer + "/v2/users/me/recordings?" +
 					"from=2024-01-01&next_page_token=Tva2CuIdTgsv8wAnhyAdU3m06Y2HuLQtlh3&page_size=300&to=2024-03-31",
 				Done: false,
 			},
@@ -286,7 +286,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseArchiveFilesFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -301,7 +301,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"parent_meeting_id": "atsXxhSEQWit9t+U02HXNQ==",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v2/archive_files?" +
+				NextPage: testconn.URLTestServer + "/v2/archive_files?" +
 					"from=2024-06-01&next_page_token=At6eWnFZ1FB3arCXnRxqHLXKhbDW18yz2i2&page_size=300",
 				Done: false,
 			},
@@ -323,7 +323,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				},
 				Then: mockserver.Response(http.StatusOK, responseUsersFirstPage),
 			}.Server(),
-			Comparator: testroutines.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
@@ -336,7 +336,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"email": "jchill@example.com",
 					},
 				}},
-				NextPage: testroutines.URLTestServer + "/v2/users?next_page_token=8V8HigQkzm2O5r9RUn31D9ZyJHgrmFfbLa2&page_size=300", //nolint:lll
+				NextPage: testconn.URLTestServer + "/v2/users?next_page_token=8V8HigQkzm2O5r9RUn31D9ZyJHgrmFfbLa2&page_size=300", //nolint:lll
 				Done:     false,
 			},
 			ExpectedErrs: nil,
@@ -346,7 +346,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
-			tt.Run(t, func() (testroutines.TestableReader, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

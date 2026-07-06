@@ -1,4 +1,4 @@
-package testroutines
+package testconn
 
 import (
 	"testing"
@@ -31,7 +31,7 @@ func (s TestCaseSearch) Run(t *testing.T, builder ConnectorBuilder[TestableSearc
 //
 //	common.SearchParams{
 //		ObjectName: "tags",
-//		NextPage:   testroutines.URLTestServer + "/v1/tags?limit=100&skip=100",
+//		NextPage:   testconn.URLTestServer + "/v1/tags?limit=100&skip=100",
 //	}
 func prepareSearchParams(serverURL string, params common.SearchParams) *common.SearchParams {
 	params.NextPage = common.NextPageToken(
