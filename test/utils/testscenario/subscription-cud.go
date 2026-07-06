@@ -46,6 +46,13 @@ func SubscriptionCreateUpdateDelete(
 	}
 	validateSubscriptionResult(result)
 
+	// Wipe out events subscribed for each object.
+	for name := range result.ObjectEvents {
+		events := result.ObjectEvents[name]
+		events.Events = nil
+		result.ObjectEvents[name] = events
+	}
+
 	fmt.Println("============= Delete =============")
 	err = conn.DeleteSubscription(ctx, *result)
 	if err != nil {
