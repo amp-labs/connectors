@@ -50,8 +50,8 @@ func main() {
 	// 10. placement-tests
 	readObject(ctx, conn, "placement-tests", connectors.Fields("id", "name", "status", "score"))
 
-	// 11. auto/identitys
-	readObject(ctx, conn, "auto/identitys", connectors.Fields("id", "username", "type", "status"))
+	// 11. identities
+	readObject(ctx, conn, "identities", connectors.Fields("id", "username", "type", "status"))
 
 	// 12. conversation/latest-by-profile (nested responseKey: data.conversations)
 	readObject(ctx, conn, "conversation/latest-by-profile", connectors.Fields("id", "title", "is_unread", "platform_type"))
