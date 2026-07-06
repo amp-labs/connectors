@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -19,7 +18,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseAccountsMeta := testutils.DataFromFile(t, "metadata/read/accounts-sampled.json")
 	responseCustomObjMeta := testutils.DataFromFile(t, "metadata/read/custom-object-with-custom-fields.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -269,7 +268,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -285,7 +284,7 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 		"Pardot-Business-Unit-Id": []string{"test-business-unit-id"},
 	}
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:         "At least one object name must be queried",
 			Input:        nil,
@@ -420,7 +419,7 @@ func TestListObjectMetadataPardot(t *testing.T) { // nolint:funlen,gocognit,cycl
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnectorAccountEngagement(tt.Server.URL)
 			})
 		})
@@ -668,7 +667,7 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 			ctx := common.WithAuthToken(t.Context(), "TEST_ACCESS_TOKEN")
 
-			tt.RunWithContext(t, ctx, func() (connectors.UpsertMetadataConnector, error) {
+			tt.RunWithContext(t, ctx, func() (testroutines.TestableMetadataUpdater, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -701,7 +700,7 @@ func TestUpsertMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocogni
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.UpsertMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataUpdater, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -715,7 +714,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	responseDeleteFields := testutils.DataFromFile(t, "metadata/delete/delete-fields-response.xml")
 	responseFieldNotFound := testutils.DataFromFile(t, "metadata/delete/delete-field-not-found.xml")
 
-	tests := []testroutines.DeleteMetadata{
+	tests := []testroutines.TestCaseDeleteMetadata{
 		{
 			Name:         "At least one field must be provided",
 			Input:        nil,
@@ -777,7 +776,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 			ctx := common.WithAuthToken(t.Context(), "TEST_ACCESS_TOKEN")
 
-			tt.RunWithContext(t, ctx, func() (connectors.DeleteMetadataConnector, error) {
+			tt.RunWithContext(t, ctx, func() (testroutines.TestableMetadataDeleter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -787,7 +786,7 @@ func TestDeleteMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 func TestDeleteMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	tests := []testroutines.DeleteMetadata{
+	tests := []testroutines.TestCaseDeleteMetadata{
 		{
 			Name: "Access token must be injected into the context",
 			Input: &common.DeleteMetadataParams{
@@ -805,7 +804,7 @@ func TestDeleteMetadataNoAccessTokenCRM(t *testing.T) { // nolint:funlen,gocogni
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.DeleteMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataDeleter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

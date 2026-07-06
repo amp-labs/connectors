@@ -19,7 +19,7 @@ func TestAdsRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	dmpEngagementSourceTypesResponse := testutils.DataFromFile(t, "dmpEngagementSourceTypes.json")
 	adAccountsResponse := testutils.DataFromFile(t, "adAccounts.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -196,7 +196,7 @@ func TestAdsRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestAdsConnector(tt.Server)
 			})
 		})

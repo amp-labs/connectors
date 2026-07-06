@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
 
@@ -15,13 +14,13 @@ type (
 )
 
 // Run provides a procedure to test connectors.UpsertMetadataConnector.
-func (m TestCaseUpsertMetadata) Run(t *testing.T, builder ConnectorBuilder[connectors.UpsertMetadataConnector]) {
+func (m TestCaseUpsertMetadata) Run(t *testing.T, builder ConnectorBuilder[TestableMetadataUpdater]) {
 	m.RunWithContext(t, t.Context(), builder)
 }
 
 // RunWithContext provides a procedure to test connectors.UpsertMetadataConnector.
 func (m TestCaseUpsertMetadata) RunWithContext(t *testing.T, ctx context.Context,
-	builder ConnectorBuilder[connectors.UpsertMetadataConnector],
+	builder ConnectorBuilder[TestableMetadataUpdater],
 ) {
 	t.Helper()
 	t.Cleanup(func() {

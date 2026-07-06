@@ -20,7 +20,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	unsupportedResponse := testutils.DataFromFile(t, "unsupported.txt")
 	team := testutils.DataFromFile(t, "team.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Object Name is required",
 			Server:       mockserver.Dummy(),
@@ -101,7 +101,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

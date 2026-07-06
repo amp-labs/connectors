@@ -23,7 +23,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 	notesResponse := testutils.DataFromFile(t, "notes.json")
 	messagesResponse := testutils.DataFromFile(t, "messages.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Object name and fields are required",
 			Input:        common.ReadParams{ObjectName: "notes"},

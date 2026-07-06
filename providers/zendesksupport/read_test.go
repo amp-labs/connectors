@@ -24,7 +24,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseTriggersLastPage := testutils.DataFromFile(t, "read/triggers-2-last-page.json")
 	responseReadPosts := testutils.DataFromFile(t, "read/help-center-posts.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -157,7 +157,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -173,7 +173,7 @@ func TestIncrementalRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 	responseUsersLastPage := testutils.DataFromFile(t, "read/incremental/users-2-last-page.json")
 	responseOrganizations := testutils.DataFromFile(t, "read/incremental/organizations.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name: "Incremental Tickets no since with custom fields",
 			Input: common.ReadParams{
@@ -330,7 +330,7 @@ func TestIncrementalRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

@@ -20,7 +20,7 @@ func TestRead(t *testing.T) {
 	prospectAccountResponse := testutils.DataFromFile(t, "prospectaccount-read.json")
 	callAnalysisResponse := testutils.DataFromFile(t, "callanalysis-read.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read objects must be implemented",
 			Input:        common.ReadParams{},
@@ -147,7 +147,7 @@ func TestRead(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnectorForRead(tt.Server.URL)
 			})
 		})

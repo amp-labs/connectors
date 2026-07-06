@@ -3,7 +3,6 @@ package asana
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -22,7 +21,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	responseTags := testutils.DataFromFile(t, "read-tags.json")
 	responseSingleTag := testutils.DataFromFile(t, "single-tag.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:         "Object must be included",
 			Server:       mockserver.Dummy(),
@@ -149,7 +148,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

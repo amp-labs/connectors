@@ -19,7 +19,7 @@ func TestReadCRM(t *testing.T) {
 	dealsResponse := testutils.DataFromFile(t, "deals.json")
 	dealProductsResponse := testutils.DataFromFile(t, "deal-products.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name: "Deals include products when products field is requested",
 			Input: common.ReadParams{
@@ -116,7 +116,7 @@ func TestReadCRM(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveCRM)
 			})
 		})
@@ -135,7 +135,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		Always: mockserver.Response(http.StatusOK, nextPageTest),
 	}.Server()
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Object Name Required",
 			Server:       mockserver.Dummy(),
@@ -251,7 +251,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL, providers.ModulePipedriveLegacy)
 			})
 		})

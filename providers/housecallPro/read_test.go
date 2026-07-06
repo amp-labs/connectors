@@ -27,7 +27,7 @@ func TestRead(t *testing.T) {
 	responseRoutes := testutils.DataFromFile(t, "read-routes.json")
 	responseJobs := testutils.DataFromFile(t, "read-jobs.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name: "Read customers empty",
 			Input: common.ReadParams{
@@ -509,7 +509,7 @@ func TestRead(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

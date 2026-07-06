@@ -18,7 +18,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	currenciesResponse := testutils.DataFromFile(t, "currencies.json")
 	volunteersResponse := testutils.DataFromFile(t, "volunteers.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -96,7 +96,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

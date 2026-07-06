@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -19,7 +18,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	errorMediaType := testutils.DataFromFile(t, "write/err-media-type.txt")
 	responseAccounts := testutils.DataFromFile(t, "write/accounts/new.json")
 
-	tests := []testroutines.Write{
+	tests := []testroutines.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -141,7 +140,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.WriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

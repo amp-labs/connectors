@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -18,7 +17,7 @@ func TestAdsListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	adTargetingFacetsResponse := testutils.DataFromFile(t, "adTargetingFacets.json")
 	dmpEngagementSourceTypesResponse := testutils.DataFromFile(t, "dmpEngagementSourceTypes.json")
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:  "Successfully describe multiple object with metadata",
 			Input: []string{"adTargetingFacets", "dmpEngagementSourceTypes"},
@@ -114,7 +113,7 @@ func TestAdsListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestAdsConnector(tt.Server)
 			})
 		})

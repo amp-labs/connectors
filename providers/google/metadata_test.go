@@ -3,7 +3,6 @@ package google
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
@@ -14,7 +13,7 @@ import (
 func TestCalendarListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:       "Successful metadata for CalendarList and Settings",
 			Input:      []string{"calendarList", "settings", "events"},
@@ -81,7 +80,7 @@ func TestCalendarListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cy
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestCalendarConnector(tt.Server.URL)
 			})
 		})
@@ -91,7 +90,7 @@ func TestCalendarListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cy
 func TestContactsListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:       "Successful metadata for CalendarList and Settings",
 			Input:      []string{"myConnections", "peopleDirectory"},
@@ -146,7 +145,7 @@ func TestContactsListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cy
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestContactsConnector(tt.Server.URL)
 			})
 		})
@@ -156,7 +155,7 @@ func TestContactsListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cy
 func TestMailListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
-	tests := []testroutines.Metadata{
+	tests := []testroutines.TestCaseListObjectMetadata{
 		{
 			Name:       "Successful metadata for messages and drafts",
 			Input:      []string{"messages", "drafts"},
@@ -204,7 +203,7 @@ func TestMailListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ObjectMetadataConnector, error) {
+			tt.Run(t, func() (testroutines.TestableMetadataReader, error) {
 				return constructTestMailConnector(tt.Server.URL)
 			})
 		})

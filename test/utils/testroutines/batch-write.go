@@ -3,18 +3,17 @@ package testroutines
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
 
 type (
 	batchWriteType = TestCase[*common.BatchWriteParam, *common.BatchWriteResult]
-	// BatchWrite is a test suite useful for testing connectors.BatchWriteConnector interface.
-	BatchWrite batchWriteType
+	// TestCaseBatchWrite is a test suite useful for testing connectors.BatchWriteConnector interface.
+	TestCaseBatchWrite batchWriteType
 )
 
 // Run provides a procedure to test connectors.BatchWriteConnector
-func (m BatchWrite) Run(t *testing.T, builder ConnectorBuilder[connectors.BatchWriteConnector]) {
+func (m TestCaseBatchWrite) Run(t *testing.T, builder ConnectorBuilder[TestableBatchWriter]) {
 	t.Helper()
 	t.Cleanup(func() {
 		batchWriteType(m).Close()

@@ -33,7 +33,7 @@ const testCompanyID = "test-company-uuid"
 func TestRead(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
@@ -309,7 +309,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				noCompanyIDCases := map[string]bool{
 					"Company-scoped reads require companyId metadata":  true,
 					"Employee-scoped reads require companyId metadata": true,

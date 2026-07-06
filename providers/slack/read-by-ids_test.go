@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -19,7 +18,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 	responseConversation1 := testutils.DataFromFile(t, "read/conversation-1.json")
 	responseConversation2 := testutils.DataFromFile(t, "read/conversation-2.json")
 
-	tests := []testroutines.ReadByIds{
+	tests := []testroutines.TestCaseGetRecordsByIds{
 		{
 			Name:         "Empty record identifiers",
 			Server:       mockserver.Dummy(),
@@ -69,7 +68,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.BatchRecordReaderConnector, error) {
+			tt.Run(t, func() (testroutines.TestableBatchReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

@@ -18,7 +18,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,maintidx
 	taskCreateResponse := testutils.DataFromFile(t, "write_task_create.json")
 	folderCreateResponse := testutils.DataFromFile(t, "write_folder_create.json")
 
-	tests := []testroutines.Write{
+	tests := []testroutines.TestCaseWrite{
 		{
 			Name:         "Object name is required",
 			Input:        common.WriteParams{},

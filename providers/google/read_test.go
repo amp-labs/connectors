@@ -25,7 +25,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseEventsFirstPage := testutils.DataFromFile(t, "calendar/read/events/1-first-page.json")
 	responseEventsLastPage := testutils.DataFromFile(t, "calendar/read/events/2-last-page.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -292,7 +292,7 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestCalendarConnector(tt.Server.URL)
 			})
 		})
@@ -307,7 +307,7 @@ func TestCalendarReadEventsForAllCalendars(t *testing.T) { //nolint:funlen
 	responseEventsTeam := testutils.DataFromFile(t, "calendar/read/all-calendars/events-team.json")
 	responseEventsLastPage := testutils.DataFromFile(t, "calendar/read/events/2-last-page.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name: "Opts present but flag disabled reads only the primary calendar",
 			Input: common.ReadParams{
@@ -378,7 +378,7 @@ func TestCalendarReadEventsForAllCalendars(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestCalendarConnector(tt.Server.URL)
 			})
 		})
@@ -395,7 +395,7 @@ func TestCalendarReadEventsDatabookOpts(t *testing.T) { //nolint:funlen
 	timeMin := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	timeMax := time.Date(2026, 4, 1, 0, 0, 0, 0, time.UTC)
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name: "singleEvents opts set events.list params, dedupe by id, and fetch series masters",
 			Input: common.ReadParams{
@@ -463,7 +463,7 @@ func TestCalendarReadEventsDatabookOpts(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestCalendarConnector(tt.Server.URL)
 			})
 		})
@@ -481,7 +481,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseMyConnectionsLastPage := testutils.DataFromFile(t, "contacts/read/myConnections/2-last-page.json")
 	responseOtherContacts := testutils.DataFromFile(t, "contacts/read/otherContacts/one-page.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -685,7 +685,7 @@ func TestContactsRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestContactsConnector(tt.Server.URL)
 			})
 		})
@@ -704,7 +704,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseDraftMessageItem1 := testutils.DataFromFile(t, "mail/read/drafts/message-item-1.json")
 	responseDraftMessageItem2 := testutils.DataFromFile(t, "mail/read/drafts/message-item-2.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -959,7 +959,7 @@ func TestMailRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestMailConnector(tt.Server.URL)
 			})
 		})

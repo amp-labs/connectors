@@ -23,7 +23,7 @@ func TestRead(t *testing.T) {
 	responseArticles := testutils.DataFromFile(t, "read-articles.json")
 	responseVistasGroups := testutils.DataFromFile(t, "read-vistas-groups.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name: "Read accounts empty",
 			Input: common.ReadParams{
@@ -364,7 +364,7 @@ func TestRead(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

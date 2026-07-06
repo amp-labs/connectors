@@ -33,7 +33,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 	validSlackSignature := computeSlackSignature(testSigningKey, validTimestamp, string(eventMessage))
 	invalidSlackSignature := "mismatching-signature-from-provider"
 
-	tests := []testroutines.TestCaseWebhookMessageVerification{
+	tests := []testroutines.TestCaseVerifyWebhookMessage{
 		{
 			Name: "Missing signature header in input",
 			Input: testroutines.WebhookMessageVerificationParams{

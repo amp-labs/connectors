@@ -22,7 +22,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 	responseContactsLastPage := testutils.DataFromFile(t, "search/contacts/2-second-page.json")
 	responseContactsToCompanies := testutils.DataFromFile(t, "search/contacts/contacts-to-companies.json")
 
-	tests := []testroutines.Search{
+	tests := []testroutines.TestCaseSearch{
 		{
 			Name:         "Object name must be included",
 			Server:       mockserver.Dummy(),
@@ -199,7 +199,7 @@ func TestSearch(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.SearchConnector, error) {
+			tt.Run(t, func() (testroutines.TestableSearcher, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

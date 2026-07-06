@@ -24,6 +24,62 @@ func (builder ConnectorBuilder[C]) Build(t *testing.T, testCaseName string) C {
 	return conn
 }
 
+// TestablePostAuthMetadata is the minimal interface for a connector that returns post auth metadata.
+type TestablePostAuthMetadata interface {
+	GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, error)
+}
+
+// TestableMetadataReader is the minimal interface for a connector that can read metadata.
+type TestableMetadataReader interface {
+	ListObjectMetadata(ctx context.Context, objectNames []string) (*common.ListObjectMetadataResult, error)
+}
+
+// TestableMetadataUpdater is the minimal interface for a connector that can update metadata.
+type TestableMetadataUpdater interface {
+	UpsertMetadata(ctx context.Context, params *common.UpsertMetadataParams) (*common.UpsertMetadataResult, error)
+}
+
+// TestableMetadataDeleter is the minimal interface for a connector that can delete metadata.
+type TestableMetadataDeleter interface {
+	DeleteMetadata(ctx context.Context, params *common.DeleteMetadataParams) (*common.DeleteMetadataResult, error)
+}
+
+// TestableReader is the minimal interface for a connector that can read records.
+type TestableReader interface {
+	Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error)
+}
+
+// TestableWriter is the minimal interface for a connector that can write records.
+type TestableWriter interface {
+	Write(ctx context.Context, params common.WriteParams) (*common.WriteResult, error)
+}
+
+// TestableDeleter is the minimal interface for a connector that can delete records.
+type TestableDeleter interface {
+	Delete(ctx context.Context, params common.DeleteParams) (*common.DeleteResult, error)
+}
+
+// TestableSearcher is the minimal interface for a connector that can search records.
+type TestableSearcher interface {
+	Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error)
+}
+
+// TestableBatchReader is the minimal interface for a connector that can batch read records.
+type TestableBatchReader interface {
+	GetRecordsByIds(
+		ctx context.Context,
+		objectName string,
+		recordIds []string,
+		fields []string,
+		associations []string,
+	) ([]common.ReadResultRow, error)
+}
+
+// TestableBatchWriter is the minimal interface for a connector that can batch write records.
+type TestableBatchWriter interface {
+	BatchWrite(ctx context.Context, params *common.BatchWriteParam) (*common.BatchWriteResult, error)
+}
+
 // TestableWebhookMessageVerifier is the minimal interface for a connector that can verify webhook messages.
 type TestableWebhookMessageVerifier interface {
 	VerifyWebhookMessage(

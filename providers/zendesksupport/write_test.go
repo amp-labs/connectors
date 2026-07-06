@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
@@ -23,7 +22,7 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 	responseRecordValidationError := testutils.DataFromFile(t, "record-validation.json")
 	createBrand := testutils.DataFromFile(t, "create-brand.json")
 
-	tests := []testroutines.Write{
+	tests := []testroutines.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Server:       mockserver.Dummy(),
@@ -164,7 +163,7 @@ func TestWriteZendeskSupportModule(t *testing.T) { // nolint:funlen,cyclop
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.WriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
@@ -176,7 +175,7 @@ func TestWriteHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,m
 
 	responseCreatePost := testutils.DataFromFile(t, "write-post.json")
 
-	tests := []testroutines.Write{
+	tests := []testroutines.TestCaseWrite{
 		{
 			Name:  "Creating a help center post invokes correct endpoint",
 			Input: common.WriteParams{ObjectName: "posts", RecordData: "dummy"},
@@ -208,7 +207,7 @@ func TestWriteHelpCenterModule(t *testing.T) { //nolint:funlen,gocognit,cyclop,m
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.WriteConnector, error) {
+			tt.Run(t, func() (testroutines.TestableWriter, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

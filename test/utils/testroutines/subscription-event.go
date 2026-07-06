@@ -33,14 +33,14 @@ type SubscriptionEventExpectedErr struct {
 	UpdatedFields      error
 }
 
-type SubscriptionEventTestCase struct {
+type TestCaseSubscriptionEvent struct {
 	Name                     string
 	Input                    common.Event
 	Expected                 []SubscriptionEventExpected
 	SubscriptionEventListErr error
 }
 
-func (c SubscriptionEventTestCase) Run(t *testing.T) {
+func (c TestCaseSubscriptionEvent) Run(t *testing.T) {
 	t.Helper()
 
 	result := testutils.NewCompareResult()

@@ -3,18 +3,17 @@ package testroutines
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
 
 type (
 	metadataType = TestCase[[]string, *common.ListObjectMetadataResult]
-	// Metadata is a test suite useful for testing connectors.ObjectMetadataConnector interface.
-	Metadata metadataType
+	// TestCaseListObjectMetadata is a test suite useful for testing connectors.ObjectMetadataConnector interface.
+	TestCaseListObjectMetadata metadataType
 )
 
 // Run provides a procedure to test connectors.ObjectMetadataConnector
-func (m Metadata) Run(t *testing.T, builder ConnectorBuilder[connectors.ObjectMetadataConnector]) {
+func (m TestCaseListObjectMetadata) Run(t *testing.T, builder ConnectorBuilder[TestableMetadataReader]) {
 	t.Helper()
 	t.Cleanup(func() {
 		metadataType(m).Close()

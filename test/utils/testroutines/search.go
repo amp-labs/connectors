@@ -3,18 +3,17 @@ package testroutines
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
 
 type (
 	searchType = TestCase[common.SearchParams, *common.SearchResult]
-	// Search is a test suite useful for testing connectors.SearchConnector interface.
-	Search searchType
+	// TestCaseSearch is a test suite useful for testing connectors.SearchConnector interface.
+	TestCaseSearch searchType
 )
 
 // Run provides a procedure to test connectors.SearchConnector
-func (s Search) Run(t *testing.T, builder ConnectorBuilder[connectors.SearchConnector]) {
+func (s TestCaseSearch) Run(t *testing.T, builder ConnectorBuilder[TestableSearcher]) {
 	t.Helper()
 	t.Cleanup(func() {
 		searchType(s).Close()

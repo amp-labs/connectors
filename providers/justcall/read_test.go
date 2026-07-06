@@ -25,7 +25,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	responseWebhooks := testutils.DataFromFile(t, "read/webhooks/list.json")
 	responseSalesDialerContacts := testutils.DataFromFile(t, "read/sales_dialer_contacts/first-page.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -416,7 +416,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

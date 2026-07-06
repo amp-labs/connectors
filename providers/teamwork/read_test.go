@@ -22,7 +22,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseNotebooksFirstPage := testutils.DataFromFile(t, "read/notebooks/1-first-page.json")
 	responseNotebooksSecondPage := testutils.DataFromFile(t, "read/notebooks/2-second-page.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:  "Error response is parsed",
 			Input: common.ReadParams{ObjectName: "companies", Fields: connectors.Fields("name")},
@@ -159,7 +159,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

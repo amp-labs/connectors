@@ -30,7 +30,7 @@ func TestRead(t *testing.T) {
 	responseRoleLast := testutils.DataFromFile(t, "read-role-last-page.json")
 	responseRoleUntilWindow := []byte(`[{"id":99,"name":"Filtered"}]`)
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name: "Read crm.iap.lead.role empty",
 			Input: common.ReadParams{
@@ -303,7 +303,7 @@ func TestRead(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

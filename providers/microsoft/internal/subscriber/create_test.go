@@ -63,7 +63,7 @@ func TestCreate(t *testing.T) { // nolint:funlen,cyclop
 	  "headers": {"Content-Type": "application/json"}
 	}`)
 
-	tests := []testroutines.TestCaseCreateSubscription{
+	tests := []testroutines.TestCaseSubscribe{
 		{
 			Name: "Missing object for subscription",
 			Input: common.SubscribeParams{

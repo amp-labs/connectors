@@ -17,7 +17,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	errorBadRequest := testutils.DataFromFile(t, "boards/err-unknown-property.json")
 
-	tests := []testroutines.Read{
+	tests := []testroutines.TestCaseRead{
 		{
 			Name:  "Error requesting unknown field for the object",
 			Input: common.ReadParams{ObjectName: "boards", Fields: connectors.Fields("id", "random_field")},
@@ -37,7 +37,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testroutines.TestableReader, error) {
 				return constructTestConnector(tt.Server.URL)
 			})
 		})

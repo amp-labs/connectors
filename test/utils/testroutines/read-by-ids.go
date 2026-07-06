@@ -3,14 +3,13 @@ package testroutines
 import (
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
 
 type (
 	readByIdsType = TestCase[ReadByIdsParams, []common.ReadResultRow]
-	// ReadByIds is a test suite useful for testing connectors.BatchRecordReaderConnector interface.
-	ReadByIds readByIdsType
+	// TestCaseGetRecordsByIds is a test suite useful for testing connectors.BatchRecordReaderConnector interface.
+	TestCaseGetRecordsByIds readByIdsType
 )
 
 type ReadByIdsParams struct {
@@ -21,7 +20,7 @@ type ReadByIdsParams struct {
 }
 
 // Run provides a procedure to test connectors.BatchRecordReaderConnector
-func (r ReadByIds) Run(t *testing.T, builder ConnectorBuilder[connectors.BatchRecordReaderConnector]) {
+func (r TestCaseGetRecordsByIds) Run(t *testing.T, builder ConnectorBuilder[TestableBatchReader]) {
 	t.Helper()
 	t.Cleanup(func() {
 		readByIdsType(r).Close()
