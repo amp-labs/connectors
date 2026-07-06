@@ -285,7 +285,17 @@ type (
 	CalendarWatchResponse      = calendar.WatchResponse
 	CalendarSubscriptionResult = calendar.CalendarSubscriptionResult
 	CalendarVerificationParams = calendar.VerificationParams
+	CalendarSubscriptionEvent  = calendar.SubscriptionEvent
 )
+
+// CalendarSubscriptionEventsFromRecords classifies GetRecordsByIds rows into
+// create/update/delete events. updatedMin must be the same checkpoint passed to
+// GetRecordsByIds (recordIds[0]).
+func CalendarSubscriptionEventsFromRecords(
+	rows []common.ReadResultRow, updatedMin string,
+) []CalendarSubscriptionEvent {
+	return calendar.SubscriptionEventsFromRecords(rows, updatedMin)
+}
 
 // CalendarVerifier is a standalone Google Calendar webhook verifier.
 //

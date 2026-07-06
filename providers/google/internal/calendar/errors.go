@@ -17,6 +17,7 @@ var (
 	errInvalidRequestType         = errors.New("invalid request type")
 	errUnsupportedSubscribeObject = errors.New("unsupported subscribe object")
 	errFieldNotFound              = errors.New("field not found")
+	errInvalidTimestamp           = errors.New("invalid timestamp")
 )
 
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
