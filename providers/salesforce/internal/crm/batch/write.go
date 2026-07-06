@@ -170,7 +170,11 @@ type Payload struct {
 // It wraps a core Record with Salesforce-specific attributes required
 // for batch or composite write operations. Fields from RecordExtension
 // are merged alongside the record's own properties in the final payload.
-type PayloadItem = codec.DecoratedRecord[RecordExtension]
+type PayloadItem codec.DecoratedRecord[RecordExtension]
+
+func (i PayloadItem) MarshalJSON() ([]byte, error) {
+	return codec.DecoratedRecord[RecordExtension](i).MarshalJSON()
+}
 
 type RecordExtension struct {
 	Attributes RecordAttributes `json:"attributes"`

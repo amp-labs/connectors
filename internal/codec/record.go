@@ -8,38 +8,57 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// DecoratedRecord merges a dynamic record with a structured extension,
-// producing a single flattened JSON object when marshaled.
+// DecoratedRecord merges a dynamic record with a typed extension and marshals them as one flat JSON object.
 //
-// It embeds a [common.Record] containing user-defined key–value pairs
-// and a typed struct [T] representing schema-bound fields that must
-// coexist with those user-supplied values in the API payload.
+// Important: zero values in Extension are still marshaled unless the field is tagged with `omitempty`.
+// Those zero values can overwrite values already present in Record during the merge unless that is your intention.
 //
-// When marshaled, fields from both Record and Extension are serialized
-// at the same level in the resulting JSON. This allows connectors to
-// enrich arbitrary record data with well-defined metadata or attributes.
+// Merge rules:
+//   - Keys present only in Record are preserved in the output.
+//   - Fields from Extension are added to the output.
+//   - Matching keys favor Extension values.
+//   - Nested structs in Extension are supported.
+//   - Zero-value fields in Extension still override unless omitted from JSON.
 //
 // Example:
 //
-//	type MyPayloadForRecord = codec.DecoratedRecord[RecordExtension]
-//
 //	type RecordExtension struct {
-//		ObjectName string `json:"objectName"`
+//	    ObjectName string `json:"objectName"`
 //	}
 //
-//	record := common.Record{"name": "Bob"}
-//	extension := RecordExtension{ObjectName: "users"}
-//	item := codec.DecoratedRecord[RecordExtension]{Record: record, Extension: extension}
+//	item := codec.NewDecoratedRecord(
+//		map[string]any{
+//			"name": "Bob",
+//		},
+//		RecordExtension{
+//			ObjectName: "users",
+//		})
 //
-//	// Output:
-//	// {"name": "Bob", "objectName": "users"}
+//	// JSON:
+//	// {"name":"Bob","objectName":"users"}
 type DecoratedRecord[T any] struct {
 	common.Record
 
 	Extension T
 }
 
-func (d *DecoratedRecord[T]) MarshalJSON() ([]byte, error) {
+// NewDecoratedRecord creates a DecoratedRecord from a base record and a typed extension.
+//
+// The returned value marshals both parts as a single flattened JSON object.
+// Fields from the extension may override values already present in the base
+// record, including nested JSON object fields.
+func NewDecoratedRecord[T any](base common.Record, decoration T) *DecoratedRecord[T] {
+	return &DecoratedRecord[T]{
+		Record:    base,
+		Extension: decoration,
+	}
+}
+
+// MarshalJSON merges Record and Extension into a single JSON object.
+//
+// The record is copied first, then extension fields are added on top.
+// If both contain the same key, the extension value replaces the record value.
+func (d DecoratedRecord[T]) MarshalJSON() ([]byte, error) {
 	// Create a copy of records.
 	jsonProperties, err := datautils.FromMap(d.Record).DeepCopy()
 	if err != nil {
@@ -57,9 +76,42 @@ func (d *DecoratedRecord[T]) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("unmarshal extension: %w", err)
 	}
 
-	// Enhance final JSON map with properties from extension.
-	datautils.FromMap(jsonProperties).AddMapValues(additionalProperties)
+	deepMerge(jsonProperties, additionalProperties)
 
 	// Marshall combined map.
 	return json.Marshal(jsonProperties)
+}
+
+// deepMerge merges source into destination in place.
+//
+// Behavior:
+//   - Keys that exist only in source are added to destination.
+//   - When both values are nested map[string]any values, they are merged recursively.
+//   - For all other value types, the source value overrides the destination value.
+//
+// This is a deep merge for JSON object trees.
+func deepMerge(destination, source map[string]any) {
+	for key, srcValue := range source {
+		dstValue, exists := destination[key]
+		// Add missing keys.
+		if !exists {
+			destination[key] = srcValue
+
+			continue
+		}
+
+		dstMap, dstOK := dstValue.(map[string]any)
+		srcMap, srcOK := srcValue.(map[string]any)
+
+		// Nested maps are merged together instead of one map overriding the other.
+		if dstOK && srcOK {
+			deepMerge(dstMap, srcMap)
+			destination[key] = dstMap
+
+			continue
+		}
+
+		// Override value.
+		destination[key] = srcValue
+	}
 }
