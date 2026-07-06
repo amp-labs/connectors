@@ -5,7 +5,7 @@ go 1.26.1
 require (
 	cloud.google.com/go/bigquery v1.75.0
 	github.com/PuerkitoBio/goquery v1.11.0
-	github.com/amp-labs/amp-common v0.0.0-20260706145943-7da2452b3407
+	github.com/amp-labs/amp-common v0.0.0-20260706184531-deda7496634f
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/aws/aws-sdk-go-v2 v1.41.1
