@@ -12,7 +12,7 @@ func supportedOperations() components.EndpointRegistryInput {
 	readSupport := []string{
 		"appAlerts",
 		"apps",
-		"capitalLoans",
+		objectCapitalLoans,
 		"clientEmails",
 		"clientPhones",
 		objectClients,
@@ -26,7 +26,7 @@ func supportedOperations() components.EndpointRegistryInput {
 		"requestSettingsCollection",
 		objectRequests,
 		"similarClients",
-		"tasks",
+		objectTasks,
 		"taxRates",
 		objectTimeSheetEntries,
 		objectUsers,

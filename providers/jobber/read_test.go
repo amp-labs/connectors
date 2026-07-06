@@ -88,6 +88,91 @@ func TestRead_IncrementalClientsUsesUpdatedAtFilter(t *testing.T) {
 	assert.Equal(t, res.Rows, int64(1))
 	assert.Equal(t, res.NextPage.String(), "CUR1")
 	assert.Equal(t, res.Data[0].Fields["name"], "Ada")
+	// updatedAt was not requested but must be present since the read filtered on it.
+	assert.Equal(t, res.Data[0].Fields["updatedat"], "2026-07-02T10:00:00Z")
+}
+
+func TestRead_IncrementalAppendsTimestampFieldWhenMissing(t *testing.T) {
+	t.Parallel()
+
+	// clients filter on updatedAt, visits on createdAt, jobs sort+cut on
+	// updatedAt. In each case the timestamp field must appear in the output
+	// even though the caller only requested id.
+	tests := []struct {
+		object   string
+		tsField  string // lowercased key expected in output
+		tsValue  string
+		response string
+	}{
+		{
+			object: "clients", tsField: "updatedat", tsValue: "2026-07-02T10:00:00Z",
+			response: `{"data":{"clients":{"nodes":[{"id":"C1","updatedAt":"2026-07-02T10:00:00Z"}],
+				"pageInfo":{"endCursor":"","hasNextPage":false},"totalCount":1}}}`,
+		},
+		{
+			object: "visits", tsField: "createdat", tsValue: "2026-07-02T08:00:00Z",
+			response: `{"data":{"visits":{"nodes":[{"id":"V1","createdAt":"2026-07-02T08:00:00Z"}],
+				"pageInfo":{"endCursor":"","hasNextPage":false},"totalCount":1}}}`,
+		},
+		{
+			object: "jobs", tsField: "updatedat", tsValue: "2026-07-02T10:00:00Z",
+			response: `{"data":{"jobs":{"nodes":[{"id":"J1","updatedAt":"2026-07-02T10:00:00Z"}],
+				"pageInfo":{"endCursor":"","hasNextPage":false},"totalCount":1}}}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.object, func(t *testing.T) {
+			t.Parallel()
+
+			srv := mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.MethodPOST(),
+				Then:  mockserver.ResponseString(http.StatusOK, tt.response),
+			}.Server()
+			defer srv.Close()
+
+			conn, err := constructTestConnector(srv.URL)
+			assert.NilError(t, err)
+
+			res, err := conn.Read(context.Background(), common.ReadParams{
+				ObjectName: tt.object,
+				Fields:     connectors.Fields("id"), // timestamp deliberately omitted
+				Since:      time.Date(2026, 7, 1, 0, 0, 0, 0, time.UTC),
+			})
+
+			assert.NilError(t, err)
+			assert.Equal(t, res.Rows, int64(1))
+			assert.Equal(t, res.Data[0].Fields[tt.tsField], tt.tsValue)
+		})
+	}
+}
+
+func TestRead_FullReadDoesNotAppendTimestampField(t *testing.T) {
+	t.Parallel()
+
+	// Without Since/Until the read is not incremental, so nothing is appended.
+	srv := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If:    mockcond.MethodPOST(),
+		Then: mockserver.ResponseString(http.StatusOK, `{"data":{"clients":{
+			"nodes":[{"id":"C1","name":"Ada","updatedAt":"2026-07-02T10:00:00Z"}],
+			"pageInfo":{"endCursor":"","hasNextPage":false},"totalCount":1}}}`),
+	}.Server()
+	defer srv.Close()
+
+	conn, err := constructTestConnector(srv.URL)
+	assert.NilError(t, err)
+
+	res, err := conn.Read(context.Background(), common.ReadParams{
+		ObjectName: "clients",
+		Fields:     connectors.Fields("id"),
+	})
+
+	assert.NilError(t, err)
+	assert.Equal(t, res.Rows, int64(1))
+	_, hasTS := res.Data[0].Fields["updatedat"]
+	assert.Assert(t, !hasTS, "updatedAt should not be appended on a non-incremental read")
 }
 
 func TestRead_IncrementalVisitsUsesCreatedAtFilter(t *testing.T) {

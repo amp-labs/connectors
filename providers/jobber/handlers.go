@@ -201,6 +201,10 @@ func (c *Connector) parseReadResponse(
 		return nil, err
 	}
 
+	// On incremental reads, make sure the timestamp field being filtered on is
+	// returned even if the caller didn't request it.
+	params = withIncrementalField(params)
+
 	// Jobs have no server-side timestamp filter, so any Since/Until read goes
 	// through the client-side sort + cutoff path (see incremental.go).
 	if params.ObjectName == objectJobs && (!params.Since.IsZero() || !params.Until.IsZero()) {

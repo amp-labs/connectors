@@ -12,6 +12,7 @@ const (
 	apiVersion      = "2026-05-12"
 	defaultPageSize = 50
 
+	objectCapitalLoans        = "capitalLoans"
 	objectClients             = "clients"
 	objectExpenses            = "expenses"
 	objectInvoices            = "invoices"
@@ -21,11 +22,16 @@ const (
 	objectProperties          = "properties"
 	objectQuotes              = "quotes"
 	objectRequests            = "requests"
+	objectTasks               = "tasks"
 	objectTimeSheetEntries    = "timeSheetEntries"
 	objectUsers               = "users"
 	objectVehicles            = "vehicles"
 	objectVisits              = "visits"
 	objectProductsAndServices = "productsAndServices"
+
+	// Timestamp fields used for incremental read.
+	fieldUpdatedAt = "updatedAt"
+	fieldCreatedAt = "createdAt"
 
 	// GraphQL request body keys.
 	gqlQueryKey     = "query"
@@ -40,7 +46,7 @@ const (
 var objectNameMapping = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"appAlerts":                 "AppAlert",
 	"apps":                      "Application",
-	"capitalLoans":              "JobberPaymentsCpitalLoan",
+	objectCapitalLoans:          "JobberPaymentsCpitalLoan",
 	"clientEmails":              "Email",
 	"clientPhones":              "ClientPhoneNumber",
 	objectClients:               "Client",
@@ -56,7 +62,7 @@ var objectNameMapping = datautils.NewDefaultMap(map[string]string{ //nolint:goch
 	objectRequests:              "Request",
 	"scheduledItems":            "ScheduledItemInterface",
 	"similarClients":            "Client",
-	"tasks":                     "Task",
+	objectTasks:                 "Task",
 	"taxRates":                  "TaxRate",
 	objectTimeSheetEntries:      "TimeSheetEntry",
 	objectUsers:                 "User",
