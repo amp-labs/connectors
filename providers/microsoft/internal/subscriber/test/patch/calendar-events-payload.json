@@ -1,0 +1,12 @@
+{
+  "id": "63b01115-ba3f-4db6-a1ef-793797ec340a",
+  "method": "PATCH",
+  "url": "/subscriptions/63b01115-ba3f-4db6-a1ef-793797ec340a",
+  "body": {
+    "expirationDateTime": "2026-03-04T10:00:00Z",
+    "notificationUrl": "https://test.com/webhook"
+  },
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}

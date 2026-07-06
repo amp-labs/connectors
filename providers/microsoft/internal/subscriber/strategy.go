@@ -4,6 +4,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/batch"
 )
@@ -57,4 +58,26 @@ type Result struct {
 // https://learn.microsoft.com/en-us/graph/change-notifications-delivery-webhooks?tabs=http#subscription-request
 func (s Strategy) getSubscriptionURL() (*urlbuilder.URL, error) {
 	return urlbuilder.New(s.providerInfo.BaseURL, apiVersion, "subscriptions")
+}
+
+func (r Result) extractSubscriptionsByIds(
+	ids []string,
+) (map[string]SubscriptionResource, map[common.ObjectName]common.ObjectEvents) {
+	// Build initial state (subscriptions and objectEvents) from the previous result,
+	// but only for the requested identifiers. This represents the set of items
+	// that we intend to remove; we'll prune it after seeing which removals succeed.
+	subscriptions := make(map[string]SubscriptionResource)
+	objectEvents := make(map[common.ObjectName]common.ObjectEvents)
+	identifiers := datautils.NewSetFromList(ids)
+
+	for _, sub := range r.Subscriptions {
+		if identifiers.Has(sub.ID) {
+			subscriptions[sub.ID] = sub
+			objectEvents[sub.ObjectName] = common.ObjectEvents{
+				Events: sub.ChangeType.EventTypes(),
+			}
+		}
+	}
+
+	return subscriptions, objectEvents
 }

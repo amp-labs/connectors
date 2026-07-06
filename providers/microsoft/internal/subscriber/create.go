@@ -12,7 +12,17 @@ import (
 	"github.com/amp-labs/connectors/providers/microsoft/internal/webhook"
 )
 
-const subscriptionExpirationWindow = 5 * time.Hour
+const (
+	// timeBufferForValidPayload keeps the requested expiration safely below the
+	// minimum supported subscription lifetime so Microsoft Graph accepts the payload.
+	// We leave a 5-minute margin to account for latency and boundary timing.
+	timeBufferForValidPayload = 5 * time.Minute
+
+	// subscriptionExpirationWindow is the effective minimum lifetime we request.
+	// The target is 6 hours, minus the safety buffer, to stay close to the real
+	// minimum while avoiding "400 BadRequest" on creation.
+	subscriptionExpirationWindow = 6*time.Hour - timeBufferForValidPayload
+)
 
 // Subscribe creates a Microsoft Graph subscription for the specified objects and events.
 //
@@ -216,7 +226,7 @@ type SubscriptionResource struct {
 
 // newPayloadCreateSubscription constructs a subscription payload for creation.
 // Uses clientState to store objectName for identification.
-// Expiration is set to 5 hours to safely fit common maximums (e.g., presence: 1h excluded; others 3-30 days).
+// Expiration is set to a little less than 6 hours to safely fit common maximums.
 //
 // nolint:lll
 // See [lifetime limits](https://learn.microsoft.com/en-us/graph/api/resources/subscription?view=graph-rest-1.0#subscription-lifetime)
@@ -227,13 +237,29 @@ func newPayloadCreateSubscription(
 ) SubscriptionResource {
 	resource := objectName.String()
 
-	fiveHoursFromNow := time.Now().Add(subscriptionExpirationWindow)
+	sixHoursFromNow := time.Now().Add(subscriptionExpirationWindow)
 	body := SubscriptionResource{
 		ChangeType:          webhook.NewChangeType(events.Events),
 		ObjectName:          objectName,
 		WebhookURL:          webhookURL,
 		Resource:            resource,
-		ExpirationDateTime:  fiveHoursFromNow,
+		ExpirationDateTime:  sixHoursFromNow,
+		IncludeResourceData: false,
+	}
+
+	return body
+}
+
+// Update is only relevant for extending the subscription expiration.
+// > Updates a subscription expiration time for renewal and/or updates the notificationUrl for delivery.
+// https://learn.microsoft.com/en-us/graph/api/resources/subscription?view=graph-rest-1.0#methods
+func newPayloadRefreshSubscription(
+	webhookURL string,
+) SubscriptionResource {
+	sixHoursFromNow := time.Now().Add(subscriptionExpirationWindow)
+	body := SubscriptionResource{
+		WebhookURL:          webhookURL,
+		ExpirationDateTime:  sixHoursFromNow,
 		IncludeResourceData: false,
 	}
 
