@@ -5,7 +5,7 @@ go 1.26.1
 require (
 	cloud.google.com/go/bigquery v1.75.0
 	github.com/PuerkitoBio/goquery v1.11.0
-	github.com/amp-labs/amp-common v0.0.0-20260703003249-fc66edd36f7b
+	github.com/amp-labs/amp-common v0.0.0-20260706145902-2bc450117f3a
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/aws/aws-sdk-go-v2 v1.41.1
@@ -86,7 +86,7 @@ require (
 	github.com/kaptinlin/go-i18n v0.2.3 // indirect
 	github.com/kaptinlin/jsonpointer v0.4.9 // indirect
 	github.com/kaptinlin/messageformat-go v0.4.9 // indirect
-	github.com/klauspost/compress v1.18.6 // indirect
+	github.com/klauspost/compress v1.19.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
