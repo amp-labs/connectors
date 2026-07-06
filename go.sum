@@ -28,8 +28,8 @@ github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapp
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.55.0/go.mod h1:Mf6O40IAyB9zR/1J8nGDDPirZQQPbYJni8Yisy7NTMc=
 github.com/PuerkitoBio/goquery v1.11.0 h1:jZ7pwMQXIITcUXNH83LLk+txlaEy6NVOfTuP43xxfqw=
 github.com/PuerkitoBio/goquery v1.11.0/go.mod h1:wQHgxUOU3JGuj3oD/QFfxUdlzW6xPHfqyHre6VMY4DQ=
-github.com/amp-labs/amp-common v0.0.0-20260703003249-fc66edd36f7b h1:+kl4tBNdwNmge47NhdwStQUXXEmkb8tnDSClEs4Gp88=
-github.com/amp-labs/amp-common v0.0.0-20260703003249-fc66edd36f7b/go.mod h1:brlGiqGV+b3kBszGhXkm6lPQzd+qy+7piuxRV/31nVY=
+github.com/amp-labs/amp-common v0.0.0-20260706145929-ef0951156d8b h1:SY01d3FJgzM95y2iTAPS7T3z4xF18orolGFOyz3jojQ=
+github.com/amp-labs/amp-common v0.0.0-20260706145929-ef0951156d8b/go.mod h1:7O1Z5z2NC0E6o1NJ8fG58RqjKodzv6i1se8kMSo3H5U=
 github.com/andybalholm/cascadia v1.3.3 h1:AG2YHrzJIm4BZ19iwJ/DAua6Btl3IwJX+VI4kktS1LM=
 github.com/andybalholm/cascadia v1.3.3/go.mod h1:xNd9bqTn98Ln4DwST8/nG+H0yuB8Hmgu1YHNnWw0GeA=
 github.com/antchfx/xmlquery v1.5.0 h1:uAi+mO40ZWfyU6mlUBxRVvL6uBNZ6LMU4M3+mQIBV4c=
@@ -173,8 +173,8 @@ github.com/kaptinlin/jsonschema v0.6.9 h1:N6bwMCadb0fA9CYINqQbtPhacIIjXmAjuYnJaW
 github.com/kaptinlin/jsonschema v0.6.9/go.mod h1:ZXZ4K5KrRmCCF1i6dgvBsQifl+WTb8XShKj0NpQNrz8=
 github.com/kaptinlin/messageformat-go v0.4.9 h1:FR5j5n4aL4nG0afKn9vvANrKxLu7HjmbhJnw5ogIwAQ=
 github.com/kaptinlin/messageformat-go v0.4.9/go.mod h1:qZzrGrlvWDz2KyyvN3dOWcK9PVSRV1BnfnNU+zB/RWc=
-github.com/klauspost/compress v1.18.6 h1:2jupLlAwFm95+YDR+NwD2MEfFO9d4z4Prjl1XXDjuao=
-github.com/klauspost/compress v1.18.6/go.mod h1:cwPg85FWrGar70rWktvGQj8/hthj3wpl0PGDogxkrSQ=
+github.com/klauspost/compress v1.19.0 h1:sXLILfc9jV2QYWkzFOPWStmcUVH2RHEB1JCdY2oVvCQ=
+github.com/klauspost/compress v1.19.0/go.mod h1:cwPg85FWrGar70rWktvGQj8/hthj3wpl0PGDogxkrSQ=
 github.com/klauspost/cpuid/v2 v2.3.0 h1:S4CRMLnYUhGeDFDqkGriYKdfoFlDnMtqTiI/sFzhA9Y=
 github.com/klauspost/cpuid/v2 v2.3.0/go.mod h1:hqwkgyIinND0mEev00jJYCxPNVRVXFQeu1XKlok6oO0=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
