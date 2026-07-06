@@ -67,7 +67,7 @@ func makeReadCondition(params common.ReadParams) (string, bool) {
 		conditions = append(conditions, condition)
 	}
 
-	return strings.Join(conditions, " AND "), true
+	return strings.Join(conditions, " AND "), len(conditions) != 0
 }
 
 func (c *Connector) parseReadResponse(

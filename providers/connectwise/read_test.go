@@ -115,7 +115,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v4_6_release/apis/3.0/company/contacts"),
+				If: mockcond.And{
+					mockcond.Path("/v4_6_release/apis/3.0/company/contacts"),
+					mockcond.QueryParamsMissing("conditions"),
+				},
 				Then: mockserver.ResponseChainedFuncs(
 					mockserver.Header("Link", linkHeaderRaw),
 					mockserver.Response(http.StatusOK, responseContacts),
