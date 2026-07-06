@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	apiVersion      = "2025-01-20"
+	apiVersion      = "2026-05-12"
 	defaultPageSize = 50
 
 	objectClients             = "clients"
