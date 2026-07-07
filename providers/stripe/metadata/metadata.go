@@ -23,10 +23,12 @@ var (
 	Schemas = FileManager.MustLoadSchemas() // nolint:gochecknoglobals
 
 	//go:embed expandableFields.json
-	expandableFields []byte
-
-	ExpandableFields = fileregistry.MustParseJSON[ExpandableFieldsDef](expandableFields) // nolint:gochecknoglobals
+	expandableFieldsFile []byte
+	expandableFields     = fileregistry.MustParseJSON[ExpandableFieldsDef](expandableFieldsFile) // nolint:gochecknoglobals
 )
 
-// ExpandableFieldsDef is a registry of object names to expandable query params for a field.
+// ExpandableFieldsDef stores expandable Stripe fields by resource name.
+//
+// The map keys represent Stripe resource names, and each value contains the set
+// of queryable expand paths for that resource.
 type ExpandableFieldsDef map[string]datautils.Set[string]

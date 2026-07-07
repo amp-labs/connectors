@@ -1,17 +1,14 @@
 package stripe
 
 import (
-	"maps"
-
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
-// flattenCustomFields converts a Stripe record node into a flat map and promotes keys
-// from the nested "metadata" object to the root level. This is used so that
-// user-defined custom fields keys can be queried directly as top-level fields in
-// ReadResult.Fields, while leaving ReadResult.Raw untouched.
-func flattenCustomFields(node *ajson.Node) (map[string]any, error) {
+// getCustomFields converts a Stripe record node into a flat map and returns custom fields
+// from the nested "metadata" object. This is used so that user-defined
+// custom fields keys can be queried directly as top-level fields ReadResult.Fields.
+func getCustomFields(node *ajson.Node) (map[string]any, error) {
 	root, err := jsonquery.Convertor.ObjectToMap(node)
 	if err != nil {
 		return nil, err
@@ -20,18 +17,15 @@ func flattenCustomFields(node *ajson.Node) (map[string]any, error) {
 	// custom fields are stored in the metadata object
 	customFieldsValue, ok := root["metadata"]
 	if !ok {
-		// No metadata field, return as is
-		return root, nil
+		// No metadata field, return nothing.
+		return make(map[string]any), nil
 	}
 
 	customFieldsMap, ok := customFieldsValue.(map[string]any)
 	if !ok || len(customFieldsMap) == 0 {
-		// custom fields is not a map or is empty, return as is
-		return root, nil
+		// Custom fields is not a map or is empty, return nothing
+		return make(map[string]any), nil
 	}
 
-	// flatten metadata keys to root level
-	maps.Copy(root, customFieldsMap)
-
-	return root, nil
+	return customFieldsMap, nil
 }
