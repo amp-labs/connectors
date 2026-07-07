@@ -3,7 +3,7 @@ package stripe
 import (
 	"context"
 	"errors"
-	"fmt"
+	"maps"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -27,9 +27,6 @@ const (
 	// in ReadResult.Data[*].Fields.
 	// This field is populated when ReadParamsOpts.ReadForAllConnectedAccounts is set to true.
 	fieldConnectedAccountID = "AMPERSAND-connectedAccountId"
-
-	// CheckoutSession is an object that supports expanding nested list of line items.
-	objectNameCheckoutSession = "checkout/sessions"
 )
 
 // ReadParamsOpts defines optional parameters for the Read operation.
@@ -112,10 +109,12 @@ func (c *Connector) readFirstPage(ctx context.Context, params common.ReadParams)
 // It applies:
 //   - Pagination: adds "limit" query parameter
 //   - Incremental reading: adds "created[gte]" for objects supporting incremental reads
-//   - Object expansion: adds "expand[]" for LineItems fields of format:
+//   - Object expansion: adds "expand[]" for fields of format:
 //     => "$['line_items']['currency']"
 //     => "$['line_items']['description']"
 //     => "$['line_items']['...']"
+//     => "$['source']['payment_intent']['customer']['id']"
+//     => "$['source']['payment_intent']['id']"
 //
 // See [Stripe expand documentation](https://docs.stripe.com/expand#how-it-works).
 func (c *Connector) buildFirstPageReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
@@ -133,16 +132,12 @@ func (c *Connector) buildFirstPageReadURL(params common.ReadParams) (*urlbuilder
 
 	expandTargets := make(datautils.Set[string])
 
-	if expandableFields, ok := metadata.ExpandableFields[params.ObjectName]; ok {
-		for field := range params.Fields {
-			rawFieldName := getRawFieldName(field)
-
-			// If the requested field supports expansion, add it to the expand list
-			// so the provider can return the nested object in the response.
-			queryParam := fmt.Sprintf("data.%v", rawFieldName)
-			if expandableFields.Has(queryParam) {
-				expandTargets.AddOne(queryParam)
-			}
+	for field := range params.Fields {
+		// If the requested field supports expansion, add it to the expand list
+		// so the provider can return the nested object in the response.
+		queryParam := metadata.MakeExpandableQueryParam(params.ObjectName, field)
+		if queryParam != "" {
+			expandTargets.AddOne(queryParam)
 		}
 	}
 
@@ -152,15 +147,6 @@ func (c *Connector) buildFirstPageReadURL(params common.ReadParams) (*urlbuilder
 	}
 
 	return url, nil
-}
-
-func getRawFieldName(field string) string {
-	keys := readhelper.ParseJSONPath(field)
-	if len(keys) > 0 {
-		return keys[0]
-	}
-
-	return field
 }
 
 // executeReadTasks runs multiple read tasks in parallel and aggregates their results.
@@ -236,18 +222,13 @@ func (c *Connector) readRecords(ctx context.Context,
 
 	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, objectName)
 
-	marshaller := readhelper.MakeMarshaledDataFuncWithId(flattenCustomFields, readhelper.IdFieldQuery{Field: "id"})
-	if objectName == objectNameCheckoutSession {
-		marshaller = readhelper.MakeMarshaledSelectedDataFunc(
-			checkoutSessionsEmbedLineItems,
-			jsonquery.Convertor.ObjectToMap, // raw already has line-items
-		)
-	}
-
 	return common.ParseResult(res,
 		makeGetRecords(responseFieldName),
 		makeNextRecordsURL(url),
-		marshaller,
+		readhelper.MakeMarshaledSelectedDataFunc(
+			fieldsSelector,
+			jsonquery.Convertor.ObjectToMap,
+		),
 		selectedFields,
 	)
 }
@@ -364,7 +345,7 @@ var incrementalObjects = datautils.NewSet( // nolint:gochecknoglobals
 	"treasury/financial_accounts",
 )
 
-func checkoutSessionsEmbedLineItems(node *ajson.Node, fields []string) (map[string]any, string, error) {
+func fieldsSelector(node *ajson.Node, fields []string) (map[string]any, string, error) {
 	root, err := jsonquery.Convertor.ObjectToMap(node)
 	if err != nil {
 		return nil, "", err
@@ -375,7 +356,13 @@ func checkoutSessionsEmbedLineItems(node *ajson.Node, fields []string) (map[stri
 		return nil, "", err
 	}
 
+	customFields, err := getCustomFields(node)
+	if err != nil {
+		return nil, "", err
+	}
+
 	selected := readhelper.SelectFields(root, datautils.NewSetFromList(fields))
+	maps.Copy(selected, customFields)
 
 	return selected, identifier, nil
 }

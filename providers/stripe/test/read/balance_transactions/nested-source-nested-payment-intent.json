@@ -1,0 +1,177 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "txn_3TonX5ES6gLOjP911H3BpXoI",
+      "object": "balance_transaction",
+      "amount": 1100,
+      "available_on": 1783010097,
+      "balance_type": "payments",
+      "created": 1783010092,
+      "currency": "usd",
+      "description": null,
+      "exchange_rate": null,
+      "fee": 9,
+      "fee_details": [
+        {
+          "amount": 9,
+          "application": null,
+          "currency": "usd",
+          "description": "Stripe processing fees",
+          "type": "stripe_fee"
+        }
+      ],
+      "net": 1091,
+      "reporting_category": "charge",
+      "source": {
+        "id": "py_3TonX5ES6gLOjP9113RJaMNS",
+        "object": "charge",
+        "amount": 1100,
+        "amount_captured": 1100,
+        "amount_refunded": 0,
+        "application": null,
+        "application_fee": null,
+        "application_fee_amount": null,
+        "balance_transaction": "txn_3TonX5ES6gLOjP911H3BpXoI",
+        "billing_details": {
+          "address": {
+            "city": null,
+            "country": null,
+            "line1": null,
+            "line2": null,
+            "postal_code": null,
+            "state": null
+          },
+          "email": null,
+          "name": "User 002",
+          "phone": null,
+          "tax_id": null
+        },
+        "calculated_statement_descriptor": null,
+        "captured": true,
+        "created": 1783010085,
+        "currency": "usd",
+        "customer": "cus_Rd3kcMGRvsoY8j",
+        "description": null,
+        "destination": null,
+        "dispute": null,
+        "disputed": false,
+        "failure_balance_transaction": null,
+        "failure_code": null,
+        "failure_message": null,
+        "fraud_details": {},
+        "invoice": null,
+        "livemode": false,
+        "metadata": {},
+        "on_behalf_of": null,
+        "order": null,
+        "outcome": {
+          "advice_code": null,
+          "network_advice_code": null,
+          "network_decline_code": null,
+          "network_status": "approved_by_network",
+          "reason": null,
+          "risk_level": "normal",
+          "risk_score": 13,
+          "seller_message": "Payment complete.",
+          "type": "authorized"
+        },
+        "paid": true,
+        "payment_intent": {
+          "id": "pi_3TonX5ES6gLOjP9110pnynic",
+          "object": "payment_intent",
+          "amount": 1100,
+          "amount_capturable": 0,
+          "amount_details": {
+            "tip": {}
+          },
+          "amount_received": 1100,
+          "application": null,
+          "application_fee_amount": null,
+          "automatic_payment_methods": null,
+          "canceled_at": null,
+          "cancellation_reason": null,
+          "capture_method": "automatic",
+          "client_secret": "pi_3TonX5ES6gLOjP9110pnynic_secret_yufAmnvbkgcO1FzisLLzdfVIB",
+          "confirmation_method": "automatic",
+          "created": 1783009931,
+          "currency": "usd",
+          "customer": {
+            "id": "cus_Rd3kcMGRvsoY8j",
+            "email": "andrew.ross@example.com"
+          },
+          "customer_account": null,
+          "description": null,
+          "excluded_payment_method_types": null,
+          "invoice": null,
+          "last_payment_error": null,
+          "latest_charge": "py_3TonX5ES6gLOjP9113RJaMNS",
+          "livemode": false,
+          "managed_payments": {
+            "enabled": false
+          },
+          "metadata": {},
+          "next_action": null,
+          "on_behalf_of": null,
+          "payment_method": "pm_1TonIuES6gLOjP91uyNbV5xz",
+          "payment_method_configuration_details": null,
+          "payment_method_options": {
+            "us_bank_account": {
+              "mandate_options": {},
+              "transaction_purpose": "unspecified",
+              "verification_method": "automatic"
+            }
+          },
+          "payment_method_types": [
+            "us_bank_account"
+          ],
+          "processing": null,
+          "receipt_email": null,
+          "review": null,
+          "setup_future_usage": null,
+          "shared_payment_granted_token": null,
+          "shipping": null,
+          "source": null,
+          "statement_descriptor": null,
+          "statement_descriptor_suffix": null,
+          "status": "succeeded",
+          "transfer_data": null,
+          "transfer_group": null
+        },
+        "payment_method": "pm_1TonIuES6gLOjP91uyNbV5xz",
+        "payment_method_details": {
+          "type": "us_bank_account",
+          "us_bank_account": {
+            "account_holder_type": "individual",
+            "account_type": "checking",
+            "bank_name": "STRIPE TEST BANK",
+            "expected_debit_date": "2026-07-02",
+            "fingerprint": "8uWn0GTh9ts6fjyh",
+            "last4": "6789",
+            "mandate": "mandate_1TonJFES6gLOjP910IFf3y3N",
+            "payment_reference": "fHCKkEd0+RBS6nC39y2NJCxd2/c9HjgYTDCTOLE1ad0=",
+            "routing_number": "110000000"
+          }
+        },
+        "radar_options": {},
+        "receipt_email": null,
+        "receipt_number": null,
+        "receipt_url": "https://pay.stripe.com/receipts/payment/CAcaFwoVYWNjdF8xT3lIeEhFUzZnTE9qUDkxKL35mtIGMgaZaYuOezU6LBbLzzU-R87tuBi_p4A3o8DQq_NGwsYpc72uPiZkyJ_im32EIQkyvXWynY4H",
+        "refunded": false,
+        "review": null,
+        "shipping": null,
+        "source": null,
+        "source_transfer": null,
+        "statement_descriptor": null,
+        "statement_descriptor_suffix": null,
+        "status": "succeeded",
+        "transfer_data": null,
+        "transfer_group": null
+      },
+      "status": "available",
+      "type": "payment"
+    }
+  ],
+  "has_more": false,
+  "url": "/v1/balance_transactions"
+}

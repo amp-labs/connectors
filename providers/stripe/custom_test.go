@@ -19,7 +19,7 @@ func TestFlattenCustomFields(t *testing.T) {
 		wantErr  bool
 	}{
 		{
-			name: "Object with custom fields should flatten custom fields to root level",
+			name: "Object with custom fields should return them",
 			input: map[string]any{
 				"id":    "cus_test123",
 				"email": "test@example.com",
@@ -31,14 +31,6 @@ func TestFlattenCustomFields(t *testing.T) {
 				},
 			},
 			expected: map[string]any{
-				"id":    "cus_test123",
-				"email": "test@example.com",
-				"name":  "Test Customer",
-				"metadata": map[string]any{
-					"order_id":     "6735",
-					"user_id":      "456",
-					"internal_ref": "REF-2024-001",
-				},
 				"order_id":     "6735",
 				"user_id":      "456",
 				"internal_ref": "REF-2024-001",
@@ -46,32 +38,24 @@ func TestFlattenCustomFields(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Object without custom fields should return as is",
+			name: "Object without custom fields should return nothing",
 			input: map[string]any{
 				"id":    "cus_test123",
 				"email": "test@example.com",
 				"name":  "Test Customer",
 			},
-			expected: map[string]any{
-				"id":    "cus_test123",
-				"email": "test@example.com",
-				"name":  "Test Customer",
-			},
-			wantErr: false,
+			expected: make(map[string]any),
+			wantErr:  false,
 		},
 		{
-			name: "Object with empty custom fields should return as is",
+			name: "Object with empty custom fields should return nothing",
 			input: map[string]any{
 				"id":       "cus_test123",
 				"email":    "test@example.com",
 				"metadata": map[string]any{},
 			},
-			expected: map[string]any{
-				"id":       "cus_test123",
-				"email":    "test@example.com",
-				"metadata": map[string]any{},
-			},
-			wantErr: false,
+			expected: make(map[string]any),
+			wantErr:  false,
 		},
 	}
 
@@ -86,7 +70,7 @@ func TestFlattenCustomFields(t *testing.T) {
 			node, err := ajson.Unmarshal(jsonBytes)
 			require.NoError(t, err)
 
-			result, err := flattenCustomFields(node)
+			result, err := getCustomFields(node)
 
 			if tt.wantErr {
 				assert.Error(t, err)

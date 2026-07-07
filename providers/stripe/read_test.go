@@ -26,6 +26,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseCustomersWithMetadata := testutils.DataFromFile(t, "read/customers/with-metadata.json")
 	responseCheckoutSessionsWithItems := testutils.DataFromFile(t, "read/checkout-sessions/with-line-items.json")
 	responseInvoices := testutils.DataFromFile(t, "read/invoices/incremental.json")
+	responseBalanceWithSource := testutils.DataFromFile(t, "read/balance_transactions/nested-source.json")
+	responseBalanceWithPaymentIntents := testutils.DataFromFile(t, "read/balance_transactions/nested-source-nested-payment-intent.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -401,6 +403,72 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					},
 					Raw: map[string]any{"email": "sean.foster@example.com"},
 					Id:  "cus_Rd3NKXxTV0Hzpp",
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Balance transactions requested with nested source",
+			Input: common.ReadParams{
+				ObjectName: "balance_transactions",
+				Fields:     connectors.Fields("$['source']['amount']"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/balance_transactions"),
+					mockcond.QueryParam("expand[]", "data.source"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseBalanceWithSource),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"source": map[string]any{
+							"amount": float64(1100),
+						},
+					},
+					Raw: map[string]any{"currency": "usd"},
+					Id:  "txn_3TonX5ES6gLOjP911H3BpXoI",
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Balance transactions requested with nested payment intents",
+			Input: common.ReadParams{
+				ObjectName: "balance_transactions",
+				Fields:     connectors.Fields("$['source']['payment_intent']['customer']['email']"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/balance_transactions"),
+					mockcond.QueryParam("expand[]", "data.source.payment_intent.customer"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseBalanceWithPaymentIntents),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"source": map[string]any{
+							"payment_intent": map[string]any{
+								"customer": map[string]any{
+									"email": "andrew.ross@example.com",
+								},
+							},
+						},
+					},
+					Raw: map[string]any{"available_on": float64(1783010097)},
+					Id:  "txn_3TonX5ES6gLOjP911H3BpXoI",
 				}},
 				NextPage: "",
 				Done:     true,
