@@ -133,6 +133,7 @@ import (
 	"github.com/amp-labs/connectors/providers/snapchatads"
 	"github.com/amp-labs/connectors/providers/snowflake"
 	"github.com/amp-labs/connectors/providers/solarwinds"
+	"github.com/amp-labs/connectors/providers/square"
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/supersend"
 	"github.com/amp-labs/connectors/providers/talkdesk"
@@ -291,6 +292,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Snowflake:                  wrapper(newSnowflakeConnector),
 	providers.SolarWindsServiceDesk:      wrapper(newSolarWindsConnector),
 	providers.Stripe:                     wrapper(newStripeConnector),
+	providers.Square:                     wrapper(newSquareConnector),
+	providers.SquareSandbox:              wrapper(newSquareSandboxConnector),
 	providers.SuperSend:                  wrapper(newSuperSendConnector),
 	providers.Talkdesk:                   wrapper(newTalkdeskConnector),
 	providers.Teamleader:                 wrapper(newTeamleaderConnector),
@@ -1264,4 +1267,12 @@ func newProcoreSandboxConnector(params common.ConnectorParams) (*procore.Connect
 
 func newGoToConnector(params common.ConnectorParams) (*gotoconn.Connector, error) {
 	return gotoconn.NewConnector(params)
+}
+
+func newSquareConnector(params common.ConnectorParams) (*square.Connector, error) {
+	return square.NewConnector(params)
+}
+
+func newSquareSandboxConnector(params common.ConnectorParams) (*square.Connector, error) {
+	return square.NewSandboxConnector(params)
 }
