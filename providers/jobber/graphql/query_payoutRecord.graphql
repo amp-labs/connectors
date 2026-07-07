@@ -1,0 +1,18 @@
+query PayoutRecord($id: EncodedId!) {
+  payoutRecord(id: $id) {
+    arrivalDate
+    created
+    createdAt
+    currency
+    feeAmount
+    grossAmount
+    id
+    identifier
+    netAmount
+    payoutMethod
+    status
+    type
+    updatedAt
+
+  }
+}
