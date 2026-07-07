@@ -2,7 +2,7 @@ query RequestSettingsConnection{
   requestSettingsCollection(
      first: {{.First}}
      {{if .After}}
-     after: {{.After}}
+     after: "{{.After}}"
      {{end}}
   ){
     nodes{

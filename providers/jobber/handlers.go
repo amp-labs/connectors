@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/graphql"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
@@ -45,7 +46,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 
 	// Create the request body as a map
 	requestBody := map[string]string{
-		"query": query,
+		gqlQueryKey: query,
 	}
 
 	// Marshal the request body to JSON
@@ -141,9 +142,27 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	first = defaultPageSize
 
+	// Templates for objects whose list query supports timestamp filtering
+	// render FromDate/ToDate into a filter argument (updatedAt where the API
+	// supports it; createdAt for visits, tasks and capitalLoans, which cannot
+	// filter by modification time). The jobs template instead sorts by
+	// UPDATED_AT descending and records are cut off client-side, see
+	// incremental.go. Remaining templates ignore these values.
+	var fromDate, toDate string
+
+	if !params.Since.IsZero() {
+		fromDate = datautils.Time.FormatRFC3339inUTC(params.Since)
+	}
+
+	if !params.Until.IsZero() {
+		toDate = datautils.Time.FormatRFC3339inUTC(params.Until)
+	}
+
 	pagination := graphql.PaginationParameter{
-		First: first,
-		After: after,
+		First:    first,
+		After:    after,
+		FromDate: fromDate,
+		ToDate:   toDate,
 	}
 
 	query, err := graphql.Operation(queryFiles, "query", params.ObjectName, pagination)
@@ -152,7 +171,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	requestBody := map[string]string{
-		"query": query,
+		gqlQueryKey: query,
 	}
 
 	jsonBody, err := json.Marshal(requestBody)
@@ -176,6 +195,22 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	// GraphQL failures (throttling, validation) arrive with a 2xx status, so
+	// the operation's status-based error handler never runs; surface them here.
+	if err := interpretGraphQLError(resp); err != nil {
+		return nil, err
+	}
+
+	// On incremental reads, make sure the timestamp field being filtered on is
+	// returned even if the caller didn't request it.
+	params = withIncrementalField(params)
+
+	// Jobs have no server-side timestamp filter, so any Since/Until read goes
+	// through the client-side sort + cutoff path (see incremental.go).
+	if params.ObjectName == objectJobs && (!params.Since.IsZero() || !params.Until.IsZero()) {
+		return c.parseJobsIncrementalReadResponse(params, resp)
+	}
+
 	return common.ParseResult(
 		resp,
 		common.ExtractOptionalRecordsFromPath("nodes", "data", params.ObjectName),
@@ -207,14 +242,14 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 
 	// Prepare request body with mutation & variables
 	requestBody := map[string]any{
-		"query": mutation,
-		"variables": map[string]any{
+		gqlQueryKey: mutation,
+		gqlVariablesKey: map[string]any{
 			"input": params.RecordData,
 		},
 	}
 
 	if params.RecordId != "" {
-		vars, ok := requestBody["variables"].(map[string]any)
+		vars, ok := requestBody[gqlVariablesKey].(map[string]any)
 		if ok {
 			vars["id"] = params.RecordId
 		}
@@ -338,8 +373,8 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 	}
 
 	requestBody := map[string]any{
-		"query": mutation,
-		"variables": map[string]string{
+		gqlQueryKey: mutation,
+		gqlVariablesKey: map[string]string{
 			"id": params.RecordId,
 		},
 	}

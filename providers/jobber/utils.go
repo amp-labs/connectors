@@ -9,8 +9,33 @@ import (
 )
 
 const (
-	apiVersion      = "2025-01-20"
+	apiVersion      = "2026-05-12"
 	defaultPageSize = 50
+
+	objectCapitalLoans        = "capitalLoans"
+	objectClients             = "clients"
+	objectExpenses            = "expenses"
+	objectInvoices            = "invoices"
+	objectJobs                = "jobs"
+	objectPayoutRecords       = "payoutRecords"
+	objectProducts            = "products"
+	objectProperties          = "properties"
+	objectQuotes              = "quotes"
+	objectRequests            = "requests"
+	objectTasks               = "tasks"
+	objectTimeSheetEntries    = "timeSheetEntries"
+	objectUsers               = "users"
+	objectVehicles            = "vehicles"
+	objectVisits              = "visits"
+	objectProductsAndServices = "productsAndServices"
+
+	// Timestamp fields used for incremental read.
+	fieldUpdatedAt = "updatedAt"
+	fieldCreatedAt = "createdAt"
+
+	// GraphQL request body keys.
+	gqlQueryKey     = "query"
+	gqlVariablesKey = "variables"
 )
 
 // Jobber API Documentation: https://developer.getjobber.com/docs
@@ -21,28 +46,28 @@ const (
 var objectNameMapping = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
 	"appAlerts":                 "AppAlert",
 	"apps":                      "Application",
-	"capitalLoans":              "JobberPaymentsCpitalLoan",
+	objectCapitalLoans:          "JobberPaymentsCpitalLoan",
 	"clientEmails":              "Email",
 	"clientPhones":              "ClientPhoneNumber",
-	"clients":                   "Client",
-	"Expenses":                  "Expense",
-	"invoices":                  "Invoice",
-	"jobs":                      "Job",
+	objectClients:               "Client",
+	objectExpenses:              "Expense",
+	objectInvoices:              "Invoice",
+	objectJobs:                  "Job",
 	"paymentsRecords":           "PaymentRecordInterface",
-	"payoutRecords":             "PayoutRecord",
-	"products":                  "ProductOrService",
-	"properties":                "Property",
-	"quotes":                    "Quote",
+	objectPayoutRecords:         "PayoutRecord",
+	objectProducts:              "ProductOrService",
+	objectProperties:            "Property",
+	objectQuotes:                "Quote",
 	"requestSettingsCollection": "RequestSettings",
-	"requests":                  "Request",
+	objectRequests:              "Request",
 	"scheduledItems":            "ScheduledItemInterface",
 	"similarClients":            "Client",
-	"tasks":                     "Task",
+	objectTasks:                 "Task",
 	"taxRates":                  "TaxRate",
-	"timeSheetEntries":          "TimeSheetEntry",
-	"users":                     "User",
-	"vehicles":                  "Vehicle",
-	"vists":                     "Visit",
+	objectTimeSheetEntries:      "TimeSheetEntry",
+	objectUsers:                 "User",
+	objectVehicles:              "Vehicle",
+	objectVisits:                "Visit",
 }, func(objectName string) string {
 	return objectName
 })
@@ -78,7 +103,7 @@ func makeNextRecordsURL(objName string) common.NextPageFunc {
 
 // Singularize all objectname expect productsAndServices object.
 func getObjectName(objName string) string {
-	if objName == "productsAndServices" {
+	if objName == objectProductsAndServices {
 		return objName
 	}
 
@@ -87,7 +112,7 @@ func getObjectName(objName string) string {
 
 // All write objects use the singular form of the node path, except for the productsAndServices object.
 var writeObjectNodePathMapping = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
-	"productsAndServices": "productOrService",
+	objectProductsAndServices: "productOrService",
 }, func(objectName string) string {
 	return naming.NewSingularString(objectName).String()
 })

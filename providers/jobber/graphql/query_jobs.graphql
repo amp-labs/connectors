@@ -2,7 +2,13 @@ query JobConnection{
   jobs(
      first: {{.First}}
      {{if .After}}
-     after: {{.After}}
+     after: "{{.After}}"
+     {{end}}
+     {{if or .FromDate .ToDate}}
+     sort: {
+       key: UPDATED_AT
+       direction: DESCENDING
+     }
      {{end}}
   ){
     nodes{

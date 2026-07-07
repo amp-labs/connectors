@@ -1,5 +1,22 @@
 query TimeSheetEntryconnection{
-  timeSheetEntries{
+  timeSheetEntries(
+     first: {{.First}}
+     {{if .After}}
+     after: "{{.After}}"
+     {{end}}
+     {{if or .FromDate .ToDate}}
+     filter: {
+       updatedAt: {
+         {{if .FromDate}}
+         after: "{{.FromDate}}"
+         {{end}}
+         {{if .ToDate}}
+         before: "{{.ToDate}}"
+         {{end}}
+       }
+     }
+     {{end}}
+  ){
     nodes{
       approved
       approvedBy{

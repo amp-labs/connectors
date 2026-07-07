@@ -2,7 +2,7 @@ query EmailConnection{
   clientEmails(
      first: {{.First}}
      {{if .After}}
-     after: {{.After}}
+     after: "{{.After}}"
      {{end}}
   ){
      nodes{
