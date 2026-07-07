@@ -1,0 +1,18 @@
+{
+  "objects": [
+    {
+      "type": "ITEM",
+      "id": "W62UWFY35CWMYGVWK6TWJDNI",
+      "updated_at": "2016-11-16T22:25:24.878Z",
+      "created_at": "2016-11-16T22:25:24.878Z",
+      "version": 1479335124878,
+      "is_deleted": false,
+      "present_at_all_locations": true,
+      "item_data": {
+        "name": "Coffee",
+        "description": "Hot coffee",
+        "category_id": "BJNQCF2FJ6S6UIDT65ABHLRX"
+      }
+    }
+  ]
+}

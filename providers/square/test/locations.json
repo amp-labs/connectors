@@ -1,0 +1,13 @@
+{
+  "locations": [
+    {
+      "id": "18YC4JDH91E1H",
+      "name": "Default Test Account",
+      "status": "ACTIVE",
+      "created_at": "2016-09-19T17:33:12Z",
+      "merchant_id": "3MYCJG5GVYQ8Q",
+      "country": "US",
+      "currency": "USD"
+    }
+  ]
+}

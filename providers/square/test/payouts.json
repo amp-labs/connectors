@@ -1,0 +1,18 @@
+{
+  "payouts": [
+    {
+      "id": "po_b831a266-5fdf-4ea3-b1a0-bfff5c6cb0c9",
+      "status": "PAID",
+      "location_id": "L88917AVBK2S5",
+      "created_at": "2022-03-30T17:00:00.000Z",
+      "updated_at": "2022-03-31T17:00:00.000Z",
+      "amount_money": {
+        "amount": 1000,
+        "currency": "USD"
+      },
+      "type": "BATCH",
+      "version": 1
+    }
+  ],
+  "cursor": "TbfwAxZHHFvtVbpDgWd9F"
+}

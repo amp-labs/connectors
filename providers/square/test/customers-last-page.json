@@ -1,0 +1,11 @@
+{
+  "customers": [
+    {
+      "id": "V9PD6FN1KMSQ8MEEYQHK0X1AC4",
+      "created_at": "2017-04-20T10:00:00.000Z",
+      "given_name": "Wilbur",
+      "family_name": "Wright",
+      "version": 2
+    }
+  ]
+}

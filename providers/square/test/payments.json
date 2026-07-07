@@ -1,0 +1,18 @@
+{
+  "payments": [
+    {
+      "id": "bP9mAxakQF1Fp7gM92R1yk1ScjMZY",
+      "created_at": "2021-10-13T19:34:33.524Z",
+      "updated_at": "2021-10-13T19:34:33.680Z",
+      "amount_money": {
+        "amount": 555,
+        "currency": "USD"
+      },
+      "status": "COMPLETED",
+      "source_type": "CARD",
+      "location_id": "L88917AVBK2S5",
+      "order_id": "nbcQ5Rc91xHM2tsNYbBn0lYT9NaZY"
+    }
+  ],
+  "cursor": "bk9iU0RGNGdGZ0VxZ1pQ"
+}

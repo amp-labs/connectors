@@ -1,0 +1,16 @@
+{
+  "cards": [
+    {
+      "id": "ccof:uIbfRdHyiP99HKi1aD9jE7tpAj6w",
+      "card_brand": "VISA",
+      "last_4": "1111",
+      "exp_month": 11,
+      "exp_year": 2022,
+      "cardholder_name": "Amelia Earhart",
+      "customer_id": "JDKYHBWT1D4F8MFH63DBMEN8Y4",
+      "enabled": true,
+      "version": 1
+    }
+  ],
+  "cursor": "JbFx7dkqZ8aBcDeF"
+}
