@@ -1,12 +1,9 @@
 package jobber
 
 import (
-	"bytes"
 	"context"
 	"errors"
-	"io"
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -188,35 +185,8 @@ func TestEmptyFactories(t *testing.T) {
 	assert.Assert(t, ok, "Result should be *SubscriptionResult")
 }
 
-// bodyContains matches requests whose body contains the given substring,
-// restoring the body afterwards so later checks and handlers can re-read it.
-func bodyContains(substring string) mockcond.Check {
-	return func(w http.ResponseWriter, r *http.Request) bool {
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			return false
-		}
-
-		_ = r.Body.Close()
-		r.Body = io.NopCloser(bytes.NewBuffer(body))
-
-		return strings.Contains(string(body), substring)
-	}
-}
-
-func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(common.ConnectorParams{
-		Module:              common.ModuleRoot,
-		AuthenticatedClient: &http.Client{},
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	connector.SetUnitTestBaseURL(serverURL)
-
-	return connector, nil
-}
+// bodyContains and constructTestConnector are shared test helpers defined in
+// read_test.go.
 
 func TestSubscribe_CreatesEndpoint(t *testing.T) {
 	t.Parallel()

@@ -65,23 +65,8 @@ type SubscriptionResult struct {
 	Endpoints map[common.ObjectName]map[string]WebhookEndpoint `json:"endpoints"`
 }
 
-// Subscribable object names.
-const (
-	objectClients          = "clients"
-	objectProperties       = "properties"
-	objectRequests         = "requests"
-	objectQuotes           = "quotes"
-	objectJobs             = "jobs"
-	objectVisits           = "visits"
-	objectInvoices         = "invoices"
-	objectExpenses         = "expenses"
-	objectUsers            = "users"
-	objectTimeSheetEntries = "timeSheetEntries"
-	objectPayoutRecords    = "payoutRecords"
-	objectProducts         = "products"
-)
-
 // objectTopicRoot maps connector object names to Jobber topic prefixes.
+// The object name constants live in utils.go, shared with read and metadata.
 //
 //nolint:gochecknoglobals
 var objectTopicRoot = map[common.ObjectName]string{
@@ -560,7 +545,19 @@ func extractSubscriptionResult(
 }
 
 // resolveSubscriptionTopics translates the requested object events into
-// Jobber webhook topics, keyed by topic with the owning object as value.
+// Jobber webhook topics. The result maps each topic to the object it belongs
+// to, because Jobber creates one webhook endpoint per topic and the object is
+// needed to group endpoints back into the framework's per-object result.
+//
+// Example: clients with create+update events and quotes with a create event
+// plus the QUOTE_SENT pass-through resolve to:
+//
+//	{
+//	  "CLIENT_CREATE": "clients",
+//	  "CLIENT_UPDATE": "clients",
+//	  "QUOTE_CREATE":  "quotes",
+//	  "QUOTE_SENT":    "quotes",
+//	}
 func resolveSubscriptionTopics(
 	events map[common.ObjectName]common.ObjectEvents,
 ) (map[string]common.ObjectName, error) {

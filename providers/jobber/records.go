@@ -25,24 +25,21 @@ var (
 	errRecordFetchFailed   = errors.New("jobber: record fetch failed")
 )
 
-// batchReadableObjects lists objects with a singular GraphQL getter,
-// which is the same set of objects that support webhook subscriptions.
+// batchReadableObjects lists objects with a singular GraphQL getter, used to
+// hydrate webhook events. It is derived from objectTopicRoot so that every
+// subscribable object is hydratable by construction; the unit tests assert
+// that each entry also has an embedded getter query file.
 //
 //nolint:gochecknoglobals
-var batchReadableObjects = datautils.NewStringSet(
-	objectClients,
-	objectProperties,
-	objectRequests,
-	objectQuotes,
-	objectJobs,
-	objectVisits,
-	objectInvoices,
-	objectExpenses,
-	objectUsers,
-	objectTimeSheetEntries,
-	objectPayoutRecords,
-	objectProducts,
-)
+var batchReadableObjects = func() datautils.StringSet {
+	set := datautils.NewStringSet()
+
+	for obj := range objectTopicRoot {
+		set.AddOne(obj.String())
+	}
+
+	return set
+}()
 
 //nolint:revive
 func (c *Connector) GetRecordsByIds(
