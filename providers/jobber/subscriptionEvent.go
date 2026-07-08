@@ -180,10 +180,10 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 }
 
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
-	// Apps created before 2023-12-08 receive the misspelled "occuredAt" key.
+	// Apps created before 2023-12-08 receive the misspelled "occurredAt" key.
 	timestamp, err := evt.eventField("occurredAt")
 	if err != nil {
-		timestamp, err = evt.eventField("occuredAt")
+		timestamp, err = evt.eventField("occurredAt")
 		if err != nil {
 			return 0, err
 		}
