@@ -1,6 +1,7 @@
 package webhook
 
 import (
+	"encoding/json"
 	"fmt"
 	"maps"
 
@@ -15,9 +16,10 @@ type CollapsedSubscriptionEvent map[string]any
 type Event map[string]any
 
 var (
-	_ common.SubscriptionEvent          = Event{}
-	_ common.SubscriptionUpdateEvent    = Event{}
-	_ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
+	_ common.SubscriptionEvent           = Event{}
+	_ common.SubscriptionUpdateEvent     = Event{}
+	_ common.SubscriptionEventWithRecord = Event{}
+	_ common.CollapsedSubscriptionEvent  = CollapsedSubscriptionEvent{}
 )
 
 func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
@@ -96,6 +98,23 @@ func (e Event) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
 
 func (e Event) UpdatedFields() ([]string, error) {
 	return nil, nil
+}
+
+// Record returns the full record carried inline in the webhook payload.
+// ConnectWise embeds the changed record as an escaped JSON string under the
+// "Entity" field, so we unmarshal it into the same shape a read returns.
+func (e Event) Record() (map[string]any, error) {
+	entity, ok := e["Entity"].(string)
+	if !ok || entity == "" {
+		return nil, fmt.Errorf("%w: 'Entity'", common.ErrMissingField)
+	}
+
+	var record map[string]any
+	if err := json.Unmarshal([]byte(entity), &record); err != nil {
+		return nil, fmt.Errorf("parsing connectwise webhook 'Entity': %w", err)
+	}
+
+	return record, nil
 }
 
 // ObjectNameToObjectType maps ConnectWise connector object names
