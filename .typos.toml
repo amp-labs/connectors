@@ -21,7 +21,9 @@ extend-exclude = [
     # Test files (contain mock data with intentional strings)
     "*_test.go",
     # Files with external API field names (non-standard spellings)
-    "providers/salesforce/metadata.go"
+    "providers/salesforce/metadata.go",
+    # Files that are hard coded exceptions
+    "providers/jobber/subscriptionEvent.go", # Field "occuredAt" with 1 "r" is a valid key used by the provider.
 ]
 
 ignore-hidden = true
