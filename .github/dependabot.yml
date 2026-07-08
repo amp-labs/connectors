@@ -4,3 +4,7 @@ updates:
     directory: /
     schedule:
       interval: daily
+    # Cooldown -- minimum age requirement for a release before Dependabot opens a PR,
+    # which helps avoid taking a version that was just published and may still be unstable or risky
+    cooldown:
+      default-days: 7
