@@ -3,9 +3,11 @@ package calendar
 import (
 	"context"
 	"errors"
+	"net/http"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -201,7 +203,20 @@ func (a *Adapter) fetchSeriesMasters(
 		jobs[idx] = func(ctx context.Context) error {
 			row, err := a.fetchEvent(ctx, calendarID, masterID, params.Fields)
 			if err != nil {
-				if errors.Is(err, common.ErrNotFound) {
+				// A series master can be legitimately missing on the calendar we read
+				// the instance from: e.g. a shared recurring meeting whose master lives
+				// on the organizer's calendar (an attendee's copy 404s on that id), or a
+				// series whose anchor occurrence has been cancelled. Google returns 404
+				// for such a get. Skip that one master instead of failing the whole read
+				// — its instances are already included (and present as cancelled rows
+				// when showDeleted is set).
+				if isNotFound(err) {
+					logging.Logger(ctx).Warn(
+						"google calendar: recurring series master not found, skipping",
+						"calendarId", calendarID,
+						"masterId", masterID,
+					)
+
 					return nil
 				}
 
@@ -227,6 +242,25 @@ func (a *Adapter) fetchSeriesMasters(
 	}
 
 	return masters, nil
+}
+
+// isNotFound reports whether err represents an HTTP 404 from the Calendar API.
+//
+// fetchEvent calls the base JSON HTTP client directly (bypassing the reader), and that
+// client's default error handler maps 404 to a retryable error rather than
+// common.ErrNotFound. So, in addition to the sentinel, we inspect the HTTP status on the
+// wrapped *common.HTTPError — otherwise a genuinely-missing master would be treated as a
+// transient failure and retried forever, wedging the whole read.
+func isNotFound(err error) bool {
+	if errors.Is(err, common.ErrNotFound) {
+		return true
+	}
+
+	if httpErr, ok := errors.AsType[*common.HTTPError](err); ok {
+		return httpErr.Status == http.StatusNotFound
+	}
+
+	return false
 }
 
 // distinctRecurringEventIDs returns the unique, non-empty recurringEventId values among the
