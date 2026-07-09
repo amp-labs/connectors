@@ -28,6 +28,9 @@ const (
 	// in ReadResult.Data[*].Fields.
 	// This field is populated when ReadParamsOpts.ReadForAllConnectedAccounts is set to true.
 	fieldConnectedAccountID = "AMPERSAND-connectedAccountId"
+
+	// DefaultPageSize is number of elements per page.
+	DefaultPageSize = 100
 )
 
 // ReadParamsOpts defines optional parameters for the Read operation.
@@ -234,12 +237,12 @@ func (c *Connector) readRecords(ctx context.Context,
 	url *urlbuilder.URL,
 	headers ...common.Header,
 ) (*common.ReadResult, error) {
-	res, err := c.Client.Get(ctx, url.String(), headers...)
+	res, err := c.JSONHTTPClient().Get(ctx, url.String(), headers...)
 	if err != nil {
 		return nil, err
 	}
 
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module.ID, objectName)
+	responseFieldName := metadata.Schemas.LookupArrayFieldName(c.Module(), objectName)
 
 	return common.ParseResult(res,
 		makeGetRecords(responseFieldName),
@@ -282,7 +285,7 @@ func (c *Connector) listAllAccounts(ctx context.Context) ([]string, error) {
 	accountIDs := make([]string, 0)
 
 	for {
-		res, err := c.Client.Get(ctx, url.String())
+		res, err := c.JSONHTTPClient().Get(ctx, url.String())
 		if err != nil {
 			return nil, err
 		}

@@ -665,9 +665,7 @@ func newAsanaConnector(
 func newStripeConnector(
 	params common.ConnectorParams,
 ) (*stripe.Connector, error) {
-	return stripe.NewConnector(
-		stripe.WithAuthenticatedClient(params.AuthenticatedClient),
-	)
+	return stripe.NewConnector(params)
 }
 
 func newZoomConnector(
