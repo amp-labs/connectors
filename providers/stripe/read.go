@@ -13,7 +13,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/internal/parallelfetch"
-	"github.com/amp-labs/connectors/providers/stripe/metadata"
+	"github.com/amp-labs/connectors/providers/stripe/internal/metadata"
 	"github.com/spyzhov/ajson"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/stripe/metadata"
+	"github.com/amp-labs/connectors/providers/stripe/internal/metadata"
 )
 
 func (c *Connector) ListObjectMetadata(
