@@ -46,14 +46,6 @@ func init() {
 		},
 		PostAuthInfoNeeded: true,
 		Metadata: &ProviderMetadata{
-			Input: []MetadataItemInput{
-				{
-					DisplayName: "Signing Secret",
-					DocsURL:     "https://docs.slack.dev/authentication/verifying-requests-from-slack/#validating-a-request",
-					Name:        "signingSecret",
-					Prompt:      "Grab your Slack 'Signing Secret', available in the app admin panel under Basic Info.",
-				},
-			},
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "teamId",
