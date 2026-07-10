@@ -652,7 +652,7 @@
           }
         },
         "ips": {
-          "displayName": "Ips",
+          "displayName": "IPs",
           "path": "3/ips",
           "responseKey": "details",
           "fields": {

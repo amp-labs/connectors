@@ -74,6 +74,8 @@ var displayNameOverrides = map[string]string{
 	"domains/dynamic_pools/assignable": "Assignable Domains",
 	// tag: Dynamic IP Pools
 	"dynamic_pools": "Dynamic IP Pools",
+	// tag: IPs
+	"ips": "IPs",
 	// summary: List account IPs - detailed view
 	"ips/details": "Account IPs - Detailed View",
 	// summary: List all domains assigned to dynamic IP pools
