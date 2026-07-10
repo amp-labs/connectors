@@ -4,7 +4,7 @@ go 1.26.4
 
 require (
 	cloud.google.com/go/bigquery v1.77.0
-	github.com/PuerkitoBio/goquery v1.11.0
+	github.com/PuerkitoBio/goquery v1.12.0
 	github.com/amp-labs/amp-common v0.0.0-20260707211901-527fea45abf2
 	github.com/antchfx/xmlquery v1.5.0
 	github.com/apache/arrow/go/v15 v15.0.2
