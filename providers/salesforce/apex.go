@@ -475,28 +475,73 @@ func isVariableNotExistError(result *DeployResult) bool {
 // against that class would fail (Salesforce processes destructiveChanges before
 // running tests). The rollback therefore uses RunLocalTests, which Salesforce also
 // permits in production and which doesn't require any runTests entry.
+//
+// Fallback: RunLocalTests runs the org's local Apex tests as part of the deploy,
+// and Salesforce rolls the whole deploy back if that test run fails — including
+// when the org's overall coverage dips below 75% or an unrelated pre-existing test
+// fails. Neither is caused by our pure deletion. When the destructive components
+// themselves reported no failure (len(ComponentFailures) == 0) but the deploy was
+// rolled back by the test run, we retry once with NoTestRun so the deletion can
+// proceed. A genuine component-level problem (which appears in ComponentFailures)
+// is NOT retried. NoTestRun is rejected by Salesforce for production orgs, so the
+// fallback only helps sandbox/dev orgs — exactly where the coverage rollback bites.
 func (c *Connector) rollbackApexTrigger(ctx context.Context, triggerName string) error {
 	zipData, err := ConstructDestructiveApexTriggerZip(triggerName)
 	if err != nil {
 		return fmt.Errorf("failed to construct destructive apex trigger zip for %s: %w", triggerName, err)
 	}
 
-	deployID, err := c.DeployMetadataZipWithTests(ctx, zipData, metadata.TestLevelRunLocalTests, nil)
+	deployResult, err := c.deployDestructiveApex(ctx, zipData, metadata.TestLevelRunLocalTests)
 	if err != nil {
 		return fmt.Errorf("failed to deploy destructive apex trigger for %s: %w", triggerName, err)
 	}
 
-	deployResult, err := c.pollDeployStatus(ctx, deployID)
-	if err != nil {
-		return fmt.Errorf("failed to poll deploy status for destructive apex trigger %s: %w", triggerName, err)
+	if deployResult.Success {
+		return nil
 	}
 
-	if !deployResult.Success {
+	// A component failure means the destructive change itself was rejected — do not
+	// paper over it by skipping tests.
+	if len(deployResult.ComponentFailures) > 0 {
 		return fmt.Errorf("%w for trigger %s: %s",
 			errDestructiveDeployFailed, triggerName, formatDeployFailureDetails(deployResult))
 	}
 
+	// No component failures: the deploy was rolled back by the test run (coverage
+	// or an unrelated failing test), not by our deletion. Retry without tests.
+	slog.WarnContext(ctx, "destructive apex deploy rolled back by test run; retrying with NoTestRun",
+		"trigger", triggerName, "firstAttempt", formatDeployFailureDetails(deployResult))
+
+	deployResult, err = c.deployDestructiveApex(ctx, zipData, metadata.TestLevelNoTestRun)
+	if err != nil {
+		return fmt.Errorf("failed to deploy destructive apex trigger for %s (NoTestRun fallback): %w",
+			triggerName, err)
+	}
+
+	if !deployResult.Success {
+		return fmt.Errorf("%w for trigger %s (NoTestRun fallback): %s",
+			errDestructiveDeployFailed, triggerName, formatDeployFailureDetails(deployResult))
+	}
+
 	return nil
+}
+
+// deployDestructiveApex deploys the given destructive-changes zip at the supplied
+// test level and polls to completion, returning the final deploy result.
+func (c *Connector) deployDestructiveApex(
+	ctx context.Context, zipData []byte, testLevel metadata.TestLevel,
+) (*DeployResult, error) {
+	deployID, err := c.DeployMetadataZipWithTests(ctx, zipData, testLevel, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	deployResult, err := c.pollDeployStatus(ctx, deployID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to poll deploy status for deployId %s: %w", deployID, err)
+	}
+
+	return deployResult, nil
 }
 
 func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*DeployResult, error) {
