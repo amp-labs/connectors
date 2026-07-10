@@ -90,7 +90,7 @@ func (e SubscriptionEvent) RecordId() (string, error) {
 }
 
 // EventTimeStampNano returns the last-modification time in nanoseconds, or the current time
-// if Updated is missing or unparseable.
+// if Updated is missing or unparsable.
 func (e SubscriptionEvent) EventTimeStampNano() (int64, error) {
 	updated, err := time.Parse(time.RFC3339, e.Updated)
 	if err != nil {
