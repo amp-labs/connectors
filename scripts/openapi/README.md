@@ -7,8 +7,33 @@ These schemas are later will be served via ListObjectMetadata.
 
 Scripts will be located under `scripts/openapi/<PROVIDER_NAME>/metadata/main.go`.
 
-OpenAPI files that it loads can be found under `providers/<PROVIDER_NAME>/openapi/<FILE_NAME>.yaml|json`.
-The output will be saved under `providers/<PROVIDER_NAME>/metadata/schemas.json`.
+OpenAPI files that it loads can be found under `scripts/openapi/<PROVIDER_NAME>/internal/files/<FILE_NAME>.yaml|json`.
+The output will be saved under `providers/<PROVIDER_NAME>/internal/metadata/schemas.json`.
+
+# Adding Scripts
+
+Use the `api3` or `api2` packages to extract object metadata from REST API resources defined in the OpenAPI specification.
+
+Before adding a new OpenAPI file, register it in `.gitattributes`.
+This repository uses **Git LFS (Large File Storage)** to store OpenAPI specifications because they can be very large.
+The `.gitattributes` file tells Git which files should be tracked by Git LFS instead of being stored 
+directly in the repository history. If a large OpenAPI file is committed without first being added to `.gitattributes`,
+it will be committed as a regular Git object, unnecessarily increasing the repository size.
+
+After updating `.gitattributes`, add the OpenAPI file to Git normally. Git LFS will automatically replace the file
+in the Git history with a small pointer while storing the actual contents in Git LFS.
+
+If the file has already been committed before being tracked by Git LFS, you need to migrate it. Run:
+
+```sh
+make lfs-migrate
+```
+
+To see which files are currently tracked by Git LFS, run:
+
+```sh
+make lfs-pointers
+```
 
 # Running instructions
 
