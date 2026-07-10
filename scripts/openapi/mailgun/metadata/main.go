@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/mailgun/metadata"
-	"github.com/amp-labs/connectors/providers/mailgun/metadata/openapi"
+	"github.com/amp-labs/connectors/providers/mailgun/openapi"
 	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
@@ -60,7 +60,7 @@ var objectEndpoints = map[string]string{
 	"/v1/bounce-classification/domains":     "bounce-classification/domains",
 }
 
-// Display names taken from OpenAPI tags/summaries in metadata/openapi/schema.yaml.
+// Display names taken from OpenAPI tags/summaries in openapi/schema.yaml.
 // Prefer the operation tag when it names the resource; otherwise use the summary
 // with leading list/get verbs removed.
 //
