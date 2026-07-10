@@ -124,3 +124,18 @@ update-creds:
 .PHONY: test-proxy
 test-proxy:
 	go run scripts/proxy/proxy.go
+
+# Lists all files currently stored as Git LFS objects.
+# Files tracked by LFS according to ".gitattributes" should appear in this list.
+# Adding file patterns to ".gitattributes" does not retroactively migrate existing files.
+.PHONY: lfs-pointers
+lfs-pointers:
+	git lfs ls-files
+
+# Rewrites Git history to migrate files tracked by ".gitattributes" into Git LFS.
+# Use this after adding or updating Git LFS patterns in ".gitattributes" to
+# migrate matching files that already exist in the repository history.
+# This rewrites commits, so a force-push may be required.
+.PHONY: lfs-migrate
+lfs-migrate:
+	git lfs migrate import --fixup
