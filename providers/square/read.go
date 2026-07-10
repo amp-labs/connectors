@@ -60,11 +60,20 @@ func (c *Connector) parseReadResponse(
 
 	return common.ParseResult(
 		resp,
-		common.MakeRecordsFunc(cfg.responseKey),
+		makeRecordsFunc(cfg.responseKey),
 		makeNextRecordsURL(),
 		readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id")),
 		params.Fields,
 	)
+}
+
+// makeRecordsFunc extracts the records array under responseKey. Square omits the
+// key entirely on an empty last page (the body is just `{}`), so we look it up
+// optionally and treat a missing key as zero records rather than an error.
+func makeRecordsFunc(responseKey string) common.NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
+		return jsonquery.New(node).ArrayOptional(responseKey)
+	}
 }
 
 // Square paginates list endpoints with a top-level `cursor` field that is

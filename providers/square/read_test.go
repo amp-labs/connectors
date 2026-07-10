@@ -196,6 +196,26 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Read payments last page omits the records key entirely",
+			Input: common.ReadParams{
+				ObjectName: "payments",
+				Fields:     connectors.Fields("id", "status"),
+				NextPage:   "bk9iU0RGNGdGZ0VxZ1pQ",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v2/payments"),
+				Then:  mockserver.Response(http.StatusOK, []byte(`{}`)),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     0,
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name: "Read customers ignores Since because the list endpoint has no time filter",
 			Input: common.ReadParams{
 				ObjectName: "customers",
