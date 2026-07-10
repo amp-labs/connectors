@@ -14733,7 +14733,7 @@ paths:
               examples:
                 Example:
                   value:
-                    http_signing_key: key-55c5c5c5c55f55ca5cd5f55d5c555c55
+                    http_signing_key: key-REDACTED-PLACEHOLDER
         '400':
           description: Error response
           content:
@@ -14765,7 +14765,7 @@ paths:
                 Example:
                   value:
                     message: regenerated HTTP signing key for account
-                    http_signing_key: key-55c5c5c5c55f55ca5cd5f55d5c555c55
+                    http_signing_key: key-REDACTED-PLACEHOLDER
       security:
         - basicAuth: []
   /v5/sandbox/auth_recipients:
@@ -15772,7 +15772,7 @@ paths:
                       user_name: null
                       domain_name: example.com
                       is_disabled: false
-                      secret: api-key-be-careful
+                      secret: REDACTED-PLACEHOLDER
         '403':
           description: A 403 response
           content:
@@ -15843,7 +15843,7 @@ paths:
               examples:
                 Example:
                   value:
-                    key: pubkey-626b31f321228ddddddddddcc5a7a1c9
+                    key: pubkey-REDACTED-PLACEHOLDER
                     message: The public API key has been successfully regenerated.
         '400':
           description: A 400 response
