@@ -39,12 +39,17 @@ func main() {
 	if err := testReadWorkspaceUsers(ctx, conn); err != nil {
 		slog.Info(err.Error())
 	}
+
+	if err := testReadMeetings(ctx, conn); err != nil {
+		slog.Info(err.Error())
+	}
 }
 
 func testReadWorkspaces(ctx context.Context, conn *cp.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "workspace",
-		Fields:     connectors.Fields("id", "name"),
+		Fields:     connectors.Fields("id"),
+		Since:      time.Now().Add(-100 * time.Hour),
 		// NextPage:   "https://fire.chilipiper.com/api/fire-edge/v1/org/workspace?page=1\u0026pageSize=2",
 	}
 
@@ -90,10 +95,34 @@ func testReadTeams(ctx context.Context, conn *cp.Connector) error {
 
 func testReadWorkspaceUsers(ctx context.Context, conn *cp.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "workspace_users",
-		Fields:     connectors.Fields("name", "id"),
+		ObjectName: "distribution",
+		Fields:     connectors.Fields("published", "id"),
 		Since:      time.Now().Add(-1000 * time.Hour),
-		// NextPage:   "https://fire.chilipiper.com/api/fire-edge/v1/org/workspace/users?page=1\u0026pageSize=2",
+		// NextPage:   "https://fire.chilipiper.com/api/fire-edge/v1/org/distribution?page=1\u0026pageSize=2",
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadMeetings(ctx context.Context, conn *cp.Connector) error {
+	params := common.ReadParams{
+		ObjectName: "meetings/meetings",
+		Fields:     connectors.Fields("assignment", "attendees", "id"),
+		Since:      time.Now(),
 	}
 
 	res, err := conn.Read(ctx, params)
