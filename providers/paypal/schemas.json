@@ -1,0 +1,617 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "disputes": {
+          "displayName": "Dispute Search Response",
+          "path": "/v1/customer/disputes",
+          "responseKey": "items",
+          "fields": {
+            "buyer_response_due_date": {
+              "displayName": "buyer_response_due_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "create_time": {
+              "displayName": "create_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dispute_amount": {
+              "displayName": "dispute_amount",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "dispute_asset": {
+              "displayName": "dispute_asset",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "dispute_channel": {
+              "displayName": "dispute_channel",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "INTERNAL",
+                  "displayValue": "INTERNAL"
+                },
+                {
+                  "value": "EXTERNAL",
+                  "displayValue": "EXTERNAL"
+                },
+                {
+                  "value": "ALERT",
+                  "displayValue": "ALERT"
+                }
+              ]
+            },
+            "dispute_id": {
+              "displayName": "dispute_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dispute_life_cycle_stage": {
+              "displayName": "dispute_life_cycle_stage",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "INQUIRY",
+                  "displayValue": "INQUIRY"
+                },
+                {
+                  "value": "CHARGEBACK",
+                  "displayValue": "CHARGEBACK"
+                },
+                {
+                  "value": "PRE_ARBITRATION",
+                  "displayValue": "PRE_ARBITRATION"
+                },
+                {
+                  "value": "ARBITRATION",
+                  "displayValue": "ARBITRATION"
+                }
+              ]
+            },
+            "dispute_state": {
+              "displayName": "dispute_state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "OPEN_INQUIRIES",
+                  "displayValue": "OPEN_INQUIRIES"
+                },
+                {
+                  "value": "REQUIRED_ACTION",
+                  "displayValue": "REQUIRED_ACTION"
+                },
+                {
+                  "value": "REQUIRED_OTHER_PARTY_ACTION",
+                  "displayValue": "REQUIRED_OTHER_PARTY_ACTION"
+                },
+                {
+                  "value": "UNDER_PAYPAL_REVIEW",
+                  "displayValue": "UNDER_PAYPAL_REVIEW"
+                },
+                {
+                  "value": "APPEALABLE",
+                  "displayValue": "APPEALABLE"
+                },
+                {
+                  "value": "RESOLVED",
+                  "displayValue": "RESOLVED"
+                }
+              ]
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "reason": {
+              "displayName": "reason",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+                  "displayValue": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED"
+                },
+                {
+                  "value": "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED",
+                  "displayValue": "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED"
+                },
+                {
+                  "value": "UNAUTHORISED",
+                  "displayValue": "UNAUTHORISED"
+                },
+                {
+                  "value": "CREDIT_NOT_PROCESSED",
+                  "displayValue": "CREDIT_NOT_PROCESSED"
+                },
+                {
+                  "value": "DUPLICATE_TRANSACTION",
+                  "displayValue": "DUPLICATE_TRANSACTION"
+                },
+                {
+                  "value": "INCORRECT_AMOUNT",
+                  "displayValue": "INCORRECT_AMOUNT"
+                },
+                {
+                  "value": "PAYMENT_BY_OTHER_MEANS",
+                  "displayValue": "PAYMENT_BY_OTHER_MEANS"
+                },
+                {
+                  "value": "CANCELED_RECURRING_BILLING",
+                  "displayValue": "CANCELED_RECURRING_BILLING"
+                },
+                {
+                  "value": "PROBLEM_WITH_REMITTANCE",
+                  "displayValue": "PROBLEM_WITH_REMITTANCE"
+                },
+                {
+                  "value": "OTHER",
+                  "displayValue": "OTHER"
+                }
+              ]
+            },
+            "seller_response_due_date": {
+              "displayName": "seller_response_due_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "OPEN",
+                  "displayValue": "OPEN"
+                },
+                {
+                  "value": "WAITING_FOR_BUYER_RESPONSE",
+                  "displayValue": "WAITING_FOR_BUYER_RESPONSE"
+                },
+                {
+                  "value": "WAITING_FOR_SELLER_RESPONSE",
+                  "displayValue": "WAITING_FOR_SELLER_RESPONSE"
+                },
+                {
+                  "value": "UNDER_REVIEW",
+                  "displayValue": "UNDER_REVIEW"
+                },
+                {
+                  "value": "RESOLVED",
+                  "displayValue": "RESOLVED"
+                },
+                {
+                  "value": "OTHER",
+                  "displayValue": "OTHER"
+                }
+              ]
+            },
+            "update_time": {
+              "displayName": "update_time",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "web-profiles": {
+          "displayName": "Web Profile List",
+          "path": "/v1/payment-experience/web-profiles",
+          "responseKey": "",
+          "fields": {
+            "flow_config": {
+              "displayName": "flow_config",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "input_fields": {
+              "displayName": "input_fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "presentation": {
+              "displayName": "presentation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "temporary": {
+              "displayName": "temporary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "invoices": {
+          "displayName": "Invoices",
+          "path": "/v2/invoicing/invoices",
+          "responseKey": "items",
+          "fields": {
+            "additional_recipients": {
+              "displayName": "additional_recipients",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "amount": {
+              "displayName": "amount",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "configuration": {
+              "displayName": "configuration",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "detail": {
+              "displayName": "detail",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invoicer": {
+              "displayName": "invoicer",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "parent_id": {
+              "displayName": "parent_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary_recipients": {
+              "displayName": "primary_recipients",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "templates": {
+          "displayName": "Templates",
+          "path": "/v2/invoicing/templates",
+          "responseKey": "templates",
+          "fields": {
+            "default_template": {
+              "displayName": "default_template",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "plans": {
+          "displayName": "Plan Collection",
+          "path": "/v1/billing/plans",
+          "responseKey": "plans",
+          "fields": {
+            "billing_cycles": {
+              "displayName": "billing_cycles",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "create_time": {
+              "displayName": "create_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payment_preferences": {
+              "displayName": "payment_preferences",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "product_id": {
+              "displayName": "product_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "quantity_supported": {
+              "displayName": "quantity_supported",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "CREATED",
+                  "displayValue": "CREATED"
+                },
+                {
+                  "value": "INACTIVE",
+                  "displayValue": "INACTIVE"
+                },
+                {
+                  "value": "ACTIVE",
+                  "displayValue": "ACTIVE"
+                }
+              ]
+            },
+            "taxes": {
+              "displayName": "taxes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "update_time": {
+              "displayName": "update_time",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "products": {
+          "displayName": "Product Collection",
+          "path": "/v1/catalogs/products",
+          "responseKey": "products",
+          "fields": {
+            "create_time": {
+              "displayName": "create_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "balances": {
+          "displayName": "Balances Response",
+          "path": "/v1/reporting/balances",
+          "responseKey": "balances",
+          "fields": {
+            "available_balance": {
+              "displayName": "available_balance",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "currency": {
+              "displayName": "currency",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primary": {
+              "displayName": "primary",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "total_balance": {
+              "displayName": "total_balance",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "withheld_balance": {
+              "displayName": "withheld_balance",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "transactions": {
+          "displayName": "Search Response",
+          "path": "/v1/reporting/transactions",
+          "responseKey": "transaction_details",
+          "fields": {
+            "auction_info": {
+              "displayName": "auction_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "cart_info": {
+              "displayName": "cart_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "incentive_info": {
+              "displayName": "incentive_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "payer_info": {
+              "displayName": "payer_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "shipping_info": {
+              "displayName": "shipping_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "store_info": {
+              "displayName": "store_info",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "transaction_info": {
+              "displayName": "transaction_info",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "webhooks": {
+          "displayName": "Webhook List",
+          "path": "/v1/notifications/webhooks",
+          "responseKey": "webhooks",
+          "fields": {
+            "event_types": {
+              "displayName": "event_types",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "webhooks-event-types": {
+          "displayName": "Event Type List",
+          "path": "/v1/notifications/webhooks-event-types",
+          "responseKey": "event_types",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resource_versions": {
+              "displayName": "resource_versions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "webhooks-events": {
+          "displayName": "Event List",
+          "path": "/v1/notifications/webhooks-events",
+          "responseKey": "events",
+          "fields": {
+            "create_time": {
+              "displayName": "create_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "event_type": {
+              "displayName": "event_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "event_version": {
+              "displayName": "event_version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "resource": {
+              "displayName": "resource",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "resource_type": {
+              "displayName": "resource_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resource_version": {
+              "displayName": "resource_version",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "summary": {
+              "displayName": "summary",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
