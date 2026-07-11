@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
@@ -54,6 +55,40 @@ func TestEvent(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			tt.Run(t)
 		})
+	}
+}
+
+func TestEventRecord(t *testing.T) {
+	t.Parallel()
+
+	collapsed := testutils.DataFromFileAs[CollapsedSubscriptionEvent](t, "contact-update.json")
+
+	events, err := collapsed.SubscriptionEventList()
+	if err != nil {
+		t.Fatalf("SubscriptionEventList: %v", err)
+	}
+
+	withRecord, ok := events[0].(common.SubscriptionEventWithRecord)
+	if !ok {
+		t.Fatal("connectwise Event does not implement SubscriptionEventWithRecord")
+	}
+
+	record, err := withRecord.Record()
+	if err != nil {
+		t.Fatalf("Record: %v", err)
+	}
+
+	result := testutils.NewCompareResult()
+	result.Assert("id", record["id"], float64(57961))
+	result.Assert("firstName", record["firstName"], "Xzavier Sawayn")
+	result.Validate(t, "inline Entity should unmarshal into the record")
+}
+
+func TestEventRecordMissingEntity(t *testing.T) {
+	t.Parallel()
+
+	if _, err := (Event{"Action": "updated", "ID": float64(1)}).Record(); err == nil {
+		t.Fatal("expected error when 'Entity' is absent")
 	}
 }
 
