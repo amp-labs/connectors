@@ -1,0 +1,41 @@
+{
+  "resultSetSize": "1",
+  "startPosition": "0",
+  "endPosition": "0",
+  "totalSetSize": "8",
+  "nextUri": "/accounts/devTest-123/templates?from_date=2000-01-01T08%3a00%3a00.0000000Z&to_date=2026-03-06T03%3a28%3a16.5352444Z&user_filter=all&count=1&start_position=1",
+  "envelopeTemplates": [
+    {
+      "templateId": "c48813d7-d4b9-4b70-9509-5a51ee88a2a3",
+      "uri": "/templates/c48813d7-d4b9-4b70-9509-5a51ee88a2a3",
+      "name": "Test Template 1",
+      "shared": "false",
+      "passwordProtected": "false",
+      "description": "Test Template Description 1",
+      "created": "2026-03-04T06:38:51.3270000Z",
+      "lastModified": "2026-03-04T06:38:51.6730000Z",
+      "lastUsed": "2026-03-04T06:38:51.4630000Z",
+      "owner": {
+        "userName": "Dev Test 1",
+        "userId": "devTest-123",
+        "email": "dev.test@test.com"
+      },
+      "pageCount": "1",
+      "folderId": "32ead5aa-cd5e-43f1-b32d-9f4e2a67f637",
+      "folderName": "Templates",
+      "folderIds": ["32ead5aa-cd5e-43f1-b32d-9f4e2a67f637"],
+      "autoMatch": "true",
+      "autoMatchSpecifiedByUser": "false",
+      "emailSubject": "Test Template Email Subject",
+      "signingLocation": "Online",
+      "authoritativeCopy": "false",
+      "enforceSignerVisibility": "false",
+      "enableWetSign": "true",
+      "allowMarkup": "false",
+      "allowReassign": "true",
+      "disableResponsiveDocument": "true",
+      "anySigner": null,
+      "envelopeLocation": null
+    }
+  ]
+}

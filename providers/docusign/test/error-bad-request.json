@@ -1,0 +1,4 @@
+{
+  "errorCode": "INVALID_REQUEST_PARAMETER",
+  "message": "The request contained at least one invalid parameter. Query parameter 'from_date' must be set to a valid DateTime or 'envelope_ids', 'folder_ids' or 'transaction_ids' must be specified."
+}
