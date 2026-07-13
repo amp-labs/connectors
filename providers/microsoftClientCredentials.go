@@ -1,56 +1,119 @@
 package providers
 
-import "net/http"
+import (
+	"context"
+	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
+	"strings"
+)
 
-// MicrosoftClientCredentials is a twin of the Microsoft provider that
-// authenticates using the OAuth2 client credentials grant instead of the
-// per-user Authorization Code grant. It targets the same Microsoft Graph
-// APIs, so the connector implementation in providers/microsoft is reused
-// under a different provider name.
-//
-// Use cases include admin-consented bulk access (accessing many users'
-// mailboxes/calendars without individual OAuth flows), background services,
-// and any scenario where the app acts as itself rather than on behalf of a
-// signed-in user.
+// MicrosoftClientCredentials authenticates as the application (OAuth2 client
+// credentials) against Microsoft Graph, reusing the providers/microsoft
+// connector. Rather than requiring the customer to enter their tenant and grant
+// admin consent out-of-band, it uses the multi-step custom auth flow: redirect
+// the admin to the consent screen, capture the tenant Microsoft returns, then
+// exchange the app's client credentials for a Graph token.
 const MicrosoftClientCredentials Provider = "microsoftClientCredentials"
 
+const (
+	msAdminConsentURL  = "https://login.microsoftonline.com/common/adminconsent"
+	msTokenURLTemplate = "https://login.microsoftonline.com/%s/oauth2/v2.0/token"
+	msDefaultScope     = "https://graph.microsoft.com/.default"
+)
+
+// msBuildConsentURL sends the admin to Microsoft's admin-consent screen. The
+// tenant isn't known yet; Microsoft returns it on the callback.
+func msBuildConsentURL(_ context.Context, state AuthContext) (AuthContext, string, error) {
+	vals := state.Flatten()
+
+	clientID := vals["clientId"]
+	if clientID == "" {
+		return state, "", errors.New("missing clientId; configure the Microsoft provider app")
+	}
+
+	query := url.Values{}
+	query.Set("client_id", clientID)
+	query.Set("redirect_uri", vals["callbackURL"])
+
+	return state, msAdminConsentURL + "?" + query.Encode(), nil
+}
+
+// msParseConsentCallback captures the tenant Microsoft returns after consent.
+func msParseConsentCallback(_ context.Context, state AuthContext, callback *http.Request) (AuthContext, error) {
+	query := callback.URL.Query()
+
+	if errCode := query.Get("error"); errCode != "" {
+		return state, fmt.Errorf("admin consent failed: %s (%s)", query.Get("error_description"), errCode)
+	}
+
+	tenant := query.Get("tenant")
+	if tenant == "" {
+		return state, errors.New("admin consent callback did not include a tenant")
+	}
+
+	state.Metadata["workspace"] = tenant
+
+	return state, nil
+}
+
+// msBuildTokenRequest exchanges the app's client credentials for a Graph token
+// against the consented tenant.
+func msBuildTokenRequest(ctx context.Context, state AuthContext) (AuthContext, *http.Request, error) {
+	vals := state.Flatten()
+
+	tenant := vals["workspace"]
+	if tenant == "" {
+		return state, nil, errors.New("missing tenant; admin consent must run first")
+	}
+
+	form := url.Values{}
+	form.Set("grant_type", "client_credentials")
+	form.Set("client_id", vals["clientId"])
+	form.Set("client_secret", vals["clientSecret"])
+	form.Set("scope", msDefaultScope)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
+		fmt.Sprintf(msTokenURLTemplate, tenant), strings.NewReader(form.Encode()))
+	if err != nil {
+		return state, nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	return state, req, nil
+}
+
 func init() {
+	// Token exchange is reused for both the second connect step and refresh.
+	tokenStep := HTTPStep{
+		BuildRequest:  msBuildTokenRequest,
+		ParseResponse: ExtractJSONSecrets(map[string]string{"access_token": "accessToken"}),
+	}
+
 	SetInfo(MicrosoftClientCredentials, ProviderInfo{
 		DisplayName: "Microsoft",
-		AuthType:    Oauth2,
+		AuthType:    Custom,
 		BaseURL:     "https://graph.microsoft.com",
 		AuthHealthCheck: &AuthHealthCheck{
 			Method:             http.MethodGet,
 			SuccessStatusCodes: []int{http.StatusOK},
 			Url:                "https://graph.microsoft.com/v1.0/organization",
 		},
-		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 ClientCredentials,
-			TokenURL:                  "https://login.microsoftonline.com/{{.workspace}}/oauth2/v2.0/token",
-			ExplicitScopesRequired:    true,
-			ExplicitWorkspaceRequired: true,
+		CustomOpts: &CustomAuthOpts{
+			MultiStep: true,
+			// clientId/clientSecret come from the provider app (ProviderInputs);
+			// tenant is captured into Metadata as `workspace` by the callback.
+			Headers: []CustomAuthHeader{
+				{Name: "Authorization", ValueTemplate: "Bearer {{ .accessToken }}"},
+			},
 		},
 		Support: Support{
-			BulkWrite: BulkWriteSupport{
-				Insert: false,
-				Update: false,
-				Upsert: false,
-				Delete: false,
-			},
 			Proxy:     true,
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
-		},
-		Metadata: &ProviderMetadata{
-			Input: []MetadataItemInput{
-				{
-					Name:        "workspace",
-					DisplayName: "Tenant ID",
-					Prompt:      "The Azure AD tenant GUID (e.g. `951a1899-8810-4356-ax10-3a5f8fg99a65`)",
-					DocsURL:     "https://docs.withampersand.com/customer-guides/microsoft-client-credentials",
-				},
-			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
@@ -62,5 +125,13 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328785/media/microsoft_1722328785.svg",
 			},
 		},
+	})
+
+	RegisterCustomAuthFlow(MicrosoftClientCredentials, CustomAuthFlow{
+		ConnectSteps: []AuthStep{
+			{Redirect: &RedirectStep{BuildURL: msBuildConsentURL, ParseCallback: msParseConsentCallback}},
+			{HTTP: &tokenStep},
+		},
+		RefreshSteps: []HTTPStep{tokenStep},
 	})
 }
