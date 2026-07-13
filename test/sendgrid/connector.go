@@ -15,11 +15,18 @@ func GetSendGridConnector(ctx context.Context) *sendgrid.Connector {
 
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 
-	conn, err := sendgrid.NewConnector(
-		common.ConnectorParams{
-			AuthenticatedClient: utils.NewAPIKeyClient(ctx, reader, providers.SendGrid),
-		},
+	client, err := common.NewApiKeyHeaderAuthHTTPClient(
+		ctx,
+		"Authorization",
+		"Bearer "+reader.Get(credscanning.Fields.ApiKey),
 	)
+	if err != nil {
+		utils.Fail(err.Error())
+	}
+
+	conn, err := sendgrid.NewConnector(common.ConnectorParams{
+		AuthenticatedClient: client,
+	})
 	if err != nil {
 		utils.Fail("error creating SendGrid connector", "error", err)
 	}

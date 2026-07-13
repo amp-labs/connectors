@@ -18,5 +18,6 @@ var (
 		fileconv.NewSiblingFileLocator(),
 	)
 
+	// Schemas is cached object schemas sourced from SendGrid OpenAPI specs.
 	Schemas = FileManager.MustLoadSchemas()
 )
