@@ -14,12 +14,27 @@ func TestListObjectMetadata(t *testing.T) {
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
-			Name:       "Successful metadata for email objects",
-			Input:      []string{"lists", "templates", "bounces"},
+			Name:       "Successful metadata for core objects",
+			Input:      []string{"contacts", "lists", "templates", "bounces"},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "Contacts",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Contact Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"email": {
+								DisplayName:  "Email",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
 					"lists": {
 						DisplayName: "Lists",
 						Fields: map[string]common.FieldMetadata{
@@ -43,8 +58,8 @@ func TestListObjectMetadata(t *testing.T) {
 								ValueType:    "string",
 								ProviderType: "string",
 							},
-							"name": {
-								DisplayName:  "Name",
+							"generation": {
+								DisplayName:  "Generation",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
@@ -53,13 +68,13 @@ func TestListObjectMetadata(t *testing.T) {
 					"bounces": {
 						DisplayName: "Bounces",
 						Fields: map[string]common.FieldMetadata{
-							"created": {
-								DisplayName:  "Created",
-								ValueType:    "int",
-								ProviderType: "integer",
-							},
 							"email": {
 								DisplayName:  "Email",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"reason": {
+								DisplayName:  "Reason",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
@@ -115,17 +130,14 @@ func TestListObjectMetadata(t *testing.T) {
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(
-		common.ConnectorParams{
-			Module:              common.ModuleRoot,
-			AuthenticatedClient: mockutils.NewClient(),
-		},
-	)
+	connector, err := NewConnector(common.ConnectorParams{
+		AuthenticatedClient: mockutils.NewClient(),
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	connector.SetUnitTestMockServerBaseURL(serverURL)
+	connector.SetUnitTestBaseURL(serverURL)
 
 	return connector, nil
 }
