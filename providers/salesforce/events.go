@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -309,22 +310,50 @@ func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) er
 		return err
 	}
 
-	config := &EventRelayConfig{
-		FullName: cfg.FullName,
-		Metadata: &EventRelayConfigMetadata{
-			State: "RUN",
-		},
-	}
-
-	// patch returns no content with 204. If it fails, it will return an error.
-	_, err = c.Client.Patch(ctx, url.String(), config)
+	err = c.patchEventRelayState(ctx, url.String(), cfg.FullName)
 	if err != nil {
-		return fmt.Errorf("error running event relay: %w", err)
+		// In a namespaced org (scratch/packaging orgs), Salesforce prepends the
+		// org namespace to the full name of metadata it creates (e.g. the
+		// EventRelayConfig created as "amp_x" becomes "acme__amp_x"). A PATCH
+		// that echoes the un-namespaced full name is then rejected. The error
+		// reports the expected namespaced full name, so adopt it and retry once.
+		expected, ok := fullNameMismatch(err, cfg.FullName)
+		if !ok {
+			return fmt.Errorf("error running event relay: %w", err)
+		}
+
+		logging.Logger(ctx).Info("event relay full name mismatch; retrying with namespaced full name",
+			"provided", cfg.FullName, "expected", expected)
+
+		if retryErr := c.patchEventRelayState(ctx, url.String(), expected); retryErr != nil {
+			// Join the retry error with the original mismatch error so both the
+			// namespace-corrected failure and the initial cause are preserved.
+			return fmt.Errorf("error running event relay after namespace retry: %w",
+				errors.Join(retryErr, err))
+		}
+
+		// Persist the corrected full name so callers store the namespaced value.
+		cfg.FullName = expected
 	}
 
 	cfg.Metadata.State = "RUN"
 
 	return nil
+}
+
+// patchEventRelayState PATCHes the EventRelayConfig at url to the RUN state
+// using the given full name. Salesforce returns 204 No Content on success.
+func (c *Connector) patchEventRelayState(ctx context.Context, url, fullName string) error {
+	config := &EventRelayConfig{
+		FullName: fullName,
+		Metadata: &EventRelayConfigMetadata{
+			State: "RUN",
+		},
+	}
+
+	_, err := c.Client.Patch(ctx, url, config)
+
+	return err
 }
 
 // nolint: lll
@@ -552,6 +581,51 @@ func isDuplicateDeveloperName(err error) bool {
 	}
 
 	return false
+}
+
+// fullNameMismatch reports whether err is a 400 response indicating the supplied
+// metadata FullName omitted the org's namespace prefix, and if so returns the
+// expected (namespaced) full name.
+//
+// In a namespaced org, Salesforce stores created metadata as
+// "<namespace>__<fullName>" and rejects a later reference to the un-namespaced
+// name with a message like: "Full name amp_<id> does not match the full name
+// speedboatdev__amp_<id> of the entity (id: ...)". Because the supplied full
+// name is known, we match "<namespace>__<fullName>" directly rather than
+// parsing the free-form message.
+//
+// A Salesforce namespace prefix is 1-15 alphanumeric characters, begins with a
+// letter, and cannot contain two consecutive underscores (single underscores
+// are allowed, e.g. "my_np"). The pattern below encodes that: a leading letter
+// followed by units of an optional single underscore plus an alphanumeric, so
+// underscores can never be consecutive or trailing — which also makes it stop
+// cleanly at the "__" that separates the namespace from the full name.
+// https://developer.salesforce.com/docs/atlas.en-us.pkg1_dev.meta/pkg1_dev/register_namespace_prefix.htm
+func fullNameMismatch(err error, fullName string) (string, bool) {
+	var httpErr *common.HTTPError
+	if !errors.As(err, &httpErr) || httpErr.Status != http.StatusBadRequest || fullName == "" {
+		return "", false
+	}
+
+	var entries []sfAPIError
+	if jsonErr := json.Unmarshal(httpErr.Body, &entries); jsonErr != nil {
+		return "", false
+	}
+
+	// Matches "<namespace>__<fullName>", e.g. "speedboatdev__amp_<id>" or
+	// "my_np__amp_<id>".
+	pattern, compileErr := regexp.Compile(`\b[A-Za-z](?:_?[A-Za-z0-9])*__` + regexp.QuoteMeta(fullName))
+	if compileErr != nil {
+		return "", false
+	}
+
+	for _, e := range entries {
+		if match := pattern.FindString(e.Message); match != "" {
+			return match, true
+		}
+	}
+
+	return "", false
 }
 
 // recoverDuplicateByDeveloperName looks up a tooling entity by DeveloperName
