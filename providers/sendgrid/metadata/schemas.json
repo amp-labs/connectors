@@ -1,0 +1,774 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/marketing/contacts",
+          "responseKey": "result",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/contacts/get-sample-contacts",
+          "fields": {
+            "id": {
+              "displayName": "Contact Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "unique_name": {
+              "displayName": "Unique Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_id": {
+              "displayName": "External Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "anonymous_id": {
+              "displayName": "Anonymous Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "alternate_emails": {
+              "displayName": "Alternate Emails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "address_line_1": {
+              "displayName": "Address Line 1",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address_line_2": {
+              "displayName": "Address Line 2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "city": {
+              "displayName": "City",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state_province_region": {
+              "displayName": "State Province Region",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "country": {
+              "displayName": "Country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "postal_code": {
+              "displayName": "Postal Code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_number": {
+              "displayName": "Phone Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "list_ids": {
+              "displayName": "List Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "segment_ids": {
+              "displayName": "Segment Ids",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "custom_fields": {
+              "displayName": "Custom Fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "lists": {
+          "displayName": "Lists",
+          "path": "/marketing/lists",
+          "responseKey": "result",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/lists/get-all-lists",
+          "fields": {
+            "id": {
+              "displayName": "List Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contact_count": {
+              "displayName": "Contact Count",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "segments": {
+          "displayName": "Segments",
+          "path": "/marketing/segments",
+          "responseKey": "results",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/segmenting-contacts/get-list-of-segments",
+          "fields": {
+            "id": {
+              "displayName": "Segment Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contacts_count": {
+              "displayName": "Contacts Count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "parent_list_id": {
+              "displayName": "Parent List Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "sample_updated_at": {
+              "displayName": "Sample Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "next_sample_update": {
+              "displayName": "Next Sample Update",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "singlesends": {
+          "displayName": "Single Sends",
+          "path": "/marketing/singlesends",
+          "responseKey": "result",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/single-sends/get-all-single-sends",
+          "fields": {
+            "id": {
+              "displayName": "Single Send Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "categories": {
+              "displayName": "Categories",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "send_at": {
+              "displayName": "Send At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "is_abtest": {
+              "displayName": "Is A/B Test",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "templates": {
+          "displayName": "Templates",
+          "path": "/templates",
+          "responseKey": "result",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/templates-api/retrieve-all-templates",
+          "fields": {
+            "id": {
+              "displayName": "Template Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "generation": {
+              "displayName": "Generation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "versions": {
+              "displayName": "Versions",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "field_definitions": {
+          "displayName": "Field Definitions",
+          "path": "/marketing/field_definitions",
+          "responseKey": "custom_fields",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/custom-fields/get-all-field-definitions",
+          "fields": {
+            "id": {
+              "displayName": "Field Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "field_type": {
+              "displayName": "Field Type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "verified_senders": {
+          "displayName": "Verified Senders",
+          "path": "/verified_senders",
+          "responseKey": "results",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/sender-verification/get-all-verified-senders",
+          "fields": {
+            "id": {
+              "displayName": "Sender Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "nickname": {
+              "displayName": "Nickname",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "from_email": {
+              "displayName": "From Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "from_name": {
+              "displayName": "From Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reply_to": {
+              "displayName": "Reply To",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reply_to_name": {
+              "displayName": "Reply To Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address": {
+              "displayName": "Address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address2": {
+              "displayName": "Address 2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "city": {
+              "displayName": "City",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "State",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "zip": {
+              "displayName": "Zip",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "country": {
+              "displayName": "Country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "verified": {
+              "displayName": "Verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "locked": {
+              "displayName": "Locked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "senders": {
+          "displayName": "Senders",
+          "path": "/marketing/senders",
+          "responseKey": "results",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/sender-identities-api/get-all-senders",
+          "fields": {
+            "id": {
+              "displayName": "Sender Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "nickname": {
+              "displayName": "Nickname",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "from": {
+              "displayName": "From",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "reply_to": {
+              "displayName": "Reply To",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "address": {
+              "displayName": "Address",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address_2": {
+              "displayName": "Address 2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "city": {
+              "displayName": "City",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "state": {
+              "displayName": "State",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "zip": {
+              "displayName": "Zip",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "country": {
+              "displayName": "Country",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "verified": {
+              "displayName": "Verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "locked": {
+              "displayName": "Locked",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "bounces": {
+          "displayName": "Bounces",
+          "path": "/suppression/bounces",
+          "responseKey": "",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/bounces-api/retrieve-all-bounces",
+          "fields": {
+            "created": {
+              "displayName": "Created",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reason": {
+              "displayName": "Reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "blocks": {
+          "displayName": "Blocks",
+          "path": "/suppression/blocks",
+          "responseKey": "",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/blocks-api/retrieve-all-blocks",
+          "fields": {
+            "created": {
+              "displayName": "Created",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reason": {
+              "displayName": "Reason",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "spam_reports": {
+          "displayName": "Spam Reports",
+          "path": "/suppression/spam_reports",
+          "responseKey": "",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/spam-reports-api/retrieve-all-spam-reports",
+          "fields": {
+            "created": {
+              "displayName": "Created",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ip": {
+              "displayName": "Ip",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "unsubscribes": {
+          "displayName": "Unsubscribes",
+          "path": "/suppression/unsubscribes",
+          "responseKey": "",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/suppressions-global-suppressions/retrieve-all-global-suppressions",
+          "fields": {
+            "created": {
+              "displayName": "Created",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "invalid_emails": {
+          "displayName": "Invalid Emails",
+          "path": "/suppression/invalid_emails",
+          "responseKey": "",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/invalid-emails-api/retrieve-all-invalid-emails",
+          "fields": {
+            "created": {
+              "displayName": "Created",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reason": {
+              "displayName": "Reason",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "asm_groups": {
+          "displayName": "ASM Groups",
+          "path": "/asm/groups",
+          "responseKey": "",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/suppressions-unsubscribe-groups/retrieve-all-suppression-groups",
+          "fields": {
+            "id": {
+              "displayName": "Group Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_default": {
+              "displayName": "Is Default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "unsubscribes": {
+              "displayName": "Unsubscribes",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "categories": {
+          "displayName": "Categories",
+          "path": "/categories",
+          "responseKey": "",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/categories/retrieve-all-categories",
+          "fields": {
+            "category": {
+              "displayName": "Category",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "subusers": {
+          "displayName": "Subusers",
+          "path": "/subusers",
+          "responseKey": "",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/subusers-api/list-all-subusers",
+          "fields": {
+            "id": {
+              "displayName": "Subuser Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "username": {
+              "displayName": "Username",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "disabled": {
+              "displayName": "Disabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "region": {
+              "displayName": "Region",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "event_webhook_settings": {
+          "displayName": "Event Webhook Settings",
+          "path": "/user/webhooks/event/settings/all",
+          "responseKey": "webhooks",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/webhooks/get-all-event-webhook-settings",
+          "fields": {
+            "id": {
+              "displayName": "Webhook Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "friendly_name": {
+              "displayName": "Friendly Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enabled": {
+              "displayName": "Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "bounce": {
+              "displayName": "Bounce",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "click": {
+              "displayName": "Click",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deferred": {
+              "displayName": "Deferred",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "delivered": {
+              "displayName": "Delivered",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "dropped": {
+              "displayName": "Dropped",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "open": {
+              "displayName": "Open",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "processed": {
+              "displayName": "Processed",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "spam_report": {
+              "displayName": "Spam Report",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "unsubscribe": {
+              "displayName": "Unsubscribe",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "group_resubscribe": {
+              "displayName": "Group Resubscribe",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "group_unsubscribe": {
+              "displayName": "Group Unsubscribe",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "account_status_change": {
+              "displayName": "Account Status Change",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_date": {
+              "displayName": "Created Date",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_date": {
+              "displayName": "Updated Date",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "parse_webhook_settings": {
+          "displayName": "Parse Webhook Settings",
+          "path": "/user/webhooks/parse/settings",
+          "responseKey": "result",
+          "docs": "https://www.twilio.com/docs/sendgrid/api-reference/settings-inbound-parse/retrieve-all-parse-settings",
+          "fields": {
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hostname": {
+              "displayName": "Hostname",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "spam_check": {
+              "displayName": "Spam Check",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "send_raw": {
+              "displayName": "Send Raw",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}
