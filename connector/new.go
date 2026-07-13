@@ -126,6 +126,7 @@ import (
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/seismic"
 	"github.com/amp-labs/connectors/providers/sellsy"
+	"github.com/amp-labs/connectors/providers/sendgrid"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/shopify"
 	"github.com/amp-labs/connectors/providers/slack"
@@ -284,6 +285,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Salesloft:                  wrapper(newSalesloftConnector),
 	providers.Seismic:                    wrapper(newSeismicConnector),
 	providers.Sellsy:                     wrapper(newSellsyConnector),
+	providers.SendGrid:                   wrapper(newSendGridConnector),
 	providers.ServiceNow:                 wrapper(newServiceNowConnector),
 	providers.Shopify:                    wrapper(newShopifyConnector),
 	providers.Slack:                      wrapper(newSlackConnector),
@@ -995,6 +997,12 @@ func newSeismicConnector(
 	params common.ConnectorParams,
 ) (*seismic.Connector, error) {
 	return seismic.NewConnector(params)
+}
+
+func newSendGridConnector(
+	params common.ConnectorParams,
+) (*sendgrid.Connector, error) {
+	return sendgrid.NewConnector(params)
 }
 
 func newXeroConnector(
