@@ -5,7 +5,7 @@ go 1.26.4
 require (
 	cloud.google.com/go/bigquery v1.77.0
 	github.com/PuerkitoBio/goquery v1.12.0
-	github.com/amp-labs/amp-common v0.0.0-20260707211901-527fea45abf2
+	github.com/amp-labs/amp-common v0.0.0-20260713153615-309758a5659f
 	github.com/antchfx/xmlquery v1.5.1
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/aws/aws-sdk-go-v2 v1.42.1
@@ -31,9 +31,9 @@ require (
 	github.com/stretchr/testify v1.11.1
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
 	go.uber.org/atomic v1.11.0
-	golang.org/x/net v0.56.0
+	golang.org/x/net v0.57.0
 	golang.org/x/oauth2 v0.36.0
-	golang.org/x/text v0.39.0
+	golang.org/x/text v0.40.0
 	google.golang.org/api v0.275.0
 	google.golang.org/grpc v1.82.0
 )
@@ -107,11 +107,11 @@ require (
 	go.opentelemetry.io/otel/metric v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
 	go.yaml.in/yaml/v4 v4.0.0-rc.2 // indirect
-	golang.org/x/crypto v0.53.0 // indirect
+	golang.org/x/crypto v0.54.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/mod v0.37.0 // indirect
-	golang.org/x/sync v0.21.0 // indirect
-	golang.org/x/sys v0.46.0 // indirect
+	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/telemetry v0.0.0-20260625142307-59b4966ccb57 // indirect
 	golang.org/x/time v0.15.0 // indirect
 	golang.org/x/tools v0.47.0 // indirect
