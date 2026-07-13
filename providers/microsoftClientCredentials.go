@@ -18,9 +18,16 @@ import (
 const MicrosoftClientCredentials Provider = "microsoftClientCredentials"
 
 const (
-	msAdminConsentURL  = "https://login.microsoftonline.com/common/adminconsent"
-	msTokenURLTemplate = "https://login.microsoftonline.com/%s/oauth2/v2.0/token"
-	msDefaultScope     = "https://graph.microsoft.com/.default"
+	msAdminConsentURL     = "https://login.microsoftonline.com/common/adminconsent"
+	msExchangeURLTemplate = "https://login.microsoftonline.com/%s/oauth2/v2.0/token"
+	msDefaultScope        = "https://graph.microsoft.com/.default"
+)
+
+var (
+	errMissingClientID    = errors.New("missing clientId; configure the Microsoft provider app")
+	errAdminConsentFailed = errors.New("admin consent failed")
+	errMissingTenant      = errors.New("admin consent callback did not include a tenant")
+	errNoTenant           = errors.New("missing tenant; admin consent must run first")
 )
 
 // msBuildConsentURL sends the admin to Microsoft's admin-consent screen. The
@@ -30,7 +37,7 @@ func msBuildConsentURL(_ context.Context, state AuthContext) (AuthContext, strin
 
 	clientID := vals["clientId"]
 	if clientID == "" {
-		return state, "", errors.New("missing clientId; configure the Microsoft provider app")
+		return state, "", errMissingClientID
 	}
 
 	query := url.Values{}
@@ -45,12 +52,12 @@ func msParseConsentCallback(_ context.Context, state AuthContext, callback *http
 	query := callback.URL.Query()
 
 	if errCode := query.Get("error"); errCode != "" {
-		return state, fmt.Errorf("admin consent failed: %s (%s)", query.Get("error_description"), errCode)
+		return state, fmt.Errorf("%w: %s (%s)", errAdminConsentFailed, query.Get("error_description"), errCode)
 	}
 
 	tenant := query.Get("tenant")
 	if tenant == "" {
-		return state, errors.New("admin consent callback did not include a tenant")
+		return state, errMissingTenant
 	}
 
 	state.Metadata["workspace"] = tenant
@@ -65,7 +72,7 @@ func msBuildTokenRequest(ctx context.Context, state AuthContext) (AuthContext, *
 
 	tenant := vals["workspace"]
 	if tenant == "" {
-		return state, nil, errors.New("missing tenant; admin consent must run first")
+		return state, nil, errNoTenant
 	}
 
 	form := url.Values{}
@@ -75,7 +82,7 @@ func msBuildTokenRequest(ctx context.Context, state AuthContext) (AuthContext, *
 	form.Set("scope", msDefaultScope)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
-		fmt.Sprintf(msTokenURLTemplate, tenant), strings.NewReader(form.Encode()))
+		fmt.Sprintf(msExchangeURLTemplate, tenant), strings.NewReader(form.Encode()))
 	if err != nil {
 		return state, nil, err
 	}

@@ -135,8 +135,12 @@ func (o *CustomAuthOpts) HasSteps() bool {
 
 // ExtractJSONSecrets returns a ParseResponse handler that decodes the JSON body
 // and copies mapped response fields (responseKey -> secretKey) into Secrets.
-func ExtractJSONSecrets(mapping map[string]string) func(context.Context, AuthContext, *http.Response) (AuthContext, error) {
+func ExtractJSONSecrets(
+	mapping map[string]string,
+) func(context.Context, AuthContext, *http.Response) (AuthContext, error) {
 	return func(_ context.Context, state AuthContext, resp *http.Response) (AuthContext, error) {
+		defer resp.Body.Close()
+
 		var body map[string]any
 		if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 			return state, fmt.Errorf("decoding JSON response: %w", err)
@@ -154,7 +158,9 @@ func ExtractJSONSecrets(mapping map[string]string) func(context.Context, AuthCon
 
 // ExtractQueryParamsSecrets returns a ParseCallback handler that copies mapped
 // callback query params (paramName -> secretKey) into Secrets.
-func ExtractQueryParamsSecrets(mapping map[string]string) func(context.Context, AuthContext, *http.Request) (AuthContext, error) {
+func ExtractQueryParamsSecrets(
+	mapping map[string]string,
+) func(context.Context, AuthContext, *http.Request) (AuthContext, error) {
 	return func(_ context.Context, state AuthContext, callback *http.Request) (AuthContext, error) {
 		query := callback.URL.Query()
 		for param, secretKey := range mapping {
