@@ -14,8 +14,27 @@ func TestListObjectMetadata(t *testing.T) {
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
-			Name:       "Successful metadata for core objects",
-			Input:      []string{"contacts", "lists", "templates", "bounces"},
+			Name: "Successful metadata for email objects",
+			Input: []string{
+				"contacts",
+				"lists",
+				"segments",
+				"singlesends",
+				"templates",
+				"field_definitions",
+				"verified_senders",
+				"senders",
+				"bounces",
+				"blocks",
+				"spam_reports",
+				"unsubscribes",
+				"invalid_emails",
+				"asm_groups",
+				"categories",
+				"subusers",
+				"event_webhook_settings",
+				"parse_webhook_settings",
+			},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -50,6 +69,36 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
+					"segments": {
+						DisplayName: "Segments",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Segment Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"singlesends": {
+						DisplayName: "Single Sends",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Single Send Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
 					"templates": {
 						DisplayName: "Templates",
 						Fields: map[string]common.FieldMetadata{
@@ -58,8 +107,53 @@ func TestListObjectMetadata(t *testing.T) {
 								ValueType:    "string",
 								ProviderType: "string",
 							},
-							"generation": {
-								DisplayName:  "Generation",
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"field_definitions": {
+						DisplayName: "Field Definitions",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Field Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"verified_senders": {
+						DisplayName: "Verified Senders",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Sender Id",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"nickname": {
+								DisplayName:  "Nickname",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"senders": {
+						DisplayName: "Senders",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Sender Id",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"nickname": {
+								DisplayName:  "Nickname",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
@@ -68,13 +162,143 @@ func TestListObjectMetadata(t *testing.T) {
 					"bounces": {
 						DisplayName: "Bounces",
 						Fields: map[string]common.FieldMetadata{
+							"created": {
+								DisplayName:  "Created",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
 							"email": {
 								DisplayName:  "Email",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
-							"reason": {
-								DisplayName:  "Reason",
+						},
+					},
+					"blocks": {
+						DisplayName: "Blocks",
+						Fields: map[string]common.FieldMetadata{
+							"created": {
+								DisplayName:  "Created",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"email": {
+								DisplayName:  "Email",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"spam_reports": {
+						DisplayName: "Spam Reports",
+						Fields: map[string]common.FieldMetadata{
+							"created": {
+								DisplayName:  "Created",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"email": {
+								DisplayName:  "Email",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"unsubscribes": {
+						DisplayName: "Unsubscribes",
+						Fields: map[string]common.FieldMetadata{
+							"created": {
+								DisplayName:  "Created",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"email": {
+								DisplayName:  "Email",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"invalid_emails": {
+						DisplayName: "Invalid Emails",
+						Fields: map[string]common.FieldMetadata{
+							"created": {
+								DisplayName:  "Created",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"email": {
+								DisplayName:  "Email",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"asm_groups": {
+						DisplayName: "ASM Groups",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Group Id",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"name": {
+								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"categories": {
+						DisplayName: "Categories",
+						Fields: map[string]common.FieldMetadata{
+							"category": {
+								DisplayName:  "Category",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"subusers": {
+						DisplayName: "Subusers",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Subuser Id",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"username": {
+								DisplayName:  "Username",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"event_webhook_settings": {
+						DisplayName: "Event Webhook Settings",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Webhook Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"friendly_name": {
+								DisplayName:  "Friendly Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"parse_webhook_settings": {
+						DisplayName: "Parse Webhook Settings",
+						Fields: map[string]common.FieldMetadata{
+							"url": {
+								DisplayName:  "Url",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"hostname": {
+								DisplayName:  "Hostname",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
@@ -130,14 +354,17 @@ func TestListObjectMetadata(t *testing.T) {
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
-	})
+	connector, err := NewConnector(
+		common.ConnectorParams{
+			Module:              common.ModuleRoot,
+			AuthenticatedClient: mockutils.NewClient(),
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	connector.SetUnitTestBaseURL(serverURL)
+	connector.SetUnitTestMockServerBaseURL(serverURL)
 
 	return connector, nil
 }
