@@ -110,8 +110,14 @@ func init() {
 		},
 		CustomOpts: &CustomAuthOpts{
 			MultiStep: true,
-			// clientId/clientSecret come from the provider app (ProviderInputs);
-			// tenant is captured into Metadata as `workspace` by the callback.
+			// Builder-configured app credentials. Declaring them signals that this
+			// provider needs a provider app and drives the dashboard form; clientId/
+			// clientSecret map to the provider app's reserved columns. The tenant is
+			// captured into Metadata as `workspace` by the callback.
+			ProviderInputs: []CustomAuthInput{
+				{Name: "clientId", DisplayName: "Client ID", FieldType: FieldTypeText},
+				{Name: "clientSecret", DisplayName: "Client Secret", FieldType: FieldTypePassword},
+			},
 			Headers: []CustomAuthHeader{
 				{Name: "Authorization", ValueTemplate: "Bearer {{ .accessToken }}"},
 			},
