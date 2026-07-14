@@ -73,21 +73,29 @@ func TestEventRecord(t *testing.T) {
 		t.Fatal("connectwise Event does not implement SubscriptionEventWithRecord")
 	}
 
-	record, err := withRecord.Record()
+	row, err := withRecord.Record([]string{"id", "firstName"})
 	if err != nil {
 		t.Fatalf("Record: %v", err)
 	}
 
 	result := testutils.NewCompareResult()
-	result.Assert("id", record["id"], float64(57961))
-	result.Assert("firstName", record["firstName"], "Xzavier Sawayn")
-	result.Validate(t, "inline Entity should unmarshal into the record")
+	// Id is extracted from the record and matches RecordId().
+	result.Assert("id", row.Id, "57961")
+	// Fields is the requested subset, with lowercased keys.
+	result.Assert("fields.id", row.Fields["id"], float64(57961))
+	result.Assert("fields.firstname", row.Fields["firstname"], "Xzavier Sawayn")
+	// Provider noise that was not requested (_info) is excluded from Fields.
+	result.Assert("fields._info absent", row.Fields["_info"], nil)
+	// Raw carries the full provider record untouched, including the _info noise.
+	result.Assert("raw.firstName", row.Raw["firstName"], "Xzavier Sawayn")
+	result.Assert("raw._info present", row.Raw["_info"] != nil, true)
+	result.Validate(t, "inline Entity should marshal into a ReadResultRow like a read")
 }
 
 func TestEventRecordMissingEntity(t *testing.T) {
 	t.Parallel()
 
-	if _, err := (Event{"Action": "updated", "ID": float64(1)}).Record(); err == nil {
+	if _, err := (Event{"Action": "updated", "ID": float64(1)}).Record(nil); err == nil {
 		t.Fatal("expected error when 'Entity' is absent")
 	}
 }
