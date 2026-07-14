@@ -185,9 +185,9 @@ func TestMicrosoftBuildTokenRequestMissingTenant(t *testing.T) {
 func TestMicrosoftFlowRegistered(t *testing.T) {
 	t.Parallel()
 
-	flow, ok := CustomAuthFlowFor(MicrosoftClientCredentials)
+	flow, ok := CustomAuthFlowFor(MicrosoftAdminConsent)
 	if !ok {
-		t.Fatal("microsoftClientCredentials custom flow not registered")
+		t.Fatal("microsoftAdminConsent custom flow not registered")
 	}
 
 	if len(flow.ConnectSteps) != 2 {

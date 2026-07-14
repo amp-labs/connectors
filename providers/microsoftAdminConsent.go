@@ -9,13 +9,13 @@ import (
 	"strings"
 )
 
-// MicrosoftClientCredentials authenticates as the application (OAuth2 client
+// MicrosoftAdminConsent authenticates as the application (OAuth2 client
 // credentials) against Microsoft Graph, reusing the providers/microsoft
 // connector. Rather than requiring the customer to enter their tenant and grant
 // admin consent out-of-band, it uses the multi-step custom auth flow: redirect
 // the admin to the consent screen, capture the tenant Microsoft returns, then
 // exchange the app's client credentials for a Graph token.
-const MicrosoftClientCredentials Provider = "microsoftClientCredentials"
+const MicrosoftAdminConsent Provider = "microsoftAdminConsent"
 
 const (
 	msAdminConsentURL     = "https://login.microsoftonline.com/common/adminconsent"
@@ -99,8 +99,8 @@ func init() {
 		ParseResponse: ExtractJSONSecrets(map[string]string{"access_token": "accessToken"}),
 	}
 
-	SetInfo(MicrosoftClientCredentials, ProviderInfo{
-		DisplayName: "Microsoft",
+	SetInfo(MicrosoftAdminConsent, ProviderInfo{
+		DisplayName: "Microsoft (Admin consent)",
 		AuthType:    Custom,
 		BaseURL:     "https://graph.microsoft.com",
 		AuthHealthCheck: &AuthHealthCheck{
@@ -140,7 +140,7 @@ func init() {
 		},
 	})
 
-	RegisterCustomAuthFlow(MicrosoftClientCredentials, CustomAuthFlow{
+	RegisterCustomAuthFlow(MicrosoftAdminConsent, CustomAuthFlow{
 		ConnectSteps: []AuthStep{
 			{Redirect: &RedirectStep{BuildURL: msBuildConsentURL, ParseCallback: msParseConsentCallback}},
 			{HTTP: &tokenStep},
