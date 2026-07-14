@@ -1,0 +1,40 @@
+{
+  "count": 2,
+  "pageSize": 2,
+  "pageStartIndex": 0,
+  "items": [
+    {
+      "id": "job-001",
+      "currentMilestone": "Lead",
+      "modifiedDate": "2026-04-01T10:00:00Z",
+      "contacts": [
+        {
+          "id": "jc-001",
+          "contact": {
+            "id": "ctc-100",
+            "firstName": "Diane",
+            "lastName": "Tiblin"
+          },
+          "isPrimary": true,
+          "relationToPrimary": ""
+        }
+      ]
+    },
+    {
+      "id": "job-002",
+      "currentMilestone": "Approved",
+      "modifiedDate": "2026-04-15T14:30:00Z",
+      "contacts": [
+        {
+          "id": "jc-002",
+          "contact": {
+            "id": "ctc-200",
+            "firstName": "Alan"
+          },
+          "isPrimary": true,
+          "relationToPrimary": ""
+        }
+      ]
+    }
+  ]
+}

@@ -64,6 +64,12 @@ var jobInvoicesPage2Response []byte
 //go:embed test/read/job-history.json
 var jobHistoryResponse []byte
 
+//go:embed test/read/jobs-with-contacts.json
+var jobsWithContactsResponse []byte
+
+//go:embed test/read/contacts-includes.json
+var contactsIncludesResponse []byte
+
 func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	t.Parallel()
 
@@ -72,6 +78,139 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name: "Read contacts always requests emailAddress,phoneNumber includes",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("id"),
+				PageSize:   100,
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/contacts"),
+							mockcond.QueryParam("includes", "emailAddress,phoneNumber"),
+						},
+						Then: mockserver.Response(http.StatusOK, contactsIncludesResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/company-settings/custom-fields"),
+						},
+						Then: mockserver.Response(http.StatusOK, customFieldDefinitionsEmptyResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"id": "ctc-100"},
+					Raw:    map[string]any{"id": "ctc-100"},
+				}},
+				Done: true,
+			},
+		},
+		{
+			Name: "Read jobs with contacts association attaches embedded contacts",
+			Input: common.ReadParams{
+				ObjectName:        "jobs",
+				Fields:            connectors.Fields("id"),
+				AssociatedObjects: []string{"contacts"},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+							mockcond.QueryParam("includes", "contacts"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsWithContactsResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/company-settings/custom-fields"),
+						},
+						Then: mockserver.Response(http.StatusOK, customFieldDefinitionsEmptyResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": "job-001"},
+						Raw:    map[string]any{"id": "job-001"},
+						Associations: map[string][]common.Association{
+							"contacts": {{
+								ObjectId:                    "ctc-100",
+								Raw:                         map[string]any{"id": "ctc-100", "firstName": "Diane"},
+								ProviderAssociationMetadata: map[string]any{"isPrimary": true},
+							}},
+						},
+					},
+					{
+						Fields: map[string]any{"id": "job-002"},
+						Raw:    map[string]any{"id": "job-002"},
+						Associations: map[string][]common.Association{
+							"contacts": {{
+								ObjectId:                    "ctc-200",
+								Raw:                         map[string]any{"id": "ctc-200"},
+								ProviderAssociationMetadata: map[string]any{"isPrimary": true},
+							}},
+						},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			Name: "Read jobs without association omits includes and attaches no associations",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+							mockcond.QueryParamsMissing("includes"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsWithContactsResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/company-settings/custom-fields"),
+						},
+						Then: mockserver.Response(http.StatusOK, customFieldDefinitionsEmptyResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{Fields: map[string]any{"id": "job-001"}, Raw: map[string]any{"id": "job-001"}},
+					{Fields: map[string]any{"id": "job-002"}, Raw: map[string]any{"id": "job-002"}},
+				},
+				Done: true,
+			},
 		},
 		{
 			Name: "Object must be supported",
