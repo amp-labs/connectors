@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/batch"
 )
 
@@ -30,8 +31,16 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 		return nil, err
 	}
 
-	marshaler := readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id"))
+	marshaler := readhelper.MakeMarshaledDataFuncWithId(
+		flattenCustomFields(),
+		readhelper.IdFieldQuery{Field: "id"},
+	)
 	uniqueFields := datautils.NewSetFromList(fields).List()
 
-	return marshaler(batchResult, uniqueFields)
+	list, err := jsonquery.Convertor.NodesFromArray(batchResult)
+	if err != nil {
+		return nil, err
+	}
+
+	return marshaler(list, uniqueFields)
 }
