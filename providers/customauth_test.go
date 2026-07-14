@@ -135,9 +135,20 @@ func TestMicrosoftParseConsentCallback(t *testing.T) {
 	t.Run("missing tenant is an error", func(t *testing.T) {
 		t.Parallel()
 
-		req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://cb", nil)
+		req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet,
+			"https://cb?admin_consent=True", nil)
 		if _, err := msParseConsentCallback(context.Background(), NewAuthContext(), req); err == nil {
 			t.Fatal("expected error when tenant is missing")
+		}
+	})
+
+	t.Run("consent not granted is an error", func(t *testing.T) {
+		t.Parallel()
+
+		req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet,
+			"https://cb?tenant=tid-1", nil) // no admin_consent=True
+		if _, err := msParseConsentCallback(context.Background(), NewAuthContext(), req); err == nil {
+			t.Fatal("expected error when admin_consent is not True")
 		}
 	})
 }

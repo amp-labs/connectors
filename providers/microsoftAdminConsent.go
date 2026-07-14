@@ -18,7 +18,7 @@ import (
 const MicrosoftAdminConsent Provider = "microsoftAdminConsent"
 
 const (
-	msAdminConsentURL     = "https://login.microsoftonline.com/common/adminconsent"
+	msAdminConsentURL     = "https://login.microsoftonline.com/organizations/adminconsent"
 	msExchangeURLTemplate = "https://login.microsoftonline.com/%s/oauth2/v2.0/token"
 	msDefaultScope        = "https://graph.microsoft.com/.default"
 )
@@ -26,6 +26,7 @@ const (
 var (
 	errMissingClientID    = errors.New("missing clientId; configure the Microsoft provider app")
 	errAdminConsentFailed = errors.New("admin consent failed")
+	errConsentNotGranted  = errors.New("admin consent was not granted")
 	errMissingTenant      = errors.New("admin consent callback did not include a tenant")
 	errNoTenant           = errors.New("missing tenant; admin consent must run first")
 )
@@ -53,6 +54,11 @@ func msParseConsentCallback(_ context.Context, state AuthContext, callback *http
 
 	if errCode := query.Get("error"); errCode != "" {
 		return state, fmt.Errorf("%w: %s (%s)", errAdminConsentFailed, query.Get("error_description"), errCode)
+	}
+
+	// Microsoft returns admin_consent=True only when consent actually succeeded.
+	if !strings.EqualFold(query.Get("admin_consent"), "true") {
+		return state, errConsentNotGranted
 	}
 
 	tenant := query.Get("tenant")
