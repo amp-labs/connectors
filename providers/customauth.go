@@ -36,13 +36,34 @@ type AuthContext struct {
 // NewAuthContext returns an AuthContext with every sub-map initialized, so
 // handlers can write without nil checks.
 func NewAuthContext() AuthContext {
-	return AuthContext{
-		ConsumerInputs: map[string]string{},
-		ProviderInputs: map[string]string{},
-		Secrets:        map[string]string{},
-		Metadata:       map[string]string{},
-		System:         map[string]string{},
+	return AuthContext{}.EnsureMaps()
+}
+
+// EnsureMaps returns c with any nil sub-map initialized. Call it after loading a
+// stored AuthContext (e.g. from Redis on resume/refresh): empty maps are declared
+// omitempty and deserialize as nil, but step handlers write into them.
+func (c AuthContext) EnsureMaps() AuthContext {
+	if c.ConsumerInputs == nil {
+		c.ConsumerInputs = map[string]string{}
 	}
+
+	if c.ProviderInputs == nil {
+		c.ProviderInputs = map[string]string{}
+	}
+
+	if c.Secrets == nil {
+		c.Secrets = map[string]string{}
+	}
+
+	if c.Metadata == nil {
+		c.Metadata = map[string]string{}
+	}
+
+	if c.System == nil {
+		c.System = map[string]string{}
+	}
+
+	return c
 }
 
 // Flatten merges every sub-map into one for template resolution. Precedence,

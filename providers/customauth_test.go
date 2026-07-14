@@ -210,3 +210,23 @@ func TestMicrosoftFlowRegistered(t *testing.T) {
 		t.Errorf("want 1 refresh step, got %d", len(flow.RefreshSteps))
 	}
 }
+
+func TestAuthContextEnsureMaps(t *testing.T) {
+	t.Parallel()
+
+	got := AuthContext{}.EnsureMaps() // all sub-maps nil, as after a Redis round-trip
+
+	if got.ConsumerInputs == nil || got.ProviderInputs == nil ||
+		got.Secrets == nil || got.Metadata == nil || got.System == nil {
+		t.Fatalf("EnsureMaps left a nil sub-map: %+v", got)
+	}
+
+	got.Metadata["workspace"] = "tenant" // must not panic
+	got.Secrets["accessToken"] = "tok"
+
+	// Existing entries are preserved, not clobbered.
+	preserved := AuthContext{Secrets: map[string]string{"k": "v"}}.EnsureMaps()
+	if preserved.Secrets["k"] != "v" {
+		t.Errorf("EnsureMaps clobbered a populated map: %+v", preserved.Secrets)
+	}
+}
