@@ -23,19 +23,24 @@ func inferValueTypeFromData(value any) common.ValueType {
 	}
 }
 
-// buildIssueBody constructs the POST /issues/search payload. The search endpoint has no
-// start_time/end_time parameters; a time window is instead expressed as a filter over
-// updated_at, so that issues modified after the watermark are re-read rather than only
-// newly created ones.
-//
+// buildIssueBody constructs the POST /issues/search.
+// We use a POST request because the GET /issues endpoint filters on created_at, which means
+// issues updated after the watermark are never re-read. The POST /issues/search endpoint
+// instead filters on updated_at, which is what we want.
+
 // filter is optional, and is omitted entirely when neither Since nor Until is set, which
 // reads every issue.
 func buildIssueBody(params common.ReadParams) (map[string]any, error) {
-	body := map[string]any{
-		"limit": searchLimit,
+	pageSize := searchLimit
+	if params.PageSize > 0 && params.PageSize <= searchLimit {
+		pageSize = params.PageSize
 	}
 
-	subfilters := make([]map[string]any, 0, 2) //nolint:gomnd
+	body := map[string]any{
+		"limit": pageSize,
+	}
+
+	subfilters := make([]map[string]any, 0, 2) //nolint:gomnd,mnd
 
 	if !params.Since.IsZero() {
 		subfilters = append(subfilters, map[string]any{

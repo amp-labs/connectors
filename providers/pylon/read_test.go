@@ -161,6 +161,47 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "PageSize sets the limit, and is clamped to the endpoint maximum",
+			Input: common.ReadParams{
+				ObjectName: "issues",
+				Fields:     connectors.Fields("id", "title"),
+				PageSize:   5000,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/issues/search"),
+					mockcond.MethodPOST(),
+					// 5000 is above what search accepts, so it falls back to the maximum.
+					mockcond.Body(`{"limit":999}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseIssuesEmpty),
+			}.Server(),
+			Comparator:   testconn.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "PageSize below the maximum is passed through",
+			Input: common.ReadParams{
+				ObjectName: "issues",
+				Fields:     connectors.Fields("id", "title"),
+				PageSize:   2,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/issues/search"),
+					mockcond.MethodPOST(),
+					mockcond.Body(`{"limit":2}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseIssuesEmpty),
+			}.Server(),
+			Comparator:   testconn.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
+			ExpectedErrs: nil,
+		},
+		{
 			Name: "Next page is the last page",
 			Input: common.ReadParams{
 				ObjectName: "accounts",
