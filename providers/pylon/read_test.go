@@ -3,6 +3,7 @@ package pylon
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -72,8 +73,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{ObjectName: "issues", Fields: connectors.Fields("id", "title")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/issues"),
-				Then:  mockserver.Response(http.StatusOK, responseIssuesEmpty),
+				If: mockcond.And{
+					mockcond.Path("/issues/search"),
+					mockcond.MethodPOST(),
+				},
+				Then: mockserver.Response(http.StatusOK, responseIssuesEmpty),
 			}.Server(),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
@@ -81,6 +85,79 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 				NextPage: "",
 				Done:     true,
 			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Issues are read via POST to the search endpoint",
+			Input: common.ReadParams{ObjectName: "issues", Fields: connectors.Fields("id", "title")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/issues/search"),
+					mockcond.MethodPOST(),
+					// filter is optional, and is omitted when no window is requested.
+					mockcond.Body(`{"limit":999}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseIssuesEmpty),
+			}.Server(),
+			Comparator:   testconn.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Since alone filters on updated_at with a lower bound",
+			Input: common.ReadParams{
+				ObjectName: "issues",
+				Fields:     connectors.Fields("id", "title"),
+				Since:      time.Unix(1754518014, 0),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/issues/search"),
+					mockcond.MethodPOST(),
+					mockcond.Body(`{
+						"limit":999,
+						"filter":{
+							"operator":"and",
+							"subfilters":[
+								{"field":"updated_at","operator":"time_is_after","value":"2025-08-06T22:06:54Z"}
+							]
+						}}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseIssuesEmpty),
+			}.Server(),
+			Comparator:   testconn.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Since and Until filter on updated_at with both bounds",
+			Input: common.ReadParams{
+				ObjectName: "issues",
+				Fields:     connectors.Fields("id", "title"),
+				Since:      time.Unix(1754518014, 0),
+				Until:      time.Unix(1754518016, 0),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/issues/search"),
+					mockcond.MethodPOST(),
+					mockcond.Body(`{
+						"limit":999,
+						"filter":{
+							"operator":"and",
+							"subfilters":[
+								{"field":"updated_at","operator":"time_is_after","value":"2025-08-06T22:06:54Z"},
+								{"field":"updated_at","operator":"time_is_before","value":"2025-08-06T22:06:56Z"}
+							]
+						}}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseIssuesEmpty),
+			}.Server(),
+			Comparator:   testconn.ComparatorPagination,
+			Expected:     &common.ReadResult{Rows: 0, NextPage: "", Done: true},
 			ExpectedErrs: nil,
 		},
 		{

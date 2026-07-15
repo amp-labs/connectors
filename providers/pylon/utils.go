@@ -1,11 +1,9 @@
 package pylon
 
 import (
-	"errors"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 func inferValueTypeFromData(value any) common.ValueType {
@@ -25,30 +23,46 @@ func inferValueTypeFromData(value any) common.ValueType {
 	}
 }
 
-func addIssuesTimeWindowQuery(url *urlbuilder.URL, params common.ReadParams) error {
-	var startTime, endTime time.Time
-
-	if params.Since.IsZero() {
-		// Default to last 29 days instead of 30 to account for potential
-		// timezone transitions and microsecond precision differences that
-		// could cause the API to reject requests exceeding 30 days exactly.
-		startTime = time.Now().UTC().AddDate(0, 0, -29)
-	} else {
-		startTime = params.Since.UTC()
+// buildIssueBody constructs the POST /issues/search payload. The search endpoint has no
+// start_time/end_time parameters; a time window is instead expressed as a filter over
+// updated_at, so that issues modified after the watermark are re-read rather than only
+// newly created ones.
+//
+// filter is optional, and is omitted entirely when neither Since nor Until is set, which
+// reads every issue.
+func buildIssueBody(params common.ReadParams) (map[string]any, error) {
+	body := map[string]any{
+		"limit": searchLimit,
 	}
 
-	if params.Until.IsZero() {
-		endTime = time.Now().UTC()
-	} else {
-		endTime = params.Until.UTC()
+	subfilters := make([]map[string]any, 0, 2) //nolint:gomnd
+
+	if !params.Since.IsZero() {
+		subfilters = append(subfilters, map[string]any{
+			"field":    "updated_at",
+			"operator": "time_is_after",
+			"value":    params.Since.UTC().Format(time.RFC3339),
+		})
 	}
 
-	if endTime.Sub(startTime) > 30*24*time.Hour {
-		return errors.New("time window exceeds 30 days") // nolint:err113
+	if !params.Until.IsZero() {
+		subfilters = append(subfilters, map[string]any{
+			"field":    "updated_at",
+			"operator": "time_is_before",
+			"value":    params.Until.UTC().Format(time.RFC3339),
+		})
 	}
 
-	url.WithQueryParam("start_time", startTime.Format(time.RFC3339))
-	url.WithQueryParam("end_time", endTime.Format(time.RFC3339))
+	if len(subfilters) > 0 {
+		body["filter"] = map[string]any{
+			"operator":   "and",
+			"subfilters": subfilters,
+		}
+	}
 
-	return nil
+	if params.NextPage != "" {
+		body["cursor"] = params.NextPage.String()
+	}
+
+	return body, nil
 }
