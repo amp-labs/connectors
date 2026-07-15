@@ -122,7 +122,7 @@ func constructTestAdapter(t *testing.T, baseURL, accountID string) *Adapter {
 		},
 	}
 
-	adapter, err := NewAdapter(client, &providers.ModuleInfo{BaseURL: baseURL}, accountID)
+	adapter, err := NewAdapter(client, &providers.ModuleInfo{BaseURL: baseURL}, accountID, "")
 	if err != nil {
 		t.Fatalf("failed to construct adapter: %v", err)
 	}
