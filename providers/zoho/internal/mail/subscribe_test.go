@@ -18,7 +18,9 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-const testHookSecret = "e3b0c44298fc1c149afbf4c8996fb924"
+// testHookSecret is an arbitrary HMAC key; the tests sign their own bodies with
+// it, so the value is not sensitive — kept low-entropy to avoid secret scanners.
+const testHookSecret = "unit-test-hook-secret"
 
 // mailWebhookBody is a Zoho Mail outgoing-webhook payload for a new email, from
 // the WEBHOOK RESPONSE SAMPLE in the docs. messageId and folderId are 64-bit
