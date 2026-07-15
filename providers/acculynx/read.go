@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"net/http"
 	neturl "net/url"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -57,6 +59,18 @@ const (
 	objectSupplements = "supplements"
 	objectCalendars   = "calendars"
 )
+
+// includesByObject lists the AccuLynx ?includes= expansions applied
+// unconditionally on every read of the object. Contacts return phone/email as
+// reference-only stubs unless expanded, so we always request them — downstream
+// field filtering still drops fields the caller did not select. Object-scoped
+// (not org-scoped): the connector has no org context. Association-driven
+// includes (e.g. jobs -> contacts) are handled separately in applyIncludes.
+//
+//nolint:gochecknoglobals
+var includesByObject = map[string]string{
+	objectContacts: "emailAddress,phoneNumber",
+}
 
 type nestedSpec struct {
 	parentObject string
@@ -127,8 +141,23 @@ func (c *Connector) buildInitialURL(params common.ReadParams) (*urlbuilder.URL, 
 	}
 
 	applyPagination(url, objectName, params)
+	applyIncludes(url, objectName, params)
 
 	return url, nil
+}
+
+// applyIncludes appends AccuLynx ?includes= expansions to the read URL. Object
+// defaults come from includesByObject (always applied). Additionally, jobs
+// request the embedded contacts array only when the Job<->Contact association is
+// requested, so plain jobs reads are not bloated for orgs that did not opt in.
+func applyIncludes(url *urlbuilder.URL, objectName string, params common.ReadParams) {
+	if includes, ok := includesByObject[objectName]; ok {
+		url.WithQueryParam("includes", includes)
+	}
+
+	if objectName == objectJobs && slices.Contains(params.AssociatedObjects, jobContactsAssociation) {
+		url.WithQueryParam("includes", jobContactsAssociation)
+	}
 }
 
 func applyPagination(url *urlbuilder.URL, objectName string, params common.ReadParams) {
@@ -186,12 +215,26 @@ func (c *Connector) parseReadResponse(
 		}
 	}
 
+	marshaller := common.MakeMarshaledDataFunc(transformer)
+
+	// Attach the job's embedded contacts as associations when requested. The
+	// contacts ride inline on the job payload (?includes=contacts), so this is a
+	// pure post-process of the parsed rows — no extra API call.
+	if params.ObjectName == objectJobs &&
+		slices.Contains(params.AssociatedObjects, jobContactsAssociation) {
+		marshaller = readhelper.ChainedMarshaller(marshaller, func(rows []common.ReadResultRow) error {
+			extractJobContacts(rows)
+
+			return nil
+		})
+	}
+
 	return common.ParseResultFiltered(
 		params,
 		resp,
 		c.recordsFunc(params.ObjectName),
 		c.makeFilterFunc(params, reqURL),
-		common.MakeMarshaledDataFunc(transformer),
+		marshaller,
 		params.Fields,
 	)
 }
