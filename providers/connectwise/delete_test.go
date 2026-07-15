@@ -36,6 +36,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				If: mockcond.And{
 					mockcond.MethodDELETE(),
 					mockcond.Path("/v4_6_release/apis/3.0/company/contacts/57919"),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 				},
 				Then: mockserver.Response(http.StatusNoContent),
 			}.Server(),
@@ -50,6 +51,7 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop
 				If: mockcond.And{
 					mockcond.MethodDELETE(),
 					mockcond.Path("/v4_6_release/apis/3.0/company/contacts/57919"),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 				},
 				Then: mockserver.Response(http.StatusNotFound, errorNotFound),
 			}.Server(),

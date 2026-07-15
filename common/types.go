@@ -855,10 +855,12 @@ type SubscriptionUpdateEvent interface {
 type SubscriptionEventWithRecord interface {
 	SubscriptionEvent
 
-	// Record returns the full provider record carried inline in the webhook
-	// payload. The returned map should use the same field shape a read returns
-	// (i.e. ReadResultRow.Fields), so it can be run through the same mapping.
-	Record() (map[string]any, error)
+	// Record returns the single record carried inline in the webhook payload as a
+	// ReadResultRow, marshaled the same way a read returns it: Raw holds the full
+	// provider record and Fields holds the requested subset (lowercased), selected
+	// from the given fields. This lets callers map the inline record exactly like a
+	// fetched read, without a GetRecordsByIds call.
+	Record(fields []string) (ReadResultRow, error)
 }
 
 // CollapsedSubscriptionEvent some providers send multiple events in a single webhook payload.

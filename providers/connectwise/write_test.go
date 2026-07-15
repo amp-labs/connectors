@@ -65,6 +65,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/v4_6_release/apis/3.0/company/contacts"),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContact),
 			}.Server(),
@@ -95,6 +96,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					mockcond.MethodPUT(),
 					mockcond.Path("/v4_6_release/apis/3.0/company/contacts/57919"),
 					mockcond.Body(`{"lastName": "Sims"}`),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContact),
 			}.Server(),
@@ -131,6 +133,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						{"op":"replace","path":"/firstName","value":"Sims"},
 						{"op":"replace","path":"/customFields/1/value","value":true}
 					]`),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContact),
 			}.Server(),

@@ -56,7 +56,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v4_6_release/apis/3.0/marketing/campaigns"),
+				If: mockcond.And{
+					mockcond.Path("/v4_6_release/apis/3.0/marketing/campaigns"),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
+				},
 				Then: mockserver.ResponseChainedFuncs(
 					mockserver.Header("Link", linkHeaderRaw),
 					mockserver.Response(http.StatusOK, responseCampaignsFirstPage),
@@ -87,8 +90,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v4_6_release/apis/3.0/marketing/campaigns"),
-				Then:  mockserver.ResponseString(http.StatusOK, `[]`),
+				If: mockcond.And{
+					mockcond.Path("/v4_6_release/apis/3.0/marketing/campaigns"),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `[]`),
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
 			ExpectedErrs: nil,
@@ -101,8 +107,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v4_6_release/apis/3.0/marketing/campaigns"),
-				Then:  mockserver.Response(http.StatusOK, responseExportsEmpty),
+				If: mockcond.And{
+					mockcond.Path("/v4_6_release/apis/3.0/marketing/campaigns"),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
+				},
+				Then: mockserver.Response(http.StatusOK, responseExportsEmpty),
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
 			ExpectedErrs: nil,
@@ -118,6 +127,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				If: mockcond.And{
 					mockcond.Path("/v4_6_release/apis/3.0/company/contacts"),
 					mockcond.QueryParamsMissing("conditions"),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 				},
 				Then: mockserver.ResponseChainedFuncs(
 					mockserver.Header("Link", linkHeaderRaw),
@@ -147,8 +157,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Contacts next page consumption",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				Fields:     connectors.Fields("firstName", "lastName"),
-				NextPage:   nextPageRelative,
+				Fields: connectors.Fields("firstName", "lastName",
+					"sync_status", // the field uses Caption as the name
+					// The suffix is the constant id of a field.
+					"customField22", // sync_status field can be requested this way too.
+				),
+				NextPage: nextPageRelative,
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -157,6 +171,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					mockcond.QueryParam("pageSize", "2"),
 					mockcond.QueryParam("page", "2"),
 					mockcond.QueryParam("conditions", "LastUpdated >= [2025-04-01T20:02:28Z]"),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContacts),
 			}.Server(),
@@ -165,8 +180,10 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"firstname": "Alex",
-						"lastname":  "Morgan",
+						"firstname":     "Alex",
+						"lastname":      "Morgan",
+						"sync_status":   "pending",
+						"customfield22": "pending", // The `Fields` are always lower case
 					},
 					Raw: map[string]any{
 						"title": "Operations Manager",

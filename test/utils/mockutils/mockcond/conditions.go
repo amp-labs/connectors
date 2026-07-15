@@ -7,6 +7,12 @@ type Condition interface {
 	EvaluateCondition(w http.ResponseWriter, r *http.Request) bool
 }
 
+type CustomCondition func(w http.ResponseWriter, r *http.Request) bool
+
+func (c CustomCondition) EvaluateCondition(w http.ResponseWriter, r *http.Request) bool {
+	return c(w, r)
+}
+
 // Check is the most basic Condition. It is a function definition that allows custom implementation.
 // There are some out of the box functions in this package that have this signature.
 type Check func(w http.ResponseWriter, r *http.Request) bool
