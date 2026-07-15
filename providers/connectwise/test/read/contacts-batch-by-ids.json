@@ -2,16 +2,58 @@
   {
     "id": 57920,
     "firstName": "Maxime Schaefer [1]",
-    "lastName": "Wayne Blanda"
+    "lastName": "Wayne Blanda",
+    "customFields": [
+      {
+        "id": 53,
+        "caption": "Job Level",
+        "type": "Text",
+        "entryMethod": "EntryField",
+        "numberOfDecimals": 0,
+        "value": "Software Developer",
+        "connectWiseId": "ce9d1a73-1414-f111-bacd-1243069cda05",
+        "rowNum": 4,
+        "userDefinedFieldRecId": 53,
+        "podId": "contact_overview"
+      }
+    ]
   },
   {
     "id": 57921,
     "firstName": "Roderick Rippin [2]",
-    "lastName": "Lemuel Hackett"
+    "lastName": "Lemuel Hackett",
+    "customFields": [
+      {
+        "id": 53,
+        "caption": "Job Level",
+        "type": "Text",
+        "entryMethod": "EntryField",
+        "numberOfDecimals": 0,
+        "value": "Sales Representative",
+        "connectWiseId": "ce9d1a73-1414-f111-bacd-1243069cda05",
+        "rowNum": 4,
+        "userDefinedFieldRecId": 53,
+        "podId": "contact_overview"
+      }
+    ]
   },
   {
     "id": 57922,
     "firstName": "Randi Haag [3]",
-    "lastName": "Ferne Bradtke"
+    "lastName": "Ferne Bradtke",
+    "customFields": [
+      {
+        "id": 53,
+        "caption": "Job Level",
+        "type": "Text",
+        "entryMethod": "EntryField",
+        "numberOfDecimals": 0,
+        "value": "Manager",
+        "connectWiseId": "ce9d1a73-1414-f111-bacd-1243069cda05",
+        "rowNum": 4,
+        "userDefinedFieldRecId": 53,
+        "podId": "contact_overview"
+      }
+    ]
   }
 ]

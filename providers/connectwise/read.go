@@ -78,9 +78,12 @@ func (c *Connector) parseReadResponse(
 ) (*common.ReadResult, error) {
 	return common.ParseResult(resp,
 		// "" is used, because root level of JSON is right away an array.
-		common.ExtractRecordsFromPath(""),
+		common.MakeRecordsFunc(""),
 		nextRecordsURL(resp),
-		readhelper.MakeGetMarshaledDataWithId(readhelper.IdFieldQuery{Field: "id"}),
+		readhelper.MakeMarshaledDataFuncWithId(
+			flattenCustomFields(),
+			readhelper.IdFieldQuery{Field: "id"},
+		),
 		params.Fields,
 	)
 }

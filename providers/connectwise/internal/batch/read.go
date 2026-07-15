@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/parallelfetch"
 )
 
@@ -31,18 +32,29 @@ func Read[B any](ctx context.Context,
 	tasks := make([]parallelfetch.Task[int, readResponse[B]], len(urls))
 	for index, wrapper := range urls {
 		tasks[index] = func(ctx context.Context) (taskID int, data *readResponse[B], err error) {
-			res, err := adapter.client.Get(ctx, wrapper.URL, adapter.clientIdHeader())
-			if err != nil {
-				return index, nil, err
+			result := make(readResponse[B], 0)
+			url := wrapper.URL
+
+			// Paginated read until no `next` links is present in the header.
+			for url != "" {
+				res, err := adapter.client.Get(ctx, url, adapter.clientIdHeader())
+				if err != nil {
+					return index, nil, err
+				}
+
+				// Parse the response to obtain any API errors.
+				apiResponse, err := common.UnmarshalJSON[readResponse[B]](res)
+				if err != nil {
+					return index, nil, err
+				}
+
+				result = append(result, *apiResponse...)
+
+				// Repeat for the next page if any.
+				url = httpkit.HeaderLink(res, "next")
 			}
 
-			// Parse the response to obtain any API errors.
-			apiResponse, err := common.UnmarshalJSON[readResponse[B]](res)
-			if err != nil {
-				return index, nil, err
-			}
-
-			return index, apiResponse, nil
+			return index, &result, nil
 		}
 	}
 

@@ -29,7 +29,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 			Input: testconn.ReadByIdsParams{
 				ObjectName: "contacts",
 				RecordIds:  []string{"57920", "57921", "57922"},
-				Fields:     []string{"firstName"},
+				Fields:     []string{"firstName", "customField53", "Job Level"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -45,17 +45,29 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 			}.Server(),
 			Comparator: testconn.ComparatorSortedSubsetReadByIds,
 			Expected: []common.ReadResultRow{{
-				Id:     "57920",
-				Fields: map[string]any{"firstname": "Maxime Schaefer [1]"},
-				Raw:    map[string]any{"lastName": "Wayne Blanda"},
+				Id: "57920",
+				Fields: map[string]any{
+					"firstname":     "Maxime Schaefer [1]",
+					"customfield53": "Software Developer",
+					"job level":     "Software Developer",
+				},
+				Raw: map[string]any{"lastName": "Wayne Blanda"},
 			}, {
-				Id:     "57921",
-				Fields: map[string]any{"firstname": "Roderick Rippin [2]"},
-				Raw:    map[string]any{"lastName": "Lemuel Hackett"},
+				Id: "57921",
+				Fields: map[string]any{
+					"firstname":     "Roderick Rippin [2]",
+					"customfield53": "Sales Representative",
+					"job level":     "Sales Representative",
+				},
+				Raw: map[string]any{"lastName": "Lemuel Hackett"},
 			}, {
-				Id:     "57922",
-				Fields: map[string]any{"firstname": "Randi Haag [3]"},
-				Raw:    map[string]any{"lastName": "Ferne Bradtke"},
+				Id: "57922",
+				Fields: map[string]any{
+					"firstname":     "Randi Haag [3]",
+					"customfield53": "Manager",
+					"job level":     "Manager",
+				},
+				Raw: map[string]any{"lastName": "Ferne Bradtke"},
 			}},
 			ExpectedErrs: nil,
 		},
