@@ -119,7 +119,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					"contacts": {
 						DisplayName: "Contacts",
 						Fields: map[string]common.FieldMetadata{
-							"Mobile Phone": {
+							"customField80": {
 								DisplayName:  "Mobile Phone",
 								ValueType:    "string",
 								ProviderType: "EntryField_Text",
@@ -127,7 +127,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								IsCustom:     new(true),
 								IsRequired:   new(false),
 							},
-							"is_synced": {
+							"customField16": {
 								DisplayName:  "is_synced",
 								ValueType:    "multiSelect",
 								ProviderType: "List_Text",
@@ -142,7 +142,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									DisplayValue: "false",
 								}},
 							},
-							"Hobby": {
+							"customField83": {
 								DisplayName:  "Hobby",
 								ValueType:    "multiSelect",
 								ProviderType: "List_Text",
@@ -163,7 +163,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									DisplayValue: "Hiking",
 								}},
 							},
-							"Chooser": {
+							"customField88": {
 								DisplayName:  "Chooser",
 								ValueType:    "singleSelect",
 								ProviderType: "Option_Text",

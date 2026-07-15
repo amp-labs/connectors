@@ -23,7 +23,7 @@ func main() {
 
 	testscenario.ReadThroughPagesFieldsOnly(ctx, conn, common.ReadParams{
 		ObjectName: "contacts",
-		Fields:     datautils.NewSet("firstName", "lastName", "customField15", "LinkedIn URL"),
+		Fields:     datautils.NewSet("firstName", "lastName", "customField15"),
 		Since:      time.Now().Add(-1 * time.Hour * 24 * 15),
 		PageSize:   1000,
 	})

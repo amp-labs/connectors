@@ -158,9 +158,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "contacts",
 				Fields: connectors.Fields("firstName", "lastName",
-					"sync_status", // the field uses Caption as the name
-					// The suffix is the constant id of a field.
-					"customField22", // sync_status field can be requested this way too.
+					"customField22", // sync_status.
 				),
 				NextPage: nextPageRelative,
 			},
@@ -182,7 +180,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Fields: map[string]any{
 						"firstname":     "Alex",
 						"lastname":      "Morgan",
-						"sync_status":   "pending",
 						"customfield22": "pending", // The `Fields` are always lower case
 					},
 					Raw: map[string]any{

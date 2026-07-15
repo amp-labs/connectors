@@ -42,8 +42,7 @@ func (c *Connector) ListObjectMetadata(
 				Values:       field.getValues(),
 			}
 
-			objectMetadata.AddFieldMetadata(field.makeFieldName1(), fieldMetadata)
-			objectMetadata.AddFieldMetadata(field.makeFieldName2(), fieldMetadata)
+			objectMetadata.AddFieldMetadata(field.makeFieldName(), fieldMetadata)
 		}
 
 		// Write the modified metadata back to the map
