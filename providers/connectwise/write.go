@@ -6,8 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -17,24 +20,9 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	method := http.MethodPost
-
-	// By contract, WriteParams.RecordData holds the JSON payload.
-	// For updates, we may need to switch to PATCH (JSON Patch) or use PUT (replace).
-	data := params.RecordData
-	if params.IsUpdate() {
-		url.AddPath(params.RecordId)
-
-		// If the incoming WriteParams.RecordData represents a JSON Patch payload, we must use HTTP PATCH.
-		// Important: the connector's internal contract requires RecordData
-		// to be a JSON object, not a top-level JSON array.
-		// However, ConnectWise provider expects a PATCH body as a bare JSON array.
-		if payload, ok := extractPatchPayload(params); ok {
-			method = http.MethodPatch
-			data = payload.Patch
-		} else {
-			method = http.MethodPut
-		}
+	data, method, err := makeWritePayload(params, url)
+	if err != nil {
+		return nil, err
 	}
 
 	jsonData, err := json.Marshal(data)
@@ -50,6 +38,133 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	c.clientIdHeader().ApplyToRequest(req)
 
 	return req, nil
+}
+
+// Returns payload, http method and modifies URL to include the record id in its path for update write case.
+func makeWritePayload(params common.WriteParams, url *urlbuilder.URL) (any, string, error) {
+	if params.IsUpdate() {
+		url.AddPath(params.RecordId)
+
+		return makeWriteUpdatePayload(params)
+	}
+
+	return makeWriteCreatePayload(params)
+}
+
+func makeWriteCreatePayload(params common.WriteParams) (any, string, error) {
+	record, err := params.GetRecord()
+	payloadWithCustomFields(record)
+
+	return record, http.MethodPost, err
+}
+
+func payloadWithCustomFields(record common.Record) {
+	if record == nil {
+		// No-op. Nothing to modify.
+		return
+	}
+
+	customFields := make([]map[string]any, 0)
+
+	for key, value := range record {
+		if key == "customFields" {
+			continue
+		}
+
+		if fieldIdStr, ok := strings.CutPrefix(key, "customField"); ok {
+			fieldId, err := strconv.Atoi(fieldIdStr)
+			if err != nil {
+				continue
+			}
+
+			// This is in-house field, shouldn't be part of actual payload.
+			delete(record, key)
+
+			customFields = append(customFields, map[string]any{
+				"id":    fieldId,
+				"value": value,
+			})
+		}
+	}
+
+	if len(customFields) != 0 {
+		record["customFields"] = customFields
+	}
+}
+
+// By contract, WriteParams.RecordData holds the JSON payload.
+// For updates, we may need to switch to PATCH (JSON Patch) or use PUT (replace).
+func makeWriteUpdatePayload(params common.WriteParams) (any, string, error) {
+	// If the incoming WriteParams.RecordData represents a JSON Patch payload, we must use HTTP PATCH.
+	// Important: the connector's internal contract requires RecordData
+	// to be a JSON object, not a top-level JSON array.
+	// However, ConnectWise provider expects a PATCH body as a bare JSON array.
+	if payload, ok := extractPatchPayload(params); ok {
+		data := payloadPatchWithCustomFields(params.ObjectName, payload.Patch)
+
+		return data, http.MethodPatch, nil
+	}
+
+	record, err := params.GetRecord()
+	payloadWithCustomFields(record)
+
+	return record, http.MethodPut, err
+}
+
+// payloadPatchWithCustomFields normalizes PATCH payloads for objects that support custom fields.
+//
+// ConnectWise has an unusual requirement for PATCH requests: if an object supports custom fields,
+// the request must include the customFields container, otherwise the API returns 400 Bad Request.
+// To satisfy this requirement, this function always emits a /customFields replace operation for
+// supported objects, even when the caller is only updating non-custom-field properties.
+//
+// Individual patch operations targeting custom fields are converted into entries in the
+// /customFields array in the form {id, value}. Only the fields explicitly mentioned are included.
+// Unlike the ConnectWise documentation suggests, omitting a custom field from the array does not
+// wipe it out, and sending an empty array does not clear existing custom field values.
+//
+// For objects that do not support custom fields, the payload is returned unchanged.
+// Non-custom-field patch operations are preserved as-is.
+func payloadPatchWithCustomFields(objectName string, payloads []patchOperationPayload) []patchOperationPayload {
+	if !objectsSupportingCustomFields.Has(objectName) {
+		// Nothing to do.
+		return payloads
+	}
+
+	customFields := make([]map[string]any, 0)
+	result := make([]patchOperationPayload, 0)
+
+	for _, payload := range payloads {
+		// Path may start with slash. Normalize it.
+		path, _ := strings.CutPrefix(payload.Path, "/")
+
+		fieldIdStr, ok := strings.CutPrefix(path, "customField")
+		if !ok {
+			result = append(result, payload)
+
+			continue
+		}
+
+		fieldId, err := strconv.Atoi(fieldIdStr)
+		if err != nil {
+			result = append(result, payload)
+
+			continue
+		}
+
+		customFields = append(customFields, map[string]any{
+			"id":    fieldId,
+			"value": payload.Value,
+		})
+	}
+
+	result = append(result, patchOperationPayload{
+		Op:    "replace",
+		Path:  "/customFields",
+		Value: customFields,
+	})
+
+	return result
 }
 
 func (c *Connector) parseWriteResponse(

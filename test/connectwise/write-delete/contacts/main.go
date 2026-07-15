@@ -15,8 +15,10 @@ import (
 )
 
 type payload struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
+	FirstName            string `json:"firstName"`
+	LastName             string `json:"lastName"`
+	CustomFieldMarketing bool   `json:"customField59"`
+	CustomFieldHobby     string `json:"customField83"`
 }
 
 type patchPayload struct {
@@ -49,15 +51,22 @@ func main() {
 	testscenario.ValidateCreateUpdateDelete(ctx, conn,
 		"contacts",
 		payload{
-			FirstName: firstName,
-			LastName:  lastName,
+			FirstName:            firstName,
+			LastName:             lastName,
+			CustomFieldHobby:     "Traveling",
+			CustomFieldMarketing: true,
 		},
 		payload{
-			FirstName: updatedFirstName,
-			LastName:  updatedLastName,
+			FirstName:            updatedFirstName,
+			LastName:             updatedLastName,
+			CustomFieldHobby:     "Skiing",
+			CustomFieldMarketing: false,
 		},
 		testscenario.CRUDTestSuite{
-			ReadFields: datautils.NewSet("id", "firstName", "lastName"),
+			ReadFields: datautils.NewSet("id", "firstName", "lastName",
+				"customField83",
+				"customField59",
+			),
 			SearchBy: testscenario.Property{
 				Key:   "firstname",
 				Value: firstName,
@@ -65,8 +74,10 @@ func main() {
 			},
 			RecordIdentifierKey: "id",
 			UpdatedFields: map[string]string{
-				"firstname": updatedFirstName,
-				"lastname":  updatedLastName,
+				"firstname":     updatedFirstName,
+				"lastname":      updatedLastName,
+				"customfield83": "Skiing",
+				"customfield59": "false",
 			},
 		},
 	)
@@ -77,15 +88,12 @@ func main() {
 	testscenario.ValidateCreateUpdateDelete(ctx, conn,
 		"contacts",
 		payload{
-			FirstName: firstName,
-			LastName:  lastName,
+			FirstName:            firstName,
+			LastName:             lastName,
+			CustomFieldHobby:     "Traveling",
+			CustomFieldMarketing: true,
 		},
 		patchPayload{Patch: []patchOperation{{
-			// Not clear why this is needed. This was discovered by trial and error.
-			Op:    "replace",
-			Path:  "/customFields/1/value",
-			Value: true,
-		}, {
 			Op:    "replace",
 			Path:  "firstName",
 			Value: updatedFirstName,
@@ -93,9 +101,16 @@ func main() {
 			Op:    "replace",
 			Path:  "/lastName",
 			Value: updatedLastName,
+		}, {
+			Op:    "replace",
+			Path:  "/customField83", // Handled and translated by connector.
+			Value: "Hiking",
 		}}},
 		testscenario.CRUDTestSuite{
-			ReadFields: datautils.NewSet("id", "firstName", "lastName"),
+			ReadFields: datautils.NewSet("id", "firstName", "lastName",
+				"customField83",
+				"customField59",
+			),
 			SearchBy: testscenario.Property{
 				Key:   "firstname",
 				Value: firstName,
@@ -103,8 +118,10 @@ func main() {
 			},
 			RecordIdentifierKey: "id",
 			UpdatedFields: map[string]string{
-				"firstname": updatedFirstName,
-				"lastname":  updatedLastName,
+				"firstname":     updatedFirstName,
+				"lastname":      updatedLastName,
+				"customfield83": "Hiking",
+				"customfield59": "true",
 			},
 		},
 	)

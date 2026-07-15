@@ -58,13 +58,16 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
-			Name:  "Create task via POST",
-			Input: common.WriteParams{ObjectName: "contacts", RecordData: "dummy"},
+			Name: "Create task via POST",
+			Input: common.WriteParams{ObjectName: "contacts", RecordData: map[string]any{
+				"customField83": "Traveling",
+			}},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/v4_6_release/apis/3.0/company/contacts"),
+					mockcond.Body(`{"customFields":[{"id":83,"value":"Traveling"}]}`),
 					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContact),
@@ -87,7 +90,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				ObjectName: "contacts",
 				RecordId:   "57919",
 				RecordData: map[string]any{
-					"lastName": "Sims",
+					"lastName":      "Sims",
+					"customField83": "Skiing",
 				},
 			},
 			Server: mockserver.Conditional{
@@ -95,7 +99,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				If: mockcond.And{
 					mockcond.MethodPUT(),
 					mockcond.Path("/v4_6_release/apis/3.0/company/contacts/57919"),
-					mockcond.Body(`{"lastName": "Sims"}`),
+					mockcond.Body(`{"customFields":[{"id":83,"value":"Skiing"}],"lastName":"Sims"}`),
 					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 				},
 				Then: mockserver.Response(http.StatusOK, responseContact),
@@ -120,7 +124,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				RecordData: map[string]any{
 					"patch": []any{
 						map[string]any{"op": "replace", "path": "/firstName", "value": "Sims"},
-						map[string]any{"op": "replace", "path": "/customFields/1/value", "value": true},
+						map[string]any{"op": "replace", "path": "/customField53", "value": "Software Developer"},
+						map[string]any{"op": "replace", "path": "/customField83", "value": "Hiking"},
 					},
 				},
 			},
@@ -131,7 +136,10 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					mockcond.Path("/v4_6_release/apis/3.0/company/contacts/57919"),
 					mockcond.Body(`[
 						{"op":"replace","path":"/firstName","value":"Sims"},
-						{"op":"replace","path":"/customFields/1/value","value":true}
+						{"op":"replace","path":"/customFields","value": [
+							{"id":53,"value":"Software Developer"},
+							{"id":83,"value":"Hiking"}
+						]}
 					]`),
 					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 				},
