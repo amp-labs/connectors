@@ -101,7 +101,8 @@ func msBuildTokenRequest(ctx context.Context, state AuthContext) (AuthContext, *
 func init() {
 	// Token exchange is reused for both the second connect step and refresh.
 	tokenStep := HTTPStep{
-		BuildRequest:  msBuildTokenRequest,
+		BuildRequest: msBuildTokenRequest,
+		//nolint:bodyclose // the response is owned and closed by the custom-auth executor's doHTTP
 		ParseResponse: ExtractJSONSecrets(map[string]string{"access_token": "accessToken"}),
 	}
 
