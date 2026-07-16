@@ -17,6 +17,64 @@ import (
 // exchange the app's client credentials for a Graph token.
 const MicrosoftAdminConsent Provider = "microsoftAdminConsent"
 
+func init() {
+	// Token exchange is reused for both the second connect step and refresh.
+	tokenStep := HTTPStep{
+		BuildRequest: msBuildTokenRequest,
+		//nolint:bodyclose // the response is owned and closed by the custom-auth executor's doHTTP
+		ParseResponse: ExtractJSONSecrets(map[string]string{"access_token": "accessToken"}),
+	}
+
+	SetInfo(MicrosoftAdminConsent, ProviderInfo{
+		DisplayName: "Microsoft (Admin consent)",
+		AuthType:    Custom,
+		BaseURL:     "https://graph.microsoft.com",
+		AuthHealthCheck: &AuthHealthCheck{
+			Method:             http.MethodGet,
+			SuccessStatusCodes: []int{http.StatusOK},
+			Url:                "https://graph.microsoft.com/v1.0/organization",
+		},
+		CustomOpts: &CustomAuthOpts{
+			MultiStep: true,
+			// Builder-configured app credentials. Declaring them signals that this
+			// provider needs a provider app and drives the dashboard form; clientId/
+			// clientSecret map to the provider app's reserved columns. The tenant is
+			// captured into Metadata as `workspace` by the callback.
+			ProviderInputs: []CustomAuthInput{
+				{Name: "clientId", DisplayName: "Client ID", FieldType: FieldTypeText},
+				{Name: "clientSecret", DisplayName: "Client Secret", FieldType: FieldTypePassword},
+			},
+			Headers: []CustomAuthHeader{
+				{Name: "Authorization", ValueTemplate: "Bearer {{ .accessToken }}"},
+			},
+		},
+		Support: Support{
+			Proxy:     true,
+			Read:      true,
+			Subscribe: false,
+			Write:     true,
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328808/media/microsoft_1722328808.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328785/media/microsoft_1722328785.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328808/media/microsoft_1722328808.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328785/media/microsoft_1722328785.svg",
+			},
+		},
+	})
+
+	RegisterCustomAuthFlow(MicrosoftAdminConsent, CustomAuthFlow{
+		ConnectSteps: []AuthStep{
+			{Redirect: &RedirectStep{BuildURL: msBuildConsentURL, ParseCallback: msParseConsentCallback}},
+			{HTTP: &tokenStep},
+		},
+		RefreshSteps: []HTTPStep{tokenStep},
+	})
+}
+
 const (
 	msAdminConsentURL     = "https://login.microsoftonline.com/organizations/adminconsent"
 	msExchangeURLTemplate = "https://login.microsoftonline.com/%s/oauth2/v2.0/token"
@@ -96,62 +154,4 @@ func msBuildTokenRequest(ctx context.Context, state AuthContext) (AuthContext, *
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	return state, req, nil
-}
-
-func init() {
-	// Token exchange is reused for both the second connect step and refresh.
-	tokenStep := HTTPStep{
-		BuildRequest: msBuildTokenRequest,
-		//nolint:bodyclose // the response is owned and closed by the custom-auth executor's doHTTP
-		ParseResponse: ExtractJSONSecrets(map[string]string{"access_token": "accessToken"}),
-	}
-
-	SetInfo(MicrosoftAdminConsent, ProviderInfo{
-		DisplayName: "Microsoft (Admin consent)",
-		AuthType:    Custom,
-		BaseURL:     "https://graph.microsoft.com",
-		AuthHealthCheck: &AuthHealthCheck{
-			Method:             http.MethodGet,
-			SuccessStatusCodes: []int{http.StatusOK},
-			Url:                "https://graph.microsoft.com/v1.0/organization",
-		},
-		CustomOpts: &CustomAuthOpts{
-			MultiStep: true,
-			// Builder-configured app credentials. Declaring them signals that this
-			// provider needs a provider app and drives the dashboard form; clientId/
-			// clientSecret map to the provider app's reserved columns. The tenant is
-			// captured into Metadata as `workspace` by the callback.
-			ProviderInputs: []CustomAuthInput{
-				{Name: "clientId", DisplayName: "Client ID", FieldType: FieldTypeText},
-				{Name: "clientSecret", DisplayName: "Client Secret", FieldType: FieldTypePassword},
-			},
-			Headers: []CustomAuthHeader{
-				{Name: "Authorization", ValueTemplate: "Bearer {{ .accessToken }}"},
-			},
-		},
-		Support: Support{
-			Proxy:     true,
-			Read:      true,
-			Subscribe: false,
-			Write:     true,
-		},
-		Media: &Media{
-			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328808/media/microsoft_1722328808.png",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328785/media/microsoft_1722328785.svg",
-			},
-			Regular: &MediaTypeRegular{
-				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328808/media/microsoft_1722328808.png",
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722328785/media/microsoft_1722328785.svg",
-			},
-		},
-	})
-
-	RegisterCustomAuthFlow(MicrosoftAdminConsent, CustomAuthFlow{
-		ConnectSteps: []AuthStep{
-			{Redirect: &RedirectStep{BuildURL: msBuildConsentURL, ParseCallback: msParseConsentCallback}},
-			{HTTP: &tokenStep},
-		},
-		RefreshSteps: []HTTPStep{tokenStep},
-	})
 }
