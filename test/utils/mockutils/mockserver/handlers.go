@@ -1,6 +1,10 @@
 package mockserver
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/amp-labs/connectors/test/utils/testconn"
+)
 
 // ContentJSON is a setup handler, which configures server to use JSON.
 func ContentJSON() http.HandlerFunc {
@@ -39,6 +43,11 @@ func ContentMIME(mediaType string) http.HandlerFunc {
 
 func Header(headerName, headerValue string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if mockServerUrl := r.Context().Value(testconn.URLTestServer); mockServerUrl != nil {
+			url := mockServerUrl.(string)
+			headerValue = testconn.ResolveTestServerURL(headerValue, url)
+		}
+
 		w.Header().Set(headerName, headerValue)
 	}
 }

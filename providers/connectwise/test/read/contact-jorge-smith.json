@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "firstName": "Jorge",
+    "lastName": "Smith",
+    "company": {
+      "id": 19297,
+      "identifier": "TestCompany",
+      "name": "Test Company",
+      "_info": {
+      }
+    },
+    "site": {
+      "id": 1002,
+      "name": "Main",
+      "_info": {
+      }
+    },
+    "relationship": {
+      "id": 2,
+      "name": "Payments",
+      "_info": {}
+    },
+    "department": {
+      "id": 2,
+      "name": "Finance",
+      "_info": {}
+    },
+    "inactiveFlag": false,
+    "title": "President",
+    "marriedFlag": false,
+    "childrenFlag": false,
+    "disablePortalLoginFlag": true,
+    "unsubscribeFlag": false,
+    "mobileGuid": "a6ef5023-5d8e-4609-bdfe-de2e3a4d634d",
+    "defaultPhoneType": "Phone - Direct",
+    "defaultPhoneNbr": "8135555555",
+    "defaultBillingFlag": true,
+    "defaultFlag": false,
+    "companyLocation": {},
+    "communicationItems": [
+      {
+        "id": 44102,
+        "type": {
+          "id": 22,
+          "name": "Phone - Direct",
+          "_info": {
+            "type_href": "https://sandbox-na.myconnectwise.net/v4_6_release/apis/3.0//company/communicationTypes/2"
+          }
+        },
+        "value": "+13344455",
+        "defaultFlag": true,
+        "communicationType": "Phone"
+      },
+      {
+        "id": 99677,
+        "type": {
+          "id": 55,
+          "name": "Landline",
+          "_info": {
+            "type_href": "https://sandbox-na.myconnectwise.net/v4_6_release/apis/3.0//company/communicationTypes/27"
+          }
+        },
+        "value": "+10203005",
+        "defaultFlag": false,
+        "communicationType": "Phone"
+      }
+    ],
+    "types": [
+      {
+        "id": 2,
+        "name": "Decision Maker",
+        "_info": {}
+      }
+    ],
+    "customFields": [],
+    "ignoreDuplicates": false,
+    "_info": {}
+  }
+]

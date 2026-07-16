@@ -1,0 +1,10 @@
+[
+  {
+    "id": 7,
+    "description": "Fax - Home",
+    "phoneFlag": false,
+    "faxFlag": true,
+    "emailFlag": false,
+    "defaultFlag": false
+  }
+]

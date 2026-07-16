@@ -16,6 +16,19 @@
         "userDefinedFieldRecId": 53,
         "podId": "contact_overview"
       }
+    ],
+    "communicationItems": [
+      {
+        "id": 101,
+        "type": {
+          "id": 111,
+          "name": "Phone - Direct",
+          "_info": {}
+        },
+        "value": "+123",
+        "defaultFlag": true,
+        "communicationType": "Phone"
+      }
     ]
   },
   {
@@ -35,6 +48,19 @@
         "userDefinedFieldRecId": 53,
         "podId": "contact_overview"
       }
+    ],
+    "communicationItems": [
+      {
+        "id": 101,
+        "type": {
+          "id": 222,
+          "name": "Phone - Direct",
+          "_info": {}
+        },
+        "value": "+456",
+        "defaultFlag": true,
+        "communicationType": "Phone"
+      }
     ]
   },
   {
@@ -53,6 +79,30 @@
         "rowNum": 4,
         "userDefinedFieldRecId": 53,
         "podId": "contact_overview"
+      }
+    ],
+    "communicationItems": [
+      {
+        "id": 101,
+        "type": {
+          "id": 222,
+          "name": "Phone - Direct",
+          "_info": {}
+        },
+        "value": "+456",
+        "defaultFlag": false,
+        "communicationType": "Phone"
+      },
+      {
+        "id": 101,
+        "type": {
+          "id": 333,
+          "name": "Phone - Direct",
+          "_info": {}
+        },
+        "value": "+789",
+        "defaultFlag": true,
+        "communicationType": "Phone"
       }
     ]
   }

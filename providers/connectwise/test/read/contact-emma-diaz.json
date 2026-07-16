@@ -1,0 +1,77 @@
+[
+  {
+    "id": 58118,
+    "firstName": "Emma",
+    "lastName": "Diaz",
+    "company": {
+      "id": 250,
+      "identifier": "Bob Technology Service",
+      "name": "Bob Technology Services",
+      "_info": {}
+    },
+    "site": {
+      "id": 1000,
+      "name": "Main",
+      "_info": {}
+    },
+    "relationshipOverride": "",
+    "inactiveFlag": false,
+    "marriedFlag": false,
+    "childrenFlag": false,
+    "portalSecurityLevel": 1,
+    "disablePortalLoginFlag": true,
+    "unsubscribeFlag": false,
+    "mobileGuid": "5732b408-0c46-4c84-8d01-235a722c3a00",
+    "defaultPhoneType": "Work Landline",
+    "defaultPhoneNbr": "+166155555",
+    "defaultBillingFlag": false,
+    "defaultFlag": false,
+    "companyLocation": {},
+    "communicationItems": [
+      {
+        "id": 99677,
+        "type": {
+          "id": 27,
+          "name": "Work Landline",
+          "_info": {
+            "type_href": "https://sandbox-na.myconnectwise.net/v4_6_release/apis/3.0//company/communicationTypes/27"
+          }
+        },
+        "value": "+166155555",
+        "defaultFlag": true,
+        "communicationType": "Phone"
+      },
+      {
+        "id": 99678,
+        "type": {
+          "id": 20,
+          "name": "Personal Fax",
+          "_info": {
+            "type_href": "https://sandbox-na.myconnectwise.net/v4_6_release/apis/3.0//company/communicationTypes/20"
+          }
+        },
+        "value": "6548568",
+        "defaultFlag": true,
+        "communicationType": "Fax"
+      },
+      {
+        "id": 99679,
+        "type": {
+          "id": 14,
+          "name": "Shared Mailbox",
+          "_info": {
+            "type_href": "https://sandbox-na.myconnectwise.net/v4_6_release/apis/3.0//company/communicationTypes/14"
+          }
+        },
+        "value": "emma@test.com",
+        "defaultFlag": true,
+        "domain": "@test.com",
+        "communicationType": "Email"
+      }
+    ],
+    "types": [],
+    "customFields": [],
+    "ignoreDuplicates": false,
+    "_info": {}
+  }
+]

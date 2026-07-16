@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) {
@@ -43,7 +44,9 @@ func TestListObjectMetadata(t *testing.T) {
 						},
 					},
 				},
-				Errors: nil,
+				Errors: map[string]error{
+					"users": testutils.StringError("cannot resolve custom fields"),
+				},
 			},
 			Comparator:   testconn.ComparatorSubsetMetadata,
 			ExpectedErrs: nil,
@@ -68,7 +71,9 @@ func TestListObjectMetadata(t *testing.T) {
 						},
 					},
 				},
-				Errors: nil,
+				Errors: map[string]error{
+					"groups": testutils.StringError("cannot resolve custom fields"),
+				},
 			},
 			Comparator:   testconn.ComparatorSubsetMetadata,
 			ExpectedErrs: nil,
@@ -281,7 +286,10 @@ func TestListObjectMetadata(t *testing.T) {
 						},
 					},
 				},
-				Errors: nil,
+				Errors: map[string]error{
+					"users":  testutils.StringError("cannot resolve custom fields"),
+					"groups": testutils.StringError("cannot resolve custom fields"),
+				},
 			},
 			Comparator:   testconn.ComparatorSubsetMetadata,
 			ExpectedErrs: nil,

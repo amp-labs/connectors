@@ -14,42 +14,33 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// flattenCustomFields returns a RecordTransformer that lifts customFields
-// from the nested ConnectWise response into the top-level record map.
-func flattenCustomFields() common.RecordTransformer {
-	return func(node *ajson.Node) (map[string]any, error) {
-		customFields, err := jsonquery.New(node).ArrayOptional("customFields")
-		if err != nil {
-			return nil, err
-		}
-
-		root, err := jsonquery.Convertor.ObjectToMap(node)
-		if err != nil {
-			return nil, err
-		}
-
-		if len(customFields) == 0 {
-			// This object doesn't have custom fields defined.
-			// Nothing to attach. Must return raw root as is.
-			return root, nil
-		}
-
-		fields := make(map[string]any)
-
-		for _, customField := range customFields {
-			field, err := jsonquery.ParseNode[readCustomField](customField)
-			if err != nil {
-				return nil, err
-			}
-
-			fields[field.makeFieldName()] = field.Value
-		}
-
-		// Move custom fields to the top root level.
-		maps.Copy(root, fields)
-
-		return root, nil
+func attachCustomFields(node *ajson.Node, root map[string]any) error {
+	customFields, err := jsonquery.New(node).ArrayOptional("customFields")
+	if err != nil {
+		return err
 	}
+
+	if len(customFields) == 0 {
+		// This object doesn't have custom fields defined.
+		// Nothing to attach.
+		return nil
+	}
+
+	fields := make(map[string]any)
+
+	for _, customField := range customFields {
+		field, err := jsonquery.ParseNode[readCustomField](customField)
+		if err != nil {
+			return err
+		}
+
+		fields[field.makeFieldName()] = field.Value
+	}
+
+	// Move custom fields to the top root level.
+	maps.Copy(root, fields)
+
+	return nil
 }
 
 // requestCustomFields fetches custom field definitions for objectName.

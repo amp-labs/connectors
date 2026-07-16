@@ -17,6 +17,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	errorNotFound := testutils.DataFromFile(t, "read/not-found.json")
 	responseContacts := testutils.DataFromFile(t, "read/contacts.json")
+	responseContactNoItems := testutils.DataFromFile(t, "read/contact-frank-fenrir.json")
+	responseContactPartialItems := testutils.DataFromFile(t, "read/contact-jorge-smith.json")
+	responseContactAllItems := testutils.DataFromFile(t, "read/contact-emma-diaz.json")
 	responseCampaignsFirstPage := []byte(`[{"name": "Weekly Update #33", "id": 123}]`)
 	responseExportsEmpty := []byte(`[]`)
 
@@ -186,6 +189,96 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"title": "Operations Manager",
 					},
 					Id: "31045",
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Contact with no communication items",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields: connectors.Fields(
+					"AMPERSAND-email7", "AMPERSAND-fax7", "AMPERSAND-phone7",
+					"AMPERSAND-email-default", "AMPERSAND-fax-default", "AMPERSAND-phone-default",
+				),
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseContactNoItems),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"ampersand-email7":        nil,
+						"ampersand-fax7":          nil,
+						"ampersand-phone7":        nil,
+						"ampersand-email-default": nil,
+						"ampersand-fax-default":   nil,
+						"ampersand-phone-default": nil,
+					},
+					Raw: map[string]any{"id": float64(58001)},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Contact with some communication items of same phone type",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("AMPERSAND-phone22", "AMPERSAND-phone55", "AMPERSAND-phone-default"),
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseContactPartialItems),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"ampersand-phone22":       "+13344455",
+						"ampersand-phone55":       "+10203005",
+						"ampersand-phone-default": "22",
+					},
+					Raw: map[string]any{"id": float64(1)},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Contact with all communication items",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields: connectors.Fields(
+					"AMPERSAND-email14", "AMPERSAND-fax20", "AMPERSAND-phone27",
+					"AMPERSAND-email-default", "AMPERSAND-fax-default", "AMPERSAND-phone-default",
+				),
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseContactAllItems),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"ampersand-email14":       "emma@test.com",
+						"ampersand-fax20":         "6548568",
+						"ampersand-phone27":       "+166155555",
+						"ampersand-email-default": "14",
+						"ampersand-fax-default":   "20",
+						"ampersand-phone-default": "27",
+					},
+					Raw: map[string]any{"id": float64(58118)},
 				}},
 				NextPage: "",
 				Done:     true,

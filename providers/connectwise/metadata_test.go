@@ -21,6 +21,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	responseContactSample := testutils.DataFromFile(t, "read/one-contact.json")
 	responseCustomFields := testutils.DataFromFile(t, "custom-fields/definitions.json")
+	responseCommunicationItems1 := testutils.DataFromFile(t, "metadata/communication-items/1-first-page.json")
+	responseCommunicationItems2 := testutils.DataFromFile(t, "metadata/communication-items/2-last-page.json")
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
@@ -41,34 +43,20 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
-			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"contacts", "companies"},
-			Server:     mockserver.Dummy(),
+			Name:  "Successfully describe companies with metadata",
+			Input: []string{"companies"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v4_6_release/apis/3.0/company/companies"),
+					mockcond.QueryParam("pageSize", "1"),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `[]`),
+			}.Server(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"contacts": {
-						DisplayName: "Contacts",
-						Fields: map[string]common.FieldMetadata{
-							"firstName": {
-								DisplayName:  "firstName",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-							"gender": {
-								DisplayName:  "gender",
-								ValueType:    "singleSelect",
-								ProviderType: "string",
-								Values: []common.FieldValue{{
-									Value:        "Female",
-									DisplayValue: "Female",
-								}, {
-									Value:        "Male",
-									DisplayValue: "Male",
-								}},
-							},
-						},
-					},
 					"companies": {
 						DisplayName: "Companies",
 						Fields: map[string]common.FieldMetadata{
@@ -111,6 +99,26 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 					},
 					Then: mockserver.Response(http.StatusOK, responseCustomFields),
+				}, {
+					// List communication items.
+					If: mockcond.And{
+						mockcond.Path("/v4_6_release/apis/3.0/company/communicationTypes"),
+						mockcond.QueryParamsMissing("page"),
+						mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
+					},
+					Then: mockserver.ResponseChainedFuncs(
+						mockserver.Header("Link", `<`+testconn.URLTestServer+
+							`/v4_6_release/apis/3.0/company/communicationTypes?page=2>; rel="next"`,
+						),
+						mockserver.Response(http.StatusOK, responseCommunicationItems1),
+					),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/v4_6_release/apis/3.0/company/communicationTypes"),
+						mockcond.QueryParam("page", "2"),
+						mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCommunicationItems2),
 				}},
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetMetadata,
@@ -119,6 +127,23 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					"contacts": {
 						DisplayName: "Contacts",
 						Fields: map[string]common.FieldMetadata{
+							"firstName": {
+								DisplayName:  "firstName",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"gender": {
+								DisplayName:  "gender",
+								ValueType:    "singleSelect",
+								ProviderType: "string",
+								Values: []common.FieldValue{{
+									Value:        "Female",
+									DisplayValue: "Female",
+								}, {
+									Value:        "Male",
+									DisplayValue: "Male",
+								}},
+							},
 							"customField80": {
 								DisplayName:  "Mobile Phone",
 								ValueType:    "string",
@@ -180,6 +205,86 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									Value:        "Party3",
 									DisplayValue: "Party3",
 								}},
+							},
+							"AMPERSAND-email1": {
+								DisplayName:  "Email - Business",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-email2": {
+								DisplayName:  "Email - Private",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-phone3": {
+								DisplayName:  "Phone - Work",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-phone4": {
+								DisplayName:  "Phone - Home",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-phone5": {
+								DisplayName:  "Phone - Landline",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-fax6": {
+								DisplayName:  "Fax - Work",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-fax7": {
+								DisplayName:  "Fax - Home",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-email-default": {
+								DisplayName:  "Default communication item for Email",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-phone-default": {
+								DisplayName:  "Default communication item for Phone",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-fax-default": {
+								DisplayName:  "Default communication item for Fax",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 							},
 						},
 					},

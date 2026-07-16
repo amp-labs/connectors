@@ -139,7 +139,11 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				Errors: nil,
+				Errors: map[string]error{
+					"workspaces": testutils.StringError(
+						`HTTP status 500: server error: {"error": {"message": "condition failed"}}`,
+					),
+				},
 			},
 			ExpectedErrs: nil,
 		},

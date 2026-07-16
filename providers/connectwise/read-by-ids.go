@@ -32,7 +32,7 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 	}
 
 	marshaler := readhelper.MakeMarshaledDataFuncWithId(
-		flattenCustomFields(),
+		recordTransformer(objectName),
 		readhelper.IdFieldQuery{Field: "id"},
 	)
 	uniqueFields := datautils.NewSetFromList(fields).List()
