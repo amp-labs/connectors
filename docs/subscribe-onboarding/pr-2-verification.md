@@ -25,6 +25,12 @@ VerifyWebhookMessage(
 Return `true` to allow webhook processing, `false` to reject as untrusted, and an `error` only for
 *unexpected* failures.
 
+`WebhookVerifierConnector` embeds `Connector` and `BatchRecordReaderConnector`, so implementing it also
+requires `GetRecordsByIds` (the compiler enforces this). That's by design: a webhook event carries only
+the affected record's **id and event metadata**, not the record body — after the event is parsed, the
+server fetches the full record via `GetRecordsByIds`. So your event types only need to expose the object
+name, record id, and event type.
+
 Plus a provider-specific `VerificationParams` struct (the caller fills it in per installation) and one
 or more event types.
 
@@ -85,10 +91,25 @@ var (
 See [`providers/salesloft/subscribeEvent.go`](../../providers/salesloft/subscribeEvent.go) for a
 complete, readable implementation.
 
+> **The concrete `CollapsedSubscriptionEvent` type must be exported** and defined as a type convertible
+> from `map[string]any`. The server converts the raw webhook payload to it by name —
+> `<provider>.CollapsedSubscriptionEvent(rawEvent)` in `shared/subscribe/providers/events.go` — then
+> calls `SubscriptionEventList()`. This also means enabling a new provider requires adding a `case` for
+> it to that server-side switch (ENG-3785 tracks refactoring this). The per-event `SubscriptionEvent` /
+> `SubscriptionUpdateEvent` types only need to satisfy their `common` interfaces; they don't need to be
+> exported for this path.
+
 ## Verification
 
 `VerifyWebhookMessage(ctx, request *common.WebhookRequest, params *common.VerificationParams)` receives
 two objects, both populated by the caller:
+
+> **`VerifyWebhookMessage` cannot rely on the connector's authenticated client.** On the server the
+> verifier connector is instantiated as a bare zero value (`&<provider>.Connector{}` in
+> `shared/subscribe/providers/*.go`) — it has **no `AuthorizationClient` and no authenticated HTTP
+> client**. Unlike other connector methods, it must verify using only the `request` (headers/body) and
+> `params` (the signing secret threaded in via `VerificationParams.Param`); it must not make
+> authenticated API calls.
 
 **`request *common.WebhookRequest`** — the raw incoming webhook HTTP request, exactly as the provider
 sent it:
@@ -174,7 +195,9 @@ events carry no provider signature, verification is bypassed by the caller rathe
 - [ ] All `SubscriptionEvent` methods implemented; `SubscriptionUpdateEvent` /
       `CollapsedSubscriptionEvent` added where the provider needs them.
 - [ ] Unit tests cover valid / invalid / missing-signature, plus each event method against a captured
-      real payload (table-driven; see `test/utils/testroutines/`).
+      real payload. Use the shared table-driven suites in `test/utils/testconn/`:
+      `testconn.TestCaseVerifyWebhookMessage` (webhook verification) and
+      `testconn.TestCaseSubscriptionEvent` (event mapping).
 
 ## Reviewer focus
 

@@ -14,12 +14,12 @@ factory if it's brand-new. This PR changes **no runtime behavior**; it's a safe 
 
 ## What you implement
 
-Declare subscribe capability in the provider's hand-written info file, `providers/<provider>.go`,
+Declare subscribe capability in the provider's handwritten info file, `providers/<provider>.go`,
 inside `SetInfo(...)`. Two pieces matter:
 
 - **`Support.Subscribe`** — the master "this provider supports subscribe at all" switch.
-- **`SubscribeRequirements`** — what the provider *needs* in order to subscribe. All fields are `*bool`;
-  use the package pointer helper `new(true)`. From `providers/types.gen.go`:
+- **`SubscribeRequirements`** — what the provider *needs* in order to subscribe. All fields are `*bool`.
+  From `providers/types.gen.go`:
 
 ```go
 type SubscribeRequirements struct {
@@ -69,8 +69,10 @@ at all** — it's a pure indicator declared here; see [PostProcess](#postprocess
 ### PostProcess (indicator only)
 
 `PostProcess` covers **any setup that must happen in a third-party system the connector has no access
-to** — for example, Salesforce subscriptions require AWS EventBridge wiring. It is **independent of
-registration**: Salesforce happens to need both, but a provider can require one without the other.
+to**. For a concrete, fully explained example see the `PostProcess` comment in
+[`providers/salesforce.go`](../../providers/salesforce.go) (search for `PostProcess`). It is
+**independent of registration**: Salesforce happens to need both, but a provider can require one without
+the other.
 
 The post-process logic itself lives in **server-side code**, not in the connector — there is **no
 connector method or interface** for it. The connector's entire contribution is to **indicate whether it
@@ -125,14 +127,18 @@ SubscribeRequirements: &SubscribeRequirements{
 > [`Enable`](./pr-6-enable.md) PR — that's what keeps every intermediate PR a safe no-op even after it
 > merges.
 
-## Factory wiring *(brand-new providers only)*
+## Factory wiring
 
-Most providers being onboarded for subscribe **already have a factory entry** (they already do
-read/write), so there's nothing to do here — subscribe work in later PRs just attaches new methods to
-the existing `*Connector`.
+"The factory" is [`connector/new.go`](../../connector/new.go) — it maps each provider to a constructor so
+a connector can be built by provider name. Which case you're in:
 
-A **brand-new** provider needs a constructor + dispatch-map entry in
-[`connector/new.go`](../../connector/new.go):
+- **Existing connector** (already does read/write — the common case). It **already has a factory entry**,
+  so there's nothing to do here — subscribe work in later PRs just attaches new methods to the existing
+  `*Connector`.
+- **Brand-new provider** (no connector yet). Build the connector first, following
+  [Adding a Proxy Connector](../../CONTRIBUTING.md#adding-a-proxy-connector) and
+  [Adding a Deep Connector](../../CONTRIBUTING.md#adding-a-deep-connector), then add a constructor +
+  dispatch-map entry in [`connector/new.go`](../../connector/new.go):
 
 ```go
 var connectorConstructors = map[providers.Provider]outputConstructorFunc{

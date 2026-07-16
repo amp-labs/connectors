@@ -35,10 +35,17 @@ EmptySubscriptionResult() *common.SubscriptionResult
   provider-specific API calls and returns the resulting state. On partial failure it should roll back
   what it created (see Salesloft/Outreach for the parallel-create-with-rollback pattern).
 - **`UpdateSubscription`** reconciles the existing subscription (`previousResult`) with the new desired
-  state (`params`). The framework only calls this after it detects a change.
-- **`DeleteSubscription`** tears down everything identified by `previousResult`.
+  state (`params`). The framework only calls this after it detects a change. Like `Subscribe`, roll back
+  partial work on failure **where feasible** — an update mixes deletes and creates, so a clean rollback
+  isn't always possible (you can't un-delete); at minimum return the actual resulting state rather than
+  leaving `Result` diverged from the provider. Salesforce implements this via `rollbackUpdateSubscription`.
+- **`DeleteSubscription`** tears down everything identified by `previousResult.Result` (your
+  provider-specific struct holding the subscription IDs).
 - **`Empty*`** return zero-value instances with the provider-specific `.Request` / `.Result` populated
-  so the framework can deserialize stored DB state back into your concrete types.
+  so the framework can deserialize stored DB state back into your concrete types. `.Request` and
+  `.Result` **must hold pointers** to your concrete structs (e.g. `Request: &SubscriptionRequest{}`) —
+  returning them by value breaks server-side deserialization and subscribe silently fails in
+  integration testing.
 
 Plus your provider-specific `Request` / `Result` structs, and a manual test harness.
 
@@ -94,6 +101,11 @@ See [`providers/salesloft/subscribe.go`](../../providers/salesloft/subscribe.go)
 [`providers/outreach/subscribe.go`](../../providers/outreach/subscribe.go) for the parallel-create-with-
 rollback pattern.
 
+For `UpdateSubscription`, the shared [`common/subscriptionhelper`](../../common/subscriptionhelper/event-segments.go)
+package can do the diffing for you: `SegmentSubscriptionEvents(previous, desired)` categorizes each
+object into **ToCreate / ToKeep / ToUpdate / ToRemove**, so you don't reimplement the reconciliation
+logic (see `providers/microsoft` and `providers/connectwise` for usage).
+
 ## Serialization
 
 The caller **persists your `SubscriptionResult` and reads it back later** (for updates, deletes, and to
@@ -109,26 +121,42 @@ cleanly:
 - Anything you'll need later — a provider subscription id, or a secret the webhook verifier will use —
   must live in `Result`; if it isn't serialized, it's gone.
 
+## State consistency
+
+`SubscriptionResult.Result` and `SubscriptionResult.ObjectEvents` are the persisted record of what
+exists in the provider — **you own keeping them true to remote state on every return path**, not just
+the happy one. If a subscription wasn't removed, it must still appear in `ObjectEvents`; if `Result`
+holds subscription records that still exist remotely, they must still be present. Treat each `return` as
+a state-consistency decision.
+
+For batch work (creating/deleting many subscriptions in one call), prefer returning **per-item results
+(succeeded/failed)** over failing fast on the first error. An early error return hides which items were
+processed and which weren't, making the true remote state impossible to deduce and reconcile.
+
 ## Testing
 
 1. **Compile-time assertions** — in `subscribe.go`, keep
    `var _ connectors.SubscribeConnector = &Connector{}` so a missing method fails the build. In your
    test file, also assert the **decomposed per-method interfaces** from
-   [`test/utils/testroutines`](../../test/utils/testroutines/connector.go) — one per subscription
+   [`test/utils/testconn`](../../test/utils/testconn/connector.go) — one per subscription
    method. They let each method be verified independently and are what the subscription CUD / update
    test scenarios consume (in particular `TestableSubscriptionUpdater` for the update path):
 
    ```go
-   // <provider>_test.go  (testroutines imports "testing", so keep these in a _test.go file)
-   import "github.com/amp-labs/connectors/test/utils/testroutines"
+   // <provider>_test.go  (testconn imports "testing", so keep these in a _test.go file)
+   import "github.com/amp-labs/connectors/test/utils/testconn"
 
    var (
-       _ testroutines.TestableSubscriptionCreator = &Connector{} // Subscribe
-       _ testroutines.TestableSubscriptionUpdater = &Connector{} // UpdateSubscription
-       _ testroutines.TestableSubscriptionRemover = &Connector{} // DeleteSubscription
+       _ testconn.TestableSubscriptionCreator = &Connector{} // Subscribe
+       _ testconn.TestableSubscriptionUpdater = &Connector{} // UpdateSubscription
+       _ testconn.TestableSubscriptionRemover = &Connector{} // DeleteSubscription
    )
    ```
-2. **Manual end-to-end harness** — add `test/<provider>/subscribe/subscribe.go`, a small `main` that
+2. **Unit-test suites** — drive each method with the shared table-driven suites in
+   `test/utils/testconn/`: `testconn.TestCaseSubscribe` (Subscribe),
+   `testconn.TestCaseUpdateSubscription` (UpdateSubscription), and
+   `testconn.TestCaseDeleteSubscription` (DeleteSubscription).
+3. **Manual end-to-end harness** — add `test/<provider>/subscribe/subscribe.go`, a small `main` that
    loads creds, builds the connector, and calls `Subscribe` against a real sandbox. Model it on
    [`test/outreach/subscribe/subscribe.go`](../../test/outreach/subscribe/subscribe.go):
 

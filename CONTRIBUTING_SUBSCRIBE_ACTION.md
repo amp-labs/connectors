@@ -4,28 +4,8 @@ How to **ship** subscribe support for a new provider as a clean stack of pull re
 
 This doc is about *process*: how to slice the work, what each PR contains, the order to merge them, and
 what reviewers should check. For the *implementation* details (interfaces, types, event parsing,
-verification, metadata, factory wiring, worked examples), see the companion reference:
+verification, metadata, factory wiring, working examples), see the companion reference:
 [**`SUBSCRIBE_REFERENCES.md`**](./SUBSCRIBE_REFERENCES.md).
-
----
-
-## Principles
-
-1. **Small, stacked PRs.** One concern per PR, each stacked on the one below it. A reviewer should be
-   able to understand a PR without holding the whole feature in their head.
-2. **Safest-first.** Start with the change that carries zero behavioral risk (metadata, gated off) and
-   end with the one-line switch that turns the provider on.
-3. **Gated off until the end.** `Support.Subscribe` (the gate) stays `false` for the entire stack except
-   the final `Enable` PR. Every intermediate PR is a safe no-op in production — nothing calls into your
-   new code until you flip the switch. This means you can merge the stack incrementally without waiting
-   for the whole feature to be done.
-4. **One interface per PR.** Each PR adds a single interface's methods (verification, registration,
-   subscribe, maintenance). See [The big picture](./SUBSCRIBE_REFERENCES.md#the-big-picture) for how the
-   interfaces relate (note: PR order is sequenced by dependency, not by the interface ladder — see
-   [The stack](#the-stack)).
-5. **Only build what the provider needs.** `RegisterSubscribeConnector` and
-   `SubscriptionMaintainerConnector` are **provider-specific** — most providers skip them. Don't add a
-   PR for a rung the provider doesn't require.
 
 ---
 
@@ -64,6 +44,26 @@ renews what Subscribe created). `Enable` is always last.
 | 4 | Subscribe / Update / Delete | `SubscribeConnector` | ✅ |
 | 5 | Maintenance | `SubscriptionMaintainerConnector` — after Subscribe | ⬜ if needed |
 | 6 | Enable the provider | flips the gate on | ✅ (last) |
+
+---
+
+## Principles
+
+1. **Small, stacked PRs.** One concern per PR, each stacked on the one below it. A reviewer should be
+   able to understand a PR without holding the whole feature in their head.
+2. **Safest-first.** Start with the change that carries zero behavioral risk (metadata, gated off) and
+   end with the one-line switch that turns the provider on.
+3. **Gated off until the end.** `Support.Subscribe` (the gate) stays `false` for the entire stack except
+   the final `Enable` PR. Every intermediate PR is a safe no-op in production — nothing calls into your
+   new code until you flip the switch. This means you can merge the stack incrementally without waiting
+   for the whole feature to be done.
+4. **One interface per PR.** Each PR adds a single interface's methods (verification, registration,
+   subscribe, maintenance). See [The big picture](./SUBSCRIBE_REFERENCES.md#the-big-picture) for how the
+   interfaces relate (note: PR order is sequenced by dependency, not by the interface ladder — see
+   [The stack](#the-stack)).
+5. **Only build what the provider needs.** `RegisterSubscribeConnector` and
+   `SubscriptionMaintainerConnector` are **provider-specific** — most providers skip them. Don't add a
+   PR for a rung the provider doesn't require.
 
 ---
 
@@ -132,21 +132,12 @@ main
 
 ---
 
-## PR description checklist (copy into each PR)
+## PR description checklist
 
-```markdown
-## Subscribe Action — <Provider> — [PR N: <name>]
-
-Part of the Subscribe Action stack for `<provider>`. See CONTRIBUTING_SUBSCRIBE_ACTION.md.
-
-- [ ] Scope limited to this stack rung (one interface / concern)
-- [ ] Provider remains gated off (Support.Subscribe stays false) — except the Enable PR
-- [ ] Any SubscribeRequirements flag set to new(true) has a code comment linking the provider docs
-- [ ] Compile-time interface assertion added (if this PR adds an interface)
-- [ ] Unit tests added/updated
-- [ ] Manual sandbox verification (where applicable)
-- [ ] Linked the relevant SUBSCRIBE_REFERENCES.md section
-```
+Use the dedicated PR template
+[`.github/PULL_REQUEST_TEMPLATE/subscribe.md`](./.github/PULL_REQUEST_TEMPLATE/subscribe.md) for each PR
+in the stack (select it when opening the PR, e.g. `?template=subscribe.md`). It carries the per-rung
+checklist — scope, gating, interface assertion, tests, and the SUBSCRIBE_REFERENCES link.
 
 ---
 
@@ -155,6 +146,6 @@ Part of the Subscribe Action stack for `<provider>`. See CONTRIBUTING_SUBSCRIBE_
 | Want to… | Go to |
 |----------|-------|
 | Understand the interfaces & types | [`SUBSCRIBE_REFERENCES.md`](./SUBSCRIBE_REFERENCES.md) |
-| See a worked example | the **Example** section in each per-PR guide (e.g. [PR 4](./docs/subscribe-onboarding/pr-4-subscribe-update-delete.md#example)) |
+| See a working example | the **Example** section in each per-PR guide (e.g. [PR 4](./docs/subscribe-onboarding/pr-4-subscribe-update-delete.md#example)) |
 | Know what each PR contains | [PR-by-PR](#pr-by-pr) above |
 | Know the merge order | [The stack](#the-stack) above |

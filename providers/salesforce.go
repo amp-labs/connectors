@@ -80,7 +80,16 @@ func init() { // nolint:funlen
 					},
 				},
 				SubscribeRequirements: &SubscribeRequirements{
-					Registration:   new(true),
+					Registration: new(true),
+					// PostProcess: Salesforce cannot deliver change events to Ampersand on its own. After the
+					// subscription is created via API, a setup step must happen in a *third-party* system that the
+					// connector has no access to: Salesforce publishes Change Data Capture / Platform Events onto
+					// its own event bus, and those must be routed out to AWS EventBridge (a Salesforce
+					// "Event Relay" configured against an AWS partner event source), which Ampersand then
+					// consumes. That AWS/EventBridge wiring is the "post-process" — it lives outside the
+					// connector (server-side), so the connector's only job is to *declare* that it is required by
+					// setting this flag. Contrast with Registration above, which is an in-provider one-time setup
+					// the connector itself performs; PostProcess is external and connector-less.
 					PostProcess:    new(true),
 					SubscribeByAPI: new(true),
 				},
