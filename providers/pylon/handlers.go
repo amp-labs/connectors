@@ -14,7 +14,13 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
-var limit = "999" //nolint:gochecknoglobals
+const (
+	// limit is the page size for the GET endpoints, which take it as a query param.
+	limit = "999"
+	// searchLimit is the page size for POST /issues/search, which takes limit as a
+	// JSON number rather than a query param. The endpoint caps it at 1000.
+	searchLimit = 999
+)
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, objectName)
@@ -91,13 +97,22 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if params.ObjectName == "issues" {
-		// issues required start_time and end_time query params.
-		// The time window cannot exceed 30 days.
-		// addIssuesTimeWindowQuery adds start_time and end_time query params for the "issues" object
-		// and validates the time window does not exceed 30 days.
-		if err := addIssuesTimeWindowQuery(url, params); err != nil {
+		// Issues are read via POST /issues/search rather than GET /issues, because the
+		// latter filters on created_at and so never re-reads issues updated after the
+		// watermark. Note that POST /issues (without /search) creates an issue.
+		url.AddPath("search")
+
+		body, err := buildIssueBody(params)
+		if err != nil {
 			return nil, err
 		}
+
+		jsonData, err := json.Marshal(body)
+		if err != nil {
+			return nil, err
+		}
+
+		return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
 	}
 
 	url.WithQueryParam("limit", limit)

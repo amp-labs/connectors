@@ -1,11 +1,9 @@
 package pylon
 
 import (
-	"errors"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
 func inferValueTypeFromData(value any) common.ValueType {
@@ -25,30 +23,51 @@ func inferValueTypeFromData(value any) common.ValueType {
 	}
 }
 
-func addIssuesTimeWindowQuery(url *urlbuilder.URL, params common.ReadParams) error {
-	var startTime, endTime time.Time
+// buildIssueBody constructs the POST /issues/search.
+// We use a POST request because the GET /issues endpoint filters on created_at, which means
+// issues updated after the watermark are never re-read. The POST /issues/search endpoint
+// instead filters on updated_at, which is what we want.
 
-	if params.Since.IsZero() {
-		// Default to last 29 days instead of 30 to account for potential
-		// timezone transitions and microsecond precision differences that
-		// could cause the API to reject requests exceeding 30 days exactly.
-		startTime = time.Now().UTC().AddDate(0, 0, -29)
-	} else {
-		startTime = params.Since.UTC()
+// filter is optional, and is omitted entirely when neither Since nor Until is set, which
+// reads every issue.
+func buildIssueBody(params common.ReadParams) (map[string]any, error) {
+	pageSize := searchLimit
+	if params.PageSize > 0 && params.PageSize <= searchLimit {
+		pageSize = params.PageSize
 	}
 
-	if params.Until.IsZero() {
-		endTime = time.Now().UTC()
-	} else {
-		endTime = params.Until.UTC()
+	body := map[string]any{
+		"limit": pageSize,
 	}
 
-	if endTime.Sub(startTime) > 30*24*time.Hour {
-		return errors.New("time window exceeds 30 days") // nolint:err113
+	subfilters := make([]map[string]any, 0, 2) //nolint:gomnd,mnd
+
+	if !params.Since.IsZero() {
+		subfilters = append(subfilters, map[string]any{
+			"field":    "updated_at",
+			"operator": "time_is_after",
+			"value":    params.Since.UTC().Format(time.RFC3339),
+		})
 	}
 
-	url.WithQueryParam("start_time", startTime.Format(time.RFC3339))
-	url.WithQueryParam("end_time", endTime.Format(time.RFC3339))
+	if !params.Until.IsZero() {
+		subfilters = append(subfilters, map[string]any{
+			"field":    "updated_at",
+			"operator": "time_is_before",
+			"value":    params.Until.UTC().Format(time.RFC3339),
+		})
+	}
 
-	return nil
+	if len(subfilters) > 0 {
+		body["filter"] = map[string]any{
+			"operator":   "and",
+			"subfilters": subfilters,
+		}
+	}
+
+	if params.NextPage != "" {
+		body["cursor"] = params.NextPage.String()
+	}
+
+	return body, nil
 }
