@@ -34,8 +34,13 @@ func init() {
 			},
 			Proxy:     true,
 			Read:      true,
-			Subscribe: false,
+			Subscribe: true,
 			Write:     true,
+		},
+		SubscribeRequirements: &SubscribeRequirements{
+			// Jobber supports creating webhook subscriptions via API.
+			// https://developer.getjobber.com/docs/build_with_jobber/webhooks/
+			SubscribeByAPI: new(true),
 		},
 	})
 }

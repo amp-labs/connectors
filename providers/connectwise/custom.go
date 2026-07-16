@@ -42,9 +42,7 @@ func flattenCustomFields() common.RecordTransformer {
 				return nil, err
 			}
 
-			// There are 2 formats.
-			fields[field.makeFieldName1()] = field.Value
-			fields[field.makeFieldName2()] = field.Value
+			fields[field.makeFieldName()] = field.Value
 		}
 
 		// Move custom fields to the top root level.
@@ -268,18 +266,10 @@ func (f modelCustomField) getValues() []common.FieldValue {
 	return values
 }
 
-func (f modelCustomField) makeFieldName1() string {
+func (f modelCustomField) makeFieldName() string {
 	return fmt.Sprintf("customField%v", strconv.Itoa(f.Id))
 }
 
-func (f modelCustomField) makeFieldName2() string {
-	return f.Caption
-}
-
-func (f readCustomField) makeFieldName1() string {
+func (f readCustomField) makeFieldName() string {
 	return fmt.Sprintf("customField%v", strconv.Itoa(f.Id))
-}
-
-func (f readCustomField) makeFieldName2() string {
-	return f.Caption
 }

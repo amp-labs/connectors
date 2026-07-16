@@ -1,0 +1,17 @@
+{
+  "count": 1,
+  "pageSize": 100,
+  "pageStartIndex": 0,
+  "items": [
+    {
+      "id": "ctc-100",
+      "firstName": "Diane",
+      "phoneNumbers": [
+        { "id": "pn-1", "number": "(703) 450-3818", "type": "Home", "primary": true }
+      ],
+      "emailAddresses": [
+        { "id": "em-1", "address": "diane@example.com", "primary": true }
+      ]
+    }
+  ]
+}

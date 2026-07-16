@@ -54,9 +54,10 @@ func Body(expected string, rules ...FieldIgnoreRule) Check {
 
 		textEquals := textBodyMatch(body, expected)
 		jsonEquals := jsonBodyMatch(body, expected, rules)
+		arrayJsonEquals := jsonBodyArrayMatch(body, expected, rules)
 		xmlEquals := xmlBodyMatch(body, expected)
 
-		return textEquals || jsonEquals || xmlEquals
+		return textEquals || jsonEquals || arrayJsonEquals || xmlEquals
 	}
 }
 
@@ -123,6 +124,35 @@ func jsonBodyMatch(actual []byte, expected string, rules []FieldIgnoreRule) bool
 	secondObj := applyIgnoreRules(second, rules)
 
 	return reflect.DeepEqual(firstObj, secondObj)
+}
+
+func jsonBodyArrayMatch(actual []byte, expected string, rules []FieldIgnoreRule) bool {
+	first := make([]map[string]any, 0)
+	if err := json.Unmarshal(actual, &first); err != nil {
+		return false
+	}
+
+	second := make([]map[string]any, 0)
+	if err := json.Unmarshal([]byte(expected), &second); err != nil {
+		return false
+	}
+
+	if len(first) != len(second) {
+		return false
+	}
+
+	for index, firstItem := range first {
+		secondItem := second[index]
+
+		firstObj := applyIgnoreRules(firstItem, rules)
+		secondObj := applyIgnoreRules(secondItem, rules)
+
+		if !reflect.DeepEqual(firstObj, secondObj) {
+			return false
+		}
+	}
+
+	return true
 }
 
 func applyIgnoreRules(entity any, rules []FieldIgnoreRule) any {
