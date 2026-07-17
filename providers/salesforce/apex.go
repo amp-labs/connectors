@@ -81,7 +81,7 @@ type DeployResult = metadata.DeployResult
 
 const (
 	deployPollInterval = 10 * time.Second
-	deployPollTimeout  = 5 * time.Minute
+	deployPollTimeout  = 15 * time.Minute
 
 	// apexDeployMaxAttempts is the maximum number of attempts for deploying an apex trigger.
 	// Retries handle the race condition where a custom field was just created via Metadata API
