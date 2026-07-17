@@ -8,12 +8,12 @@ import (
 )
 
 const (
-	virtualFieldContactEmail        = "AMPERSAND-email"
-	virtualFieldContactEmailDefault = virtualFieldContactEmail + "-default"
-	virtualFieldContactFax          = "AMPERSAND-fax"
-	virtualFieldContactFaxDefault   = virtualFieldContactFax + "-default"
-	virtualFieldContactPhone        = "AMPERSAND-phone"
-	virtualFieldContactPhoneDefault = virtualFieldContactPhone + "-default"
+	virtualFieldContactEmail   = "AMPERSAND-defaultEmail"
+	virtualFieldContactEmailId = "AMPERSAND-defaultEmailId"
+	virtualFieldContactFax     = "AMPERSAND-defaultFax"
+	virtualFieldContactFaxId   = "AMPERSAND-defaultFaxId"
+	virtualFieldContactPhone   = "AMPERSAND-defaultPhone"
+	virtualFieldContactPhoneId = "AMPERSAND-defaultPhoneId"
 
 	objectNameContacts = "contacts"
 )
@@ -41,11 +41,7 @@ func (c *Connector) ListObjectMetadata(
 		}
 
 		if objectName == objectNameContacts {
-			if err = c.attachContactFields(ctx, &objectMetadata); err != nil {
-				metadataResult.Errors[objectName] = err
-
-				continue
-			}
+			c.attachContactFields(&objectMetadata)
 		}
 
 		// Write the modified metadata back to the map
@@ -81,40 +77,18 @@ func (c *Connector) attachCustomFields(ctx context.Context,
 	return nil
 }
 
-func (c *Connector) attachContactFields(ctx context.Context, objectMetadata *common.ObjectMetadata) error {
-	types, err := c.requestCommunicationTypes(ctx)
-	if err != nil {
-		return err
-	}
-
-	for _, item := range types {
-		field := common.FieldMetadata{
-			DisplayName:  item.Description,
-			ValueType:    common.ValueTypeString,
-			ProviderType: "string",
-			ReadOnly:     new(false),
-			IsCustom:     new(false),
-			IsRequired:   new(false),
-		}
-
-		var prefix string
-		if item.EmailFlag {
-			prefix = virtualFieldContactEmail
-		}
-
-		if item.FaxFlag {
-			prefix = virtualFieldContactFax
-		}
-
-		if item.PhoneFlag {
-			prefix = virtualFieldContactPhone
-		}
-
-		objectMetadata.AddFieldMetadata(prefix+item.Id.String(), field)
-	}
-
-	objectMetadata.AddFieldMetadata(virtualFieldContactEmailDefault, common.FieldMetadata{
-		DisplayName:  "Default communication item for Email",
+func (c *Connector) attachContactFields(objectMetadata *common.ObjectMetadata) {
+	// Email fields.
+	objectMetadata.AddFieldMetadata(virtualFieldContactEmail, common.FieldMetadata{
+		DisplayName:  "Default Email",
+		ValueType:    common.ValueTypeString,
+		ProviderType: "string",
+		ReadOnly:     new(false),
+		IsCustom:     new(false),
+		IsRequired:   new(false),
+	})
+	objectMetadata.AddFieldMetadata(virtualFieldContactEmailId, common.FieldMetadata{
+		DisplayName:  "Default Email Type Id",
 		ValueType:    common.ValueTypeString,
 		ProviderType: "string",
 		ReadOnly:     new(false),
@@ -122,8 +96,17 @@ func (c *Connector) attachContactFields(ctx context.Context, objectMetadata *com
 		IsRequired:   new(false),
 	})
 
-	objectMetadata.AddFieldMetadata(virtualFieldContactFaxDefault, common.FieldMetadata{
-		DisplayName:  "Default communication item for Fax",
+	// Fax fields.
+	objectMetadata.AddFieldMetadata(virtualFieldContactFax, common.FieldMetadata{
+		DisplayName:  "Default Fax",
+		ValueType:    common.ValueTypeString,
+		ProviderType: "string",
+		ReadOnly:     new(false),
+		IsCustom:     new(false),
+		IsRequired:   new(false),
+	})
+	objectMetadata.AddFieldMetadata(virtualFieldContactFaxId, common.FieldMetadata{
+		DisplayName:  "Default Fax Type Id",
 		ValueType:    common.ValueTypeString,
 		ProviderType: "string",
 		ReadOnly:     new(false),
@@ -131,14 +114,21 @@ func (c *Connector) attachContactFields(ctx context.Context, objectMetadata *com
 		IsRequired:   new(false),
 	})
 
-	objectMetadata.AddFieldMetadata(virtualFieldContactPhoneDefault, common.FieldMetadata{
-		DisplayName:  "Default communication item for Phone",
+	// Phone fields.
+	objectMetadata.AddFieldMetadata(virtualFieldContactPhone, common.FieldMetadata{
+		DisplayName:  "Default Phone",
 		ValueType:    common.ValueTypeString,
 		ProviderType: "string",
 		ReadOnly:     new(false),
 		IsCustom:     new(false),
 		IsRequired:   new(false),
 	})
-
-	return nil
+	objectMetadata.AddFieldMetadata(virtualFieldContactPhoneId, common.FieldMetadata{
+		DisplayName:  "Default Phone Type Id",
+		ValueType:    common.ValueTypeString,
+		ProviderType: "string",
+		ReadOnly:     new(false),
+		IsCustom:     new(false),
+		IsRequired:   new(false),
+	})
 }

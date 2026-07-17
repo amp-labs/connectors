@@ -21,8 +21,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	responseContactSample := testutils.DataFromFile(t, "read/one-contact.json")
 	responseCustomFields := testutils.DataFromFile(t, "custom-fields/definitions.json")
-	responseCommunicationItems1 := testutils.DataFromFile(t, "metadata/communication-items/1-first-page.json")
-	responseCommunicationItems2 := testutils.DataFromFile(t, "metadata/communication-items/2-last-page.json")
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
@@ -99,26 +97,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
 					},
 					Then: mockserver.Response(http.StatusOK, responseCustomFields),
-				}, {
-					// List communication items.
-					If: mockcond.And{
-						mockcond.Path("/v4_6_release/apis/3.0/company/communicationTypes"),
-						mockcond.QueryParamsMissing("page"),
-						mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
-					},
-					Then: mockserver.ResponseChainedFuncs(
-						mockserver.Header("Link", `<`+testconn.URLTestServer+
-							`/v4_6_release/apis/3.0/company/communicationTypes?page=2>; rel="next"`,
-						),
-						mockserver.Response(http.StatusOK, responseCommunicationItems1),
-					),
-				}, {
-					If: mockcond.And{
-						mockcond.Path("/v4_6_release/apis/3.0/company/communicationTypes"),
-						mockcond.QueryParam("page", "2"),
-						mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
-					},
-					Then: mockserver.Response(http.StatusOK, responseCommunicationItems2),
 				}},
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetMetadata,
@@ -206,80 +184,48 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									DisplayValue: "Party3",
 								}},
 							},
-							"AMPERSAND-email1": {
-								DisplayName:  "Email - Business",
+							"AMPERSAND-defaultEmail": {
+								DisplayName:  "Default Email",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     new(false),
 								IsCustom:     new(false),
 								IsRequired:   new(false),
 							},
-							"AMPERSAND-email2": {
-								DisplayName:  "Email - Private",
+							"AMPERSAND-defaultEmailId": {
+								DisplayName:  "Default Email Type Id",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     new(false),
 								IsCustom:     new(false),
 								IsRequired:   new(false),
 							},
-							"AMPERSAND-phone3": {
-								DisplayName:  "Phone - Work",
+							"AMPERSAND-defaultPhone": {
+								DisplayName:  "Default Phone",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     new(false),
 								IsCustom:     new(false),
 								IsRequired:   new(false),
 							},
-							"AMPERSAND-phone4": {
-								DisplayName:  "Phone - Home",
+							"AMPERSAND-defaultPhoneId": {
+								DisplayName:  "Default Phone Type Id",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     new(false),
 								IsCustom:     new(false),
 								IsRequired:   new(false),
 							},
-							"AMPERSAND-phone5": {
-								DisplayName:  "Phone - Landline",
+							"AMPERSAND-defaultFax": {
+								DisplayName:  "Default Fax",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     new(false),
 								IsCustom:     new(false),
 								IsRequired:   new(false),
 							},
-							"AMPERSAND-fax6": {
-								DisplayName:  "Fax - Work",
-								ValueType:    "string",
-								ProviderType: "string",
-								ReadOnly:     new(false),
-								IsCustom:     new(false),
-								IsRequired:   new(false),
-							},
-							"AMPERSAND-fax7": {
-								DisplayName:  "Fax - Home",
-								ValueType:    "string",
-								ProviderType: "string",
-								ReadOnly:     new(false),
-								IsCustom:     new(false),
-								IsRequired:   new(false),
-							},
-							"AMPERSAND-email-default": {
-								DisplayName:  "Default communication item for Email",
-								ValueType:    "string",
-								ProviderType: "string",
-								ReadOnly:     new(false),
-								IsCustom:     new(false),
-								IsRequired:   new(false),
-							},
-							"AMPERSAND-phone-default": {
-								DisplayName:  "Default communication item for Phone",
-								ValueType:    "string",
-								ProviderType: "string",
-								ReadOnly:     new(false),
-								IsCustom:     new(false),
-								IsRequired:   new(false),
-							},
-							"AMPERSAND-fax-default": {
-								DisplayName:  "Default communication item for Fax",
+							"AMPERSAND-defaultFaxId": {
+								DisplayName:  "Default Fax Type Id",
 								ValueType:    "string",
 								ProviderType: "string",
 								ReadOnly:     new(false),

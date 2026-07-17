@@ -200,8 +200,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "contacts",
 				Fields: connectors.Fields(
-					"AMPERSAND-email7", "AMPERSAND-fax7", "AMPERSAND-phone7",
-					"AMPERSAND-email-default", "AMPERSAND-fax-default", "AMPERSAND-phone-default",
+					"AMPERSAND-defaultEmail", "AMPERSAND-defaultFax", "AMPERSAND-defaultPhone",
 				),
 			},
 			Server: mockserver.Fixed{
@@ -213,12 +212,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"ampersand-email7":        nil,
-						"ampersand-fax7":          nil,
-						"ampersand-phone7":        nil,
-						"ampersand-email-default": nil,
-						"ampersand-fax-default":   nil,
-						"ampersand-phone-default": nil,
+						"ampersand-defaultEmail": nil,
+						"ampersand-defaultFax":   nil,
+						"ampersand-defaultPhone": nil,
 					},
 					Raw: map[string]any{"id": float64(58001)},
 				}},
@@ -231,7 +227,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Contact with some communication items of same phone type",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				Fields:     connectors.Fields("AMPERSAND-phone22", "AMPERSAND-phone55", "AMPERSAND-phone-default"),
+				Fields:     connectors.Fields("AMPERSAND-defaultPhone", "AMPERSAND-defaultPhoneId"),
 			},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
@@ -242,9 +238,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"ampersand-phone22":       "+13344455",
-						"ampersand-phone55":       "+10203005",
-						"ampersand-phone-default": "22",
+						"ampersand-defaultphone":   "+13344455",
+						"ampersand-defaultphoneid": "22",
 					},
 					Raw: map[string]any{"id": float64(1)},
 				}},
@@ -258,8 +253,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "contacts",
 				Fields: connectors.Fields(
-					"AMPERSAND-email14", "AMPERSAND-fax20", "AMPERSAND-phone27",
-					"AMPERSAND-email-default", "AMPERSAND-fax-default", "AMPERSAND-phone-default",
+					"AMPERSAND-defaultEmail", "AMPERSAND-defaultFax", "AMPERSAND-defaultPhone",
+					"AMPERSAND-defaultEmailId", "AMPERSAND-defaultFaxId", "AMPERSAND-defaultPhoneId",
 				),
 			},
 			Server: mockserver.Fixed{
@@ -271,12 +266,12 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"ampersand-email14":       "emma@test.com",
-						"ampersand-fax20":         "6548568",
-						"ampersand-phone27":       "+166155555",
-						"ampersand-email-default": "14",
-						"ampersand-fax-default":   "20",
-						"ampersand-phone-default": "27",
+						"ampersand-defaultemail":   "emma@test.com",
+						"ampersand-defaultemailid": "14",
+						"ampersand-defaultfax":     "6548568",
+						"ampersand-defaultfaxid":   "20",
+						"ampersand-defaultphone":   "+166155555",
+						"ampersand-defaultphoneid": "27",
 					},
 					Raw: map[string]any{"id": float64(58118)},
 				}},

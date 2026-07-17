@@ -1,14 +1,17 @@
 package connectwise
 
 import (
-	"context"
 	"maps"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
+)
+
+const (
+	communicationTypeEmail = "Email"
+	communicationTypePhone = "Phone"
+	communicationTypeFax   = "Fax"
 )
 
 func attachCommunicationItems(node *ajson.Node, root map[string]any) error { // nolint:cyclop
@@ -31,23 +34,22 @@ func attachCommunicationItems(node *ajson.Node, root map[string]any) error { // 
 			return err
 		}
 
-		identifier := item.Type.Id.String()
+		if !item.DefaultFlag {
+			// Only the default communication items in each category matter.
+			// Other items can be skipped as they don't participate in Read/Metadata.
+			continue
+		}
+
 		switch item.CommunicationType {
-		case "Email":
-			fields[virtualFieldContactEmail+identifier] = item.Value
-			if item.DefaultFlag {
-				fields[virtualFieldContactEmailDefault] = identifier
-			}
-		case "Fax":
-			fields[virtualFieldContactFax+identifier] = item.Value
-			if item.DefaultFlag {
-				fields[virtualFieldContactFaxDefault] = identifier
-			}
-		case "Phone":
-			fields[virtualFieldContactPhone+identifier] = item.Value
-			if item.DefaultFlag {
-				fields[virtualFieldContactPhoneDefault] = identifier
-			}
+		case communicationTypeEmail:
+			fields[virtualFieldContactEmail] = item.Value
+			fields[virtualFieldContactEmailId] = item.Type.Id.String()
+		case communicationTypeFax:
+			fields[virtualFieldContactFax] = item.Value
+			fields[virtualFieldContactFaxId] = item.Type.Id.String()
+		case communicationTypePhone:
+			fields[virtualFieldContactPhone] = item.Value
+			fields[virtualFieldContactPhoneId] = item.Type.Id.String()
 		}
 	}
 
@@ -55,48 +57,6 @@ func attachCommunicationItems(node *ajson.Node, root map[string]any) error { // 
 	maps.Copy(root, fields)
 
 	return nil
-}
-
-func (c *Connector) requestCommunicationTypes(ctx context.Context) ([]communicationTypeResponse, error) {
-	typesUrl, err := c.getCommunicationTypesURL()
-	if err != nil {
-		return nil, err
-	}
-
-	result := make([]communicationTypeResponse, 0)
-	url := typesUrl.String()
-
-	// Paginated read until no `next` links is present in the header.
-	for url != "" {
-		res, err := c.JSONHTTPClient().Get(ctx, url, c.clientIdHeader())
-		if err != nil {
-			return nil, err
-		}
-
-		records, err := common.UnmarshalJSON[communicationTypesResponse](res)
-		if err != nil {
-			return nil, err
-		}
-
-		result = append(result, *records...)
-
-		// Repeat for the next page if any.
-		url = httpkit.HeaderLink(res, "next")
-	}
-
-	return result, nil
-}
-
-// communicationTypesResponse is returned by `/company/communicationTypes` endpoint.
-type communicationTypesResponse []communicationTypeResponse
-
-type communicationTypeResponse struct {
-	Id          naming.Text `json:"id"`
-	Description string      `json:"description"`
-	PhoneFlag   bool        `json:"phoneFlag"`
-	FaxFlag     bool        `json:"faxFlag"`
-	EmailFlag   bool        `json:"emailFlag"`
-	DefaultFlag bool        `json:"defaultFlag"`
 }
 
 // readCommunicationItem is returned by contact as elements of `communicationItems` array.

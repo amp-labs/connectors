@@ -115,10 +115,6 @@ func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.ModuleInfo().BaseURL, apiVersion, objectPath)
 }
 
-func (c *Connector) getCommunicationTypesURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ModuleInfo().BaseURL, apiVersion, "company/communicationTypes")
-}
-
 func (c *Connector) clientIdHeader() common.Header {
 	return common.Header{
 		Key:   "ClientId",
