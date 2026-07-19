@@ -1,0 +1,11 @@
+{
+  "webhooks": [
+    {
+      "webhook_id": "507f1f77bcf86cd799439011",
+      "description": "Production alerts webhook",
+      "url": "https://api.example.com/webhooks/mailgun",
+      "event_types": ["delivered", "permanent_fail"],
+      "created_at": "2026-02-16T19:06:01Z"
+    }
+  ]
+}

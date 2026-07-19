@@ -1,0 +1,12 @@
+{
+  "total_count": 2,
+  "items": [
+    {
+      "id": "2",
+      "name": "other.com",
+      "created_at": "Tue, 03 Jan 2006 15:04:05 MST",
+      "state": "unverified",
+      "type": "sandbox"
+    }
+  ]
+}

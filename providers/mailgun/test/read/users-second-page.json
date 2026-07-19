@@ -1,0 +1,12 @@
+{
+  "total": 2,
+  "users": [
+    {
+      "id": "456",
+      "name": "Jane Doe",
+      "email": "janedoe@example.com",
+      "role": "admin",
+      "activated": true
+    }
+  ]
+}
