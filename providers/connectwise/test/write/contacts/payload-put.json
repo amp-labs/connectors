@@ -1,0 +1,30 @@
+{
+  "firstName": "Estella",
+  "lastName": "Mcdowell",
+  "communicationItems": [
+    {
+      "type": {
+        "id": "1"
+      },
+      "value": "professional.bob.updated@test.com",
+      "defaultFlag": true,
+      "communicationType": "Email"
+    },
+    {
+      "type": {
+        "id": "2"
+      },
+      "value": "+380111358",
+      "defaultFlag": true,
+      "communicationType": "Phone"
+    },
+    {
+      "type": {
+        "id": "26"
+      },
+      "value": "+77767",
+      "defaultFlag": true,
+      "communicationType": "Fax"
+    }
+  ]
+}
