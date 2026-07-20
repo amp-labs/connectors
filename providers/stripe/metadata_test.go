@@ -1,6 +1,7 @@
 package stripe
 
 import (
+	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -99,4 +100,19 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			})
 		})
 	}
+}
+
+func constructTestConnector(server *httptest.Server) (*Connector, error) {
+	connector, err := NewConnector(
+		common.ConnectorParams{
+			AuthenticatedClient: server.Client(),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	connector.SetUnitTestMockServerBaseURL(server.URL)
+
+	return connector, nil
 }

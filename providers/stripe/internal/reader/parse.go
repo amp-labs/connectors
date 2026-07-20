@@ -1,11 +1,23 @@
-package stripe
+package reader
 
 import (
+	"maps"
+
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
+
+// makeGetRecords creates a NodeRecordsFunc that extracts records from Stripe's API response.
+// It retrieves the array field containing the list of records (e.g., "data" for most objects).
+func makeGetRecords(responseFieldName string) common.NodeRecordsFunc {
+	return func(node *ajson.Node) ([]*ajson.Node, error) {
+		return jsonquery.New(node).ArrayOptional(responseFieldName)
+	}
+}
 
 // Pagination is implemented as follows:
 //   - Check the response to determine if there are more items to retrieve.
@@ -49,4 +61,26 @@ func makeNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 
 		return url.String(), nil
 	}
+}
+
+func fieldsSelector(node *ajson.Node, fields []string) (map[string]any, string, error) {
+	root, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, "", err
+	}
+
+	identifier, err := jsonquery.New(node).StringRequired("id")
+	if err != nil {
+		return nil, "", err
+	}
+
+	customFields, err := getCustomFields(node)
+	if err != nil {
+		return nil, "", err
+	}
+
+	selected := readhelper.SelectFields(root, datautils.NewSetFromList(fields))
+	maps.Copy(selected, customFields)
+
+	return selected, identifier, nil
 }

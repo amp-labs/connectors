@@ -1,4 +1,4 @@
-package stripe
+package reader
 
 import (
 	"github.com/amp-labs/connectors/internal/jsonquery"

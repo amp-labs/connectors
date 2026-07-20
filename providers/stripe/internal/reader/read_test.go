@@ -1,4 +1,4 @@
-package stripe
+package reader
 
 import (
 	"net/http"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/stripe/internal/core"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
@@ -18,16 +19,16 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	errorBadRequest := testutils.DataFromFile(t, "general-errors/error-bad-request.json")
-	responseEmptyAccounts := testutils.DataFromFile(t, "read/accounts/empty.json")
-	responseAccountsFirstPage := testutils.DataFromFile(t, "read/accounts/1-first-page.json")
-	responseAccountsLastPage := testutils.DataFromFile(t, "read/accounts/2-last-page.json")
-	responseCustomersFirstPage := testutils.DataFromFile(t, "read/customers/1-first-page.json")
-	responseCustomersLastPage := testutils.DataFromFile(t, "read/customers/2-last-page.json")
-	responseCustomersWithMetadata := testutils.DataFromFile(t, "read/customers/with-metadata.json")
-	responseCheckoutSessionsWithItems := testutils.DataFromFile(t, "read/checkout-sessions/with-line-items.json")
-	responseInvoices := testutils.DataFromFile(t, "read/invoices/incremental.json")
-	responseBalanceWithSource := testutils.DataFromFile(t, "read/balance_transactions/nested-source.json")
-	responseBalanceWithPaymentIntents := testutils.DataFromFile(t, "read/balance_transactions/nested-source-nested-payment-intent.json")
+	responseEmptyAccounts := testutils.DataFromFile(t, "accounts/empty.json")
+	responseAccountsFirstPage := testutils.DataFromFile(t, "accounts/1-first-page.json")
+	responseAccountsLastPage := testutils.DataFromFile(t, "accounts/2-last-page.json")
+	responseCustomersFirstPage := testutils.DataFromFile(t, "customers/1-first-page.json")
+	responseCustomersLastPage := testutils.DataFromFile(t, "customers/2-last-page.json")
+	responseCustomersWithMetadata := testutils.DataFromFile(t, "customers/with-metadata.json")
+	responseCheckoutSessionsWithItems := testutils.DataFromFile(t, "checkout-sessions/with-line-items.json")
+	responseInvoices := testutils.DataFromFile(t, "invoices/incremental.json")
+	responseBalanceWithSource := testutils.DataFromFile(t, "balance_transactions/nested-source.json")
+	responseBalanceWithPaymentIntents := testutils.DataFromFile(t, "balance_transactions/nested-source-nested-payment-intent.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -521,23 +522,21 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableReader, error) {
-				return constructTestConnector(tt.Server)
+				return constructTestStrategy(tt.Server)
 			})
 		})
 	}
 }
 
-func constructTestConnector(server *httptest.Server) (*Connector, error) {
-	connector, err := NewConnector(
-		common.ConnectorParams{
-			AuthenticatedClient: server.Client(),
-		},
-	)
+func constructTestStrategy(server *httptest.Server) (*Strategy, error) {
+	base, err := core.NewBase(common.ConnectorParams{
+		AuthenticatedClient: server.Client(),
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	connector.SetUnitTestMockServerBaseURL(server.URL)
+	base.SetUnitTestMockServerBaseURL(server.URL)
 
-	return connector, nil
+	return NewStrategy(base), nil
 }

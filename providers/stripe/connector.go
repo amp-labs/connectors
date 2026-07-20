@@ -2,46 +2,30 @@ package stripe
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/stripe/internal/core"
+	"github.com/amp-labs/connectors/providers/stripe/internal/reader"
 )
 
-const apiVersion = "v1"
+type (
+	ReadParamsOpts = reader.ReadParamsOpts
+	readerStrategy = reader.Strategy
+)
 
 type Connector struct {
-	// Basic connector
-	*components.Connector
+	*core.Base
 
-	// Require authenticated client
-	common.RequireAuthenticatedClient
+	// Dependent services.
+	*readerStrategy
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Init(providers.Stripe, params, constructor)
-}
-
-func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
-	connector := &Connector{
-		Connector: base,
+	base, err := core.NewBase(params)
+	if err != nil {
+		return nil, err
 	}
 
-	base.SetErrorHandler(interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
-	}.Handle)
-
-	return connector, nil
-}
-
-func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
-}
-
-// https://docs.stripe.com/api/connected-accounts
-func makeConnectedAccountHeader(accountID string) common.Header {
-	return common.Header{
-		Key:   "Stripe-Account",
-		Value: accountID,
-	}
+	return &Connector{
+		Base:           base,
+		readerStrategy: reader.NewStrategy(base),
+	}, nil
 }
