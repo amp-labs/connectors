@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"maps"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -76,6 +77,40 @@ func (c *Connector) requestCustomFields(
 	}
 
 	return fields, nil
+}
+
+func payloadWithCustomFields(record common.Record) {
+	if record == nil {
+		// No-op. Nothing to modify.
+		return
+	}
+
+	customFields := make([]map[string]any, 0)
+
+	for key, value := range record {
+		if key == "customFields" {
+			continue
+		}
+
+		if fieldIdStr, ok := strings.CutPrefix(key, "customField"); ok {
+			fieldId, err := strconv.Atoi(fieldIdStr)
+			if err != nil {
+				continue
+			}
+
+			// This is in-house field, shouldn't be part of actual payload.
+			delete(record, key)
+
+			customFields = append(customFields, map[string]any{
+				"id":    fieldId,
+				"value": value,
+			})
+		}
+	}
+
+	if len(customFields) != 0 {
+		record["customFields"] = customFields
+	}
 }
 
 // objectsSupportingCustomFields lists ConnectWise object names that can include customFields in read responses.

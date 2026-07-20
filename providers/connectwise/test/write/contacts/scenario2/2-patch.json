@@ -1,0 +1,23 @@
+[
+  {
+    "op": "replace",
+    "path": "/communicationItems/1/value",
+    "value": "+380111358"
+  },
+  {
+    "op": "add",
+    "path": "/communicationItems/3",
+    "value": {
+      "type": {
+        "id": "26"
+      },
+      "value": "+77767",
+      "defaultFlag": true,
+      "communicationType": "Fax"
+    }
+  },
+  {
+    "op": "remove",
+    "path": "/communicationItems/0"
+  }
+]

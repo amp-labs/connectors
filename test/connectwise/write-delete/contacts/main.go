@@ -19,6 +19,12 @@ type payload struct {
 	LastName             string `json:"lastName"`
 	CustomFieldMarketing bool   `json:"customField59"`
 	CustomFieldHobby     string `json:"customField83"`
+	Email                string `json:"AMPERSAND-defaultEmail,omitempty"`
+	EmailId              string `json:"AMPERSAND-defaultEmailId,omitempty"`
+	Phone                string `json:"AMPERSAND-defaultPhone,omitempty"`
+	PhoneId              string `json:"AMPERSAND-defaultPhoneId,omitempty"`
+	Fax                  string `json:"AMPERSAND-defaultFax,omitempty"`
+	FaxId                string `json:"AMPERSAND-defaultFaxId,omitempty"`
 }
 
 type patchPayload struct {
@@ -28,7 +34,7 @@ type patchPayload struct {
 type patchOperation struct {
 	Op    string `json:"op"`
 	Path  string `json:"path"`
-	Value any    `json:"value"`
+	Value any    `json:"value,omitempty"`
 }
 
 func main() {
@@ -48,24 +54,43 @@ func main() {
 
 	fmt.Println(">>> Using PUT")
 
+	// PUT operation does a complete replacement.
 	testscenario.ValidateCreateUpdateDelete(ctx, conn,
 		"contacts",
 		payload{
 			FirstName:            firstName,
 			LastName:             lastName,
-			CustomFieldHobby:     "Traveling",
 			CustomFieldMarketing: true,
+			CustomFieldHobby:     "Traveling",
+			Email:                "professional.bob@test.com",
+			EmailId:              "13",
+			Phone:                "+380001000",
+			PhoneId:              "",
+			Fax:                  "+99969",
+			FaxId:                "",
 		},
 		payload{
 			FirstName:            updatedFirstName,
 			LastName:             updatedLastName,
-			CustomFieldHobby:     "Skiing",
 			CustomFieldMarketing: false,
+			CustomFieldHobby:     "Skiing",
+			Email:                "professional.bob.updated@test.com",
+			EmailId:              "",
+			Phone:                "+380111358",
+			PhoneId:              "",
+			Fax:                  "+77767",
+			FaxId:                "26",
 		},
 		testscenario.CRUDTestSuite{
 			ReadFields: datautils.NewSet("id", "firstName", "lastName",
 				"customField83",
 				"customField59",
+				"AMPERSAND-defaultEmail",
+				"AMPERSAND-defaultEmailId",
+				"AMPERSAND-defaultPhone",
+				"AMPERSAND-defaultPhoneId",
+				"AMPERSAND-defaultFax",
+				"AMPERSAND-defaultFaxId",
 			),
 			SearchBy: testscenario.Property{
 				Key:   "firstname",
@@ -74,10 +99,16 @@ func main() {
 			},
 			RecordIdentifierKey: "id",
 			UpdatedFields: map[string]string{
-				"firstname":     updatedFirstName,
-				"lastname":      updatedLastName,
-				"customfield83": "Skiing",
-				"customfield59": "false",
+				"firstname":                updatedFirstName,
+				"lastname":                 updatedLastName,
+				"customfield83":            "Skiing",
+				"customfield59":            "false",
+				"ampersand-defaultemail":   "professional.bob.updated@test.com",
+				"ampersand-defaultemailid": "1",
+				"ampersand-defaultphone":   "+380111358",
+				"ampersand-defaultphoneid": "2",
+				"ampersand-defaultfax":     "+77767",
+				"ampersand-defaultfaxid":   "26",
 			},
 		},
 	)
@@ -92,6 +123,12 @@ func main() {
 			LastName:             lastName,
 			CustomFieldHobby:     "Traveling",
 			CustomFieldMarketing: true,
+			Email:                "professional.bob@test.com",
+			EmailId:              "13",
+			Phone:                "+380001000",
+			PhoneId:              "",
+			Fax:                  "+99969",
+			FaxId:                "",
 		},
 		patchPayload{Patch: []patchOperation{{
 			Op:    "replace",
@@ -105,11 +142,32 @@ func main() {
 			Op:    "replace",
 			Path:  "/customField83", // Handled and translated by connector.
 			Value: "Hiking",
+		}, {
+			Op:    "replace",
+			Path:  "AMPERSAND-defaultPhone",
+			Value: "+380111358",
+		}, {
+			Op:    "replace",
+			Path:  "AMPERSAND-defaultFax",
+			Value: "+77767",
+		}, {
+			Op:    "replace",
+			Path:  "AMPERSAND-defaultFaxId", // TODO should the order matter? at the moment it doesn't
+			Value: "26",
+		}, {
+			Op:   "remove",
+			Path: "AMPERSAND-defaultEmail", // TODO what if somebody wants to remove id. What if remove id and replace value at the same time.
 		}}},
 		testscenario.CRUDTestSuite{
 			ReadFields: datautils.NewSet("id", "firstName", "lastName",
 				"customField83",
 				"customField59",
+				"AMPERSAND-defaultEmail",
+				"AMPERSAND-defaultEmailId",
+				"AMPERSAND-defaultPhone",
+				"AMPERSAND-defaultPhoneId",
+				"AMPERSAND-defaultFax",
+				"AMPERSAND-defaultFaxId",
 			),
 			SearchBy: testscenario.Property{
 				Key:   "firstname",
@@ -118,10 +176,16 @@ func main() {
 			},
 			RecordIdentifierKey: "id",
 			UpdatedFields: map[string]string{
-				"firstname":     updatedFirstName,
-				"lastname":      updatedLastName,
-				"customfield83": "Hiking",
-				"customfield59": "true",
+				"firstname":                updatedFirstName,
+				"lastname":                 updatedLastName,
+				"customfield83":            "Hiking",
+				"customfield59":            "true",
+				"ampersand-defaultemail":   "",
+				"ampersand-defaultemailid": "",
+				"ampersand-defaultphone":   "+380111358",
+				"ampersand-defaultphoneid": "2",
+				"ampersand-defaultfax":     "+77767",
+				"ampersand-defaultfaxid":   "26",
 			},
 		},
 	)

@@ -1,0 +1,41 @@
+[
+  {
+    "id": 99856,
+    "type": {
+      "id": 2,
+      "name": "Phone - Direct",
+      "_info": {
+        "type_href": "https://sandbox-na.myconnectwise.net/v4_6_release/apis/3.0//company/communicationTypes/2"
+      }
+    },
+    "value": "+380111358",
+    "defaultFlag": true,
+    "communicationType": "Phone"
+  },
+  {
+    "id": 99857,
+    "type": {
+      "id": 3,
+      "name": "Fax - Work",
+      "_info": {
+        "type_href": "https://sandbox-na.myconnectwise.net/v4_6_release/apis/3.0//company/communicationTypes/3"
+      }
+    },
+    "value": "+99969",
+    "defaultFlag": false,
+    "communicationType": "Fax"
+  },
+  {
+    "id": 99858,
+    "type": {
+      "id": 26,
+      "name": "Work Fax",
+      "_info": {
+        "type_href": "https://sandbox-na.myconnectwise.net/v4_6_release/apis/3.0//company/communicationTypes/26"
+      }
+    },
+    "value": "+77767",
+    "defaultFlag": true,
+    "communicationType": "Fax"
+  }
+]
