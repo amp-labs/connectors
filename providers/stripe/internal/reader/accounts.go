@@ -36,7 +36,7 @@ func (s *Strategy) readForConnectedAccounts(
 		}
 	}
 
-	return executeReadTasks(ctx, tasks)
+	return executeReadTasksAccounts(ctx, tasks)
 }
 
 // readNextPageConnectedAccounts resumes paginated reads for connected accounts.
@@ -65,7 +65,7 @@ func (s *Strategy) readNextPageConnectedAccounts(ctx context.Context,
 		}
 	}
 
-	return executeReadTasks(ctx, tasks)
+	return executeReadTasksAccounts(ctx, tasks)
 }
 
 type accountsListResponse struct {

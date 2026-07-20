@@ -88,6 +88,19 @@ func FromRawURL(rawURL *url.URL) (*URL, error) {
 	}, nil
 }
 
+// Clone returns a deep copy of the URL.
+func (u *URL) Clone() *URL {
+	// Copy url.URL
+	delegate := *u.delegate // nolint:staticcheck
+
+	return &URL{
+		delegate:             new(delegate),
+		queryParams:          maps.Clone(u.queryParams),
+		unencodedQueryParams: maps.Clone(u.unencodedQueryParams),
+		encodingExceptions:   maps.Clone(u.encodingExceptions),
+	}
+}
+
 func (u *URL) WithQueryParamList(name string, values []string) {
 	u.queryParams[name] = values
 }

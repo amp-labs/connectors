@@ -1,0 +1,25 @@
+{
+  "object": "list",
+  "url": "/v1/treasury/transaction_entries",
+  "has_more": true,
+  "data": [
+    {
+      "id": "transaction_0b0_76f1bb782252",
+      "object": "treasury.transaction_entry",
+      "balance_impact": {
+        "cash": 0,
+        "inbound_pending": 0,
+        "outbound_pending": -1000
+      },
+      "created": 1680756271,
+      "currency": "usd",
+      "effective_at": 1680756271,
+      "financial_account": "finAcc_001_a3738395bf7b",
+      "flow": "obt_1MtkgV2eZvKYlo2CCxhXVFLB",
+      "flow_type": "outbound_transfer",
+      "livemode": false,
+      "transaction": "trxn_ABC_2",
+      "type": "outbound_transfer"
+    }
+  ]
+}
