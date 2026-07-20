@@ -2,12 +2,12 @@ package stripe
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
@@ -521,22 +521,23 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableReader, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
+func constructTestConnector(server *httptest.Server) (*Connector, error) {
 	connector, err := NewConnector(
-		WithAuthenticatedClient(mockutils.NewClient()),
+		common.ConnectorParams{
+			AuthenticatedClient: server.Client(),
+		},
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	// for testing we want to redirect calls to our mock server
-	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	connector.SetUnitTestMockServerBaseURL(server.URL)
 
 	return connector, nil
 }

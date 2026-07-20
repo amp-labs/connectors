@@ -3,62 +3,39 @@ package stripe
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
 )
 
 const apiVersion = "v1"
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	// Basic connector
+	*components.Connector
+
+	// Require authenticated client
+	common.RequireAuthenticatedClient
 }
 
-func NewConnector(opts ...Option) (*Connector, error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
-	if err != nil {
-		return nil, err
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
+	return components.Init(providers.Stripe, params, constructor)
+}
+
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	connector := &Connector{
+		Connector: base,
 	}
 
-	httpClient := params.Client.Caller
-	conn := &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
-		},
-	}
-
-	// Read provider info
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
-
-	// connector and its client must mirror base url and provide its own error parser
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
+	base.SetErrorHandler(interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
-	}.Handle
+	}.Handle)
 
-	return conn, nil
-}
-
-func (c *Connector) Provider() providers.Provider {
-	return providers.Stripe
-}
-
-func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
+	return connector, nil
 }
 
 func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, objectName)
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
+	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, objectName)
 }
 
 // https://docs.stripe.com/api/connected-accounts
