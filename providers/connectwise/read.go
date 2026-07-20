@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/httpkit"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -81,11 +82,36 @@ func (c *Connector) parseReadResponse(
 		common.MakeRecordsFunc(""),
 		nextRecordsURL(resp),
 		readhelper.MakeMarshaledDataFuncWithId(
-			flattenCustomFields(),
+			recordTransformer(params.ObjectName),
 			readhelper.IdFieldQuery{Field: "id"},
 		),
 		params.Fields,
 	)
+}
+
+// recordTransformer returns a RecordTransformer that
+//
+//	(1) lifts customFields from the nested ConnectWise response into the top-level record map.
+//	(2) lifts communication items of a contact as virtual fields.
+func recordTransformer(objectName string) common.RecordTransformer {
+	return func(node *ajson.Node) (map[string]any, error) {
+		root, err := jsonquery.Convertor.ObjectToMap(node)
+		if err != nil {
+			return nil, err
+		}
+
+		if err = attachCustomFields(node, root); err != nil {
+			return nil, err
+		}
+
+		if objectName == objectNameContacts {
+			if err = attachCommunicationItems(node, root); err != nil {
+				return nil, err
+			}
+		}
+
+		return root, nil
+	}
 }
 
 func nextRecordsURL(resp *common.JSONHTTPResponse) common.NextPageFunc {

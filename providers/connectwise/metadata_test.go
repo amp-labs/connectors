@@ -41,34 +41,20 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 		},
 		{
-			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"contacts", "companies"},
-			Server:     mockserver.Dummy(),
+			Name:  "Successfully describe companies with metadata",
+			Input: []string{"companies"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v4_6_release/apis/3.0/company/companies"),
+					mockcond.QueryParam("pageSize", "1"),
+					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `[]`),
+			}.Server(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"contacts": {
-						DisplayName: "Contacts",
-						Fields: map[string]common.FieldMetadata{
-							"firstName": {
-								DisplayName:  "firstName",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-							"gender": {
-								DisplayName:  "gender",
-								ValueType:    "singleSelect",
-								ProviderType: "string",
-								Values: []common.FieldValue{{
-									Value:        "Female",
-									DisplayValue: "Female",
-								}, {
-									Value:        "Male",
-									DisplayValue: "Male",
-								}},
-							},
-						},
-					},
 					"companies": {
 						DisplayName: "Companies",
 						Fields: map[string]common.FieldMetadata{
@@ -119,6 +105,23 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					"contacts": {
 						DisplayName: "Contacts",
 						Fields: map[string]common.FieldMetadata{
+							"firstName": {
+								DisplayName:  "firstName",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"gender": {
+								DisplayName:  "gender",
+								ValueType:    "singleSelect",
+								ProviderType: "string",
+								Values: []common.FieldValue{{
+									Value:        "Female",
+									DisplayValue: "Female",
+								}, {
+									Value:        "Male",
+									DisplayValue: "Male",
+								}},
+							},
 							"customField80": {
 								DisplayName:  "Mobile Phone",
 								ValueType:    "string",
@@ -180,6 +183,54 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									Value:        "Party3",
 									DisplayValue: "Party3",
 								}},
+							},
+							"AMPERSAND-defaultEmail": {
+								DisplayName:  "Default Email",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-defaultEmailId": {
+								DisplayName:  "Default Email Type Id",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-defaultPhone": {
+								DisplayName:  "Default Phone",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-defaultPhoneId": {
+								DisplayName:  "Default Phone Type Id",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-defaultFax": {
+								DisplayName:  "Default Fax",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
+							},
+							"AMPERSAND-defaultFaxId": {
+								DisplayName:  "Default Fax Type Id",
+								ValueType:    "string",
+								ProviderType: "string",
+								ReadOnly:     new(false),
+								IsCustom:     new(false),
+								IsRequired:   new(false),
 							},
 						},
 					},

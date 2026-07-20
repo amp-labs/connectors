@@ -29,7 +29,7 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 			Input: testconn.ReadByIdsParams{
 				ObjectName: "contacts",
 				RecordIds:  []string{"57920", "57921", "57922"},
-				Fields:     []string{"firstName", "customField53"},
+				Fields:     []string{"firstName", "customField53", "AMPERSAND-defaultPhone", "AMPERSAND-defaultPhoneId"},
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -47,22 +47,28 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 			Expected: []common.ReadResultRow{{
 				Id: "57920",
 				Fields: map[string]any{
-					"firstname":     "Maxime Schaefer [1]",
-					"customfield53": "Software Developer",
+					"firstname":                "Maxime Schaefer [1]",
+					"customfield53":            "Software Developer",
+					"ampersand-defaultphone":   "+123",
+					"ampersand-defaultphoneid": "111",
 				},
 				Raw: map[string]any{"lastName": "Wayne Blanda"},
 			}, {
 				Id: "57921",
 				Fields: map[string]any{
-					"firstname":     "Roderick Rippin [2]",
-					"customfield53": "Sales Representative",
+					"firstname":                "Roderick Rippin [2]",
+					"customfield53":            "Sales Representative",
+					"ampersand-defaultphone":   "+456",
+					"ampersand-defaultphoneid": "222",
 				},
 				Raw: map[string]any{"lastName": "Lemuel Hackett"},
 			}, {
 				Id: "57922",
 				Fields: map[string]any{
-					"firstname":     "Randi Haag [3]",
-					"customfield53": "Manager",
+					"firstname":                "Randi Haag [3]",
+					"customfield53":            "Manager",
+					"ampersand-defaultphone":   "+789",
+					"ampersand-defaultphoneid": "333",
 				},
 				Raw: map[string]any{"lastName": "Ferne Bradtke"},
 			}},

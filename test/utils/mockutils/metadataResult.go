@@ -58,6 +58,14 @@ func (metadataResultComparator) SubsetErrors(
 	actual, expected *common.ListObjectMetadataResult,
 ) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
+
+	if len(actual.Errors) != 0 && len(expected.Errors) == 0 {
+		result.AddDiff("Errors is non empty, but no expectation is set. Specify at least one error.")
+		for name, err := range actual.Errors {
+			result.AddDiff("Consider \"%v\": %v", name, err)
+		}
+	}
+
 	for objectName, expectedError := range expected.Errors {
 		actualError, ok := actual.Errors[objectName]
 		if !ok {

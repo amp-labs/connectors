@@ -1,0 +1,19 @@
+[
+  {
+    "id": 58001,
+    "firstName": "Frank",
+    "lastName": "Fenrir",
+    "inactiveFlag": false,
+    "marriedFlag": false,
+    "childrenFlag": false,
+    "disablePortalLoginFlag": true,
+    "unsubscribeFlag": false,
+    "mobileGuid": "caeb1281-41a2-45f7-b2d8-94b4f5093305",
+    "defaultBillingFlag": false,
+    "defaultFlag": false,
+    "types": [],
+    "customFields": [],
+    "ignoreDuplicates": false,
+    "_info": {}
+  }
+]
