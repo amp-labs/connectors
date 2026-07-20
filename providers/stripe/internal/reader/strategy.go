@@ -11,10 +11,15 @@ const (
 	// Rate limit: [https://docs.stripe.com/rate-limits](https://docs.stripe.com/rate-limits)
 	maxReadConcurrency = 3
 
-	// fieldConnectedAccountID is the field name used to store the connected account identifier
+	// fieldConnectedAccountId is the field name used to store the connected account identifier
 	// in ReadResult.Data[*].Fields.
 	// This field is populated when ReadParamsOpts.ReadForAllConnectedAccounts is set to true.
-	fieldConnectedAccountID = "AMPERSAND-connectedAccountId"
+	fieldConnectedAccountId = "AMPERSAND-connectedAccountId"
+
+	// fieldFinancialAccountId is the field name used to store the financial account identifier
+	// in ReadResult.Data[*].Fields.
+	// This field is populated when read Object is part of the Treasury API.
+	fieldFinancialAccountId = "AMPERSAND-financialAccountId"
 
 	// DefaultPageSize is number of elements per page.
 	DefaultPageSize = 100

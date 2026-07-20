@@ -54,8 +54,7 @@ var incrementalObjects = datautils.NewSet( // nolint:gochecknoglobals
 // Requests to these endpoints must be resolved against a FinancialAccount,
 // which is discovered through treasury/financial_accounts.
 // The connector uses those accounts as context to list the corresponding objects.
-// TODO must be used by Read method (remove the `unused` tag).
-var scopedObjectsForFinancialAccount = datautils.NewSet( // nolint:gochecknoglobals,unused
+var scopedObjectsForFinancialAccount = datautils.NewSet( // nolint:gochecknoglobals
 	"treasury/outbound_payments",
 	"treasury/received_credits",
 	"treasury/debit_reversals",
