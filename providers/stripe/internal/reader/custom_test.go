@@ -1,4 +1,4 @@
-package stripe
+package reader
 
 import (
 	"encoding/json"
