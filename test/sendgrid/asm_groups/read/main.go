@@ -24,6 +24,6 @@ func main() {
 	slog.Info("=== Reading asm_groups ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "asm_groups",
-		Fields:     connectors.Fields("id", "name", "description", "is_default"),
+		Fields:     connectors.Fields("id", "name", "description"),
 	})
 }

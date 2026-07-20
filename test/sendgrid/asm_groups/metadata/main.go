@@ -14,26 +14,7 @@ func main() {
 
 	conn := connTest.GetSendGridConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{
-		"contacts",
-		"lists",
-		"segments",
-		"singlesends",
-		"templates",
-		"field_definitions",
-		"verified_senders",
-		"senders",
-		"bounces",
-		"blocks",
-		"spam_reports",
-		"unsubscribes",
-		"invalid_emails",
-		"asm_groups",
-		"categories",
-		"subusers",
-		"event_webhook_settings",
-		"parse_webhook_settings",
-	})
+	m, err := conn.ListObjectMetadata(ctx, []string{"asm_groups"})
 	if err != nil {
 		log.Fatal("Error fetching metadata: ", err)
 	}
