@@ -51,7 +51,7 @@ func (p PathItem[C]) RetrieveSchemaOperation(
 		return nil, false, nil
 	}
 
-	if ok := operationMethodFilter(p.objectName, operation); !ok {
+	if ok := operationMethodFilter(p.urlPath, operation); !ok {
 		// Omit this schema, operation for this object is not what we are looking for.
 		return nil, false, nil
 	}

@@ -388,6 +388,24 @@ var incrementalObjects = datautils.NewSet( // nolint:gochecknoglobals
 	"treasury/financial_accounts",
 )
 
+// scopedObjectsForFinancialAccount lists Treasury objects that are context-scoped by financial_account.
+//
+// Requests to these endpoints must be resolved against a FinancialAccount,
+// which is discovered through treasury/financial_accounts.
+// The connector uses those accounts as context to list the corresponding objects.
+// TODO must be used by Read method (remove the `unused` tag).
+var scopedObjectsForFinancialAccount = datautils.NewSet( // nolint:gochecknoglobals,unused
+	"treasury/outbound_payments",
+	"treasury/received_credits",
+	"treasury/debit_reversals",
+	"treasury/inbound_transfers",
+	"treasury/received_debits",
+	"treasury/transaction_entries",
+	"treasury/outbound_transfers",
+	"treasury/transactions",
+	"treasury/credit_reversals",
+)
+
 func fieldsSelector(node *ajson.Node, fields []string) (map[string]any, string, error) {
 	root, err := jsonquery.Convertor.ObjectToMap(node)
 	if err != nil {

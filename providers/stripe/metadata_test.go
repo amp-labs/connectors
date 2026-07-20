@@ -39,21 +39,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					"coupons": {
 						DisplayName: "Coupons",
 						FieldsMap: map[string]string{
-							"id":               "id",
-							"livemode":         "livemode",
-							"currency":         "currency",
-							"currency_options": "currency_options",
-							"percent_off":      "percent_off",
+							"id":               "Id",
+							"livemode":         "Livemode",
+							"currency":         "Currency",
+							"currency_options": "Currency Options",
+							"percent_off":      "Percent Off",
 						},
 					},
 					"products": {
 						DisplayName: "Products",
 						FieldsMap: map[string]string{
-							"id":            "id",
-							"images":        "images",
-							"default_price": "default_price",
-							"tax_code":      "tax_code",
-							"unit_label":    "unit_label",
+							"id":            "Id",
+							"images":        "Images",
+							"default_price": "Default Price",
+							"tax_code":      "Tax Code",
+							"unit_label":    "Unit Label",
 						},
 					},
 				},
@@ -72,12 +72,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						DisplayName: "Payment Checkout Sessions",
 						Fields: map[string]common.FieldMetadata{
 							"line_items": {
-								DisplayName:  "line_items",
+								DisplayName:  "Line Items",
 								ValueType:    "other",
 								ProviderType: "object",
 							},
 							"currency": {
-								DisplayName:  "currency",
+								DisplayName:  "Currency",
 								ValueType:    "string",
 								ProviderType: "string",
 							},

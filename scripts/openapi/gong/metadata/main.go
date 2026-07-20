@@ -18,7 +18,7 @@ var (
 	// Even though OpenAPI docs and official documentation say that some query parameters are required
 	// in practice you still can make an API call without any specified.
 	// Must include "calls" object.
-	queryParamFilterExceptions = datautils.NewSet("calls", "flows") // nolint:gochecknoglobals
+	queryParamFilterExceptions = datautils.NewSet("/v2/calls", "/v2/flows") // nolint:gochecknoglobals
 
 	ignoreEndpoints = []string{ // nolint:gochecknoglobals
 		"/v2/settings/scorecards",

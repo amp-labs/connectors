@@ -40,7 +40,7 @@ func buildIssueBody(params common.ReadParams) (map[string]any, error) {
 		"limit": pageSize,
 	}
 
-	subfilters := make([]map[string]any, 0, 2) //nolint:gomnd,mnd
+	subfilters := make([]map[string]any, 0, 2) //nolint:mnd
 
 	if !params.Since.IsZero() {
 		subfilters = append(subfilters, map[string]any{

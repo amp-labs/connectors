@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
@@ -12,6 +13,7 @@ import (
 	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
+	"github.com/getkin/kin-openapi/openapi3"
 )
 
 var (
@@ -64,7 +66,7 @@ func main() { // nolint:funlen
 			api3.Pluralize,
 		),
 		api3.WithParameterFilterGetMethod(
-			api3.OnlyOptionalQueryParameters,
+			OnlyOptionalQueryParametersOrTreasuryApi,
 		),
 		api3.WithArrayItemAutoSelection(),
 		api3.WithDuplicatesResolver(api3.SingleItemDuplicatesResolver(func(endpoint string) string {
@@ -98,8 +100,16 @@ func main() { // nolint:funlen
 		}
 
 		for _, field := range object.Fields {
+			fieldMetadata := staticschema.FieldMetadataMapV2{
+				field.Name: staticschema.FieldMetadata{
+					DisplayName:  formatFieldDisplayName(field.Name),
+					ValueType:    utilsopenapi.GetFieldValueType(field),
+					ProviderType: field.Type,
+					Values:       utilsopenapi.GetFieldValueOptions(field),
+				},
+			}
 			schemas.Add("", objectName, object.DisplayName, urlPath, object.ResponseKey,
-				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
+				fieldMetadata, nil, object.Custom)
 		}
 
 		for _, queryParam := range object.QueryParams {
@@ -111,6 +121,14 @@ func main() { // nolint:funlen
 	goutils.MustBeNil(files.OutputStripe.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.")
+}
+
+func formatFieldDisplayName(fieldName string) string {
+	displayName := fieldName
+	displayName = naming.SeparateUnderscoreWords(displayName)
+	displayName = naming.CapitalizeFirstLetterEveryWord(displayName)
+
+	return displayName
 }
 
 func arrayLocator(objectName, fieldName string) bool {
@@ -140,4 +158,21 @@ func processResourceTitles(displayName string) string {
 	}
 
 	return displayName
+}
+
+func OnlyOptionalQueryParametersOrTreasuryApi(urlPath string, operation *openapi3.Operation) bool {
+	for _, parameter := range operation.Parameters {
+		// Required query params are not supported.
+		if parameter.Value.In == "query" && parameter.Value.Required {
+			// Treasury endpoints are an exception.
+			if strings.Contains(urlPath, "/v1/treasury/") &&
+				strings.Contains(parameter.Value.Name, "financial_account") {
+				return true
+			}
+
+			return false
+		}
+	}
+
+	return true
 }
