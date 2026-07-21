@@ -145,21 +145,17 @@ func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
 //
 // A naive objectName+"_id" is wrong for some events: note-content events carry a
 // "note_id" (not "note-content_id"), and workspace-member events carry a
-// "workspace_member_id" (underscore, not the hyphenated object name). Example
-// "id" objects from the docs for these two non-obvious cases:
+// "workspace_member_id" (underscore, not the hyphenated object name).
 //
-//	note-content.updated:     {"workspace_id": "...", "note_id": "..."}
-//	workspace-member.created: {"workspace_id": "...", "workspace_member_id": "..."}
+// Every mapping below is confirmed against the concrete example "id" object in
+// Attio's webhook reference (source of truth: https://api.attio.com/openapi/webhooks):
 //
-// Keys verified against Attio's webhook reference (see each event's "id" schema
-// and example):
-//   - source of truth: https://api.attio.com/openapi/webhooks
-//   - record.*:           https://docs.attio.com/rest-api/webhook-reference/record-events/recordcreated
-//   - list.*:             https://docs.attio.com/rest-api/webhook-reference/list-events/listcreated
-//   - task.*:             https://docs.attio.com/rest-api/webhook-reference/task-events/taskcreated
-//   - note.*:             https://docs.attio.com/rest-api/webhook-reference/note-events/notecreated
-//   - note-content.*:     https://docs.attio.com/rest-api/webhook-reference/note-content-events/note-contentupdated
-//   - workspace-member.*: https://docs.attio.com/rest-api/webhook-reference/workspace-member-events/workspace-membercreated
+//	record.*           id: {"workspace_id","object_id","record_id"}   https://docs.attio.com/rest-api/webhook-reference/record-events/recordcreated
+//	list.*             id: {"workspace_id","list_id"}                 https://docs.attio.com/rest-api/webhook-reference/list-events/listcreated
+//	task.*             id: {"workspace_id","task_id"}                 https://docs.attio.com/rest-api/webhook-reference/task-events/taskcreated
+//	note.*             id: {"workspace_id","note_id"}                 https://docs.attio.com/rest-api/webhook-reference/note-events/notecreated
+//	note-content.*     id: {"workspace_id","note_id"}                 https://docs.attio.com/rest-api/webhook-reference/note-content-events/note-contentupdated
+//	workspace-member.* id: {"workspace_id","workspace_member_id"}     https://docs.attio.com/rest-api/webhook-reference/workspace-member-events/workspace-membercreated
 //
 //nolint:gochecknoglobals
 var recordIDKeyByEventObject = map[string]string{
