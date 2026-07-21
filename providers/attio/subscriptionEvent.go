@@ -123,9 +123,41 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 	return objectName, nil
 }
 
+// ObjectNameWithMetadata resolves the object's name for the event using object
+// metadata from the same provider.
+//
+// Standard and custom object changes arrive as generic record.* events that
+// identify the object only by its id.object_id — a per-workspace UUID, not a name.
+// This method looks that object_id up in the provided metadata. For core-object
+// events (note, task, list, workspace-member) the object is already encoded in the
+// event_type, so it falls back to ObjectName() without consulting metadata.
+//
+// The metadata must come from the same provider and be keyed by object_id (the
+// same contract as GetObjectNameFromObjectMetadata).
+func (evt SubscriptionEvent) ObjectNameWithMetadata(
+	metadata *common.ListObjectMetadataResult,
+) (string, error) {
+	idMap, err := evt.idMap()
+	if err != nil {
+		return "", err
+	}
+
+	objectID, ok := idMap["object_id"].(string)
+	if !ok {
+		// No object_id: this is a core-object event whose object is in event_type.
+		return evt.ObjectName()
+	}
+
+	if metadata == nil {
+		return "", fmt.Errorf("%w: metadata is nil", errTypeMismatch)
+	}
+
+	return GetObjectNameFromObjectMetadata(metadata, objectID)
+}
+
 func (evt SubscriptionEvent) RawEventName() (string, error) {
-	// asMap returns the single event object ({event_type, id, ...}) extracted
-	// from the top-level events array, so event_type is read directly off it.
+	// asMap returns the single event object ({event_type, id, ...}), so event_type
+	// is read directly off it.
 	event := evt.asMap()
 
 	eventName, ok := event["event_type"].(string)

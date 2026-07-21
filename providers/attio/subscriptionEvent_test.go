@@ -145,6 +145,95 @@ func TestSubscriptionEvent_ObjectName(t *testing.T) {
 	}
 }
 
+func TestSubscriptionEvent_ObjectNameWithMetadata(t *testing.T) {
+	t.Parallel()
+
+	// Metadata is keyed by object_id (the contract shared with
+	// GetObjectNameFromObjectMetadata), and DisplayName holds the object name.
+	metadata := &common.ListObjectMetadataResult{
+		Result: map[string]common.ObjectMetadata{
+			"obj-people-uuid": {DisplayName: "people"},
+		},
+	}
+
+	tests := []struct {
+		name        string
+		event       SubscriptionEvent
+		metadata    *common.ListObjectMetadataResult
+		expected    string
+		expectedErr bool
+	}{
+		{
+			name: "record event resolves object_id via metadata",
+			event: newTestEvent("record.created", map[string]string{
+				"workspace_id": "ws-1",
+				"object_id":    "obj-people-uuid",
+				"record_id":    "rec-1",
+			}),
+			metadata: metadata,
+			expected: "people",
+		},
+		{
+			name: "core event falls back to event_type object",
+			event: newTestEvent("note.updated", map[string]string{
+				"workspace_id": "ws-1",
+				"note_id":      "note-1",
+			}),
+			metadata: metadata,
+			expected: "note",
+		},
+		{
+			name: "unknown object_id returns error",
+			event: newTestEvent("record.created", map[string]string{
+				"workspace_id": "ws-1",
+				"object_id":    "obj-unknown",
+				"record_id":    "rec-1",
+			}),
+			metadata:    metadata,
+			expectedErr: true,
+		},
+		{
+			name: "nil metadata with record event returns error",
+			event: newTestEvent("record.created", map[string]string{
+				"workspace_id": "ws-1",
+				"object_id":    "obj-people-uuid",
+				"record_id":    "rec-1",
+			}),
+			metadata:    nil,
+			expectedErr: true,
+		},
+		{
+			name:        "empty event returns error",
+			event:       SubscriptionEvent{},
+			metadata:    metadata,
+			expectedErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result, err := tt.event.ObjectNameWithMetadata(tt.metadata)
+			if tt.expectedErr {
+				if err == nil {
+					t.Fatal("expected error, got nil")
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if result != tt.expected {
+				t.Fatalf("expected %q, got %q", tt.expected, result)
+			}
+		})
+	}
+}
+
 func TestSubscriptionEvent_RawEventName(t *testing.T) {
 	t.Parallel()
 
