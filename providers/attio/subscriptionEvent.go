@@ -145,9 +145,14 @@ func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
 //
 // A naive objectName+"_id" is wrong for some events: note-content events carry a
 // "note_id" (not "note-content_id"), and workspace-member events carry a
-// "workspace_member_id" (underscore, not the hyphenated object name).
+// "workspace_member_id" (underscore, not the hyphenated object name). Example
+// "id" objects from the docs for these two non-obvious cases:
 //
-// Keys verified against Attio's webhook reference (see each event's "id" schema):
+//	note-content.updated:     {"workspace_id": "...", "note_id": "..."}
+//	workspace-member.created: {"workspace_id": "...", "workspace_member_id": "..."}
+//
+// Keys verified against Attio's webhook reference (see each event's "id" schema
+// and example):
 //   - source of truth: https://api.attio.com/openapi/webhooks
 //   - record.*:           https://docs.attio.com/rest-api/webhook-reference/record-events/recordcreated
 //   - list.*:             https://docs.attio.com/rest-api/webhook-reference/list-events/listcreated
