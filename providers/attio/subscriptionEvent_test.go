@@ -145,7 +145,7 @@ func TestSubscriptionEvent_ObjectName(t *testing.T) {
 	}
 }
 
-func TestSubscriptionEvent_ObjectNameWithMetadata(t *testing.T) {
+func TestSubscriptionEvent_ObjectNameFromMetadata(t *testing.T) {
 	t.Parallel()
 
 	// Metadata is keyed by object_id (the contract shared with
@@ -214,7 +214,7 @@ func TestSubscriptionEvent_ObjectNameWithMetadata(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result, err := tt.event.ObjectNameWithMetadata(tt.metadata)
+			result, err := tt.event.ObjectNameFromMetadata(tt.metadata)
 			if tt.expectedErr {
 				if err == nil {
 					t.Fatal("expected error, got nil")

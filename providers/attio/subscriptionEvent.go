@@ -24,9 +24,10 @@ type (
 )
 
 var (
-	_ common.SubscriptionEvent          = SubscriptionEvent{}
-	_ common.SubscriptionUpdateEvent    = SubscriptionEvent{}
-	_ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
+	_ common.SubscriptionEvent             = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent       = SubscriptionEvent{}
+	_ common.SubscriptionEventWithMetadata = SubscriptionEvent{}
+	_ common.CollapsedSubscriptionEvent    = CollapsedSubscriptionEvent{}
 
 	errTypeMismatch = errors.New("type mismatch")
 )
@@ -134,7 +135,7 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 //
 // The metadata must come from the same provider and be keyed by object_id (the
 // same contract as GetObjectNameFromObjectMetadata).
-func (evt SubscriptionEvent) ObjectNameWithMetadata(
+func (evt SubscriptionEvent) ObjectNameFromMetadata(
 	metadata *common.ListObjectMetadataResult,
 ) (string, error) {
 	idMap, err := evt.idMap()

@@ -870,6 +870,19 @@ type SubscriptionEventWithRecord interface {
 	Record(fields []string) (ReadResultRow, error)
 }
 
+// SubscriptionEventWithMetadata is an optional interface implemented by providers
+// whose event identifies its object only by an id that must be resolved against
+// object metadata (e.g. Attio record.* events carry id.object_id, a per-workspace
+// UUID, rather than an object name). When implemented, callers can resolve the
+// object name by passing metadata from the same provider.
+type SubscriptionEventWithMetadata interface {
+	SubscriptionUpdateEvent
+
+	// ObjectNameFromMetadata resolves the object's name for the event using object
+	// metadata from the same provider.
+	ObjectNameFromMetadata(metadata *ListObjectMetadataResult) (string, error)
+}
+
 // CollapsedSubscriptionEvent some providers send multiple events in a single webhook payload.
 // This interface is used to extract individual events to SubscriptionEvent type
 // from a collapsed event for webhook parsing and processing.
