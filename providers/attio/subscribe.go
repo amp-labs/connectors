@@ -120,11 +120,11 @@ func (c *Connector) DeleteSubscription(
 		return fmt.Errorf("%w: subscription is empty", errMissingParams)
 	}
 
-	err := c.deleteSubscription(ctx, subscriptionData.Data.ID.WebhookID)
+	err := c.deleteSubscription(ctx, subscriptionData.Data.Id.WebhookId)
 	if err != nil {
 		return fmt.Errorf(
-			"failed to delete subscription (ID: %s): %w",
-			subscriptionData.Data.ID.WebhookID,
+			"failed to delete subscription (id: %s): %w",
+			subscriptionData.Data.Id.WebhookId,
 			err,
 		)
 	}

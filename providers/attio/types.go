@@ -58,10 +58,10 @@ type CreateSubscriptionsResponse struct {
 	Data CreateSubscriptionsResponseData `json:"data"`
 }
 
-// CreateSubscriptionsResponseID holds the workspace and webhook identifiers of a created webhook.
-type CreateSubscriptionsResponseID struct {
-	WorkspaceID string `json:"workspace_id"`
-	WebhookID   string `json:"webhook_id"`
+// CreateSubscriptionsResponseId holds the workspace and webhook identifiers of a created webhook.
+type CreateSubscriptionsResponseId struct {
+	WorkspaceId string `json:"workspace_id"`
+	WebhookId   string `json:"webhook_id"`
 }
 
 // CreateSubscriptionsResponseData is the data payload of a created webhook subscription.
@@ -69,7 +69,7 @@ type CreateSubscriptionsResponseID struct {
 type CreateSubscriptionsResponseData struct {
 	TargetURL     string                        `json:"target_url"`
 	Subscriptions []Subscription                `json:"subscriptions" validate:"required"`
-	ID            CreateSubscriptionsResponseID `json:"id"`
+	Id            CreateSubscriptionsResponseId `json:"id"`
 	Status        string                        `json:"status"`
 	CreatedAt     string                        `json:"created_at"`
 	// Secret used for webhook signature verification.
@@ -80,7 +80,7 @@ type CreateSubscriptionsResponseData struct {
 
 // SuccessfulSubscription is used internally for rollback tracking.
 type SuccessfulSubscription struct {
-	ID         string
+	Id         string
 	ObjectName string
 	EventName  string
 }
