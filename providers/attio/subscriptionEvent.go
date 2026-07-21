@@ -149,15 +149,18 @@ func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
 // "note_id" (not "note-content_id"), and workspace-member events carry a
 // "workspace_member_id" (underscore, not the hyphenated object name).
 //
-// Every mapping below is confirmed against the concrete example "id" object in
-// Attio's webhook reference (source of truth: https://api.attio.com/openapi/webhooks):
+// Each mapping is confirmed against the concrete example "id" object in Attio's
+// webhook reference (source of truth: https://api.attio.com/openapi/webhooks):
 //
-//	record.*           id: {"workspace_id","object_id","record_id"}   https://docs.attio.com/rest-api/webhook-reference/record-events/recordcreated
-//	list.*             id: {"workspace_id","list_id"}                 https://docs.attio.com/rest-api/webhook-reference/list-events/listcreated
-//	task.*             id: {"workspace_id","task_id"}                 https://docs.attio.com/rest-api/webhook-reference/task-events/taskcreated
-//	note.*             id: {"workspace_id","note_id"}                 https://docs.attio.com/rest-api/webhook-reference/note-events/notecreated
-//	note-content.*     id: {"workspace_id","note_id"}                 https://docs.attio.com/rest-api/webhook-reference/note-content-events/note-contentupdated
-//	workspace-member.* id: {"workspace_id","workspace_member_id"}     https://docs.attio.com/rest-api/webhook-reference/workspace-member-events/workspace-membercreated
+//	record.*             id: {workspace_id, object_id, record_id}
+//	list.*               id: {workspace_id, list_id}
+//	task.*               id: {workspace_id, task_id}
+//	note.* / note-content id: {workspace_id, note_id}
+//	workspace-member.*   id: {workspace_id, workspace_member_id}
+//
+// Per-event reference pages live under
+// https://docs.attio.com/rest-api/webhook-reference (e.g. record-events/recordcreated,
+// note-content-events/note-contentupdated, workspace-member-events/workspace-membercreated).
 //
 //nolint:gochecknoglobals
 var recordIDKeyByEventObject = map[string]string{
@@ -306,9 +309,7 @@ func (o *objectNameCache) store(idToName map[string]string) {
 		o.m = make(map[string]string, len(idToName))
 	}
 
-	for id, name := range idToName {
-		o.m[id] = name
-	}
+	maps.Copy(o.m, idToName)
 }
 
 // GetObjectNameFromTypeId resolves the object name for a subscription event.
@@ -326,8 +327,8 @@ func (o *objectNameCache) store(idToName map[string]string) {
 func (c *Connector) GetObjectNameFromTypeId(
 	ctx context.Context, event common.SubscriptionEvent,
 ) (string, error) {
-	attioEvent, ok := event.(SubscriptionEvent)
-	if !ok {
+	attioEvent, isAttioEvent := event.(SubscriptionEvent)
+	if !isAttioEvent {
 		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, SubscriptionEvent{}, event)
 	}
 
