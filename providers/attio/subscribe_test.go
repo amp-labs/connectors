@@ -65,7 +65,7 @@ func TestCreateSubscribe(t *testing.T) {
 					},
 				},
 			}.Server(),
-			ExpectedErrs: []error{testutils.StringError("unsupported_object: object not found. Ensure it is activated in the workspace settings")},
+			ExpectedErrs: []error{errObjectNotFound},
 		},
 
 		{
@@ -104,16 +104,17 @@ func TestCreateSubscribe(t *testing.T) {
 				},
 			}.Server(),
 			ExpectedErrs: nil,
-			Comparator: func(serverURL string, actual, expected *common.SubscriptionResult) *testutils.CompareResult {
+			Comparator: func(_ string, actual, expected *common.SubscriptionResult) *testutils.CompareResult {
 				result := testutils.NewCompareResult()
 				if actual == nil {
-					result.AddDiff("actual is nil")
-				} else {
-					result.Assert("Status", common.SubscriptionStatusSuccess, actual.Status)
+					result.AddDiff("actual SubscriptionResult is nil")
+
+					return result
 				}
 
-				return result
+				result.Assert("Status", common.SubscriptionStatusSuccess, actual.Status)
 
+				return result
 			},
 		},
 
@@ -320,17 +321,14 @@ func TestCreateSubscribe(t *testing.T) {
 			result, err := conn.Subscribe(t.Context(), tt.Input)
 
 			tt.Validate(t, err, result)
-
 		})
 	}
-
 }
 
 func TestDeleteSubscribe(t *testing.T) {
 	t.Parallel()
 
 	tests := []testconn.TestCase[common.SubscriptionResult, error]{
-
 		{
 			Name:         "Unsubscribe with missing result data",
 			Server:       mockserver.Dummy(),
@@ -461,5 +459,4 @@ func TestValidationSubscriptionEvents(t *testing.T) {
 
 	err = validateSubscriptionEvents(supportedObjectEvents, standardObjects)
 	assert.NilError(t, err)
-
 }
