@@ -674,6 +674,18 @@ func makeJsonPatchOperations(identifier string,
 	items []readCommunicationItem,
 	itemsRegistry map[string]int,
 ) ([]patchOperationPayload, []patchOperationPayload) {
+	if identifier == "" {
+		// identifier must be set by this point.
+		//
+		// For remove operations, we rely on the record id; however, the "value" is expected to be empty.
+		// For replace/add operations, the id is also required to target
+		// the correct element and "value" will be non-empty.
+		//
+		// If identifier is empty, we cannot construct a meaningful patch, so this is treated
+		// as a no-op for this field (it was not requested for modification).
+		return nil, nil
+	}
+
 	index, exists := itemsRegistry[identifier]
 	if !exists {
 		if isRemove {
