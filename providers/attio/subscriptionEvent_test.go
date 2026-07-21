@@ -591,7 +591,7 @@ func TestConnector_GetObjectNameFromTypeId(t *testing.T) {
 	}
 }
 
-func TestConnector_GetObjectNameFromTypeId_CachesInContext(t *testing.T) {
+func TestConnector_GetObjectNameFromTypeId_CachesOnConnector(t *testing.T) {
 	t.Parallel()
 
 	objectsResponse := testutils.DataFromFile(t, "objects.json")
@@ -613,10 +613,9 @@ func TestConnector_GetObjectNameFromTypeId_CachesInContext(t *testing.T) {
 		t.Fatalf("failed to construct test connector: %v", err)
 	}
 
-	ctx := WithObjectNameCache(t.Context())
-
+	// The same connector caches the object list, so repeated resolutions fetch once.
 	for range 3 {
-		name, err := conn.GetObjectNameFromTypeId(ctx, newTestEvent("record.created", map[string]string{
+		name, err := conn.GetObjectNameFromTypeId(t.Context(), newTestEvent("record.created", map[string]string{
 			"object_id": "bb3380d7-06a7-4948-9d62-3e735e782c5c",
 			"record_id": "rec-1",
 		}))

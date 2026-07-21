@@ -280,29 +280,13 @@ func computeSignature(secret string, body []byte) []byte {
 	return h.Sum(nil)
 }
 
-// objectNameCacheKey is the context key under which GetObjectNameFromTypeId stores
-// its object_id -> object name cache.
-type objectNameCacheKey struct{}
-
-// objectNameCache maps an Attio object_id to its object name (api_slug). It is kept
-// in the context so a batch of events resolves the object list at most once.
+// objectNameCache maps an Attio object_id to its object name (api_slug). It lives
+// on the Connector so a connector instance resolves the object list at most once
+// (and picks up newly created objects on a cache miss). It is safe for concurrent
+// use.
 type objectNameCache struct {
 	mu sync.RWMutex
 	m  map[string]string
-}
-
-// WithObjectNameCache returns a context carrying an object_id -> name cache used by
-// GetObjectNameFromTypeId. Callers that process multiple events should set this up
-// once so the object list is fetched at most once per batch. Without it,
-// GetObjectNameFromTypeId still works but fetches the object list on every call.
-func WithObjectNameCache(ctx context.Context) context.Context {
-	return context.WithValue(ctx, objectNameCacheKey{}, &objectNameCache{m: make(map[string]string)})
-}
-
-func objectNameCacheFromContext(ctx context.Context) *objectNameCache {
-	cache, _ := ctx.Value(objectNameCacheKey{}).(*objectNameCache)
-
-	return cache
 }
 
 func (o *objectNameCache) get(objectID string) (string, bool) {
@@ -318,6 +302,10 @@ func (o *objectNameCache) store(idToName map[string]string) {
 	o.mu.Lock()
 	defer o.mu.Unlock()
 
+	if o.m == nil {
+		o.m = make(map[string]string, len(idToName))
+	}
+
 	for id, name := range idToName {
 		o.m[id] = name
 	}
@@ -327,9 +315,9 @@ func (o *objectNameCache) store(idToName map[string]string) {
 //
 // Standard and custom object changes arrive as generic record.* events that
 // identify the object only by its id.object_id (a per-workspace UUID). This maps
-// that id to the object's api_slug: it first checks the object_id -> name cache in
-// the context (see WithObjectNameCache), and on a miss fetches the workspace's
-// objects directly from GET /v2/objects and caches the result.
+// that id to the object's api_slug: it first checks the connector's object_id ->
+// name cache, and on a miss fetches the workspace's objects directly from
+// GET /v2/objects and caches the result.
 // Ref: https://docs.attio.com/rest-api/endpoint-reference/objects/list-objects
 //
 // For core-object events (note, task, list, workspace-member) there is no
@@ -354,11 +342,8 @@ func (c *Connector) GetObjectNameFromTypeId(
 		return attioEvent.ObjectName()
 	}
 
-	cache := objectNameCacheFromContext(ctx)
-	if cache != nil {
-		if name, found := cache.get(objectID); found {
-			return name, nil
-		}
+	if name, found := c.objectNameCache.get(objectID); found {
+		return name, nil
 	}
 
 	idToName, err := c.fetchObjectIdToName(ctx)
@@ -366,9 +351,7 @@ func (c *Connector) GetObjectNameFromTypeId(
 		return "", err
 	}
 
-	if cache != nil {
-		cache.store(idToName)
-	}
+	c.objectNameCache.store(idToName)
 
 	name, found := idToName[objectID]
 	if !found {
