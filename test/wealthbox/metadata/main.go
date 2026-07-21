@@ -28,6 +28,16 @@ func main() {
 		"opportunities",
 		"projects",
 		"notes",
+		"workflows",
+		"workflow_templates",
+		"comments",
+		"activity",
+		"users",
+		"teams",
+		"user_groups",
+		"contact_roles",
+		"custom_fields",
+		"tags",
 	})
 	if err != nil {
 		utils.Fail("error listing metadata", "error", err)

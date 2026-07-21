@@ -881,6 +881,445 @@
             }
           },
           "docs": "https://dev.wealthbox.com/#topics-notes"
+        },
+        "workflows": {
+          "displayName": "Workflows",
+          "path": "/workflows",
+          "responseKey": "workflows",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "label": {
+              "displayName": "Label",
+              "valueType": "string"
+            },
+            "linked_to": {
+              "displayName": "Linked To",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "visible_to": {
+              "displayName": "Visible To",
+              "valueType": "string",
+              "providerType": "Everyone|Private|{user_group_id}"
+            },
+            "workflow_template": {
+              "displayName": "Workflow Template",
+              "valueType": "other",
+              "providerType": "WorkflowTemplate"
+            },
+            "kind": {
+              "displayName": "Kind",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Contact",
+                  "displayValue": "Contact"
+                },
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "Opportunity",
+                  "displayValue": "Opportunity"
+                }
+              ]
+            },
+            "workflow_steps": {
+              "displayName": "Workflow Steps",
+              "valueType": "other",
+              "providerType": "Array (WorkflowStep)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-workflows"
+        },
+        "workflow_templates": {
+          "displayName": "Workflow Templates",
+          "path": "/workflow_templates",
+          "responseKey": "workflow_templates",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "sequential": {
+              "displayName": "Sequential",
+              "valueType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string"
+            },
+            "description_html": {
+              "displayName": "Description (HTML)",
+              "valueType": "string"
+            },
+            "shared": {
+              "displayName": "Shared",
+              "valueType": "boolean"
+            },
+            "ready": {
+              "displayName": "Ready",
+              "valueType": "boolean"
+            },
+            "workflow_milestones": {
+              "displayName": "Workflow Milestones",
+              "valueType": "other",
+              "providerType": "Array (WorkflowTemplateMilestone)"
+            },
+            "workflow_steps": {
+              "displayName": "Workflow Steps",
+              "valueType": "other",
+              "providerType": "Array (WorkflowTemplateStep)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-workflow-templates"
+        },
+        "comments": {
+          "displayName": "Comments",
+          "path": "/comments",
+          "responseKey": "comments",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "body": {
+              "displayName": "Body",
+              "valueType": "other",
+              "providerType": "Object (text, html)"
+            },
+            "resource_type": {
+              "displayName": "Resource Type",
+              "valueType": "string"
+            },
+            "resource_id": {
+              "displayName": "Resource ID",
+              "valueType": "int"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-comments"
+        },
+        "activity": {
+          "displayName": "Activity Stream",
+          "path": "/activity",
+          "responseKey": "stream_items",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "body": {
+              "displayName": "Body",
+              "valueType": "string",
+              "providerType": "HTML"
+            },
+            "linked_to": {
+              "displayName": "Linked To",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "icon": {
+              "displayName": "Icon",
+              "valueType": "string",
+              "readOnly": true
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-activity-stream"
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "users",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "account": {
+              "displayName": "Account",
+              "valueType": "int"
+            },
+            "excluded_from_assignments": {
+              "displayName": "Excluded From Assignments",
+              "valueType": "boolean"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "active",
+                  "displayValue": "active"
+                },
+                {
+                  "value": "invited",
+                  "displayValue": "invited"
+                },
+                {
+                  "value": "inactive",
+                  "displayValue": "inactive"
+                },
+                {
+                  "value": "legacy",
+                  "displayValue": "legacy"
+                }
+              ]
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-users"
+        },
+        "teams": {
+          "displayName": "Teams",
+          "path": "/teams",
+          "responseKey": "teams",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "members": {
+              "displayName": "Members",
+              "valueType": "other",
+              "providerType": "Array (AccountUser)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-teams"
+        },
+        "user_groups": {
+          "displayName": "User Groups",
+          "path": "/user_groups",
+          "responseKey": "user_groups",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "int",
+              "providerType": "nullable, populated for \"Only Me\" groups"
+            },
+            "members": {
+              "displayName": "Members",
+              "valueType": "other",
+              "providerType": "Array (user id)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-user-groups"
+        },
+        "contact_roles": {
+          "displayName": "Contact Roles",
+          "path": "/categories/contact_roles",
+          "responseKey": "contact_roles",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "available_options": {
+              "displayName": "Available Options",
+              "valueType": "other",
+              "providerType": "Array (ContactRoleOption)"
+            },
+            "removed_options": {
+              "displayName": "Removed Options",
+              "valueType": "other",
+              "providerType": "Array (RemovedContactRoleOption)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-contact-roles"
+        },
+        "custom_fields": {
+          "displayName": "Custom Fields",
+          "path": "/categories/custom_fields",
+          "responseKey": "custom_fields",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "document_type": {
+              "displayName": "Document Type",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Contact",
+                  "displayValue": "Contact"
+                },
+                {
+                  "value": "Opportunity",
+                  "displayValue": "Opportunity"
+                },
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "Task",
+                  "displayValue": "Task"
+                },
+                {
+                  "value": "Event",
+                  "displayValue": "Event"
+                },
+                {
+                  "value": "ManualInvestmentAccount",
+                  "displayValue": "ManualInvestmentAccount"
+                },
+                {
+                  "value": "DataFile",
+                  "displayValue": "DataFile"
+                }
+              ]
+            },
+            "field_type": {
+              "displayName": "Field Type",
+              "valueType": "string"
+            },
+            "options": {
+              "displayName": "Options",
+              "valueType": "other",
+              "providerType": "Array (label)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-custom-fields"
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/categories/tags",
+          "responseKey": "tags",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "document_type": {
+              "displayName": "Document Type",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Contact",
+                  "displayValue": "Contact"
+                },
+                {
+                  "value": "Note",
+                  "displayValue": "Note"
+                }
+              ]
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-tags"
         }
       }
     }
