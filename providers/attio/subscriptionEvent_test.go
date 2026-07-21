@@ -9,12 +9,12 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// newTestEvent creates a SubscriptionEvent that mirrors a real Attio webhook
-// payload: a top-level "events" array whose single element holds the event_type
-// and an "id" object. The id values are stored as map[string]any because that is
-// what encoding/json produces when decoding a real webhook body.
+// newTestEvent creates a single SubscriptionEvent as produced by
+// CollapsedSubscriptionEvent.SubscriptionEventList: one event object holding the
+// event_type and an "id" object. The id values are stored as map[string]any
+// because that is what encoding/json produces when decoding a real webhook body.
 func newTestEvent(eventType string, idMap map[string]string) SubscriptionEvent {
-	event := map[string]any{
+	event := SubscriptionEvent{
 		"event_type": eventType,
 	}
 
@@ -27,9 +27,7 @@ func newTestEvent(eventType string, idMap map[string]string) SubscriptionEvent {
 		event["id"] = id
 	}
 
-	return SubscriptionEvent{
-		"events": []any{event},
-	}
+	return event
 }
 
 func TestSubscriptionEvent_EventType(t *testing.T) {
@@ -62,7 +60,7 @@ func TestSubscriptionEvent_EventType(t *testing.T) {
 			expected: common.SubscriptionEventTypeOther,
 		},
 		{
-			name:        "Missing events key",
+			name:        "Empty event",
 			event:       SubscriptionEvent{},
 			expectedErr: true,
 		},
@@ -117,7 +115,7 @@ func TestSubscriptionEvent_ObjectName(t *testing.T) {
 			expected: "record",
 		},
 		{
-			name:        "Missing events key",
+			name:        "Empty event",
 			event:       SubscriptionEvent{},
 			expectedErr: true,
 		},
@@ -167,7 +165,7 @@ func TestSubscriptionEvent_RawEventName(t *testing.T) {
 			expected: "record.created",
 		},
 		{
-			name:        "Missing events key",
+			name:        "Empty event",
 			event:       SubscriptionEvent{},
 			expectedErr: true,
 		},
@@ -260,7 +258,7 @@ func TestSubscriptionEvent_RecordId(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name:        "Missing events key",
+			name:        "Empty event",
 			event:       SubscriptionEvent{},
 			expectedErr: true,
 		},
@@ -315,7 +313,7 @@ func TestSubscriptionEvent_Workspace(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name:        "Missing events key",
+			name:        "Empty event",
 			event:       SubscriptionEvent{},
 			expectedErr: true,
 		},
@@ -392,11 +390,13 @@ func TestSubscriptionEvent_EventTimeStampNano(t *testing.T) {
 	}
 }
 
-// TestSubscriptionEvent_RealWebhookPayload decodes a real Attio webhook body
-// (via encoding/json, the way the server does) and verifies the parsing methods
-// work end to end. This guards against the events-as-array / id map[string]any
+// TestCollapsedSubscriptionEvent_RealWebhookPayload decodes a real Attio webhook
+// body (via encoding/json, the way the server does), fans it out through
+// SubscriptionEventList, and verifies the parsing methods work end to end on the
+// resulting per-event SubscriptionEvents. It uses two events to also exercise the
+// array fan-out (batching), guarding against the events-array / id map[string]any
 // shape being mishandled.
-func TestSubscriptionEvent_RealWebhookPayload(t *testing.T) {
+func TestCollapsedSubscriptionEvent_RealWebhookPayload(t *testing.T) {
 	t.Parallel()
 
 	body := []byte(`{
@@ -404,53 +404,108 @@ func TestSubscriptionEvent_RealWebhookPayload(t *testing.T) {
 		"events": [
 			{
 				"event_type": "note.updated",
-				"id": {
-					"workspace_id": "ws-1",
-					"note_id": "note-9"
-				}
+				"id": { "workspace_id": "ws-1", "note_id": "note-9" }
+			},
+			{
+				"event_type": "record.created",
+				"id": { "workspace_id": "ws-1", "object_id": "obj-1", "record_id": "rec-2" }
 			}
 		]
 	}`)
 
-	var evt SubscriptionEvent
-	if err := json.Unmarshal(body, &evt); err != nil {
+	var collapsed CollapsedSubscriptionEvent
+	if err := json.Unmarshal(body, &collapsed); err != nil {
 		t.Fatalf("failed to unmarshal payload: %v", err)
 	}
 
-	eventType, err := evt.EventType()
+	events, err := collapsed.SubscriptionEventList()
 	if err != nil {
-		t.Fatalf("EventType() error: %v", err)
+		t.Fatalf("SubscriptionEventList() error: %v", err)
 	}
 
-	if eventType != common.SubscriptionEventTypeUpdate {
-		t.Fatalf("EventType() = %v, want %v", eventType, common.SubscriptionEventTypeUpdate)
+	if len(events) != 2 {
+		t.Fatalf("expected 2 events, got %d", len(events))
 	}
 
-	objectName, err := evt.ObjectName()
-	if err != nil {
-		t.Fatalf("ObjectName() error: %v", err)
+	cases := []struct {
+		eventType  common.SubscriptionEventType
+		objectName string
+		recordID   string
+	}{
+		{common.SubscriptionEventTypeUpdate, "note", "note-9"},
+		{common.SubscriptionEventTypeCreate, "record", "rec-2"},
 	}
 
-	if objectName != "note" {
-		t.Fatalf("ObjectName() = %q, want %q", objectName, "note")
+	for i, want := range cases {
+		evt := events[i]
+
+		eventType, err := evt.EventType()
+		if err != nil {
+			t.Fatalf("event %d EventType() error: %v", i, err)
+		}
+
+		if eventType != want.eventType {
+			t.Fatalf("event %d EventType() = %v, want %v", i, eventType, want.eventType)
+		}
+
+		objectName, err := evt.ObjectName()
+		if err != nil {
+			t.Fatalf("event %d ObjectName() error: %v", i, err)
+		}
+
+		if objectName != want.objectName {
+			t.Fatalf("event %d ObjectName() = %q, want %q", i, objectName, want.objectName)
+		}
+
+		recordID, err := evt.RecordId()
+		if err != nil {
+			t.Fatalf("event %d RecordId() error: %v", i, err)
+		}
+
+		if recordID != want.recordID {
+			t.Fatalf("event %d RecordId() = %q, want %q", i, recordID, want.recordID)
+		}
+
+		workspace, err := evt.Workspace()
+		if err != nil {
+			t.Fatalf("event %d Workspace() error: %v", i, err)
+		}
+
+		if workspace != "ws-1" {
+			t.Fatalf("event %d Workspace() = %q, want %q", i, workspace, "ws-1")
+		}
+	}
+}
+
+func TestCollapsedSubscriptionEvent_SubscriptionEventList_Errors(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		event CollapsedSubscriptionEvent
+	}{
+		{
+			name:  "missing events key",
+			event: CollapsedSubscriptionEvent{"webhook_id": "wh-1"},
+		},
+		{
+			name:  "events is not an array",
+			event: CollapsedSubscriptionEvent{"events": map[string]any{"event_type": "note.updated"}},
+		},
+		{
+			name:  "event element is not an object",
+			event: CollapsedSubscriptionEvent{"events": []any{"not-an-object"}},
+		},
 	}
 
-	recordID, err := evt.RecordId()
-	if err != nil {
-		t.Fatalf("RecordId() error: %v", err)
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	if recordID != "note-9" {
-		t.Fatalf("RecordId() = %q, want %q", recordID, "note-9")
-	}
-
-	workspace, err := evt.Workspace()
-	if err != nil {
-		t.Fatalf("Workspace() error: %v", err)
-	}
-
-	if workspace != "ws-1" {
-		t.Fatalf("Workspace() = %q, want %q", workspace, "ws-1")
+			if _, err := tt.event.SubscriptionEventList(); err == nil {
+				t.Fatal("expected error, got nil")
+			}
+		})
 	}
 }
 

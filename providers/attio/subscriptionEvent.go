@@ -24,8 +24,9 @@ type (
 )
 
 var (
-	_ common.SubscriptionEvent       = SubscriptionEvent{}
-	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+	_ common.SubscriptionEvent          = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent    = SubscriptionEvent{}
+	_ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 
 	errTypeMismatch = errors.New("type mismatch")
 )
@@ -228,21 +229,47 @@ func lookupID(idMap map[string]any, key string) (string, error) {
 	return id, nil
 }
 
-// asMap returns the event as a StringMap.
+// asMap returns the single event as a StringMap. A SubscriptionEvent is one
+// event object ({event_type, id, actor}) produced by
+// CollapsedSubscriptionEvent.SubscriptionEventList, so no unwrapping is needed.
 func (evt SubscriptionEvent) asMap() common.StringMap {
-	// extract first event from events array
-	// Attio sends an array of events, but it only contains one event per webhook call.
-	// So we extract the first event for processing.
-	evtsArray, ok := evt["events"].([]any)
-	if ok && len(evtsArray) > 0 {
-		firstEvt, ok := evtsArray[0].(map[string]any)
-		if ok {
-			return common.StringMap(firstEvt)
-		}
+	return common.StringMap(evt)
+}
+
+// CollapsedSubscriptionEvent is the raw Attio webhook payload. Attio delivers a
+// top-level object with an "events" array; each element is an individual event.
+// Currently each delivery carries exactly one event, but the schema notes this
+// may change to support batching, so we fan out every element.
+// Ref: https://api.attio.com/openapi/webhooks
+type CollapsedSubscriptionEvent map[string]any
+
+// RawMap returns a copy of the raw payload.
+func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(e), nil
+}
+
+// SubscriptionEventList fans the top-level "events" array out into one
+// SubscriptionEvent per event.
+func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
+	rawEvents, ok := e["events"].([]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: expected events to be []any, got %T",
+			common.ErrSubscriptionEventList, e["events"])
 	}
 
-	// Fallback to returning the whole event if extraction fails
-	return common.StringMap(evt)
+	events := make([]common.SubscriptionEvent, 0, len(rawEvents))
+
+	for _, raw := range rawEvents {
+		eventMap, ok := raw.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("%w: expected event to be map[string]any, got %T",
+				common.ErrSubscriptionEventList, raw)
+		}
+
+		events = append(events, SubscriptionEvent(eventMap))
+	}
+
+	return events, nil
 }
 
 func computeSignature(secret string, body []byte) []byte {
