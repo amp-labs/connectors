@@ -1,0 +1,34 @@
+{
+    "data": [
+        {
+            "id": {
+                "workspace_id": "5f9a8705-a575-4a48-8733-c681e6857d74",
+                "object_id": "0131429d-bf53-4991-b7c3-9997cc56e6bc"
+            },
+            "api_slug": "users",
+            "singular_noun": "User",
+            "plural_noun": "Users",
+            "created_at": "2023-09-08T16:08:27.485000000Z"
+        },
+        {
+            "id": {
+                "workspace_id": "5f9a8705-a575-4a48-8733-c681e6857d74",
+                "object_id": "0e80364d-70b1-44d3-b7ba-0a6a564a7152"
+            },
+            "api_slug": "people",
+            "singular_noun": "Person",
+            "plural_noun": "People",
+            "created_at": "2023-01-16T16:08:36.795000000Z"
+        },
+        {
+            "id": {
+                "workspace_id": "5f9a8705-a575-4a48-8733-c681e6857d74",
+                "object_id": "bb3380d7-06a7-4948-9d62-3e735e782c5c"
+            },
+            "api_slug": "companies",
+            "singular_noun": "Company",
+            "plural_noun": "Companies",
+            "created_at": "2023-01-16T16:08:36.782000000Z"
+        }
+    ]
+}
