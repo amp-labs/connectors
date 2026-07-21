@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"maps"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -79,7 +81,7 @@ func attachCommunicationItems(node *ajson.Node, root map[string]any) error { // 
 	return nil
 }
 
-// payloadWithCommunicationItems rewrites the write payload for a contact record
+// postPayloadWithCommunicationItems rewrites the write payload for a contact record
 // so that virtual communication-item fields are translated into a proper
 // `communicationItems` array for ConnectWise.
 //
@@ -92,7 +94,7 @@ func attachCommunicationItems(node *ajson.Node, root map[string]any) error { // 
 //
 // If the record is nil or the intent is empty (no communication fields set),
 // the function returns without modifying the record.
-func (c *Connector) payloadWithCommunicationItems(ctx context.Context, record common.Record) error {
+func (c *Connector) postPayloadWithCommunicationItems(ctx context.Context, record common.Record) error {
 	if record == nil {
 		// No record to modify; nothing to do.
 		return nil
@@ -148,7 +150,224 @@ func (c *Connector) payloadWithCommunicationItems(ctx context.Context, record co
 	return nil
 }
 
-// patchPayloadWithCommunicationItems transforms a list of JSON Patch operations
+// contactsFullUpdatePayload builds a JSON Patch payload that emulates a full
+// PUT for a contact record, while avoiding ConnectWise's known issues with
+// native PUT.
+//
+// ConnectWise's PUT for contacts is problematic:
+//   - Including `communicationItems` in a PUT can trigger spurious validation
+//     errors even when the items are correct.
+//   - PUT does not truly replace the object: custom fields property is left untouched,
+//     and communication items are not fully synchronized.
+//
+// This function implements true full-replacement semantics using PATCH:
+//
+// 1. Clear customFields
+// 2. Remove obsolete top-level field
+// 3. Replace all fields from the incoming record
+// 4. Synchronize communicationItems
+//
+// If the record contains virtual communication-item fields:
+//   - A registry of existing communication items (type ID -> index) is built
+//     from the fetched contact.
+//   - Missing communication type IDs are resolved via the
+//     `/company/communicationTypes` endpoint.
+//   - For each default email/phone/fax:
+//   - If an item with the same type ID exists, its `value` is replaced.
+//   - Otherwise, a new item is appended to `communicationItems`.
+//   - Any existing communication items not present in the intent are removed.
+//     Remove operations are sorted to avoid index instability when deleting
+//     multiple items in a single patch.
+//
+// The resulting patch sequence provides callers with simple "PUT-like"
+// semantics while sidestepping ConnectWise's bugs and limitations around
+// contact updates.
+func (c *Connector) contactsFullUpdatePayload(ctx context.Context, // nolint:cyclop,funlen
+	record common.Record,
+	contactId string,
+) ([]patchOperationPayload, error) {
+	// Start by clearing customFields; ConnectWise requires this for PATCH to work.
+	operations := []patchOperationPayload{
+		{
+			Op:    operationReplace,
+			Path:  "customFields",
+			Value: []any{},
+		},
+	}
+
+	if record == nil {
+		return operations, nil
+	}
+
+	contact, err := fetchContact[map[string]any](ctx, c, contactId)
+	if err != nil {
+		return nil, err
+	}
+
+	var registry map[string]int
+
+	keys := datautils.Map[string, any](*contact).Keys()
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		if datautils.NewSet(
+			"firstName",        // required field
+			"customFields",     // already clearing above; required for PATCH to work
+			"ignoreDuplicates", // unremovable flag
+			"_info",            // metadata; ignore
+			"id",               // read-only field
+		).Has(key) {
+			continue
+		}
+
+		// Handle communicationItems separately via per-element add/replace/remove.
+		if key == "communicationItems" {
+			registry, err = makeCommunicationItemsRegistry((*contact)[key])
+			if err != nil {
+				return nil, err
+			}
+
+			continue
+		}
+
+		// Remove all other fields; they will be replaced from the new record.
+		operations = append(operations, patchOperationPayload{
+			Op:   operationRemove,
+			Path: key,
+		})
+	}
+
+	intent, err := createCommunicationItemsIntent(record)
+	if err != nil {
+		return nil, err
+	}
+
+	// Replace all fields from the incoming record (core + custom fields).
+	keys = datautils.Map[string, any](record).Keys()
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		operations = append(operations, patchOperationPayload{
+			Op:    operationReplace,
+			Path:  key,
+			Value: record[key],
+		})
+	}
+
+	if intent.isEmpty() {
+		// No communication-item fields present; patch is complete.
+		return operations, nil
+	}
+
+	if intent.needIds() {
+		if err = c.fetchMissingCommunicationItemIds(ctx, intent); err != nil {
+			return nil, err
+		}
+	}
+
+	// Add or replace default email/phone/fax items.
+	if intent.DefaultEmail != "" {
+		operations = append(operations,
+			makeOperationAddOrReplace(registry, intent.DefaultEmailId, intent.DefaultEmail, communicationTypeEmail)...,
+		)
+	}
+
+	if intent.DefaultPhone != "" {
+		operations = append(operations,
+			makeOperationAddOrReplace(registry, intent.DefaultPhoneId, intent.DefaultPhone, communicationTypePhone)...,
+		)
+	}
+
+	if intent.DefaultFax != "" {
+		operations = append(operations,
+			makeOperationAddOrReplace(registry, intent.DefaultFaxId, intent.DefaultFax, communicationTypeFax)...,
+		)
+	}
+
+	// Remove any existing communication items not present in the intent.
+	// First, exclude the items we are keeping (defaults).
+	delete(registry, intent.DefaultEmailId)
+	delete(registry, intent.DefaultPhoneId)
+	delete(registry, intent.DefaultFaxId)
+
+	opRemove := make([]patchOperationPayload, 0, len(registry))
+	for _, index := range registry {
+		opRemove = append(opRemove, patchOperationPayload{
+			Op:          operationRemove,
+			Path:        fmt.Sprintf("/communicationItems/%v", index),
+			removeIndex: index,
+		})
+	}
+
+	// Sort remove operations to maintain stable indices during patch application.
+	sortRemovePayloads(opRemove)
+	operations = append(operations, opRemove...)
+
+	return operations, nil
+}
+
+// makeOperationAddOrReplace generates JSON Patch operations to add or replace
+// a single default communication item (email/phone/fax) based on the existing
+// registry.
+func makeOperationAddOrReplace(registry map[string]int,
+	identifier string,
+	value string,
+	communicationType string,
+) []patchOperationPayload {
+	index, found := registry[identifier]
+	if !found {
+		// No existing item with this type ID; append a new one.
+		return []patchOperationPayload{{
+			Op:   "add",
+			Path: fmt.Sprintf("/communicationItems/%v", len(registry)),
+			Value: createCommunicationItemPayload{
+				Type:              communicationItemTypePayload{identifier},
+				Value:             value,
+				DefaultFlag:       true,
+				CommunicationType: communicationType,
+			},
+		}}
+	}
+
+	// Existing item with this type ID; update its value.
+	return []patchOperationPayload{{
+		Op:    "replace",
+		Path:  fmt.Sprintf("/communicationItems/%v/value", index),
+		Value: value,
+	}}
+}
+
+func makeCommunicationItemsRegistry(value any) (map[string]int, error) {
+	registry := make(map[string]int)
+
+	communicationItems, ok := value.([]any)
+	if !ok {
+		return nil, jsonquery.ErrNotArray
+	}
+
+	for index, communicationItem := range communicationItems {
+		item, ok := communicationItem.(map[string]any)
+		if !ok {
+			return nil, jsonquery.ErrNotObject
+		}
+
+		node, err := jsonquery.Convertor.NodeFromMap(item)
+		if err != nil {
+			return nil, err
+		}
+
+		typeId, err := jsonquery.New(node, "type").IntegerRequired("id")
+		if err != nil {
+			return nil, err
+		}
+
+		registry[strconv.FormatInt(typeId, 10)] = index
+	}
+
+	return registry, nil
+}
+
+// contactsPartialUpdatePayload transforms a list of JSON Patch operations
 // that may include virtual communication-item fields into a list of operations
 // that target ConnectWise's actual `communicationItems` array.
 //
@@ -170,7 +389,7 @@ func (c *Connector) payloadWithCommunicationItems(ctx context.Context, record co
 //
 // This function is ConnectWise logic-specific because it relies on ConnectWise's
 // behavior around defaultFlag and array indexing when constructing patches.
-func (c *Connector) patchPayloadWithCommunicationItems(ctx context.Context, // nolint:cyclop
+func (c *Connector) contactsPartialUpdatePayload(ctx context.Context, // nolint:cyclop
 	input []patchOperationPayload,
 	contactId string,
 ) ([]patchOperationPayload, error) {
@@ -185,7 +404,7 @@ func (c *Connector) patchPayloadWithCommunicationItems(ctx context.Context, // n
 		return operations, nil
 	}
 
-	contact, err := c.fetchContact(ctx, contactId)
+	contact, err := fetchContact[readContactResponse](ctx, c, contactId)
 	if err != nil {
 		return nil, err
 	}
@@ -289,20 +508,20 @@ func createCommunicationItemsIntentForPatch( // nolint:cyclop
 }
 
 // fetchContact retrieves a single contact record from ConnectWise by ID.
-func (c *Connector) fetchContact(ctx context.Context, contactId string) (*readContactResponse, error) {
-	url, err := c.getURL(objectNameContacts)
+func fetchContact[T any](ctx context.Context, connector *Connector, contactId string) (*T, error) {
+	url, err := connector.getURL(objectNameContacts)
 	if err != nil {
 		return nil, err
 	}
 
 	url.AddPath(contactId)
 
-	res, err := c.JSONHTTPClient().Get(ctx, url.String(), c.clientIdHeader())
+	res, err := connector.JSONHTTPClient().Get(ctx, url.String(), connector.clientIdHeader())
 	if err != nil {
 		return nil, err
 	}
 
-	return common.UnmarshalJSON[readContactResponse](res)
+	return common.UnmarshalJSON[T](res)
 }
 
 // fetchMissingCommunicationItemIds populates missing communication type IDs in
@@ -411,13 +630,7 @@ func allJsonPatchOperations(intent *communicationItemsIntent,
 	opRemove = append(opRemove, removePhone...)
 	opRemove = append(opRemove, removeFax...)
 
-	sort.Slice(opRemove, func(i, j int) bool {
-		// Remove from the highest index to the lowest. Removing a later item
-		// shifts only indexes after it, so it cannot change the index of an
-		// earlier item that is still scheduled for removal. Removing in the
-		// opposite order would shift all subsequent removeIndex values.
-		return opRemove[i].removeIndex > opRemove[j].removeIndex
-	})
+	sortRemovePayloads(opRemove)
 
 	output = append(output, opRemove...)
 

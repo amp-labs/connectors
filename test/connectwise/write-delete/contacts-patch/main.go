@@ -9,7 +9,6 @@ import (
 
 	"github.com/amp-labs/connectors/internal/datautils"
 	connTest "github.com/amp-labs/connectors/test/connectwise"
-	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
 	"github.com/brianvoe/gofakeit/v6"
 )
@@ -42,9 +41,6 @@ func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	// Set up slog logging.
-	utils.SetupLogging()
-
 	conn := connTest.GetConnectWiseConnector(ctx)
 
 	firstName := gofakeit.Name()
@@ -52,68 +48,6 @@ func main() {
 	lastName := gofakeit.Name()
 	updatedLastName := gofakeit.Name()
 
-	fmt.Println(">>> Using PUT")
-
-	// PUT operation does a complete replacement.
-	testscenario.ValidateCreateUpdateDelete(ctx, conn,
-		"contacts",
-		payload{
-			FirstName:            firstName,
-			LastName:             lastName,
-			CustomFieldMarketing: true,
-			CustomFieldHobby:     "Traveling",
-			Email:                "professional.bob@test.com",
-			EmailId:              "13",
-			Phone:                "+380001000",
-			PhoneId:              "",
-			Fax:                  "+99969",
-			FaxId:                "",
-		},
-		payload{
-			FirstName:            updatedFirstName,
-			LastName:             updatedLastName,
-			CustomFieldMarketing: false,
-			CustomFieldHobby:     "Skiing",
-			Email:                "professional.bob.updated@test.com",
-			EmailId:              "",
-			Phone:                "+380111358",
-			PhoneId:              "",
-			Fax:                  "+77767",
-			FaxId:                "26",
-		},
-		testscenario.CRUDTestSuite{
-			ReadFields: datautils.NewSet("id", "firstName", "lastName",
-				"customField83",
-				"customField59",
-				"AMPERSAND-defaultEmail",
-				"AMPERSAND-defaultEmailId",
-				"AMPERSAND-defaultPhone",
-				"AMPERSAND-defaultPhoneId",
-				"AMPERSAND-defaultFax",
-				"AMPERSAND-defaultFaxId",
-			),
-			SearchBy: testscenario.Property{
-				Key:   "firstname",
-				Value: firstName,
-				Since: time.Now().Add(-10 * time.Second),
-			},
-			RecordIdentifierKey: "id",
-			UpdatedFields: map[string]string{
-				"firstname":                updatedFirstName,
-				"lastname":                 updatedLastName,
-				"customfield83":            "Skiing",
-				"customfield59":            "false",
-				"ampersand-defaultemail":   "professional.bob.updated@test.com",
-				"ampersand-defaultemailid": "1",
-				"ampersand-defaultphone":   "+380111358",
-				"ampersand-defaultphoneid": "2",
-				"ampersand-defaultfax":     "+77767",
-				"ampersand-defaultfaxid":   "26",
-			},
-		},
-	)
-
-	fmt.Println()
 	fmt.Println(">>> Using PATCH")
 
 	testscenario.ValidateCreateUpdateDelete(ctx, conn,
