@@ -112,21 +112,9 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 }
 
 func (evt SubscriptionEvent) ObjectName() (string, error) {
-	m := evt.asMap()
-
-	events, err := m.Get("events")
+	name, err := evt.RawEventName()
 	if err != nil {
 		return "", err
-	}
-
-	eventsMap, ok := events.(map[string]any)
-	if !ok {
-		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, eventsMap, events)
-	}
-
-	name, ok := eventsMap["event_type"].(string)
-	if !ok {
-		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, name, eventsMap["event_type"])
 	}
 
 	objectName := strings.Split(name, ".")[0]
@@ -135,21 +123,13 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 }
 
 func (evt SubscriptionEvent) RawEventName() (string, error) {
-	m := evt.asMap()
+	// asMap returns the single event object ({event_type, id, ...}) extracted
+	// from the top-level events array, so event_type is read directly off it.
+	event := evt.asMap()
 
-	events, err := m.Get("events")
-	if err != nil {
-		return "", err
-	}
-
-	eventsMap, ok := events.(map[string]any)
+	eventName, ok := event["event_type"].(string)
 	if !ok {
-		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, eventsMap, events)
-	}
-
-	eventName, ok := eventsMap["event_type"].(string)
-	if !ok {
-		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, eventName, eventsMap["event_type"])
+		return "", fmt.Errorf("%w: expected string event_type, got %T", errTypeMismatch, event["event_type"])
 	}
 
 	return eventName, nil
@@ -160,21 +140,9 @@ func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
 }
 
 func (evt SubscriptionEvent) RecordId() (string, error) {
-	m := evt.asMap()
-
-	events, err := m.Get("events")
+	idMap, err := evt.idMap()
 	if err != nil {
 		return "", err
-	}
-
-	eventsMap, exist := events.(map[string]any)
-	if !exist {
-		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, eventsMap, events)
-	}
-
-	idMap, exist := eventsMap["id"].(map[string]string)
-	if !exist {
-		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, idMap, eventsMap["id"])
 	}
 
 	objectName, err := evt.ObjectName()
@@ -184,35 +152,42 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 
 	idKey := objectName + "_id"
 
-	id, ok := idMap[idKey]
-	if !ok {
-		return "", fmt.Errorf("idMap does not contain id %s", idKey) //nolint:err113
-	}
-
-	return id, nil
+	return lookupID(idMap, idKey)
 }
 
 func (evt SubscriptionEvent) Workspace() (string, error) {
-	m := evt.asMap()
-
-	data, err := m.Get("events")
+	idMap, err := evt.idMap()
 	if err != nil {
 		return "", err
 	}
 
-	dataMap, exist := data.(map[string]any)
-	if !exist {
-		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, dataMap, data)
+	return lookupID(idMap, "workspace_id")
+}
+
+// idMap returns the "id" object of the event as a map[string]any.
+// Attio's webhook id object holds the workspace_id and object-specific
+// identifiers (e.g. note_id, record_id).
+func (evt SubscriptionEvent) idMap() (map[string]any, error) {
+	event := evt.asMap()
+
+	idMap, ok := event["id"].(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: expected id to be map[string]any, got %T", errTypeMismatch, event["id"])
 	}
 
-	idMap, ok := dataMap["id"].(map[string]string)
+	return idMap, nil
+}
+
+// lookupID returns the string value stored under key in the event's id map.
+func lookupID(idMap map[string]any, key string) (string, error) {
+	value, ok := idMap[key]
 	if !ok {
-		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, idMap, dataMap["id"])
+		return "", fmt.Errorf("%w: id map does not contain %q", errTypeMismatch, key)
 	}
 
-	id, ok := idMap["workspace_id"]
+	id, ok := value.(string)
 	if !ok {
-		return "", fmt.Errorf("idMap does not contain id %s", "workspace_id") //nolint:err113
+		return "", fmt.Errorf("%w: expected %q to be string, got %T", errTypeMismatch, key, value)
 	}
 
 	return id, nil

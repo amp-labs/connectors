@@ -1,6 +1,7 @@
 package attio
 
 import (
+	"encoding/json"
 	"errors"
 	"reflect"
 	"testing"
@@ -8,21 +9,26 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// newTestEvent creates a SubscriptionEvent for testing.
-// The "events" value is a map (not an array) so that asMap() falls back
-// to returning the raw SubscriptionEvent, which is what the methods expect
-// when they call m.Get("events").
+// newTestEvent creates a SubscriptionEvent that mirrors a real Attio webhook
+// payload: a top-level "events" array whose single element holds the event_type
+// and an "id" object. The id values are stored as map[string]any because that is
+// what encoding/json produces when decoding a real webhook body.
 func newTestEvent(eventType string, idMap map[string]string) SubscriptionEvent {
-	inner := map[string]any{
+	event := map[string]any{
 		"event_type": eventType,
 	}
 
 	if idMap != nil {
-		inner["id"] = idMap
+		id := make(map[string]any, len(idMap))
+		for k, v := range idMap {
+			id[k] = v
+		}
+
+		event["id"] = id
 	}
 
 	return SubscriptionEvent{
-		"events": inner,
+		"events": []any{event},
 	}
 }
 
@@ -345,6 +351,68 @@ func TestSubscriptionEvent_EventTimeStampNano(t *testing.T) {
 	_, err := evt.EventTimeStampNano()
 	if err == nil {
 		t.Fatal("expected error, got nil")
+	}
+}
+
+// TestSubscriptionEvent_RealWebhookPayload decodes a real Attio webhook body
+// (via encoding/json, the way the server does) and verifies the parsing methods
+// work end to end. This guards against the events-as-array / id map[string]any
+// shape being mishandled.
+func TestSubscriptionEvent_RealWebhookPayload(t *testing.T) {
+	t.Parallel()
+
+	body := []byte(`{
+		"webhook_id": "wh-1",
+		"events": [
+			{
+				"event_type": "note.updated",
+				"id": {
+					"workspace_id": "ws-1",
+					"note_id": "note-9"
+				}
+			}
+		]
+	}`)
+
+	var evt SubscriptionEvent
+	if err := json.Unmarshal(body, &evt); err != nil {
+		t.Fatalf("failed to unmarshal payload: %v", err)
+	}
+
+	eventType, err := evt.EventType()
+	if err != nil {
+		t.Fatalf("EventType() error: %v", err)
+	}
+
+	if eventType != common.SubscriptionEventTypeUpdate {
+		t.Fatalf("EventType() = %v, want %v", eventType, common.SubscriptionEventTypeUpdate)
+	}
+
+	objectName, err := evt.ObjectName()
+	if err != nil {
+		t.Fatalf("ObjectName() error: %v", err)
+	}
+
+	if objectName != "note" {
+		t.Fatalf("ObjectName() = %q, want %q", objectName, "note")
+	}
+
+	recordID, err := evt.RecordId()
+	if err != nil {
+		t.Fatalf("RecordId() error: %v", err)
+	}
+
+	if recordID != "note-9" {
+		t.Fatalf("RecordId() = %q, want %q", recordID, "note-9")
+	}
+
+	workspace, err := evt.Workspace()
+	if err != nil {
+		t.Fatalf("Workspace() error: %v", err)
+	}
+
+	if workspace != "ws-1" {
+		t.Fatalf("Workspace() = %q, want %q", workspace, "ws-1")
 	}
 }
 
