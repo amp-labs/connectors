@@ -139,18 +139,52 @@ func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
 	return maps.Clone(evt), nil
 }
 
+// recordIDKeyByEventObject maps the object portion of an Attio webhook event_type
+// (the part before the ".", e.g. "note-content" in "note-content.updated") to the
+// key that holds the affected record's identifier inside the event "id" object.
+//
+// A naive objectName+"_id" is wrong for some events: note-content events carry a
+// "note_id" (not "note-content_id"), and workspace-member events carry a
+// "workspace_member_id" (underscore, not the hyphenated object name).
+//
+// Keys verified against Attio's webhook reference (see each event's "id" schema):
+//   - source of truth: https://api.attio.com/openapi/webhooks
+//   - record.*:           https://docs.attio.com/rest-api/webhook-reference/record-events/recordcreated
+//   - list.*:             https://docs.attio.com/rest-api/webhook-reference/list-events/listcreated
+//   - task.*:             https://docs.attio.com/rest-api/webhook-reference/task-events/taskcreated
+//   - note.*:             https://docs.attio.com/rest-api/webhook-reference/note-events/notecreated
+//   - note-content.*:     https://docs.attio.com/rest-api/webhook-reference/note-content-events/note-contentupdated
+//   - workspace-member.*: https://docs.attio.com/rest-api/webhook-reference/workspace-member-events/workspace-membercreated
+//
+//nolint:gochecknoglobals
+var recordIDKeyByEventObject = map[string]string{
+	"record":           "record_id",
+	"list":             "list_id",
+	"task":             "task_id",
+	"note":             "note_id",
+	"note-content":     "note_id",
+	"workspace-member": "workspace_member_id",
+}
+
 func (evt SubscriptionEvent) RecordId() (string, error) {
 	idMap, err := evt.idMap()
 	if err != nil {
 		return "", err
 	}
 
-	objectName, err := evt.ObjectName()
+	eventName, err := evt.RawEventName()
 	if err != nil {
 		return "", err
 	}
 
-	idKey := objectName + "_id"
+	// event_type has the form "{object}.{action}"; the object portion determines
+	// which key inside the "id" object holds the record identifier.
+	eventObject := strings.Split(eventName, ".")[0]
+
+	idKey, ok := recordIDKeyByEventObject[eventObject]
+	if !ok {
+		return "", fmt.Errorf("%w: no record id key mapping for event %q", errTypeMismatch, eventName)
+	}
 
 	return lookupID(idMap, idKey)
 }

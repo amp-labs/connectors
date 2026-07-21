@@ -207,7 +207,7 @@ func TestSubscriptionEvent_RecordId(t *testing.T) {
 		expectedErr bool
 	}{
 		{
-			name: "Extracts record ID using object name as key",
+			name: "note event uses note_id",
 			event: newTestEvent("note.updated", map[string]string{
 				"workspace_id": "ws-123",
 				"note_id":      "note-456",
@@ -215,8 +215,46 @@ func TestSubscriptionEvent_RecordId(t *testing.T) {
 			expected: "note-456",
 		},
 		{
+			// note-content events carry note_id, not "note-content_id".
+			// Ref: https://docs.attio.com/rest-api/webhook-reference/note-content-events/note-contentupdated
+			name: "note-content event uses note_id",
+			event: newTestEvent("note-content.updated", map[string]string{
+				"workspace_id": "ws-123",
+				"note_id":      "note-789",
+			}),
+			expected: "note-789",
+		},
+		{
+			// workspace-member events carry workspace_member_id (underscore).
+			// Ref: https://docs.attio.com/rest-api/webhook-reference/workspace-member-events/workspace-membercreated
+			name: "workspace-member event uses workspace_member_id",
+			event: newTestEvent("workspace-member.created", map[string]string{
+				"workspace_id":        "ws-123",
+				"workspace_member_id": "wm-001",
+			}),
+			expected: "wm-001",
+		},
+		{
+			// record events carry record_id (alongside object_id).
+			// Ref: https://docs.attio.com/rest-api/webhook-reference/record-events/recordcreated
+			name: "record event uses record_id",
+			event: newTestEvent("record.created", map[string]string{
+				"workspace_id": "ws-123",
+				"object_id":    "obj-1",
+				"record_id":    "rec-001",
+			}),
+			expected: "rec-001",
+		},
+		{
 			name: "Missing ID key for object",
 			event: newTestEvent("note.updated", map[string]string{
+				"workspace_id": "ws-123",
+			}),
+			expectedErr: true,
+		},
+		{
+			name: "Unmapped event object returns error",
+			event: newTestEvent("unknown-object.created", map[string]string{
 				"workspace_id": "ws-123",
 			}),
 			expectedErr: true,
