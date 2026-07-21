@@ -1,14 +1,13 @@
 package attio
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"gotest.tools/v3/assert"
 )
@@ -21,7 +20,7 @@ func TestCreateSubscribe(t *testing.T) {
 	responseStandardCustomObjects := testutils.DataFromFile(t, "create_subscribe_standard_obj.json")
 	responseCoreStandardObjects := testutils.DataFromFile(t, "create_subscribe_core_standard_obj.json")
 
-	tests := []testroutines.TestCase[common.SubscribeParams, *common.SubscriptionResult]{
+	tests := []testconn.TestCase[common.SubscribeParams, *common.SubscriptionResult]{
 		{
 			Name: "Subscribe with missing events",
 			Input: common.SubscribeParams{
@@ -66,7 +65,7 @@ func TestCreateSubscribe(t *testing.T) {
 					},
 				},
 			}.Server(),
-			ExpectedErrs: []error{fmt.Errorf("unsupported_object: object not found. Ensure it is activated in the workspace settings")},
+			ExpectedErrs: []error{errObjectNotFound},
 		},
 
 		{
@@ -105,8 +104,17 @@ func TestCreateSubscribe(t *testing.T) {
 				},
 			}.Server(),
 			ExpectedErrs: nil,
-			Comparator: func(_ string, actual, expected *common.SubscriptionResult) bool {
-				return actual != nil && actual.Status == common.SubscriptionStatusSuccess
+			Comparator: func(_ string, actual, expected *common.SubscriptionResult) *testutils.CompareResult {
+				result := testutils.NewCompareResult()
+				if actual == nil {
+					result.AddDiff("actual SubscriptionResult is nil")
+
+					return result
+				}
+
+				result.Assert("Status", common.SubscriptionStatusSuccess, actual.Status)
+
+				return result
 			},
 		},
 
@@ -313,17 +321,14 @@ func TestCreateSubscribe(t *testing.T) {
 			result, err := conn.Subscribe(t.Context(), tt.Input)
 
 			tt.Validate(t, err, result)
-
 		})
 	}
-
 }
 
 func TestDeleteSubscribe(t *testing.T) {
 	t.Parallel()
 
-	tests := []testroutines.TestCase[common.SubscriptionResult, error]{
-
+	tests := []testconn.TestCase[common.SubscriptionResult, error]{
 		{
 			Name:         "Unsubscribe with missing result data",
 			Server:       mockserver.Dummy(),
@@ -454,5 +459,4 @@ func TestValidationSubscriptionEvents(t *testing.T) {
 
 	err = validateSubscriptionEvents(supportedObjectEvents, standardObjects)
 	assert.NilError(t, err)
-
 }

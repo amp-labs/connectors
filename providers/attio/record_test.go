@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -24,7 +24,7 @@ func TestGetRecordByIds(t *testing.T) {
 
 	responseGetRecordsByIds := testutils.DataFromFile(t, "get_records_by_ids.json")
 
-	tests := []testroutines.TestCase[GetRecordsByIdsInput, []common.ReadResultRow]{
+	tests := []testconn.TestCase[GetRecordsByIdsInput, []common.ReadResultRow]{
 		{
 			Name:         "Missing object name returns error",
 			Server:       mockserver.Dummy(),
