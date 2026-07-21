@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"maps"
 	"strings"
+	"sync"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -24,10 +25,9 @@ type (
 )
 
 var (
-	_ common.SubscriptionEvent             = SubscriptionEvent{}
-	_ common.SubscriptionUpdateEvent       = SubscriptionEvent{}
-	_ common.SubscriptionEventWithMetadata = SubscriptionEvent{}
-	_ common.CollapsedSubscriptionEvent    = CollapsedSubscriptionEvent{}
+	_ common.SubscriptionEvent          = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent    = SubscriptionEvent{}
+	_ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 
 	errTypeMismatch = errors.New("type mismatch")
 )
@@ -122,38 +122,6 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 	objectName := strings.Split(name, ".")[0]
 
 	return objectName, nil
-}
-
-// ObjectNameWithMetadata resolves the object's name for the event using object
-// metadata from the same provider.
-//
-// Standard and custom object changes arrive as generic record.* events that
-// identify the object only by its id.object_id — a per-workspace UUID, not a name.
-// This method looks that object_id up in the provided metadata. For core-object
-// events (note, task, list, workspace-member) the object is already encoded in the
-// event_type, so it falls back to ObjectName() without consulting metadata.
-//
-// The metadata must come from the same provider and be keyed by object_id (the
-// same contract as GetObjectNameFromObjectMetadata).
-func (evt SubscriptionEvent) ObjectNameFromMetadata(
-	metadata *common.ListObjectMetadataResult,
-) (string, error) {
-	idMap, err := evt.idMap()
-	if err != nil {
-		return "", err
-	}
-
-	objectID, ok := idMap["object_id"].(string)
-	if !ok {
-		// No object_id: this is a core-object event whose object is in event_type.
-		return evt.ObjectName()
-	}
-
-	if metadata == nil {
-		return "", fmt.Errorf("%w: metadata is nil", errTypeMismatch)
-	}
-
-	return GetObjectNameFromObjectMetadata(metadata, objectID)
 }
 
 func (evt SubscriptionEvent) RawEventName() (string, error) {
@@ -312,6 +280,121 @@ func computeSignature(secret string, body []byte) []byte {
 	return h.Sum(nil)
 }
 
+// objectNameCacheKey is the context key under which GetObjectNameFromTypeId stores
+// its object_id -> object name cache.
+type objectNameCacheKey struct{}
+
+// objectNameCache maps an Attio object_id to its object name (api_slug). It is kept
+// in the context so a batch of events resolves the object list at most once.
+type objectNameCache struct {
+	mu sync.RWMutex
+	m  map[string]string
+}
+
+// WithObjectNameCache returns a context carrying an object_id -> name cache used by
+// GetObjectNameFromTypeId. Callers that process multiple events should set this up
+// once so the object list is fetched at most once per batch. Without it,
+// GetObjectNameFromTypeId still works but fetches the object list on every call.
+func WithObjectNameCache(ctx context.Context) context.Context {
+	return context.WithValue(ctx, objectNameCacheKey{}, &objectNameCache{m: make(map[string]string)})
+}
+
+func objectNameCacheFromContext(ctx context.Context) *objectNameCache {
+	cache, _ := ctx.Value(objectNameCacheKey{}).(*objectNameCache)
+
+	return cache
+}
+
+func (o *objectNameCache) get(objectID string) (string, bool) {
+	o.mu.RLock()
+	defer o.mu.RUnlock()
+
+	name, ok := o.m[objectID]
+
+	return name, ok
+}
+
+func (o *objectNameCache) store(idToName map[string]string) {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+
+	for id, name := range idToName {
+		o.m[id] = name
+	}
+}
+
+// GetObjectNameFromTypeId resolves the object name for a subscription event.
+//
+// Standard and custom object changes arrive as generic record.* events that
+// identify the object only by its id.object_id (a per-workspace UUID). This maps
+// that id to the object's api_slug: it first checks the object_id -> name cache in
+// the context (see WithObjectNameCache), and on a miss fetches the workspace's
+// objects directly from GET /v2/objects and caches the result.
+// Ref: https://docs.attio.com/rest-api/endpoint-reference/objects/list-objects
+//
+// For core-object events (note, task, list, workspace-member) there is no
+// object_id — the object is already in the event_type — so ObjectName() is returned
+// without any lookup.
+func (c *Connector) GetObjectNameFromTypeId(
+	ctx context.Context, event common.SubscriptionEvent,
+) (string, error) {
+	attioEvent, ok := event.(SubscriptionEvent)
+	if !ok {
+		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, SubscriptionEvent{}, event)
+	}
+
+	idMap, err := attioEvent.idMap()
+	if err != nil {
+		return "", err
+	}
+
+	objectID, ok := idMap["object_id"].(string)
+	if !ok {
+		// No object_id: a core-object event whose object is in the event_type.
+		return attioEvent.ObjectName()
+	}
+
+	cache := objectNameCacheFromContext(ctx)
+	if cache != nil {
+		if name, found := cache.get(objectID); found {
+			return name, nil
+		}
+	}
+
+	idToName, err := c.fetchObjectIdToName(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	if cache != nil {
+		cache.store(idToName)
+	}
+
+	name, found := idToName[objectID]
+	if !found {
+		return "", fmt.Errorf("%w: object type %q", common.ErrNotFound, objectID)
+	}
+
+	return name, nil
+}
+
+// fetchObjectIdToName fetches the workspace's objects directly and returns an
+// object_id -> api_slug map.
+// Ref: https://docs.attio.com/rest-api/endpoint-reference/objects/list-objects
+func (c *Connector) fetchObjectIdToName(ctx context.Context) (map[string]string, error) {
+	objects, err := c.readStandardOrCustomObjectsList(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list objects: %w", err)
+	}
+
+	idToName := make(map[string]string, len(objects))
+	for _, obj := range objects {
+		idToName[obj.Id.ObjectId] = obj.ApiSlug
+	}
+
+	return idToName, nil
+}
+
 // GetFieldNameFromObjectMetadata looks up a field's api_slug from metadata using the object_id and attribute_id.
 // It returns an error if the object or attribute is not found.
 func GetFieldNameFromObjectMetadata(
@@ -331,20 +414,6 @@ func GetFieldNameFromObjectMetadata(
 	}
 
 	return "", fmt.Errorf("%w: attribute %q in object %q", common.ErrNotFound, attributeID, objectID)
-}
-
-// GetObjectNameFromObjectMetadata looks up an object's display name from metadata using the object_id.
-// It returns an error if the object is not found.
-func GetObjectNameFromObjectMetadata(
-	metadata *common.ListObjectMetadataResult,
-	objectID string,
-) (string, error) {
-	obj, ok := metadata.Result[objectID]
-	if !ok {
-		return "", fmt.Errorf("%w: object %q", common.ErrNotFound, objectID)
-	}
-
-	return obj.DisplayName, nil
 }
 
 // Example: Webhook response

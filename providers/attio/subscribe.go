@@ -9,7 +9,10 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var _ connectors.SubscribeConnector = &Connector{}
+var (
+	_ connectors.SubscribeConnector                   = &Connector{}
+	_ connectors.SubscriptionEventObjectNameConnector = &Connector{}
+)
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 	return &common.SubscribeParams{}

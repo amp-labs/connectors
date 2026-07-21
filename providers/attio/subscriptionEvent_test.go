@@ -3,10 +3,16 @@ package attio
 import (
 	"encoding/json"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"reflect"
+	"sync/atomic"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 // newTestEvent creates a single SubscriptionEvent as produced by
@@ -126,95 +132,6 @@ func TestSubscriptionEvent_ObjectName(t *testing.T) {
 			t.Parallel()
 
 			result, err := tt.event.ObjectName()
-			if tt.expectedErr {
-				if err == nil {
-					t.Fatal("expected error, got nil")
-				}
-
-				return
-			}
-
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
-
-			if result != tt.expected {
-				t.Fatalf("expected %q, got %q", tt.expected, result)
-			}
-		})
-	}
-}
-
-func TestSubscriptionEvent_ObjectNameFromMetadata(t *testing.T) {
-	t.Parallel()
-
-	// Metadata is keyed by object_id (the contract shared with
-	// GetObjectNameFromObjectMetadata), and DisplayName holds the object name.
-	metadata := &common.ListObjectMetadataResult{
-		Result: map[string]common.ObjectMetadata{
-			"obj-people-uuid": {DisplayName: "people"},
-		},
-	}
-
-	tests := []struct {
-		name        string
-		event       SubscriptionEvent
-		metadata    *common.ListObjectMetadataResult
-		expected    string
-		expectedErr bool
-	}{
-		{
-			name: "record event resolves object_id via metadata",
-			event: newTestEvent("record.created", map[string]string{
-				"workspace_id": "ws-1",
-				"object_id":    "obj-people-uuid",
-				"record_id":    "rec-1",
-			}),
-			metadata: metadata,
-			expected: "people",
-		},
-		{
-			name: "core event falls back to event_type object",
-			event: newTestEvent("note.updated", map[string]string{
-				"workspace_id": "ws-1",
-				"note_id":      "note-1",
-			}),
-			metadata: metadata,
-			expected: "note",
-		},
-		{
-			name: "unknown object_id returns error",
-			event: newTestEvent("record.created", map[string]string{
-				"workspace_id": "ws-1",
-				"object_id":    "obj-unknown",
-				"record_id":    "rec-1",
-			}),
-			metadata:    metadata,
-			expectedErr: true,
-		},
-		{
-			name: "nil metadata with record event returns error",
-			event: newTestEvent("record.created", map[string]string{
-				"workspace_id": "ws-1",
-				"object_id":    "obj-people-uuid",
-				"record_id":    "rec-1",
-			}),
-			metadata:    nil,
-			expectedErr: true,
-		},
-		{
-			name:        "empty event returns error",
-			event:       SubscriptionEvent{},
-			metadata:    metadata,
-			expectedErr: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			result, err := tt.event.ObjectNameFromMetadata(tt.metadata)
 			if tt.expectedErr {
 				if err == nil {
 					t.Fatal("expected error, got nil")
@@ -696,41 +613,56 @@ func TestGetFieldNameFromObjectMetadata(t *testing.T) {
 	}
 }
 
-func TestGetObjectNameFromObjectMetadata(t *testing.T) {
+func TestConnector_GetObjectNameFromTypeId(t *testing.T) {
 	t.Parallel()
 
-	metadata := &common.ListObjectMetadataResult{
-		Result: map[string]common.ObjectMetadata{
-			"obj-uuid-1": {
-				DisplayName: "Companies",
-			},
-			"obj-uuid-2": {
-				DisplayName: "People",
-			},
-		},
-		Errors: map[string]error{},
+	objectsResponse := testutils.DataFromFile(t, "objects.json")
+
+	server := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If:    mockcond.Path("/v2/objects"),
+		Then:  mockserver.Response(http.StatusOK, objectsResponse),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
 	}
 
 	tests := []struct {
 		name        string
-		objectID    string
+		event       SubscriptionEvent
 		expected    string
-		expectedErr error
+		expectedErr bool
 	}{
 		{
-			name:     "Found object display name",
-			objectID: "obj-uuid-1",
-			expected: "Companies",
+			// record.* event: object_id resolved via GET /v2/objects.
+			name: "record event resolves object_id to api_slug",
+			event: newTestEvent("record.created", map[string]string{
+				"workspace_id": "ws-1",
+				"object_id":    "0e80364d-70b1-44d3-b7ba-0a6a564a7152",
+				"record_id":    "rec-1",
+			}),
+			expected: "people",
 		},
 		{
-			name:     "Found second object display name",
-			objectID: "obj-uuid-2",
-			expected: "People",
+			// core-object event: no object_id, falls back to ObjectName() (no fetch).
+			name: "core event falls back to event_type object",
+			event: newTestEvent("note.updated", map[string]string{
+				"workspace_id": "ws-1",
+				"note_id":      "note-1",
+			}),
+			expected: "note",
 		},
 		{
-			name:        "Object not found",
-			objectID:    "unknown-obj",
-			expectedErr: common.ErrNotFound,
+			name: "unknown object_id returns error",
+			event: newTestEvent("record.created", map[string]string{
+				"workspace_id": "ws-1",
+				"object_id":    "does-not-exist",
+				"record_id":    "rec-1",
+			}),
+			expectedErr: true,
 		},
 	}
 
@@ -738,14 +670,10 @@ func TestGetObjectNameFromObjectMetadata(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result, err := GetObjectNameFromObjectMetadata(metadata, tt.objectID)
-			if tt.expectedErr != nil {
+			result, err := conn.GetObjectNameFromTypeId(t.Context(), tt.event)
+			if tt.expectedErr {
 				if err == nil {
-					t.Fatalf("expected error %v, got nil", tt.expectedErr)
-				}
-
-				if !errors.Is(err, tt.expectedErr) {
-					t.Fatalf("expected error %v, got %v", tt.expectedErr, err)
+					t.Fatal("expected error, got nil")
 				}
 
 				return
@@ -759,5 +687,48 @@ func TestGetObjectNameFromObjectMetadata(t *testing.T) {
 				t.Fatalf("expected %q, got %q", tt.expected, result)
 			}
 		})
+	}
+}
+
+func TestConnector_GetObjectNameFromTypeId_CachesInContext(t *testing.T) {
+	t.Parallel()
+
+	objectsResponse := testutils.DataFromFile(t, "objects.json")
+
+	var calls int32
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/v2/objects" {
+			atomic.AddInt32(&calls, 1)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(objectsResponse)
+	}))
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	ctx := WithObjectNameCache(t.Context())
+
+	for range 3 {
+		name, err := conn.GetObjectNameFromTypeId(ctx, newTestEvent("record.created", map[string]string{
+			"object_id": "bb3380d7-06a7-4948-9d62-3e735e782c5c",
+			"record_id": "rec-1",
+		}))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if name != "companies" {
+			t.Fatalf("expected %q, got %q", "companies", name)
+		}
+	}
+
+	if got := atomic.LoadInt32(&calls); got != 1 {
+		t.Fatalf("expected objects to be fetched once with cache, got %d", got)
 	}
 }
