@@ -327,9 +327,13 @@ func TestSubscriptionEvent_UpdatedFields(t *testing.T) {
 
 	evt := newTestEvent("note.updated", nil)
 
-	_, err := evt.UpdatedFields()
-	if err == nil {
-		t.Fatal("expected error, got nil")
+	fields, err := evt.UpdatedFields()
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if len(fields) != 0 {
+		t.Fatalf("expected empty fields, got %v", fields)
 	}
 }
 

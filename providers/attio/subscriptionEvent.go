@@ -76,7 +76,9 @@ func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadDa
 }
 
 func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
-	return nil, errors.New("attio webhooks do not provide updated field information") //nolint:err113
+	// Attio webhooks do not provide updated field information, so we return an
+	// empty list without an error.
+	return []string{}, nil
 }
 
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
