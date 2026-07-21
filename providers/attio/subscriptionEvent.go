@@ -395,27 +395,6 @@ func (c *Connector) fetchObjectIdToName(ctx context.Context) (map[string]string,
 	return idToName, nil
 }
 
-// GetFieldNameFromObjectMetadata looks up a field's api_slug from metadata using the object_id and attribute_id.
-// It returns an error if the object or attribute is not found.
-func GetFieldNameFromObjectMetadata(
-	metadata *common.ListObjectMetadataResult,
-	objectID string,
-	attributeID string,
-) (string, error) {
-	obj, ok := metadata.Result[objectID]
-	if !ok {
-		return "", fmt.Errorf("%w: object %q", common.ErrNotFound, objectID)
-	}
-
-	for fieldName, field := range obj.Fields {
-		if field.FieldId != nil && *field.FieldId == attributeID {
-			return fieldName, nil
-		}
-	}
-
-	return "", fmt.Errorf("%w: attribute %q in object %q", common.ErrNotFound, attributeID, objectID)
-}
-
 // Example: Webhook response
 /*
 {
