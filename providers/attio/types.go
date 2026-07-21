@@ -38,10 +38,11 @@ type subscriptionPayload struct {
 
 type subscriptionData struct {
 	TargetURL     string         `json:"target_url"    validate:"required"`
-	Subscriptions []subscription `json:"subscriptions" validate:"required"`
+	Subscriptions []Subscription `json:"subscriptions" validate:"required"`
 }
 
-type subscription struct {
+// Subscription is a single webhook subscription entry (event type + optional filter).
+type Subscription struct {
 	EventType providerEvent `json:"event_type" validate:"required"`
 	// Filter is an object used to limit which webhook events are delivered.
 	// Filters can target specific records (by list_id, entry_id) or specific object (by object_id).
@@ -51,21 +52,24 @@ type subscription struct {
 	Filter any `json:"filter"`
 }
 
-// // createSubscriptionsResponse is the response returned by Attio when a webhook is created.
+// CreateSubscriptionsResponse is the response returned by Attio when a webhook is created.
 // Reference: https://docs.attio.com/rest-api/endpoint-reference/webhooks/create-a-webhook#response-data
-type createSubscriptionsResponse struct {
-	Data createSubscriptionsResponseData `json:"data"`
+type CreateSubscriptionsResponse struct {
+	Data CreateSubscriptionsResponseData `json:"data"`
 }
 
-type createSubscriptionsResponseID struct {
+// CreateSubscriptionsResponseID holds the workspace and webhook identifiers of a created webhook.
+type CreateSubscriptionsResponseID struct {
 	WorkspaceID string `json:"workspace_id"`
 	WebhookID   string `json:"webhook_id"`
 }
 
-type createSubscriptionsResponseData struct {
+// CreateSubscriptionsResponseData is the data payload of a created webhook subscription.
+// It is nested in common.SubscriptionResult.Result, so it is exported.
+type CreateSubscriptionsResponseData struct {
 	TargetURL     string                        `json:"target_url"`
-	Subscriptions []subscription                `json:"subscriptions" validate:"required"`
-	ID            createSubscriptionsResponseID `json:"id"`
+	Subscriptions []Subscription                `json:"subscriptions" validate:"required"`
+	ID            CreateSubscriptionsResponseID `json:"id"`
 	Status        string                        `json:"status"`
 	CreatedAt     string                        `json:"created_at"`
 	// Secret used for webhook signature verification.
@@ -82,7 +86,7 @@ type SuccessfulSubscription struct {
 }
 
 type SubscriptionResult struct {
-	Data createSubscriptionsResponseData `json:"data"`
+	Data CreateSubscriptionsResponseData `json:"data"`
 }
 
 // providerEvent represents the combined event type string used by Attio.

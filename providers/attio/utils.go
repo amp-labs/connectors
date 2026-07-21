@@ -65,7 +65,7 @@ func buildSubscriptionPayloadForCoreObj(
 	objEvents objectEvents,
 	objectName common.ObjectName,
 	event common.SubscriptionEventType,
-) (sub []subscription, err error) {
+) (sub []Subscription, err error) {
 	providerEvents := objEvents.toProviderEvents(event)
 	if len(providerEvents) == 0 {
 		return nil, fmt.Errorf("%w: object '%s' with event '%s'",
@@ -73,7 +73,7 @@ func buildSubscriptionPayloadForCoreObj(
 	}
 
 	for _, e := range providerEvents {
-		sub = append(sub, subscription{
+		sub = append(sub, Subscription{
 			EventType: e,
 			Filter:    nil,
 		})
@@ -86,7 +86,7 @@ func buildSubscriptionPayloadForStandardObj(
 	standardObjects map[common.ObjectName]string,
 	objectName common.ObjectName,
 	event common.SubscriptionEventType,
-) (sub []subscription, err error) {
+) (sub []Subscription, err error) {
 	// Handle building subscriptions for standard/custom objects
 	objectId, exists := standardObjects[objectName]
 	if !exists {
@@ -112,7 +112,7 @@ func buildSubscriptionPayloadForStandardObj(
 		},
 	}
 	sub = append(sub,
-		subscription{
+		Subscription{
 			EventType: recordEvent,
 			Filter:    filter,
 		},

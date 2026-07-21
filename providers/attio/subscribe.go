@@ -135,7 +135,7 @@ func (c *Connector) DeleteSubscription(
 func (c *Connector) createSubscriptions(ctx context.Context,
 	payload *subscriptionPayload,
 	updater common.WriteMethod,
-) (*createSubscriptionsResponse, error) {
+) (*CreateSubscriptionsResponse, error) {
 	url, err := c.getSubscribeURL()
 	if err != nil {
 		return nil, err
@@ -146,7 +146,7 @@ func (c *Connector) createSubscriptions(ctx context.Context,
 		return nil, fmt.Errorf("failed to create subscription: %w", err)
 	}
 
-	result, err := common.UnmarshalJSON[createSubscriptionsResponse](resp)
+	result, err := common.UnmarshalJSON[CreateSubscriptionsResponse](resp)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal subscription response: %w", err)
 	}
@@ -172,7 +172,7 @@ func buildPayload(
 	standardObjects map[common.ObjectName]string,
 	webhookURL string,
 ) (*subscriptionPayload, error) {
-	subscriptions := make([]subscription, 0)
+	subscriptions := make([]Subscription, 0)
 
 	for objectName, events := range subscriptionEvents {
 		for _, event := range events.Events {
