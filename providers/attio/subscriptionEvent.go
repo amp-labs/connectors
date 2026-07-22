@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"maps"
 	"strings"
+	"sync"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -24,8 +25,9 @@ type (
 )
 
 var (
-	_ common.SubscriptionEvent       = SubscriptionEvent{}
-	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+	_ common.SubscriptionEvent          = SubscriptionEvent{}
+	_ common.SubscriptionUpdateEvent    = SubscriptionEvent{}
+	_ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
 
 	errTypeMismatch = errors.New("type mismatch")
 )
@@ -76,7 +78,9 @@ func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadDa
 }
 
 func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
-	return nil, errors.New("attio webhooks do not provide updated field information") //nolint:err113
+	// Attio webhooks do not provide updated field information, so we return an
+	// empty list without an error.
+	return []string{}, nil
 }
 
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
@@ -110,21 +114,9 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 }
 
 func (evt SubscriptionEvent) ObjectName() (string, error) {
-	m := evt.asMap()
-
-	events, err := m.Get("events")
+	name, err := evt.RawEventName()
 	if err != nil {
 		return "", err
-	}
-
-	eventsMap, ok := events.(map[string]any)
-	if !ok {
-		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, eventsMap, events)
-	}
-
-	name, ok := eventsMap["event_type"].(string)
-	if !ok {
-		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, name, eventsMap["event_type"])
 	}
 
 	objectName := strings.Split(name, ".")[0]
@@ -133,21 +125,13 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 }
 
 func (evt SubscriptionEvent) RawEventName() (string, error) {
-	m := evt.asMap()
+	// asMap returns the single event object ({event_type, id, ...}), so event_type
+	// is read directly off it.
+	event := evt.asMap()
 
-	events, err := m.Get("events")
-	if err != nil {
-		return "", err
-	}
-
-	eventsMap, ok := events.(map[string]any)
+	eventName, ok := event["event_type"].(string)
 	if !ok {
-		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, eventsMap, events)
-	}
-
-	eventName, ok := eventsMap["event_type"].(string)
-	if !ok {
-		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, eventName, eventsMap["event_type"])
+		return "", fmt.Errorf("%w: expected string event_type, got %T", errTypeMismatch, event["event_type"])
 	}
 
 	return eventName, nil
@@ -157,80 +141,139 @@ func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
 	return maps.Clone(evt), nil
 }
 
+// recordIDKeyByEventObject maps the object portion of an Attio webhook event_type
+// (the part before the ".", e.g. "note-content" in "note-content.updated") to the
+// key that holds the affected record's identifier inside the event "id" object.
+//
+// A naive objectName+"_id" is wrong for some events: note-content events carry a
+// "note_id" (not "note-content_id"), and workspace-member events carry a
+// "workspace_member_id" (underscore, not the hyphenated object name).
+//
+// Each mapping is confirmed against the concrete example "id" object in Attio's
+// webhook reference (source of truth: https://api.attio.com/openapi/webhooks):
+//
+//	record.*             id: {workspace_id, object_id, record_id}
+//	list.*               id: {workspace_id, list_id}
+//	task.*               id: {workspace_id, task_id}
+//	note.* / note-content id: {workspace_id, note_id}
+//	workspace-member.*   id: {workspace_id, workspace_member_id}
+//
+// Per-event reference pages live under
+// https://docs.attio.com/rest-api/webhook-reference (e.g. record-events/recordcreated,
+// note-content-events/note-contentupdated, workspace-member-events/workspace-membercreated).
+//
+//nolint:gochecknoglobals
+var recordIDKeyByEventObject = map[string]string{
+	"record":           "record_id",
+	"list":             "list_id",
+	"task":             "task_id",
+	"note":             "note_id",
+	"note-content":     "note_id",
+	"workspace-member": "workspace_member_id",
+}
+
 func (evt SubscriptionEvent) RecordId() (string, error) {
-	m := evt.asMap()
-
-	events, err := m.Get("events")
+	idMap, err := evt.idMap()
 	if err != nil {
 		return "", err
 	}
 
-	eventsMap, exist := events.(map[string]any)
-	if !exist {
-		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, eventsMap, events)
-	}
-
-	idMap, exist := eventsMap["id"].(map[string]string)
-	if !exist {
-		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, idMap, eventsMap["id"])
-	}
-
-	objectName, err := evt.ObjectName()
+	eventName, err := evt.RawEventName()
 	if err != nil {
 		return "", err
 	}
 
-	idKey := objectName + "_id"
+	// event_type has the form "{object}.{action}"; the object portion determines
+	// which key inside the "id" object holds the record identifier.
+	eventObject := strings.Split(eventName, ".")[0]
 
-	id, ok := idMap[idKey]
+	idKey, ok := recordIDKeyByEventObject[eventObject]
 	if !ok {
-		return "", fmt.Errorf("idMap does not contain id %s", idKey) //nolint:err113
+		return "", fmt.Errorf("%w: no record id key mapping for event %q", errTypeMismatch, eventName)
 	}
 
-	return id, nil
+	return lookupID(idMap, idKey)
 }
 
 func (evt SubscriptionEvent) Workspace() (string, error) {
-	m := evt.asMap()
-
-	data, err := m.Get("events")
+	idMap, err := evt.idMap()
 	if err != nil {
 		return "", err
 	}
 
-	dataMap, exist := data.(map[string]any)
-	if !exist {
-		return "", fmt.Errorf("%w: expected %T got %T", errTypeMismatch, dataMap, data)
+	return lookupID(idMap, "workspace_id")
+}
+
+// idMap returns the "id" object of the event as a map[string]any.
+// Attio's webhook id object holds the workspace_id and object-specific
+// identifiers (e.g. note_id, record_id).
+func (evt SubscriptionEvent) idMap() (map[string]any, error) {
+	event := evt.asMap()
+
+	idMap, ok := event["id"].(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: expected id to be map[string]any, got %T", errTypeMismatch, event["id"])
 	}
 
-	idMap, ok := dataMap["id"].(map[string]string)
+	return idMap, nil
+}
+
+// lookupID returns the string value stored under key in the event's id map.
+func lookupID(idMap map[string]any, key string) (string, error) {
+	value, ok := idMap[key]
 	if !ok {
-		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, idMap, dataMap["id"])
+		return "", fmt.Errorf("%w: id map does not contain %q", errTypeMismatch, key)
 	}
 
-	id, ok := idMap["workspace_id"]
+	id, ok := value.(string)
 	if !ok {
-		return "", fmt.Errorf("idMap does not contain id %s", "workspace_id") //nolint:err113
+		return "", fmt.Errorf("%w: expected %q to be string, got %T", errTypeMismatch, key, value)
 	}
 
 	return id, nil
 }
 
-// asMap returns the event as a StringMap.
+// asMap returns the single event as a StringMap. A SubscriptionEvent is one
+// event object ({event_type, id, actor}) produced by
+// CollapsedSubscriptionEvent.SubscriptionEventList, so no unwrapping is needed.
 func (evt SubscriptionEvent) asMap() common.StringMap {
-	// extract first event from events array
-	// Attio sends an array of events, but it only contains one event per webhook call.
-	// So we extract the first event for processing.
-	evtsArray, ok := evt["events"].([]any)
-	if ok && len(evtsArray) > 0 {
-		firstEvt, ok := evtsArray[0].(map[string]any)
-		if ok {
-			return common.StringMap(firstEvt)
-		}
+	return common.StringMap(evt)
+}
+
+// CollapsedSubscriptionEvent is the raw Attio webhook payload. Attio delivers a
+// top-level object with an "events" array; each element is an individual event.
+// Currently each delivery carries exactly one event, but the schema notes this
+// may change to support batching, so we fan out every element.
+// Ref: https://api.attio.com/openapi/webhooks
+type CollapsedSubscriptionEvent map[string]any
+
+// RawMap returns a copy of the raw payload.
+func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
+	return maps.Clone(e), nil
+}
+
+// SubscriptionEventList fans the top-level "events" array out into one
+// SubscriptionEvent per event.
+func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
+	rawEvents, ok := e["events"].([]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: expected events to be []any, got %T",
+			common.ErrSubscriptionEventList, e["events"])
 	}
 
-	// Fallback to returning the whole event if extraction fails
-	return common.StringMap(evt)
+	events := make([]common.SubscriptionEvent, 0, len(rawEvents))
+
+	for _, raw := range rawEvents {
+		eventMap, ok := raw.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("%w: expected event to be map[string]any, got %T",
+				common.ErrSubscriptionEventList, raw)
+		}
+
+		events = append(events, SubscriptionEvent(eventMap))
+	}
+
+	return events, nil
 }
 
 func computeSignature(secret string, body []byte) []byte {
@@ -240,39 +283,100 @@ func computeSignature(secret string, body []byte) []byte {
 	return h.Sum(nil)
 }
 
-// GetFieldNameFromObjectMetadata looks up a field's api_slug from metadata using the object_id and attribute_id.
-// It returns an error if the object or attribute is not found.
-func GetFieldNameFromObjectMetadata(
-	metadata *common.ListObjectMetadataResult,
-	objectID string,
-	attributeID string,
-) (string, error) {
-	obj, ok := metadata.Result[objectID]
-	if !ok {
-		return "", fmt.Errorf("%w: object %q", common.ErrNotFound, objectID)
-	}
-
-	for fieldName, field := range obj.Fields {
-		if field.FieldId != nil && *field.FieldId == attributeID {
-			return fieldName, nil
-		}
-	}
-
-	return "", fmt.Errorf("%w: attribute %q in object %q", common.ErrNotFound, attributeID, objectID)
+// objectNameCache maps an Attio object_id to its object name (api_slug). It lives
+// on the Connector so a connector instance resolves the object list at most once
+// (and picks up newly created objects on a cache miss). It is safe for concurrent
+// use.
+type objectNameCache struct {
+	mu sync.RWMutex
+	m  map[string]string
 }
 
-// GetObjectNameFromObjectMetadata looks up an object's display name from metadata using the object_id.
-// It returns an error if the object is not found.
-func GetObjectNameFromObjectMetadata(
-	metadata *common.ListObjectMetadataResult,
-	objectID string,
-) (string, error) {
-	obj, ok := metadata.Result[objectID]
-	if !ok {
-		return "", fmt.Errorf("%w: object %q", common.ErrNotFound, objectID)
+func (o *objectNameCache) get(objectID string) (string, bool) {
+	o.mu.RLock()
+	defer o.mu.RUnlock()
+
+	name, ok := o.m[objectID]
+
+	return name, ok
+}
+
+func (o *objectNameCache) store(idToName map[string]string) {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+
+	if o.m == nil {
+		o.m = make(map[string]string, len(idToName))
 	}
 
-	return obj.DisplayName, nil
+	maps.Copy(o.m, idToName)
+}
+
+// GetObjectNameFromTypeId resolves the object name for a subscription event.
+//
+// Standard and custom object changes arrive as generic record.* events that
+// identify the object only by its id.object_id (a per-workspace UUID). This maps
+// that id to the object's api_slug: it first checks the connector's object_id ->
+// name cache, and on a miss fetches the workspace's objects directly from
+// GET /v2/objects and caches the result.
+// Ref: https://docs.attio.com/rest-api/endpoint-reference/objects/list-objects
+//
+// For core-object events (note, task, list, workspace-member) there is no
+// object_id — the object is already in the event_type — so ObjectName() is returned
+// without any lookup.
+func (c *Connector) GetObjectNameFromTypeId(
+	ctx context.Context, event common.SubscriptionEvent,
+) (string, error) {
+	attioEvent, isAttioEvent := event.(SubscriptionEvent)
+	if !isAttioEvent {
+		return "", fmt.Errorf("%w: expected %T, got %T", errTypeMismatch, SubscriptionEvent{}, event)
+	}
+
+	idMap, err := attioEvent.idMap()
+	if err != nil {
+		return "", err
+	}
+
+	objectID, ok := idMap["object_id"].(string)
+	if !ok {
+		// No object_id: a core-object event whose object is in the event_type.
+		return attioEvent.ObjectName()
+	}
+
+	if name, found := c.objectNameCache.get(objectID); found {
+		return name, nil
+	}
+
+	idToName, err := c.fetchObjectIdToName(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	c.objectNameCache.store(idToName)
+
+	name, found := idToName[objectID]
+	if !found {
+		return "", fmt.Errorf("%w: object type %q", common.ErrNotFound, objectID)
+	}
+
+	return name, nil
+}
+
+// fetchObjectIdToName fetches the workspace's objects directly and returns an
+// object_id -> api_slug map.
+// Ref: https://docs.attio.com/rest-api/endpoint-reference/objects/list-objects
+func (c *Connector) fetchObjectIdToName(ctx context.Context) (map[string]string, error) {
+	objects, err := c.readStandardOrCustomObjectsList(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list objects: %w", err)
+	}
+
+	idToName := make(map[string]string, len(objects))
+	for _, obj := range objects {
+		idToName[obj.Id.ObjectId] = obj.ApiSlug
+	}
+
+	return idToName, nil
 }
 
 // Example: Webhook response

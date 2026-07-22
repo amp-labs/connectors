@@ -170,15 +170,15 @@ func TestCreateSubscribe(t *testing.T) {
 					},
 				},
 				Result: &SubscriptionResult{
-					Data: createSubscriptionsResponseData{
+					Data: CreateSubscriptionsResponseData{
 						TargetURL: "https://example.com/webhook",
 						Status:    "active",
 						CreatedAt: "2026-01-30T10:06:11.304000000Z",
-						ID: createSubscriptionsResponseID{
-							WorkspaceID: "e8d74639-96e5-41be-af46-ced812aef5c5",
-							WebhookID:   "c570dd25-5ded-44f6-b94a-84250956455d",
+						Id: CreateSubscriptionsResponseId{
+							WorkspaceId: "e8d74639-96e5-41be-af46-ced812aef5c5",
+							WebhookId:   "c570dd25-5ded-44f6-b94a-84250956455d",
 						},
-						Subscriptions: []subscription{
+						Subscriptions: []Subscription{
 							{
 								EventType: "record.deleted",
 								Filter: map[string]any{
@@ -271,15 +271,15 @@ func TestCreateSubscribe(t *testing.T) {
 					},
 				},
 				Result: &SubscriptionResult{
-					Data: createSubscriptionsResponseData{
+					Data: CreateSubscriptionsResponseData{
 						TargetURL: "https://example.com/webhook",
-						ID: createSubscriptionsResponseID{
-							WorkspaceID: "e8d74639-96e5-41be-af46-ced812aef5c5",
-							WebhookID:   "d1c60c7a-c895-4a4a-ba2f-249aeb359d17",
+						Id: CreateSubscriptionsResponseId{
+							WorkspaceId: "e8d74639-96e5-41be-af46-ced812aef5c5",
+							WebhookId:   "d1c60c7a-c895-4a4a-ba2f-249aeb359d17",
 						},
 						Status:    "active",
 						CreatedAt: "2026-01-30T13:04:22.051000000Z",
-						Subscriptions: []subscription{
+						Subscriptions: []Subscription{
 							{
 								EventType: "record.updated",
 								Filter: map[string]any{
@@ -339,15 +339,15 @@ func TestDeleteSubscribe(t *testing.T) {
 			Name: "Unsubscribe successfully",
 			Input: common.SubscriptionResult{
 				Result: &SubscriptionResult{
-					Data: createSubscriptionsResponseData{
+					Data: CreateSubscriptionsResponseData{
 						TargetURL: "https://example.com/webhook",
-						ID: createSubscriptionsResponseID{
-							WorkspaceID: "e8d74639-96e5-41be-af46-ced812aef5c5",
-							WebhookID:   "d1c60c7a-c895-4a4a-ba2f-249aeb359d17",
+						Id: CreateSubscriptionsResponseId{
+							WorkspaceId: "e8d74639-96e5-41be-af46-ced812aef5c5",
+							WebhookId:   "d1c60c7a-c895-4a4a-ba2f-249aeb359d17",
 						},
 						Status:    "active",
 						CreatedAt: "2026-01-30T13:04:22.051000000Z",
-						Subscriptions: []subscription{
+						Subscriptions: []Subscription{
 							{
 								EventType: "record.updated",
 								Filter: map[string]any{
