@@ -3,14 +3,16 @@ package providers
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
 
 // AuthContext carries data through a multi-step custom auth flow. It is pure,
-// JSON-serializable data: the server persists it between steps (e.g. across a
-// browser redirect) and, when the flow completes, into the connection. Handlers
-// read the inputs and write acquired credentials/metadata into Secrets/Metadata.
+// JSON-serializable data: the Ampersand server persists it between steps (e.g.
+// across a browser redirect, parked in Redis) and, when the flow completes, onto
+// the Connection record in its database. Handlers read the inputs and write
+// acquired credentials/metadata into Secrets/Metadata.
 type AuthContext struct {
 	// ConsumerInputs are what the consumer submitted (username, password, ...).
 	// Set once at flow start; not modified by steps.
@@ -21,11 +23,13 @@ type AuthContext struct {
 	ProviderInputs map[string]string `json:"providerInputs,omitempty"`
 
 	// Secrets are credentials accumulated by steps (accessToken, sessionId, ...).
-	// Persisted to the connection (encrypted) when the flow completes.
+	// Persisted (encrypted) onto the Connection record in the Ampersand server
+	// when the flow completes.
 	Secrets map[string]string `json:"secrets,omitempty"`
 
 	// Metadata is non-sensitive config accumulated by steps (instanceUrl,
-	// workspace, ...). Persisted to the connection when the flow completes.
+	// workspace, ...). Persisted onto the Connection record in the Ampersand
+	// server when the flow completes.
 	Metadata map[string]string `json:"metadata,omitempty"`
 
 	// System is server-injected, environment-specific, read-only config
@@ -109,6 +113,24 @@ type AuthStep struct {
 	Redirect *RedirectStep
 }
 
+var (
+	errStepBothSet    = errors.New("auth step has both HTTP and Redirect set; exactly one is allowed")
+	errStepNeitherSet = errors.New("auth step has neither HTTP nor Redirect set; exactly one is required")
+)
+
+// Validate enforces the exactly-one-of invariant, so a provider author's
+// misconfiguration is caught up front rather than silently resolving to one branch.
+func (s AuthStep) Validate() error {
+	switch {
+	case s.HTTP != nil && s.Redirect != nil:
+		return errStepBothSet
+	case s.HTTP == nil && s.Redirect == nil:
+		return errStepNeitherSet
+	default:
+		return nil
+	}
+}
+
 // CustomAuthFlow is the executable definition backing a provider's declarative
 // CustomAuthOpts.MultiStep flag: the handlers the server runs to acquire and
 // refresh credentials. RefreshSteps are HTTP-only, since refresh is
@@ -116,6 +138,19 @@ type AuthStep struct {
 type CustomAuthFlow struct {
 	ConnectSteps []AuthStep
 	RefreshSteps []HTTPStep
+}
+
+// Validate checks that every connect step is well-formed (exactly one of HTTP or
+// Redirect). The server calls this when a flow begins, so a misconfigured
+// provider fails the request cleanly instead of behaving unpredictably.
+func (f CustomAuthFlow) Validate() error {
+	for i, step := range f.ConnectSteps {
+		if err := step.Validate(); err != nil {
+			return fmt.Errorf("connect step %d: %w", i, err)
+		}
+	}
+
+	return nil
 }
 
 // HasRedirect reports whether any connect step is a browser redirect, so the
@@ -154,9 +189,9 @@ func (o *CustomAuthOpts) HasSteps() bool {
 	return o != nil && o.MultiStep
 }
 
-// ExtractJSONSecrets returns a ParseResponse handler that decodes the JSON body
+// JSONSecretParser returns a ParseResponse handler that decodes the JSON body
 // and copies mapped response fields (responseKey -> secretKey) into Secrets.
-func ExtractJSONSecrets(
+func JSONSecretParser(
 	mapping map[string]string,
 ) func(context.Context, AuthContext, *http.Response) (AuthContext, error) {
 	return func(_ context.Context, state AuthContext, resp *http.Response) (AuthContext, error) {
@@ -177,9 +212,9 @@ func ExtractJSONSecrets(
 	}
 }
 
-// ExtractQueryParamsSecrets returns a ParseCallback handler that copies mapped
+// QueryParamSecretParser returns a ParseCallback handler that copies mapped
 // callback query params (paramName -> secretKey) into Secrets.
-func ExtractQueryParamsSecrets(
+func QueryParamSecretParser(
 	mapping map[string]string,
 ) func(context.Context, AuthContext, *http.Request) (AuthContext, error) {
 	return func(_ context.Context, state AuthContext, callback *http.Request) (AuthContext, error) {

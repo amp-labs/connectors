@@ -39,10 +39,10 @@ func TestAuthContextFlattenPrecedence(t *testing.T) {
 	}
 }
 
-func TestExtractJSONSecrets(t *testing.T) {
+func TestJSONSecretParser(t *testing.T) {
 	t.Parallel()
 
-	handler := ExtractJSONSecrets(map[string]string{"access_token": "accessToken"})
+	handler := JSONSecretParser(map[string]string{"access_token": "accessToken"})
 
 	state, err := handler(context.Background(), NewAuthContext(),
 		jsonResponse(`{"access_token":"abc123","ignored":"x"}`))
@@ -55,10 +55,10 @@ func TestExtractJSONSecrets(t *testing.T) {
 	}
 }
 
-func TestExtractQueryParamsSecrets(t *testing.T) {
+func TestQueryParamSecretParser(t *testing.T) {
 	t.Parallel()
 
-	handler := ExtractQueryParamsSecrets(map[string]string{"code": "code"})
+	handler := QueryParamSecretParser(map[string]string{"code": "code"})
 
 	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet,
 		"https://cb.example.com/callback?code=xyz&state=s", nil)

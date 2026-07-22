@@ -22,7 +22,7 @@ func init() {
 	tokenStep := HTTPStep{
 		BuildRequest: msBuildTokenRequest,
 		//nolint:bodyclose // the response is owned and closed by the custom-auth executor's doHTTP
-		ParseResponse: ExtractJSONSecrets(map[string]string{"access_token": "accessToken"}),
+		ParseResponse: JSONSecretParser(map[string]string{"access_token": "accessToken"}),
 	}
 
 	SetInfo(MicrosoftAdminConsent, ProviderInfo{
