@@ -9,7 +9,10 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-var _ connectors.SubscribeConnector = &Connector{}
+var (
+	_ connectors.SubscribeConnector                   = &Connector{}
+	_ connectors.SubscriptionEventObjectNameConnector = &Connector{}
+)
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 	return &common.SubscribeParams{}
@@ -120,11 +123,11 @@ func (c *Connector) DeleteSubscription(
 		return fmt.Errorf("%w: subscription is empty", errMissingParams)
 	}
 
-	err := c.deleteSubscription(ctx, subscriptionData.Data.ID.WebhookID)
+	err := c.deleteSubscription(ctx, subscriptionData.Data.Id.WebhookId)
 	if err != nil {
 		return fmt.Errorf(
-			"failed to delete subscription (ID: %s): %w",
-			subscriptionData.Data.ID.WebhookID,
+			"failed to delete subscription (id: %s): %w",
+			subscriptionData.Data.Id.WebhookId,
 			err,
 		)
 	}
@@ -135,7 +138,7 @@ func (c *Connector) DeleteSubscription(
 func (c *Connector) createSubscriptions(ctx context.Context,
 	payload *subscriptionPayload,
 	updater common.WriteMethod,
-) (*createSubscriptionsResponse, error) {
+) (*CreateSubscriptionsResponse, error) {
 	url, err := c.getSubscribeURL()
 	if err != nil {
 		return nil, err
@@ -146,7 +149,7 @@ func (c *Connector) createSubscriptions(ctx context.Context,
 		return nil, fmt.Errorf("failed to create subscription: %w", err)
 	}
 
-	result, err := common.UnmarshalJSON[createSubscriptionsResponse](resp)
+	result, err := common.UnmarshalJSON[CreateSubscriptionsResponse](resp)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal subscription response: %w", err)
 	}
@@ -172,7 +175,7 @@ func buildPayload(
 	standardObjects map[common.ObjectName]string,
 	webhookURL string,
 ) (*subscriptionPayload, error) {
-	subscriptions := make([]subscription, 0)
+	subscriptions := make([]Subscription, 0)
 
 	for objectName, events := range subscriptionEvents {
 		for _, event := range events.Events {

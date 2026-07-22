@@ -14,6 +14,11 @@ const (
 type Connector struct {
 	BaseURL string
 	Client  *common.JSONHTTPClient
+
+	// objectNameCache memoizes object_id -> api_slug lookups used by
+	// GetObjectNameFromTypeId. The connector is always used via *Connector, so the
+	// embedded lock is never copied.
+	objectNameCache objectNameCache
 }
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) {

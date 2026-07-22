@@ -40,8 +40,18 @@ func TestGetRecordByIds(t *testing.T) {
 
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v2/objects/companies/records/query"),
-				Then:  mockserver.Response(http.StatusOK, responseGetRecordsByIds),
+				If: mockcond.And{
+					mockcond.Path("/v2/objects/companies/records/query"),
+					// Attio expects a singular "filter" key with record_id $in.
+					mockcond.Body(`{
+						"filter": {
+							"record_id": {
+								"$in": ["1bdb55e3-67f4-48d3-829b-45db3039a960", "3a95b53c-e7a1-4e53-a4e4-436f72283818"]
+							}
+						}
+					}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseGetRecordsByIds),
 			}.Server(),
 
 			Expected: []common.ReadResultRow{
