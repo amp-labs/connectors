@@ -252,10 +252,10 @@ type WebhookVerifierConnector interface {
 type SubscriptionEventObjectNameConnector interface {
 	Connector
 
-	// GetObjectNameFromTypeId resolves the object name for the given subscription
+	// GetObjectNameFromEvent resolves the object name for the given subscription
 	// event by mapping the event's object type id to an object name, fetching from
 	// the provider (and caching) when necessary.
-	GetObjectNameFromTypeId(ctx context.Context, event common.SubscriptionEvent) (string, error)
+	GetObjectNameFromEvent(ctx context.Context, event common.SubscriptionEvent) (string, error)
 }
 
 // SubscribeConnector defines the interface for connectors that manage webhook subscriptions.

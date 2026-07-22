@@ -312,7 +312,7 @@ func (o *objectNameCache) store(idToName map[string]string) {
 	maps.Copy(o.m, idToName)
 }
 
-// GetObjectNameFromTypeId resolves the object name for a subscription event.
+// GetObjectNameFromEvent resolves the object name for a subscription event.
 //
 // Standard and custom object changes arrive as generic record.* events that
 // identify the object only by its id.object_id (a per-workspace UUID). This maps
@@ -324,7 +324,7 @@ func (o *objectNameCache) store(idToName map[string]string) {
 // For core-object events (note, task, list, workspace-member) there is no
 // object_id — the object is already in the event_type — so ObjectName() is returned
 // without any lookup.
-func (c *Connector) GetObjectNameFromTypeId(
+func (c *Connector) GetObjectNameFromEvent(
 	ctx context.Context, event common.SubscriptionEvent,
 ) (string, error) {
 	attioEvent, isAttioEvent := event.(SubscriptionEvent)

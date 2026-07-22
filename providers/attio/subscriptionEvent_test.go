@@ -514,7 +514,7 @@ func TestCollapsedSubscriptionEvent_SubscriptionEventList_Errors(t *testing.T) {
 	}
 }
 
-func TestConnector_GetObjectNameFromTypeId(t *testing.T) {
+func TestConnector_GetObjectNameFromEvent(t *testing.T) {
 	t.Parallel()
 
 	objectsResponse := testutils.DataFromFile(t, "objects.json")
@@ -571,7 +571,7 @@ func TestConnector_GetObjectNameFromTypeId(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result, err := conn.GetObjectNameFromTypeId(t.Context(), tt.event)
+			result, err := conn.GetObjectNameFromEvent(t.Context(), tt.event)
 			if tt.expectedErr {
 				if err == nil {
 					t.Fatal("expected error, got nil")
@@ -591,7 +591,7 @@ func TestConnector_GetObjectNameFromTypeId(t *testing.T) {
 	}
 }
 
-func TestConnector_GetObjectNameFromTypeId_CachesOnConnector(t *testing.T) {
+func TestConnector_GetObjectNameFromEvent_CachesOnConnector(t *testing.T) {
 	t.Parallel()
 
 	objectsResponse := testutils.DataFromFile(t, "objects.json")
@@ -615,7 +615,7 @@ func TestConnector_GetObjectNameFromTypeId_CachesOnConnector(t *testing.T) {
 
 	// The same connector caches the object list, so repeated resolutions fetch once.
 	for range 3 {
-		name, err := conn.GetObjectNameFromTypeId(t.Context(), newTestEvent("record.created", map[string]string{
+		name, err := conn.GetObjectNameFromEvent(t.Context(), newTestEvent("record.created", map[string]string{
 			"object_id": "bb3380d7-06a7-4948-9d62-3e735e782c5c",
 			"record_id": "rec-1",
 		}))
