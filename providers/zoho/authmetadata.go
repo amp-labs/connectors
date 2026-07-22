@@ -30,10 +30,6 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 		return &common.PostAuthInfo{}, nil
 	}
 
-	// The account id travels as a catalog variable, which is what the connector
-	// reads back when building account-scoped paths. The workspace reference is
-	// deliberately left alone: it is a single field shared by every Zoho module
-	// that OAuth already fills from api_domain, and nothing in Zoho reads it.
 	return &common.PostAuthInfo{
 		RawResponse: resp,
 		CatalogVars: AuthMetadataVars{
