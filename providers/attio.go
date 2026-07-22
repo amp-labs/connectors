@@ -35,8 +35,13 @@ func init() {
 			},
 			Proxy:     true,
 			Read:      true,
-			Subscribe: false,
+			Subscribe: true,
 			Write:     true,
+		},
+		SubscribeRequirements: &SubscribeRequirements{
+			// Attio supports creating webhook subscriptions via API.
+			// https://docs.attio.com/rest-api/endpoint-reference/webhooks/create-a-webhook
+			SubscribeByAPI: new(true),
 		},
 	})
 }
