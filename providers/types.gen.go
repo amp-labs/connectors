@@ -84,6 +84,27 @@ func (e AuthType) Valid() bool {
 	}
 }
 
+// Defines values for CustomAuthInputFieldType.
+const (
+	FieldTypePassword CustomAuthInputFieldType = "fieldTypePassword"
+	FieldTypeSelect   CustomAuthInputFieldType = "fieldTypeSelect"
+	FieldTypeText     CustomAuthInputFieldType = "fieldTypeText"
+)
+
+// Valid indicates whether the value is a known member of the CustomAuthInputFieldType enum.
+func (e CustomAuthInputFieldType) Valid() bool {
+	switch e {
+	case FieldTypePassword:
+		return true
+	case FieldTypeSelect:
+		return true
+	case FieldTypeText:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for Oauth2OptsGrantType.
 const (
 	AuthorizationCode     Oauth2OptsGrantType = "authorizationCode"
@@ -262,11 +283,29 @@ type CustomAuthInput struct {
 	// DocsURL URL with details about this authentication mechanism and how to use it. Might be specific to this field, or a general URL for the provider. Optional.
 	DocsURL string `json:"docsURL,omitempty"`
 
+	// FieldType How the frontend should render this input. "fieldTypeText" is an unmasked field (not sensitive), "fieldTypePassword" is a masked field (sensitive), and "fieldTypeSelect" is a dropdown populated from options. Defaults to "fieldTypePassword" when omitted.
+	FieldType CustomAuthInputFieldType `json:"fieldType,omitempty"`
+
 	// Name The internal identifier for the custom auth input field.
 	Name string `json:"name"`
 
+	// Options The dropdown options, used only when fieldType is "select".
+	Options []CustomAuthInputOption `json:"options,omitempty"`
+
 	// Prompt Some helpful text or context to be displayed to the user when asking for this input.
 	Prompt string `json:"prompt,omitempty"`
+}
+
+// CustomAuthInputFieldType How the frontend should render this input. "fieldTypeText" is an unmasked field (not sensitive), "fieldTypePassword" is a masked field (sensitive), and "fieldTypeSelect" is a dropdown populated from options. Defaults to "fieldTypePassword" when omitted.
+type CustomAuthInputFieldType string
+
+// CustomAuthInputOption A selectable option for a custom auth input whose fieldType is "select".
+type CustomAuthInputOption struct {
+	// Label The human-readable label shown for this option.
+	Label string `json:"label"`
+
+	// Value The value stored when this option is selected.
+	Value string `json:"value"`
 }
 
 // CustomAuthOpts Configuration for custom auth. Optional.
@@ -276,6 +315,12 @@ type CustomAuthOpts struct {
 
 	// Inputs A list of custom input fields for authentication. The frontend will render these input fields and the backend will receive the values of these fields before making a request.
 	Inputs []CustomAuthInput `json:"inputs,omitempty"`
+
+	// MultiStep Whether this provider uses a multi-step custom auth flow (browser redirects and/or server-side credential-exchange calls) driven by the /custom-auth/connect endpoint, rather than static header/query-param injection. The step definitions and handlers live in the connectors library, not the catalog; this flag is the signal that lets clients tell "multi-step custom" apart from plain "custom" at a glance.
+	MultiStep bool `json:"multiStep,omitempty"`
+
+	// ProviderInputs Input fields the builder configures on their provider app (e.g. client secrets, subscription keys) rather than the consumer. Routed to storage by fieldType. Optional.
+	ProviderInputs []CustomAuthInput `json:"providerInputs,omitempty"`
 
 	// QueryParams A list of custom query parameters to be used for authentication. The backend will add these query parameters.
 	QueryParams []CustomAuthQueryParam `json:"queryParams,omitempty"`
