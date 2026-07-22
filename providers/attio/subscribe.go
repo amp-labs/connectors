@@ -2,7 +2,6 @@ package attio
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/amp-labs/connectors"
@@ -43,33 +42,9 @@ func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
-	req, err := validateRequest(params)
+	payload, err := c.buildSubscribePayload(ctx, params)
 	if err != nil {
 		return nil, err
-	}
-
-	// Fetch the current list of objects from Attio API
-	objectList, err := c.readStandardOrCustomObjectsList(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	// Build a map: object name -> object ID
-	// Example: "people" -> "0e80364d-70b1-44d3-b7ba-0a6a564a7152"
-	standardObjects := make(map[common.ObjectName]string)
-	for _, obj := range objectList {
-		standardObjects[common.ObjectName(obj.ApiSlug)] = obj.Id.ObjectId
-	}
-
-	// Validate that requested events are supported
-	err = validateSubscriptionEvents(params.SubscriptionEvents, standardObjects)
-	if err != nil {
-		return nil, err
-	}
-
-	payload, err := buildPayload(params.SubscriptionEvents, standardObjects, req.WebhookEndpoint)
-	if err != nil {
-		return nil, fmt.Errorf("failed to build subscription payload: %w", err)
 	}
 
 	res := &common.SubscriptionResult{
@@ -92,14 +67,96 @@ func (c *Connector) Subscribe(
 	return res, nil
 }
 
+// buildSubscribePayload fetches the workspace's objects, validates the requested events, and builds
+// the Attio webhook payload. Shared by Subscribe and UpdateSubscription.
+func (c *Connector) buildSubscribePayload(
+	ctx context.Context,
+	params common.SubscribeParams,
+) (*subscriptionPayload, error) {
+	req, err := validateRequest(params)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fetch the current list of objects from Attio API, then build a map: object name -> object ID
+	// Example: "people" -> "0e80364d-70b1-44d3-b7ba-0a6a564a7152"
+	objectList, err := c.readStandardOrCustomObjectsList(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	standardObjects := make(map[common.ObjectName]string)
+	for _, obj := range objectList {
+		standardObjects[common.ObjectName(obj.ApiSlug)] = obj.Id.ObjectId
+	}
+
+	// Validate that requested events are supported
+	if err = validateSubscriptionEvents(params.SubscriptionEvents, standardObjects); err != nil {
+		return nil, err
+	}
+
+	payload, err := buildPayload(params.SubscriptionEvents, standardObjects, req.WebhookEndpoint)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build subscription payload: %w", err)
+	}
+
+	return payload, nil
+}
+
 // nolint: nilnil, godoclint
+// UpdateSubscription updates an existing Attio webhook in place: it rebuilds the subscription
+// payload from params and PATCHes the previously-created webhook, preserving its id (and therefore
+// its signing secret).
+// Reference: https://docs.attio.com/rest-api/endpoint-reference/webhooks/update-a-webhook
+// nolint: godoclint
 func (c *Connector) UpdateSubscription(
 	ctx context.Context,
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	// TODO: not yet implemented. Returning an explicit error to avoid
-	return nil, errors.New("update subscription is not implemented for Attio") //nolint:err113
+	if previousResult == nil || previousResult.Result == nil {
+		return nil, fmt.Errorf("%w: previous subscription result cannot be nil", errMissingParams)
+	}
+
+	prev, ok := previousResult.Result.(*SubscriptionResult)
+	if !ok {
+		return nil, fmt.Errorf("%w: expected SubscriptionResult to be type %T but got %T",
+			errInvalidRequestType, prev, previousResult.Result)
+	}
+
+	webhookID := prev.Data.Id.WebhookId
+	if webhookID == "" {
+		return nil, fmt.Errorf("%w: previous subscription is missing a webhook id", errMissingParams)
+	}
+
+	payload, err := c.buildSubscribePayload(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &common.SubscriptionResult{
+		ObjectEvents: params.SubscriptionEvents,
+	}
+
+	response, err := c.updateSubscriptions(ctx, webhookID, payload)
+	if err != nil {
+		res.Status = common.SubscriptionStatusFailed
+
+		return res, fmt.Errorf("failed to update subscriptions: %w", err)
+	}
+
+	// The webhook id is unchanged, so its signing secret is unchanged. Attio's update response may
+	// omit the secret, so preserve the previously stored one when it is absent.
+	if response.Data.Secret == "" {
+		response.Data.Secret = prev.Data.Secret
+	}
+
+	res.Status = common.SubscriptionStatusSuccess
+	res.Result = &SubscriptionResult{
+		Data: response.Data,
+	}
+
+	return res, nil
 }
 
 // DeleteSubscription removes an existing webhook subscription in Attio.
@@ -147,6 +204,34 @@ func (c *Connector) createSubscriptions(ctx context.Context,
 	resp, err := updater(ctx, url.String(), payload)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create subscription: %w", err)
+	}
+
+	result, err := common.UnmarshalJSON[CreateSubscriptionsResponse](resp)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal subscription response: %w", err)
+	}
+
+	return result, nil
+}
+
+// updateSubscriptions PATCHes an existing webhook (identified by webhookID) with a new set of
+// subscriptions, replacing the webhook's subscriptions while preserving its id.
+// Reference: https://docs.attio.com/rest-api/endpoint-reference/webhooks/update-a-webhook
+func (c *Connector) updateSubscriptions(
+	ctx context.Context,
+	webhookID string,
+	payload *subscriptionPayload,
+) (*CreateSubscriptionsResponse, error) {
+	url, err := c.getSubscribeURL()
+	if err != nil {
+		return nil, err
+	}
+
+	url.AddPath(webhookID)
+
+	resp, err := c.Client.Patch(ctx, url.String(), payload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update subscription: %w", err)
 	}
 
 	result, err := common.UnmarshalJSON[CreateSubscriptionsResponse](resp)
