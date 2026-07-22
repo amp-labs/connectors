@@ -16,7 +16,7 @@ type Connector struct {
 	Client  *common.JSONHTTPClient
 
 	// objectNameCache memoizes object_id -> api_slug lookups used by
-	// GetObjectNameFromTypeId. The connector is always used via *Connector, so the
+	// GetObjectNameFromEvent. The connector is always used via *Connector, so the
 	// embedded lock is never copied.
 	objectNameCache objectNameCache
 }
