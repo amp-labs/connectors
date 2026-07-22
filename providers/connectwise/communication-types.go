@@ -420,15 +420,15 @@ func (c *Connector) contactsPartialUpdatePayload(ctx context.Context, // nolint:
 		if item.DefaultFlag {
 			switch item.CommunicationType {
 			case communicationTypeEmail:
-				if intent.needEmailId() || intent.RemoveEmail {
+				if intent.needEmailId() {
 					intent.DefaultEmailId = identifier
 				}
 			case communicationTypePhone:
-				if intent.needPhoneId() || intent.RemovePhone {
+				if intent.needPhoneId() {
 					intent.DefaultPhoneId = identifier
 				}
 			case communicationTypeFax:
-				if intent.needFaxId() || intent.RemoveFax {
+				if intent.needFaxId() {
 					intent.DefaultFaxId = identifier
 				}
 			}
@@ -862,7 +862,8 @@ func (i communicationItemsIntent) isEmpty() bool {
 		i.DefaultFaxId == "" &&
 		i.DefaultPhone == "" &&
 		i.DefaultEmail == "" &&
-		i.DefaultFax == ""
+		i.DefaultFax == "" &&
+		!i.RemovePhone && !i.RemoveFax && !i.RemoveEmail
 }
 
 // needIds reports whether any communication type has a value but is missing its
@@ -875,17 +876,17 @@ func (i communicationItemsIntent) needIds() bool {
 
 // needEmailId reports whether email value is set but email type ID is missing.
 func (i communicationItemsIntent) needEmailId() bool {
-	return i.DefaultEmail != "" && i.DefaultEmailId == ""
+	return i.DefaultEmailId == "" && (i.DefaultEmail != "" || i.RemoveEmail)
 }
 
 // needPhoneId reports whether phone value is set but phone type ID is missing.
 func (i communicationItemsIntent) needPhoneId() bool {
-	return i.DefaultPhone != "" && i.DefaultPhoneId == ""
+	return i.DefaultPhoneId == "" && (i.DefaultPhone != "" || i.RemovePhone)
 }
 
 // needFaxId reports whether fax value is set but fax type ID is missing.
 func (i communicationItemsIntent) needFaxId() bool {
-	return i.DefaultFax != "" && i.DefaultFaxId == ""
+	return i.DefaultFaxId == "" && (i.DefaultFax != "" || i.RemoveFax)
 }
 
 // communicationTypesResponse is the response from the `/company/communicationTypes`
