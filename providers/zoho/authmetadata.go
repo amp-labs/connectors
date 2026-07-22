@@ -30,22 +30,16 @@ func (c *Connector) GetPostAuthInfo(ctx context.Context) (*common.PostAuthInfo, 
 		return &common.PostAuthInfo{}, nil
 	}
 
-	info := &common.PostAuthInfo{
+	// The account id travels as a catalog variable, which is what the connector
+	// reads back when building account-scoped paths. The workspace reference is
+	// deliberately left alone: it is a single field shared by every Zoho module
+	// that OAuth already fills from api_domain, and nothing in Zoho reads it.
+	return &common.PostAuthInfo{
 		RawResponse: resp,
 		CatalogVars: AuthMetadataVars{
 			MailAccountID: accountID,
 		}.AsMap(),
-	}
-
-	// The workspace reference is shared by every Zoho module, so it is only
-	// claimed when this connector actually represents Mail. Reporting it from
-	// a CRM or Desk connection would overwrite that connection's workspace
-	// reference with an unrelated mailbox id.
-	if c.isMailModule() {
-		info.ProviderWorkspaceRef = accountID
-	}
-
-	return info, nil
+	}, nil
 }
 
 // mailAdapterForPostAuth returns an adapter bound to the Zoho Mail API.
