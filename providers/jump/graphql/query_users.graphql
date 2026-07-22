@@ -1,0 +1,28 @@
+query Users {
+  users(
+    first: {{.First}}
+    {{if .After}}
+    after: "{{.After}}"
+    {{end}}
+    {{if .UpdatedAfter}}
+    updatedAfter: "{{.UpdatedAfter}}"
+    {{end}}
+    {{if .UpdatedBefore}}
+    updatedBefore: "{{.UpdatedBefore}}"
+    {{end}}
+  ) {
+    items {
+      deactivatedAt
+      email
+      firstName
+      fullName
+      id
+      lastName
+      owner
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

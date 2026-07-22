@@ -1,0 +1,45 @@
+{
+  "data": {
+    "contacts": {
+      "items": [
+        {
+          "contactInfo": [
+            {
+              "kind": "EMAIL",
+              "source": "JUMP_NATIVE",
+              "value": {
+                "address": "ada@example.com",
+                "kind": null,
+                "principal": true
+              }
+            },
+            {
+              "kind": "NAME",
+              "source": "JUMP_NATIVE",
+              "value": {
+                "family": "ada",
+                "prefix": null,
+                "suffix": null,
+                "middle": null,
+                "given": "ada",
+                "nickname": null,
+                "maiden_name": null
+              }
+            }
+          ],
+          "email": "ada@example.com",
+          "id": "con_db16c04d87d44df18c4",
+          "insertedAt": "2026-06-27T23:02:18.773614Z",
+          "integrationReferences": [],
+          "name": "ada ada",
+          "status": "CONFIRMED",
+          "type": "INDIVIDUAL"
+        }
+      ],
+      "pageInfo": {
+        "endCursor": "g2gCdAAAAA1",
+        "hasNextPage": false
+      }
+    }
+  }
+}

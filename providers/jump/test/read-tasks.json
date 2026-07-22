@@ -1,0 +1,38 @@
+{
+    "data": {
+        "tasks": {
+            "items": [
+                {
+                    "assignee": {
+                        "email": "ada@example.com",
+                        "name": "Amperasnd Developer",
+                        "source": "USER"
+                    },
+                    "description": "TEST",
+                    "due": null,
+                    "id": "tsk_9e17843922b94782832",
+                    "meetingId": "mtg_fbff3264957a48b4888",
+                    "status": "Todo",
+                    "title": "TEST"
+                },
+                {
+                    "assignee": {
+                        "email": "ada@example.com",
+                        "name": "Amperasnd Developer",
+                        "source": "USER"
+                    },
+                    "description": "Send follow-up based on \"Comprehensive Financial Planning Session\" with Jane Doe.",
+                    "due": null,
+                    "id": "tsk_bde1c8b314e8459893e",
+                    "meetingId": "mtg_fbff3264957a48b4888",
+                    "status": "Todo",
+                    "title": "Send follow-up email"
+                }
+            ],
+            "pageInfo": {
+                "endCursor": "g3QAAAACdwJpZG0AAAAXdHNrX2JkZTFjOGIzMTRlODQ1OTg5M2V3C2luc2VydGVkX2F0dAAAAA13C21pY3Jvc2Vjb25kaAJiAAJEgWEGdwZzZWNvbmRhCXcIY2FsZW5kYXJ3E0VsaXhpci5DYWxlbmRhci5JU093BW1vbnRoYQZ3Cl9fc3RydWN0X193D0VsaXhpci5EYXRlVGltZXcKdXRjX29mZnNldGEAdwpzdGRfb2Zmc2V0YQB3BHllYXJiAAAH6ncEaG91cmEXdwNkYXlhF3cJem9uZV9hYmJybQAAAANVVEN3Bm1pbnV0ZWESdwl0aW1lX3pvbmVtAAAAB0V0Yy9VVEM=",
+                "hasNextPage": true
+            }
+        }
+    }
+}
