@@ -325,6 +325,95 @@ func TestCreateSubscribe(t *testing.T) {
 	}
 }
 
+func TestUpdateSubscribe(t *testing.T) {
+	t.Parallel()
+
+	responseObjectsList := testutils.DataFromFile(t, "objects.json")
+
+	// Update response intentionally omits "secret" so we can assert it is preserved from the
+	// previous result (the webhook id is unchanged, so the signing secret is unchanged).
+	updatedWebhookResponse := []byte(`{
+		"data": {
+			"target_url": "https://webhook.test",
+			"subscriptions": [{"event_type": "list.updated", "filter": null}],
+			"id": {"workspace_id": "ws-1", "webhook_id": "wh-1"},
+			"status": "active",
+			"created_at": "2026-01-01T00:00:00.000000000Z"
+		}
+	}`)
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If:   mockcond.Path("/v2/objects"),
+				Then: mockserver.Response(http.StatusOK, responseObjectsList),
+			},
+			{
+				If:   mockcond.And{mockcond.MethodPATCH(), mockcond.Path("/v2/webhooks/wh-1")},
+				Then: mockserver.Response(http.StatusOK, updatedWebhookResponse),
+			},
+		},
+	}.Server()
+
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	previousResult := &common.SubscriptionResult{
+		Result: &SubscriptionResult{
+			Data: CreateSubscriptionsResponseData{
+				Id:     CreateSubscriptionsResponseId{WebhookId: "wh-1"},
+				Secret: "prev-secret",
+				Subscriptions: []Subscription{
+					{EventType: "list.created"},
+				},
+			},
+		},
+	}
+
+	params := common.SubscribeParams{
+		Request: &SubscriptionRequest{WebhookEndpoint: "https://webhook.test"},
+		SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
+			"lists": {
+				Events: []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
+			},
+		},
+	}
+
+	result, err := conn.UpdateSubscription(t.Context(), params, previousResult)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if result.Status != common.SubscriptionStatusSuccess {
+		t.Fatalf("expected status %q, got %q", common.SubscriptionStatusSuccess, result.Status)
+	}
+
+	updated, ok := result.Result.(*SubscriptionResult)
+	if !ok {
+		t.Fatalf("expected *SubscriptionResult, got %T", result.Result)
+	}
+
+	if updated.Data.Secret != "prev-secret" {
+		t.Fatalf("expected secret to be preserved as %q, got %q", "prev-secret", updated.Data.Secret)
+	}
+
+	// Missing previous result is an error.
+	if _, err := conn.UpdateSubscription(t.Context(), params, nil); err == nil {
+		t.Fatal("expected error for nil previous result, got nil")
+	}
+
+	// Previous result without a webhook id is an error.
+	noWebhookID := &common.SubscriptionResult{Result: &SubscriptionResult{}}
+	if _, err := conn.UpdateSubscription(t.Context(), params, noWebhookID); err == nil {
+		t.Fatal("expected error for missing webhook id, got nil")
+	}
+}
+
 func TestDeleteSubscribe(t *testing.T) {
 	t.Parallel()
 
