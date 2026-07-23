@@ -168,6 +168,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
+						Id: "2db97cee-6c6b-4486-ae52-db8e4b6f44e9",
 						Fields: map[string]any{
 							"name": []any{
 								map[string]any{

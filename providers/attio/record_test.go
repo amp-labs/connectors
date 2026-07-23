@@ -56,6 +56,7 @@ func TestGetRecordByIds(t *testing.T) {
 
 			Expected: []common.ReadResultRow{
 				{
+					Id: "1bdb55e3-67f4-48d3-829b-45db3039a960",
 					Fields: map[string]any{
 						"name": []any{
 							map[string]any{
@@ -107,6 +108,7 @@ func TestGetRecordByIds(t *testing.T) {
 					},
 				},
 				{
+					Id: "3a95b53c-e7a1-4e53-a4e4-436f72283818",
 					Fields: map[string]any{
 						"name": []any{
 							map[string]any{
