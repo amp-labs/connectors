@@ -31,6 +31,13 @@ the affected record's **id and event metadata**, not the record body — after t
 server fetches the full record via `GetRecordsByIds`. So your event types only need to expose the object
 name, record id, and event type.
 
+> **Required: populate `ReadResultRow.Id` in `GetRecordsByIds`.** The server correlates each fetched
+> record back to its webhook event by matching the event's record id against `ReadResultRow.Id`
+> (`fetchedByID[row.Id]`). If your parser leaves `Id` empty and only fills `Raw`/`Fields`, the lookup
+> misses, the record is **silently dropped**, and the event is delivered with no record body attached —
+> even though the provider fetch returned `200 OK` with the record. Set `row.Id` to the record id
+> (the same value the event's `RecordId()` returns) for every row you return.
+
 Plus a provider-specific `VerificationParams` struct (the caller fills it in per installation) and one
 or more event types.
 
