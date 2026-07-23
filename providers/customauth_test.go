@@ -42,16 +42,24 @@ func TestAuthContextFlattenPrecedence(t *testing.T) {
 func TestJSONSecretParser(t *testing.T) {
 	t.Parallel()
 
-	handler := JSONSecretParser(map[string]string{"access_token": "accessToken"})
+	handler := JSONSecretParser(map[string]string{
+		"access_token": "accessToken",
+		"expires_in":   "expiresIn",
+	})
 
 	state, err := handler(context.Background(), NewAuthContext(),
-		jsonResponse(`{"access_token":"abc123","ignored":"x"}`))
+		jsonResponse(`{"access_token":"abc123","expires_in":3599,"ignored":"x"}`))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
 	if state.Secrets["accessToken"] != "abc123" {
 		t.Errorf("accessToken = %q, want abc123", state.Secrets["accessToken"])
+	}
+
+	// Numeric fields (expires_in) are coerced to their string form.
+	if state.Secrets["expiresIn"] != "3599" {
+		t.Errorf("expiresIn = %q, want 3599", state.Secrets["expiresIn"])
 	}
 }
 
