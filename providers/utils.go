@@ -316,6 +316,12 @@ type OAuth2ClientCredentialsParams struct {
 type CustomAuthParams struct {
 	Values  map[string]string
 	Options []common.CustomAuthClientOption
+
+	// Refresh, when set, re-mints the auth values on a 401; the client re-renders
+	// the provider's declared headers/query params with the returned values and
+	// replays the request once. The server supplies this; the connector owns how
+	// the values are applied.
+	Refresh func(context.Context) (map[string]string, error)
 }
 
 // NewClientParams is the parameters to create a new HTTP client.
@@ -685,7 +691,54 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 		opts = append(opts, common.WithCustomIsUnauthorizedHandler(isUnauth))
 	}
 
-	if unauth != nil {
+	switch {
+	case cfg.Refresh != nil:
+		// The connector owns how refreshed auth is re-applied: re-mint the values,
+		// re-render this provider's declared headers/query params, and replay once.
+		opts = append(opts,
+			common.WithCustomUnauthorizedHandler(
+				func(
+					_ []common.Header,
+					_ []common.QueryParam,
+					req *http.Request,
+					rsp *http.Response,
+				) (*http.Response, error) {
+					vals, err := cfg.Refresh(req.Context())
+					if err != nil {
+						// Don't mask the original 401 if we can't refresh.
+						return rsp, nil //nolint:nilerr
+					}
+
+					fresh := &CustomAuthParams{Values: vals}
+
+					newHeaders, err := getCustomHeaders(info, fresh)
+					if err != nil {
+						return nil, err
+					}
+
+					newParams, err := getCustomParams(info, fresh)
+					if err != nil {
+						return nil, err
+					}
+
+					// Force overwrite so the refreshed auth replaces the stale
+					// header/query param rather than appending a duplicate.
+					for i := range newHeaders {
+						newHeaders[i].Mode = common.HeaderModeOverwrite
+					}
+
+					for i := range newParams {
+						newParams[i].Mode = common.QueryParamModeOverwrite
+					}
+
+					replay := req.Clone(req.Context())
+					common.Headers(newHeaders).ApplyToRequest(replay)
+					common.QueryParams(newParams).ApplyToRequest(replay)
+
+					// Replay via the raw client so we don't re-trigger this handler.
+					return getClient(client).Do(replay)
+				}))
+	case unauth != nil:
 		opts = append(opts,
 			common.WithCustomUnauthorizedHandler(
 				func(
