@@ -103,6 +103,12 @@ linters:
       - linters:
           - revive
         text: "avoid meaningless package names"
+      # The subscribe package is a declarative per-provider config registry: its package-level
+      # ProviderConfig literals and the providerConfigs map ARE the API surface, mirroring the
+      # server package it was migrated from (ENG-4090).
+      - linters:
+          - gochecknoglobals
+        path: ^subscribe/
     paths:
       - playground
       - test
