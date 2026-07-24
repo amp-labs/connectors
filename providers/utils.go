@@ -694,50 +694,10 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 	switch {
 	case cfg.Refresh != nil:
 		// The connector owns how refreshed auth is re-applied: re-mint the values,
-		// re-render this provider's declared headers/query params, and replay once.
+		// re-render this provider's declared headers/query params, and replay.
 		opts = append(opts,
 			common.WithCustomUnauthorizedHandler(
-				func(
-					_ []common.Header,
-					_ []common.QueryParam,
-					req *http.Request,
-					rsp *http.Response,
-				) (*http.Response, error) {
-					vals, err := cfg.Refresh(req.Context())
-					if err != nil {
-						// Don't mask the original 401 if we can't refresh.
-						return rsp, nil //nolint:nilerr
-					}
-
-					fresh := &CustomAuthParams{Values: vals}
-
-					newHeaders, err := getCustomHeaders(info, fresh)
-					if err != nil {
-						return nil, err
-					}
-
-					newParams, err := getCustomParams(info, fresh)
-					if err != nil {
-						return nil, err
-					}
-
-					// Force overwrite so the refreshed auth replaces the stale
-					// header/query param rather than appending a duplicate.
-					for i := range newHeaders {
-						newHeaders[i].Mode = common.HeaderModeOverwrite
-					}
-
-					for i := range newParams {
-						newParams[i].Mode = common.QueryParamModeOverwrite
-					}
-
-					replay := req.Clone(req.Context())
-					common.Headers(newHeaders).ApplyToRequest(replay)
-					common.QueryParams(newParams).ApplyToRequest(replay)
-
-					// Replay via the raw client so we don't re-trigger this handler.
-					return getClient(client).Do(replay)
-				}))
+				customRefreshHandler(info, cfg, getClient(client), isUnauth)))
 	case unauth != nil:
 		opts = append(opts,
 			common.WithCustomUnauthorizedHandler(
@@ -767,6 +727,92 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 	}
 
 	return customClient, nil
+}
+
+// maxCustomRefreshRetries bounds how many times a 401 triggers a re-mint + replay.
+const maxCustomRefreshRetries = 3
+
+// customRefreshHandler returns a 401 handler that, using cfg.Refresh, re-mints the
+// auth values, re-renders the provider's declared headers/query params (forced to
+// overwrite so the fresh credential replaces the stale one), and replays the request
+// via the raw client — up to maxCustomRefreshRetries times, stopping as soon as a
+// replay is no longer unauthorized. It replays via the raw client so it does not
+// re-trigger itself.
+func customRefreshHandler(
+	info *ProviderInfo,
+	cfg *CustomAuthParams,
+	rawClient *http.Client,
+	isUnauth IsUnauthorizedDecider,
+) func([]common.Header, []common.QueryParam, *http.Request, *http.Response) (*http.Response, error) {
+	return func(
+		_ []common.Header,
+		_ []common.QueryParam,
+		req *http.Request,
+		rsp *http.Response,
+	) (*http.Response, error) {
+		for attempt := 0; attempt < maxCustomRefreshRetries; attempt++ {
+			vals, err := cfg.Refresh(req.Context())
+			if err != nil {
+				// Don't mask the original 401 if we can't refresh.
+				return rsp, nil //nolint:nilerr
+			}
+
+			fresh := &CustomAuthParams{Values: vals}
+
+			newHeaders, err := getCustomHeaders(info, fresh)
+			if err != nil {
+				return nil, err
+			}
+
+			newParams, err := getCustomParams(info, fresh)
+			if err != nil {
+				return nil, err
+			}
+
+			// Force overwrite so the refreshed auth replaces the stale header/query
+			// param rather than appending a duplicate.
+			for i := range newHeaders {
+				newHeaders[i].Mode = common.HeaderModeOverwrite
+			}
+
+			for i := range newParams {
+				newParams[i].Mode = common.QueryParamModeOverwrite
+			}
+
+			replay := req.Clone(req.Context())
+			common.Headers(newHeaders).ApplyToRequest(replay)
+			common.QueryParams(newParams).ApplyToRequest(replay)
+
+			resp, err := rawClient.Do(replay)
+			if err != nil {
+				return nil, err
+			}
+
+			stillUnauth := resp.StatusCode == http.StatusUnauthorized
+			if isUnauth != nil {
+				stillUnauth, err = isUnauth(resp)
+				if err != nil {
+					return nil, err
+				}
+			}
+
+			if !stillUnauth {
+				return resp, nil
+			}
+
+			// Still unauthorized. Discard this body unless it's the last attempt
+			// (whose response we return to the caller).
+			if attempt < maxCustomRefreshRetries-1 {
+				_ = resp.Body.Close()
+
+				continue
+			}
+
+			return resp, nil
+		}
+
+		return rsp, nil
+	}
 }
 
 func getCustomParams(info *ProviderInfo, cfg *CustomAuthParams) (common.QueryParams, error) {

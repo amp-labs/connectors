@@ -179,6 +179,55 @@ func TestCustomAuthRefreshOn401_QueryParam(t *testing.T) {
 	}
 }
 
+func TestCustomAuthRefreshRetriesThenGivesUp(t *testing.T) {
+	t.Parallel()
+
+	var calls int
+
+	// Always unauthorized, even after refresh.
+	transport := roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		calls++
+
+		return newResponse(http.StatusUnauthorized, req), nil
+	})
+
+	cfg := &CustomAuthParams{
+		Values: map[string]string{"accessToken": "STALE"},
+		Refresh: func(context.Context) (map[string]string, error) {
+			return map[string]string{"accessToken": "FRESH"}, nil
+		},
+	}
+
+	client, err := createCustomHTTPClient(
+		context.Background(),
+		&http.Client{Transport: transport},
+		false, nil, nil,
+		refreshTestInfo(), cfg,
+	)
+	if err != nil {
+		t.Fatalf("createCustomHTTPClient: %v", err)
+	}
+
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://example.com/v1/thing", nil)
+	if err != nil {
+		t.Fatalf("new request: %v", err)
+	}
+
+	rsp, err := client.Do(req)
+	if err != nil {
+		t.Fatalf("client.Do: %v", err)
+	}
+
+	if rsp.StatusCode != http.StatusUnauthorized {
+		t.Errorf("status = %d, want 401 after exhausting retries", rsp.StatusCode)
+	}
+
+	// 1 original request + maxCustomRefreshRetries replays.
+	if want := 1 + maxCustomRefreshRetries; calls != want {
+		t.Errorf("transport called %d times, want %d (original + %d retries)", calls, want, maxCustomRefreshRetries)
+	}
+}
+
 func TestCustomAuthRefreshErrorReturnsOriginal401(t *testing.T) {
 	t.Parallel()
 
