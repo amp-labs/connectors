@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"net/http"
 )
 
@@ -74,10 +75,9 @@ func (c AuthContext) EnsureMaps() AuthContext {
 // lowest to highest: System, Metadata, ProviderInputs, ConsumerInputs, Secrets.
 func (c AuthContext) Flatten() map[string]string {
 	out := make(map[string]string)
+
 	for _, m := range []map[string]string{c.System, c.Metadata, c.ProviderInputs, c.ConsumerInputs, c.Secrets} {
-		for k, v := range m {
-			out[k] = v
-		}
+		maps.Copy(out, m)
 	}
 
 	return out
