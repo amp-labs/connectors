@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"net/http"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -18,8 +19,14 @@ import (
 
 var errBatchReadEmptyResponse = errors.New("acculynx: empty response body for record fetch")
 
+// batchReadableObjects lists objects the connector can hydrate by id via a
+// single-record GET. Users were added for the appointment->user association:
+// an appointment's calendar id equals its user id, so the server hydrates the
+// user directly. Not every calendar is a user (company/crew calendars 404), so
+// GetRecordsByIds skips ids that are not found — see isNotFound below.
+//
 //nolint:gochecknoglobals
-var batchReadableObjects = datautils.NewStringSet(objectContacts, objectJobs)
+var batchReadableObjects = datautils.NewStringSet(objectContacts, objectJobs, objectUsers)
 
 //nolint:revive
 func (c *Connector) GetRecordsByIds(
@@ -32,7 +39,7 @@ func (c *Connector) GetRecordsByIds(
 	objectName = strings.ToLower(objectName)
 
 	if !batchReadableObjects.Has(objectName) {
-		return nil, fmt.Errorf("%w: %s (only contacts and jobs supported)",
+		return nil, fmt.Errorf("%w: %s (only contacts, jobs and users supported)",
 			common.ErrGetRecordNotSupportedForObject, objectName)
 	}
 
@@ -43,18 +50,29 @@ func (c *Connector) GetRecordsByIds(
 	fieldSet := datautils.NewSetFromList(fields)
 
 	rows := make([]common.ReadResultRow, len(recordIds))
+	found := make([]bool, len(recordIds))
 	jobs := make([]simultaneously.Job, len(recordIds))
 
 	for i, recordID := range recordIds {
-		idx, id := i, recordID
+		idx, currentID := i, recordID
 
 		jobs[idx] = func(ctx context.Context) error {
-			row, err := c.fetchSingleRecord(ctx, objectName, id, fieldSet)
+			row, err := c.fetchSingleRecord(ctx, objectName, currentID, fieldSet)
 			if err != nil {
-				return fmt.Errorf("fetch %s/%s: %w", objectName, id, err)
+				// A record that no longer exists — or, for the appointment->user
+				// edge, a calendar id that is not a user — must not sink the whole
+				// batch. Skip the missing id and let the caller receive the ids
+				// that do resolve, matching the "missing ids simply don't come
+				// back" semantics of the bulk-by-id connectors.
+				if isNotFound(err) {
+					return nil
+				}
+
+				return fmt.Errorf("fetch %s/%s: %w", objectName, currentID, err)
 			}
 
 			rows[idx] = row
+			found[idx] = true
 
 			return nil
 		}
@@ -64,7 +82,36 @@ func (c *Connector) GetRecordsByIds(
 		return nil, err
 	}
 
-	return rows, nil
+	return compactFound(rows, found), nil
+}
+
+// isNotFound reports whether err represents a 404 from AccuLynx. The base JSON
+// HTTP client maps a 404 to a retryable *common.HTTPError rather than
+// common.ErrNotFound, so the HTTP status is inspected directly — mirroring the
+// google calendar connector's handling.
+func isNotFound(err error) bool {
+	if errors.Is(err, common.ErrNotFound) {
+		return true
+	}
+
+	if httpErr, ok := errors.AsType[*common.HTTPError](err); ok {
+		return httpErr.Status == http.StatusNotFound
+	}
+
+	return false
+}
+
+// compactFound returns only the rows whose id resolved, preserving input order.
+func compactFound(rows []common.ReadResultRow, found []bool) []common.ReadResultRow {
+	out := make([]common.ReadResultRow, 0, len(rows))
+
+	for i, ok := range found {
+		if ok {
+			out = append(out, rows[i])
+		}
+	}
+
+	return out
 }
 
 func (c *Connector) fetchSingleRecord(

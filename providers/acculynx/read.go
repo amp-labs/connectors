@@ -58,6 +58,7 @@ const (
 	objectEstimates   = "estimates"
 	objectSupplements = "supplements"
 	objectCalendars   = "calendars"
+	objectUsers       = "users"
 )
 
 // includesByObject lists the AccuLynx ?includes= expansions applied
@@ -443,6 +444,7 @@ func (c *Connector) fetchChildPages(
 			return nil, err
 		}
 
+		attachAppointmentAssociations(params, parentID, result.Data)
 		allRows = append(allRows, result.Data...)
 
 		if result.NextPage == "" {
