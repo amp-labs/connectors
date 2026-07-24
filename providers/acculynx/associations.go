@@ -1,6 +1,70 @@
 package acculynx
 
-import "github.com/amp-labs/connectors/common"
+import (
+	"slices"
+
+	"github.com/amp-labs/connectors/common"
+)
+
+// appointmentJobAssociation and appointmentUserAssociation are the association
+// keys Hatch's config requests for calendars/appointments (see the server's
+// getHatchAssociations, which returns ["jobs", "users"]). They match the target
+// object names the server hydrates.
+const (
+	appointmentJobAssociation  = objectJobs
+	appointmentUserAssociation = objectUsers
+)
+
+// attachAppointmentAssociations attaches the Appointment->Job and
+// Appointment->User edges to appointment rows produced by the calendars/
+// appointments fan-out. Both are reference-shape associations (ObjectId only,
+// the server hydrates via GetRecordsByIds) — the same shape as outreach's
+// collectAssociations, and unlike the embedded Job<->Contact edge above.
+//
+//   - Appointment->Job: the job id rides on the appointment body (jobId). It is
+//     empty for non-job calendar events (e.g. Personal), so the edge is emitted
+//     only when present.
+//   - Appointment->User: the appointment body carries no calendar/user id — the
+//     calendarId is the fan-out path parent, so it is threaded in. A calendar's
+//     id equals its user's id in AccuLynx; company/crew calendars are not users
+//     and are dropped downstream when hydration 404s (see GetRecordsByIds).
+//
+// It is a no-op for any object other than calendars/appointments, so the nested
+// fan-out can call it unconditionally.
+func attachAppointmentAssociations(params common.ReadParams, calendarID string, rows []common.ReadResultRow) {
+	if params.ObjectName != "calendars/appointments" {
+		return
+	}
+
+	wantJob := slices.Contains(params.AssociatedObjects, appointmentJobAssociation)
+	wantUser := slices.Contains(params.AssociatedObjects, appointmentUserAssociation)
+
+	if !wantJob && !wantUser {
+		return
+	}
+
+	for idx := range rows {
+		if wantJob {
+			if jobID, _ := rows[idx].Raw["jobId"].(string); jobID != "" {
+				addAssociation(&rows[idx], appointmentJobAssociation, jobID)
+			}
+		}
+
+		if wantUser && calendarID != "" {
+			addAssociation(&rows[idx], appointmentUserAssociation, calendarID)
+		}
+	}
+}
+
+// addAssociation appends a reference-shape association (ObjectId only) under the
+// given key, initialising the row's association map on first use.
+func addAssociation(row *common.ReadResultRow, key, objectID string) {
+	if row.Associations == nil {
+		row.Associations = make(map[string][]common.Association)
+	}
+
+	row.Associations[key] = append(row.Associations[key], common.Association{ObjectId: objectID})
+}
 
 // jobContactsAssociation is the association key Hatch's config requests (see the
 // server's getHatchAssociations). It matches the embedded "contacts" array that
