@@ -53,7 +53,8 @@ type WatchRequest struct {
 	Token string `json:"token,omitempty"`
 
 	// Expiration is the requested channel lifetime in epoch milliseconds.
-	// 0 means use the provider's default (up to ~30 days).
+	// 0 means use the provider's default of 7 days (604800 seconds, per params.ttl).
+	// ref: https://developers.google.com/workspace/calendar/api/v3/reference/events/watch
 	Expiration int64 `json:"expiration,omitempty"`
 }
 
