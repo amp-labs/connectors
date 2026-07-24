@@ -720,14 +720,11 @@ func makeJsonPatchOperations(identifier string,
 	}
 
 	// Update existing item.
-	output := make([]patchOperationPayload, 0)
-	if identifier != "" {
-		output = append(output, patchOperationPayload{
-			Op:    operationReplace,
-			Path:  fmt.Sprintf("/communicationItems/%v/value", index),
-			Value: value,
-		})
-	}
+	output := []patchOperationPayload{{
+		Op:    operationReplace,
+		Path:  fmt.Sprintf("/communicationItems/%v/value", index),
+		Value: value,
+	}}
 
 	if !items[index].DefaultFlag {
 		// Mark this item as the default for its type.
@@ -912,15 +909,17 @@ type readContactResponse struct {
 // readCommunicationItem represents a single element of the `communicationItems`
 // array returned when reading a contact from ConnectWise.
 type readCommunicationItem struct {
-	Id   int `json:"id"`
-	Type struct {
-		Id   naming.Text `json:"id"`
-		Name string      `json:"name"`
-		Info any         `json:"_info"`
-	} `json:"type"`
-	Value             any    `json:"value"`
-	DefaultFlag       bool   `json:"defaultFlag"`
-	CommunicationType string `json:"communicationType"`
+	Id                int                       `json:"id"`
+	Type              readCommunicationItemType `json:"type"`
+	Value             any                       `json:"value"`
+	DefaultFlag       bool                      `json:"defaultFlag"`
+	CommunicationType string                    `json:"communicationType"`
+}
+
+type readCommunicationItemType struct {
+	Id   naming.Text `json:"id"`
+	Name string      `json:"name"`
+	Info any         `json:"_info"`
 }
 
 // createCommunicationItemPayload represents a communication item as it should
