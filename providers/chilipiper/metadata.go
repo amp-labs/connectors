@@ -65,7 +65,7 @@ func fetchDataFields(
 		return false
 	}
 
-	jsonResp, err := conn.Client.Get(ctx, url)
+	jsonResp, err := conn.Client.Get(ctx, url.String())
 	if err != nil {
 		return false
 	}
