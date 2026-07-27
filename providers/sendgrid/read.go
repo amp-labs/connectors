@@ -151,22 +151,12 @@ func nextPageFromOffset(requestURL *url.URL, recordsKey string) common.NextPageF
 			return "", err
 		}
 
-		limitStr, ok := endpointURL.GetFirstQueryParam(limitKey)
-		if !ok || limitStr == "" {
-			limitStr = defaultPageSize
+		limit, hasMore := offsetPageLimit(endpointURL, len(records))
+		if !hasMore {
+			return "", nil
 		}
 
-		limit, err := strconv.Atoi(limitStr)
-		if err != nil || limit <= 0 || len(records) < limit {
-			return "", nil //nolint:nilerr
-		}
-
-		offsetStr, ok := endpointURL.GetFirstQueryParam(offsetKey)
-		if !ok || offsetStr == "" {
-			offsetStr = "0"
-		}
-
-		offset, err := strconv.Atoi(offsetStr)
+		offset, err := offsetPageStart(endpointURL)
 		if err != nil {
 			return "", nil //nolint:nilerr
 		}
@@ -175,6 +165,29 @@ func nextPageFromOffset(requestURL *url.URL, recordsKey string) common.NextPageF
 
 		return endpointURL.String(), nil
 	}
+}
+
+func offsetPageLimit(endpointURL *urlbuilder.URL, recordCount int) (int, bool) {
+	limitStr, found := endpointURL.GetFirstQueryParam(limitKey)
+	if !found || limitStr == "" {
+		limitStr = defaultPageSize
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 || recordCount < limit {
+		return 0, false
+	}
+
+	return limit, true
+}
+
+func offsetPageStart(endpointURL *urlbuilder.URL) (int, error) {
+	offsetStr, found := endpointURL.GetFirstQueryParam(offsetKey)
+	if !found || offsetStr == "" {
+		offsetStr = "0"
+	}
+
+	return strconv.Atoi(offsetStr)
 }
 
 func noNextPage(_ *ajson.Node) (string, error) {
