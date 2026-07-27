@@ -18,6 +18,4 @@ const (
 	objectASMGroups             = "asm_groups"
 	objectCategories            = "categories"
 	objectSubusers              = "subusers"
-	objectEventWebhookSettings  = "event_webhook_settings"
-	objectParseWebhookSettings  = "parse_webhook_settings"
 )

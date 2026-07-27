@@ -43,8 +43,6 @@ var supportedReadObjects = datautils.NewStringSet(
 	objectASMGroups,
 	objectCategories,
 	objectSubusers,
-	objectEventWebhookSettings,
-	objectParseWebhookSettings,
 )
 
 // Marketing list endpoints that paginate with page_size + page_token and return _metadata.next.
@@ -213,8 +211,6 @@ func idFieldForObject(objectName string) readhelper.IdFieldQuery {
 		return readhelper.NewIdField("email")
 	case objectCategories:
 		return readhelper.NewIdField("category")
-	case objectParseWebhookSettings:
-		return readhelper.NewIdField("hostname")
 	default:
 		return readhelper.NewIdField("id")
 	}
