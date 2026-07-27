@@ -25,26 +25,6 @@ const (
 	offsetKey   = "offset"
 )
 
-// nolint:gochecknoglobals
-var supportedReadObjects = datautils.NewStringSet(
-	objectContacts,
-	objectLists,
-	objectSegments,
-	objectSinglesends,
-	objectTemplates,
-	objectFieldDefinitions,
-	objectVerifiedSenders,
-	objectSenders,
-	objectBounces,
-	objectBlocks,
-	objectSpamReports,
-	objectUnsubscribes,
-	objectInvalidEmails,
-	objectASMGroups,
-	objectCategories,
-	objectSubusers,
-)
-
 // Marketing list endpoints that paginate with page_size + page_token and return _metadata.next.
 // Docs: https://www.twilio.com/docs/sendgrid/api-reference/lists/get-all-lists
 //
@@ -72,10 +52,6 @@ var offsetObjects = datautils.NewStringSet(
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if err := params.ValidateParams(true); err != nil {
 		return nil, err
-	}
-
-	if !supportedReadObjects.Has(params.ObjectName) {
-		return nil, common.ErrOperationNotSupportedForObject
 	}
 
 	endpointURL, err := c.buildReadURL(params)

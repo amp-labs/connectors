@@ -36,7 +36,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 			Name:         "Unknown object is not supported",
 			Input:        common.ReadParams{ObjectName: "unknown", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
+			ExpectedErrs: []error{common.ErrResolvingURLPathForObject},
 		},
 		{
 			Name:  "Zero records response for lists",
