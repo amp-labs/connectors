@@ -28,7 +28,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		},
 		{
 			Name:         "At least one field is requested",
-			Input:        common.ReadParams{ObjectName: objectLists},
+			Input:        common.ReadParams{ObjectName: "lists"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
@@ -40,13 +40,13 @@ func TestRead(t *testing.T) { //nolint:funlen
 		},
 		{
 			Name:  "Zero records response for lists",
-			Input: common.ReadParams{ObjectName: objectLists, Fields: connectors.Fields("id", "name")},
+			Input: common.ReadParams{ObjectName: "lists", Fields: connectors.Fields("id", "name")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodGET(),
 					mockcond.Path("/v3/marketing/lists"),
-					mockcond.QueryParam("page_size", defaultPageSize),
+					mockcond.QueryParam("page_size", "100"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseListsEmpty),
 			}.Server(),
@@ -55,13 +55,13 @@ func TestRead(t *testing.T) { //nolint:funlen
 		},
 		{
 			Name:  "Read lists",
-			Input: common.ReadParams{ObjectName: objectLists, Fields: connectors.Fields("id", "name")},
+			Input: common.ReadParams{ObjectName: "lists", Fields: connectors.Fields("id", "name")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodGET(),
 					mockcond.Path("/v3/marketing/lists"),
-					mockcond.QueryParam("page_size", defaultPageSize),
+					mockcond.QueryParam("page_size", "100"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseLists),
 			}.Server(),
@@ -86,7 +86,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		},
 		{
 			Name:  "Read lists with next page from _metadata.next",
-			Input: common.ReadParams{ObjectName: objectLists, Fields: connectors.Fields("id"), PageSize: 1},
+			Input: common.ReadParams{ObjectName: "lists", Fields: connectors.Fields("id"), PageSize: 1},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -116,13 +116,13 @@ func TestRead(t *testing.T) { //nolint:funlen
 		},
 		{
 			Name:  "Read bounces root array",
-			Input: common.ReadParams{ObjectName: objectBounces, Fields: connectors.Fields("email", "reason")},
+			Input: common.ReadParams{ObjectName: "bounces", Fields: connectors.Fields("email", "reason")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodGET(),
 					mockcond.Path("/v3/suppression/bounces"),
-					mockcond.QueryParam("limit", defaultPageSize),
+					mockcond.QueryParam("limit", "100"),
 					mockcond.QueryParam("offset", "0"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseBounces),
@@ -149,7 +149,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		},
 		{
 			Name:  "Read bounces with next page via offset",
-			Input: common.ReadParams{ObjectName: objectBounces, Fields: connectors.Fields("email"), PageSize: 2},
+			Input: common.ReadParams{ObjectName: "bounces", Fields: connectors.Fields("email"), PageSize: 2},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -181,7 +181,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		},
 		{
 			Name:  "Zero records response for bounces",
-			Input: common.ReadParams{ObjectName: objectBounces, Fields: connectors.Fields("email")},
+			Input: common.ReadParams{ObjectName: "bounces", Fields: connectors.Fields("email")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{

@@ -146,8 +146,13 @@ func nextPageFromOffset(requestURL *url.URL, recordsKey string) common.NextPageF
 			return "", err
 		}
 
-		limitStr := requestURL.Query().Get(limitKey)
-		if limitStr == "" {
+		endpointURL, err := urlbuilder.FromRawURL(requestURL)
+		if err != nil {
+			return "", err
+		}
+
+		limitStr, ok := endpointURL.GetFirstQueryParam(limitKey)
+		if !ok || limitStr == "" {
 			limitStr = defaultPageSize
 		}
 
@@ -156,19 +161,14 @@ func nextPageFromOffset(requestURL *url.URL, recordsKey string) common.NextPageF
 			return "", nil //nolint:nilerr
 		}
 
-		offsetStr := requestURL.Query().Get(offsetKey)
-		if offsetStr == "" {
+		offsetStr, ok := endpointURL.GetFirstQueryParam(offsetKey)
+		if !ok || offsetStr == "" {
 			offsetStr = "0"
 		}
 
 		offset, err := strconv.Atoi(offsetStr)
 		if err != nil {
 			return "", nil //nolint:nilerr
-		}
-
-		endpointURL, err := urlbuilder.FromRawURL(requestURL)
-		if err != nil {
-			return "", err
 		}
 
 		endpointURL.WithQueryParam(offsetKey, strconv.Itoa(offset+limit))
