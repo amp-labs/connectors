@@ -46,7 +46,11 @@ func init() {
 					Write:     true,
 				},
 				SubscribeRequirements: &SubscribeRequirements{
-					Maintenance:    new(true),
+					// Maintenance: Calendar watch channels expire after up to 7 days and must be renewed.
+					// ref: https://developers.google.com/workspace/calendar/api/v3/reference/events/watch
+					Maintenance: new(true),
+					// SubscribeByAPI: subscriptions are created via a direct events.watch API call.
+					// ref: https://developers.google.com/workspace/calendar/api/v3/reference/events/watch
 					SubscribeByAPI: new(true),
 				},
 			},
