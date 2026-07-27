@@ -19,7 +19,6 @@ func TestRead(t *testing.T) { //nolint:funlen
 	responseListsPage1 := testutils.DataFromFile(t, "read/lists-page1.json")
 	responseListsEmpty := testutils.DataFromFile(t, "read/lists-empty.json")
 	responseBounces := testutils.DataFromFile(t, "read/bounces.json")
-	responseEmptyArray := testutils.DataFromFile(t, "read/empty-array.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -189,7 +188,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 					mockcond.MethodGET(),
 					mockcond.Path("/v3/suppression/bounces"),
 				},
-				Then: mockserver.Response(http.StatusOK, responseEmptyArray),
+				Then: mockserver.Response(http.StatusOK, []byte("[]")),
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
 			ExpectedErrs: nil,
