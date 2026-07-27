@@ -7,14 +7,14 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
-func NewWebhookRouter() testscenario.WebhookRouter {
-	return testscenario.WebhookRouter{
-		Routes: []testscenario.WebhookRouteFunc{subscriptionConfirmation},
+func NewWebhookProcessor() *testscenario.WebhookProcessor {
+	return &testscenario.WebhookProcessor{
+		Interceptor: subscriptionConfirmation,
 	}
 }
 
 // https://docs.slack.dev/reference/events/url_verification/
-var subscriptionConfirmation = testscenario.WebhookRouteFunc(
+var subscriptionConfirmation = testscenario.WebhookInterceptorFunc(
 	func(writer http.ResponseWriter, request *http.Request, data []byte) bool {
 		body := requestBody{}
 		if err := json.Unmarshal(data, &body); err != nil {

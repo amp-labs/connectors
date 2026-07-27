@@ -11,6 +11,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testconn"
+	"github.com/amp-labs/connectors/test/utils/testscenario/internal/core"
+	"github.com/amp-labs/connectors/test/utils/testscenario/internal/webhook"
 )
 
 type ConnectorWebhookSubscriber interface {
@@ -35,12 +37,10 @@ type SubscribeReceiveEventsSuite struct {
 	// There is no way to protect against these side effects.
 	ExpectedWebhookCalls int
 	Operations           []ConnectorOperation
-	// WebhookRouter allows a list of alternative request handling by the webhook handler.
-	// When conditions are met for the Route that handler is executed.
-	// If there are no custom routes or none match then default webhook handling will take place.
-	// This includes printing events until reaching the number of ExpectedWebhookCalls or
-	// script cancellation.
-	WebhookRouter      WebhookRouter
+	// WebhookProcessor handles incoming webhook events.
+	// The webhook.Server runs in the background, passes events to the connector for verification,
+	// and then sends them to this Processor.
+	WebhookProcessor   *WebhookProcessor
 	VerificationParams *common.VerificationParams
 	// AutoRemoveSubscription, if true, removes at the end of script execution any subscriptions
 	// that were created as part of this test run. If false, subscriptions are left in place
@@ -91,14 +91,13 @@ func ValidateSubscribeReceiveEvents(
 	fmt.Println("> TEST Subscribe/Write/Recieve")
 
 	fmt.Println("============== Starting Webhook Handler ==================")
-	messageChannel := make(chan webhookMessageResult)
-	webhookURL, shutdown := startWebhookHandler(ctx, conn,
-		suite.WebhookRouter, suite.VerificationParams, messageChannel,
-	)
+
+	server := webhook.CreateServer(ctx, suite.WebhookProcessor, conn, suite.VerificationParams)
+	webhookURL, shutdown := server.Start(ctx)
 	defer shutdown()
 
 	fmt.Printf("Local webhook server started at: \"%s\"\n", webhookURL)
-	publicURL, ok := getPublicWebhookURL(ctx)
+	publicURL, ok := webhook.GetPublicUrl(ctx)
 	if !ok {
 		return
 	}
@@ -106,7 +105,7 @@ func ValidateSubscribeReceiveEvents(
 	fmt.Println("============== Invoking connector.Subscribe() ==================")
 	params := *suite.SubscribeParamBuilder(publicURL)
 	subscriptionResult, err := conn.Subscribe(ctx, params)
-	if printError(err) {
+	if core.PrintError(err) {
 		return
 	}
 
@@ -134,7 +133,7 @@ func ValidateSubscribeReceiveEvents(
 	}
 
 	// Register a defer function to clean up the successful subscription at the end of the script.
-	defer cleanupSubscription(ctx, conn, suite, subscriptionResult)()
+	defer cleanupSubscription(conn, suite, subscriptionResult)()
 
 	fmt.Println("============== Invoking connector.Write/Delete() ==================")
 	for _, trigger := range suite.Operations {
@@ -142,7 +141,7 @@ func ValidateSubscribeReceiveEvents(
 		case ConnectorMethodCreate:
 			fmt.Printf("Creating object %v:\n", trigger.ObjectName)
 			createResult, err := createObject[any](ctx, conn, trigger.ObjectName, &trigger.Payload)
-			if printError(err) {
+			if core.PrintError(err) {
 				return
 			}
 			utils.DumpJSON(createResult, os.Stdout)
@@ -154,7 +153,7 @@ func ValidateSubscribeReceiveEvents(
 
 			fmt.Printf("Updating object %v:\n", trigger.ObjectName)
 			updateResult, err := updateObject[any](ctx, conn, trigger.ObjectName, objectID, &trigger.Payload)
-			if printError(err) {
+			if core.PrintError(err) {
 				return
 			}
 			utils.DumpJSON(updateResult, os.Stdout)
@@ -166,7 +165,7 @@ func ValidateSubscribeReceiveEvents(
 
 			fmt.Printf("Deleting object %v:\n", trigger.ObjectName)
 			err = removeObject(ctx, conn, trigger.ObjectName, objectID)
-			if printError(err) {
+			if core.PrintError(err) {
 				return
 			}
 			fmt.Println("... object deleted.")
@@ -175,25 +174,21 @@ func ValidateSubscribeReceiveEvents(
 
 	// Waiting for the events to arrive. Then report on them and exit.
 	// This can be stopped prematurely via context cancellation.
-	receivedNumEvents := 0
 	fmt.Printf("============== Waiting for %d webhook messages ==================\n", suite.ExpectedWebhookCalls)
 
-	for receivedNumEvents < suite.ExpectedWebhookCalls {
-		select {
-		case message := <-messageChannel:
-			receivedNumEvents++
-			fmt.Printf("[%d/%d] Received webhook message:\n", receivedNumEvents, suite.ExpectedWebhookCalls)
-			if message.Error == "" {
-				utils.DumpJSON(message.Body, os.Stdout)
-			} else {
-				utils.DumpJSON(message.Error, os.Stdout)
-			}
-
-		case <-ctx.Done():
-			fmt.Println("Context cancelled, stopping...")
-			return
+	receivedNumEvents := 0
+	suite.WebhookProcessor.Run(ctx, func(event webhook.Event) bool {
+		receivedNumEvents++
+		fmt.Printf("[%d/%d] Received webhook message:\n", receivedNumEvents, suite.ExpectedWebhookCalls)
+		if event.Error == "" {
+			utils.DumpJSON(event.Body, os.Stdout)
+		} else {
+			utils.DumpJSON(event.Error, os.Stdout)
 		}
-	}
+
+		// Done condition.
+		return receivedNumEvents == suite.ExpectedWebhookCalls
+	})
 
 	fmt.Println("============== Done ==================")
 }
@@ -208,13 +203,13 @@ func searchForRecord(
 
 	fmt.Printf("Search object %v by %v\n", objectName, procedure.SearchBy.String())
 	res, err := readObjects(ctx, conn, objectName, procedure.ReadFields, procedure.SearchBy.Since)
-	if printError(err) {
+	if core.PrintError(err) {
 		return "", false
 	}
 
 	search := procedure.SearchBy
 	object, err := searchObjectRecord(res, search.Key, search.Value)
-	if printError(err) {
+	if core.PrintError(err) {
 		return "", false
 	}
 
@@ -223,7 +218,7 @@ func searchForRecord(
 	return objectID, true
 }
 
-func cleanupSubscription(ctx context.Context,
+func cleanupSubscription(
 	conn ConnectorWebhookSubscriber, suite SubscribeReceiveEventsSuite,
 	subscriptionResult *common.SubscriptionResult,
 ) func() {
@@ -246,8 +241,14 @@ func cleanupSubscription(ctx context.Context,
 		}
 
 		fmt.Println("[CLEANUP] Removing subscription.")
+
+		// New fresh context. It is not canceled, nor is it expired.
+		ctx := context.Background()
+		// Subscription should remove all events.
+		subscriptionResult.ObjectEvents = nil
+
 		err := remover.DeleteSubscription(ctx, *subscriptionResult)
-		if !printError(err) {
+		if !core.PrintError(err) {
 			fmt.Println("[CLEANUP] Subscription removed.")
 		}
 	}
