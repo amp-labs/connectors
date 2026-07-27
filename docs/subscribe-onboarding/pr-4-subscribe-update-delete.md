@@ -175,6 +175,7 @@ processed and which weren't, making the true remote state impossible to deduce a
    ```
 
    Trigger a change in the provider sandbox and confirm the webhook is received and verifies end-to-end.
+See [Live Tests (Stage 2 & 3)](./live-tests.md) for automated scenarios that cover this.
 
 See [`CONTRIBUTING.md`](../../CONTRIBUTING.md) for credential setup (`creds.json`) and the dev
 environment.

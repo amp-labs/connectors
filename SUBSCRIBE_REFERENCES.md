@@ -172,18 +172,20 @@ How it plays out:
 
 ## Writing the PRs
 
-Ship subscribe support as a stack of small, gated-off PRs. The process — principles, the stack diagram,
-merge order, gating, and how to manage the stack — is in
-[**`CONTRIBUTING_SUBSCRIBE_ACTION.md`**](./CONTRIBUTING_SUBSCRIBE_ACTION.md).
+Ship subscribe support as a stack of small, gated-off PRs. The process — principles, the stack diagram, merge order,
+gating, and how to manage the stack — is in [**`CONTRIBUTING_SUBSCRIBE_ACTION.md`**](./CONTRIBUTING_SUBSCRIBE_ACTION.md).
+
+Developers create live tests as part of the PRs (e.g. Stage 1 tests during PR 2, Stage 2 & 3 during PR 4).
+See [**`live-tests.md`**](./docs/subscribe-onboarding/live-tests.md).
 
 Each PR has its own focused guide with the full implementation detail for that step (interface
 signatures, examples, files, checklist, reviewer focus):
 
-| # | PR | Guide | Required? |
-|---|----|-------|-----------|
-| 1 | ProviderInfo + Factory wiring | [pr-1-provider-info.md](./docs/subscribe-onboarding/pr-1-provider-info.md) | ✅ |
-| 2 | Verification | [pr-2-verification.md](./docs/subscribe-onboarding/pr-2-verification.md) | ✅ |
-| 3 | Registration | [pr-3-registration.md](./docs/subscribe-onboarding/pr-3-registration.md) | ⬜ if needed |
-| 4 | Subscribe / Update / Delete | [pr-4-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-4-subscribe-update-delete.md) | ✅ |
-| 5 | Maintenance | [pr-5-maintenance.md](./docs/subscribe-onboarding/pr-5-maintenance.md) | ⬜ if needed |
-| 6 | Enable the provider | [pr-6-enable.md](./docs/subscribe-onboarding/pr-6-enable.md) | ✅ (last) |
+| # | PR                            | Guide                                                                                          | Required?    |
+|---|-------------------------------|------------------------------------------------------------------------------------------------|--------------|
+| 1 | ProviderInfo + Factory wiring | [pr-1-provider-info.md](./docs/subscribe-onboarding/pr-1-provider-info.md)                     | ✅           |
+| 2 | Verification                  | [pr-2-verification.md](./docs/subscribe-onboarding/pr-2-verification.md)                       | ✅           |
+| 3 | Registration                  | [pr-3-registration.md](./docs/subscribe-onboarding/pr-3-registration.md)                       | ⬜ if needed |
+| 4 | Subscribe / Update / Delete   | [pr-4-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-4-subscribe-update-delete.md) | ✅           |
+| 5 | Maintenance                   | [pr-5-maintenance.md](./docs/subscribe-onboarding/pr-5-maintenance.md)                         | ⬜ if needed |
+| 6 | Enable the provider           | [pr-6-enable.md](./docs/subscribe-onboarding/pr-6-enable.md)                                   | ✅ (last)    |

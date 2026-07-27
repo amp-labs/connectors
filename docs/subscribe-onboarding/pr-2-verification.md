@@ -194,6 +194,8 @@ Outreach show HMAC-SHA256 variants; Salesloft uses HMAC-SHA1. For UI Subscriptio
 events carry no provider signature, verification is bypassed by the caller rather than implemented here
 (still implement it if the provider does sign its webhooks).
 
+See [Live Tests (Stage 1)](./live-tests.md#stage-1-webhook-verification-runwebhookconsumer) for how to verify this end-to-end.
+
 ## Checklist
 
 - [ ] `var _ connectors.WebhookVerifierConnector = &Connector{}` assertion present.
