@@ -285,6 +285,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Salesloft:                 wrapper(newSalesloftConnector),
 	providers.Seismic:                   wrapper(newSeismicConnector),
 	providers.Sellsy:                    wrapper(newSellsyConnector),
+	providers.SendGrid:                  wrapper(newSendGridConnector),
 	providers.ServiceNow:                wrapper(newServiceNowConnector),
 	providers.Shopify:                   wrapper(newShopifyConnector),
 	providers.Slack:                     wrapper(newSlackConnector),
