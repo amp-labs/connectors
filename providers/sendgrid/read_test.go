@@ -19,6 +19,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 	responseListsPage1 := testutils.DataFromFile(t, "read/lists-page1.json")
 	responseListsEmpty := testutils.DataFromFile(t, "read/lists-empty.json")
 	responseBounces := testutils.DataFromFile(t, "read/bounces.json")
+	responseTemplatesEmpty := []byte(`{"result":[]}`)
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -37,6 +38,22 @@ func TestRead(t *testing.T) { //nolint:funlen
 			Input:        common.ReadParams{ObjectName: "unknown", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrResolvingURLPathForObject},
+		},
+		{
+			Name:  "Read templates requests generations legacy,dynamic",
+			Input: common.ReadParams{ObjectName: objectTemplates, Fields: connectors.Fields("id", "name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/templates"),
+					mockcond.QueryParam("page_size", "100"),
+					mockcond.QueryParam("generations", "legacy,dynamic"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseTemplatesEmpty),
+			}.Server(),
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
+			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Zero records response for lists",
