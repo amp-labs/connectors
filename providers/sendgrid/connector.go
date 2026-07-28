@@ -34,8 +34,12 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 		metadata.Schemas,
 	)
 
+	// SendGrid sometimes returns JSON bodies with Content-Type: text/plain
+	// (e.g. POST /v3/asm/groups). Normalize before ParseJSONResponse.
+	httpClient := &plainTextJSONClient{AuthenticatedHTTPClient: connector.HTTPClient().Client}
+
 	connector.Reader = reader.NewHTTPReader(
-		connector.HTTPClient().Client,
+		httpClient,
 		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.ReadHandlers{
@@ -46,7 +50,7 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 	)
 
 	connector.Writer = writer.NewHTTPWriter(
-		connector.HTTPClient().Client,
+		httpClient,
 		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.WriteHandlers{
@@ -57,7 +61,7 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 	)
 
 	connector.Deleter = deleter.NewHTTPDeleter(
-		connector.HTTPClient().Client,
+		httpClient,
 		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.DeleteHandlers{

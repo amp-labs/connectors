@@ -140,7 +140,11 @@ func TestWrite(t *testing.T) { //nolint:funlen
 					mockcond.Path("/v3/asm/groups"),
 					mockcond.Body(`{"description":"Created by connector unit test","name":"amp-test-asm-group"}`),
 				},
-				Then: mockserver.Response(http.StatusCreated, createASMResp),
+				// SendGrid returns text/plain for this endpoint even though the body is JSON.
+				Then: mockserver.ResponseChainedFuncs(
+					mockserver.ContentText(),
+					mockserver.Response(http.StatusCreated, createASMResp),
+				),
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
