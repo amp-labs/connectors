@@ -87,8 +87,10 @@ func (v VerificationConfig) Params(
 // errWebhookVerificationNotSupported when the provider declares no verifierConnector.
 //
 // The connector is returned unwrapped; callers wanting instrumentation (e.g. metrics) decorate
-// it themselves.
-func (v VerificationConfig) Connector() (connectors.WebhookVerifierConnector, error) {
+// it themselves. The context is accepted (though unused here) so the signature matches the
+// original server implementation this package was migrated from — call sites and downstream
+// decorators keep their ctx-passing shape.
+func (v VerificationConfig) Connector(_ context.Context) (connectors.WebhookVerifierConnector, error) {
 	if v.verifierConnector == nil {
 		return nil, errWebhookVerificationNotSupported
 	}
