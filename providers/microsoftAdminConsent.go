@@ -24,9 +24,6 @@ func init() {
 		//nolint:bodyclose // the response is owned and closed by the custom-auth executor's doHTTP
 		ParseResponse: JSONSecretParser(map[string]string{
 			"access_token": "accessToken",
-			// expires_in lets the server set an honest token TTL (a number, coerced
-			// to a string by JSONSecretParser).
-			"expires_in": "expiresIn",
 		}),
 	}
 
