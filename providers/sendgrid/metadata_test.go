@@ -32,8 +32,6 @@ func TestListObjectMetadata(t *testing.T) {
 				"asm_groups",
 				"categories",
 				"subusers",
-				"event_webhook_settings",
-				"parse_webhook_settings",
 			},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
@@ -269,36 +267,6 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 							"username": {
 								DisplayName:  "Username",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-						},
-					},
-					"event_webhook_settings": {
-						DisplayName: "Event Webhook Settings",
-						Fields: map[string]common.FieldMetadata{
-							"id": {
-								DisplayName:  "Webhook Id",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-							"friendly_name": {
-								DisplayName:  "Friendly Name",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-						},
-					},
-					"parse_webhook_settings": {
-						DisplayName: "Parse Webhook Settings",
-						Fields: map[string]common.FieldMetadata{
-							"url": {
-								DisplayName:  "Url",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-							"hostname": {
-								DisplayName:  "Hostname",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
