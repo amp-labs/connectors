@@ -89,6 +89,11 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	switch {
 	case pageTokenObjects.Has(params.ObjectName):
 		endpointURL.WithQueryParam(pageSizeKey, pageSize)
+		// Templates default to generations=legacy; include both so dynamic templates are returned.
+		// https://www.twilio.com/docs/sendgrid/api-reference/transactional-templates/retrieve-paged-transactional-templates
+		if params.ObjectName == objectTemplates {
+			endpointURL.WithQueryParam("generations", "legacy,dynamic")
+		}
 	case offsetObjects.Has(params.ObjectName):
 		endpointURL.WithQueryParam(limitKey, pageSize)
 		endpointURL.WithQueryParam(offsetKey, "0")

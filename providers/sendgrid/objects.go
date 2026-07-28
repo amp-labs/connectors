@@ -1,6 +1,6 @@
 package sendgrid
 
-// Object names for read routing (match schemas.json keys).
+// Object names for read/write/delete routing (match schemas.json keys).
 const (
 	objectLists         = "lists"
 	objectSinglesends   = "singlesends"
@@ -10,6 +10,7 @@ const (
 	objectSpamReports   = "spam_reports"
 	objectUnsubscribes  = "unsubscribes"
 	objectInvalidEmails = "invalid_emails"
+	objectASMGroups     = "asm_groups"
 	objectCategories    = "categories"
 	objectSubusers      = "subusers"
 )
