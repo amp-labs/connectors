@@ -1,0 +1,510 @@
+{
+  "accounting-codes": {
+    "read": {
+      "url": "/accounting-codes/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "activities": {
+    "read": {
+      "url": "/activities/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "addresses": {
+    "read": {
+      "url": "/addresses",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "assigned-staff-labels": {
+    "read": {
+      "url": "/assigned-staff-labels",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "bank-accounts": {
+    "read": {
+      "url": "/bank-accounts",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "barcodes": {
+    "read": {
+      "url": "/items/barcodes/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "calendar-events": {
+    "read": {
+      "url": "/calendar-events/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "calendar-events/labels": {
+    "read": {
+      "url": "/calendar-events/labels",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "categories": {
+    "read": {
+      "url": "/opportunities/categories",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "check-labels": {
+    "read": {
+      "url": "/check-labels",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "clients": {
+    "read": {
+      "url": "/clients",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "comments": {
+    "read": {
+      "url": "/comments/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "companies": {
+    "read": {
+      "url": "/companies/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "companies/favourite-filters": {
+    "read": {
+      "url": "/companies/favourite-filters",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "contacts": {
+    "read": {
+      "url": "/contacts/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "contacts/favourite-filters": {
+    "read": {
+      "url": "/contacts/favourite-filters",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "countries": {
+    "read": {
+      "url": "/countries",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "credit-notes": {
+    "read": {
+      "url": "/credit-notes/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "credit-notes/favourite-filters": {
+    "read": {
+      "url": "/credit-notes/favourite-filters",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "crm": {
+    "read": {
+      "url": "/activities/crm/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "currencies": {
+    "read": {
+      "url": "/currencies",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "custom-activities": {
+    "read": {
+      "url": "/custom-activities/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "custom-activity-types": {
+    "read": {
+      "url": "/custom-activity-types",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "custom-fields": {
+    "read": {
+      "url": "/custom-fields/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "deposit-invoices": {
+    "read": {
+      "url": "/deposit-invoices/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "discount-incl-taxes": {
+    "read": {
+      "url": "/discount-incl-taxes",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "document-layouts": {
+    "read": {
+      "url": "/document-layouts",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "documents": {
+    "read": {
+      "url": "/accounts/documents",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "documents/models": {
+    "read": {
+      "url": "/documents/models/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "email/tags": {
+    "read": {
+      "url": "/settings/email/tags",
+      "operation": "GET"
+    }
+  },
+  "estimates": {
+    "read": {
+      "url": "/estimates",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "estimates/favourite-filters": {
+    "read": {
+      "url": "/estimates/favourite-filters",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "events": {
+    "read": {
+      "url": "/webhooks/events",
+      "operation": "GET"
+    }
+  },
+  "fiscal-years": {
+    "read": {
+      "url": "/fiscal-years",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "individuals": {
+    "read": {
+      "url": "/individuals/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "individuals/favourite-filters": {
+    "read": {
+      "url": "/individuals/favourite-filters",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "invoices": {
+    "read": {
+      "url": "/invoices/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "invoices/favourite-filters": {
+    "read": {
+      "url": "/invoices/favourite-filters",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "items": {
+    "read": {
+      "url": "/items/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "items/favourite-filters": {
+    "read": {
+      "url": "/items/favourite-filters",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "languages": {
+    "read": {
+      "url": "/languages",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "mandates": {
+    "read": {
+      "url": "/mandates/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "methods": {
+    "read": {
+      "url": "/payments/methods/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "models/tags": {
+    "read": {
+      "url": "/documents/models/tags",
+      "operation": "GET"
+    }
+  },
+  "notifications": {
+    "read": {
+      "url": "/notifications/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "opportunities": {
+    "read": {
+      "url": "/opportunities/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "opportunities/favourite-filters": {
+    "read": {
+      "url": "/opportunities/favourite-filters",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "orders": {
+    "read": {
+      "url": "/orders/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "orders/favourite-filters": {
+    "read": {
+      "url": "/orders/favourite-filters",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "payment-installments": {
+    "read": {
+      "url": "/subscriptions/payment-installments/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "payment-terms": {
+    "read": {
+      "url": "/payment-terms",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "payments": {
+    "read": {
+      "url": "/payments/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "personal-access-tokens": {
+    "read": {
+      "url": "/personal-access-tokens",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "phone-calls": {
+    "read": {
+      "url": "/phone-calls/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "pipelines": {
+    "read": {
+      "url": "/opportunities/pipelines/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "primes": {
+    "read": {
+      "url": "/primes",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "profiles": {
+    "read": {
+      "url": "/profiles",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "proposals/models": {
+    "read": {
+      "url": "/proposals/models/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "pur-invoice": {
+    "read": {
+      "url": "/ocr/pur-invoice/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "rate-categories": {
+    "read": {
+      "url": "/rate-categories",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "settings": {
+    "read": {
+      "url": "/notifications/settings",
+      "operation": "GET",
+      "responseKey": "subscriptions"
+    }
+  },
+  "sources": {
+    "read": {
+      "url": "/opportunities/sources/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "staffs": {
+    "read": {
+      "url": "/staffs/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "steps": {
+    "read": {
+      "url": "/opportunities/steps/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "subscription": {
+    "read": {
+      "url": "/settings/subscription",
+      "operation": "GET",
+      "responseKey": "licenses"
+    }
+  },
+  "subscriptions": {
+    "read": {
+      "url": "/subscriptions/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "tasks": {
+    "read": {
+      "url": "/tasks/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "tasks/labels": {
+    "read": {
+      "url": "/tasks/labels",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "taxes": {
+    "read": {
+      "url": "/taxes/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  },
+  "taxes/accounting-codes": {
+    "read": {
+      "url": "/taxes/accounting-codes",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "teams": {
+    "read": {
+      "url": "/teams",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "units": {
+    "read": {
+      "url": "/units",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "webhooks": {
+    "read": {
+      "url": "/webhooks/search",
+      "operation": "POST",
+      "responseKey": "data"
+    }
+  }
+}
