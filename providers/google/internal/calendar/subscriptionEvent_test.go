@@ -29,19 +29,63 @@ func TestSubscriptionEventEventType(t *testing.T) {
 			want:  common.SubscriptionEventTypeDelete,
 		},
 		{
-			name:  "created within the window is a create",
-			event: SubscriptionEvent{Status: "confirmed", Created: "2026-06-18T09:00:00.000Z", UpdatedMin: updatedMin},
-			want:  common.SubscriptionEventTypeCreate,
+			name: "created within the window with updated close behind is a create",
+			event: SubscriptionEvent{
+				Status: "confirmed", Created: "2026-06-18T09:00:00.000Z",
+				Updated: "2026-06-18T09:00:00.318Z", UpdatedMin: updatedMin,
+			},
+			want: common.SubscriptionEventTypeCreate,
 		},
 		{
-			name:  "created exactly at the window boundary is a create",
-			event: SubscriptionEvent{Status: "confirmed", Created: updatedMin, UpdatedMin: updatedMin},
-			want:  common.SubscriptionEventTypeCreate,
+			name: "created within the window but edited later is an update",
+			event: SubscriptionEvent{
+				Status: "confirmed", Created: "2026-06-18T09:00:00.000Z",
+				Updated: "2026-06-18T09:02:47.000Z", UpdatedMin: updatedMin,
+			},
+			want: common.SubscriptionEventTypeUpdate,
+		},
+		{
+			name: "updated exactly epsilon after created is still a create",
+			event: SubscriptionEvent{
+				Status: "confirmed", Created: "2026-06-18T09:00:00.000Z",
+				Updated: "2026-06-18T09:00:02.000Z", UpdatedMin: updatedMin,
+			},
+			want: common.SubscriptionEventTypeCreate,
+		},
+		{
+			name: "updated just past epsilon is an update",
+			event: SubscriptionEvent{
+				Status: "confirmed", Created: "2026-06-18T09:00:00.000Z",
+				Updated: "2026-06-18T09:00:02.001Z", UpdatedMin: updatedMin,
+			},
+			want: common.SubscriptionEventTypeUpdate,
+		},
+		{
+			name: "created exactly at the window boundary is a create",
+			event: SubscriptionEvent{
+				Status: "confirmed", Created: updatedMin, Updated: updatedMin, UpdatedMin: updatedMin,
+			},
+			want: common.SubscriptionEventTypeCreate,
+		},
+		{
+			name: "created before the window is an update even when updated trails created closely",
+			event: SubscriptionEvent{
+				Status: "confirmed", Created: "2026-06-01T09:00:00.000Z",
+				Updated: "2026-06-01T09:00:00.500Z", UpdatedMin: updatedMin,
+			},
+			want: common.SubscriptionEventTypeUpdate,
 		},
 		{
 			name:  "created before the window is an update",
 			event: SubscriptionEvent{Status: "confirmed", Created: "2026-06-01T09:00:00.000Z", UpdatedMin: updatedMin},
 			want:  common.SubscriptionEventTypeUpdate,
+		},
+		{
+			name: "created in the window with missing updated falls back to create",
+			event: SubscriptionEvent{
+				Status: "confirmed", Created: "2026-06-18T09:00:00.000Z", Updated: "", UpdatedMin: updatedMin,
+			},
+			want: common.SubscriptionEventTypeCreate,
 		},
 		{
 			name:  "missing created falls back to update",
@@ -64,6 +108,62 @@ func TestSubscriptionEventEventType(t *testing.T) {
 
 			assert.Equal(t, got, tt.want)
 			assert.Equal(t, err != nil, tt.wantErr)
+		})
+	}
+}
+
+// TestSubscriptionEventEventTypeLiveSamples replays the timestamps of three live webhook
+// deliveries for one Calendar event (created, edited ~3 minutes later, edited again ~17
+// minutes later). The middle delivery is the regression: its checkpoint still predated the
+// event's creation, so the window check alone classified the edit as a create.
+func TestSubscriptionEventEventTypeLiveSamples(t *testing.T) {
+	t.Parallel()
+
+	const (
+		created = "2026-07-27T18:46:10.000Z"
+		status  = "confirmed"
+	)
+
+	tests := []struct {
+		name       string
+		updated    string
+		updatedMin string
+		want       common.SubscriptionEventType
+	}{
+		{
+			name:       "initial creation delivers as create",
+			updated:    "2026-07-27T18:46:10.318Z",
+			updatedMin: "2026-07-27T18:41:55Z",
+			want:       common.SubscriptionEventTypeCreate,
+		},
+		{
+			name:       "edit before the checkpoint catches up delivers as update",
+			updated:    "2026-07-27T18:48:57.232Z",
+			updatedMin: "2026-07-27T18:44:11Z", // still before created: window check alone said create
+			want:       common.SubscriptionEventTypeUpdate,
+		},
+		{
+			name:       "edit after the checkpoint catches up delivers as update",
+			updated:    "2026-07-27T19:03:20.633Z",
+			updatedMin: "2026-07-27T18:46:58Z",
+			want:       common.SubscriptionEventTypeUpdate,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			event := SubscriptionEvent{
+				Status:     status,
+				Created:    created,
+				Updated:    tt.updated,
+				UpdatedMin: tt.updatedMin,
+			}
+
+			got, err := event.EventType()
+			assert.NilError(t, err)
+			assert.Equal(t, got, tt.want)
 		})
 	}
 }
@@ -93,11 +193,12 @@ func TestSubscriptionEventsFromRecords(t *testing.T) {
 			},
 		},
 		{
-			// id/status/created only in the marshaled Fields (lowercased keys), not Raw.
+			// id/status/created/updated only in the marshaled Fields (lowercased keys), not Raw.
 			Fields: map[string]any{
 				"id":      "evt-new-1",
 				"status":  "confirmed",
-				"created": "2026-06-18T11:00:00.000Z", // created inside the window: a create
+				"created": "2026-06-18T11:00:00.000Z", // created inside the window with
+				"updated": "2026-06-18T11:00:00.421Z", // updated close behind: a create
 			},
 		},
 	}
