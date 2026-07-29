@@ -694,10 +694,11 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 	switch {
 	case cfg.Refresh != nil:
 		// The connector owns how refreshed auth is re-applied: re-mint the values,
-		// re-render this provider's declared headers/query params, and replay.
-		opts = append(opts,
-			common.WithCustomUnauthorizedHandler(
-				customRefreshHandler(info, cfg, getClient(client), isUnauth)))
+		// re-render this provider's declared headers/query params, and replay. The
+		// handler returns each response to its caller (who closes it) or closes retry
+		// bodies itself, but bodyclose can't see across the closure boundary.
+		refreshHandler := customRefreshHandler(info, cfg, getClient(client), isUnauth) //nolint:bodyclose
+		opts = append(opts, common.WithCustomUnauthorizedHandler(refreshHandler))
 	case unauth != nil:
 		opts = append(opts,
 			common.WithCustomUnauthorizedHandler(
