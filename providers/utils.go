@@ -757,62 +757,75 @@ func customRefreshHandler(
 				return rsp, nil //nolint:nilerr
 			}
 
-			fresh := &CustomAuthParams{Values: vals}
-
-			newHeaders, err := getCustomHeaders(info, fresh)
+			replay, err := renderRefreshedReplay(info, vals, req)
 			if err != nil {
 				return nil, err
 			}
 
-			newParams, err := getCustomParams(info, fresh)
+			resp, err := rawClient.Do(replay) //nolint:bodyclose // returned to caller, or closed below before retrying
 			if err != nil {
 				return nil, err
 			}
 
-			// Force overwrite so the refreshed auth replaces the stale header/query
-			// param rather than appending a duplicate.
-			for i := range newHeaders {
-				newHeaders[i].Mode = common.HeaderModeOverwrite
-			}
-
-			for i := range newParams {
-				newParams[i].Mode = common.QueryParamModeOverwrite
-			}
-
-			replay := req.Clone(req.Context())
-			common.Headers(newHeaders).ApplyToRequest(replay)
-			common.QueryParams(newParams).ApplyToRequest(replay)
-
-			resp, err := rawClient.Do(replay)
+			stillUnauth, err := replayStillUnauthorized(resp, isUnauth)
 			if err != nil {
+				_ = resp.Body.Close()
+
 				return nil, err
 			}
 
-			stillUnauth := resp.StatusCode == http.StatusUnauthorized
-			if isUnauth != nil {
-				stillUnauth, err = isUnauth(resp)
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			if !stillUnauth {
+			// Success, or out of attempts: hand the response back to the caller.
+			if !stillUnauth || attempt == maxCustomRefreshRetries-1 {
 				return resp, nil
 			}
 
-			// Still unauthorized. Discard this body unless it's the last attempt
-			// (whose response we return to the caller).
-			if attempt < maxCustomRefreshRetries-1 {
-				_ = resp.Body.Close()
-
-				continue
-			}
-
-			return resp, nil
+			// Still unauthorized with attempts left: discard this body and retry.
+			_ = resp.Body.Close()
 		}
 
 		return rsp, nil
 	}
+}
+
+// renderRefreshedReplay clones req and applies info's declared headers/query params
+// rendered from the freshly re-minted values, forcing overwrite so the fresh
+// credential replaces the stale one rather than appending a duplicate.
+func renderRefreshedReplay(info *ProviderInfo, vals map[string]string, req *http.Request) (*http.Request, error) {
+	fresh := &CustomAuthParams{Values: vals}
+
+	newHeaders, err := getCustomHeaders(info, fresh)
+	if err != nil {
+		return nil, err
+	}
+
+	newParams, err := getCustomParams(info, fresh)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range newHeaders {
+		newHeaders[i].Mode = common.HeaderModeOverwrite
+	}
+
+	for i := range newParams {
+		newParams[i].Mode = common.QueryParamModeOverwrite
+	}
+
+	replay := req.Clone(req.Context())
+	newHeaders.ApplyToRequest(replay)
+	newParams.ApplyToRequest(replay)
+
+	return replay, nil
+}
+
+// replayStillUnauthorized reports whether the replayed response is still
+// unauthorized, honoring the provider-specific decider when present.
+func replayStillUnauthorized(resp *http.Response, isUnauth IsUnauthorizedDecider) (bool, error) {
+	if isUnauth != nil {
+		return isUnauth(resp)
+	}
+
+	return resp.StatusCode == http.StatusUnauthorized, nil
 }
 
 func getCustomParams(info *ProviderInfo, cfg *CustomAuthParams) (common.QueryParams, error) {
