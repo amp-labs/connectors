@@ -31,6 +31,9 @@ var jobContacts002Response []byte
 //go:embed test/read/calendar-appointments.json
 var calendarAppointmentsResponse []byte
 
+//go:embed test/read/calendar-appointments-assoc.json
+var calendarAppointmentsAssocResponse []byte
+
 //go:embed test/read/calendars-list.json
 var calendarsListResponse []byte
 
@@ -572,6 +575,97 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
+				Done: true,
+			},
+		},
+		{
+			Name: "Read calendars/appointments attaches job and user associations",
+			Input: common.ReadParams{
+				ObjectName:        "calendars/appointments",
+				Fields:            connectors.Fields("id", "title"),
+				PageSize:          100,
+				AssociatedObjects: []string{"jobs", "users"},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars"),
+						},
+						Then: mockserver.Response(http.StatusOK, calendarsListResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars/cal-001/appointments"),
+						},
+						Then: mockserver.Response(http.StatusOK, calendarAppointmentsAssocResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						// Job-linked event: both edges. calendarId (cal-001) is the
+						// fan-out parent -> user; jobId rides on the body -> job.
+						Fields: map[string]any{"id": "appt-1", "title": "Site visit"},
+						Raw:    map[string]any{"id": "appt-1", "jobId": "job-777"},
+						Associations: map[string][]common.Association{
+							"jobs":  {{ObjectId: "job-777"}},
+							"users": {{ObjectId: "cal-001"}},
+						},
+					},
+					{
+						// Personal event: no jobId, so only the user edge is emitted.
+						Fields: map[string]any{"id": "appt-2", "title": "Lunch"},
+						Raw:    map[string]any{"id": "appt-2"},
+						Associations: map[string][]common.Association{
+							"users": {{ObjectId: "cal-001"}},
+						},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			Name: "Read calendars/appointments without association request attaches nothing",
+			Input: common.ReadParams{
+				ObjectName: "calendars/appointments",
+				Fields:     connectors.Fields("id", "title"),
+				PageSize:   100,
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars"),
+						},
+						Then: mockserver.Response(http.StatusOK, calendarsListResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars/cal-001/appointments"),
+						},
+						Then: mockserver.Response(http.StatusOK, calendarAppointmentsAssocResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{Fields: map[string]any{"id": "appt-1"}, Raw: map[string]any{"id": "appt-1"}},
+					{Fields: map[string]any{"id": "appt-2"}, Raw: map[string]any{"id": "appt-2"}},
+				},
 				Done: true,
 			},
 		},
