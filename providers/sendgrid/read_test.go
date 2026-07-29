@@ -56,6 +56,26 @@ func TestRead(t *testing.T) { //nolint:funlen
 			ExpectedErrs: nil,
 		},
 		{
+			Name:  "Read templates accepts text/plain JSON body",
+			Input: common.ReadParams{ObjectName: objectTemplates, Fields: connectors.Fields("id", "name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/templates"),
+					mockcond.QueryParam("page_size", "100"),
+					mockcond.QueryParam("generations", "legacy,dynamic"),
+				},
+				// SendGrid may return JSON with Content-Type text/plain; plainTextJSONClient normalizes it.
+				Then: mockserver.ResponseChainedFuncs(
+					mockserver.ContentText(),
+					mockserver.Response(http.StatusOK, responseTemplatesEmpty),
+				),
+			}.Server(),
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
+			ExpectedErrs: nil,
+		},
+		{
 			Name:  "Zero records response for lists",
 			Input: common.ReadParams{ObjectName: "lists", Fields: connectors.Fields("id", "name")},
 			Server: mockserver.Conditional{
