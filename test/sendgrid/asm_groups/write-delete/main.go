@@ -24,6 +24,7 @@ func main() {
 	name := fmt.Sprintf("amp-wd-%s", gofakeit.LetterN(8))
 	updatedName := name + "-updated"
 	description := "Created by Ampersand write-delete integration test"
+	updatedDescription := description + " (updated)"
 
 	testscenario.ValidateCreateUpdateDelete(ctx, conn, "asm_groups",
 		map[string]any{
@@ -32,13 +33,14 @@ func main() {
 		},
 		map[string]any{
 			"name":        updatedName,
-			"description": description + " (updated)",
+			"description": updatedDescription,
 		},
 		testscenario.CRUDTestSuite{
 			ReadFields:          datautils.NewSet("id", "name", "description"),
 			RecordIdentifierKey: "id",
 			UpdatedFields: map[string]string{
-				"name": updatedName,
+				"name":        updatedName,
+				"description": updatedDescription,
 			},
 		},
 	)
