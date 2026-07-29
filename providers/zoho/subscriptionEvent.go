@@ -307,14 +307,39 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 
 // EventTimeStampNano returns the timestamp of the event in nanoseconds.
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
-	m := evt.asMap()
-
-	serverTime, err := m.AsInt("server_time")
+	serverTime, err := serverTimeMillis(evt.asMap())
 	if err != nil {
 		return 0, err
 	}
 
 	return time.UnixMilli(serverTime).UnixNano(), nil
+}
+
+// serverTimeMillis reads the "server_time" epoch-millis value regardless of how
+// the caller decoded the webhook body. It first tries StringMap.AsInt, which
+// handles the float64 a plain json.Unmarshal produces; if that fails it falls
+// back to parsing a json.Number/string, which is what a caller that decoded with
+// json.Decoder.UseNumber produces. This keeps the timestamp readable under both
+// decode modes (UseNumber is needed by other Zoho modules to preserve 64-bit
+// ids, and AsInt rejects json.Number because its reflect kind is String).
+func serverTimeMillis(m common.StringMap) (int64, error) {
+	if ms, err := m.AsInt("server_time"); err == nil {
+		return ms, nil
+	}
+
+	raw, err := m.Get("server_time")
+	if err != nil {
+		return 0, err
+	}
+
+	switch v := raw.(type) {
+	case json.Number:
+		return v.Int64()
+	case string:
+		return json.Number(v).Int64()
+	default:
+		return 0, fmt.Errorf("%w: server_time expected a number, got %T", errTypeMismatch, raw)
+	}
 }
 
 // UpdatedFields returns the fields that were updated in the event.
