@@ -40,16 +40,7 @@ func normalizeJSONContentType(resp *http.Response) (*http.Response, error) {
 	_ = resp.Body.Close()
 	resp.Body = io.NopCloser(bytes.NewReader(body))
 
-	trimmed := bytes.TrimSpace(body)
-	if len(trimmed) == 0 {
-		return resp, nil
-	}
-
-	if trimmed[0] != '{' && trimmed[0] != '[' {
-		return resp, nil
-	}
-
-	if !json.Valid(trimmed) {
+	if !json.Valid(body) {
 		return resp, nil
 	}
 
