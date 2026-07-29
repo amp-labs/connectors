@@ -3,7 +3,9 @@ package providers
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -225,6 +227,70 @@ func TestCustomAuthRefreshRetriesThenGivesUp(t *testing.T) {
 	// 1 original request + maxCustomRefreshRetries replays.
 	if want := 1 + maxCustomRefreshRetries; calls != want {
 		t.Errorf("transport called %d times, want %d (original + %d retries)", calls, want, maxCustomRefreshRetries)
+	}
+}
+
+// TestCustomAuthRefreshReplaysBody verifies a write (POST) whose body is consumed
+// by the failed attempt is resent intact on the refresh replay (rewound via GetBody),
+// not as an empty body.
+func TestCustomAuthRefreshReplaysBody(t *testing.T) {
+	t.Parallel()
+
+	const payload = `{"displayName":"amp-write-test"}`
+
+	var (
+		calls        int
+		replayedBody string
+	)
+
+	transport := roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		calls++
+		// Consume the body on both attempts, mimicking a real request being sent.
+		body, _ := io.ReadAll(req.Body)
+
+		if calls == 1 {
+			return newResponse(http.StatusUnauthorized, req), nil
+		}
+
+		replayedBody = string(body)
+
+		return newResponse(http.StatusOK, req), nil
+	})
+
+	cfg := &CustomAuthParams{
+		Values: map[string]string{"accessToken": "STALE"},
+		Refresh: func(context.Context) (map[string]string, error) {
+			return map[string]string{"accessToken": "FRESH"}, nil
+		},
+	}
+
+	client, err := createCustomHTTPClient(
+		context.Background(),
+		&http.Client{Transport: transport},
+		false, nil, nil,
+		refreshTestInfo(), cfg,
+	)
+	if err != nil {
+		t.Fatalf("createCustomHTTPClient: %v", err)
+	}
+
+	req, err := http.NewRequestWithContext(
+		context.Background(), http.MethodPost, "https://example.com/v1/groups", strings.NewReader(payload))
+	if err != nil {
+		t.Fatalf("new request: %v", err)
+	}
+
+	rsp, err := client.Do(req)
+	if err != nil {
+		t.Fatalf("client.Do: %v", err)
+	}
+
+	if rsp.StatusCode != http.StatusOK {
+		t.Errorf("final status = %d, want 200", rsp.StatusCode)
+	}
+
+	if replayedBody != payload {
+		t.Errorf("replay body = %q, want %q (body must be rewound for write replays)", replayedBody, payload)
 	}
 }
 

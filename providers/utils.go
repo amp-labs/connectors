@@ -812,6 +812,20 @@ func renderRefreshedReplay(info *ProviderInfo, vals map[string]string, req *http
 	}
 
 	replay := req.Clone(req.Context())
+
+	// The failed attempt consumed the request body, and Clone copies only the
+	// (now-drained) reader. Rewind from GetBody so write replays (POST/PATCH) resend
+	// their payload instead of an empty body. GetBody is set by http.NewRequest for
+	// the usual bytes/strings readers connectors build write bodies from.
+	if req.GetBody != nil {
+		body, err := req.GetBody()
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to rewind request body for refresh replay: %w", ErrClient, err)
+		}
+
+		replay.Body = body
+	}
+
 	newHeaders.ApplyToRequest(replay)
 	newParams.ApplyToRequest(replay)
 
