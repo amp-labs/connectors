@@ -10,9 +10,15 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// plainTextJSONClient wraps the authenticated client so SendGrid responses that
-// return JSON with Content-Type text/plain (notably POST /v3/asm/groups) are
-// accepted by common.ParseJSONResponse.
+// plainTextJSONClient wraps the authenticated HTTP client for SendGrid.
+//
+// Component readers/writers (operations.HTTPOperation) and common.JSONHTTPClient
+// both parse successful responses via common.ParseJSONResponse, which only accepts
+// application/json Content-Type. SendGrid sometimes returns a JSON body with
+// text/plain (notably POST /v3/asm/groups). When the body is valid JSON, this
+// client rewrites the Content-Type so parsing succeeds. Non-JSON text/plain is
+// left unchanged; common.XMLHTTPClient covers XML, but there is no shared helper
+// for other response formats.
 type plainTextJSONClient struct {
 	common.AuthenticatedHTTPClient
 }
