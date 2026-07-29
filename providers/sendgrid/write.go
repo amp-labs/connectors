@@ -97,13 +97,9 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
-	recordID, err := jsonquery.New(body).TextWithDefault("id", "")
+	recordID, err := jsonquery.New(body).TextWithDefault("id", params.RecordId)
 	if err != nil {
 		return nil, err
-	}
-
-	if recordID == "" {
-		recordID = params.RecordId
 	}
 
 	data, err := jsonquery.Convertor.ObjectToMap(body)
