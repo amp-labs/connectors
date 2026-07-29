@@ -22,7 +22,18 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if needsAdvancedQuery(params.ObjectName) {
+		// Directory objects need advanced query to $filter on createdDateTime; the
+		// header is required on every page (including @odata.nextLink follow-ups).
+		req.Header.Set("ConsistencyLevel", "eventual")
+	}
+
+	return req, nil
 }
 
 func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error) {
@@ -42,6 +53,12 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		Until(params.ObjectName, params.Until).String()
 	if filter != "" {
 		url.WithQueryParam("$filter", filter)
+
+		if needsAdvancedQuery(params.ObjectName) {
+			// $count=true is required alongside ConsistencyLevel: eventual to filter
+			// directory objects on createdDateTime.
+			url.WithQueryParam("$count", "true")
+		}
 	}
 
 	url.WithQueryParam("$top", readhelper.PageSizeWithDefaultStr(params, DefaultPageSize))

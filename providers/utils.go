@@ -316,6 +316,12 @@ type OAuth2ClientCredentialsParams struct {
 type CustomAuthParams struct {
 	Values  map[string]string
 	Options []common.CustomAuthClientOption
+
+	// Refresh, when set, re-mints the auth values on a 401; the client re-renders
+	// the provider's declared headers/query params with the returned values and
+	// replays the request once. The server supplies this; the connector owns how
+	// the values are applied.
+	Refresh func(context.Context) (map[string]string, error)
 }
 
 // NewClientParams is the parameters to create a new HTTP client.
@@ -685,7 +691,15 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 		opts = append(opts, common.WithCustomIsUnauthorizedHandler(isUnauth))
 	}
 
-	if unauth != nil {
+	switch {
+	case cfg.Refresh != nil:
+		// The connector owns how refreshed auth is re-applied: re-mint the values,
+		// re-render this provider's declared headers/query params, and replay. The
+		// handler returns each response to its caller (who closes it) or closes retry
+		// bodies itself, but bodyclose can't see across the closure boundary.
+		refreshHandler := customRefreshHandler(info, cfg, getClient(client), isUnauth) //nolint:bodyclose
+		opts = append(opts, common.WithCustomUnauthorizedHandler(refreshHandler))
+	case unauth != nil:
 		opts = append(opts,
 			common.WithCustomUnauthorizedHandler(
 				func(
@@ -714,6 +728,123 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 	}
 
 	return customClient, nil
+}
+
+// maxCustomRefreshRetries bounds how many times a 401 triggers a re-mint + replay.
+const maxCustomRefreshRetries = 3
+
+// customRefreshHandler returns a 401 handler that, using cfg.Refresh, re-mints the
+// auth values, re-renders the provider's declared headers/query params (forced to
+// overwrite so the fresh credential replaces the stale one), and replays the request
+// via the raw client — up to maxCustomRefreshRetries times, stopping as soon as a
+// replay is no longer unauthorized. It replays via the raw client so it does not
+// re-trigger itself.
+func customRefreshHandler(
+	info *ProviderInfo,
+	cfg *CustomAuthParams,
+	rawClient *http.Client,
+	isUnauth IsUnauthorizedDecider,
+) func([]common.Header, []common.QueryParam, *http.Request, *http.Response) (*http.Response, error) {
+	return func(
+		_ []common.Header,
+		_ []common.QueryParam,
+		req *http.Request,
+		rsp *http.Response,
+	) (*http.Response, error) {
+		for attempt := 0; attempt < maxCustomRefreshRetries; attempt++ {
+			vals, err := cfg.Refresh(req.Context())
+			if err != nil {
+				// Don't mask the original 401 if we can't refresh.
+				return rsp, nil //nolint:nilerr
+			}
+
+			replay, err := renderRefreshedReplay(info, vals, req)
+			if err != nil {
+				return nil, err
+			}
+
+			resp, err := rawClient.Do(replay) //nolint:bodyclose // returned to caller, or closed below before retrying
+			if err != nil {
+				return nil, err
+			}
+
+			stillUnauth, err := replayStillUnauthorized(resp, isUnauth)
+			if err != nil {
+				_ = resp.Body.Close()
+
+				return nil, err
+			}
+
+			// Success, or out of attempts: hand the replayed response back to the
+			// caller. Close the original 401 first — we're returning a different
+			// response, so nothing downstream will close it.
+			if !stillUnauth || attempt == maxCustomRefreshRetries-1 {
+				_ = rsp.Body.Close()
+
+				return resp, nil
+			}
+
+			// Still unauthorized with attempts left: discard this body and retry.
+			_ = resp.Body.Close()
+		}
+
+		return rsp, nil
+	}
+}
+
+// renderRefreshedReplay clones req and applies info's declared headers/query params
+// rendered from the freshly re-minted values, forcing overwrite so the fresh
+// credential replaces the stale one rather than appending a duplicate.
+func renderRefreshedReplay(info *ProviderInfo, vals map[string]string, req *http.Request) (*http.Request, error) {
+	fresh := &CustomAuthParams{Values: vals}
+
+	newHeaders, err := getCustomHeaders(info, fresh)
+	if err != nil {
+		return nil, err
+	}
+
+	newParams, err := getCustomParams(info, fresh)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range newHeaders {
+		newHeaders[i].Mode = common.HeaderModeOverwrite
+	}
+
+	for i := range newParams {
+		newParams[i].Mode = common.QueryParamModeOverwrite
+	}
+
+	replay := req.Clone(req.Context())
+
+	// The failed attempt consumed the request body, and Clone copies only the
+	// (now-drained) reader. Rewind from GetBody so write replays (POST/PATCH) resend
+	// their payload instead of an empty body. GetBody is set by http.NewRequest for
+	// the usual bytes/strings readers connectors build write bodies from.
+	if req.GetBody != nil {
+		body, err := req.GetBody()
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to rewind request body for refresh replay: %w", ErrClient, err)
+		}
+
+		replay.Body = body
+	}
+
+	newHeaders.ApplyToRequest(replay)
+	newParams.ApplyToRequest(replay)
+
+	return replay, nil
+}
+
+// replayStillUnauthorized reports whether the replayed response is still
+// unauthorized, honoring the provider-specific decider when present.
+func replayStillUnauthorized(resp *http.Response, isUnauth IsUnauthorizedDecider) (bool, error) {
+	if isUnauth != nil {
+		return isUnauth(resp)
+	}
+
+	return resp.StatusCode == http.StatusUnauthorized, nil
 }
 
 func getCustomParams(info *ProviderInfo, cfg *CustomAuthParams) (common.QueryParams, error) {

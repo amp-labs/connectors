@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 // AuthContext carries data through a multi-step custom auth flow. It is pure,
@@ -191,6 +192,8 @@ func (o *CustomAuthOpts) HasSteps() bool {
 
 // JSONSecretParser returns a ParseResponse handler that decodes the JSON body
 // and copies mapped response fields (responseKey -> secretKey) into Secrets.
+// String fields are copied as-is; numeric fields (e.g. OAuth `expires_in`) are
+// coerced to their string form, since Secrets is a string map.
 func JSONSecretParser(
 	mapping map[string]string,
 ) func(context.Context, AuthContext, *http.Response) (AuthContext, error) {
@@ -203,8 +206,13 @@ func JSONSecretParser(
 		}
 
 		for responseKey, secretKey := range mapping {
-			if v, ok := body[responseKey].(string); ok {
+			switch v := body[responseKey].(type) {
+			case string:
 				state.Secrets[secretKey] = v
+			case float64:
+				// encoding/json decodes JSON numbers as float64; store the shortest
+				// exact representation (e.g. 3599 for expires_in, not 3599.0).
+				state.Secrets[secretKey] = strconv.FormatFloat(v, 'f', -1, 64)
 			}
 		}
 
