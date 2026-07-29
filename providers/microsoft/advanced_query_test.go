@@ -16,6 +16,9 @@ func TestNeedsAdvancedQuery(t *testing.T) {
 	directory := []string{
 		"users", "groups", "applications", "servicePrincipals", "devices",
 		"administrativeUnits", "contacts", "appRoleAssignments", "oauth2PermissionGrants",
+		// Delta-query variants filter on createdDateTime too, so they need advanced query.
+		"users/microsoft.graph.delta()", "groups/microsoft.graph.delta()",
+		"applications/microsoft.graph.delta()",
 	}
 	for _, obj := range directory {
 		if !needsAdvancedQuery(obj) {

@@ -775,8 +775,12 @@ func customRefreshHandler(
 				return nil, err
 			}
 
-			// Success, or out of attempts: hand the response back to the caller.
+			// Success, or out of attempts: hand the replayed response back to the
+			// caller. Close the original 401 first — we're returning a different
+			// response, so nothing downstream will close it.
 			if !stillUnauth || attempt == maxCustomRefreshRetries-1 {
+				_ = rsp.Body.Close()
+
 				return resp, nil
 			}
 

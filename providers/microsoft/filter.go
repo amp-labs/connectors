@@ -362,6 +362,11 @@ var advancedQueryObjects = map[string]bool{
 	"contacts":               true, // orgContact
 	"appRoleAssignments":     true,
 	"oauth2PermissionGrants": true,
+	// Delta-query variants of directory objects that incrementalObjects also filters
+	// on createdDateTime — they need the same advanced-query parameters.
+	"users/microsoft.graph.delta()":        true,
+	"groups/microsoft.graph.delta()":       true,
+	"applications/microsoft.graph.delta()": true,
 }
 
 // needsAdvancedQuery reports whether reads of objectName must use Graph advanced
