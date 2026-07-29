@@ -41,7 +41,12 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 		return nil, err
 	}
 
-	url.WithQueryParam("limit", strconv.Itoa(maxRecordsPerPage))
+	limit := maxRecordsPerPage
+	if params.PageSize > 0 {
+		limit = params.PageSize
+	}
+
+	url.WithQueryParam("limit", strconv.Itoa(limit))
 
 	// Attach Since & Until, if provided.
 	var queries []string
