@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/zoho/internal/mail"
 )
 
 var (
@@ -30,15 +32,22 @@ func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadDa
 	return nil
 }
 
-// VerifyWebhookMessage verifies the signature of a webhook message from Zoho CRM.
-// Zoho does not send a signature, but instead,
-// they ask us to provide tokens of our choice that they attach to webhook messages
-// they call it "token", in the response body.
-func (*Connector) VerifyWebhookMessage(
-	_ context.Context,
+// VerifyWebhookMessage verifies the authenticity of an incoming webhook.
+//
+// Zoho Mail signs each delivery with an HMAC-SHA256 signature, so the Mail
+// module verifies it cryptographically (delegated to the mail adapter).
+//
+// Zoho CRM does not send a signature; instead it echoes back a caller-supplied
+// token in the response body, which we compare against the expected value.
+func (c *Connector) VerifyWebhookMessage(
+	ctx context.Context,
 	request *common.WebhookRequest,
 	params *common.VerificationParams,
 ) (bool, error) {
+	if c.moduleID == providers.ModuleZohoMail {
+		return c.mailAdapter.VerifyWebhookMessage(ctx, request, params)
+	}
+
 	zohoParams, err := common.AssertType[*ZohoVerificationParams](params.Param)
 	if err != nil {
 		return false, fmt.Errorf("invalid verification params: %w", err)
@@ -93,6 +102,11 @@ func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
 
 //nolint:funlen
 func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
+	// The zoho provider exposes a single collapsed-event type, but a delivery
+	// may be from CRM or Mail. Route Mail payloads to the mail adapter's parser.
+	if mail.IsWebhookPayload(e) {
+		return mail.CollapsedSubscriptionEvent(e).SubscriptionEventList()
+	}
 	/*
 		{
 			"server_time": 1750102639787,

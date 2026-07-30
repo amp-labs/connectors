@@ -135,6 +135,13 @@ func init() {
 					Subscribe: false,
 					Write:     false,
 				},
+				// Zoho Mail has no API to create/manage webhook subscriptions; the
+				// outgoing webhook is configured by hand in the Zoho Mail console
+				// (Settings > Integrations > Developer Space). The connector only
+				// verifies and parses the delivered events, so SubscribeByAPI is false.
+				SubscribeRequirements: &SubscribeRequirements{
+					SubscribeByAPI: new(false),
+				},
 			},
 		},
 	})
