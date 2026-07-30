@@ -544,6 +544,7 @@ func newPipedriveConnector(
 	)
 }
 
+//nolint:cyclop
 func newZohoConnector(
 	params common.ConnectorParams,
 ) (*zoho.Connector, error) {
@@ -567,12 +568,20 @@ func newZohoConnector(
 		if found && tokenDomain != "" {
 			domains.TokenDomain = tokenDomain
 		}
+
+		mailDomain, found := params.Metadata["zoho_mail_domain"]
+		if found && mailDomain != "" {
+			domains.MailDomain = mailDomain
+		}
 	}
 
 	return zoho.NewConnector(
 		zoho.WithAuthenticatedClient(params.AuthenticatedClient),
 		zoho.WithModule(params.Module),
 		zoho.WithDomains(domains),
+		// Metadata carries connection values resolved by the platform, e.g. the
+		// zohoMailAccountId catalog variable saved by post-authentication.
+		zoho.WithMetadata(params.Metadata),
 	)
 }
 
