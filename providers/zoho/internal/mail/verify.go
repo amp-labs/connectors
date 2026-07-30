@@ -2,7 +2,6 @@ package mail
 
 import (
 	"context"
-	"errors"
 
 	"github.com/amp-labs/connectors/common"
 )
@@ -20,9 +19,9 @@ import (
 // mailHookSignatureHeader is the per-request signature header Zoho Mail attaches
 // to every webhook delivery. Its value is
 // base64(HMAC-SHA256(x-hook-secret, rawRequestBody)).
-const mailHookSignatureHeader = "X-Hook-Signature"
+// const mailHookSignatureHeader = "X-Hook-Signature"
 
-var ErrMissingWebhookSecret = errors.New("zoho mail webhook secret is not set")
+// var ErrMissingWebhookSecret = errors.New("zoho mail webhook secret is not set")
 
 // VerifyWebhookMessage validates that a webhook request came from Zoho Mail by
 // recomputing the HMAC-SHA256 signature over the raw request body with the

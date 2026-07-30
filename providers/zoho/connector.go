@@ -36,7 +36,7 @@ type Connector struct {
 // Zoho Mail outgoing-webhook signing secret (the x-hook-secret value).
 //
 //nolint:gosec // G101 false positive: this is a metadata key name, not a credential.
-const mailWebhookSecretMetadataKey = "zohoMailWebhookSecret"
+// const mailWebhookSecretMetadataKey = "zohoMailWebhookSecret"
 
 func NewConnector(opts ...Option) (conn *Connector, outErr error) { // nolint: funlen
 	params, err := paramsbuilder.Apply(parameters{}, opts,
@@ -124,9 +124,9 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) { // nolint: f
 
 		// The outgoing-webhook signing secret is not known at auth time; it is
 		// delivered on the first webhook request and supplied back as metadata.
-		hookSecret := params.Metadata.Map[mailWebhookSecretMetadataKey]
+		// hookSecret := params.Metadata.Map[mailWebhookSecretMetadataKey]
 
-		conn.mailAdapter, err = mail.NewAdapter(conn.Client, conn.moduleInfo, authMetadata.MailAccountID, hookSecret)
+		conn.mailAdapter, err = mail.NewAdapter(conn.Client, conn.moduleInfo, authMetadata.MailAccountID)
 		if err != nil {
 			return nil, err
 		}

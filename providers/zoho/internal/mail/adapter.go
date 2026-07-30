@@ -21,17 +21,16 @@ type Adapter struct {
 	// hookSecret is the outgoing-webhook signing secret (the x-hook-secret value
 	// Zoho delivers on the first webhook request and the caller persists). It is
 	// used to verify webhook signatures. Empty means every webhook is rejected.
-	hookSecret string
+	// hookSecret string
 }
 
 func NewAdapter(
-	client *common.JSONHTTPClient, info *providers.ModuleInfo, accountID string, hookSecret string,
+	client *common.JSONHTTPClient, info *providers.ModuleInfo, accountID string,
 ) (*Adapter, error) {
 	return &Adapter{
-		Client:     client,
-		BaseURL:    info.BaseURL,
-		accountID:  accountID,
-		hookSecret: hookSecret,
+		Client:    client,
+		BaseURL:   info.BaseURL,
+		accountID: accountID,
 	}, nil
 }
 
