@@ -544,6 +544,7 @@ func newPipedriveConnector(
 	)
 }
 
+//nolint:cyclop
 func newZohoConnector(
 	params common.ConnectorParams,
 ) (*zoho.Connector, error) {
