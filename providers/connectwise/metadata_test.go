@@ -132,7 +132,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"customField16": {
 								DisplayName:  "is_synced",
-								ValueType:    "multiSelect",
+								ValueType:    "singleSelect",
 								ProviderType: "List_Text",
 								ReadOnly:     new(false),
 								IsCustom:     new(true),
@@ -147,7 +147,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"customField83": {
 								DisplayName:  "Hobby",
-								ValueType:    "multiSelect",
+								ValueType:    "singleSelect",
 								ProviderType: "List_Text",
 								ReadOnly:     new(false),
 								IsCustom:     new(true),
