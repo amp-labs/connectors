@@ -1,0 +1,13 @@
+{
+  "catalog_object": {
+    "type": "ITEM",
+    "id": "W62UWFY35CWMYGVWK6TWJPNI",
+    "version": 3,
+    "updated_at": "2026-07-27T10:00:00Z",
+    "item_data": {
+      "name": "Cocoa",
+      "description": "Hot chocolate"
+    }
+  },
+  "id_mappings": []
+}
