@@ -265,8 +265,14 @@ func GetRawChannelNameFromObject(objectName string) string {
 	return objectName
 }
 
+// GetChangeDataCaptureChannelMembershipName builds the developer name (fullName) of a
+// PlatformEventChannelMember. Salesforce reserves "__" in developer names as the namespace
+// prefix separator, so the "__" in custom object change events (my_object__ChangeEvent) is
+// collapsed to a single underscore; otherwise Salesforce parses everything before it as a
+// namespace and rejects the create. The un-collapsed event name remains valid as the
+// member's SelectedEntity, which names the entity rather than the component.
 func GetChangeDataCaptureChannelMembershipName(rawChannelName string, eventName string) string {
-	return rawChannelName + "_chn_" + eventName
+	return rawChannelName + "_chn_" + strings.ReplaceAll(eventName, "__", "_")
 }
 
 func GetRawPEName(peName string) string {
