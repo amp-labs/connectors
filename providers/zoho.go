@@ -131,9 +131,9 @@ func init() {
 				BaseURL:     "https://{{.zoho_mail_domain}}",
 				DisplayName: "Zoho Mail",
 				Support: Support{
-					Read:      false,
+					Read:      true,
 					Subscribe: false,
-					Write:     false,
+					Write:     true,
 				},
 				// Zoho Mail has no API to create/manage webhook subscriptions; the
 				// outgoing webhook is configured by hand in the Zoho Mail console
