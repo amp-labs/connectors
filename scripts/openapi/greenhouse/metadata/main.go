@@ -24,14 +24,35 @@ var (
 	// Only paths under /v3/ are relevant; ignore auth endpoints.
 	ignoreEndpoints = []string{
 		"/auth/token",
+
+		// Search variants duplicate the plain list endpoints and return identical fields,
+		// but offer no time based filtering, therefore the plain endpoint is preferred.
+		// https://harvestdocs.greenhouse.io/reference/get_v3-applications-search
+		"/v3/applications/search",
+		"/v3/candidates/search",
+		"/v3/jobs/search",
+
+		// Custom field definitions describe metadata rather than record data. They are
+		// consumed internally to resolve custom fields onto their parent objects.
+		// https://harvestdocs.greenhouse.io/reference/get_v3-custom-fields
+		"/v3/custom_fields",
+		"/v3/custom_field_options",
+		"/v3/custom_field_departments",
+		"/v3/custom_field_offices",
 	}
 
-	objectNameToResponseField = datautils.NewDefaultMap(map[string]string{}, //nolint:gochecknoglobals
+	objectNameToResponseField = datautils.NewDefaultMap(map[string]string{},
 		func(objectName string) string {
 			// Greenhouse v3 list endpoints return bare JSON arrays (no wrapper key).
 			return ""
 		},
 	)
+
+	// displayNameOverride holds names that title casing cannot produce correctly,
+	// such as acronyms.
+	displayNameOverride = map[string]string{
+		"eeoc": "EEOC",
+	}
 )
 
 func main() {
@@ -66,7 +87,11 @@ func main() {
 		}
 
 		objectName := strings.TrimPrefix(object.ObjectName, "v3/")
-		displayName := titleCaser.String(strings.ReplaceAll(objectName, "_", " "))
+
+		displayName, ok := displayNameOverride[objectName]
+		if !ok {
+			displayName = titleCaser.String(strings.ReplaceAll(objectName, "_", " "))
+		}
 
 		for _, field := range object.Fields {
 			schemas.Add("", objectName, displayName, object.URLPath, object.ResponseKey,
