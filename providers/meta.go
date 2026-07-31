@@ -5,6 +5,8 @@ import "github.com/amp-labs/connectors/common"
 const (
 	Meta Provider = "meta"
 
+	// ModuleMetaAds is the module used for Meta Marketing API and other Graph ads endpoints.
+	ModuleMetaAds common.ModuleID = "ads"
 	// ModuleMetaWhatsApp is the module used for sending WhatsApp messages via the Cloud API.
 	ModuleMetaWhatsApp common.ModuleID = "whatsapp"
 )
@@ -43,8 +45,18 @@ func init() { //nolint:funlen
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1753098858/media/meta.com_1753098858.svg",
 			},
 		},
-		DefaultModule: ModuleMetaWhatsApp,
+		DefaultModule: ModuleMetaAds,
 		Modules: &Modules{
+			ModuleMetaAds: {
+				BaseURL:     "https://graph.facebook.com",
+				DisplayName: "Meta Ads",
+				Support: Support{
+					Proxy:     true,
+					Read:      false,
+					Subscribe: false,
+					Write:     false,
+				},
+			},
 			ModuleMetaWhatsApp: {
 				BaseURL:     "https://graph.facebook.com",
 				DisplayName: "WhatsApp Business Platform",

@@ -339,3 +339,38 @@ func (q filterQuery) String() string {
 
 	return q.until
 }
+
+// advancedQueryObjects are the Microsoft Entra directory-object collections that
+// require Graph "advanced query" ($count=true together with the
+// ConsistencyLevel: eventual header) in order to $filter on properties such as
+// createdDateTime. Without it Graph rejects the request with "Unsupported or
+// invalid query filter clause specified for property 'createdDateTime' of
+// resource 'Group'".
+//
+// The set is the authoritative directory-object list from
+// https://learn.microsoft.com/graph/aad-advanced-queries ("Advanced query
+// capabilities are supported only on directory objects ... including the
+// following objects"), mapped to their collection names.
+// nolint:gochecknoglobals
+var advancedQueryObjects = map[string]bool{
+	"users":                  true,
+	"groups":                 true,
+	"applications":           true,
+	"servicePrincipals":      true,
+	"devices":                true,
+	"administrativeUnits":    true,
+	"contacts":               true, // orgContact
+	"appRoleAssignments":     true,
+	"oauth2PermissionGrants": true,
+	// Delta-query variants of directory objects that incrementalObjects also filters
+	// on createdDateTime — they need the same advanced-query parameters.
+	"users/microsoft.graph.delta()":        true,
+	"groups/microsoft.graph.delta()":       true,
+	"applications/microsoft.graph.delta()": true,
+}
+
+// needsAdvancedQuery reports whether reads of objectName must use Graph advanced
+// query capabilities (see advancedQueryObjects).
+func needsAdvancedQuery(objectName string) bool {
+	return advancedQueryObjects[objectName]
+}

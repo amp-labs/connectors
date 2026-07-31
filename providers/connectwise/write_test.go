@@ -85,7 +85,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Update contact via PUT",
+			Name: "Update contact via PUT translated into PATCH",
 			Input: common.WriteParams{
 				ObjectName: "contacts",
 				RecordId:   "57919",
@@ -94,15 +94,31 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					"customField83": "Skiing",
 				},
 			},
-			Server: mockserver.Conditional{
+			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPUT(),
-					mockcond.Path("/v4_6_release/apis/3.0/company/contacts/57919"),
-					mockcond.Body(`{"customFields":[{"id":83,"value":"Skiing"}],"lastName":"Sims"}`),
-					mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
-				},
-				Then: mockserver.Response(http.StatusOK, responseContact),
+				Cases: []mockserver.Case{{
+					If: mockcond.And{
+						mockcond.MethodGET(),
+						mockcond.Path("/v4_6_release/apis/3.0/company/contacts/57919"),
+					},
+					Then: mockserver.ResponseString(http.StatusOK, `{
+						"firstName": "Estella",
+						"lastName": "Mcdowell"
+					}`),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPATCH(),
+						mockcond.Path("/v4_6_release/apis/3.0/company/contacts/57919"),
+						mockcond.Body(`[
+							{"op":"replace","path":"customFields","value":[]},
+							{"op":"remove","path":"lastName"},
+							{"op":"replace","path":"customFields","value":[{"id":83,"value":"Skiing"}]},
+							{"op":"replace","path":"lastName","value":"Sims"}
+						]`),
+						mockcond.Header(http.Header{"ClientId": []string{"dummy-client-id"}}),
+					},
+					Then: mockserver.Response(http.StatusOK, responseContact),
+				}},
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{

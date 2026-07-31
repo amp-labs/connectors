@@ -126,6 +126,7 @@ import (
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/seismic"
 	"github.com/amp-labs/connectors/providers/sellsy"
+	"github.com/amp-labs/connectors/providers/sendgrid"
 	"github.com/amp-labs/connectors/providers/servicenow"
 	"github.com/amp-labs/connectors/providers/shopify"
 	"github.com/amp-labs/connectors/providers/slack"
@@ -252,7 +253,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Marketo:                    wrapper(newMarketoConnector),
 	providers.Meta:                       wrapper(newMetaConnector),
 	providers.Microsoft:                  wrapper(newMicrosoftConnector),
-	providers.MicrosoftClientCredentials: wrapper(newMicrosoftClientCredentialsConnector),
+	providers.MicrosoftAdminConsent:      wrapper(newMicrosoftAdminConsentConnector),
 	providers.Mixmax:                     wrapper(newMixmaxConnector),
 	providers.Monday:                     wrapper(newMondayConnector),
 	providers.Netsuite:                   wrapper(newNetsuiteConnector),
@@ -284,6 +285,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Salesloft:                  wrapper(newSalesloftConnector),
 	providers.Seismic:                    wrapper(newSeismicConnector),
 	providers.Sellsy:                     wrapper(newSellsyConnector),
+	providers.SendGrid:                   wrapper(newSendGridConnector),
 	providers.ServiceNow:                 wrapper(newServiceNowConnector),
 	providers.Shopify:                    wrapper(newShopifyConnector),
 	providers.Slack:                      wrapper(newSlackConnector),
@@ -491,10 +493,10 @@ func newMicrosoftConnector(
 	return microsoft.NewConnector(params)
 }
 
-func newMicrosoftClientCredentialsConnector(
+func newMicrosoftAdminConsentConnector(
 	params common.ConnectorParams,
 ) (*microsoft.Connector, error) {
-	return microsoft.NewConnectorForProvider(providers.MicrosoftClientCredentials, params)
+	return microsoft.NewConnectorForProvider(providers.MicrosoftAdminConsent, params)
 }
 
 func newInstantlyConnector(
@@ -542,6 +544,7 @@ func newPipedriveConnector(
 	)
 }
 
+//nolint:cyclop
 func newZohoConnector(
 	params common.ConnectorParams,
 ) (*zoho.Connector, error) {
@@ -565,12 +568,20 @@ func newZohoConnector(
 		if found && tokenDomain != "" {
 			domains.TokenDomain = tokenDomain
 		}
+
+		mailDomain, found := params.Metadata["zoho_mail_domain"]
+		if found && mailDomain != "" {
+			domains.MailDomain = mailDomain
+		}
 	}
 
 	return zoho.NewConnector(
 		zoho.WithAuthenticatedClient(params.AuthenticatedClient),
 		zoho.WithModule(params.Module),
 		zoho.WithDomains(domains),
+		// Metadata carries connection values resolved by the platform, e.g. the
+		// zohoMailAccountId catalog variable saved by post-authentication.
+		zoho.WithMetadata(params.Metadata),
 	)
 }
 
@@ -993,6 +1004,12 @@ func newSeismicConnector(
 	params common.ConnectorParams,
 ) (*seismic.Connector, error) {
 	return seismic.NewConnector(params)
+}
+
+func newSendGridConnector(
+	params common.ConnectorParams,
+) (*sendgrid.Connector, error) {
+	return sendgrid.NewConnector(params)
 }
 
 func newXeroConnector(

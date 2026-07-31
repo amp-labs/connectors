@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -77,7 +78,7 @@ func (c *Connector) makeWriteCreatePayload(ctx context.Context, params common.Wr
 	payloadWithCustomFields(record)
 
 	if params.ObjectName == objectNameContacts {
-		if err = c.payloadWithCommunicationItems(ctx, record); err != nil {
+		if err = c.postPayloadWithCommunicationItems(ctx, record); err != nil {
 			return nil, "", err
 		}
 	}
@@ -85,40 +86,24 @@ func (c *Connector) makeWriteCreatePayload(ctx context.Context, params common.Wr
 	return record, http.MethodPost, nil
 }
 
-// makeWriteUpdatePayload builds an update payload for the given object.
+// makeWriteUpdatePayload builds the update payload and HTTP method for the
+// given object.
 //
-// By contract, params.RecordData holds the JSON payload for the update.
-// For updates, we may:
-//   - Use HTTP PATCH with a JSON Patch array when the caller provides a
-//     patch-style payload.
-//   - Use HTTP PUT (full replacement) for regular object payloads.
+// params.RecordData holds the update payload. Depending on its shape:
+//   - JSON Patch array -> HTTP PATCH (with custom-field normalization).
+//   - Regular object -> HTTP PUT, except for contacts.
 //
-// Behavior:
-//   - If the payload is detected as a JSON Patch (via extractPatchPayload),
-//     the function:
-//   - Normalizes custom fields for the patch (payloadPatchWithCustomFields).
-//   - For contacts, translates virtual communication-item fields into
-//     concrete JSON Patch operations targeting `communicationItems`.
-//   - Returns the resulting patch array and http.MethodPatch.
-//   - Otherwise, it:
-//   - Extracts the record, applies custom-field normalization.
-//   - For contacts with `communicationItems`, works around a ConnectWise
-//     validation bug by clearing `communicationItems` via a preliminary
-//     PATCH before performing the PUT.
-//   - Returns the record and http.MethodPut.
-//
-// ConnectWise-specific notes:
-//   - PATCH body must be a bare JSON array of operations, not wrapped in an
-//     object.
-//   - Contacts: including `communicationItems` in a PUT can trigger spurious
-//     validation errors; we clear them out first via PATCH.
+// ConnectWise specifics:
+//   - PATCH body must be a bare JSON array of operations.
+//   - For contacts, full replacement is implemented via PATCH instead of PUT
+//     to avoid known bugs with `communicationItems` validation.
 func (c *Connector) makeWriteUpdatePayload(ctx context.Context, params common.WriteParams) (any, string, error) {
-	// Detect JSON Patch payloads and use HTTP PATCH if present.
+	// Detect JSON Patch payloads and use HTTP PATCH.
 	if payload, ok := extractPatchPayload(params); ok {
 		data := payloadPatchWithCustomFields(params.ObjectName, payload.Patch)
 
 		if params.ObjectName == objectNameContacts {
-			items, err := c.patchPayloadWithCommunicationItems(ctx, data, params.RecordId)
+			items, err := c.contactsPartialUpdatePayload(ctx, data, params.RecordId)
 
 			return items, http.MethodPatch, err
 		}
@@ -126,7 +111,7 @@ func (c *Connector) makeWriteUpdatePayload(ctx context.Context, params common.Wr
 		return data, http.MethodPatch, nil
 	}
 
-	// Regular object payload: use PUT.
+	// Regular object payload.
 	record, err := params.GetRecord()
 	if err != nil {
 		return nil, "", err
@@ -135,60 +120,13 @@ func (c *Connector) makeWriteUpdatePayload(ctx context.Context, params common.Wr
 	payloadWithCustomFields(record)
 
 	if params.ObjectName == objectNameContacts {
-		if err = c.payloadWithCommunicationItems(ctx, record); err != nil {
-			return nil, "", err
-		}
+		// For contacts, emulate full PUT via PATCH to avoid ConnectWise bugs.
+		items, err := c.contactsFullUpdatePayload(ctx, record, params.RecordId)
 
-		if _, ok := record["communicationItems"]; ok {
-			// Work around ConnectWise validation bug for contacts:
-			// Including communicationItems in a PUT may cause a 400 even when
-			// the items are valid. Since PUT is a full replacement, we clear
-			// communicationItems first via PATCH, then proceed with the PUT.
-			if err = c.clearContactCommunicationItems(ctx, params); err != nil {
-				return nil, "", err
-			}
-		}
+		return items, http.MethodPatch, err
 	}
 
 	return record, http.MethodPut, nil
-}
-
-// clearContactCommunicationItems removes all communication items from a contact
-// via a preliminary PATCH before a full PUT update.
-//
-// This is required due to a ConnectWise validation bug: when `communicationItems`
-// are present in a PUT request for a contact, the API may reject the payload as
-// invalid even if the items are correct. Clearing them first avoids this issue.
-//
-// The function performs a single PATCH with:
-//   - "remove" operation for `/communicationItems`.
-//   - "replace" operation for `/customFields` with an empty array to satisfy
-//     ConnectWise's validation requirements for custom fields.
-func (c *Connector) clearContactCommunicationItems(ctx context.Context,
-	params common.WriteParams,
-) error {
-	url, err := c.getURL(objectNameContacts)
-	if err != nil {
-		return err
-	}
-
-	url.AddPath(params.RecordId)
-
-	if _, err = c.JSONHTTPClient().Patch(ctx, url.String(), []map[string]any{
-		{
-			"op":   "remove",
-			"path": "/communicationItems",
-		},
-		{
-			"op":    "replace",
-			"path":  "/customFields",
-			"value": []any{},
-		},
-	}, c.clientIdHeader()); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // payloadPatchWithCustomFields normalizes JSON Patch payloads for objects that
@@ -349,4 +287,14 @@ type patchOperationPayload struct {
 	Path        string `json:"path"`
 	Value       any    `json:"value,omitempty"`
 	removeIndex int
+}
+
+func sortRemovePayloads(payloads []patchOperationPayload) {
+	// Remove from the highest index to the lowest. Removing a later item
+	// shifts only indexes after it, so it cannot change the index of an
+	// earlier item that is still scheduled for removal. Removing in the
+	// opposite order would shift all subsequent removeIndex values.
+	sort.Slice(payloads, func(i, j int) bool {
+		return payloads[i].removeIndex > payloads[j].removeIndex
+	})
 }

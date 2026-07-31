@@ -150,6 +150,7 @@ func getRecords(
 			return nil, common.ErrEmptyRecordIdResponse
 		}
 
+		data[i].Id = recordID
 		data[i].Raw = record
 		data[i].Fields = common.ExtractLowercaseFieldsFromRaw(fields, fieldRecord)
 	}

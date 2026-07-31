@@ -265,8 +265,19 @@ func GetRawChannelNameFromObject(objectName string) string {
 	return objectName
 }
 
+// GetChangeDataCaptureChannelMembershipName builds the developer name (fullName) of a
+// PlatformEventChannelMember. Per the Salesforce Metadata API docs, "two consecutive
+// underscores in full names designate either a component name suffix or a namespace
+// prefix" and are unsupported anywhere else in a full name, so the "__" in custom object
+// change events (my_object__ChangeEvent) is collapsed to a single underscore — e.g.
+// SalesEvents_chn_MyCustomObj_ChangeEvent in the docs' example; otherwise Salesforce
+// parses everything before it as a namespace and rejects the create. The un-collapsed
+// event name remains valid as the member's SelectedEntity, which names the entity rather
+// than the component.
+//
+// https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_platformeventchannelmember.htm
 func GetChangeDataCaptureChannelMembershipName(rawChannelName string, eventName string) string {
-	return rawChannelName + "_chn_" + eventName
+	return rawChannelName + "_chn_" + strings.ReplaceAll(eventName, "__", "_")
 }
 
 func GetRawPEName(peName string) string {

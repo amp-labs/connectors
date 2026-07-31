@@ -13,22 +13,33 @@ import (
 // which is how GetRecordsByIds queries.
 const statusCancelled = "cancelled"
 
+// createdUpdatedEpsilon is how close an event's updated time must be to its created time to
+// classify as a create. On a genuine create the two are near-identical, but not equal: created
+// is truncated to whole seconds while updated keeps milliseconds (live-observed delta: 318ms).
+// 2s absorbs that skew while excluding human edits-after-create. Trade-off: an async
+// post-create touch by Google that bumps updated past 2s (e.g. Meet link resolution) would
+// deliver that create as an update.
+const createdUpdatedEpsilon = 2 * time.Second
+
 // SubscriptionEvent is one Calendar event to be classified, built from a GetRecordsByIds row.
 //
 // Calendar pushes have an empty body, so the subscribe pipeline fetches the changed events
 // first and classifies them afterwards. Keeping that split, GetRecordsByIds is a plain read
 // and EventType does the classification here. A Calendar event has no event-type field (Gmail
-// gets one from its history categories), so the type is inferred from the status and the
-// created time relative to the fetch window (UpdatedMin, the checkpoint GetRecordsByIds used).
+// gets one from its history categories), so the type is inferred from the status, the created
+// time relative to the fetch window (UpdatedMin, the checkpoint GetRecordsByIds used), and how
+// closely updated trails created.
 type SubscriptionEvent struct {
 	// RecordID is the Calendar event ID.
 	RecordID string
 	// Status is the event status; "cancelled" means the event was deleted.
 	Status string
-	// Created is the event creation time (RFC3339), compared against UpdatedMin to tell a
-	// new event from an edit to an existing one.
+	// Created is the event creation time (RFC3339). EventType compares it against UpdatedMin
+	// and Updated to tell a new event from an edit to an existing one.
 	Created string
-	// Updated is the last-modification time (RFC3339), used as the event timestamp.
+	// Updated is the last-modification time (RFC3339), used as the event timestamp and, with
+	// Created, to classify creates (a genuine create has updated within a few seconds of
+	// created).
 	Updated string
 	// UpdatedMin is the fetch window checkpoint (recordIds[0] passed to GetRecordsByIds).
 	UpdatedMin string
@@ -39,10 +50,19 @@ type SubscriptionEvent struct {
 var _ common.SubscriptionEvent = SubscriptionEvent{}
 
 // EventType infers the event type from the row. A cancelled event is a delete; otherwise an
-// event created within the fetch window is a create, and an older one is an update.
+// event is a create only when it was created within the fetch window AND its updated time sits
+// within createdUpdatedEpsilon of its created time. Everything else is an update.
+//
+// The window check alone is not enough: the server's updatedMin checkpoint lags real time by a
+// couple of minutes (lookback buffer plus time between pushes), so an event edited shortly
+// after creation still has created >= updatedMin and would re-classify as a create. On a
+// genuine create updated barely trails created, while any edit pushes updated well past it, so
+// the epsilon is what separates the two. The window check stays as a guard against backfills
+// that rewrite an old event's updated time to near its created time.
 //
 // updatedMin defines the window and must parse, or we error. A non-cancelled event with no
-// usable created time falls back to update.
+// usable created time falls back to update; one created in the window with no usable updated
+// time falls back to create (the pre-epsilon behavior).
 func (e SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 	if strings.EqualFold(e.Status, statusCancelled) {
 		return common.SubscriptionEventTypeDelete, nil
@@ -60,8 +80,18 @@ func (e SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 		return common.SubscriptionEventTypeUpdate, nil // nolint: nilerr
 	}
 
-	// Created at or after the window start means it's new within this fetch.
-	if !created.Before(window) {
+	// Created before the window start means it existed before this fetch: an edit.
+	if created.Before(window) {
+		return common.SubscriptionEventTypeUpdate, nil
+	}
+
+	updated, err := time.Parse(time.RFC3339, e.Updated)
+	if err != nil {
+		// Created in the window but nothing to measure the edit gap with; call it a create.
+		return common.SubscriptionEventTypeCreate, nil // nolint: nilerr
+	}
+
+	if updated.Sub(created) <= createdUpdatedEpsilon {
 		return common.SubscriptionEventTypeCreate, nil
 	}
 

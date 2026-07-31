@@ -35,6 +35,8 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		}
 
 		connector.WhatsApp = adapter
+	case providers.ModuleMetaAds:
+		// Proxy and OAuth use the base connector; no module-specific adapter.
 	default:
 		return nil, common.ErrUnsupportedModule
 	}

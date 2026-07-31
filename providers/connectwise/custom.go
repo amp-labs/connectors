@@ -249,23 +249,23 @@ func (f modelCustomField) getValueType() common.ValueType {
 	case "TextArea":
 		return common.ValueTypeString
 	case "Number":
-		return multiValueOrDefault(f, common.ValueTypeFloat)
+		return selectValueOrDefault(f, common.ValueTypeFloat)
 	case "Percent":
-		return multiValueOrDefault(f, common.ValueTypeFloat)
+		return selectValueOrDefault(f, common.ValueTypeFloat)
 	case "Text":
-		return multiValueOrDefault(f, common.ValueTypeString)
+		return selectValueOrDefault(f, common.ValueTypeString)
 	default:
 		return common.ValueTypeOther
 	}
 }
 
-// multiValueOrDefault returns MultiSelect or SingleSelect for list-style fields, and defaultValue otherwise.
-// Number, Percent, Text can all be either primitive data type or Multi/Single Select.
-func multiValueOrDefault(field modelCustomField, defaultValue common.ValueType) common.ValueType {
+// selectValueOrDefault returns SingleSelect for list-style fields, and defaultValue otherwise.
+// Number, Percent, Text can all be either primitive data type or Single Select.
+// Both entry methods hold exactly one value: "List" is a dropdown pick-list, "Option" is radio buttons.
+// ConnectWise user-defined fields have no multi-select entry method; values are always scalar.
+func selectValueOrDefault(field modelCustomField, defaultValue common.ValueType) common.ValueType {
 	switch field.EntryTypeIdentifier {
-	case "List":
-		return common.ValueTypeMultiSelect
-	case "Option":
+	case "List", "Option":
 		return common.ValueTypeSingleSelect
 	default:
 		return defaultValue

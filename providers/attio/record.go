@@ -33,8 +33,10 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 		return nil, err
 	}
 
+	// Attio's list-records query expects a singular "filter" key.
+	// Ref: https://docs.attio.com/rest-api/guides/filtering-and-sorting
 	payload := map[string]any{
-		"filters": map[string]any{
+		"filter": map[string]any{
 			"record_id": map[string]any{
 				"$in": ids,
 			},
