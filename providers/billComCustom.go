@@ -64,10 +64,11 @@ func init() {
 				{Name: "sessionId", ValueTemplate: "{{ .sessionId }}"},
 			},
 		},
+		// Proxy works off this declaration alone (the server builds the custom-auth
+		// client generically from CustomOpts). Read/Write would need a bespoke
+		// data-plane connector with object schemas, so they're not claimed yet.
 		Support: Support{
 			Proxy: true,
-			Read:  true,
-			Write: true,
 		},
 	})
 
