@@ -97,6 +97,7 @@ import (
 	"github.com/amp-labs/connectors/providers/livestorm"
 	"github.com/amp-labs/connectors/providers/lob"
 	"github.com/amp-labs/connectors/providers/loxo"
+	"github.com/amp-labs/connectors/providers/mailgun"
 	"github.com/amp-labs/connectors/providers/marketo"
 	"github.com/amp-labs/connectors/providers/meta"
 	"github.com/amp-labs/connectors/providers/microsoft"
@@ -255,6 +256,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Livestorm:                         wrapper(newLivestormConnector),
 	providers.Lob:                               wrapper(newLobConnector),
 	providers.Loxo:                              wrapper(newLoxoConnector),
+	providers.Mailgun:                           wrapper(newMailgunConnector),
 	providers.Marketo:                           wrapper(newMarketoConnector),
 	providers.Meta:                              wrapper(newMetaConnector),
 	providers.Microsoft:                         wrapper(newMicrosoftConnector),
@@ -1227,6 +1229,12 @@ func newLoxoConnector(
 	params common.ConnectorParams,
 ) (*loxo.Connector, error) {
 	return loxo.NewConnector(params)
+}
+
+func newMailgunConnector(
+	params common.ConnectorParams,
+) (*mailgun.Connector, error) {
+	return mailgun.NewConnector(params)
 }
 
 func newSnapchatAdsConnector(
