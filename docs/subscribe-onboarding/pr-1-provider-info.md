@@ -10,7 +10,7 @@
 Declare the provider's subscribe metadata on its `ProviderInfo` — `Support.Subscribe` and
 `SubscribeRequirements` — with the gate (`Support.Subscribe`) **off**, and wire the connector into the
 factory if it's brand-new. This PR changes **no runtime behavior**; it's a safe no-op until the final
-[`Enable`](./pr-6-enable.md) PR.
+[`Enable`](./pr-7-enable.md) PR.
 
 ## What you implement
 
@@ -45,7 +45,7 @@ dormant regardless:
 Support: Support{
     Read:      true,
     Write:     true,
-    Subscribe: false, // ← the gate; flip to true in PR 6
+    Subscribe: false, // ← the gate; flip to true in PR 7
 },
 SubscribeRequirements: &SubscribeRequirements{
     // <provider> supports creating webhook subscriptions via API: <link to provider docs>
@@ -124,7 +124,7 @@ SubscribeRequirements: &SubscribeRequirements{
 > `Support.Subscribe` is the **gate** — it must be `true` for the provider to subscribe at all (via API
 > or manual/UI); `SubscribeByAPI` says whether the programmatic API approach is available. **Keep
 > `Support.Subscribe` off** for the entire stack and flip it on only in the final
-> [`Enable`](./pr-6-enable.md) PR — that's what keeps every intermediate PR a safe no-op even after it
+> [`Enable`](./pr-7-enable.md) PR — that's what keeps every intermediate PR a safe no-op even after it
 > merges.
 
 ## Factory wiring

@@ -1,15 +1,26 @@
-# Onboarding a New Provider to Subscribe
+# PR 6 — ProviderConfig declaration
 
-This guide walks through adding subscribe support for a new provider in `subscribe/`.
+> Part of [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts: [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
 
-## Summary of steps
+**Required, second-to-last.** Declares the provider's subscribe configuration bundle in the `subscribe/` package so the caller can drive the connector methods you built in PR 2–5. Merges right before [Enable](./pr-7-enable.md) — the provider is still gated off, so this PR is a safe no-op in production.
+
+## Goal
+
+Register a `ProviderConfig` for your provider: the per-provider declarative bundle the Ampersand platform reads at subscribe time — request-payload building, verification params, maintenance cadence, and the derived should-we answers.
+
+## Prerequisites
+
+- [PR 1 — ProviderInfo + Factory wiring](./pr-1-provider-info.md) merged (the derived answers read `SubscribeRequirements`).
+- The connector methods this config points at exist: [PR 2 — Verification](./pr-2-verification.md), [PR 3 — Registration](./pr-3-registration.md) *(only if the provider needs it)*, [PR 4 — Subscribe / Update / Delete](./pr-4-subscribe-update-delete.md), [PR 5 — Maintenance](./pr-5-maintenance.md) *(only if the provider needs it)*.
+
+## What you implement
 
 1. **Create** `subscribe/<provider>.go` declaring `var <provider>Config = ProviderConfig{...}` and populating only the subcomponents the provider needs.
-2. **Register** it in the `providerConfigs` map in `config.go`, keyed by `providers.<Provider>`.
+2. **Register** it in the `providerConfigs` map in `subscribe/config.go`, keyed by `providers.<Provider>`.
 
 That's it. The Ampersand server already reads everything through
 `subscribe.GetProviderConfig(module, providerInfo, deps).<Subcomponent>.<Method>()` — you do not
-touch server code.
+touch anything else.
 
 (For "twin" providers that reuse another provider's connector, also see [Twin providers](#twin-providers--providerinfoaliases).)
 
@@ -17,7 +28,7 @@ touch server code.
 
 ## ProviderConfig and Registry
 
-A `ProviderConfig` is the per-provider declarative bundle of subscribe-related configuration — the `var <provider>Config = ProviderConfig{...}` literal you write in step 1. The `providerConfigs` map in `config.go` wraps each entry in a `ProviderConfigRegistry`:
+A `ProviderConfig` is the per-provider declarative bundle of subscribe-related configuration — the `var <provider>Config = ProviderConfig{...}` literal you write in step 1. The `providerConfigs` map in `subscribe/config.go` wraps each entry in a `ProviderConfigRegistry`:
 
 ```go
 type ProviderConfigRegistry struct {
@@ -64,9 +75,7 @@ The server implements these interfaces and passes a `Dependencies` value to `Get
 
 If your provider needs an Ampersand-owned capability that doesn't exist yet, add a new narrow resolver interface in `subscribe/deps` (one file per resolver, mirroring `project.go` / `cdcoptimization.go` / `subscriptions.go`), add a field to `Dependencies`, and coordinate the implementation with the Ampersand team. Keep the interface as small as the provider function actually needs.
 
-## Examples
-
-### A worked example: adding `acme`
+## Step-by-step: adding `acme`
 
 Suppose Acme subscribes via API, builds a webhook-endpoint payload at subscribe time, and verifies webhook signatures with a per-installation secret.
 
@@ -130,9 +139,11 @@ func getAcmeRequest(
 
 Note that `webhookURL` — the event-receipt endpoint — arrives pre-constructed from the caller; endpoint construction depends on Ampersand deployment configuration, so it never happens inside this package.
 
+`AcmeVerificationParams` is the provider-specific struct you defined next to `VerifyWebhookMessage` in [PR 2](./pr-2-verification.md#verification) — the value `getAcmeVerificationParams` puts in `Param` here is exactly what that method casts back out with `common.AssertType`.
+
 **Step 2: register in `providerConfigs`**
 
-Edit [`subscribe/config.go`](https://github.com/amp-labs/connectors/blob/main/subscribe/config.go) and add an entry to the `providerConfigs` map:
+Edit [`subscribe/config.go`](../../subscribe/config.go) and add an entry to the `providerConfigs` map:
 
 ```go
 var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
@@ -147,7 +158,7 @@ Use `DefaultModuleConfig` when the provider has no module-specific differences. 
 
 ## Component reference
 
-### `RegistrationConfig` (`registration.go`)
+### `RegistrationConfig` (`subscribe/registration.go`)
 
 For providers that need a one-time installation-level setup before per-object subscriptions can be created (Salesforce → AWS EventBridge wiring is the canonical example).
 
@@ -166,7 +177,7 @@ Methods:
 | `EmptyResult()`                         | `*common.RegistrationResult` | `nil` when no `emptyResultFn` declared. |
 | `BuildParams(ctx, inst)`                | `(any, error)` | Returns `ErrRegistrationParamsBuilderNotDeclared` for providers that don't require registration; `(nil, nil)` for providers that do require it but declared no builder (connector accepts an empty `Request`). |
 
-### `SubscriptionConfig` (`subscription.go`)
+### `SubscriptionConfig` (`subscribe/subscription.go`)
 
 For providers that subscribe to webhook events, whether programmatically or by manual provider-app configuration.
 
@@ -202,7 +213,7 @@ Methods:
 | `RequiresWatchFieldsAutoAll()`    | bool    | Reads `requiresWatchFieldsAuto`. |
 | `BuildRequest(ctx, inst, rev, regResult, webhookURL)` | `(any, error)` | Invokes `buildRequestFn` with the bound `deps` and `&inst.Connection` as the `conn` arg. Returns `(nil, nil)` when no builder declared. |
 
-### `MaintenanceConfig` (`maintenance.go`)
+### `MaintenanceConfig` (`subscribe/maintenance.go`)
 
 For providers whose webhook subscriptions expire and need renewal (Gmail watch subscriptions expire after 7 days and are renewed daily; Zoho renews weekly).
 
@@ -212,7 +223,7 @@ Fields you populate:
 |-------------------|---------|
 | `renewalInterval` | How often maintenance runs. |
 
-Also add an entry to the `maintenancePeriods` map in `maintenance.go` — it backs the package function `GetMaintenancePeriod(provider)`, used by callers that have only a provider in scope (no resolved config).
+Also add an entry to the `maintenancePeriods` map in `subscribe/maintenance.go` — it backs the package function `GetMaintenancePeriod(provider)`, used by callers that have only a provider in scope (no resolved config).
 
 Methods:
 
@@ -221,7 +232,7 @@ Methods:
 | `ShouldPerform()` | bool    | Reads `ProviderInfo.SubscribeRequirements.Maintenance`. |
 | `Interval()`      | `(time.Duration, bool)` | Comma-ok: returns `(0, false)` when `renewalInterval` is zero/unset. Idiomatic use: `if p, ok := cfg.Maintenance.Interval(); ok { ... }`. |
 
-### `PostProcessConfig` (`postprocess.go`)
+### `PostProcessConfig` (`subscribe/postprocess.go`)
 
 For providers needing third-party setup after the connector's Subscribe returns (e.g. Salesforce — AWS EventBridge wiring).
 
@@ -231,16 +242,18 @@ Only the derived answer lives in this package:
 |-------------------|---------|-------|
 | `ShouldPerform()` | bool    | Reads `ProviderInfo.SubscribeRequirements.PostProcess`. |
 
-The setup/teardown functions themselves are Ampersand-infrastructure concerns — they reach AWS EventBridge and other Ampersand-managed services — and live in Ampersand's internal systems. If your provider needs post-processing, set `SubscribeRequirements.PostProcess` in its `ProviderInfo` and coordinate the internal implementation with the Ampersand team.
+The setup/teardown functions themselves are Ampersand-infrastructure concerns — they reach AWS EventBridge and other Ampersand-managed services — and live in Ampersand's internal systems. If your provider needs post-processing, set `SubscribeRequirements.PostProcess` in its `ProviderInfo` (PR 1) and coordinate the internal implementation with the Ampersand team — see [PostProcess](../../SUBSCRIBE_REFERENCES.md#postprocess).
 
-### `VerificationConfig` (`verification.go`)
+### `VerificationConfig` (`subscribe/verification.go`)
+
+This is the config side of the verification flow you built in [PR 2 — Verification](./pr-2-verification.md#verification): `paramsFn` builds the `*common.VerificationParams` whose `.Param` your connector's `VerifyWebhookMessage` casts back with `common.AssertType`, and `verifierConnector` is the zero-value connector instance the caller invokes that method on.
 
 Fields you populate:
 
 | Field               | Purpose |
 |---------------------|---------|
-| `paramsFn`          | Builds the provider-specific `*common.VerificationParams`. |
-| `verifierConnector` | The zero-value connector pointer used for webhook signature verification (e.g. `&hubspot.Connector{}`). Returned unwrapped — callers wanting instrumentation (e.g. metrics) decorate it themselves. |
+| `paramsFn`          | Builds the provider-specific `*common.VerificationParams` consumed by `VerifyWebhookMessage` ([PR 2](./pr-2-verification.md#verification)). |
+| `verifierConnector` | The zero-value connector pointer used for webhook signature verification (e.g. `&hubspot.Connector{}`) — the connector whose `VerifyWebhookMessage` you implemented in [PR 2](./pr-2-verification.md). Returned unwrapped — callers wanting instrumentation (e.g. metrics) decorate it themselves. |
 | `bypassed`          | When true, webhook signature verification is skipped (e.g. when events are synthetic republishes carrying no provider signature). |
 | `eventCaster`       | Casts raw webhook event maps into typed `common.SubscriptionEvent` slices. Usually `CastSubscriptionEvents[<provider>.SubscriptionEvent]`. |
 
@@ -283,7 +296,7 @@ There is also a package function `IsHookdeckGatewayProvider(provider) bool` — 
 
 ## Twin providers — `providerInfoAliases`
 
-If your provider in the connectors library reuses another provider's connector implementation and does not have its own `SubscribeRequirements` declared, add an entry to `providerInfoAliases` in `aliases.go`. Calls to `ResolveProviderInfoAlias` swap in the twin's `ProviderInfo`, with the original `.Name` preserved so log attribution stays accurate.
+If your provider in this library reuses another provider's connector implementation and does not have its own `SubscribeRequirements` declared, add an entry to `providerInfoAliases` in `subscribe/aliases.go`. Calls to `ResolveProviderInfoAlias` swap in the twin's `ProviderInfo`, with the original `.Name` preserved so log attribution stays accurate.
 
 `SalesforceJWT → Salesforce` is the canonical example: SalesforceJWT shares the Salesforce connector implementation and the same modules, but its own `ProviderInfo` entry doesn't declare subscribe metadata.
 
@@ -319,7 +332,7 @@ var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
 
 ---
 
-## Real providers, different shapes
+## Example configs: real providers, different shapes
 
 ### Salesforce — full surface
 
@@ -417,3 +430,33 @@ var gongConfig = ProviderConfig{
 }
 ```
 
+---
+
+## Live testing before the flip
+
+You don't have to wait for [PR 7 — Enable](./pr-7-enable.md) to see your provider working live. Installations under the Ampersand project **`connectors-test-project`** (id `8b257c62-6b89-4b9b-9271-6fe3f6b700f1`) **bypass the `Support.Subscribe` gate** — the platform treats core support flags (including subscribe) as enabled for that project — so once this PR's config is registered, you can install the provider there, subscribe, and receive real webhooks end-to-end while the provider stays gated off for everyone else.
+
+This is the recommended way to validate the whole stack (PR 2–6) before opening the Enable PR; the Enable PR's required live test can then reuse the same setup.
+
+## Files
+
+- `subscribe/<provider>.go` — the `ProviderConfig` literal and its per-provider helper functions.
+- `subscribe/config.go` — one `providerConfigs` map entry.
+- `subscribe/maintenance.go` — a `maintenancePeriods` entry *(only if the provider declares maintenance)*.
+- `subscribe/aliases.go` — a `providerInfoAliases` entry *(only for twin providers)*.
+
+## Checklist
+
+- [ ] `subscribe/<provider>.go` declares `var <provider>Config = ProviderConfig{...}` populating only the subcomponents the provider needs.
+- [ ] Registered in `providerConfigs` (`subscribe/config.go`) — `DefaultModuleConfig` vs `Modules` matches the provider's module story.
+- [ ] Builders use only the wire types and `deps.Dependencies` — no new external dependencies.
+- [ ] If maintenance is declared: `renewalInterval` set **and** `maintenancePeriods` entry added.
+- [ ] Twin providers: `providerInfoAliases` entry + same config pointer under both keys.
+- [ ] Provider still gated off (`Support.Subscribe` stays `false`) — the flip happens in [PR 7 — Enable](./pr-7-enable.md).
+
+## Reviewer focus
+
+- The config shape matches the provider's actual capabilities from PR 2–5 (e.g. no `buildRequestFn` for a look-up-only provider; `verifierConnector` matches the PR 2 connector).
+- Zero-value subcomponents are left alone — only populated concerns appear in the literal.
+- Secrets: verification params take secrets from `VerificationRequest` (`req.ProviderAppClientSecret`) or stored results via `deps` — never hardcoded.
+- The registry entry's module scoping is right (module-agnostic providers under `DefaultModuleConfig`; module-specific ones under `Modules` with no entries for non-subscribe modules).
