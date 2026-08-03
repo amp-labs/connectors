@@ -425,7 +425,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "ptoAvailableType": {
               "displayName": "ptoAvailableType",
@@ -646,7 +649,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -676,7 +682,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -786,7 +795,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -1402,7 +1414,10 @@
             "billingTerms": {
               "displayName": "billingTerms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "bottomComment": {
               "displayName": "bottomComment",
@@ -1445,7 +1460,10 @@
             "companyLocation": {
               "displayName": "companyLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "contact": {
               "displayName": "contact",
@@ -1478,7 +1496,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -1498,7 +1519,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "employeeCompNotExceed": {
               "displayName": "employeeCompNotExceed",
@@ -1600,7 +1624,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -1863,12 +1890,18 @@
             "defaultDepartment": {
               "displayName": "defaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "defaultLocation": {
               "displayName": "defaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "emailAddress": {
               "displayName": "emailAddress",
@@ -1913,12 +1946,18 @@
             "salesDefaultLocation": {
               "displayName": "salesDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "securityLocation": {
               "displayName": "securityLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "securityRole": {
               "displayName": "securityRole",
@@ -2374,7 +2413,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customLabel": {
               "displayName": "customLabel",
@@ -2460,7 +2502,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "miscInvoice": {
               "displayName": "miscInvoice",
@@ -2984,7 +3029,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -3014,7 +3062,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "duration": {
               "displayName": "duration",
@@ -3209,7 +3260,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "mergedParentTicket": {
               "displayName": "mergedParentTicket",
@@ -3897,7 +3951,10 @@
             "subType": {
               "displayName": "subType",
               "valueType": "reference",
-              "providerType": "CampaignSubTypeReference"
+              "providerType": "CampaignSubTypeReference",
+              "referenceTo": [
+                "subTypes"
+              ]
             },
             "type": {
               "displayName": "type",
@@ -4449,7 +4506,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "expenseEntryFlag": {
               "displayName": "expenseEntryFlag",
@@ -4474,7 +4534,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -4737,7 +4800,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -4767,7 +4833,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "member": {
               "displayName": "member",
@@ -4849,7 +4918,10 @@
             "territory": {
               "displayName": "territory",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "ticket": {
               "displayName": "ticket",
@@ -4992,7 +5064,10 @@
             "billingTerms": {
               "displayName": "billingTerms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "calendar": {
               "displayName": "calendar",
@@ -5031,7 +5106,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -5240,7 +5318,10 @@
             "territory": {
               "displayName": "territory",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "territoryManager": {
               "displayName": "territoryManager",
@@ -5458,7 +5539,10 @@
             "billingTerms": {
               "displayName": "billingTerms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "city": {
               "displayName": "city",
@@ -5476,7 +5560,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "defaultContact": {
               "displayName": "defaultContact",
@@ -5575,7 +5662,10 @@
             "territory": {
               "displayName": "territory",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "twitterUrl": {
               "displayName": "twitterUrl",
@@ -5939,7 +6029,10 @@
             "companyLocation": {
               "displayName": "companyLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "country": {
               "displayName": "country",
@@ -6136,7 +6229,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "defaultFlag": {
               "displayName": "defaultFlag",
@@ -6386,7 +6482,10 @@
             "companyLocation": {
               "displayName": "companyLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "companySite": {
               "displayName": "companySite",
@@ -6571,7 +6670,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "deviceIdentifier": {
               "displayName": "deviceIdentifier",
@@ -6624,7 +6726,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "locationId": {
               "displayName": "locationId",
@@ -7060,7 +7165,10 @@
             "companyLocation": {
               "displayName": "companyLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "country": {
               "displayName": "country",
@@ -7368,7 +7476,10 @@
             "baseCurrency": {
               "displayName": "baseCurrency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "chiefOperatingOfficer": {
               "displayName": "chiefOperatingOfficer",
@@ -8610,7 +8721,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "defaultFlag": {
               "displayName": "defaultFlag",
@@ -9575,7 +9689,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -9585,7 +9702,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             }
           }
         },
@@ -9664,7 +9784,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "encryptionKey": {
               "displayName": "encryptionKey",
@@ -9684,7 +9807,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "storeIdentifier": {
               "displayName": "storeIdentifier",
@@ -9750,7 +9876,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "discardDuplicatesFlag": {
               "displayName": "discardDuplicatesFlag",
@@ -9821,7 +9950,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "neverRespondFlag": {
               "displayName": "neverRespondFlag",
@@ -10594,7 +10726,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -11291,7 +11426,10 @@
             "billingTerms": {
               "displayName": "billingTerms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "bottomCommentFlag": {
               "displayName": "bottomCommentFlag",
@@ -11361,7 +11499,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "emailTemplate": {
               "displayName": "emailTemplate",
@@ -11483,7 +11624,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -11621,7 +11765,10 @@
             "billingTerms": {
               "displayName": "billingTerms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -11680,7 +11827,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -11690,7 +11840,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "remitName": {
               "displayName": "remitName",
@@ -12624,7 +12777,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "path": {
               "displayName": "path",
@@ -14573,7 +14729,10 @@
             "billingTerms": {
               "displayName": "billingTerms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "bottomComment": {
               "displayName": "bottomComment",
@@ -14601,7 +14760,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -14681,7 +14843,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "locationId": {
               "displayName": "locationId",
@@ -14843,7 +15008,10 @@
             "territory": {
               "displayName": "territory",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "territoryId": {
               "displayName": "territoryId",
@@ -15006,7 +15174,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -15016,7 +15187,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -15048,7 +15222,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -15058,7 +15235,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -15313,12 +15493,18 @@
             "defaultDepartment": {
               "displayName": "defaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "defaultLocation": {
               "displayName": "defaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "disableNewCrossReferencesFlag": {
               "displayName": "disableNewCrossReferencesFlag",
@@ -16537,7 +16723,10 @@
             "billingTerms": {
               "displayName": "billingTerms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "bottomCommentFlag": {
               "displayName": "bottomCommentFlag",
@@ -16555,7 +16744,10 @@
             "companyLocation": {
               "displayName": "companyLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "configIds": {
               "displayName": "configIds",
@@ -16573,7 +16765,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -16583,7 +16778,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "description": {
               "displayName": "description",
@@ -16618,7 +16816,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "notes": {
               "displayName": "notes",
@@ -17550,7 +17751,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "defaultFlag": {
               "displayName": "defaultFlag",
@@ -18030,7 +18234,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -18787,7 +18994,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "locationId": {
               "displayName": "locationId",
@@ -19533,7 +19743,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -19548,7 +19761,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "duration": {
               "displayName": "duration",
@@ -19649,7 +19865,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "mobileGuid": {
               "displayName": "mobileGuid",
@@ -20336,7 +20555,10 @@
             "billingTerms": {
               "displayName": "billingTerms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "board": {
               "displayName": "board",
@@ -20384,7 +20606,10 @@
             "companyLocation": {
               "displayName": "companyLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "contact": {
               "displayName": "contact",
@@ -20397,7 +20622,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -20412,7 +20640,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "description": {
               "displayName": "description",
@@ -20500,7 +20731,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "manager": {
               "displayName": "manager",
@@ -20666,7 +20900,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -20790,7 +21027,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "locationId": {
               "displayName": "locationId",
@@ -20864,7 +21104,10 @@
             "terms": {
               "displayName": "terms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "total": {
               "displayName": "total",
@@ -21040,7 +21283,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "decemberMargin": {
               "displayName": "decemberMargin",
@@ -21055,7 +21301,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "februaryMargin": {
               "displayName": "februaryMargin",
@@ -21110,7 +21359,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "marchMargin": {
               "displayName": "marchMargin",
@@ -21215,7 +21467,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "newWindowFlag": {
               "displayName": "newWindowFlag",
@@ -21607,7 +21862,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -21622,7 +21880,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "dropShipFlag": {
               "displayName": "dropShipFlag",
@@ -21660,7 +21921,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "mfgItemID": {
               "displayName": "mfgItemID",
@@ -22308,7 +22572,10 @@
             "billingTerms": {
               "displayName": "billingTerms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "businessUnitId": {
               "displayName": "businessUnitId",
@@ -22360,7 +22627,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -22875,7 +23145,10 @@
             "salesTeamLocation": {
               "displayName": "salesTeamLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             }
           }
         },
@@ -23744,7 +24017,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "discussionsLockedFlag": {
               "displayName": "discussionsLockedFlag",
@@ -23835,7 +24111,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "markFirstNoteIssueFlag": {
               "displayName": "markFirstNoteIssueFlag",
@@ -24157,7 +24436,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -24187,7 +24469,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -24960,7 +25245,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customFields": {
               "displayName": "customFields",
@@ -24990,7 +25278,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "duration": {
               "displayName": "duration",
@@ -25185,7 +25476,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "mergedParentTicket": {
               "displayName": "mergedParentTicket",
@@ -27406,7 +27700,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -27416,7 +27713,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -27627,7 +27927,10 @@
             "reportsTo": {
               "displayName": "reportsTo",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "salesRep": {
               "displayName": "salesRep",
@@ -27827,7 +28130,10 @@
             "defaultDepartment": {
               "displayName": "defaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "defaultEmail": {
               "displayName": "defaultEmail",
@@ -27851,7 +28157,10 @@
             "defaultLocation": {
               "displayName": "defaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "defaultPhone": {
               "displayName": "defaultPhone",
@@ -28260,12 +28569,18 @@
             "projectDefaultDepartment": {
               "displayName": "projectDefaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "projectDefaultLocation": {
               "displayName": "projectDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "reportCard": {
               "displayName": "reportCard",
@@ -28351,7 +28666,10 @@
             "salesDefaultLocation": {
               "displayName": "salesDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "scheduleCapacity": {
               "displayName": "scheduleCapacity",
@@ -28361,17 +28679,26 @@
             "scheduleDefaultDepartment": {
               "displayName": "scheduleDefaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "scheduleDefaultLocation": {
               "displayName": "scheduleDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "securityLocation": {
               "displayName": "securityLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "securityRole": {
               "displayName": "securityRole",
@@ -28397,12 +28724,18 @@
             "serviceDefaultDepartment": {
               "displayName": "serviceDefaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "serviceDefaultLocation": {
               "displayName": "serviceDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "serviceLocation": {
               "displayName": "serviceLocation",
@@ -28705,12 +29038,18 @@
             "defaultDepartment": {
               "displayName": "defaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "defaultLocation": {
               "displayName": "defaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "enableMobileFlag": {
               "displayName": "enableMobileFlag",
@@ -28899,12 +29238,18 @@
             "projectDefaultDepartment": {
               "displayName": "projectDefaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "projectDefaultLocation": {
               "displayName": "projectDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "reportCard": {
               "displayName": "reportCard",
@@ -28990,7 +29335,10 @@
             "salesDefaultLocation": {
               "displayName": "salesDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "scheduleCapacity": {
               "displayName": "scheduleCapacity",
@@ -29000,17 +29348,26 @@
             "scheduleDefaultDepartment": {
               "displayName": "scheduleDefaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "scheduleDefaultLocation": {
               "displayName": "scheduleDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "securityLocation": {
               "displayName": "securityLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "serviceBoardTeamIds": {
               "displayName": "serviceBoardTeamIds",
@@ -29028,12 +29385,18 @@
             "serviceDefaultDepartment": {
               "displayName": "serviceDefaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "serviceDefaultLocation": {
               "displayName": "serviceDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "serviceLocation": {
               "displayName": "serviceLocation",
@@ -29154,7 +29517,10 @@
             "baseCurrency": {
               "displayName": "baseCurrency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "groupCaption": {
               "displayName": "groupCaption",
@@ -29755,7 +30121,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -29765,7 +30134,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -31184,7 +31556,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -31202,7 +31577,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -31386,7 +31764,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "emailCC": {
               "displayName": "emailCC",
@@ -31495,7 +31876,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -32439,7 +32823,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "expenseEntryFlag": {
               "displayName": "expenseEntryFlag",
@@ -32459,7 +32846,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -33272,7 +33662,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",
@@ -33324,7 +33717,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "openInNewWindow": {
               "displayName": "openInNewWindow",
@@ -33628,7 +34024,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "dateClosed": {
               "displayName": "dateClosed",
@@ -33899,7 +34298,10 @@
             "billingTerms": {
               "displayName": "billingTerms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "cityTaxAmount": {
               "displayName": "cityTaxAmount",
@@ -33977,7 +34379,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "dateClosed": {
               "displayName": "dateClosed",
@@ -33987,7 +34392,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "departmentId": {
               "displayName": "departmentId",
@@ -34265,7 +34673,10 @@
             "billingTerms": {
               "displayName": "billingTerms",
               "valueType": "reference",
-              "providerType": "BillingTermsReference"
+              "providerType": "BillingTermsReference",
+              "referenceTo": [
+                "billingTerms"
+              ]
             },
             "cityTaxAmount": {
               "displayName": "cityTaxAmount",
@@ -34330,7 +34741,10 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "customer": {
               "displayName": "customer",
@@ -34731,7 +35145,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "height": {
               "displayName": "height",
@@ -34756,7 +35173,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "manager": {
               "displayName": "manager",
@@ -34856,12 +35276,18 @@
             "currency": {
               "displayName": "currency",
               "valueType": "reference",
-              "providerType": "CurrencyReference"
+              "providerType": "CurrencyReference",
+              "referenceTo": [
+                "currencies"
+              ]
             },
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -34876,7 +35302,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "locationDefaultFlag": {
               "displayName": "locationDefaultFlag",
@@ -35066,7 +35495,10 @@
             "defaultDepartment": {
               "displayName": "defaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "defaultEmail": {
               "displayName": "defaultEmail",
@@ -35090,7 +35522,10 @@
             "defaultLocation": {
               "displayName": "defaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "defaultPhone": {
               "displayName": "defaultPhone",
@@ -35499,12 +35934,18 @@
             "projectDefaultDepartment": {
               "displayName": "projectDefaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "projectDefaultLocation": {
               "displayName": "projectDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "reportCard": {
               "displayName": "reportCard",
@@ -35590,7 +36031,10 @@
             "salesDefaultLocation": {
               "displayName": "salesDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "scheduleCapacity": {
               "displayName": "scheduleCapacity",
@@ -35600,17 +36044,26 @@
             "scheduleDefaultDepartment": {
               "displayName": "scheduleDefaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "scheduleDefaultLocation": {
               "displayName": "scheduleDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "securityLocation": {
               "displayName": "securityLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "securityRole": {
               "displayName": "securityRole",
@@ -35636,12 +36089,18 @@
             "serviceDefaultDepartment": {
               "displayName": "serviceDefaultDepartment",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "serviceDefaultLocation": {
               "displayName": "serviceDefaultLocation",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "serviceLocation": {
               "displayName": "serviceLocation",
@@ -36058,7 +36517,10 @@
             "department": {
               "displayName": "department",
               "valueType": "reference",
-              "providerType": "SystemDepartmentReference"
+              "providerType": "SystemDepartmentReference",
+              "referenceTo": [
+                "system/departments"
+              ]
             },
             "id": {
               "displayName": "id",
@@ -36068,7 +36530,10 @@
             "location": {
               "displayName": "location",
               "valueType": "reference",
-              "providerType": "SystemLocationReference"
+              "providerType": "SystemLocationReference",
+              "referenceTo": [
+                "system/locations"
+              ]
             },
             "name": {
               "displayName": "name",

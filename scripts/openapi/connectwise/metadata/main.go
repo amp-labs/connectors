@@ -424,10 +424,11 @@ func Objects() []metadatadef.Schema {
 
 // referenceSchemaToObjectName maps ConnectWise reference schema names to the object they point to.
 // Every readable object is described by an item schema (ex: "Contact" for the contacts object),
-// and lookup fields on other objects reference it via a dedicated "<ItemSchema>Reference" schema.
-// When multiple objects share one item schema, the object named after the schema wins,
-// ex: MemberReference -> "system/members" rather than "withSso". Otherwise the mapping
-// is ambiguous and dropped with a warning.
+// and lookup fields on other objects reference it via a dedicated "*Reference" schema.
+// Reference schema naming is not fully uniform, so each object registers several aliases,
+// see referenceSchemaAliases. When multiple objects claim one reference schema, the object
+// named after it wins, ex: MemberReference -> "system/members" rather than "withSso".
+// Otherwise the mapping is ambiguous and dropped with a warning.
 func referenceSchemaToObjectName(objects []metadatadef.Schema) map[string]string {
 	candidates := datautils.NamedLists[string]{}
 
@@ -436,15 +437,15 @@ func referenceSchemaToObjectName(objects []metadatadef.Schema) map[string]string
 			continue
 		}
 
-		candidates.Add(object.ItemSchemaName, getObjectName(object))
+		for _, referenceName := range referenceSchemaAliases(object.ItemSchemaName, object.URLPath) {
+			candidates.Add(referenceName, getObjectName(object))
+		}
 	}
 
 	result := make(map[string]string)
 
-	for itemSchemaName, objectNames := range candidates {
-		referenceName := itemSchemaName + "Reference"
-
-		objectName, ok := selectCanonicalObject(itemSchemaName, datautils.NewSet(objectNames...).List())
+	for referenceName, objectNames := range candidates {
+		objectName, ok := selectCanonicalObject(referenceName, datautils.NewSet(objectNames...).List())
 		if !ok {
 			slog.Warn("ambiguous reference schema, referenceTo will be omitted",
 				"referenceSchema", referenceName,
@@ -460,21 +461,55 @@ func referenceSchemaToObjectName(objects []metadatadef.Schema) map[string]string
 	return result
 }
 
+// referenceSchemaAliases returns the reference schema names that may point at the object
+// whose items are described by itemSchemaName. ConnectWise does not name these uniformly:
+//   - exact:      Contact           -> ContactReference
+//   - namespaced: Finance.Currency  -> CurrencyReference
+//   - pluralized: BillingTerm       -> BillingTermsReference
+//   - prefixed:   Location (object under /system/) -> SystemLocationReference
+//
+// Item schemas that already are a "*Reference" (ex: DocumentReference) are used as is.
+func referenceSchemaAliases(itemSchemaName, urlPath string) []string {
+	base := itemSchemaName[strings.LastIndex(itemSchemaName, ".")+1:]
+	if strings.HasSuffix(base, "Reference") {
+		return []string{base}
+	}
+
+	aliases := datautils.NewSet(
+		base+"Reference",
+		naming.NewPluralString(base).String()+"Reference",
+	)
+
+	if strings.HasPrefix(urlPath, "/system/") {
+		aliases.AddOne("System" + base + "Reference")
+	}
+
+	return aliases.List()
+}
+
 // selectCanonicalObject picks the object a reference schema points to.
-// A single candidate wins outright, otherwise the object whose last URL segment
-// matches the pluralized schema name, ex: Member -> {"withSso", "system/members"} -> "system/members".
-func selectCanonicalObject(itemSchemaName string, objectNames []string) (string, bool) {
+// A single candidate wins outright, otherwise the sole object whose last URL segment
+// matches the pluralized schema name, ex: MemberReference -> {"withSso", "system/members"}
+// -> "system/members". Zero or several such matches are ambiguous.
+func selectCanonicalObject(referenceName string, objectNames []string) (string, bool) {
 	if len(objectNames) == 1 {
 		return objectNames[0], true
 	}
 
-	pluralName := naming.NewPluralString(itemSchemaName).String()
+	base := strings.TrimSuffix(referenceName, "Reference")
+	pluralName := naming.NewPluralString(base).String()
+
+	matches := make([]string, 0)
 
 	for _, objectName := range objectNames {
 		segment := objectName[strings.LastIndex(objectName, "/")+1:]
 		if strings.EqualFold(segment, pluralName) {
-			return objectName, true
+			matches = append(matches, objectName)
 		}
+	}
+
+	if len(matches) == 1 {
+		return matches[0], true
 	}
 
 	return "", false
