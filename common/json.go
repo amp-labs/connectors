@@ -170,9 +170,18 @@ func ParseJSONResponse(ctx context.Context, res *http.Response, body []byte) (*J
 	jsonBody, err := ajson.Unmarshal(body)
 	if err != nil {
 		headers := GetResponseHeaders(res)
+		wrapped := fmt.Errorf("failed to unmarshall response body into JSON: %w", err)
 
-		return nil, NewHTTPError(res.StatusCode, body, headers,
-			fmt.Errorf("failed to unmarshall response body into JSON: %w", err))
+		// A truncated body means the response stream was cut short, so the same
+		// request will usually succeed on retry. A body that is malformed but
+		// complete (an HTML error page, a mislabelled content type) is not
+		// transient and is deliberately left unclassified.
+		var ajsonErr ajson.Error
+		if errors.As(err, &ajsonErr) && ajsonErr.Type == ajson.UnexpectedEOF {
+			wrapped = fmt.Errorf("%w: %w", ErrRetryable, wrapped)
+		}
+
+		return nil, NewHTTPError(res.StatusCode, body, headers, wrapped)
 	}
 
 	return &JSONHTTPResponse{
