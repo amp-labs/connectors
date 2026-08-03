@@ -1,0 +1,34 @@
+query Tasks {
+  tasks(
+    first: {{.First}}
+    {{if .After}}
+    after: "{{.After}}"
+    {{end}}
+    {{if .UpdatedAfter}}
+    updatedAfter: "{{.UpdatedAfter}}"
+    {{end}}
+    {{if .UpdatedBefore}}
+    updatedBefore: "{{.UpdatedBefore}}"
+    {{end}}
+  ) {
+    items {
+      {{- if index .Fields "assignee"}}
+      assignee {
+        email
+        name
+        source
+      }
+      {{- end}}
+      description
+      due
+      id
+      meetingId
+      status
+      title
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

@@ -1,0 +1,42 @@
+query Contacts {
+  contacts(
+    first: {{.First}}
+    {{if .After}}
+    after: "{{.After}}"
+    {{end}}
+    {{if .UpdatedAfter}}
+    updatedAfter: "{{.UpdatedAfter}}"
+    {{end}}
+    {{if .UpdatedBefore}}
+    updatedBefore: "{{.UpdatedBefore}}"
+    {{end}}
+  ) {
+    items {
+      {{- if index .Fields "contactInfo"}}
+      contactInfo {
+        kind
+        source
+        value
+      }
+      {{- end}}
+      email
+      id
+      insertedAt
+      {{- if index .Fields "integrationReferences"}}
+      integrationReferences {
+        crmUrl
+        recordId
+        recordType
+        service
+      }
+      {{- end}}
+      name
+      status
+      type
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

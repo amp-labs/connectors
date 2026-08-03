@@ -1,0 +1,3 @@
+{
+  "query": "query Contacts {\n  contacts(\n    first: 1\n    \n    \n    \n  ) {\n    items {\n      contactInfo {\n        kind\n        source\n        value\n      }\n      email\n      id\n      insertedAt\n      integrationReferences {\n        crmUrl\n        recordId\n        recordType\n        service\n      }\n      name\n      status\n      type\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n}\n"
+}

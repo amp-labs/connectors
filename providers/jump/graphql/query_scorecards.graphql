@@ -1,0 +1,42 @@
+query Scorecards {
+  scorecards(
+    first: {{.First}}
+    {{if .After}}
+    after: "{{.After}}"
+    {{end}}
+    {{if .UpdatedAfter}}
+    updatedAfter: "{{.UpdatedAfter}}"
+    {{end}}
+    {{if .UpdatedBefore}}
+    updatedBefore: "{{.UpdatedBefore}}"
+    {{end}}
+  ) {
+    items {
+      calcType
+      calcValue
+      {{- if index .Fields "criteria"}}
+      criteria {
+        description
+        gradingFactors
+        gradingMethod
+        id
+        name
+        numericUpperScore
+        order
+      }
+      {{- end}}
+      description
+      format
+      id
+      insertedAt
+      meetingTypes
+      name
+      showCumulative
+      viewable
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

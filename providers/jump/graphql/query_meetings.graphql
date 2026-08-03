@@ -1,0 +1,187 @@
+query Meetings {
+  meetings(
+    first: {{.First}}
+    {{if .After}}
+    after: "{{.After}}"
+    {{end}}
+    {{if .UpdatedAfter}}
+    updatedAfter: "{{.UpdatedAfter}}"
+    {{end}}
+    {{if .UpdatedBefore}}
+    updatedBefore: "{{.UpdatedBefore}}"
+    {{end}}
+  ) {
+    items {
+      duration
+      endedAt
+      {{- if index .Fields "host"}}
+      host {
+        contactId
+        email
+        external
+        id
+        joinTime
+        leaveTime
+        name
+        role
+      }
+      {{- end}}
+      id
+      {{- if index .Fields "meetingEvents"}}
+      meetingEvents {
+        id
+        insertedAt
+        meta
+        status
+        type
+      }
+      {{- end}}
+      meetingType
+      meetingUrl
+      {{- if index .Fields "notes"}}
+      notes {
+        id
+        insertedAt
+        meetingId
+        note
+        subject
+      }
+      {{- end}}
+      {{- if index .Fields "owner"}}
+      owner {
+        deactivatedAt
+        email
+        firstName
+        fullName
+        id
+        lastName
+        owner
+      }
+      {{- end}}
+      {{- if index .Fields "participants"}}
+      participants {
+        contactId
+        email
+        external
+        id
+        joinTime
+        leaveTime
+        name
+        role
+      }
+      {{- end}}
+      platformMeetingId
+      {{- if index .Fields "pulseResults"}}
+      pulseResults {
+        evaluatedAt
+        id
+        meetingId
+        pulseId
+        resultJson
+        resultType
+        resultValue
+      }
+      {{- end}}
+      rawTranscript
+      {{- if index .Fields "recordSuggestions"}}
+      recordSuggestions {
+        actionId
+        fields {
+          name
+          recordType
+          value
+        }
+        id
+        integrationReferenceId
+        integrationReferenceIds
+        kind
+        parentRecordType
+        recordType
+        service
+        state
+        taskId
+        taskTitle
+      }
+      {{- end}}
+      {{- if index .Fields "scorecardResults"}}
+      scorecardResults {
+        calcType
+        calcValue
+        criteriaResults {
+          criteriaScores {
+            explanation
+            value
+          }
+          criteriaValue
+          gradingMethod
+          id
+          name
+          numericUpperScore
+          order
+        }
+        evaluatedAt
+        format
+        id
+        meetingId
+        name
+        scorecardId
+        showCumulative
+        viewable
+      }
+      {{- end}}
+      {{- if index .Fields "signalResults"}}
+      signalResults {
+        confidence
+        description
+        evaluatedAt
+        id
+        meetingId
+        priority
+        rawData
+        signalCategory
+        signalDefinitionId
+        signalType
+        title
+        urgency
+      }
+      {{- end}}
+      source
+      startedAt
+      status
+      summaryCreated
+      {{- if index .Fields "tasks"}}
+      tasks {
+        description
+        due
+        id
+        meetingId
+        status
+        title
+        assignee {
+          email
+          name
+          source
+        }
+      }
+      {{- end}}
+      topic
+      {{- if index .Fields "transcript"}}
+      transcript {
+        endAtSeconds
+        speaker
+        speakerId
+        startAtSeconds
+        text
+        timestamp
+      }
+      {{- end}}
+      transcriptCreatedAt
+      transcriptId
+      transcriptLanguage
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
