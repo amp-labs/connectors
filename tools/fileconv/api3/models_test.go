@@ -77,6 +77,46 @@ func TestExtractPropertySchemaRefName(t *testing.T) {
 			},
 			expected: "",
 		},
+		{
+			name: "object property wrapping a reference in allOf",
+			schema: &openapi3.SchemaRef{
+				Value: &openapi3.Schema{
+					AllOf: openapi3.SchemaRefs{{
+						Ref:   "#/components/schemas/CompanyReference",
+						Value: &openapi3.Schema{},
+					}},
+				},
+			},
+			expected: "CompanyReference",
+		},
+		{
+			name: "array property declared via named wrapper schema",
+			schema: &openapi3.SchemaRef{
+				Ref: "#/components/schemas/CompanyReferenceList",
+				Value: &openapi3.Schema{
+					Items: &openapi3.SchemaRef{
+						Ref:   "#/components/schemas/CompanyReference",
+						Value: &openapi3.Schema{},
+					},
+				},
+			},
+			expected: "CompanyReference",
+		},
+		{
+			name: "ambiguous composition of multiple distinct references",
+			schema: &openapi3.SchemaRef{
+				Value: &openapi3.Schema{
+					OneOf: openapi3.SchemaRefs{{
+						Ref:   "#/components/schemas/CompanyReference",
+						Value: &openapi3.Schema{},
+					}, {
+						Ref:   "#/components/schemas/ContactReference",
+						Value: &openapi3.Schema{},
+					}},
+				},
+			},
+			expected: "",
+		},
 	}
 
 	for _, tt := range tests {

@@ -419,18 +419,55 @@ func extractFields(
 }
 
 // extractPropertySchemaRefName resolves the OpenAPI component name the property schema referenced.
-// For object properties it is the property's own $ref, for array properties the $ref of its items.
+// For object properties it is the property's own $ref, for array properties the $ref of its items,
+// even when the array is declared through a named wrapper schema.
 // Empty string when the schema is inlined.
 func extractPropertySchemaRefName(propertySchema *openapi3.SchemaRef) string {
-	if name := schemaRefComponentName(propertySchema.Ref); name != "" {
-		return name
+	if propertySchema == nil {
+		return ""
 	}
 
 	if propertySchema.Value != nil && propertySchema.Value.Items != nil {
-		return schemaRefComponentName(propertySchema.Value.Items.Ref)
+		return schemaRefNameWithComposites(propertySchema.Value.Items)
 	}
 
-	return ""
+	return schemaRefNameWithComposites(propertySchema)
+}
+
+// schemaRefNameWithComposites resolves the component name of the schema itself, falling back
+// to a lone $ref within allOf/oneOf/anyOf composition, a common idiom to attach extra keywords
+// to a reference, ex: {"allOf": [{"$ref": "#/components/schemas/CompanyReference"}], "nullable": true}.
+// Multiple distinct referenced components make the type ambiguous, resulting in an empty string.
+func schemaRefNameWithComposites(schema *openapi3.SchemaRef) string {
+	if schema == nil {
+		return ""
+	}
+
+	if name := schemaRefComponentName(schema.Ref); name != "" {
+		return name
+	}
+
+	if schema.Value == nil {
+		return ""
+	}
+
+	var result string
+
+	for _, composite := range datautils.MergeSlices(schema.Value.AllOf, schema.Value.OneOf, schema.Value.AnyOf) {
+		if composite == nil {
+			continue
+		}
+
+		if name := schemaRefComponentName(composite.Ref); name != "" {
+			if result != "" && result != name {
+				return ""
+			}
+
+			result = name
+		}
+	}
+
+	return result
 }
 
 // schemaRefComponentName converts a $ref URI to the component name.
