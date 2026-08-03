@@ -51,6 +51,7 @@ providers/justcall/openapi/api-v21.json filter=lfs diff=lfs merge=lfs -text
 providers/keap/openapi/rest-v1.json filter=lfs diff=lfs merge=lfs -text
 providers/keap/openapi/rest-v2.json filter=lfs diff=lfs merge=lfs -text
 providers/klaviyo/openapi/stable.json filter=lfs diff=lfs merge=lfs -text
+providers/mailgun/metadata/openapi/mailgun.yaml filter=lfs diff=lfs merge=lfs -text
 providers/okta/metadata/openapi/management-minimal.yaml filter=lfs diff=lfs merge=lfs -text
 providers/paddle/openapi/openapi.yaml filter=lfs diff=lfs merge=lfs -text
 providers/pipedrive/openapi/specs.yaml filter=lfs diff=lfs merge=lfs -text
