@@ -1,6 +1,10 @@
 package salesforce
 
 import (
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"sync"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -311,7 +315,33 @@ func TestUpsertQuotaOptimizationFieldsFiltersUnsubscribedObjects(t *testing.T) {
 func TestUpdateExistingSubscriptionsNoWork(t *testing.T) {
 	t.Parallel()
 
-	conn, err := constructTestConnector("http://example.com")
+	var (
+		mu       sync.Mutex
+		requests int
+	)
+
+	// Answers the GET that UpdateEventChannelMember issues before its PATCH with a
+	// canonical member, so a reconcile that is not skipped runs to completion.
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		mu.Lock()
+		requests++
+		mu.Unlock()
+
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, `{"Id":"member-1","FullName":"test",`+
+			`"Metadata":{"eventChannel":"test-channel","selectedEntity":"AccountChangeEvent",`+
+			`"enrichedFields":[],"filterExpression":""}}`)
+	}))
+	defer server.Close()
+
+	requestCount := func() int {
+		mu.Lock()
+		defer mu.Unlock()
+
+		return requests
+	}
+
+	conn, err := constructTestConnector(server.URL)
 	if err != nil {
 		t.Fatalf("failed to construct test connector: %v", err)
 	}
@@ -331,23 +361,48 @@ func TestUpdateExistingSubscriptionsNoWork(t *testing.T) {
 		apexTriggersExisting: map[common.ObjectName]*ApexTrigger{},
 	}
 
-	if err := conn.updateExistingSubscriptions(t.Context(), nil, diffWithMember); err != nil {
+	provisioned := &SubscribeResult{
+		QuotaOptimizationObjectFields: map[common.ObjectName]string{"Account": "app_cdc_event_flag__c"},
+	}
+
+	if err := conn.updateExistingSubscriptions(t.Context(), nil, provisioned, diffWithMember); err != nil {
 		t.Errorf("expected nil error for nil request, got %v", err)
 	}
 
 	// A non-nil request with an empty diff (no existing objects to reconcile)
-	// is also a no-op — the iteration loops have nothing to operate on. Note
-	// that a non-nil request with non-empty diff is NOT a no-op even if the
-	// request has no quota fields: the design unconditionally PATCHes existing
-	// channel members to converge their state to the desired config (which
-	// includes "no filter" when quota config has been removed).
+	// is also a no-op — the iteration loops have nothing to operate on.
 	emptyDiff := subscriptionDiff{
 		channelMembersExisting: map[common.ObjectName]*EventChannelMember{},
 		apexTriggersExisting:   map[common.ObjectName]*ApexTrigger{},
 	}
 
-	if err := conn.updateExistingSubscriptions(t.Context(), &SubscriptionRequest{}, emptyDiff); err != nil {
+	if err := conn.updateExistingSubscriptions(
+		t.Context(), &SubscriptionRequest{}, provisioned, emptyDiff); err != nil {
 		t.Errorf("expected nil error for empty request and empty diff, got %v", err)
+	}
+
+	// An empty request over an installation with nothing provisioned short-circuits too, even
+	// with existing objects in the diff: there is no filter to clear and no trigger to orphan,
+	// so the unconditional PATCH would only write empty values over empty ones.
+	if err := conn.updateExistingSubscriptions(
+		t.Context(), &SubscriptionRequest{}, &SubscribeResult{}, diffWithMember); err != nil {
+		t.Errorf("expected nil error for empty request with nothing provisioned, got %v", err)
+	}
+
+	if got := requestCount(); got != 0 {
+		t.Errorf("expected no Salesforce requests for the no-work cases, got %d", got)
+	}
+
+	// But an empty request over an installation that DOES have a quota field provisioned must
+	// still reconcile — that is the explicit opt-out, and skipping it would leave the filter
+	// expression live in Salesforce.
+	if err := conn.updateExistingSubscriptions(
+		t.Context(), &SubscriptionRequest{}, provisioned, diffWithMember); err != nil {
+		t.Errorf("expected the opt-out to reconcile, got error %v", err)
+	}
+
+	if got := requestCount(); got == 0 {
+		t.Error("expected the opt-out to PATCH the existing channel member, got no requests")
 	}
 }
 
