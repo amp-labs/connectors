@@ -813,8 +813,8 @@ func (c *Connector) generateArrayValue(fieldMap map[string]any, depth, maxDepth 
 	// Track unique values if needed
 	uniqueMap := make(map[string]bool)
 
-	//nolint:intrange,modernize,varnamelen // Using index for array assignment
-	for i := 0; i < arraySize; i++ {
+	//nolint:modernize,varnamelen // Using index for array assignment
+	for i := range arraySize {
 		var (
 			value any
 			err   error
