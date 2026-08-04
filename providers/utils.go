@@ -687,6 +687,13 @@ func createCustomHTTPClient(ctx context.Context, //nolint:funlen,cyclop
 
 	var customClient common.AuthenticatedHTTPClient
 
+	// Fall back to the provider's registered unauthorized decider (for APIs that
+	// signal an expired session with something other than a 401) when the caller
+	// didn't supply one. The refresh handler below reuses the same decider.
+	if isUnauth == nil {
+		isUnauth = CustomUnauthorizedDeciderFor(info.Name)
+	}
+
 	if isUnauth != nil {
 		opts = append(opts, common.WithCustomIsUnauthorizedHandler(isUnauth))
 	}
