@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testconn"
+	"github.com/amp-labs/connectors/test/utils/testscenario/internal/webhook"
 )
 
 type ConnectorSubscriptionManager interface {
@@ -25,7 +26,7 @@ func SubscriptionCreateUpdateDelete(
 	createParams, updateParams SubscribeParamBuilder,
 ) {
 	fmt.Println("> TEST Subscription Create/Update/Delete")
-	publicURL, ok := getPublicWebhookURL(ctx)
+	publicURL, ok := webhook.GetPublicUrl(ctx)
 	if !ok {
 		failOnError(errors.New("webhook URL is needed"))
 	}

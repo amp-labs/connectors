@@ -73,7 +73,7 @@ func main() {
 					},
 				},
 			},
-			WebhookRouter:          testscenario.WebhookRouter{},
+			WebhookProcessor:       &testscenario.WebhookProcessor{},
 			VerificationParams:     nil,
 			AutoRemoveSubscription: true,
 		},

@@ -17,5 +17,5 @@ func main() {
 
 	conn := connTest.NewConnector(ctx)
 
-	testscenario.RunWebhookConsumer(ctx, conn, subscription.NewWebhookRouter(), nil)
+	testscenario.RunWebhookConsumer(ctx, subscription.NewWebhookProcessor(), conn, nil)
 }
