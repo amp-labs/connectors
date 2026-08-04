@@ -73,10 +73,8 @@ func getSalesforceVerificationParams(
 	return nil, nil //nolint:nilnil
 }
 
-// getSalesforceRequest builds the CDC quota-optimization subscribe payload for installations
-// whose (project, group) opted in. Returns (nil, nil) — no custom payload — when no CDC
-// optimization is configured (including when no deps.Dependencies.CDCOptimization resolver was
-// supplied).
+// getSalesforceRequest builds the CDC quota-optimization SubscriptionRequest. Nil config → (nil, nil)
+// (no change). Non-nil with nothing enabled → empty QuotaOptimizationObjectFields (teardown).
 //
 //nolint:unparam
 func getSalesforceRequest(
@@ -105,11 +103,6 @@ func getSalesforceRequest(
 		return nil, nil //nolint:nilnil // documented contract: no CDC opt-in → no custom payload.
 	}
 
-	optInObjects := optInConfig.ObjectEnabled
-	if len(optInObjects) == 0 {
-		return nil, nil //nolint:nilnil // documented contract: no CDC opt-in → no custom payload.
-	}
-
 	if deps.Project == nil {
 		return nil, errProjectResolverNotConfigured
 	}
@@ -120,7 +113,7 @@ func getSalesforceRequest(
 	}
 
 	// Build CDC event flag fields for the opted-in objects in this project's group.
-	cdcEventFlagFields, err := buildCDCEventFlagFields(appName, optInObjects)
+	cdcEventFlagFields, err := buildCDCEventFlagFields(appName, optInConfig.ObjectEnabled)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build CDC event flag fields: %w", err)
 	}
@@ -142,7 +135,7 @@ var ErrAppNameInvalid = errors.New("app name is invalid")
 // using the sanitized app name as a prefix (e.g. "myapp_cdc_event_flag__c").
 func buildCDCEventFlagFields(
 	appName string,
-	objectNames map[common.ObjectName]bool,
+	objectEnabled map[common.ObjectName]bool,
 ) (map[common.ObjectName]string, error) {
 	if appName == "" {
 		return nil, ErrAppNameRequired
@@ -154,9 +147,13 @@ func buildCDCEventFlagFields(
 	}
 
 	fieldName := sanitizedAppName + "_cdc_event_flag__c"
-	result := make(map[common.ObjectName]string, len(objectNames))
+	result := make(map[common.ObjectName]string, len(objectEnabled))
 
-	for objectName := range objectNames {
+	for objectName, enabled := range objectEnabled {
+		if !enabled {
+			continue
+		}
+
 		result[objectName] = fieldName
 	}
 
