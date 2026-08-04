@@ -2,6 +2,7 @@ package staticschema
 
 import (
 	"maps"
+	"slices"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -69,6 +70,12 @@ type FieldMetadata struct {
 	ProviderType string           `json:"providerType,omitempty"`
 	ReadOnly     *bool            `json:"readOnly,omitempty"`
 	Values       FieldValues      `json:"values,omitempty"`
+
+	// ReferenceTo is the list of object names this field references.
+	// It is applicable only to lookup fields, otherwise nil.
+	// Ex: ConnectWise Contact.company is a lookup pointing to the companies object,
+	// so its field metadata is {"valueType": "reference", "referenceTo": ["companies"]}.
+	ReferenceTo []string `json:"referenceTo,omitempty"`
 }
 
 type FieldValues []FieldValue
@@ -109,6 +116,7 @@ func (m FieldMetadataMapV2) convertToCommon() map[string]common.FieldMetadata {
 			ProviderType: field.ProviderType,
 			ReadOnly:     field.ReadOnly,
 			Values:       values,
+			ReferenceTo:  slices.Clone(field.ReferenceTo),
 		}
 	}
 
