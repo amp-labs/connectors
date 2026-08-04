@@ -52,6 +52,8 @@ testscenario.RunWebhookConsumer(ctx,
 
 ## Stage 2: Automated Subscription & Events (`ValidateSubscribeReceiveEvents`)
 
+![Microsoft Subscription Outlook Messages](../media/microsoft-subscription-outlook-messages.gif)
+
 **Prerequisite:** [PR 4 — Subscribe](./pr-4-subscribe-update-delete.md).
 
 This stage tests the full loop: creating a subscription, triggering events via the connector itself,
