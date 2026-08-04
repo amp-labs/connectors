@@ -65,8 +65,9 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							},
 							"taxCode": {
 								DisplayName:  "taxCode",
-								ValueType:    "other",
-								ProviderType: "object",
+								ValueType:    "reference",
+								ProviderType: "TaxCodeReference",
+								ReferenceTo:  []string{"taxCodes"},
 							},
 						},
 					},
@@ -109,6 +110,22 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								DisplayName:  "firstName",
 								ValueType:    "string",
 								ProviderType: "string",
+							},
+							"company": {
+								DisplayName:  "company",
+								ValueType:    "reference",
+								ProviderType: "CompanyReference",
+								ReferenceTo:  []string{"companies"},
+							},
+							"site": {
+								DisplayName:  "site",
+								ValueType:    "reference",
+								ProviderType: "SiteReference",
+							},
+							"communicationItems": {
+								DisplayName:  "communicationItems",
+								ValueType:    "other",
+								ProviderType: "array",
 							},
 							"gender": {
 								DisplayName:  "gender",

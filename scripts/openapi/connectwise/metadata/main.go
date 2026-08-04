@@ -368,6 +368,8 @@ func main() {
 	registry := datautils.NamedLists[string]{}
 
 	objects := Objects()
+	referenceObjects := referenceSchemaToObjectName(objects)
+
 	for _, object := range objects {
 		objectName := getObjectName(object)
 
@@ -380,7 +382,7 @@ func main() {
 
 		for _, field := range object.Fields {
 			schemas.Add(common.ModuleRoot, objectName, object.DisplayName, object.URLPath, object.ResponseKey,
-				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
+				convertField(field, referenceObjects), nil, object.Custom)
 		}
 
 		for _, queryParam := range object.QueryParams {
@@ -418,6 +420,125 @@ func Objects() []metadatadef.Schema {
 	goutils.MustBeNil(err)
 
 	return readObjects
+}
+
+// referenceSchemaToObjectName maps ConnectWise reference schema names to the object they point to.
+// Every readable object is described by an item schema (ex: "Contact" for the contacts object),
+// and lookup fields on other objects reference it via a dedicated "*Reference" schema.
+// Reference schema naming is not fully uniform, so each object registers several aliases,
+// see referenceSchemaAliases. When multiple objects claim one reference schema, the object
+// named after it wins, ex: MemberReference -> "system/members" rather than "withSso".
+// Otherwise the mapping is ambiguous and dropped with a warning.
+func referenceSchemaToObjectName(objects []metadatadef.Schema) map[string]string {
+	candidates := datautils.NamedLists[string]{}
+
+	for _, object := range objects {
+		if object.ItemSchemaName == "" {
+			continue
+		}
+
+		for _, referenceName := range referenceSchemaAliases(object.ItemSchemaName, object.URLPath) {
+			candidates.Add(referenceName, getObjectName(object))
+		}
+	}
+
+	result := make(map[string]string)
+
+	for referenceName, objectNames := range candidates {
+		objectName, ok := selectCanonicalObject(referenceName, datautils.NewSet(objectNames...).List())
+		if !ok {
+			slog.Warn("ambiguous reference schema, referenceTo will be omitted",
+				"referenceSchema", referenceName,
+				"objects", objectNames,
+			)
+
+			continue
+		}
+
+		result[referenceName] = objectName
+	}
+
+	return result
+}
+
+// referenceSchemaAliases returns the reference schema names that may point at the object
+// whose items are described by itemSchemaName. ConnectWise does not name these uniformly:
+//   - exact:      Contact           -> ContactReference
+//   - namespaced: Finance.Currency  -> CurrencyReference
+//   - pluralized: BillingTerm       -> BillingTermsReference
+//   - prefixed:   Location (object under /system/) -> SystemLocationReference
+//
+// Item schemas that already are a "*Reference" (ex: DocumentReference) are used as is.
+func referenceSchemaAliases(itemSchemaName, urlPath string) []string {
+	base := itemSchemaName[strings.LastIndex(itemSchemaName, ".")+1:]
+	if strings.HasSuffix(base, "Reference") {
+		return []string{base}
+	}
+
+	aliases := datautils.NewSet(
+		base+"Reference",
+		naming.NewPluralString(base).String()+"Reference",
+	)
+
+	if strings.HasPrefix(urlPath, "/system/") {
+		aliases.AddOne("System" + base + "Reference")
+	}
+
+	return aliases.List()
+}
+
+// selectCanonicalObject picks the object a reference schema points to.
+// A single candidate wins outright, otherwise the sole object whose last URL segment
+// matches the pluralized schema name, ex: MemberReference -> {"withSso", "system/members"}
+// -> "system/members". Zero or several such matches are ambiguous.
+func selectCanonicalObject(referenceName string, objectNames []string) (string, bool) {
+	if len(objectNames) == 1 {
+		return objectNames[0], true
+	}
+
+	base := strings.TrimSuffix(referenceName, "Reference")
+	pluralName := naming.NewPluralString(base).String()
+
+	matches := make([]string, 0)
+
+	for _, objectName := range objectNames {
+		segment := objectName[strings.LastIndex(objectName, "/")+1:]
+		if strings.EqualFold(segment, pluralName) {
+			matches = append(matches, objectName)
+		}
+	}
+
+	if len(matches) == 1 {
+		return matches[0], true
+	}
+
+	return "", false
+}
+
+// convertField enhances the generic OpenAPI conversion with ConnectWise reference handling.
+// Lookup fields are represented in the spec as objects referencing a "*Reference" schema,
+// ex: Contact.company -> CompanyReference. They are reported as a reference value type,
+// pointing to the referenced object whenever the target is a supported object.
+func convertField(
+	field metadatadef.Field, referenceObjects map[string]string,
+) staticschema.FieldMetadataMapV2 {
+	if field.Type != "object" || !strings.HasSuffix(field.SchemaRefName, "Reference") {
+		return utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field)
+	}
+
+	var referenceTo []string
+	if objectName, found := referenceObjects[field.SchemaRefName]; found {
+		referenceTo = []string{objectName}
+	}
+
+	return staticschema.FieldMetadataMapV2{
+		field.Name: staticschema.FieldMetadata{
+			DisplayName:  field.Name,
+			ValueType:    common.ValueTypeReference,
+			ProviderType: field.SchemaRefName,
+			ReferenceTo:  referenceTo,
+		},
+	}
 }
 
 func collectionDisplayName(displayName string) string {
