@@ -41,12 +41,12 @@ func init() {
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://www.monaco.com/global/logo-mark-square.svg",
-				LogoURL: "https://www.monaco.com/global/logo-mark.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1785823470/media/monaco.com_1785823468.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1785823514/media/monaco.com_1785823514.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://www.monaco.com/global/logo-mark-square.svg",
-				LogoURL: "https://www.monaco.com/global/logo-mark-square.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1785823470/media/monaco.com_1785823468.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1785823514/media/monaco.com_1785823514.svg",
 			},
 		},
 	})
