@@ -68,6 +68,7 @@ import (
 	"github.com/amp-labs/connectors/providers/gorgias"
 	gotoconn "github.com/amp-labs/connectors/providers/goto"
 	"github.com/amp-labs/connectors/providers/granola"
+	"github.com/amp-labs/connectors/providers/greenhouse"
 	"github.com/amp-labs/connectors/providers/groove"
 	"github.com/amp-labs/connectors/providers/gusto"
 	"github.com/amp-labs/connectors/providers/happyfox"
@@ -222,6 +223,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Gorgias:                    wrapper(newGorgiasConnector),
 	providers.GoTo:                       wrapper(newGoToConnector),
 	providers.Granola:                    wrapper(newGranolaConnector),
+	providers.Greenhouse:                 wrapper(newGreenhouseConnector),
 	providers.Groove:                     wrapper(newGrooveConnector),
 	providers.Gusto:                      wrapper(newGustoConnector),
 	providers.GustoDemo:                  wrapper(newGustoDemoConnector),
@@ -1254,6 +1256,10 @@ func newTalkdeskConnector(params common.ConnectorParams) (*talkdesk.Connector, e
 
 func newGranolaConnector(params common.ConnectorParams) (*granola.Connector, error) {
 	return granola.NewConnector(params)
+}
+
+func newGreenhouseConnector(params common.ConnectorParams) (*greenhouse.Connector, error) {
+	return greenhouse.NewConnector(params)
 }
 
 func newHousecallProConnector(params common.ConnectorParams) (*housecallpro.Connector, error) {
