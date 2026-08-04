@@ -1,0 +1,75 @@
+specVersion: 1.0.0
+integrations:
+  - name: readAndWriteSendGrid
+    displayName: SendGrid Read and Write
+    provider: sendGrid
+    read:
+      objects:
+        - objectName: lists
+          destination: sendGridWebhook
+          schedule: "0 */6 * * *"
+          # Field names: https://www.twilio.com/docs/sendgrid/api-reference/lists/get-all-lists
+          requiredFields:
+            - fieldName: id
+            - fieldName: name
+          optionalFieldsAuto: all
+          backfill:
+            defaultPeriod:
+              fullHistory: true
+
+        - objectName: templates
+          destination: sendGridWebhook
+          schedule: "0 */6 * * *"
+          # Field names: https://www.twilio.com/docs/sendgrid/api-reference/templates-api/retrieve-all-templates
+          requiredFields:
+            - fieldName: id
+            - fieldName: name
+          optionalFields:
+            - fieldName: generation
+            - fieldName: updated_at
+          backfill:
+            defaultPeriod:
+              fullHistory: true
+
+        - objectName: bounces
+          destination: sendGridWebhook
+          schedule: "0 */6 * * *"
+          # Field names: https://www.twilio.com/docs/sendgrid/api-reference/bounces-api/retrieve-all-bounces
+          requiredFields:
+            - fieldName: email
+          optionalFields:
+            - fieldName: created
+            - fieldName: reason
+            - fieldName: status
+          backfill:
+            defaultPeriod:
+              fullHistory: true
+
+        - objectName: asm_groups
+          destination: sendGridWebhook
+          schedule: "0 */6 * * *"
+          # Field names: https://www.twilio.com/docs/sendgrid/api-reference/suppressions-unsubscribe-groups/retrieve-all-suppression-groups
+          requiredFields:
+            - fieldName: id
+            - fieldName: name
+          optionalFields:
+            - fieldName: description
+            - fieldName: is_default
+          backfill:
+            defaultPeriod:
+              fullHistory: true
+
+    write:
+      objects:
+        - objectName: lists
+        - objectName: templates
+        - objectName: asm_groups
+
+    delete:
+      objects:
+        - objectName: lists
+        - objectName: templates
+        - objectName: asm_groups
+
+    proxy:
+      enabled: true
