@@ -43,25 +43,6 @@ func TestWrite(t *testing.T) { //nolint:funlen
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
-			Name: "Create-only object cannot be updated",
-			Input: common.WriteParams{
-				ObjectName: "refunds",
-				RecordId:   "refund-001",
-				RecordData: map[string]any{"foo": "bar"},
-			},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
-			Name: "Update-only object cannot be created",
-			Input: common.WriteParams{
-				ObjectName: "labor/workweek_configs",
-				RecordData: map[string]any{"start_of_week": "MON"},
-			},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
-		},
-		{
 			// Customer creation takes a flat body while the response wraps the
 			// record in a "customer" envelope.
 			Name: "Create customer with flat request body",

@@ -16,29 +16,26 @@ import (
 
 const idempotencyKeyField = "idempotency_key"
 
-// writeOperation is the create or update half of a writeConfig, resolved
-// against the incoming WriteParams.
-type writeOperation struct {
-	method           string
-	path             string
-	envelopeKey      string
-	needsIdempotency bool
-	idInBody         bool
-}
-
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	cfg, ok := writeObjects[params.ObjectName]
-	if !ok {
+	cfg, ok := objects[params.ObjectName]
+	if !ok || !cfg.supportsWrite {
 		return nil, fmt.Errorf("%w: %q", common.ErrOperationNotSupportedForObject, params.ObjectName)
 	}
 
-	operation, err := resolveWriteOperation(cfg, params)
-	if err != nil {
-		return nil, err
+	path := cfg.path
+	if cfg.writePath != "" {
+		path = cfg.writePath
 	}
 
-	urlParts := []string{apiVersion, operation.path}
-	if params.IsUpdate() && !operation.idInBody {
+	// Everything is a POST except plain updates, which PUT to path/{id}.
+	// upsertViaPost updates (catalog) keep POSTing to the create path with the
+	// record id in the body instead.
+	method := http.MethodPost
+	urlParts := []string{apiVersion, path}
+
+	if params.IsUpdate() && !cfg.upsertViaPost {
+		method = http.MethodPut
+
 		urlParts = append(urlParts, params.RecordId)
 	}
 
@@ -47,7 +44,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	body, err := buildWriteBody(cfg, operation, params)
+	body, err := buildWriteBody(cfg, params)
 	if err != nil {
 		return nil, err
 	}
@@ -57,49 +54,15 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	return http.NewRequestWithContext(ctx, operation.method, url.String(), bytes.NewReader(jsonData))
-}
-
-// resolveWriteOperation picks the create or update endpoint for the request,
-// erroring when the object doesn't support that operation.
-func resolveWriteOperation(cfg writeConfig, params common.WriteParams) (*writeOperation, error) {
-	if params.IsUpdate() {
-		if cfg.updatePath == "" {
-			return nil, fmt.Errorf("%w: %q cannot be updated", common.ErrOperationNotSupportedForObject, params.ObjectName)
-		}
-
-		method := cfg.updateMethod
-		if method == "" {
-			method = http.MethodPut
-		}
-
-		return &writeOperation{
-			method:           method,
-			path:             cfg.updatePath,
-			envelopeKey:      cfg.updateKey,
-			needsIdempotency: cfg.updateNeedsIdempotency,
-			idInBody:         cfg.updateIDInBody,
-		}, nil
-	}
-
-	if cfg.createPath == "" {
-		return nil, fmt.Errorf("%w: %q cannot be created", common.ErrOperationNotSupportedForObject, params.ObjectName)
-	}
-
-	return &writeOperation{
-		method:           http.MethodPost,
-		path:             cfg.createPath,
-		envelopeKey:      cfg.createKey,
-		needsIdempotency: cfg.createNeedsIdempotency,
-	}, nil
+	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
 // buildWriteBody shapes RecordData into the request body Square expects:
 // topLevelFields and idempotency_key are hoisted out of the record to the top
-// level, the rest is wrapped under the envelope key (or sent flat without one).
+// level, the rest is wrapped under writeKey (or sent flat without one).
 // When the endpoint requires an idempotency key and the caller didn't supply
 // one, a UUID is generated so callers don't need to know Square's quirk.
-func buildWriteBody(cfg writeConfig, operation *writeOperation, params common.WriteParams) (map[string]any, error) {
+func buildWriteBody(cfg objectConfig, params common.WriteParams) (map[string]any, error) {
 	record, err := common.RecordDataToMap(params.RecordData)
 	if err != nil {
 		return nil, err
@@ -119,16 +82,21 @@ func buildWriteBody(cfg writeConfig, operation *writeOperation, params common.Wr
 	if value, ok := record[idempotencyKeyField]; ok {
 		body[idempotencyKeyField] = value
 		delete(record, idempotencyKeyField)
-	} else if operation.needsIdempotency {
+	} else if cfg.needsIdempotency {
 		body[idempotencyKeyField] = uuid.NewString()
 	}
 
-	if operation.idInBody && params.RecordId != "" {
+	if cfg.upsertViaPost && params.IsUpdate() && params.RecordId != "" {
 		record["id"] = params.RecordId
 	}
 
-	if operation.envelopeKey != "" {
-		body[operation.envelopeKey] = record
+	envelopeKey := cfg.writeKey
+	if !params.IsUpdate() && cfg.flatCreate {
+		envelopeKey = ""
+	}
+
+	if envelopeKey != "" {
+		body[envelopeKey] = record
 	} else {
 		maps.Copy(body, record)
 	}
@@ -147,13 +115,18 @@ func (c *Connector) parseWriteResponse(
 		return &common.WriteResult{Success: true}, nil
 	}
 
-	cfg := writeObjects[params.ObjectName]
+	cfg := objects[params.ObjectName]
 
 	// Square wraps the written record in an envelope, e.g. {"customer": {...}}.
 	record := body
 
-	if cfg.responseKey != "" {
-		wrapped, err := jsonquery.New(body).ObjectOptional(cfg.responseKey)
+	responseKey := cfg.writeResponseKey
+	if responseKey == "" {
+		responseKey = cfg.writeKey
+	}
+
+	if responseKey != "" {
+		wrapped, err := jsonquery.New(body).ObjectOptional(responseKey)
 		if err != nil {
 			return nil, err
 		}
