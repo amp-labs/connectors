@@ -1,0 +1,21 @@
+{
+  "items": [
+    {
+      "id": "dom-1",
+      "account_id": "acc-1",
+      "name": "example.com",
+      "registered_at": "2026-01-01T00:00:00Z",
+      "pool": "dynamic_good",
+      "bounce_rate": 0.01,
+      "complaint_rate": 0.001,
+      "processed_count": 100
+    }
+  ],
+  "total_items": 2,
+  "paging": {
+    "Next": "https://api.mailgun.net/v1/dynamic_pools/domains?limit=1&page=next",
+    "Previous": "",
+    "First": "https://api.mailgun.net/v1/dynamic_pools/domains?limit=1",
+    "Last": ""
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "total_count": 2,
+  "items": [
+    {
+      "id": "1",
+      "name": "example.com",
+      "created_at": "Mon, 02 Jan 2006 15:04:05 MST",
+      "state": "active",
+      "type": "custom"
+    }
+  ]
+}

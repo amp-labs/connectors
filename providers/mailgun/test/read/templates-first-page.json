@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "name": "ampersand",
+      "description": "test",
+      "createdAt": "Fri, 17 Jul 2026 09:45:09 UTC",
+      "createdBy": "html",
+      "id": "019f6f77-2ecc-7677-9408-f3018a86915c"
+    }
+  ],
+  "paging": {
+    "previous": "https://api.mailgun.net/v4/templates?page=previous&p=ampersand&limit=1",
+    "first": "https://api.mailgun.net/v4/templates?limit=1",
+    "next": "https://api.mailgun.net/v4/templates?page=next&p=ampersand&limit=1",
+    "last": "https://api.mailgun.net/v4/templates?page=last&limit=1"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "id": "hist-1",
+      "timestamp": "2026-01-15T10:00:00Z",
+      "domain_name": "example.com",
+      "reason": "band_change",
+      "account_id": "acc-1"
+    }
+  ],
+  "total_items": 2,
+  "paging": {
+    "Next": "https://api.mailgun.net/v1/dynamic_pools/history?Limit=1&page=next",
+    "Previous": "",
+    "First": "https://api.mailgun.net/v1/dynamic_pools/history?Limit=1",
+    "Last": ""
+  }
+}
