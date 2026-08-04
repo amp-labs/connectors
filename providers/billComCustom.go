@@ -1,6 +1,7 @@
 package providers
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -76,6 +77,10 @@ func init() {
 		ConnectSteps: []AuthStep{{HTTP: &loginStep}},
 		RefreshSteps: []HTTPStep{loginStep},
 	})
+
+	// Bill.com signals an expired session with an error body, not a 401, so a
+	// custom decider drives the reactive re-login path.
+	RegisterCustomUnauthorizedDecider(BillComCustom, billComIsUnauthorized)
 }
 
 // billComBuildLoginRequest builds the form-encoded Login.json request from the
@@ -153,4 +158,40 @@ func billComParseLogin(_ context.Context, state AuthContext, resp *http.Response
 	}
 
 	return state, nil
+}
+
+// billComIsUnauthorized reports whether a Bill.com response indicates an expired
+// or invalid session. Bill.com returns HTTP 200 with a non-zero response_status
+// and a session-related error rather than a 401, so it inspects the body —
+// restoring it for the caller — and matches on the error message so it doesn't
+// depend on exact error codes. Returning true triggers a re-login and replay.
+func billComIsUnauthorized(resp *http.Response) (bool, error) {
+	if resp.Body == nil {
+		return false, nil
+	}
+
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	// Restore the body so the caller (and any refresh replay) can still read it.
+	resp.Body = io.NopCloser(bytes.NewReader(bodyBytes))
+
+	var body struct {
+		ResponseStatus int `json:"response_status"`
+		ResponseData   struct {
+			ErrorMessage string `json:"error_message"`
+		} `json:"response_data"`
+	}
+
+	if err := json.Unmarshal(bodyBytes, &body); err != nil {
+		return false, nil //nolint:nilerr // non-JSON body: leave it to default status-code handling
+	}
+
+	if body.ResponseStatus == 0 {
+		return false, nil
+	}
+
+	return strings.Contains(strings.ToLower(body.ResponseData.ErrorMessage), "session"), nil
 }
