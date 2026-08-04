@@ -18,6 +18,8 @@ All prerequisite PRs are merged:
 - [PR 4 — Subscribe / Update / Delete](./pr-4-subscribe-update-delete.md)
 - [PR 5 — Maintenance](./pr-5-maintenance.md) *(only if the provider needs it)*
 
+Additionally, the implementation should have been verified using the automated scenarios in [Live Tests](./live-tests.md).
+
 ## What you implement
 
 In `providers/<provider>.go`, flip the gate — `Support.Subscribe`. That's the only change:
@@ -36,8 +38,7 @@ Support: Support{
 
 ## Live testing (required)
 
-Because this PR turns the provider on, it must be verified **live on Ampersand** — not just with the
-local harness from PR 3.
+Because this PR turns the provider on, it must be verified **live on Ampersand** — not just with the local harness or [live tests](./live-tests.md).
 
 1. Install the provider on **Ampersand**. The **MailMonkey demo app** is a convenient test app for this.
 2. Create an installation and subscribe.

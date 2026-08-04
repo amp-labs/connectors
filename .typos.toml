@@ -24,6 +24,7 @@ extend-exclude = [
     "providers/salesforce/metadata.go",
     # Files that are hard coded exceptions
     "providers/jobber/subscriptionEvent.go", # Field "occuredAt" with 1 "r" is a valid key used by the provider.
+    "providers/zoho/internal/mail/subscriptionEvent.go",  # taskEventType method uses string matching which shouldn't be corrected.
 ]
 
 ignore-hidden = true

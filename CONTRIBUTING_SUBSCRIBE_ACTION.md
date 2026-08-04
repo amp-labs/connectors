@@ -31,6 +31,8 @@ renews what Subscribe created). `Enable` is always last.
   ProviderInfo + factory wiring (PR 1, gated off)          ← base, merge first
 ```
 
+> **Live tests are not a separate PR.** Developers create live tests as part of the PRs above (e.g. Stage 1 tests during PR 2, Stage 2 & 3 during PR 4). See [**`live-tests.md`**](./docs/subscribe-onboarding/live-tests.md).
+
 > The PR order is not the same as the interface ladder. `RegisterSubscribeConnector` *embeds*
 > `SubscribeConnector`, yet registration is *sequenced before* subscribe because its result is an input
 > to `Subscribe`. (The full `RegisterSubscribeConnector` compile-time assertion is therefore added once
@@ -81,6 +83,8 @@ implement, files, step-by-step, an example, a checklist, and reviewer focus. Lin
 | 4 | Subscribe / Update / Delete | [pr-4-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-4-subscribe-update-delete.md) | ✅ |
 | 5 | Maintenance | [pr-5-maintenance.md](./docs/subscribe-onboarding/pr-5-maintenance.md) | ⬜ if needed |
 | 6 | Enable the provider | [pr-6-enable.md](./docs/subscribe-onboarding/pr-6-enable.md) | ✅ (last) |
+
+> **Live tests** are performed as part of PRs 2 and 4. See [**`live-tests.md`**](./docs/subscribe-onboarding/live-tests.md).
 
 > **PostProcess is not a connector PR.** Some providers need a third-party setup step the connector
 > can't perform — it lives in a *different* provider's system than the connector authenticates to (e.g.

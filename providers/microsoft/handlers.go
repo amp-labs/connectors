@@ -30,7 +30,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	if needsAdvancedQuery(params.ObjectName) {
 		// Directory objects need advanced query to $filter on createdDateTime; the
 		// header is required on every page (including @odata.nextLink follow-ups).
-		req.Header.Set("ConsistencyLevel", "eventual")
+		req.Header.Set("ConsistencyLevel", "eventual") // nolint:canonicalheader
 	}
 
 	return req, nil
