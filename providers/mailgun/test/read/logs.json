@@ -1,0 +1,25 @@
+{
+  "start": "Tue, 04 Aug 2026 10:00:00 +0000",
+  "end": "Wed, 05 Aug 2026 10:00:00 +0000",
+  "items": [
+    {
+      "@timestamp": "2026-08-04T12:00:00Z",
+      "id": "log-1",
+      "event": "delivered",
+      "account": {"id": "66442309b8d50db47ba12658"}
+    },
+    {
+      "@timestamp": "2026-08-04T13:00:00Z",
+      "id": "log-2",
+      "event": "opened",
+      "account": {"id": "66442309b8d50db47ba12658"}
+    }
+  ],
+  "pagination": {
+    "previous": "",
+    "first": "",
+    "next": "tok-2",
+    "last": "",
+    "total": 3
+  }
+}

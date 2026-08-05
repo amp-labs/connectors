@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "id": "h1",
+      "name": "bounce-rate",
+      "metric": "hard_bounce_rate",
+      "comparator": ">",
+      "limit": 5,
+      "latest_value": 7.5,
+      "dimension": "domain",
+      "dimension_value": "example.com",
+      "triggered": true,
+      "created_at": "Tue, 15 Sep 2026 10:00:00 UTC",
+      "updated_at": "Tue, 15 Sep 2026 10:00:00 UTC",
+      "expires_at": "Wed, 16 Sep 2026 10:00:00 UTC",
+      "parent_account_id": "acc-1",
+      "subaccount_id": null
+    },
+    {
+      "id": "h0",
+      "name": "complaint-rate",
+      "metric": "complaint_rate",
+      "comparator": ">",
+      "limit": 0.1,
+      "latest_value": 0.4,
+      "dimension": "domain",
+      "dimension_value": "example.com",
+      "triggered": true,
+      "created_at": "Mon, 01 Sep 2025 10:00:00 UTC",
+      "updated_at": "Mon, 01 Sep 2025 10:00:00 UTC",
+      "expires_at": "Tue, 02 Sep 2025 10:00:00 UTC",
+      "parent_account_id": "acc-1",
+      "subaccount_id": null
+    }
+  ],
+  "total": 2
+}
