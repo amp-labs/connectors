@@ -1,0 +1,7 @@
+{
+  "total_count": 5,
+  "items": [
+    {"id": "1", "name": "alpha.example.com", "state": "active"},
+    {"id": "2", "name": "beta.example.com", "state": "unverified"}
+  ]
+}

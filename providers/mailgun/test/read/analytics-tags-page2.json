@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "account_id": "66442309b8d50db47ba12658",
+      "tag": "receipts",
+      "description": "transactional receipts",
+      "first_seen": "Wed, 15 May 2024 02:50:53 +0000",
+      "last_seen": "Sat, 01 Aug 2026 08:00:00 +0000"
+    }
+  ],
+  "pagination": {
+    "sort": "lastseen:desc",
+    "skip": 2,
+    "limit": 2,
+    "total": 3
+  }
+}

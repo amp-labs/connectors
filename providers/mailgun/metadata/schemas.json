@@ -273,6 +273,53 @@
             }
           }
         },
+        "analytics/tags": {
+          "displayName": "Tags",
+          "path": "1/analytics/tags",
+          "responseKey": "items",
+          "fields": {
+            "account_id": {
+              "displayName": "account_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "account_name": {
+              "displayName": "account_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_seen": {
+              "displayName": "first_seen",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "last_seen": {
+              "displayName": "last_seen",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "metrics": {
+              "displayName": "metrics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "parent_account_id": {
+              "displayName": "parent_account_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tag": {
+              "displayName": "tag",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "bounces": {
           "displayName": "Bounces",
           "path": "3/{domain_name}/bounces",
@@ -858,33 +905,6 @@
               "displayName": "priority",
               "valueType": "int",
               "providerType": "integer"
-            }
-          }
-        },
-        "tags": {
-          "displayName": "Tags",
-          "path": "3/{domain}/tags",
-          "responseKey": "items",
-          "fields": {
-            "description": {
-              "displayName": "description",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "first-seen": {
-              "displayName": "first-seen",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "last-seen": {
-              "displayName": "last-seen",
-              "valueType": "string",
-              "providerType": "string"
-            },
-            "tag": {
-              "displayName": "tag",
-              "valueType": "string",
-              "providerType": "string"
             }
           }
         },

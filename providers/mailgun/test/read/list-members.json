@@ -1,0 +1,7 @@
+{
+  "total_count": 2,
+  "items": [
+    {"address": "alice@example.com", "name": "Alice", "subscribed": true},
+    {"address": "bob@example.com", "name": "Bob", "subscribed": false}
+  ]
+}

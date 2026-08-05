@@ -91,7 +91,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 		},
 		{
 			Name:       "Describe multiple objects at once",
-			Input:      []string{"webhooks", "routes", "tags"},
+			Input:      []string{"webhooks", "routes", "analytics/tags"},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -110,10 +110,13 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 							"expression": "expression",
 						},
 					},
-					"tags": {
+					// The modern Tags API (POST /v1/analytics/tags), which replaces
+					// the deprecated GET /v3/{domain}/tags endpoint.
+					"analytics/tags": {
 						DisplayName: "Tags",
 						FieldsMap: map[string]string{
-							"tag": "tag",
+							"tag":         "tag",
+							"description": "description",
 						},
 					},
 				},
