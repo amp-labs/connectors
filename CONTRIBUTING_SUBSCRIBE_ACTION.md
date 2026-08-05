@@ -15,10 +15,12 @@ The stack is **linear** — each PR builds on the one below it. Registration (PR
 (PR 5) are **optional**; include them only if the provider needs them. Their positions are fixed by
 dependency: **Registration comes before Subscribe** (it creates a shared resource that all object
 subscriptions hang off of, which `Subscribe` consumes), and **Maintenance comes after Subscribe** (it
-renews what Subscribe created). `Enable` is always last.
+renews what Subscribe created). **ProviderConfig comes after the connector methods** (it declares how the caller drives what PR 2–5 built). `Enable` is always last.
 
 ```
-  Enable the provider (PR 6)             flip Support.Subscribe on   ← merge last
+  Enable the provider (PR 7)             flip Support.Subscribe on   ← merge last
+        ▲
+  ProviderConfig declaration (PR 6)      subscribe/<provider>.go + registry entry — how the caller drives PR 2–5
         ▲
   Maintenance (PR 5, if needed)          SubscriptionMaintainerConnector — renews after subscribe
         ▲
@@ -45,7 +47,8 @@ renews what Subscribe created). `Enable` is always last.
 | 3 | Registration | `RegisterSubscribeConnector` — before Subscribe | ⬜ if needed |
 | 4 | Subscribe / Update / Delete | `SubscribeConnector` | ✅ |
 | 5 | Maintenance | `SubscriptionMaintainerConnector` — after Subscribe | ⬜ if needed |
-| 6 | Enable the provider | flips the gate on | ✅ (last) |
+| 6 | ProviderConfig declaration | `subscribe/<provider>.go` + `providerConfigs` registry entry | ✅ |
+| 7 | Enable the provider | flips the gate on | ✅ (last) |
 
 ---
 
@@ -82,7 +85,8 @@ implement, files, step-by-step, an example, a checklist, and reviewer focus. Lin
 | 3 | Registration | [pr-3-registration.md](./docs/subscribe-onboarding/pr-3-registration.md) | ⬜ if needed |
 | 4 | Subscribe / Update / Delete | [pr-4-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-4-subscribe-update-delete.md) | ✅ |
 | 5 | Maintenance | [pr-5-maintenance.md](./docs/subscribe-onboarding/pr-5-maintenance.md) | ⬜ if needed |
-| 6 | Enable the provider | [pr-6-enable.md](./docs/subscribe-onboarding/pr-6-enable.md) | ✅ (last) |
+| 6 | ProviderConfig declaration | [pr-6-provider-config.md](./docs/subscribe-onboarding/pr-6-provider-config.md) | ✅ |
+| 7 | Enable the provider | [pr-7-enable.md](./docs/subscribe-onboarding/pr-7-enable.md) | ✅ (last) |
 
 > **Live tests** are performed as part of PRs 2 and 4. See [**`live-tests.md`**](./docs/subscribe-onboarding/live-tests.md).
 
@@ -109,11 +113,13 @@ production, even after they merge — that's what makes incremental merging safe
 `Registration` / `PostProcess` / `Maintenance` — are only consulted once subscribe is active, so
 declaring them earlier is harmless.)
 
+> **Testing while gated:** the gate doesn't block you from testing. Installations under the Ampersand project **`connectors-test-project`** (id `8b257c62-6b89-4b9b-9271-6fe3f6b700f1`) **bypass the support gates** — the platform treats core support flags (including subscribe) as enabled for that project. Use it to exercise the full subscribe flow end-to-end once PR 6 (ProviderConfig) is in, before the Enable PR flips the switch for everyone. See [Live testing before the flip](./docs/subscribe-onboarding/pr-6-provider-config.md#live-testing-before-the-flip).
+
 ---
 
 ## Managing the stack
 
-Branch each PR off the one below it: PR 1 → 2 → 3 → 4 → 5 → 6. Skip PR 3 (Registration) and/or PR 5
+Branch each PR off the one below it: PR 1 → 2 → 3 → 4 → 5 → 6 → 7. Skip PR 3 (Registration) and/or PR 5
 (Maintenance) if the provider doesn't need them — the chain just closes up.
 
 ```
@@ -123,7 +129,8 @@ main
          └─ subscribe/<provider>/registration  (PR 3, if needed)
              └─ subscribe/<provider>/subscribe   (PR 4)
                  └─ subscribe/<provider>/maintenance  (PR 5, if needed)
-                     └─ subscribe/<provider>/enable     (PR 6, merge last)
+                     └─ subscribe/<provider>/provider-config  (PR 6)
+                         └─ subscribe/<provider>/enable     (PR 7, merge last)
 ```
 
 - Skip PR 3 / PR 5 entirely when the provider doesn't need registration / maintenance; the next PR

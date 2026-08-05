@@ -1,4 +1,4 @@
-# PR 6 — Enable the provider *(top)*
+# PR 7 — Enable the provider *(top)*
 
 > Part of [Contributing a Subscribe Action](../../CONTRIBUTING_SUBSCRIBE_ACTION.md). Shared concepts:
 > [`SUBSCRIBE_REFERENCES.md`](../../SUBSCRIBE_REFERENCES.md).
@@ -17,6 +17,7 @@ All prerequisite PRs are merged:
 - [PR 3 — Registration](./pr-3-registration.md) *(only if the provider needs it)*
 - [PR 4 — Subscribe / Update / Delete](./pr-4-subscribe-update-delete.md)
 - [PR 5 — Maintenance](./pr-5-maintenance.md) *(only if the provider needs it)*
+- [PR 6 — ProviderConfig declaration](./pr-6-provider-config.md)
 
 Additionally, the implementation should have been verified using the automated scenarios in [Live Tests](./live-tests.md).
 
@@ -38,7 +39,7 @@ Support: Support{
 
 ## Live testing (required)
 
-Because this PR turns the provider on, it must be verified **live on Ampersand** — not just with the local harness or [live tests](./live-tests.md).
+Because this PR turns the provider on, it must be verified **live on Ampersand** — not just with the local harness or [live tests](./live-tests.md). If you already validated end-to-end under `connectors-test-project` ([PR 6 — Live testing before the flip](./pr-6-provider-config.md#live-testing-before-the-flip)), reuse that setup here — but note that project **bypasses the gate**, so it doesn't by itself prove the flag flip; run this verification as described below.
 
 1. Install the provider on **Ampersand**. The **MailMonkey demo app** is a convenient test app for this.
 2. Create an installation and subscribe.
