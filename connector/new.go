@@ -258,6 +258,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Mixmax:                    wrapper(newMixmaxConnector),
 	providers.MockAttio:                 wrapper(newMockAttioConnector),
 	providers.MockConnectWise:           wrapper(newMockConnectWiseConnector),
+	providers.MockGmail:                 wrapper(newMockGmailConnector),
 	providers.MockHubspot:               wrapper(newMockHubspotConnector),
 	providers.MockSalesforce:            wrapper(newMockSalesforceConnector),
 	providers.MockSalesloft:             wrapper(newMockSalesloftConnector),
@@ -466,6 +467,13 @@ func newMockSalesforceConnector(_ common.ConnectorParams) (*mocksub.Connector, e
 // canned records from the provider's process-wide mocksub store.
 func newMockConnectWiseConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
 	return mocksub.NewConnector(providers.MockConnectWise), nil
+}
+
+// newMockGmailConnector constructs the mockgmail subscribe-testing connector (see the mocksub
+// package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned records
+// from the provider's process-wide mocksub store.
+func newMockGmailConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
+	return mocksub.NewConnector(providers.MockGmail), nil
 }
 
 func newDynamicsCRMConnector(
