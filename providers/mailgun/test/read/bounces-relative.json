@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "address": "rel@bar.com",
+      "code": "550",
+      "error": "No such mailbox",
+      "created_at": "Thu, 11 Dec 2025 01:49:40 UTC"
+    }
+  ],
+  "paging": {
+    "previous": "/v3/example.com/bounces?page=previous&limit=100",
+    "first": "/v3/example.com/bounces?limit=100",
+    "next": "/v3/example.com/bounces?page=next&limit=100",
+    "last": "/v3/example.com/bounces?page=last&limit=100"
+  }
+}

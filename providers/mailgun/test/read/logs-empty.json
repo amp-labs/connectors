@@ -1,0 +1,12 @@
+{
+  "start": "Sat, 01 Aug 2026 00:00:00 +0000",
+  "end": "Wed, 05 Aug 2026 10:00:00 +0000",
+  "items": null,
+  "pagination": {
+    "previous": "",
+    "first": "",
+    "next": "tok-3",
+    "last": "",
+    "total": 3
+  }
+}
