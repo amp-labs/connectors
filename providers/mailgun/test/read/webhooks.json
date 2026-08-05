@@ -1,0 +1,16 @@
+{
+  "webhooks": [
+    {
+      "webhook_id": "5f1b1e2a3c4d5e6f7a8b9c0d",
+      "description": "Production alerts webhook",
+      "url": "https://api.example.com/webhooks/mailgun",
+      "event_types": ["delivered", "permanent_fail"]
+    },
+    {
+      "webhook_id": "5f1b1e2a3c4d5e6f7a8b9c0e",
+      "description": "Analytics webhook",
+      "url": "https://analytics.example.com/mailgun",
+      "event_types": ["opened", "clicked"]
+    }
+  ]
+}
