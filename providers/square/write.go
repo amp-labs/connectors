@@ -22,26 +22,24 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, fmt.Errorf("%w: %q", common.ErrOperationNotSupportedForObject, params.ObjectName)
 	}
 
-	// Everything is a POST except plain updates, which PUT to path/{id}.
-	// Upsert endpoints (catalog) keep POSTing to upsertPath with the record id
-	// in the body instead.
+	// Writes POST, except updates, which PUT to path/{id} — unless the
+	// endpoint is an upsert (upsertPath set), which always POSTs.
 	path := cfg.path
 	if cfg.upsertPath != "" {
 		path = cfg.upsertPath
 	}
 
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+	if err != nil {
+		return nil, err
+	}
+
 	method := http.MethodPost
-	urlParts := []string{apiVersion, path}
 
 	if params.IsUpdate() && cfg.upsertPath == "" {
 		method = http.MethodPut
 
-		urlParts = append(urlParts, params.RecordId)
-	}
-
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, urlParts...)
-	if err != nil {
-		return nil, err
+		url.AddPath(params.RecordId)
 	}
 
 	body, err := buildWriteBody(cfg, params)
