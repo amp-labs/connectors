@@ -8,9 +8,11 @@ package mailgun
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/mailgun/metadata"
 )
@@ -27,6 +29,8 @@ type Connector struct {
 
 	components.SchemaProvider
 	components.Reader
+	components.Writer
+	components.Deleter
 
 	// workspace is the Mailgun sending domain (ConnectorParams.Workspace).
 	// It is substituted into domain-scoped object paths at read time and is
@@ -65,6 +69,28 @@ func constructor(params common.ConnectorParams) func(*components.Connector) (*Co
 			operations.ReadHandlers{
 				BuildRequest:  connector.buildReadRequest,
 				ParseResponse: connector.parseReadResponse,
+				ErrorHandler:  common.InterpretError,
+			},
+		)
+
+		connector.Writer = writer.NewHTTPWriter(
+			connector.HTTPClient().Client,
+			components.NewEmptyEndpointRegistry(),
+			connector.ProviderContext.Module(),
+			operations.WriteHandlers{
+				BuildRequest:  connector.buildWriteRequest,
+				ParseResponse: connector.parseWriteResponse,
+				ErrorHandler:  common.InterpretError,
+			},
+		)
+
+		connector.Deleter = deleter.NewHTTPDeleter(
+			connector.HTTPClient().Client,
+			components.NewEmptyEndpointRegistry(),
+			connector.ProviderContext.Module(),
+			operations.DeleteHandlers{
+				BuildRequest:  connector.buildDeleteRequest,
+				ParseResponse: connector.parseDeleteResponse,
 				ErrorHandler:  common.InterpretError,
 			},
 		)
