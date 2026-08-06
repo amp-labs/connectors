@@ -1,7 +1,6 @@
 package stripe
 
 import (
-	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
@@ -11,6 +10,8 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"gotest.tools/v3/assert"
 )
 
@@ -19,10 +20,11 @@ func computeTestSignature(secret, timestamp string, body []byte) string {
 	signedPayload := fmt.Sprintf("%s.%s", timestamp, string(body))
 	mac := hmac.New(sha256.New, []byte(secret))
 	mac.Write([]byte(signedPayload))
+
 	return hex.EncodeToString(mac.Sum(nil))
 }
 
-func TestVerifyWebhookMessage(t *testing.T) {
+func TestVerifyWebhookMessage(t *testing.T) { // nolint:funlen,maintidx
 	t.Parallel()
 
 	secret := "whsec_test_secret"
@@ -33,235 +35,279 @@ func TestVerifyWebhookMessage(t *testing.T) {
 	validSignature := computeTestSignature(secret, recentTimestamp, body)
 	validSignatureHeader := fmt.Sprintf("t=%s,v1=%s", recentTimestamp, validSignature)
 
-	conn := &Connector{}
-
-	tests := []struct {
-		name          string
-		request       *common.WebhookRequest
-		params        *common.VerificationParams
-		expectedValid bool
-		expectedError error
-	}{
+	tests := []testconn.TestCaseVerifyWebhookMessage{
 		{
-			name: "Valid signature",
-			request: &common.WebhookRequest{
-				Headers: http.Header{
-					"Stripe-Signature": []string{validSignatureHeader},
+			Name: "Valid signature",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"Stripe-Signature": []string{validSignatureHeader},
+					},
+					Body: body,
 				},
-				Body: body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret: secret,
-				},
-			},
-			expectedValid: true,
-			expectedError: nil,
-		},
-
-		{
-			name: "Invalid signature",
-			request: &common.WebhookRequest{
-				Headers: http.Header{
-					"Stripe-Signature": []string{fmt.Sprintf("t=%s,v1=%s", recentTimestamp, "invalid_signature")},
-				},
-				Body: body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret: secret,
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret: secret,
+					},
 				},
 			},
-			expectedValid: false,
-			expectedError: errInvalidSignature,
+			Server:   mockserver.Dummy(),
+			Expected: true,
 		},
 		{
-			name: "Missing signature header",
-			request: &common.WebhookRequest{
-				Headers: http.Header{},
-				Body:    body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret: secret,
+			Name: "Invalid signature",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"Stripe-Signature": []string{fmt.Sprintf("t=%s,v1=%s", recentTimestamp, "invalid_signature")},
+					},
+					Body: body,
+				},
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret: secret,
+					},
 				},
 			},
-			expectedValid: false,
-			expectedError: errMissingSignature,
+			Server:       mockserver.Dummy(),
+			Expected:     false,
+			ExpectedErrs: []error{errInvalidSignature},
 		},
 		{
-			name:    "Nil request",
-			request: nil,
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret: secret,
+			Name: "Missing signature header",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{},
+					Body:    body,
+				},
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret: secret,
+					},
 				},
 			},
-			expectedValid: false,
-			expectedError: errMissingParams,
+			Server:       mockserver.Dummy(),
+			Expected:     false,
+			ExpectedErrs: []error{errMissingSignature},
 		},
 		{
-			name: "Empty secret",
-			request: &common.WebhookRequest{
-				Headers: http.Header{
-					"Stripe-Signature": []string{validSignatureHeader},
-				},
-				Body: body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret: "",
+			Name: "Nil request",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: nil,
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret: secret,
+					},
 				},
 			},
-			expectedValid: false,
-			expectedError: errMissingParams,
+			Server:       mockserver.Dummy(),
+			Expected:     false,
+			ExpectedErrs: []error{errMissingParams},
 		},
 		{
-			name: "Wrong timestamp (signature mismatch)",
-			request: &common.WebhookRequest{
-				Headers: http.Header{
-					// Use a valid recent timestamp but with a signature computed for a different timestamp
-					"Stripe-Signature": []string{fmt.Sprintf("t=%s,v1=%s", recentTimestamp, computeTestSignature(secret, fmt.Sprintf("%d", time.Now().Unix()-10), body))},
+			Name: "Empty secret",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"Stripe-Signature": []string{validSignatureHeader},
+					},
+					Body: body,
 				},
-				Body: body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret: secret,
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret: "",
+					},
 				},
 			},
-			expectedValid: false,
-			expectedError: errInvalidSignature,
+			Server:       mockserver.Dummy(),
+			Expected:     false,
+			ExpectedErrs: []error{errMissingParams},
 		},
 		{
-			name: "Timestamp too old (replay attack)",
-			request: &common.WebhookRequest{
-				Headers: http.Header{
-					"Stripe-Signature": []string{fmt.Sprintf("t=%d,v1=%s", time.Now().Unix()-600, computeTestSignature(secret, fmt.Sprintf("%d", time.Now().Unix()-600), body))},
+			Name: "Wrong timestamp (signature mismatch)",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						// Use a valid recent timestamp but with a signature computed for a different timestamp
+						"Stripe-Signature": []string{fmt.Sprintf(
+							"t=%s,v1=%s",
+							recentTimestamp,
+							computeTestSignature(secret, fmt.Sprintf("%d", time.Now().Unix()-10), body),
+						)},
+					},
+					Body: body,
 				},
-				Body: body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret: secret,
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret: secret,
+					},
 				},
 			},
-			expectedValid: false,
-			expectedError: errTimestampTooOld,
+			Server:       mockserver.Dummy(),
+			Expected:     false,
+			ExpectedErrs: []error{errInvalidSignature},
 		},
 		{
-			name: "Timestamp too far in the future",
-			request: &common.WebhookRequest{
-				Headers: http.Header{
-					"Stripe-Signature": []string{fmt.Sprintf("t=%d,v1=%s", time.Now().Unix()+600, computeTestSignature(secret, fmt.Sprintf("%d", time.Now().Unix()+600), body))},
+			Name: "Timestamp too old (replay attack)",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"Stripe-Signature": []string{fmt.Sprintf(
+							"t=%d,v1=%s",
+							time.Now().Unix()-600,
+							computeTestSignature(secret, fmt.Sprintf("%d", time.Now().Unix()-600), body),
+						)},
+					},
+					Body: body,
 				},
-				Body: body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret: secret,
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret: secret,
+					},
 				},
 			},
-			expectedValid: false,
-			expectedError: errTimestampTooFarInFuture,
+			Server:       mockserver.Dummy(),
+			Expected:     false,
+			ExpectedErrs: []error{errTimestampTooOld},
 		},
 		{
-			name: "Invalid tolerance (zero)",
-			request: &common.WebhookRequest{
-				Headers: http.Header{
-					"Stripe-Signature": []string{validSignatureHeader},
+			Name: "Timestamp too far in the future",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"Stripe-Signature": []string{fmt.Sprintf(
+							"t=%d,v1=%s",
+							time.Now().Unix()+600,
+							computeTestSignature(secret, fmt.Sprintf("%d", time.Now().Unix()+600), body),
+						)},
+					},
+					Body: body,
 				},
-				Body: body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret:    secret,
-					Tolerance: 0,
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret: secret,
+					},
 				},
 			},
-			expectedValid: true,
-			expectedError: nil,
+			Server:       mockserver.Dummy(),
+			Expected:     false,
+			ExpectedErrs: []error{errTimestampTooFarInFuture},
 		},
 		{
-			name: "Invalid tolerance (negative)",
-			request: &common.WebhookRequest{
-				Headers: http.Header{
-					"Stripe-Signature": []string{validSignatureHeader},
+			Name: "Default tolerance applies when unset (zero)",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"Stripe-Signature": []string{validSignatureHeader},
+					},
+					Body: body,
 				},
-				Body: body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret:    secret,
-					Tolerance: -1 * time.Minute,
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret:    secret,
+						Tolerance: 0,
+					},
 				},
 			},
-			expectedValid: false,
-			expectedError: errInvalidTolerance,
+			Server:   mockserver.Dummy(),
+			Expected: true,
 		},
 		{
-			name: "Custom tolerance within limit",
-			request: &common.WebhookRequest{
-				Headers: http.Header{
-					"Stripe-Signature": []string{fmt.Sprintf("t=%d,v1=%s", time.Now().Unix()-120, computeTestSignature(secret, fmt.Sprintf("%d", time.Now().Unix()-120), body))},
+			Name: "Invalid tolerance (negative)",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"Stripe-Signature": []string{validSignatureHeader},
+					},
+					Body: body,
 				},
-				Body: body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret:    secret,
-					Tolerance: 5 * time.Minute, // 5 minutes tolerance
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret:    secret,
+						Tolerance: -1 * time.Minute,
+					},
 				},
 			},
-			expectedValid: true,
-			expectedError: nil,
+			Server:       mockserver.Dummy(),
+			Expected:     false,
+			ExpectedErrs: []error{errInvalidTolerance},
 		},
 		{
-			name: "Custom tolerance exceeded",
-			request: &common.WebhookRequest{
-				Headers: http.Header{
-					"Stripe-Signature": []string{fmt.Sprintf("t=%d,v1=%s", time.Now().Unix()-120, computeTestSignature(secret, fmt.Sprintf("%d", time.Now().Unix()-120), body))},
+			Name: "Custom tolerance within limit",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"Stripe-Signature": []string{fmt.Sprintf(
+							"t=%d,v1=%s",
+							time.Now().Unix()-120,
+							computeTestSignature(secret, fmt.Sprintf("%d", time.Now().Unix()-120), body),
+						)},
+					},
+					Body: body,
 				},
-				Body: body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret:    secret,
-					Tolerance: 1 * time.Minute, // Only 1 minute tolerance, but timestamp is 2 minutes old
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret:    secret,
+						Tolerance: 5 * time.Minute, // 5 minutes tolerance
+					},
 				},
 			},
-			expectedValid: false,
-			expectedError: errTimestampTooOld,
+			Server:   mockserver.Dummy(),
+			Expected: true,
 		},
 		{
-			name: "Wrong secret",
-			request: &common.WebhookRequest{
-				Headers: http.Header{
-					"Stripe-Signature": []string{validSignatureHeader},
+			Name: "Custom tolerance exceeded",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"Stripe-Signature": []string{fmt.Sprintf(
+							"t=%d,v1=%s",
+							time.Now().Unix()-120,
+							computeTestSignature(secret, fmt.Sprintf("%d", time.Now().Unix()-120), body),
+						)},
+					},
+					Body: body,
 				},
-				Body: body,
-			},
-			params: &common.VerificationParams{
-				Param: &VerificationParams{
-					Secret: "wrong_secret",
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret:    secret,
+						Tolerance: 1 * time.Minute, // Only 1 minute tolerance, but timestamp is 2 minutes old
+					},
 				},
 			},
-			expectedValid: false,
-			expectedError: errInvalidSignature,
+			Server:       mockserver.Dummy(),
+			Expected:     false,
+			ExpectedErrs: []error{errTimestampTooOld},
+		},
+		{
+			Name: "Wrong secret",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"Stripe-Signature": []string{validSignatureHeader},
+					},
+					Body: body,
+				},
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{
+						Secret: "wrong_secret",
+					},
+				},
+			},
+			Server:       mockserver.Dummy(),
+			Expected:     false,
+			ExpectedErrs: []error{errInvalidSignature},
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			valid, err := conn.VerifyWebhookMessage(context.Background(), tt.request, tt.params)
+	for _, tt := range tests { // nolint:dupl
+		// nolint:varnamelen
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
 
-			if tt.expectedError != nil {
-				assert.ErrorIs(t, err, tt.expectedError, "should return expected error")
-				assert.Equal(t, valid, false, "should return false for invalid verification")
-			} else {
-				assert.NilError(t, err, "should not return error")
-				assert.Equal(t, valid, tt.expectedValid, "verification result should match expected")
-			}
+			tt.Run(t, func() (testconn.TestableWebhookMessageVerifier, error) {
+				return &Connector{}, nil
+			})
 		})
 	}
 }
@@ -276,12 +322,15 @@ func TestParseStripeSignature(t *testing.T) {
 		expectedSigs  []string
 		expectedError string
 	}{
-
 		{
-			name:         "Parse signature header",
-			header:       "t=1766887044,v1=08ddffb964639dd31625fa74a9fcb8e95daaef2220ebd8e493127cf2a06320f7,v0=2c1d2ba92e6f80203fbbd6b46b9b2386693bb0d4a1987432c4646e817583201d",
-			expectedTS:   "1766887044",
-			expectedSigs: []string{"08ddffb964639dd31625fa74a9fcb8e95daaef2220ebd8e493127cf2a06320f7", "2c1d2ba92e6f80203fbbd6b46b9b2386693bb0d4a1987432c4646e817583201d"},
+			name: "Parse signature header",
+			header: "t=1766887044,v1=08ddffb964639dd31625fa74a9fcb8e95daaef2220ebd8e493127cf2a06320f7," +
+				"v0=2c1d2ba92e6f80203fbbd6b46b9b2386693bb0d4a1987432c4646e817583201d",
+			expectedTS: "1766887044",
+			expectedSigs: []string{
+				"08ddffb964639dd31625fa74a9fcb8e95daaef2220ebd8e493127cf2a06320f7",
+				"2c1d2ba92e6f80203fbbd6b46b9b2386693bb0d4a1987432c4646e817583201d",
+			},
 		},
 	}
 

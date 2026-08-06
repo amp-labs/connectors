@@ -10,8 +10,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
+
+var _ connectors.WebhookVerifierConnector = &Connector{}
 
 const (
 	stripeSignatureHeader = "Stripe-Signature"

@@ -1,7 +1,6 @@
 package stripe
 
 import (
-	"context"
 	"net/http"
 	"reflect"
 	"testing"
@@ -10,33 +9,22 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-// GetRecordsByIdsInput represents the input parameters for GetRecordsByIds method.
-type GetRecordsByIdsInput struct {
-	ObjectName   string
-	Ids          []string
-	Fields       []string
-	Associations []string
-}
-
-type GetRecordsByIdsTestCase = testroutines.TestCase[GetRecordsByIdsInput, []common.ReadResultRow]
-
-func TestGetRecordsByIds(t *testing.T) {
+func TestGetRecordsByIds(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	paymentIntentWithAssociations := testutils.DataFromFile(t, "read/payment_intents/expand_payment_method_charge.json")
 
-	tests := []GetRecordsByIdsTestCase{
+	tests := []testconn.TestCaseGetRecordsByIds{
 		{
 			Name: "Empty IDs returns empty slice",
-			Input: GetRecordsByIdsInput{
-				ObjectName:   "payment_intents",
-				Ids:          []string{},
-				Fields:       []string{"id", "amount", "currency"},
-				Associations: nil,
+			Input: testconn.ReadByIdsParams{
+				ObjectName: "payment_intents",
+				RecordIds:  []string{},
+				Fields:     []string{"id", "amount", "currency"},
 			},
 			Server:       mockserver.Dummy(),
 			Expected:     []common.ReadResultRow{},
@@ -44,11 +32,10 @@ func TestGetRecordsByIds(t *testing.T) {
 		},
 		{
 			Name: "Missing object name",
-			Input: GetRecordsByIdsInput{
-				ObjectName:   "",
-				Ids:          []string{"pi_123"},
-				Fields:       []string{"id"},
-				Associations: nil,
+			Input: testconn.ReadByIdsParams{
+				ObjectName: "",
+				RecordIds:  []string{"pi_123"},
+				Fields:     []string{"id"},
 			},
 			Server:       mockserver.Dummy(),
 			Expected:     nil,
@@ -56,11 +43,10 @@ func TestGetRecordsByIds(t *testing.T) {
 		},
 		{
 			Name: "Missing fields",
-			Input: GetRecordsByIdsInput{
-				ObjectName:   "payment_intents",
-				Ids:          []string{"pi_123"},
-				Fields:       []string{},
-				Associations: nil,
+			Input: testconn.ReadByIdsParams{
+				ObjectName: "payment_intents",
+				RecordIds:  []string{"pi_123"},
+				Fields:     []string{},
 			},
 			Server:       mockserver.Dummy(),
 			Expected:     nil,
@@ -68,9 +54,9 @@ func TestGetRecordsByIds(t *testing.T) {
 		},
 		{
 			Name: "With associations (expand)",
-			Input: GetRecordsByIdsInput{
+			Input: testconn.ReadByIdsParams{
 				ObjectName:   "payment_intents",
-				Ids:          []string{"pi_3SsAwzF6iHem4voo03GfTErP"},
+				RecordIds:    []string{"pi_3SsAwzF6iHem4voo03GfTErP"},
 				Fields:       []string{"id", "amount", "currency"},
 				Associations: []string{"payment_method", "latest_charge"},
 			},
@@ -79,8 +65,7 @@ func TestGetRecordsByIds(t *testing.T) {
 				If: mockcond.And{
 					mockcond.MethodGET(),
 					mockcond.Path("/v1/payment_intents/pi_3SsAwzF6iHem4voo03GfTErP"),
-					mockcond.QueryParam("expand[]", "payment_method"),
-					mockcond.QueryParam("expand[]", "latest_charge"),
+					mockcond.QueryParam("expand[]", "payment_method", "latest_charge"),
 				},
 				Then: mockserver.Response(http.StatusOK, paymentIntentWithAssociations),
 			}.Server(),
@@ -113,98 +98,88 @@ func TestGetRecordsByIds(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		tt := tt
+	for _, tt := range tests { // nolint:dupl
+		// nolint:varnamelen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
-			t.Cleanup(func() {
-				tt.Close()
+
+			tt.Run(t, func() (testconn.TestableBatchReader, error) {
+				return constructTestConnector(tt.Server)
 			})
-
-			conn, err := constructTestConnector(tt.Server.URL)
-			if err != nil {
-				t.Fatalf("failed to construct test connector: %v", err)
-			}
-
-			result, err := conn.GetRecordsByIds(
-				context.Background(),
-				tt.Input.ObjectName,
-				tt.Input.Ids,
-				tt.Input.Fields,
-				tt.Input.Associations,
-			)
-
-			tt.Validate(t, err, result)
 		})
 	}
 }
 
 // compareReadResultRows compares two slices of ReadResultRow by wrapping them
 // into ReadResult and using existing utilities for Fields and Raw, plus association validation.
-func compareReadResultRows(_ string, actual, expected []common.ReadResultRow) bool {
+func compareReadResultRows(_ string, actual, expected []common.ReadResultRow) *testutils.CompareResult {
 	// Wrap slices into ReadResult to use existing utilities
 	actualResult := &common.ReadResult{Data: actual}
 	expectedResult := &common.ReadResult{Data: expected}
 
 	// Use existing utilities for Fields and Raw
-	if !mockutils.ReadResultComparator.SubsetFields(actualResult, expectedResult) {
-		return false
-	}
+	result := mockutils.ReadResultComparator.SubsetFields(actualResult, expectedResult)
 
-	// Check that Raw is populated for all rows
 	for i := range expectedResult.Data {
+		// Check that Raw is populated for all rows
 		if actualResult.Data[i].Raw == nil {
-			return false
+			result.AddDiff("row [%v] has no Raw data", i)
 		}
+
+		// Validate associations if expected
+		result.Merge(compareRowAssociations(i, actualResult.Data[i].Associations, expectedResult.Data[i].Associations))
 	}
 
-	// Validate associations if expected
-	for i := range expectedResult.Data {
-		expectedAssoc := expectedResult.Data[i].Associations
-		actualAssoc := actualResult.Data[i].Associations
+	return result
+}
 
-		// If expected has no associations, actual can have none or some (we don't care)
-		if len(expectedAssoc) == 0 {
+func compareRowAssociations( // nolint:cyclop
+	rowIndex int,
+	actualAssoc, expectedAssoc map[string][]common.Association,
+) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+
+	// If expected has no associations, actual can have none or some (we don't care)
+	if len(expectedAssoc) == 0 {
+		return result
+	}
+
+	// If expected has associations but actual doesn't, that's a failure
+	if len(actualAssoc) == 0 {
+		return result.AddDiff("row [%v] has no associations", rowIndex)
+	}
+
+	// Check each expected association type
+	for assocType, expectedAssociations := range expectedAssoc {
+		actualAssociations, ok := actualAssoc[assocType]
+		if !ok || len(actualAssociations) != len(expectedAssociations) {
+			result.AddDiff("row [%v] association [%v] is missing or has mismatching length", rowIndex, assocType)
+
 			continue
 		}
 
-		// If expected has associations but actual doesn't, that's a failure
-		if len(actualAssoc) == 0 {
-			return false
-		}
+		for j, expectedItem := range expectedAssociations {
+			actualItem := actualAssociations[j]
 
-		// Check each expected association type
-		for assocType, expectedAssociations := range expectedAssoc {
-			actualAssociations, ok := actualAssoc[assocType]
-			if !ok || len(actualAssociations) != len(expectedAssociations) {
-				return false
+			// Check ObjectId matches
+			if expectedItem.ObjectId != "" {
+				result.Assert("association ObjectId", expectedItem.ObjectId, actualItem.ObjectId)
 			}
 
-			for j, expectedAssoc := range expectedAssociations {
-				actualAssoc := actualAssociations[j]
+			// Verify Raw is populated (contains the full associated object)
+			if actualItem.Raw == nil {
+				result.AddDiff("row [%v] association [%v][%v] has no Raw data", rowIndex, assocType, j)
+			}
 
-				// Check ObjectId matches
-				if expectedAssoc.ObjectId != "" && actualAssoc.ObjectId != expectedAssoc.ObjectId {
-					return false
-				}
-
-				// Verify Raw is populated (contains the full associated object)
-				if actualAssoc.Raw == nil {
-					return false
-				}
-
-				// If expected Raw is specified, verify key fields match (subset matching)
-				if expectedAssoc.Raw != nil {
-					for key, expectedVal := range expectedAssoc.Raw {
-						actualVal, exists := actualAssoc.Raw[key]
-						if !exists || !reflect.DeepEqual(actualVal, expectedVal) {
-							return false
-						}
-					}
+			// If expected Raw is specified, verify key fields match (subset matching)
+			for key, expectedVal := range expectedItem.Raw {
+				actualVal, exists := actualItem.Raw[key]
+				if !exists || !reflect.DeepEqual(actualVal, expectedVal) {
+					result.AddDiff("row [%v] association [%v][%v] Raw key [%v] mismatch", rowIndex, assocType, j, key)
 				}
 			}
 		}
 	}
 
-	return true
+	return result
 }
