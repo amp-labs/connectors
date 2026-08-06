@@ -25,9 +25,6 @@ type objectConfig struct {
 	// writeKey is the JSON envelope wrapping the record in write request and
 	// response bodies, e.g. {"gift_card": {...}}. Empty means flat bodies.
 	writeKey string
-	// flatCreate sends the create body without the writeKey envelope; only
-	// updates wrap (payments, payment_links).
-	flatCreate bool
 	// writeResponseKey overrides writeKey as the response envelope, for objects
 	// whose request body is flat but whose response is wrapped (customers,
 	// refunds) or whose response key differs (catalog).
@@ -76,7 +73,6 @@ var objects = map[string]objectConfig{ //nolint:gochecknoglobals
 		supportsTimeRange: true,
 		supportsWrite:     true,
 		writeKey:          "payment",
-		flatCreate:        true,
 		needsIdempotency:  true,
 	},
 	// https://developer.squareup.com/reference/square/refunds-api/refund-payment
@@ -198,7 +194,6 @@ var objects = map[string]objectConfig{ //nolint:gochecknoglobals
 		supportsLimit:  true,
 		supportsWrite:  true,
 		writeKey:       "payment_link",
-		flatCreate:     true,
 	},
 	// https://developer.squareup.com/reference/square/customer-custom-attributes-api
 	"customers/custom_attribute_definitions": {

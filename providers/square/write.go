@@ -90,8 +90,12 @@ func buildWriteBody(cfg objectConfig, params common.WriteParams) (map[string]any
 		body[idempotencyKeyField] = uuid.NewString()
 	}
 
+	// If the endpoint requires a writeKey, wrap the record under it;
+	// otherwise, send the record flat. Payments and payment links are the odd
+	// ones out: their creates take flat bodies while their updates wrap.
 	envelopeKey := cfg.writeKey
-	if !params.IsUpdate() && cfg.flatCreate {
+	if !params.IsUpdate() &&
+		(params.ObjectName == "payments" || params.ObjectName == "online_checkout/payment_links") {
 		envelopeKey = ""
 	}
 
