@@ -53,6 +53,36 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
 		{
+			// Webhook events carry singular object types (SubscriptionEvent.ObjectName
+			// returns e.g. "payment_intent"); the fetch URL must use the plural collection.
+			Name: "Singular object name resolves to plural collection",
+			Input: testconn.ReadByIdsParams{
+				ObjectName: "payment_intent",
+				RecordIds:  []string{"pi_3SsAwzF6iHem4voo03GfTErP"},
+				Fields:     []string{"id", "amount", "currency"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v1/payment_intents/pi_3SsAwzF6iHem4voo03GfTErP"),
+				},
+				Then: mockserver.Response(http.StatusOK, paymentIntentWithAssociations),
+			}.Server(),
+			Comparator: compareReadResultRows,
+			Expected: []common.ReadResultRow{
+				{
+					Id: "pi_3SsAwzF6iHem4voo03GfTErP",
+					Fields: map[string]any{
+						"id":       "pi_3SsAwzF6iHem4voo03GfTErP",
+						"amount":   float64(100),
+						"currency": "usd",
+					},
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name: "With associations (expand)",
 			Input: testconn.ReadByIdsParams{
 				ObjectName:   "payment_intents",
@@ -182,4 +212,41 @@ func compareRowAssociations( // nolint:cyclop
 	}
 
 	return result
+}
+
+func TestExtractAssociationsDotPath(t *testing.T) {
+	t.Parallel()
+
+	record := map[string]any{
+		"id":     "pi_123",
+		"object": "payment_intent",
+		"customer": map[string]any{
+			"id":     "cus_123",
+			"object": "customer",
+			"default_source": map[string]any{
+				"id":     "card_123",
+				"object": "card",
+				"last4":  "4242",
+			},
+		},
+	}
+
+	associations := extractAssociations(record, []string{"customer", "customer.default_source", "customer.missing"})
+
+	result := testutils.NewCompareResult()
+
+	customer, found := associations["customer"]
+	if result.Assert("customer association found", true, found) {
+		result.Assert("customer ObjectId", "cus_123", customer[0].ObjectId)
+	}
+
+	defaultSource, found := associations["customer.default_source"]
+	if result.Assert("customer.default_source association found", true, found) {
+		result.Assert("customer.default_source ObjectId", "card_123", defaultSource[0].ObjectId)
+	}
+
+	_, found = associations["customer.missing"]
+	result.Assert("customer.missing association absent", false, found)
+
+	result.Validate(t, "extract associations by dot-separated path")
 }

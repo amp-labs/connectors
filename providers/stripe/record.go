@@ -5,9 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"strings"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -117,8 +119,15 @@ func (c *Connector) fetchSingleRecord(
 // buildGetRecordURL constructs a URL for fetching a single record by ID.
 // Format: /v1/{objectName}/{id}
 // Supports expand[] query parameters for associated objects.
+//
+// Stripe's retrieve endpoints use plural collection names (/v1/setup_intents/{id}),
+// while webhook events carry the singular object type (SubscriptionEvent.ObjectName
+// returns e.g. "setup_intent"). Pluralize so both forms resolve to the collection,
+// mirroring providers/hubspot/record.go.
 func (c *Connector) buildGetRecordURL(objectName string, id string, associations []string) (*urlbuilder.URL, error) {
-	url, err := c.GetURL(objectName)
+	pluralObjectName := naming.NewPluralString(objectName).String()
+
+	url, err := c.GetURL(pluralObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -248,14 +257,11 @@ func extractAssociations(record map[string]any, associationNames []string) map[s
 	associations := make(map[string][]common.Association)
 
 	for _, assocName := range associationNames {
-		assocValue, exists := record[assocName]
-		if !exists || assocValue == nil {
-			continue
-		}
-
-		// Handle expanded object
-		assocMap, isMap := assocValue.(map[string]any)
-		if !isMap {
+		// Association names may be dot-separated paths to nested properties
+		// (e.g. "customer.default_source"), matching Stripe's expand[] convention
+		// documented on common.ReadParams.AssociatedObjects.
+		assocMap, found := lookupAssociationPath(record, assocName)
+		if !found {
 			continue
 		}
 
@@ -281,4 +287,32 @@ func extractAssociations(record map[string]any, associationNames []string) map[s
 	}
 
 	return associations
+}
+
+// lookupAssociationPath walks a dot-separated path of nested objects within a record
+// and returns the expanded object found at the end of the path.
+// Example: "customer.default_source" -> record["customer"]["default_source"].
+func lookupAssociationPath(record map[string]any, path string) (map[string]any, bool) {
+	current := record
+
+	segments := strings.Split(path, ".")
+	for index, segment := range segments {
+		value, exists := current[segment]
+		if !exists || value == nil {
+			return nil, false
+		}
+
+		valueMap, isMap := value.(map[string]any)
+		if !isMap {
+			return nil, false
+		}
+
+		if index == len(segments)-1 {
+			return valueMap, true
+		}
+
+		current = valueMap
+	}
+
+	return nil, false
 }
