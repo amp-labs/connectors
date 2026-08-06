@@ -66,7 +66,7 @@ func GetObjectTypeSubscribeEventsList(
 		collapsedEvents = slack.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Microsoft:
 		collapsedEvents = microsoft.CollapsedSubscriptionEvent(rawEvent)
-	case providers.Attio:
+	case providers.Attio, providers.MockAttio:
 		collapsedEvents = attio.CollapsedSubscriptionEvent(rawEvent)
 	default:
 		return nil, fmt.Errorf("%w with non-array object webhook message: %s", errUnsupportedProvider, provider)

@@ -129,6 +129,8 @@ var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
 	// Subscribe-testing mock providers (see the mocksub package). Inert unless the mock
 	// provider is explicitly set up via providers.SetupMock*Provider() in a test.
 	providers.MockSalesloft: {DefaultModuleConfig: &mockSalesloftConfig},
+	providers.MockHubspot:   {DefaultModuleConfig: &mockHubspotConfig},
+	providers.MockAttio:     {DefaultModuleConfig: &mockAttioConfig},
 }
 
 // ErrProviderConfigNotFound is returned by GetProviderConfig when no entry exists in
