@@ -71,21 +71,23 @@ func buildWriteBody(cfg objectConfig, params common.WriteParams) (map[string]any
 	body := make(map[string]any)
 
 	for _, field := range cfg.topLevelFields {
-		if value, ok := record[field]; ok {
+		value, ok := record[field]
+		// If the caller provided a value for a top-level field,
+		// Use it and remove it from the record so it doesn't get wrapped under writeKey.
+		if ok {
 			body[field] = value
 			delete(record, field)
 		}
 	}
 
-	if value, ok := record[idempotencyKeyField]; ok {
+	value, ok := record[idempotencyKeyField]
+	if ok {
+		// Caller provided an idempotency key; use it and remove it from the record.
 		body[idempotencyKeyField] = value
 		delete(record, idempotencyKeyField)
 	} else if cfg.needsIdempotency {
+		// Caller didn't provide an idempotency key, but the endpoint requires one; generate a UUID.
 		body[idempotencyKeyField] = uuid.NewString()
-	}
-
-	if cfg.upsertPath != "" && params.IsUpdate() && params.RecordId != "" {
-		record["id"] = params.RecordId
 	}
 
 	envelopeKey := cfg.writeKey

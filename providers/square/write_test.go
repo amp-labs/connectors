@@ -181,12 +181,13 @@ func TestWrite(t *testing.T) { //nolint:funlen
 		},
 		{
 			// Catalog updates go through the upsert endpoint: POST to the same
-			// path with the record id injected into the object body.
+			// path with the record id and current version inside the object.
 			Name: "Update catalog object via upsert",
 			Input: common.WriteParams{
 				ObjectName: "catalog",
 				RecordId:   "W62UWFY35CWMYGVWK6TWJPNI",
 				RecordData: map[string]any{
+					"id":      "W62UWFY35CWMYGVWK6TWJPNI",
 					"type":    "ITEM",
 					"version": 2,
 					"item_data": map[string]any{
