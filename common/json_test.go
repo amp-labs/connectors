@@ -751,6 +751,85 @@ func TestParseJSONResponse_InvalidJSON(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to unmarshall response body into JSON")
 }
 
+// A 200 response whose body was cut off mid-stream is transient and must be
+// marked retryable. A body that is malformed but complete is not: retrying it
+// would burn the whole retry budget on a request that can never succeed.
+func TestParseJSONResponse_TruncatedBodyIsRetryable(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name          string
+		body          string
+		wantRetryable bool
+	}{
+		{
+			name:          "truncated object",
+			body:          `{"value":[{"id":"1"`,
+			wantRetryable: true,
+		},
+		{
+			name:          "truncated array after comma",
+			body:          `[{"id":1},`,
+			wantRetryable: true,
+		},
+		{
+			name:          "whitespace only",
+			body:          "   \n",
+			wantRetryable: true,
+		},
+		{
+			name:          "complete but not JSON",
+			body:          `invalid json`,
+			wantRetryable: false,
+		},
+		{
+			name:          "HTML error page mislabelled as JSON",
+			body:          `<html><body>Bad Gateway</body></html>`,
+			wantRetryable: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := &http.Response{
+				StatusCode: http.StatusOK,
+				Header: http.Header{
+					"Content-Type": []string{"application/json"},
+				},
+				Body: io.NopCloser(strings.NewReader(tt.body)),
+			}
+
+			_, err := ParseJSONResponse(context.Background(), res, []byte(tt.body))
+
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), "failed to unmarshall response body into JSON")
+			assert.Equal(t, tt.wantRetryable, errors.Is(err, ErrRetryable))
+		})
+	}
+}
+
+// The early return for an empty body must keep working: it is not an error, and
+// callers rely on receiving an empty response rather than a parse failure.
+func TestParseJSONResponse_EmptyBodyIsNotAnError(t *testing.T) {
+	t.Parallel()
+
+	res := &http.Response{
+		StatusCode: http.StatusOK,
+		Header: http.Header{
+			"Content-Type": []string{"application/json"},
+		},
+		Body: io.NopCloser(strings.NewReader("")),
+	}
+
+	parsed, err := ParseJSONResponse(context.Background(), res, []byte{})
+
+	require.NoError(t, err)
+	require.NotNil(t, parsed)
+	assert.Equal(t, http.StatusOK, parsed.Code)
+}
+
 func TestUnmarshalJSON_ComplexTypes(t *testing.T) {
 	t.Parallel()
 
