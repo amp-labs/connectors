@@ -17,89 +17,66 @@ func TestBuildCDCEventFlagFields(t *testing.T) {
 	tests := []struct {
 		name           string
 		appName        string
-		objectNames    map[common.ObjectName]bool
+		enabledObjects []common.ObjectName
 		expectedResult map[common.ObjectName]string
 		expectedErr    error
 	}{
 		{
-			name:    "empty appName returns error",
-			appName: "",
-			objectNames: map[common.ObjectName]bool{
-				"obj1": true,
-			},
-			expectedErr: ErrAppNameRequired,
+			name:           "empty appName returns error",
+			appName:        "",
+			enabledObjects: []common.ObjectName{"obj1"},
+			expectedErr:    ErrAppNameRequired,
 		},
 		{
-			name:    "appName that sanitizes to empty returns invalid error",
-			appName: "!@#$%",
-			objectNames: map[common.ObjectName]bool{
-				"Account": true,
-			},
-			expectedErr: ErrAppNameInvalid,
+			name:           "appName that sanitizes to empty returns invalid error",
+			appName:        "!@#$%",
+			enabledObjects: []common.ObjectName{"Account"},
+			expectedErr:    ErrAppNameInvalid,
 		},
 		{
-			name:           "empty objectNames returns empty map",
+			name:           "empty enabledObjects returns empty map",
 			appName:        "myapp",
-			objectNames:    map[common.ObjectName]bool{},
+			enabledObjects: []common.ObjectName{},
 			expectedResult: map[common.ObjectName]string{},
 		},
 		{
-			name:           "nil objectNames returns empty map",
+			name:           "nil enabledObjects returns empty map",
 			appName:        "myapp",
-			objectNames:    nil,
+			enabledObjects: nil,
 			expectedResult: map[common.ObjectName]string{},
 		},
 		{
-			name:    "single object name produces field with sanitized appName prefix",
-			appName: "myapp",
-			objectNames: map[common.ObjectName]bool{
-				"Account": true,
-			},
+			name:           "single object name produces field with sanitized appName prefix",
+			appName:        "myapp",
+			enabledObjects: []common.ObjectName{"Account"},
 			expectedResult: map[common.ObjectName]string{
 				"Account": "myapp_cdc_event_flag__c",
 			},
 		},
 		{
-			name:    "appName with special characters is sanitized in field value",
-			appName: "My App-Name!",
-			objectNames: map[common.ObjectName]bool{
-				"Account": true,
-			},
+			name:           "appName with special characters is sanitized in field value",
+			appName:        "My App-Name!",
+			enabledObjects: []common.ObjectName{"Account"},
 			expectedResult: map[common.ObjectName]string{
 				"Account": "my_app_name_cdc_event_flag__c",
 			},
 		},
 		{
-			name:    "multiple object names",
-			appName: "myapp",
-			objectNames: map[common.ObjectName]bool{
-				"Account": true,
-				"Contact": true,
-			},
+			name:           "multiple object names share the one app-derived field",
+			appName:        "myapp",
+			enabledObjects: []common.ObjectName{"Account", "Contact"},
 			expectedResult: map[common.ObjectName]string{
 				"Account": "myapp_cdc_event_flag__c",
 				"Contact": "myapp_cdc_event_flag__c",
 			},
 		},
 		{
-			name:    "objects mapped to false are omitted",
-			appName: "myapp",
-			objectNames: map[common.ObjectName]bool{
-				"Account": true,
-				"Contact": false,
-			},
+			name:           "repeated object name collapses to one entry",
+			appName:        "myapp",
+			enabledObjects: []common.ObjectName{"Account", "Account"},
 			expectedResult: map[common.ObjectName]string{
 				"Account": "myapp_cdc_event_flag__c",
 			},
-		},
-		{
-			name:    "all objects mapped to false returns empty map",
-			appName: "myapp",
-			objectNames: map[common.ObjectName]bool{
-				"Account": false,
-				"Contact": false,
-			},
-			expectedResult: map[common.ObjectName]string{},
 		},
 	}
 
@@ -107,7 +84,7 @@ func TestBuildCDCEventFlagFields(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			t.Parallel()
 
-			result, err := buildCDCEventFlagFields(testCase.appName, testCase.objectNames)
+			result, err := buildCDCEventFlagFields(testCase.appName, testCase.enabledObjects)
 
 			if testCase.expectedErr != nil {
 				if !errors.Is(err, testCase.expectedErr) {
@@ -269,21 +246,19 @@ func TestGetSalesforceRequestNilConfig(t *testing.T) {
 func TestGetSalesforceRequestExplicitDisable(t *testing.T) {
 	t.Parallel()
 
+	// An object the caller resolved to disabled reaches here the same way one that was never
+	// configured does — absent from EnabledObjects — so both arrive as one of the cases below.
 	tests := []struct {
-		name          string
-		objectEnabled map[common.ObjectName]bool
+		name           string
+		enabledObjects []common.ObjectName
 	}{
 		{
-			name:          "empty opt-in map",
-			objectEnabled: map[common.ObjectName]bool{},
+			name:           "empty opt-in list",
+			enabledObjects: []common.ObjectName{},
 		},
 		{
-			name:          "nil opt-in map",
-			objectEnabled: nil,
-		},
-		{
-			name:          "every object explicitly disabled",
-			objectEnabled: map[common.ObjectName]bool{"Account": false, "Contact": false},
+			name:           "nil opt-in list",
+			enabledObjects: nil,
 		},
 	}
 
@@ -296,7 +271,7 @@ func TestGetSalesforceRequestExplicitDisable(t *testing.T) {
 				CDCOptimization: stubCDCOptimizationResolver{cfg: &deps.CDCOptimizationConfig{
 					ManualCheckboxManagement:    true,
 					ManualApexTriggerManagement: true,
-					ObjectEnabled:               testCase.objectEnabled,
+					EnabledObjects:              testCase.enabledObjects,
 				}},
 			}
 
@@ -332,16 +307,16 @@ func TestGetSalesforceRequestExplicitDisable(t *testing.T) {
 	}
 }
 
-// TestGetSalesforceRequestPartialOptIn verifies that only objects with enabled:true appear in
-// QuotaOptimizationObjectFields. Objects set to enabled:false are omitted so UpdateSubscription
-// can tear down their CDC quota-optimization artifacts without re-enabling them.
-func TestGetSalesforceRequestPartialOptIn(t *testing.T) {
+// TestGetSalesforceRequestEnabledObjects verifies that exactly the enabled objects appear in
+// QuotaOptimizationObjectFields, each pointing at the one app-derived checkbox field. Objects the
+// caller left out are absent, which is what lets UpdateSubscription tear their artifacts down.
+func TestGetSalesforceRequestEnabledObjects(t *testing.T) {
 	t.Parallel()
 
 	dependencies := deps.Dependencies{
 		Project: stubProjectResolver{appName: "My App"},
 		CDCOptimization: stubCDCOptimizationResolver{cfg: &deps.CDCOptimizationConfig{
-			ObjectEnabled: map[common.ObjectName]bool{"Account": true, "Contact": false},
+			EnabledObjects: []common.ObjectName{"Account", "Contact"},
 		}},
 	}
 
@@ -357,7 +332,10 @@ func TestGetSalesforceRequestPartialOptIn(t *testing.T) {
 		t.Fatalf("getSalesforceRequest() = %T, want *salesforce.SubscriptionRequest", got)
 	}
 
-	want := map[common.ObjectName]string{"Account": "my_app_cdc_event_flag__c"}
+	want := map[common.ObjectName]string{
+		"Account": "my_app_cdc_event_flag__c",
+		"Contact": "my_app_cdc_event_flag__c",
+	}
 	if len(req.QuotaOptimizationObjectFields) != len(want) {
 		t.Fatalf("QuotaOptimizationObjectFields = %v, want %v", req.QuotaOptimizationObjectFields, want)
 	}
@@ -367,5 +345,30 @@ func TestGetSalesforceRequestPartialOptIn(t *testing.T) {
 			t.Errorf("QuotaOptimizationObjectFields[%s] = %q, want %q",
 				objName, req.QuotaOptimizationObjectFields[objName], fieldName)
 		}
+	}
+}
+
+// TestGetSalesforceRequestResolverError verifies that a failed resolution propagates instead of
+// degrading to an empty payload. An empty payload would read as an explicit disable and tear down
+// a live optimization on what may be a transient failure.
+func TestGetSalesforceRequestResolverError(t *testing.T) {
+	t.Parallel()
+
+	wantErr := errors.New("resolving subscribe objects")
+
+	dependencies := deps.Dependencies{
+		Project:         stubProjectResolver{appName: "My App"},
+		CDCOptimization: stubCDCOptimizationResolver{err: wantErr},
+	}
+
+	got, err := getSalesforceRequest(
+		context.Background(), dependencies, &openapi.Installation{Id: "inst-1", ProjectId: "proj-1"},
+		nil, nil, nil, "")
+	if !errors.Is(err, wantErr) {
+		t.Errorf("getSalesforceRequest() error = %v, want %v", err, wantErr)
+	}
+
+	if got != nil {
+		t.Errorf("getSalesforceRequest() = %v, want nil", got)
 	}
 }

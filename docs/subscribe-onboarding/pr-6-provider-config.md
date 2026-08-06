@@ -66,7 +66,7 @@ Some per-provider functions need data that only the Ampersand server can resolve
 ```go
 type Dependencies struct {
     Project         ProjectResolver          // project attributes (Salesforce CDC event-flag field naming)
-    CDCOptimization CDCOptimizationResolver  // per-(project, group) Salesforce CDC quota opt-in
+    CDCOptimization CDCOptimizationResolver  // an installation's Salesforce CDC quota opt-in
     Subscriptions   SubscriptionResultLister // stored subscription results (Attio signing secret recovery)
 }
 ```

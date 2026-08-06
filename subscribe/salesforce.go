@@ -81,24 +81,20 @@ func getSalesforceRequest(
 	ctx context.Context,
 	deps deps.Dependencies,
 	inst *openapi.Installation,
-	_ *openapi.Revision,
+	rev *openapi.Revision,
 	_ *common.RegistrationResult,
 	_ *openapi.Connection,
 	_ string,
 ) (any, error) {
-	// GroupRef lives under Group on the wire type.
-	groupRef := ""
-	if inst.Group != nil {
-		groupRef = inst.Group.GroupRef
-	}
-
-	// Resolve the CDC optimization config for this installation's (project, group).
-	// Falls back to the project default when the group has no specific entry.
 	if deps.CDCOptimization == nil {
 		return nil, nil //nolint:nilnil // documented contract: no CDC opt-in → no custom payload.
 	}
 
-	optInConfig := deps.CDCOptimization.GetCDCOptimizationConfig(ctx, inst.ProjectId, groupRef)
+	optInConfig, err := deps.CDCOptimization.GetCDCOptimizationConfig(ctx, inst, rev)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve CDC optimization config: %w", err)
+	}
+
 	if optInConfig == nil {
 		return nil, nil //nolint:nilnil // documented contract: no CDC opt-in → no custom payload.
 	}
@@ -112,8 +108,8 @@ func getSalesforceRequest(
 		return nil, fmt.Errorf("failed to get project app name: %w", err)
 	}
 
-	// Build CDC event flag fields for the opted-in objects in this project's group.
-	cdcEventFlagFields, err := buildCDCEventFlagFields(appName, optInConfig.ObjectEnabled)
+	// Build CDC event flag fields for the objects this installation opted in.
+	cdcEventFlagFields, err := buildCDCEventFlagFields(appName, optInConfig.EnabledObjects)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build CDC event flag fields: %w", err)
 	}
@@ -133,9 +129,12 @@ var ErrAppNameInvalid = errors.New("app name is invalid")
 
 // buildCDCEventFlagFields maps each opted-in object name to a CDC event flag custom field name,
 // using the sanitized app name as a prefix (e.g. "myapp_cdc_event_flag__c").
+//
+// No objects yields an empty (non-nil) map, which is the teardown instruction — see
+// getSalesforceRequest.
 func buildCDCEventFlagFields(
 	appName string,
-	objectEnabled map[common.ObjectName]bool,
+	enabledObjects []common.ObjectName,
 ) (map[common.ObjectName]string, error) {
 	if appName == "" {
 		return nil, ErrAppNameRequired
@@ -147,13 +146,9 @@ func buildCDCEventFlagFields(
 	}
 
 	fieldName := sanitizedAppName + "_cdc_event_flag__c"
-	result := make(map[common.ObjectName]string, len(objectEnabled))
+	result := make(map[common.ObjectName]string, len(enabledObjects))
 
-	for objectName, enabled := range objectEnabled {
-		if !enabled {
-			continue
-		}
-
+	for _, objectName := range enabledObjects {
 		result[objectName] = fieldName
 	}
 
