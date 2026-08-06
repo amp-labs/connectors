@@ -89,10 +89,16 @@ func buildWebhookPayloadFromParams(
 }
 
 // buildRequestedEventSet builds a set of requested events from subscription events.
+// Every object must resolve to at least one Stripe event; otherwise the object would be
+// reported as successfully subscribed while no event is enabled for it on the endpoint.
 func buildRequestedEventSet(subscriptionEvents map[common.ObjectName]common.ObjectEvents) (map[string]bool, error) {
 	requestedEventsSet := make(map[string]bool)
 
 	for obj, events := range subscriptionEvents {
+		if len(events.Events) == 0 && len(events.PassThroughEvents) == 0 {
+			return nil, fmt.Errorf("%w: object %s has no events to subscribe to", errMissingParams, obj)
+		}
+
 		for _, event := range events.Events {
 			stripeEventName, err := getStripeEventName(event, obj)
 			if err != nil {
@@ -132,7 +138,10 @@ func buildSubscriptionResult(
 	subscriptionsMap := make(map[common.ObjectName]WebhookResponse)
 
 	for obj, events := range subscriptionEvents {
-		// Filter enabled events to only include events for this object
+		// Filter enabled events to only include events for this object.
+		// Deduplicate so stored state matches the deduplicated enabled_events
+		// actually sent to Stripe (Events and PassThroughEvents may overlap).
+		seenEvents := make(map[string]bool)
 		objectEvents := make([]string, 0)
 
 		for _, event := range events.Events {
@@ -141,11 +150,21 @@ func buildSubscriptionResult(
 				return nil, fmt.Errorf("failed to convert event type %s for object %s: %w", event, obj, err)
 			}
 
-			objectEvents = append(objectEvents, stripeEventName)
+			if !seenEvents[stripeEventName] {
+				seenEvents[stripeEventName] = true
+
+				objectEvents = append(objectEvents, stripeEventName)
+			}
 		}
 
 		// Add pass-through events directly
-		objectEvents = append(objectEvents, events.PassThroughEvents...)
+		for _, passthroughEvent := range events.PassThroughEvents {
+			if !seenEvents[passthroughEvent] {
+				seenEvents[passthroughEvent] = true
+
+				objectEvents = append(objectEvents, passthroughEvent)
+			}
+		}
 
 		objectResponse := *response
 		objectResponse.EnabledEvents = objectEvents

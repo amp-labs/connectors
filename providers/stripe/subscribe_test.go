@@ -166,6 +166,18 @@ func TestBuildRequestedEventSet(t *testing.T) {
 			description: "Test building event set with pass-through event",
 		},
 		{
+			name: "Object with no events is rejected",
+			subscriptionEvents: map[common.ObjectName]common.ObjectEvents{
+				"account": {
+					Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
+				},
+				"charge": {},
+			},
+			expected:    nil,
+			expectedErr: errMissingParams,
+			description: "An object resolving to zero events must error instead of silently reporting success",
+		},
+		{
 			name: "Multiple objects, multiple events",
 			subscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 				"account": {
@@ -325,5 +337,38 @@ func TestBuildSubscriptionResult(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestBuildSubscriptionResultDedup(t *testing.T) {
+	t.Parallel()
+
+	response := &WebhookResponse{
+		ID:            "we_123",
+		EnabledEvents: []string{"account.updated"},
+	}
+
+	// The same Stripe event expressed through both Events and PassThroughEvents
+	// must be stored once, matching the deduplicated enabled_events sent to Stripe.
+	subscriptionEvents := map[common.ObjectName]common.ObjectEvents{
+		"account": {
+			Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
+			PassThroughEvents: []string{"account.updated"},
+		},
+	}
+
+	result, err := buildSubscriptionResult(response, subscriptionEvents)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	subResult, ok := result.Result.(*SubscriptionResult)
+	if !ok {
+		t.Fatalf("expected SubscriptionResult, got %T", result.Result)
+	}
+
+	enabledEvents := subResult.Subscriptions["account"].EnabledEvents
+	if len(enabledEvents) != 1 || enabledEvents[0] != "account.updated" {
+		t.Errorf("expected deduplicated [account.updated], got %v", enabledEvents)
 	}
 }
