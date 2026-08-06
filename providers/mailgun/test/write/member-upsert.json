@@ -1,0 +1,9 @@
+{
+  "member": {
+    "address": "alice@example.com",
+    "name": "Alice",
+    "subscribed": true,
+    "vars": {}
+  },
+  "message": "Mailing list member has been updated"
+}

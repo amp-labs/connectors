@@ -1,0 +1,12 @@
+{
+  "list": {
+    "access_level": "readonly",
+    "address": "developers@example.com",
+    "created_at": "Wed, 05 Aug 2026 17:08:25 -0000",
+    "description": "",
+    "members_count": 0,
+    "name": "Developers",
+    "reply_preference": "list"
+  },
+  "message": "Mailing list has been created"
+}
