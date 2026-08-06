@@ -73,6 +73,9 @@ var jobsWithContactsResponse []byte
 //go:embed test/read/contacts-includes.json
 var contactsIncludesResponse []byte
 
+//go:embed test/read/jobs-with-initial-appointment.json
+var jobsWithInitialAppointmentResponse []byte
+
 func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	t.Parallel()
 
@@ -134,7 +137,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						If: mockcond.And{
 							mockcond.MethodGET(),
 							mockcond.Path("/api/v2/jobs"),
-							mockcond.QueryParam("includes", "contacts"),
+							mockcond.QueryParam("includes", "initialAppointment,contacts"),
 						},
 						Then: mockserver.Response(http.StatusOK, jobsWithContactsResponse),
 					},
@@ -179,7 +182,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			Name: "Read jobs without association omits includes and attaches no associations",
+			Name: "Read jobs without association still requests initialAppointment and attaches no associations",
 			Input: common.ReadParams{
 				ObjectName: "jobs",
 				Fields:     connectors.Fields("id"),
@@ -191,7 +194,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						If: mockcond.And{
 							mockcond.MethodGET(),
 							mockcond.Path("/api/v2/jobs"),
-							mockcond.QueryParamsMissing("includes"),
+							mockcond.QueryParam("includes", "initialAppointment"),
 						},
 						Then: mockserver.Response(http.StatusOK, jobsWithContactsResponse),
 					},
@@ -212,6 +215,64 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					{Fields: map[string]any{"id": "job-001"}, Raw: map[string]any{"id": "job-001"}},
 					{Fields: map[string]any{"id": "job-002"}, Raw: map[string]any{"id": "job-002"}},
 				},
+				Done: true,
+			},
+		},
+		{
+			// The initialAppointment expansion is what makes startDate/endDate/notes
+			// present at all — without ?includes=initialAppointment AccuLynx omits the
+			// property from the job payload entirely.
+			Name: "Read jobs surfaces the expanded initialAppointment object",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id", "initialAppointment"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+							mockcond.QueryParam("includes", "initialAppointment"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsWithInitialAppointmentResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/company-settings/custom-fields"),
+						},
+						Then: mockserver.Response(http.StatusOK, customFieldDefinitionsEmptyResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id": "875b28e8-4f10-44e2-9af1-aff90527291e",
+						"initialappointment": map[string]any{
+							"startDate": "2025-03-20T16:30:00Z",
+							"endDate":   "2025-03-20T17:00:00Z",
+							"notes":     "Customer contact information:\nFoobar - McHealy, David\n",
+							"_link": "https://api.acculynx.com/api/v2/jobs/" +
+								"875b28e8-4f10-44e2-9af1-aff90527291e/initial-appointment",
+						},
+					},
+					Raw: map[string]any{
+						"id": "875b28e8-4f10-44e2-9af1-aff90527291e",
+						"initialAppointment": map[string]any{
+							"startDate": "2025-03-20T16:30:00Z",
+							"endDate":   "2025-03-20T17:00:00Z",
+							"notes":     "Customer contact information:\nFoobar - McHealy, David\n",
+							"_link": "https://api.acculynx.com/api/v2/jobs/" +
+								"875b28e8-4f10-44e2-9af1-aff90527291e/initial-appointment",
+						},
+					},
+				}},
 				Done: true,
 			},
 		},

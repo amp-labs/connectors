@@ -64,13 +64,19 @@ const (
 // includesByObject lists the AccuLynx ?includes= expansions applied
 // unconditionally on every read of the object. Contacts return phone/email as
 // reference-only stubs unless expanded, so we always request them — downstream
-// field filtering still drops fields the caller did not select. Object-scoped
-// (not org-scoped): the connector has no org context. Association-driven
-// includes (e.g. jobs -> contacts) are handled separately in applyIncludes.
+// field filtering still drops fields the caller did not select. Jobs omit
+// initialAppointment from the payload entirely unless expanded; with
+// ?includes=initialAppointment it arrives in full (startDate/endDate/notes).
+// Note the OpenAPI spec types job.initialAppointment as a _link-only stub and
+// documents contacts as the sole expandable property — both are spec bugs; the
+// live API expands initialAppointment. Object-scoped (not org-scoped): the
+// connector has no org context. Association-driven includes (e.g. jobs ->
+// contacts) are handled separately in applyIncludes.
 //
 //nolint:gochecknoglobals
-var includesByObject = map[string]string{
-	objectContacts: "emailAddress,phoneNumber",
+var includesByObject = map[string][]string{
+	objectContacts: {"emailAddress", "phoneNumber"},
+	objectJobs:     {"initialAppointment"},
 }
 
 type nestedSpec struct {
@@ -151,14 +157,23 @@ func (c *Connector) buildInitialURL(params common.ReadParams) (*urlbuilder.URL, 
 // defaults come from includesByObject (always applied). Additionally, jobs
 // request the embedded contacts array only when the Job<->Contact association is
 // requested, so plain jobs reads are not bloated for orgs that did not opt in.
+//
+// AccuLynx takes every expansion as one comma-separated ?includes= value, and
+// urlbuilder's WithQueryParam replaces rather than appends — so the values are
+// collected and written in a single call. Setting the param twice would silently
+// drop the first expansion.
 func applyIncludes(url *urlbuilder.URL, objectName string, params common.ReadParams) {
-	if includes, ok := includesByObject[objectName]; ok {
-		url.WithQueryParam("includes", includes)
-	}
+	includes := slices.Clone(includesByObject[objectName])
 
 	if objectName == objectJobs && slices.Contains(params.AssociatedObjects, jobContactsAssociation) {
-		url.WithQueryParam("includes", jobContactsAssociation)
+		includes = append(includes, jobContactsAssociation)
 	}
+
+	if len(includes) == 0 {
+		return
+	}
+
+	url.WithQueryParam("includes", strings.Join(includes, ","))
 }
 
 func applyPagination(url *urlbuilder.URL, objectName string, params common.ReadParams) {
