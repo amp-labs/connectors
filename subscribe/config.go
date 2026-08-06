@@ -133,6 +133,7 @@ var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
 	providers.MockAttio:       {DefaultModuleConfig: &mockAttioConfig},
 	providers.MockSalesforce:  {DefaultModuleConfig: &mockSalesforceConfig},
 	providers.MockConnectWise: {DefaultModuleConfig: &mockConnectWiseConfig},
+	providers.MockGmail:       {DefaultModuleConfig: &mockGmailConfig},
 }
 
 // ErrProviderConfigNotFound is returned by GetProviderConfig when no entry exists in
