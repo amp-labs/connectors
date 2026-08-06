@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/providers/stripe/metadata"
+	"github.com/amp-labs/connectors/providers/stripe/internal/metadata"
 	"github.com/go-playground/validator"
 )
 
@@ -190,7 +190,7 @@ func (c *Connector) GetWebhookEndpoint(ctx context.Context, endpointID string) (
 
 	endpointURL.AddPath(endpointID)
 
-	resp, err := c.Client.Get(ctx, endpointURL.String())
+	resp, err := c.JSONHTTPClient().Get(ctx, endpointURL.String())
 	if err != nil {
 		return nil, fmt.Errorf("failed to get webhook endpoint: %w", err)
 	}
@@ -226,7 +226,7 @@ func (c *Connector) deleteWebhookEndpoint(ctx context.Context, endpointID string
 
 	url.AddPath(endpointID)
 
-	_, err = c.Client.Delete(ctx, url.String())
+	_, err = c.JSONHTTPClient().Delete(ctx, url.String())
 	if err != nil {
 		return err
 	}
@@ -257,7 +257,7 @@ func getStripeEventName(event common.SubscriptionEventType, obj common.ObjectNam
 }
 
 func getExpectedObjectTypeFromMetadata(objectName string) (string, error) {
-	objMetadata, err := metadata.Schemas.SelectOne(common.ModuleID("root"), objectName)
+	objMetadata, err := metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
 	if err != nil {
 		return "", err
 	}
@@ -275,9 +275,11 @@ func getExpectedObjectTypeFromMetadata(objectName string) (string, error) {
 }
 
 // parseWebhookEndpointResponse parses and validates the webhook endpoint response.
-func parseWebhookEndpointResponse(httpResp *http.Response, bodyBytes []byte) (*WebhookResponse, error) {
+func parseWebhookEndpointResponse(
+	ctx context.Context, httpResp *http.Response, bodyBytes []byte,
+) (*WebhookResponse, error) {
 	// Use common JSON parsing utilities
-	jsonResp, err := common.ParseJSONResponse(httpResp, bodyBytes)
+	jsonResp, err := common.ParseJSONResponse(ctx, httpResp, bodyBytes)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse JSON response: %w", err)
 	}
@@ -317,11 +319,11 @@ func (c *Connector) createWebhookEndpoint(
 	}
 	defer httpResp.Body.Close()
 
-	return parseWebhookEndpointResponse(httpResp, bodyBytes)
+	return parseWebhookEndpointResponse(ctx, httpResp, bodyBytes)
 }
 
 func (c *Connector) getWebhookEndpointURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, "webhook_endpoints")
+	return c.GetURL("webhook_endpoints")
 }
 
 func (c *Connector) updateWebhookEndpoint(
@@ -345,7 +347,7 @@ func (c *Connector) updateWebhookEndpoint(
 
 	defer httpResp.Body.Close()
 
-	return parseWebhookEndpointResponse(httpResp, bodyBytes)
+	return parseWebhookEndpointResponse(ctx, httpResp, bodyBytes)
 }
 
 // executeFormPostRequest executes a POST request with form-encoded data using HTTPClient.Post.
@@ -358,7 +360,7 @@ func (c *Connector) executeFormPostRequest(
 	formEncoded := formData.Encode()
 	formBytes := []byte(formEncoded)
 
-	httpResp, bodyBytes, err := c.Client.HTTPClient.Post(ctx, endpointURL.String(), formBytes, common.Header{
+	httpResp, bodyBytes, err := c.HTTPClient().Post(ctx, endpointURL.String(), formBytes, common.Header{
 		Key:   "Content-Type",
 		Value: "application/x-www-form-urlencoded",
 		Mode:  common.HeaderModeOverwrite,

@@ -8,25 +8,19 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-// UpdateSubscriptionInput contains both params and previousResult needed for UpdateSubscription
-type UpdateSubscriptionInput struct {
-	Params         common.SubscribeParams
-	PreviousResult *common.SubscriptionResult
-}
-
-func TestUpdateSubscription(t *testing.T) {
+func TestUpdateSubscription(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	webhookEndpointUpdatedResponse := testutils.DataFromFile(t, "subscribe/webhook-endpoint-updated-response.json")
 
-	tests := []testroutines.TestCase[UpdateSubscriptionInput, *common.SubscriptionResult]{
+	tests := []testconn.TestCaseUpdateSubscription{
 		{
 			Name: "Missing previous result",
-			Input: UpdateSubscriptionInput{
+			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 						"account": {
@@ -41,7 +35,7 @@ func TestUpdateSubscription(t *testing.T) {
 		},
 		{
 			Name: "Nil result field",
-			Input: UpdateSubscriptionInput{
+			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 						"account": {
@@ -58,7 +52,7 @@ func TestUpdateSubscription(t *testing.T) {
 		},
 		{
 			Name: "Invalid previous result type",
-			Input: UpdateSubscriptionInput{
+			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 						"account": {
@@ -75,7 +69,7 @@ func TestUpdateSubscription(t *testing.T) {
 		},
 		{
 			Name: "Update single object events",
-			Input: UpdateSubscriptionInput{
+			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 						"account": {
@@ -109,13 +103,11 @@ func TestUpdateSubscription(t *testing.T) {
 				Then: mockserver.Response(http.StatusOK, webhookEndpointUpdatedResponse),
 			}.Server(),
 			ExpectedErrs: nil,
-			Comparator: func(_ string, actual, expected *common.SubscriptionResult) bool {
-				return actual != nil && actual.Status == common.SubscriptionStatusSuccess
-			},
+			Comparator:   compareUpdateResultObjects("account"),
 		},
 		{
-			Name: "Update multiple objects with different events",
-			Input: UpdateSubscriptionInput{
+			Name: "Desired state replaces previous objects (removal reconciliation)",
+			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 						"account": {
@@ -135,6 +127,11 @@ func TestUpdateSubscription(t *testing.T) {
 					},
 				},
 				PreviousResult: &common.SubscriptionResult{
+					ObjectEvents: map[common.ObjectName]common.ObjectEvents{
+						"balance": {
+							Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
+						},
+					},
 					Result: &SubscriptionResult{
 						Subscriptions: map[common.ObjectName]WebhookResponse{
 							"balance": {
@@ -154,27 +151,56 @@ func TestUpdateSubscription(t *testing.T) {
 				Then: mockserver.Response(http.StatusOK, webhookEndpointUpdatedResponse),
 			}.Server(),
 			ExpectedErrs: nil,
-			Comparator: func(_ string, actual, expected *common.SubscriptionResult) bool {
-				return actual != nil && actual.Status == common.SubscriptionStatusSuccess
-			},
+			// "balance" is absent from the desired state, so it must not survive the update.
+			Comparator: compareUpdateResultObjects("account", "charge"),
 		},
 	}
 
-	for _, tt := range tests {
+	for _, tt := range tests { // nolint:dupl
+		// nolint:varnamelen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
-			t.Cleanup(func() {
-				tt.Close()
-			})
 
-			conn, err := constructTestConnector(tt.Server.URL)
-			if err != nil {
-				t.Fatalf("failed to construct test connector: %v", err)
+			tt.Run(t, func() (testconn.TestableSubscriptionUpdater, error) {
+				return constructTestConnector(tt.Server)
+			})
+		})
+	}
+}
+
+// compareUpdateResultObjects verifies the update succeeded and that the resulting state
+// contains exactly the desired objects (both in ObjectEvents and stored Subscriptions).
+func compareUpdateResultObjects(
+	objects ...common.ObjectName,
+) func(string, *common.SubscriptionResult, *common.SubscriptionResult) *testutils.CompareResult {
+	return func(_ string, actual, _ *common.SubscriptionResult) *testutils.CompareResult {
+		result := testutils.NewCompareResult()
+
+		if actual == nil {
+			return result.AddDiff("subscription result is nil")
+		}
+
+		result.Assert("Status", common.SubscriptionStatusSuccess, actual.Status)
+		result.Assert("ObjectEvents length", len(objects), len(actual.ObjectEvents))
+
+		subscriptionData, ok := actual.Result.(*SubscriptionResult)
+		if !ok {
+			return result.AddDiff("expected Result of type *SubscriptionResult, got %T", actual.Result)
+		}
+
+		result.Assert("Subscriptions length", len(objects), len(subscriptionData.Subscriptions))
+
+		for _, obj := range objects {
+			if _, found := actual.ObjectEvents[obj]; !found {
+				result.AddDiff("ObjectEvents is missing object [%v]", obj)
 			}
 
-			result, err := conn.UpdateSubscription(t.Context(), tt.Input.Params, tt.Input.PreviousResult)
-			tt.Validate(t, err, result)
-		})
+			if _, found := subscriptionData.Subscriptions[obj]; !found {
+				result.AddDiff("Subscriptions is missing object [%v]", obj)
+			}
+		}
+
+		return result
 	}
 }
 
@@ -319,74 +345,6 @@ func TestGetExistingEndpoint(t *testing.T) {
 				}
 				if result.ID != tt.expectedID {
 					t.Errorf("expected ID %s, got %s", tt.expectedID, result.ID)
-				}
-			}
-		})
-	}
-}
-
-func TestBuildMergedSubscriptionEvents(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name            string
-		previousResult  *common.SubscriptionResult
-		params          common.SubscribeParams
-		expectedObjects []common.ObjectName
-		description     string
-	}{
-		{
-			name: "Keep existing objects and add new",
-			previousResult: &common.SubscriptionResult{
-				ObjectEvents: map[common.ObjectName]common.ObjectEvents{
-					"balance": {
-						Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
-					},
-				},
-			},
-			params: common.SubscribeParams{
-				SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-					"account": {
-						Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
-					},
-				},
-			},
-			expectedObjects: []common.ObjectName{"balance", "account"},
-			description:     "Test merging keeps existing objects and adds new",
-		},
-		{
-			name: "Update existing object",
-			previousResult: &common.SubscriptionResult{
-				ObjectEvents: map[common.ObjectName]common.ObjectEvents{
-					"account": {
-						Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
-					},
-				},
-			},
-			params: common.SubscribeParams{
-				SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-					"account": {
-						Events: []common.SubscriptionEventType{
-							common.SubscriptionEventTypeCreate,
-							common.SubscriptionEventTypeUpdate,
-						},
-					},
-				},
-			},
-			expectedObjects: []common.ObjectName{"account"},
-			description:     "Test merging updates existing object events",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := buildMergedSubscriptionEvents(tt.previousResult, tt.params)
-			if len(result) != len(tt.expectedObjects) {
-				t.Errorf("expected %d objects, got %d", len(tt.expectedObjects), len(result))
-			}
-			for _, expectedObj := range tt.expectedObjects {
-				if _, ok := result[expectedObj]; !ok {
-					t.Errorf("expected object %s to be in result", expectedObj)
 				}
 			}
 		})

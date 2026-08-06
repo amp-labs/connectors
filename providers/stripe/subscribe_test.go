@@ -9,17 +9,24 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestSubscribe(t *testing.T) {
+// Decomposed per-method interface assertions, so Subscribe, UpdateSubscription and
+// DeleteSubscription are each verified independently (see pr-4-subscribe-update-delete.md).
+var (
+	_ testconn.TestableSubscriptionCreator = &Connector{} // Subscribe
+	_ testconn.TestableSubscriptionUpdater = &Connector{} // UpdateSubscription
+	_ testconn.TestableSubscriptionRemover = &Connector{} // DeleteSubscription
+)
+
+func TestSubscribe(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
 	webhookEndpointResponse := testutils.DataFromFile(t, "subscribe/webhook-endpoint-response.json")
 
-	tests := []testroutines.TestCase[common.SubscribeParams, *common.SubscriptionResult]{
-
+	tests := []testconn.TestCaseSubscribe{
 		{
 			Name: "Empty events",
 			Input: common.SubscribeParams{
@@ -55,9 +62,7 @@ func TestSubscribe(t *testing.T) {
 				Then: mockserver.Response(http.StatusOK, webhookEndpointResponse),
 			}.Server(),
 			ExpectedErrs: nil,
-			Comparator: func(_ string, actual, expected *common.SubscriptionResult) bool {
-				return actual != nil && actual.Status == common.SubscriptionStatusSuccess
-			},
+			Comparator:   compareSubscriptionSuccess,
 		},
 		{
 			Name: "Subscribe multiple objects",
@@ -90,28 +95,35 @@ func TestSubscribe(t *testing.T) {
 				Then: mockserver.Response(http.StatusOK, webhookEndpointResponse),
 			}.Server(),
 			ExpectedErrs: nil,
-			Comparator: func(_ string, actual, expected *common.SubscriptionResult) bool {
-				return actual != nil && actual.Status == common.SubscriptionStatusSuccess
-			},
+			Comparator:   compareSubscriptionSuccess,
 		},
 	}
 
-	for _, tt := range tests {
+	for _, tt := range tests { // nolint:dupl
+		// nolint:varnamelen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
-			t.Cleanup(func() {
-				tt.Close()
+
+			tt.Run(t, func() (testconn.TestableSubscriptionCreator, error) {
+				return constructTestConnector(tt.Server)
 			})
-
-			conn, err := constructTestConnector(tt.Server.URL)
-			if err != nil {
-				t.Fatalf("failed to construct test connector: %v", err)
-			}
-
-			result, err := conn.Subscribe(t.Context(), tt.Input)
-			tt.Validate(t, err, result)
 		})
 	}
+}
+
+// compareSubscriptionSuccess verifies the operation returned a successful subscription result.
+func compareSubscriptionSuccess(
+	_ string, actual, _ *common.SubscriptionResult,
+) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+
+	if actual == nil {
+		return result.AddDiff("subscription result is nil")
+	}
+
+	result.Assert("Status", common.SubscriptionStatusSuccess, actual.Status)
+
+	return result
 }
 
 func TestBuildRequestedEventSet(t *testing.T) {
