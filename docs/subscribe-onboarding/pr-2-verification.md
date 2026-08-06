@@ -111,12 +111,7 @@ complete, readable implementation.
 `VerifyWebhookMessage(ctx, request *common.WebhookRequest, params *common.VerificationParams)` receives
 two objects, both populated by the caller:
 
-> **`VerifyWebhookMessage` cannot rely on the connector's authenticated client.** On the server the
-> verifier connector is instantiated as a bare zero value (`&<provider>.Connector{}` in
-> `shared/subscribe/providers/*.go`) — it has **no `AuthorizationClient` and no authenticated HTTP
-> client**. Unlike other connector methods, it must verify using only the `request` (headers/body) and
-> `params` (the signing secret threaded in via `VerificationParams.Param`); it must not make
-> authenticated API calls.
+> **`VerifyWebhookMessage` cannot rely on the connector's authenticated client.** The verifier connector is instantiated as a bare zero value — the `verifierConnector: &<provider>.Connector{}` you'll declare in your ProviderConfig ([PR 6 — VerificationConfig](./pr-6-provider-config.md#verificationconfig-subscribeverificationgo)) — so it has **no `AuthorizationClient` and no authenticated HTTP client**. Unlike other connector methods, it must verify using only the `request` (headers/body) and `params` (the signing secret threaded in via `VerificationParams.Param`); it must not make authenticated API calls.
 
 **`request *common.WebhookRequest`** — the raw incoming webhook HTTP request, exactly as the provider
 sent it:
@@ -137,12 +132,7 @@ provider-specific verification struct:
 type VerificationParams struct{ Param any }   // e.g. Param = &SalesloftVerificationParams{Secret: ...}
 ```
 
-The caller fills `Param` per installation; cast it back to your type with `common.AssertType`. The
-values inside (a signing secret, a token, an account ref, …) come from whatever your connector
-persisted — **anything your `Subscribe` returns in the `SubscriptionResult` is available to the caller
-to thread back here.** So if the provider issues a signing secret at subscribe time, return it in the
-`SubscriptionResult` (PR 3), and the caller will supply it back through `VerificationParams.Param` when
-it calls `VerifyWebhookMessage`.
+Concretely, `Param` is filled per installation by the `paramsFn` you'll declare in your ProviderConfig ([PR 6 — VerificationConfig](./pr-6-provider-config.md#verificationconfig-subscribeverificationgo)); cast it back to your type with `common.AssertType`. The values inside (a signing secret, a token, an account ref, …) come from whatever your connector persisted — **anything your `Subscribe` returns in the `SubscriptionResult` is available to the `paramsFn` to thread back here** (via the `deps.Subscriptions` resolver — Attio recovers its signing secret this way). So if the provider issues a signing secret at subscribe time, return it in the `SubscriptionResult` (PR 4), and PR 6's `paramsFn` supplies it back through `VerificationParams.Param` when the caller invokes `VerifyWebhookMessage`.
 
 Implement `VerifyWebhookMessage` on your `*Connector`. The pattern (from
 [`providers/salesloft/subscribeEvent.go`](../../providers/salesloft/subscribeEvent.go)):
@@ -188,11 +178,7 @@ func (c *Connector) VerifyWebhookMessage(ctx context.Context,
 }
 ```
 
-The provider-specific `*VerificationParams` struct (here `SalesloftVerificationParams`) is populated
-per installation by the caller and passed through `common.VerificationParams.Param`. Hubspot and
-Outreach show HMAC-SHA256 variants; Salesloft uses HMAC-SHA1. For UI Subscription only providers whose
-events carry no provider signature, verification is bypassed by the caller rather than implemented here
-(still implement it if the provider does sign its webhooks).
+The provider-specific `*VerificationParams` struct (here `SalesloftVerificationParams`) is populated per installation by your ProviderConfig's `paramsFn` ([PR 6 — VerificationConfig](./pr-6-provider-config.md#verificationconfig-subscribeverificationgo)) and passed through `common.VerificationParams.Param`. Hubspot and Outreach show HMAC-SHA256 variants; Salesloft uses HMAC-SHA1. For UI Subscription only providers whose events carry no provider signature, verification is bypassed via the `bypassed` flag in the ProviderConfig (PR 6) rather than implemented here (still implement it if the provider does sign its webhooks).
 
 See [Live Tests (Stage 1)](./live-tests.md#stage-1-webhook-verification-runwebhookconsumer) for how to verify this end-to-end.
 

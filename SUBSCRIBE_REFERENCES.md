@@ -188,4 +188,5 @@ signatures, examples, files, checklist, reviewer focus):
 | 3 | Registration                  | [pr-3-registration.md](./docs/subscribe-onboarding/pr-3-registration.md)                       | ⬜ if needed |
 | 4 | Subscribe / Update / Delete   | [pr-4-subscribe-update-delete.md](./docs/subscribe-onboarding/pr-4-subscribe-update-delete.md) | ✅           |
 | 5 | Maintenance                   | [pr-5-maintenance.md](./docs/subscribe-onboarding/pr-5-maintenance.md)                         | ⬜ if needed |
-| 6 | Enable the provider           | [pr-6-enable.md](./docs/subscribe-onboarding/pr-6-enable.md)                                   | ✅ (last)    |
+| 6 | ProviderConfig declaration    | [pr-6-provider-config.md](./docs/subscribe-onboarding/pr-6-provider-config.md)                 | ✅           |
+| 7 | Enable the provider           | [pr-7-enable.md](./docs/subscribe-onboarding/pr-7-enable.md)                                   | ✅ (last)    |
