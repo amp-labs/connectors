@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -52,11 +54,15 @@ func main() {
 
 	utils.DumpJSON(res, os.Stdout)
 
-	// Create a customer group, then update it.
+	// Create a customer group, then update it. Square rejects duplicate group
+	// names, so include a timestamp to keep reruns from colliding with groups
+	// left behind by earlier runs.
+	groupName := fmt.Sprintf("Connectors Write Test Group %d", time.Now().Unix())
+
 	res, err = conn.Write(ctx, common.WriteParams{
 		ObjectName: "customers/groups",
 		RecordData: map[string]any{
-			"name": "Connectors Write Test Group",
+			"name": groupName,
 		},
 	})
 	if err != nil {
@@ -69,7 +75,7 @@ func main() {
 		ObjectName: "customers/groups",
 		RecordId:   res.RecordId,
 		RecordData: map[string]any{
-			"name": "Connectors Write Test Group (updated)",
+			"name": groupName + " (updated)",
 		},
 	})
 	if err != nil {
