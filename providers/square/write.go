@@ -125,6 +125,8 @@ func (c *Connector) parseWriteResponse(
 	record := body
 
 	responseKey := cfg.writeResponseKey
+
+	// If the endpoint doesn't have a writeResponseKey, use the writeKey instead.
 	if responseKey == "" {
 		responseKey = cfg.writeKey
 	}

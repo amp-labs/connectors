@@ -18,7 +18,6 @@ type objectConfig struct {
 	// supportsTimeRange reports whether the endpoint filters by creation time via
 	// `begin_time`/`end_time` query params, enabling incremental reads.
 	supportsTimeRange bool
-
 	// supportsWrite reports whether records can be written: created via
 	// POST path and updated via PUT path/{id}.
 	supportsWrite bool
@@ -43,8 +42,6 @@ type objectConfig struct {
 	upsertPath string
 }
 
-// objects is the set of objects the Square connector supports. Each exposes a
-// GET list endpoint that returns an array of records under responseKey.
 var objects = map[string]objectConfig{ //nolint:gochecknoglobals
 	// https://developer.squareup.com/reference/square/customers-api/create-customer
 	// Create and update take flat bodies; the response wraps the record in "customer".
