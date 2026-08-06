@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/amp-common/openapi"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/subscribe/deps"
 )
 
@@ -81,7 +82,7 @@ func TestBuildCDCEventFlagFields(t *testing.T) {
 			},
 		},
 		{
-			name:    "all object names are included regardless of bool value",
+			name:    "objects mapped to false are omitted",
 			appName: "myapp",
 			objectNames: map[common.ObjectName]bool{
 				"Account": true,
@@ -89,8 +90,16 @@ func TestBuildCDCEventFlagFields(t *testing.T) {
 			},
 			expectedResult: map[common.ObjectName]string{
 				"Account": "myapp_cdc_event_flag__c",
-				"Contact": "myapp_cdc_event_flag__c",
 			},
+		},
+		{
+			name:    "all objects mapped to false returns empty map",
+			appName: "myapp",
+			objectNames: map[common.ObjectName]bool{
+				"Account": false,
+				"Contact": false,
+			},
+			expectedResult: map[common.ObjectName]string{},
 		},
 	}
 
@@ -227,5 +236,136 @@ func TestGetSalesforceRequestNoCDCResolver(t *testing.T) {
 
 	if req != nil {
 		t.Errorf("getSalesforceRequest() = %v, want nil", req)
+	}
+}
+
+// TestGetSalesforceRequestNilConfig verifies that a resolver returning nil config makes
+// getSalesforceRequest return (nil, nil). With no SubscriptionRequest, UpdateSubscription
+// leaves existing CDC quota-optimization state unchanged.
+func TestGetSalesforceRequestNilConfig(t *testing.T) {
+	t.Parallel()
+
+	dependencies := deps.Dependencies{
+		Project:         stubProjectResolver{appName: "My App"},
+		CDCOptimization: stubCDCOptimizationResolver{cfg: nil},
+	}
+
+	req, err := getSalesforceRequest(
+		context.Background(), dependencies, &openapi.Installation{Id: "inst-1", ProjectId: "proj-1"},
+		nil, nil, nil, "")
+	if err != nil {
+		t.Errorf("getSalesforceRequest() error = %v, want nil", err)
+	}
+
+	if req != nil {
+		t.Errorf("getSalesforceRequest() = %v, want nil", req)
+	}
+}
+
+// TestGetSalesforceRequestExplicitDisable verifies that a non-nil config with no objects enabled
+// returns a SubscriptionRequest whose QuotaOptimizationObjectFields map is empty. That empty map
+// tells UpdateSubscription to tear down CDC quota optimization; returning nil instead would leave
+// existing filters and triggers in place.
+func TestGetSalesforceRequestExplicitDisable(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name          string
+		objectEnabled map[common.ObjectName]bool
+	}{
+		{
+			name:          "empty opt-in map",
+			objectEnabled: map[common.ObjectName]bool{},
+		},
+		{
+			name:          "nil opt-in map",
+			objectEnabled: nil,
+		},
+		{
+			name:          "every object explicitly disabled",
+			objectEnabled: map[common.ObjectName]bool{"Account": false, "Contact": false},
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			dependencies := deps.Dependencies{
+				Project: stubProjectResolver{appName: "My App"},
+				CDCOptimization: stubCDCOptimizationResolver{cfg: &deps.CDCOptimizationConfig{
+					ManualCheckboxManagement:    true,
+					ManualApexTriggerManagement: true,
+					ObjectEnabled:               testCase.objectEnabled,
+				}},
+			}
+
+			got, err := getSalesforceRequest(
+				context.Background(), dependencies, &openapi.Installation{Id: "inst-1", ProjectId: "proj-1"},
+				nil, nil, nil, "")
+			if err != nil {
+				t.Fatalf("getSalesforceRequest() error = %v, want nil", err)
+			}
+
+			req, ok := got.(*salesforce.SubscriptionRequest)
+			if !ok {
+				t.Fatalf("getSalesforceRequest() = %T, want *salesforce.SubscriptionRequest", got)
+			}
+
+			// Non-nil map, not just empty: the connector distinguishes the two nowhere today, but
+			// the payload's whole job here is to be an explicit, present instruction.
+			if req.QuotaOptimizationObjectFields == nil {
+				t.Error("QuotaOptimizationObjectFields = nil, want non-nil empty map")
+			}
+
+			if len(req.QuotaOptimizationObjectFields) != 0 {
+				t.Errorf("QuotaOptimizationObjectFields = %v, want empty", req.QuotaOptimizationObjectFields)
+			}
+
+			// The manual-mode flags still ride along: they decide whether the teardown may
+			// destructively remove caller-owned artifacts.
+			if !req.ManualCheckboxManagement || !req.ManualApexTriggerManagement {
+				t.Errorf("flags = (%v, %v), want (true, true)",
+					req.ManualCheckboxManagement, req.ManualApexTriggerManagement)
+			}
+		})
+	}
+}
+
+// TestGetSalesforceRequestPartialOptIn verifies that only objects with enabled:true appear in
+// QuotaOptimizationObjectFields. Objects set to enabled:false are omitted so UpdateSubscription
+// can tear down their CDC quota-optimization artifacts without re-enabling them.
+func TestGetSalesforceRequestPartialOptIn(t *testing.T) {
+	t.Parallel()
+
+	dependencies := deps.Dependencies{
+		Project: stubProjectResolver{appName: "My App"},
+		CDCOptimization: stubCDCOptimizationResolver{cfg: &deps.CDCOptimizationConfig{
+			ObjectEnabled: map[common.ObjectName]bool{"Account": true, "Contact": false},
+		}},
+	}
+
+	got, err := getSalesforceRequest(
+		context.Background(), dependencies, &openapi.Installation{Id: "inst-1", ProjectId: "proj-1"},
+		nil, nil, nil, "")
+	if err != nil {
+		t.Fatalf("getSalesforceRequest() error = %v, want nil", err)
+	}
+
+	req, ok := got.(*salesforce.SubscriptionRequest)
+	if !ok {
+		t.Fatalf("getSalesforceRequest() = %T, want *salesforce.SubscriptionRequest", got)
+	}
+
+	want := map[common.ObjectName]string{"Account": "my_app_cdc_event_flag__c"}
+	if len(req.QuotaOptimizationObjectFields) != len(want) {
+		t.Fatalf("QuotaOptimizationObjectFields = %v, want %v", req.QuotaOptimizationObjectFields, want)
+	}
+
+	for objName, fieldName := range want {
+		if req.QuotaOptimizationObjectFields[objName] != fieldName {
+			t.Errorf("QuotaOptimizationObjectFields[%s] = %q, want %q",
+				objName, req.QuotaOptimizationObjectFields[objName], fieldName)
+		}
 	}
 }
