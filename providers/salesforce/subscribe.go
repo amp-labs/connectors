@@ -1129,7 +1129,16 @@ func shouldSkipQuotaReconcile(
 	if len(diff.apexTriggersExisting) > 0 {
 		return false
 	}
+  // Kept members still carrying a filter (e.g. from a failed teardown)
+  for _, member := range diff.channelMembersExisting {
+      if member == nil || member.Metadata == nil {
+          continue
+      }
 
+      if member.Metadata.FilterExpression != "" || len(member.Metadata.EnrichedFields) > 0 {
+          return false
+      }
+  }
 	return true
 }
 
