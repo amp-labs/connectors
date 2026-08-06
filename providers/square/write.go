@@ -22,18 +22,18 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, fmt.Errorf("%w: %q", common.ErrOperationNotSupportedForObject, params.ObjectName)
 	}
 
+	// Everything is a POST except plain updates, which PUT to path/{id}.
+	// Upsert endpoints (catalog) keep POSTing to upsertPath with the record id
+	// in the body instead.
 	path := cfg.path
-	if cfg.writePath != "" {
-		path = cfg.writePath
+	if cfg.upsertPath != "" {
+		path = cfg.upsertPath
 	}
 
-	// Everything is a POST except plain updates, which PUT to path/{id}.
-	// upsertViaPost updates (catalog) keep POSTing to the create path with the
-	// record id in the body instead.
 	method := http.MethodPost
 	urlParts := []string{apiVersion, path}
 
-	if params.IsUpdate() && !cfg.upsertViaPost {
+	if params.IsUpdate() && cfg.upsertPath == "" {
 		method = http.MethodPut
 
 		urlParts = append(urlParts, params.RecordId)
@@ -86,7 +86,7 @@ func buildWriteBody(cfg objectConfig, params common.WriteParams) (map[string]any
 		body[idempotencyKeyField] = uuid.NewString()
 	}
 
-	if cfg.upsertViaPost && params.IsUpdate() && params.RecordId != "" {
+	if cfg.upsertPath != "" && params.IsUpdate() && params.RecordId != "" {
 		record["id"] = params.RecordId
 	}
 

@@ -22,9 +22,6 @@ type objectConfig struct {
 	// supportsWrite reports whether records can be written: created via
 	// POST path and updated via PUT path/{id}.
 	supportsWrite bool
-	// writePath overrides path for writes; only catalog needs it (lists via
-	// /catalog/list, writes via /catalog/object).
-	writePath string
 	// writeKey is the JSON envelope wrapping the record in write request and
 	// response bodies, e.g. {"gift_card": {...}}. Empty means flat bodies.
 	writeKey string
@@ -43,9 +40,10 @@ type objectConfig struct {
 	// topLevelFields are record fields the endpoint expects as siblings of the
 	// envelope rather than inside it, e.g. source_id when creating a card.
 	topLevelFields []string
-	// upsertViaPost makes updates POST to writePath with the record id injected
+	// upsertPath, when set, is where writes go instead of path, and marks the
+	// endpoint as an upsert: updates POST there with the record id injected
 	// into the body instead of PUT path/{id} (the catalog upsert endpoint).
-	upsertViaPost bool
+	upsertPath string
 }
 
 // objects is the set of objects the Square connector supports. Each exposes a
@@ -101,11 +99,10 @@ var objects = map[string]objectConfig{ //nolint:gochecknoglobals
 		responseKey:      "objects",
 		supportsCursor:   true,
 		supportsWrite:    true,
-		writePath:        "/catalog/object",
+		upsertPath:       "/catalog/object",
 		writeKey:         "object",
 		writeResponseKey: "catalog_object",
 		needsIdempotency: true,
-		upsertViaPost:    true,
 	},
 	// https://developer.squareup.com/reference/square/cards-api/create-card
 	// source_id and verification_token sit beside the "card" envelope.
