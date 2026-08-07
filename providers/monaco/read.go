@@ -8,12 +8,10 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/monaco/metadata"
 	"github.com/spyzhov/ajson"
@@ -68,24 +66,10 @@ func (c *Connector) buildReadURL(objectName string) (string, error) {
 
 	modulePath := metadata.Schemas.LookupModuleURLPath(c.ProviderContext.Module())
 
-	endpointURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, modulePath, path)
-	if err != nil {
-		return "", err
-	}
-
-	result := endpointURL.String()
-
-	// urlbuilder normalizes trailing slashes away, but Monaco's routes are
-	// slash-exact: GET /v1/tags/ and /v1/users/ are served directly, while
-	// /v1/tags and /v1/users answer 307 pointing at the slashed form. Restore
-	// the slash rather than depend on the client following a redirect.
-	// /v1/sequence-templates is the reverse -- unslashed is the real route --
-	// which is why this keys off the recorded path instead of the object kind.
-	if strings.HasSuffix(path, "/") && !strings.HasSuffix(result, "/") {
-		result += "/"
-	}
-
-	return result, nil
+	// buildURL preserves the trailing slash recorded in schemas.json, which is
+	// load-bearing on GET /v1/tags/ and /v1/users/ but must stay off
+	// /v1/sequence-templates. See url.go.
+	return buildURL(c.ProviderInfo().BaseURL, modulePath, path)
 }
 
 func newGetRequest(ctx context.Context, endpointURL string) (*http.Request, error) {

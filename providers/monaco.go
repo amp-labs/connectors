@@ -36,7 +36,7 @@ func init() {
 			Proxy:     true,
 			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		//nolint:lll
 		Media: &Media{
