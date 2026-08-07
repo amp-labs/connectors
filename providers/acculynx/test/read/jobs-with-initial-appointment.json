@@ -1,0 +1,19 @@
+{
+  "count": 1,
+  "pageSize": 25,
+  "pageStartIndex": 0,
+  "items": [
+    {
+      "id": "875b28e8-4f10-44e2-9af1-aff90527291e",
+      "initialAppointment": {
+        "startDate": "2025-03-20T16:30:00Z",
+        "endDate": "2025-03-20T17:00:00Z",
+        "notes": "Customer contact information:\nFoobar - McHealy, David\n",
+        "_link": "https://api.acculynx.com/api/v2/jobs/875b28e8-4f10-44e2-9af1-aff90527291e/initial-appointment"
+      },
+      "currentMilestone": "Cancelled",
+      "modifiedDate": "2025-03-19T20:01:27Z",
+      "_link": "https://api.acculynx.com/api/v2/jobs/875b28e8-4f10-44e2-9af1-aff90527291e"
+    }
+  ]
+}
