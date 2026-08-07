@@ -23,8 +23,8 @@ type Dependencies struct {
 	// builder to read the project's app name for CDC event-flag field naming.
 	Project ProjectResolver
 
-	// CDCOptimization resolves the per-(project, group) Salesforce CDC quota-optimization
-	// opt-in configuration. Used by the Salesforce subscribe-request builder.
+	// CDCOptimization resolves an installation's Salesforce CDC quota-optimization opt-in.
+	// Used by the Salesforce subscribe-request builder.
 	CDCOptimization CDCOptimizationResolver
 
 	// Subscriptions lists the stored subscription results for an installation. Used by the

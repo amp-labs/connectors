@@ -129,15 +129,16 @@ func (s stubProjectResolver) GetProjectAppName(_ context.Context, _ string) (str
 	return s.appName, s.err
 }
 
-// stubCDCOptimizationResolver returns a canned CDC config.
+// stubCDCOptimizationResolver returns a canned CDC config, or a canned resolution failure.
 type stubCDCOptimizationResolver struct {
 	cfg *deps.CDCOptimizationConfig
+	err error
 }
 
 func (s stubCDCOptimizationResolver) GetCDCOptimizationConfig(
-	_ context.Context, _, _ string,
-) *deps.CDCOptimizationConfig {
-	return s.cfg
+	_ context.Context, _ *openapi.Installation, _ *openapi.Revision,
+) (*deps.CDCOptimizationConfig, error) {
+	return s.cfg, s.err
 }
 
 // TestGetSalesforceRequestWithCDCOptIn verifies the full resolver-seam happy path: the Salesforce
@@ -150,7 +151,7 @@ func TestGetSalesforceRequestWithCDCOptIn(t *testing.T) {
 		Project: stubProjectResolver{appName: "My App"},
 		CDCOptimization: stubCDCOptimizationResolver{cfg: &deps.CDCOptimizationConfig{
 			ManualCheckboxManagement: true,
-			ObjectEnabled:            map[common.ObjectName]bool{"Account": true},
+			EnabledObjects:           []common.ObjectName{"Account"},
 		}},
 	}
 
