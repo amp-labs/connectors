@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "id": "con_lmn456",
+      "account_id": "acc_def456",
+      "first_name": "Ada",
+      "last_name": "Lovelace",
+      "email": "ada@acme.com",
+      "created_at": "2025-06-17T12:00:00Z",
+      "updated_at": "2025-06-22T10:00:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 2,
+    "page_size": 2,
+    "total_count": 3,
+    "total_pages": 2
+  },
+  "meta": {
+    "timestamp": "2026-08-06T00:00:00Z"
+  }
+}
