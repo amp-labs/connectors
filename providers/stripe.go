@@ -24,7 +24,7 @@ func init() {
 			},
 			Proxy:     true,
 			Read:      true,
-			Subscribe: false, // the gate; flipped to true in the final Enable PR of the subscribe stack
+			Subscribe: true,
 			Write:     true,
 		},
 		SubscribeRequirements: &SubscribeRequirements{
