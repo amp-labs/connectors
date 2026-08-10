@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "id": "firstName",
+      "type": "ContactSearchOutput",
+      "attributes": {
+        "accessGranted": true,
+        "description": "Contact's first name.",
+        "fieldName": "firstName"
+      }
+    },
+    {
+      "id": "lastName",
+      "type": "ContactSearchOutput",
+      "attributes": {
+        "accessGranted": true,
+        "description": "Contact's last name.",
+        "fieldName": "lastName"
+      }
+    },
+    {
+      "id": "companyId",
+      "type": "ContactSearchOutput",
+      "attributes": {
+        "accessGranted": true,
+        "description": "Unique ZoomInfo identifier for a company.",
+        "fieldName": "companyId"
+      }
+    },
+    {
+      "id": "managementLevel",
+      "type": "ContactSearchOutput",
+      "attributes": {
+        "accessGranted": true,
+        "description": "Management level of the contact.",
+        "fieldName": "managementLevel"
+      }
+    }
+  ]
+}
