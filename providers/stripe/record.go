@@ -74,7 +74,7 @@ func (c *Connector) fetchSingleRecord(
 		return nil, err
 	}
 
-	res, err := c.Client.Get(ctx, url.String())
+	res, err := c.Base.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func (c *Connector) fetchSingleRecord(
 // Format: /v1/{objectName}/{id}
 // Supports expand[] query parameters for associated objects.
 func (c *Connector) buildGetRecordURL(objectName string, id string, associations []string) (*urlbuilder.URL, error) {
-	url, err := c.getURL(objectName)
+	url, err := c.GetURL(objectName)
 	if err != nil {
 		return nil, err
 	}
