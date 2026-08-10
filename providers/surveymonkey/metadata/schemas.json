@@ -1,0 +1,385 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "groups": {
+          "displayName": "Groups",
+          "path": "/groups",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-groups",
+          "fields": {
+            "id": {
+              "displayName": "Group Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "Href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "survey_categories": {
+          "displayName": "Survey Categories",
+          "path": "/survey_categories",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-survey_categories",
+          "fields": {
+            "id": {
+              "displayName": "Category Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "survey_templates": {
+          "displayName": "Survey Templates",
+          "path": "/survey_templates",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-survey_templates",
+          "fields": {
+            "id": {
+              "displayName": "Template Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "category": {
+              "displayName": "Category",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "available": {
+              "displayName": "Available",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "num_questions": {
+              "displayName": "Num Questions",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "preview_link": {
+              "displayName": "Preview Link",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "team_survey_templates": {
+          "displayName": "Team Survey Templates",
+          "path": "/team_survey_templates",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-team_survey_templates",
+          "fields": {
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "team_template_id": {
+              "displayName": "Team Template Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "survey_id": {
+              "displayName": "Survey Id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "survey_languages": {
+          "displayName": "Survey Languages",
+          "path": "/survey_languages",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-survey_languages",
+          "fields": {
+            "id": {
+              "displayName": "Language Code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "native_name": {
+              "displayName": "Native Name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "question_bank_questions": {
+          "displayName": "Question Bank Questions",
+          "path": "/question_bank/questions",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-question_bank-questions",
+          "fields": {
+            "question_id": {
+              "displayName": "Question Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "text": {
+              "displayName": "Text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locales": {
+              "displayName": "Locales",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "modifiers": {
+              "displayName": "Modifiers",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "survey_folders": {
+          "displayName": "Survey Folders",
+          "path": "/survey_folders",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-survey_folders",
+          "fields": {
+            "id": {
+              "displayName": "Folder Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "num_surveys": {
+              "displayName": "Num Surveys",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "href": {
+              "displayName": "Href",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-contacts",
+          "fields": {
+            "id": {
+              "displayName": "Contact Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "First Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "Last Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_number": {
+              "displayName": "Phone Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "Href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_fields": {
+              "displayName": "Custom Fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "optout",
+                  "displayValue": "Opt Out"
+                },
+                {
+                  "value": "bounced",
+                  "displayValue": "Bounced"
+                }
+              ]
+            }
+          }
+        },
+        "contact_lists": {
+          "displayName": "Contact Lists",
+          "path": "/contact_lists",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-contact_lists",
+          "fields": {
+            "id": {
+              "displayName": "Contact List Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "Href",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "organizations": {
+          "displayName": "Organizations",
+          "path": "/organizations",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-organizations",
+          "fields": {
+            "id": {
+              "displayName": "Organization Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "default_role_id": {
+              "displayName": "Default Role Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "users_can_create_workgroups": {
+              "displayName": "Users Can Create Workgroups",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "roles": {
+          "displayName": "Roles",
+          "path": "/roles",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-roles",
+          "fields": {
+            "id": {
+              "displayName": "Role Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_enabled": {
+              "displayName": "Is Enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_system_role": {
+              "displayName": "Is System Role",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "privileges": {
+              "displayName": "Privileges",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "benchmark_bundles": {
+          "displayName": "Benchmark Bundles",
+          "path": "/benchmark_bundles",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-benchmark_bundles",
+          "fields": {
+            "id": {
+              "displayName": "Benchmark Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "Href",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
