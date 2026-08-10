@@ -61,7 +61,7 @@ func init() { //nolint:funlen
 				BaseURL:     "https://graph.facebook.com",
 				DisplayName: "WhatsApp Business Platform",
 				Support: Support{
-					Proxy:     false,
+					Proxy:     true,
 					Read:      false,
 					Subscribe: false,
 					Write:     false,
