@@ -1,0 +1,11 @@
+{
+  "data": [
+    {
+      "id": "software",
+      "type": "Industry",
+      "attributes": {
+        "name": "Software"
+      }
+    }
+  ]
+}
