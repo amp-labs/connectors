@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -19,7 +19,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 	contactsResponse := testutils.DataFromFile(t, "read-contacts.json")
 	industriesResponse := testutils.DataFromFile(t, "read-industries.json")
 
-	tests := []testroutines.Read{
+	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Input:        common.ReadParams{},
@@ -43,7 +43,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, contactsResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{
@@ -88,7 +88,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, contactsResponse),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 2, Done: false, NextPage: "3"},
 			ExpectedErrs: nil,
 		},
@@ -111,7 +111,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, industriesResponse),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 1, Done: true},
 			ExpectedErrs: nil,
 		},
@@ -132,7 +132,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, industriesResponse),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 1, Done: true},
 			ExpectedErrs: nil,
 		},
@@ -155,7 +155,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, industriesResponse),
 			}.Server(),
-			Comparator:   testroutines.ComparatorPagination,
+			Comparator:   testconn.ComparatorPagination,
 			Expected:     &common.ReadResult{Rows: 1, Done: true},
 			ExpectedErrs: nil,
 		},
@@ -167,7 +167,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 				If:    mockcond.Path("/gtm/data/v1/lookup/industries"),
 				Then:  mockserver.Response(http.StatusOK, industriesResponse),
 			}.Server(),
-			Comparator: testroutines.ComparatorPagination,
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{
@@ -190,7 +190,7 @@ func TestRead(t *testing.T) { // nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.ReadConnector, error) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})
