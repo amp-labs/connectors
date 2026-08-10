@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -22,7 +22,7 @@ type GetRecordsByIdsInput struct {
 	Associations []string
 }
 
-type GetRecordsByIdsTestCase = testroutines.TestCase[GetRecordsByIdsInput, []common.ReadResultRow]
+type GetRecordsByIdsTestCase = testconn.TestCase[GetRecordsByIdsInput, []common.ReadResultRow]
 
 func TestGetRecordsByIds(t *testing.T) {
 	t.Parallel()
@@ -79,8 +79,7 @@ func TestGetRecordsByIds(t *testing.T) {
 				If: mockcond.And{
 					mockcond.MethodGET(),
 					mockcond.Path("/v1/payment_intents/pi_3SsAwzF6iHem4voo03GfTErP"),
-					mockcond.QueryParam("expand[]", "payment_method"),
-					mockcond.QueryParam("expand[]", "latest_charge"),
+					mockcond.QueryParam("expand[]", "payment_method", "latest_charge"),
 				},
 				Then: mockserver.Response(http.StatusOK, paymentIntentWithAssociations),
 			}.Server(),
@@ -121,7 +120,7 @@ func TestGetRecordsByIds(t *testing.T) {
 				tt.Close()
 			})
 
-			conn, err := constructTestConnector(tt.Server.URL)
+			conn, err := constructTestConnector(tt.Server)
 			if err != nil {
 				t.Fatalf("failed to construct test connector: %v", err)
 			}
@@ -141,13 +140,22 @@ func TestGetRecordsByIds(t *testing.T) {
 
 // compareReadResultRows compares two slices of ReadResultRow by wrapping them
 // into ReadResult and using existing utilities for Fields and Raw, plus association validation.
-func compareReadResultRows(_ string, actual, expected []common.ReadResultRow) bool {
+func compareReadResultRows(_ string, actual, expected []common.ReadResultRow) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+	if !readResultRowsMatch(actual, expected) {
+		result.AddDiff("read result rows do not match expectation")
+	}
+
+	return result
+}
+
+func readResultRowsMatch(actual, expected []common.ReadResultRow) bool {
 	// Wrap slices into ReadResult to use existing utilities
 	actualResult := &common.ReadResult{Data: actual}
 	expectedResult := &common.ReadResult{Data: expected}
 
 	// Use existing utilities for Fields and Raw
-	if !mockutils.ReadResultComparator.SubsetFields(actualResult, expectedResult) {
+	if !mockutils.ReadResultComparator.SubsetFields(actualResult, expectedResult).OK {
 		return false
 	}
 

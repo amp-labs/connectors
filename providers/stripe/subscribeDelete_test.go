@@ -8,13 +8,13 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestDeleteSubscription(t *testing.T) {
 	t.Parallel()
 
-	tests := []testroutines.TestCase[common.SubscriptionResult, error]{
+	tests := []testconn.TestCase[common.SubscriptionResult, error]{
 		{
 			Name:         "Nil result",
 			Input:        common.SubscriptionResult{Result: nil},
@@ -66,7 +66,7 @@ func TestDeleteSubscription(t *testing.T) {
 				tt.Close()
 			})
 
-			conn, err := constructTestConnector(tt.Server.URL)
+			conn, err := constructTestConnector(tt.Server)
 			if err != nil {
 				t.Fatalf("failed to construct test connector: %v", err)
 			}

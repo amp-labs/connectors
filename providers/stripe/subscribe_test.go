@@ -14,7 +14,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 	"gotest.tools/v3/assert"
 )
@@ -24,7 +24,7 @@ func TestSubscribe(t *testing.T) {
 
 	webhookEndpointResponse := testutils.DataFromFile(t, "subscribe/webhook-endpoint-response.json")
 
-	tests := []testroutines.TestCase[common.SubscribeParams, *common.SubscriptionResult]{
+	tests := []testconn.TestCase[common.SubscribeParams, *common.SubscriptionResult]{
 
 		{
 			Name: "Empty events",
@@ -61,9 +61,7 @@ func TestSubscribe(t *testing.T) {
 				Then: mockserver.Response(http.StatusOK, webhookEndpointResponse),
 			}.Server(),
 			ExpectedErrs: nil,
-			Comparator: func(_ string, actual, expected *common.SubscriptionResult) bool {
-				return actual != nil && actual.Status == common.SubscriptionStatusSuccess
-			},
+			Comparator: comparatorSubscriptionSuccess,
 		},
 		{
 			Name: "Subscribe multiple objects",
@@ -96,9 +94,7 @@ func TestSubscribe(t *testing.T) {
 				Then: mockserver.Response(http.StatusOK, webhookEndpointResponse),
 			}.Server(),
 			ExpectedErrs: nil,
-			Comparator: func(_ string, actual, expected *common.SubscriptionResult) bool {
-				return actual != nil && actual.Status == common.SubscriptionStatusSuccess
-			},
+			Comparator: comparatorSubscriptionSuccess,
 		},
 	}
 
@@ -109,7 +105,7 @@ func TestSubscribe(t *testing.T) {
 				tt.Close()
 			})
 
-			conn, err := constructTestConnector(tt.Server.URL)
+			conn, err := constructTestConnector(tt.Server)
 			if err != nil {
 				t.Fatalf("failed to construct test connector: %v", err)
 			}
@@ -606,4 +602,14 @@ func TestParseStripeSignature(t *testing.T) {
 			}
 		})
 	}
+}
+
+// comparatorSubscriptionSuccess asserts that a subscription operation succeeded.
+func comparatorSubscriptionSuccess(_ string, actual, _ *common.SubscriptionResult) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+	if actual == nil || actual.Status != common.SubscriptionStatusSuccess {
+		result.AddDiff("expected subscription status %v, got %v", common.SubscriptionStatusSuccess, actual)
+	}
+
+	return result
 }
