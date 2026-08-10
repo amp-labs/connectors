@@ -110,11 +110,12 @@ var writeUpdateSuffix = datautils.Map[string, string]{
 //
 //nolint:gochecknoglobals
 var writeUpdateIdField = datautils.Map[string, string]{
-	"calls":      "id",
-	"bookmarks":  "bookmark_id",
-	"canvases":   "canvas_id",
-	"slackLists": "id",
-	"usergroups": "usergroup",
+	"bookmarks":    "bookmark_id",
+	"calls":        "id",
+	"canvases":     "canvas_id",
+	"files.remote": "file",
+	"slackLists":   "id",
+	"usergroups":   "usergroup",
 }
 
 // readSingleRecordResourceNameToQueryParam maps Slack API resources that read single records
