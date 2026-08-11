@@ -207,17 +207,16 @@ func (c *Connector) parseReadResponse(
 
 	return common.ParseResult(
 		resp,
-		extractRecords(recordsKey),
+		// Records are required, not optional: `data` is mandatory in Monaco's
+		// response schema for both the paginated and unpaginated envelopes, so
+		// its absence is a contract violation. Treating it as optional would
+		// report "zero records, read complete" and let a sync end early and
+		// silently; an error is louder and safer.
+		common.MakeRecordsFunc(recordsKey),
 		makeNextPageFunc(params.ObjectName),
 		readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id")),
 		params.Fields,
 	)
-}
-
-func extractRecords(recordsKey string) common.NodeRecordsFunc {
-	return func(node *ajson.Node) ([]*ajson.Node, error) {
-		return jsonquery.New(node).ArrayOptional(recordsKey)
-	}
 }
 
 func makeNextPageFunc(objectName string) common.NextPageFunc {

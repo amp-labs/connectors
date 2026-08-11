@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
@@ -235,6 +236,23 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			}.Server(),
 			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
 			ExpectedErrs: nil,
+		},
+		{
+			// Records are extracted with required semantics. A response missing
+			// `data` violates Monaco's schema, and reporting it as an empty page
+			// would let a sync finish early and silently.
+			Name: "Missing data envelope is an error, not an empty page",
+			Input: common.ReadParams{
+				ObjectName: objectContacts,
+				Fields:     connectors.Fields("id"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v1/contacts/list"),
+				Then: mockserver.Response(http.StatusOK,
+					[]byte(`{"pagination":{"page":1,"page_size":100,"total_count":0,"total_pages":1},"meta":{}}`)),
+			}.Server(),
+			ExpectedErrs: []error{jsonquery.ErrKeyNotFound},
 		},
 		{
 			Name: "Malformed NextPage is rejected",
