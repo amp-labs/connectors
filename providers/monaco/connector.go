@@ -29,7 +29,7 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 	// objects. Layering that in is deferred until we have credentials to
 	// verify its payload shape.
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
-		connector.ProviderContext.Module(),
+		connector.Module(),
 		metadata.Schemas,
 	)
 
