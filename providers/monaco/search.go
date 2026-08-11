@@ -20,7 +20,7 @@ import (
 // GET /v1/schemas/{entity} under `allowed_operators`, and we have no API key to
 // read it. `equals` is chosen because it is the operator the spec uses for the
 // plainest equality example (contacts by email). If a field turns out to accept
-// only `is`, searching on it will 400;
+// only `is`, searching on it will 400 and this mapping has to become per-field.
 const conditionEquals = "equals"
 
 // ErrUnsupportedSearchOperator is returned for any operator the framework may
@@ -81,7 +81,7 @@ func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*c
 
 	return common.ParseResult(
 		resp,
-		extractRecords(recordsKey),
+		common.MakeRecordsFunc(recordsKey),
 		nextPageFromPagination,
 		readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id")),
 		params.Fields,

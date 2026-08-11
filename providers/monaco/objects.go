@@ -49,7 +49,7 @@ var getListObjects = datautils.NewStringSet(
 // so `updated_at` being a filterable field with a `greater_than` operator is
 // unverified for all six. The one directly documented example is accounts
 // filtering on `created_at` with `greater_than`. Confirm against
-// GET /v1/schemas/{entity} once credentials exist; see metadata/README.md.
+// GET /v1/schemas/{entity} once credentials exist.
 //
 //nolint:gochecknoglobals
 var incrementalObjects = datautils.NewStringSet(
