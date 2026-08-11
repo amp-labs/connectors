@@ -124,7 +124,7 @@ func (c *Connector) parseReadResponse(
 		response,
 		getRecords,
 		nextPageFromMeta,
-		common.MakeMarshaledDataFunc(common.FlattenNestedFields("attributes")),
+		common.MakeMarshaledDataFunc(common.FlattenNestedFields(attributesField)),
 		params.Fields,
 	)
 }

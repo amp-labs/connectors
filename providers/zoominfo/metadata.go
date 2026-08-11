@@ -220,14 +220,14 @@ func flattenRecord(record map[string]any) map[string]any {
 	out := make(map[string]any, len(record))
 
 	for key, value := range record {
-		if key == "attributes" {
+		if key == attributesField {
 			continue
 		}
 
 		out[key] = value
 	}
 
-	if attrs, ok := record["attributes"].(map[string]any); ok {
+	if attrs, ok := record[attributesField].(map[string]any); ok {
 		maps.Copy(out, attrs)
 	}
 

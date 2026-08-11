@@ -1,0 +1,10 @@
+{
+  "data": {
+    "id": "bp_12345",
+    "type": "CustomerBuyerPersona",
+    "attributes": {
+      "name": "VP of Engineering",
+      "description": "Technical decision maker"
+    }
+  }
+}
