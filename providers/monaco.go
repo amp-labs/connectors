@@ -34,9 +34,17 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
 			Write:     false,
+			// Monaco's list endpoints double as search endpoints, filtering on
+			// a `filters` array. Only equality maps onto common.FilterOperator
+			// today; Monaco itself also accepts contains/greater_than/less_than/is.
+			Search: SearchSupport{
+				Operators: SearchOperators{
+					Equals: true,
+				},
+			},
 		},
 		//nolint:lll
 		Media: &Media{
