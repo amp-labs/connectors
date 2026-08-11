@@ -77,14 +77,21 @@ func walkNullableAnyOf(node any) any {
 }
 
 // soleNonNullMember returns the single member of an anyOf list that is not the
-// null type, provided exactly one such member exists.
+// null type, provided exactly one such member exists alongside at least one
+// null. Both conditions matter: one non-null member proves the union is
+// unambiguous, and a null member proves the anyOf existed only to express
+// optionality. A union of two real types is left alone.
 func soleNonNullMember(anyOf any) (map[string]any, bool) {
 	members, ok := anyOf.([]any)
 	if !ok {
 		return nil, false
 	}
 
-	var survivors []map[string]any
+	var (
+		survivor     map[string]any
+		nonNullCount int
+		sawNull      bool
+	)
 
 	for _, member := range members {
 		schema, isObject := member.(map[string]any)
@@ -93,15 +100,18 @@ func soleNonNullMember(anyOf any) (map[string]any, bool) {
 		}
 
 		if schema["type"] == "null" {
+			sawNull = true
+
 			continue
 		}
 
-		survivors = append(survivors, schema)
+		survivor = schema
+		nonNullCount++
 	}
 
-	if len(survivors) != 1 || len(survivors) == len(members) {
+	if nonNullCount != 1 || !sawNull {
 		return nil, false
 	}
 
-	return survivors[0], true
+	return survivor, true
 }
