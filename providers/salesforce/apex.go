@@ -79,6 +79,9 @@ type ApexTriggerResult struct {
 // DeployResult contains the outcome of a Salesforce Metadata API deployment.
 type DeployResult = metadata.DeployResult
 
+// CancelDeployResult is an alias, see internal package for implementation.
+type CancelDeployResult = metadata.CancelDeployResult
+
 const (
 	deployPollInterval = 10 * time.Second
 	deployPollTimeout  = 15 * time.Minute
@@ -298,6 +301,19 @@ func (c *Connector) DeployMetadataZipWithTests(
 func (c *Connector) CheckDeployStatus(ctx context.Context, deployID string) (*DeployResult, error) {
 	if c.crmAdapter != nil {
 		return c.crmAdapter.CheckDeployStatus(ctx, deployID)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+// CancelDeploy requests cancellation of a queued (Pending) or InProgress deployment
+// via the Metadata API cancelDeploy operation. Cancellation is asynchronous: when the
+// returned result's Done is false, poll CheckDeployStatus until the deploy reports
+// Done (final status "Canceled"). A deploy that has already finished cannot be
+// canceled; Salesforce returns a SOAP fault, surfaced as an error.
+func (c *Connector) CancelDeploy(ctx context.Context, deployID string) (*CancelDeployResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.CancelDeploy(ctx, deployID)
 	}
 
 	return nil, common.ErrNotImplemented
