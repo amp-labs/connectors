@@ -29,10 +29,34 @@ const (
 	entityScoop   = "scoop"
 )
 
-// Object names shared between the read (getObjects) and write (writeObjects)
-// registries, plus their JSON:API resource types, hoisted to constants to avoid
-// repeated string literals.
+// obj* and type* live on two different axes and are NOT interchangeable:
+//
+//   - obj* is the connector-facing object name — the key callers pass in
+//     ReadParams/WriteParams.ObjectName and the key these registries are keyed
+//     by. It is plural and kebab-cased, and usually (but not always) doubles as
+//     the URL path segment.
+//   - type* is ZoomInfo's JSON:API resource type — the `data.type` member sent
+//     in a create/update request body and echoed in the response. It is
+//     singular and PascalCase.
+//
+// So a single audiences write uses both, in different positions:
+//
+//	POST /gtm/studio/v1/audiences        <- objAudiences (path)
+//	{"data":{"type":"Audience", ...}}    <- typeAudience (body)
+//
+// Both are declared because neither can be mechanically derived from the other —
+// singularizing and PascalCasing the object name is wrong often enough that
+// ZoomInfo's own naming rules it out. Counter-examples in writeObjects below:
+// objProducts ("products") has data.type "OrganizationOffering",
+// objIdealCompanyProfile ("ideal-company-profile") has "IdealCompanySegment",
+// and objAudienceFolders ("audience-folders") is served at path segment
+// "folders" with data.type "Folder" — three independent strings for one object.
+//
+// Only the two type* values reused across more than one registry entry are
+// hoisted here; the single-use ones stay inline in writeObjects.
 const (
+	// Object names shared between the read (getObjects) and write (writeObjects)
+	// registries.
 	objCustomerBuyerPersonas = "customer-buyer-personas"
 	objCustomerCompetitors   = "customer-competitors"
 	objIdealCompanyProfile   = "ideal-company-profile"
@@ -41,6 +65,8 @@ const (
 	objAudienceFolders       = "audience-folders"
 	objIndustries            = "industries"
 
+	// JSON:API data.type values, referenced by writeObjects and asserted in the
+	// write tests.
 	typeAudience             = "Audience"
 	typeCustomerBuyerPersona = "CustomerBuyerPersona"
 
@@ -247,9 +273,13 @@ const (
 // writeDef describes a writable (create/update/delete) ZoomInfo object.
 type writeDef struct {
 	// segments are the collection path segments after BaseURL, including the
-	// version prefix (e.g. {copilotAPIPath, "customer-buyer-personas"}).
+	// version prefix (e.g. {copilotAPIPath, "customer-buyer-personas"}). The
+	// trailing segment is not always the object name — audience-folders is
+	// served at "folders".
 	segments []string
-	// recordType is the JSON:API data.type for the request body.
+	// recordType is the JSON:API data.type for the request body — a separate,
+	// singular PascalCase string that ZoomInfo does not derive from the object
+	// name or the path (see the obj*/type* note above).
 	recordType string
 	// style selects the create/update mechanism.
 	style writeStyle

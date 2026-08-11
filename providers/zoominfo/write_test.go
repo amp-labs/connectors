@@ -4,11 +4,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
-	"github.com/amp-labs/connectors/test/utils/testroutines"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -18,7 +17,7 @@ func TestWrite(t *testing.T) { // nolint:funlen
 	audienceResponse := testutils.DataFromFile(t, "write-audience.json")
 	buyerPersonaResponse := testutils.DataFromFile(t, "write-buyer-persona.json")
 
-	tests := []testroutines.Write{
+	tests := []testconn.TestCaseWrite{
 		{
 			Name:         "Write object must be included",
 			Input:        common.WriteParams{},
@@ -26,10 +25,12 @@ func TestWrite(t *testing.T) { // nolint:funlen
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
+			// Rejected by the endpoint registry, which supports.go derives from
+			// writeObjects — read-only objects never reach buildWriteRequest.
 			Name:         "Unsupported (read-only) object is rejected",
 			Input:        common.WriteParams{ObjectName: objIndustries, RecordData: map[string]any{}},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
 			Name: "Studio create: POST collection (audiences)",
@@ -157,7 +158,7 @@ func TestWrite(t *testing.T) { // nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 
-			tt.Run(t, func() (connectors.WriteConnector, error) {
+			tt.Run(t, func() (testconn.TestableWriter, error) {
 				return constructTestConnector(tt.Server)
 			})
 		})

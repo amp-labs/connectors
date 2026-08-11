@@ -31,9 +31,23 @@ type writeRequestData struct {
 //   - createUpdate (Studio): POST {collection} to create; PATCH {collection}/{id}
 //     to update.
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
+	// This lookup is a data fetch, not a support check: def carries the three
+	// pieces of per-object data needed to build the request at all — the
+	// collection path (segments), the JSON:API data.type (recordType), and the
+	// create/update mechanism (style). None of it is derivable from the object
+	// name, so there is no request to build without it.
+	//
+	// Unsupported object names are already rejected upstream by the endpoint
+	// registry, which supports.go derives from this same map, so !ok is not a
+	// caller error — it can only mean those two have diverged. It is reported as
+	// a broken invariant rather than "object not supported", which would blame
+	// the caller for an object the registry just vouched for. Keeping the branch
+	// stops a future registry change from silently POSTing an empty data.type
+	// against the bare BaseURL.
 	def, ok := writeObjects[params.ObjectName]
 	if !ok {
-		return nil, fmt.Errorf("%w: %q", common.ErrObjectNotSupported, params.ObjectName)
+		return nil, fmt.Errorf("%w: %q is registered for write support but missing from writeObjects",
+			common.ErrInvalidImplementation, params.ObjectName)
 	}
 
 	method := http.MethodPost
