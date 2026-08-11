@@ -100,7 +100,7 @@ func newGetRequest(ctx context.Context, endpointURL string) (*http.Request, erro
 }
 
 func newListRequest(ctx context.Context, endpointURL string, params common.ReadParams) (*http.Request, error) {
-	page, err := readPage(params)
+	page, err := resolvePage(params.NextPage)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func newListRequest(ctx context.Context, endpointURL string, params common.ReadP
 func buildListRequestBody(params common.ReadParams, page int) map[string]any {
 	body := map[string]any{
 		pageKey:     page,
-		pageSizeKey: readPageSize(params),
+		pageSizeKey: clampPageSize(params.PageSize),
 	}
 
 	if filters := buildTimeFilters(params); len(filters) != 0 {
@@ -165,16 +165,17 @@ func filterRule(field, condition string, value time.Time) map[string]any {
 	}
 }
 
-// readPage resolves which page to request. Monaco paginates by page number
-// rather than by cursor, so the next-page token is just the number.
-func readPage(params common.ReadParams) (int, error) {
-	if params.NextPage == "" {
+// resolvePage turns a next-page token into the page to request. Monaco
+// paginates by page number rather than by cursor, so the token is just the
+// number. Shared with Search, which pages the same endpoints.
+func resolvePage(token common.NextPageToken) (int, error) {
+	if token == "" {
 		return firstPage, nil
 	}
 
-	page, err := strconv.Atoi(params.NextPage.String())
+	page, err := strconv.Atoi(token.String())
 	if err != nil {
-		return 0, fmt.Errorf("%w: expected a page number, got %q", ErrInvalidNextPage, params.NextPage)
+		return 0, fmt.Errorf("%w: expected a page number, got %q", ErrInvalidNextPage, token)
 	}
 
 	if page < firstPage {
@@ -184,14 +185,15 @@ func readPage(params common.ReadParams) (int, error) {
 	return page, nil
 }
 
-func readPageSize(params common.ReadParams) int {
+// clampPageSize keeps the requested size inside Monaco's 1..500 range.
+func clampPageSize(size int) int {
 	switch {
-	case params.PageSize <= 0:
+	case size <= 0:
 		return defaultPageSize
-	case params.PageSize > maxPageSize:
+	case size > maxPageSize:
 		return maxPageSize
 	default:
-		return params.PageSize
+		return size
 	}
 }
 
