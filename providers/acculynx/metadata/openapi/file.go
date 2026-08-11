@@ -14,3 +14,9 @@ var (
 
 	FileManager = api3.NewOpenapiFileManager[any](apiFile) // nolint:gochecknoglobals
 )
+
+// FileBytes exposes the raw spec for generators that need direct component
+// schema access beyond what api3's collection-oriented readers extract.
+func FileBytes() []byte {
+	return apiFile
+}

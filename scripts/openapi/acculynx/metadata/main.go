@@ -7,6 +7,8 @@ package main
 
 import (
 	"log/slog"
+	"maps"
+	"sort"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -18,6 +20,7 @@ import (
 	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
+	"github.com/getkin/kin-openapi/openapi3"
 )
 
 // objectEndpoints maps URL path → ObjectName. Templated paths ({jobId},
@@ -140,6 +143,19 @@ func main() {
 		}
 	}
 
+	// The /estimates list returns reference stubs only (id, isPrimary, job)
+	// and silently ignores ?includes= (verified live), so the read connector
+	// hydrates every estimate from GET /estimates/{estimateId}. The detail
+	// fields (financials, createdDate, sections, ...) are therefore part of
+	// the estimates read shape and merged into its schema here, keyed under
+	// the list's URL path and response key. Query params are intentionally
+	// not registered: queryParamStats tracks list endpoints only.
+	for _, field := range estimateDetailFields() {
+		schemas.Add(common.ModuleRoot, "estimates", "Estimates",
+			"/api/v2/estimates", "items",
+			utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, nil)
+	}
+
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
@@ -171,4 +187,69 @@ func Objects() []metadatadef.Schema {
 	goutils.MustBeNil(err)
 
 	return objects
+}
+
+// estimateDetailFields returns the flattened property set of the estimate
+// component schema — the single-object response of GET /estimates/{estimateId}.
+// api3's ReadObjects cannot extract it: its extractors are collection-oriented
+// and, pointed at the detail endpoint, auto-select the only inner array
+// (sections) and return section fields instead of the estimate's own. So the
+// properties are read directly from the spec.
+func estimateDetailFields() []metadatadef.Field {
+	doc, err := openapi3.NewLoader().LoadFromData(openapi.FileBytes())
+	goutils.MustBeNil(err)
+
+	schema, ok := doc.Components.Schemas["estimate"]
+	if !ok || schema.Value == nil {
+		panic("estimate component schema missing from AccuLynx OpenAPI spec")
+	}
+
+	props := flattenedProperties(schema.Value)
+
+	names := datautils.Map[string, *openapi3.SchemaRef](props).Keys()
+	sort.Strings(names)
+
+	fields := make([]metadatadef.Field, 0, len(names))
+	for _, name := range names {
+		fields = append(fields, metadatadef.Field{
+			Name: name,
+			Type: propertyTypeName(props[name]),
+		})
+	}
+
+	return fields
+}
+
+// flattenedProperties merges a schema's own properties with those of its
+// allOf components, recursively. Own properties win on collisions.
+func flattenedProperties(schema *openapi3.Schema) map[string]*openapi3.SchemaRef {
+	out := make(map[string]*openapi3.SchemaRef)
+
+	for _, ref := range schema.AllOf {
+		if ref != nil && ref.Value != nil {
+			maps.Copy(out, flattenedProperties(ref.Value))
+		}
+	}
+
+	maps.Copy(out, schema.Properties)
+
+	return out
+}
+
+// propertyTypeName resolves a property's provider type. Schemas composed via
+// $ref/allOf frequently omit an explicit type; those are objects.
+func propertyTypeName(ref *openapi3.SchemaRef) string {
+	if ref == nil || ref.Value == nil {
+		return ""
+	}
+
+	if types := ref.Value.Type; types != nil && len(types.Slice()) > 0 {
+		return types.Slice()[0]
+	}
+
+	if len(ref.Value.AllOf) > 0 || len(ref.Value.Properties) > 0 {
+		return "object"
+	}
+
+	return ""
 }

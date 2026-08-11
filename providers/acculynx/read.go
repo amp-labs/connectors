@@ -224,18 +224,41 @@ func (c *Connector) parseReadResponse(
 
 	var transformer common.RecordTransformer
 
-	if usesCustomFields(params.ObjectName) {
+	switch {
+	case usesCustomFields(params.ObjectName):
 		transformer, err = c.buildCustomFieldsTransformer(ctx, params, resp)
+		if err != nil {
+			return nil, err
+		}
+	case params.ObjectName == objectEstimates:
+		// /estimates rows are reference stubs; every substantive field needs
+		// the per-record detail endpoint — see estimates.go.
+		transformer, err = c.buildEstimateDetailTransformer(ctx, resp)
 		if err != nil {
 			return nil, err
 		}
 	}
 
+	return common.ParseResultFiltered(
+		params,
+		resp,
+		c.recordsFunc(params.ObjectName),
+		c.makeFilterFunc(params, reqURL),
+		readMarshaller(params, transformer),
+		params.Fields,
+	)
+}
+
+// readMarshaller wraps the base marshaller with association post-processors
+// for objects whose related-object references ride on the list payload
+// itself — pure reshapes of the parsed rows, no extra API calls:
+//
+//   - jobs -> contacts: embedded contacts arrive via ?includes=contacts.
+//   - estimates -> jobs: the job stub ({id, _link}) and isPrimary are on
+//     every estimate row.
+func readMarshaller(params common.ReadParams, transformer common.RecordTransformer) common.MarshalFromNodeFunc {
 	marshaller := common.MakeMarshaledDataFunc(transformer)
 
-	// Attach the job's embedded contacts as associations when requested. The
-	// contacts ride inline on the job payload (?includes=contacts), so this is a
-	// pure post-process of the parsed rows — no extra API call.
 	if params.ObjectName == objectJobs &&
 		slices.Contains(params.AssociatedObjects, jobContactsAssociation) {
 		marshaller = readhelper.ChainedMarshaller(marshaller, func(rows []common.ReadResultRow) error {
@@ -245,14 +268,16 @@ func (c *Connector) parseReadResponse(
 		})
 	}
 
-	return common.ParseResultFiltered(
-		params,
-		resp,
-		c.recordsFunc(params.ObjectName),
-		c.makeFilterFunc(params, reqURL),
-		marshaller,
-		params.Fields,
-	)
+	if params.ObjectName == objectEstimates &&
+		slices.Contains(params.AssociatedObjects, estimateJobAssociation) {
+		marshaller = readhelper.ChainedMarshaller(marshaller, func(rows []common.ReadResultRow) error {
+			extractEstimateJobs(rows)
+
+			return nil
+		})
+	}
+
+	return marshaller
 }
 
 // buildCustomFieldsTransformer fetches custom-field definitions and per-record
@@ -459,7 +484,7 @@ func (c *Connector) fetchChildPages(
 			return nil, err
 		}
 
-		attachAppointmentAssociations(params, parentID, result.Data)
+		attachNestedAssociations(params, parentID, result.Data)
 		allRows = append(allRows, result.Data...)
 
 		if result.NextPage == "" {
