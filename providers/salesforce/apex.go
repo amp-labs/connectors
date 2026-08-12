@@ -5,11 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"sort"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
@@ -83,8 +85,20 @@ type DeployResult = metadata.DeployResult
 type CancelDeployResult = metadata.CancelDeployResult
 
 const (
-	deployPollInterval = 10 * time.Second
-	deployPollTimeout  = 15 * time.Minute
+	// deployPollTimeout bounds how long pollDeployStatus waits for a single deploy.
+	// Metadata deploys serialize per org, so on a busy org a deploy can sit queued
+	// (status Pending) far longer than the deploy itself takes to execute — the
+	// window has to cover queue time, not just run time.
+	deployPollTimeout = 2 * time.Hour
+
+	// Deploy status checks back off in steps: quick checks while a fast deploy
+	// might still finish, then progressively sparser ones for the long-haul wait
+	// (see deployPollInterval).
+	deployPollIntervalFast = 10 * time.Second
+	deployPollIntervalSlow = 1 * time.Minute
+	deployPollIntervalIdle = 5 * time.Minute
+	deployPollFastWindow   = 1 * time.Minute
+	deployPollSlowWindow   = 10 * time.Minute
 
 	// apexDeployMaxAttempts is the maximum number of attempts for deploying an apex trigger.
 	// Retries handle the race condition where a custom field was just created via Metadata API
@@ -560,8 +574,34 @@ func (c *Connector) deployDestructiveApex(
 	return deployResult, nil
 }
 
+// deployPollInterval returns the pause before the next deploy status check,
+// stepped by how long the deploy has already been polled: 10s checks during the
+// first minute (a fast deploy finishes almost immediately), 1m checks until ten
+// minutes have passed, then 5m checks for the long-haul wait behind a busy
+// org's deploy queue.
+func deployPollInterval(elapsed time.Duration) time.Duration {
+	switch {
+	case elapsed < deployPollFastWindow:
+		return deployPollIntervalFast
+	case elapsed < deployPollSlowWindow:
+		return deployPollIntervalSlow
+	default:
+		return deployPollIntervalIdle
+	}
+}
+
 func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*DeployResult, error) {
 	timeout := time.After(deployPollTimeout)
+	start := time.Now()
+
+	// logging.Logger (rather than raw slog) inherits the caller's structured
+	// fields set via logging.With — e.g. amp-labs/server enriches the subscribe
+	// context with installation/subscription/project ids, so every poll line
+	// below carries them.
+	logging.Logger(ctx).InfoContext(ctx, "polling metadata deploy status",
+		"deployId", deployID,
+		"timeout", deployPollTimeout.String(),
+	)
 
 	for {
 		deployResult, err := c.CheckDeployStatus(ctx, deployID)
@@ -569,18 +609,32 @@ func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*Dep
 			return nil, fmt.Errorf("failed to check deploy status: %w", err)
 		}
 
+		elapsed := time.Since(start).Round(time.Second)
+
 		if deployResult.Done {
+			logging.Logger(ctx).InfoContext(ctx, "metadata deploy finished",
+				"deployId", deployID,
+				"status", deployResult.Status,
+				"success", deployResult.Success,
+				"elapsed", elapsed.String(),
+			)
 			logApexCoverage(ctx, deployID, deployResult)
 
 			return deployResult, nil
 		}
 
+		logging.Logger(ctx).InfoContext(ctx, "still polling metadata deploy",
+			"deployId", deployID,
+			"status", deployResult.Status,
+			"elapsed", elapsed.String(),
+		)
+
 		select {
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		case <-timeout:
-			return nil, fmt.Errorf("%w after %s for deployId %s", errDeployPollTimeout, deployPollTimeout, deployID)
-		case <-time.After(deployPollInterval):
+			return nil, fmt.Errorf("%w after %s for deployId %s", ErrDeployPollTimeout, deployPollTimeout, deployID)
+		case <-time.After(deployPollInterval(time.Since(start))):
 			// continue polling
 		}
 	}
@@ -625,21 +679,59 @@ func filterSuccessfulTriggers(
 	return successful
 }
 
+// onlyDeployPollTimeouts reports whether out carries at least one per-object
+// deploy error and every one of them is a poll timeout — i.e. no deploy
+// actually failed; they are all still queued/running org-side and expected to
+// land on their own.
+func onlyDeployPollTimeouts(out *DeployApexTriggersResult) bool {
+	if out == nil || len(out.Errors) == 0 {
+		return false
+	}
+
+	for _, err := range out.Errors {
+		if !errors.Is(err, ErrDeployPollTimeout) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// timedOutTriggerObjects lists the object names whose trigger deploy hit the
+// poll timeout, for logging.
+func timedOutTriggerObjects(out *DeployApexTriggersResult) []string {
+	objects := make([]string, 0, len(out.Errors))
+
+	for objName, err := range out.Errors {
+		if errors.Is(err, ErrDeployPollTimeout) {
+			objects = append(objects, string(objName))
+		}
+	}
+
+	sort.Strings(objects)
+
+	return objects
+}
+
 // toApexTriggers converts deploy results to the ApexTrigger type stored in
-// SubscribeResult. Only successfully deployed triggers (non-empty DeployID) are
-// emitted, so the returned map faithfully describes triggers that exist in
-// Salesforce. Per-object deploy errors are aggregated into out.Errors and
-// surfaced through the error chain returned from Subscribe / UpdateSubscription;
-// they are also logged here per object so that, even if the caller swallows the
-// aggregate error, a failed-deploy entry has a corresponding warn log keyed to
-// the object name.
+// SubscribeResult. Successfully deployed triggers (non-empty DeployID) are
+// emitted, and so are triggers whose deploy merely outlived the poll window
+// (ErrDeployPollTimeout) — those are still running org-side and expected to
+// land, so recording the intended entry keeps later lifecycle operations
+// (update/unsubscribe) tracking them, mirroring the manual-verify path which
+// records intent. Genuinely failed deploys are omitted so the map never
+// describes a trigger that will not exist. Per-object deploy errors are
+// aggregated into out.Errors and surfaced through the error chain returned
+// from Subscribe / UpdateSubscription; they are also logged here per object so
+// that, even if the caller swallows the aggregate error, a failed-deploy entry
+// has a corresponding warn log keyed to the object name.
 func toApexTriggers(
 	out *DeployApexTriggersResult,
 ) map[common.ObjectName]*ApexTrigger {
 	triggers := make(map[common.ObjectName]*ApexTrigger, len(out.Results))
 
 	for objName, result := range out.Results {
-		if result.DeployID == "" {
+		if result.DeployID == "" && !errors.Is(out.Errors[objName], ErrDeployPollTimeout) {
 			slog.Warn("apex trigger deploy failed; entry omitted from sfRes.ApexTriggers",
 				"object", objName,
 				"error", out.Errors[objName],
