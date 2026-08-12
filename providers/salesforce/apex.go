@@ -593,17 +593,36 @@ func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*Dep
 	timeout := time.After(deployPollTimeout)
 	start := time.Now()
 
+	slog.InfoContext(ctx, "polling metadata deploy status",
+		"deployId", deployID,
+		"timeout", deployPollTimeout.String(),
+	)
+
 	for {
 		deployResult, err := c.CheckDeployStatus(ctx, deployID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to check deploy status: %w", err)
 		}
 
+		elapsed := time.Since(start).Round(time.Second)
+
 		if deployResult.Done {
+			slog.InfoContext(ctx, "metadata deploy finished",
+				"deployId", deployID,
+				"status", deployResult.Status,
+				"success", deployResult.Success,
+				"elapsed", elapsed.String(),
+			)
 			logApexCoverage(ctx, deployID, deployResult)
 
 			return deployResult, nil
 		}
+
+		slog.InfoContext(ctx, "still polling metadata deploy",
+			"deployId", deployID,
+			"status", deployResult.Status,
+			"elapsed", elapsed.String(),
+		)
 
 		select {
 		case <-ctx.Done():
