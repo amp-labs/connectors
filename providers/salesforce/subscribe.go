@@ -251,7 +251,23 @@ func (c *Connector) executeSubscribe(
 		progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
 		sfRes.ApexTriggers = toApexTriggers(deployOut)
 
-		if err != nil {
+		switch {
+		case err == nil:
+		case onlyDeployPollTimeouts(deployOut):
+			// Every deploy failure is a poll timeout: the deploys are still
+			// queued/running org-side (metadata deploys serialize per org, so queue
+			// wait can exceed any reasonable poll window) and will land on their
+			// own. Proceed instead of rolling the whole subscribe back —
+			// CREATE/DELETE events flow as soon as the channel members below exist;
+			// UPDATE events for the affected objects are dropped by the member
+			// filter until the trigger lands and starts flipping the indicator
+			// field. If a deploy ultimately fails org-side, UPDATE events keep
+			// being dropped — check Setup > Deployment Status for the verdict.
+			slog.WarnContext(ctx,
+				"apex trigger deploy(s) still running after poll timeout; proceeding without waiting — "+
+					"UPDATE events are dropped until the trigger lands",
+				"objects", timedOutTriggerObjects(deployOut))
+		default:
 			return sfRes, progress, err
 		}
 	}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -608,7 +609,7 @@ func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*Dep
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		case <-timeout:
-			return nil, fmt.Errorf("%w after %s for deployId %s", errDeployPollTimeout, deployPollTimeout, deployID)
+			return nil, fmt.Errorf("%w after %s for deployId %s", ErrDeployPollTimeout, deployPollTimeout, deployID)
 		case <-time.After(deployPollInterval(time.Since(start))):
 			// continue polling
 		}
@@ -654,21 +655,59 @@ func filterSuccessfulTriggers(
 	return successful
 }
 
+// onlyDeployPollTimeouts reports whether out carries at least one per-object
+// deploy error and every one of them is a poll timeout — i.e. no deploy
+// actually failed; they are all still queued/running org-side and expected to
+// land on their own.
+func onlyDeployPollTimeouts(out *DeployApexTriggersResult) bool {
+	if out == nil || len(out.Errors) == 0 {
+		return false
+	}
+
+	for _, err := range out.Errors {
+		if !errors.Is(err, ErrDeployPollTimeout) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// timedOutTriggerObjects lists the object names whose trigger deploy hit the
+// poll timeout, for logging.
+func timedOutTriggerObjects(out *DeployApexTriggersResult) []string {
+	objects := make([]string, 0, len(out.Errors))
+
+	for objName, err := range out.Errors {
+		if errors.Is(err, ErrDeployPollTimeout) {
+			objects = append(objects, string(objName))
+		}
+	}
+
+	sort.Strings(objects)
+
+	return objects
+}
+
 // toApexTriggers converts deploy results to the ApexTrigger type stored in
-// SubscribeResult. Only successfully deployed triggers (non-empty DeployID) are
-// emitted, so the returned map faithfully describes triggers that exist in
-// Salesforce. Per-object deploy errors are aggregated into out.Errors and
-// surfaced through the error chain returned from Subscribe / UpdateSubscription;
-// they are also logged here per object so that, even if the caller swallows the
-// aggregate error, a failed-deploy entry has a corresponding warn log keyed to
-// the object name.
+// SubscribeResult. Successfully deployed triggers (non-empty DeployID) are
+// emitted, and so are triggers whose deploy merely outlived the poll window
+// (ErrDeployPollTimeout) — those are still running org-side and expected to
+// land, so recording the intended entry keeps later lifecycle operations
+// (update/unsubscribe) tracking them, mirroring the manual-verify path which
+// records intent. Genuinely failed deploys are omitted so the map never
+// describes a trigger that will not exist. Per-object deploy errors are
+// aggregated into out.Errors and surfaced through the error chain returned
+// from Subscribe / UpdateSubscription; they are also logged here per object so
+// that, even if the caller swallows the aggregate error, a failed-deploy entry
+// has a corresponding warn log keyed to the object name.
 func toApexTriggers(
 	out *DeployApexTriggersResult,
 ) map[common.ObjectName]*ApexTrigger {
 	triggers := make(map[common.ObjectName]*ApexTrigger, len(out.Results))
 
 	for objName, result := range out.Results {
-		if result.DeployID == "" {
+		if result.DeployID == "" && !errors.Is(out.Errors[objName], ErrDeployPollTimeout) {
 			slog.Warn("apex trigger deploy failed; entry omitted from sfRes.ApexTriggers",
 				"object", objName,
 				"error", out.Errors[objName],
