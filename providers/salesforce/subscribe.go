@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/go-playground/validator"
@@ -245,15 +246,8 @@ func (c *Connector) executeSubscribe(
 		if err != nil {
 			return sfRes, progress, err
 		}
-	} else {
-		deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
-
-		progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
-		sfRes.ApexTriggers = toApexTriggers(deployOut)
-
-		if err != nil {
-			return sfRes, progress, err
-		}
+	} else if err := c.deployTriggersToleratingTimeouts(ctx, params, req, sfRes, progress); err != nil {
+		return sfRes, progress, err
 	}
 
 	if err := c.createEventChannelMembers(ctx, params, registrationParams, req, sfRes); err != nil {
@@ -261,6 +255,45 @@ func (c *Connector) executeSubscribe(
 	}
 
 	return sfRes, progress, nil
+}
+
+// deployTriggersToleratingTimeouts deploys the CDC apex triggers and records the
+// outcome on sfRes/progress. A poll timeout is not treated as failure: when
+// EVERY deploy error is ErrDeployPollTimeout, the deploys are still
+// queued/running org-side (metadata deploys serialize per org, so queue wait can
+// exceed any reasonable poll window) and will land on their own, so Subscribe
+// proceeds instead of rolling back — CREATE/DELETE events flow as soon as the
+// channel members exist; UPDATE events for the affected objects are dropped by
+// the member filter until the trigger lands and starts flipping the indicator
+// field. If a deploy ultimately fails org-side, UPDATE events keep being
+// dropped — check Setup > Deployment Status for the verdict. Any real deploy
+// failure is returned and fails Subscribe as before.
+func (c *Connector) deployTriggersToleratingTimeouts(
+	ctx context.Context,
+	params common.SubscribeParams,
+	req *SubscriptionRequest,
+	sfRes *SubscribeResult,
+	progress *subscribeProgress,
+) error {
+	deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
+
+	progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
+	sfRes.ApexTriggers = toApexTriggers(deployOut)
+
+	if err == nil {
+		return nil
+	}
+
+	if !onlyDeployPollTimeouts(deployOut) {
+		return err
+	}
+
+	logging.Logger(ctx).WarnContext(ctx,
+		"apex trigger deploy(s) still running after poll timeout; proceeding without waiting — "+
+			"UPDATE events are dropped until the trigger lands",
+		"objects", timedOutTriggerObjects(deployOut))
+
+	return nil
 }
 
 // createEventChannelMembers creates CDC event channel members for each subscribed object,

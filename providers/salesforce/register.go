@@ -11,11 +11,17 @@ import (
 	"github.com/go-playground/validator"
 )
 
+// ErrDeployPollTimeout is returned (wrapped) when a Metadata API deploy did not
+// finish within the poll window. The deploy itself is NOT canceled — metadata
+// deploys serialize per org, so it stays queued/running org-side and can still
+// land later. Exported so callers can distinguish "still running" from a real
+// deploy failure via errors.Is.
+var ErrDeployPollTimeout = errors.New("deploy poll timeout")
+
 var (
 	errInvalidRequestType      = errors.New("invalid request type")
 	errMissingParams           = errors.New("missing required parameters")
 	errDeployFailed            = errors.New("apex trigger deployment failed")
-	errDeployPollTimeout       = errors.New("deploy poll timeout")
 	errDestructiveDeployFailed = errors.New("destructive apex trigger deployment failed")
 )
 

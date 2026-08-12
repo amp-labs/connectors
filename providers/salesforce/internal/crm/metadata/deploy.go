@@ -44,6 +44,15 @@ type DeployResult struct {
 	CodeCoverage []CodeCoverage
 }
 
+// CancelDeployResult contains the immediate outcome of a Salesforce Metadata API
+// cancelDeploy call. Done=false means the cancellation is still being processed
+// org-side; the caller polls CheckDeployStatus until the deploy reports Done
+// (final status "Canceled").
+type CancelDeployResult struct {
+	Done bool
+	ID   string
+}
+
 // ComponentFailure describes a single component failure in a deployment.
 type ComponentFailure struct {
 	ComponentType string
@@ -154,6 +163,30 @@ func (a *Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*Depl
 	}, nil
 }
 
+// CancelDeploy requests cancellation of a queued (Pending) or InProgress
+// deployment via the Metadata API SOAP cancelDeploy operation. Cancellation is
+// asynchronous: when the returned result's Done is false, the caller polls
+// CheckDeployStatus until the deploy reports Done (final status "Canceled").
+// A deploy that has already finished cannot be canceled; Salesforce returns a
+// SOAP fault, surfaced here as an error.
+func (a *Adapter) CancelDeploy(ctx context.Context, deployID string) (*CancelDeployResult, error) {
+	payload := fmt.Sprintf(`<md:cancelDeploy xmlns:md="http://soap.sforce.com/2006/04/metadata">
+  <md:asyncProcessId>%s</md:asyncProcessId>
+</md:cancelDeploy>`, deployID)
+
+	resp, err := performDeploySOAPRequest[cancelDeployResponse](ctx, a, payload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse cancel deploy response: %w", err)
+	}
+
+	result := &resp.CancelDeployResponse.Result
+
+	return &CancelDeployResult{
+		Done: result.Done,
+		ID:   result.ID,
+	}, nil
+}
+
 // deploy sends a SOAP deploy request with the base64-encoded zip to the Metadata API.
 // Returns the async deployment ID for status polling.
 //
@@ -217,6 +250,15 @@ type deployResponse struct {
 			Done bool   `xml:"done"`
 		} `xml:"result"`
 	} `xml:"deployResponse"`
+}
+
+type cancelDeployResponse struct {
+	CancelDeployResponse struct {
+		Result struct {
+			Done bool   `xml:"done"`
+			ID   string `xml:"id"`
+		} `xml:"result"`
+	} `xml:"cancelDeployResponse"`
 }
 
 type checkDeployStatusResponse struct {
