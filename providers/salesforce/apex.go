@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
@@ -593,7 +594,11 @@ func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*Dep
 	timeout := time.After(deployPollTimeout)
 	start := time.Now()
 
-	slog.InfoContext(ctx, "polling metadata deploy status",
+	// logging.Logger (rather than raw slog) inherits the caller's structured
+	// fields set via logging.With — e.g. amp-labs/server enriches the subscribe
+	// context with installation/subscription/project ids, so every poll line
+	// below carries them.
+	logging.Logger(ctx).InfoContext(ctx, "polling metadata deploy status",
 		"deployId", deployID,
 		"timeout", deployPollTimeout.String(),
 	)
@@ -607,7 +612,7 @@ func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*Dep
 		elapsed := time.Since(start).Round(time.Second)
 
 		if deployResult.Done {
-			slog.InfoContext(ctx, "metadata deploy finished",
+			logging.Logger(ctx).InfoContext(ctx, "metadata deploy finished",
 				"deployId", deployID,
 				"status", deployResult.Status,
 				"success", deployResult.Success,
@@ -618,7 +623,7 @@ func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*Dep
 			return deployResult, nil
 		}
 
-		slog.InfoContext(ctx, "still polling metadata deploy",
+		logging.Logger(ctx).InfoContext(ctx, "still polling metadata deploy",
 			"deployId", deployID,
 			"status", deployResult.Status,
 			"elapsed", elapsed.String(),
