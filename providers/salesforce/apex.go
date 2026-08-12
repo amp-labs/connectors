@@ -83,8 +83,20 @@ type DeployResult = metadata.DeployResult
 type CancelDeployResult = metadata.CancelDeployResult
 
 const (
-	deployPollInterval = 10 * time.Second
-	deployPollTimeout  = 15 * time.Minute
+	// deployPollTimeout bounds how long pollDeployStatus waits for a single deploy.
+	// Metadata deploys serialize per org, so on a busy org a deploy can sit queued
+	// (status Pending) far longer than the deploy itself takes to execute — the
+	// window has to cover queue time, not just run time.
+	deployPollTimeout = 2 * time.Hour
+
+	// Deploy status checks back off in steps: quick checks while a fast deploy
+	// might still finish, then progressively sparser ones for the long-haul wait
+	// (see deployPollInterval).
+	deployPollIntervalFast = 10 * time.Second
+	deployPollIntervalSlow = 1 * time.Minute
+	deployPollIntervalIdle = 5 * time.Minute
+	deployPollFastWindow   = 1 * time.Minute
+	deployPollSlowWindow   = 10 * time.Minute
 
 	// apexDeployMaxAttempts is the maximum number of attempts for deploying an apex trigger.
 	// Retries handle the race condition where a custom field was just created via Metadata API
@@ -560,8 +572,25 @@ func (c *Connector) deployDestructiveApex(
 	return deployResult, nil
 }
 
+// deployPollInterval returns the pause before the next deploy status check,
+// stepped by how long the deploy has already been polled: 10s checks during the
+// first minute (a fast deploy finishes almost immediately), 1m checks until ten
+// minutes have passed, then 5m checks for the long-haul wait behind a busy
+// org's deploy queue.
+func deployPollInterval(elapsed time.Duration) time.Duration {
+	switch {
+	case elapsed < deployPollFastWindow:
+		return deployPollIntervalFast
+	case elapsed < deployPollSlowWindow:
+		return deployPollIntervalSlow
+	default:
+		return deployPollIntervalIdle
+	}
+}
+
 func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*DeployResult, error) {
 	timeout := time.After(deployPollTimeout)
+	start := time.Now()
 
 	for {
 		deployResult, err := c.CheckDeployStatus(ctx, deployID)
@@ -580,7 +609,7 @@ func (c *Connector) pollDeployStatus(ctx context.Context, deployID string) (*Dep
 			return nil, ctx.Err()
 		case <-timeout:
 			return nil, fmt.Errorf("%w after %s for deployId %s", errDeployPollTimeout, deployPollTimeout, deployID)
-		case <-time.After(deployPollInterval):
+		case <-time.After(deployPollInterval(time.Since(start))):
 			// continue polling
 		}
 	}
