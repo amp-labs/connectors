@@ -87,9 +87,13 @@ type CancelDeployResult = metadata.CancelDeployResult
 const (
 	// deployPollTimeout bounds how long pollDeployStatus waits for a single deploy.
 	// Metadata deploys serialize per org, so on a busy org a deploy can sit queued
-	// (status Pending) far longer than the deploy itself takes to execute — the
-	// window has to cover queue time, not just run time.
-	deployPollTimeout = 2 * time.Hour
+	// (status Pending) far longer than the deploy itself takes to execute. The
+	// window is deliberately SHORT: a timeout is not a failure — Subscribe proceeds
+	// without waiting (see deployTriggersToleratingTimeouts), the deploy keeps
+	// running org-side and lands on its own. Keeping the wait short bounds the
+	// activity's wall-clock, which minimizes exposure to Temporal worker churn
+	// (rollouts/autoscaling) cancelling the attempt mid-poll.
+	deployPollTimeout = 15 * time.Minute
 
 	// Deploy status checks back off in steps: quick checks while a fast deploy
 	// might still finish, then progressively sparser ones for the long-haul wait
