@@ -68,7 +68,7 @@ func (c *Connector) readStandardOrCustomObject(
 		rsp,
 		common.ExtractRecordsFromPath("data"),
 		makeNextRecordStandardObj(offset),
-		DataMarshall(rsp),
+		DataMarshaller(rsp, config.AssociatedObjects),
 		config.Fields,
 	)
 }
