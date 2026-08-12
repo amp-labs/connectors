@@ -59,7 +59,8 @@ func TestDeleteSubscription(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
+	for _, tt := range tests { // nolint:dupl
+		// nolint:varnamelen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 

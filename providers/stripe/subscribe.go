@@ -2,15 +2,10 @@ package stripe
 
 import (
 	"context"
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -94,10 +89,16 @@ func buildWebhookPayloadFromParams(
 }
 
 // buildRequestedEventSet builds a set of requested events from subscription events.
+// Every object must resolve to at least one Stripe event; otherwise the object would be
+// reported as successfully subscribed while no event is enabled for it on the endpoint.
 func buildRequestedEventSet(subscriptionEvents map[common.ObjectName]common.ObjectEvents) (map[string]bool, error) {
 	requestedEventsSet := make(map[string]bool)
 
 	for obj, events := range subscriptionEvents {
+		if len(events.Events) == 0 && len(events.PassThroughEvents) == 0 {
+			return nil, fmt.Errorf("%w: object %s has no events to subscribe to", errMissingParams, obj)
+		}
+
 		for _, event := range events.Events {
 			stripeEventName, err := getStripeEventName(event, obj)
 			if err != nil {
@@ -137,7 +138,10 @@ func buildSubscriptionResult(
 	subscriptionsMap := make(map[common.ObjectName]WebhookResponse)
 
 	for obj, events := range subscriptionEvents {
-		// Filter enabled events to only include events for this object
+		// Filter enabled events to only include events for this object.
+		// Deduplicate so stored state matches the deduplicated enabled_events
+		// actually sent to Stripe (Events and PassThroughEvents may overlap).
+		seenEvents := make(map[string]bool)
 		objectEvents := make([]string, 0)
 
 		for _, event := range events.Events {
@@ -146,11 +150,21 @@ func buildSubscriptionResult(
 				return nil, fmt.Errorf("failed to convert event type %s for object %s: %w", event, obj, err)
 			}
 
-			objectEvents = append(objectEvents, stripeEventName)
+			if !seenEvents[stripeEventName] {
+				seenEvents[stripeEventName] = true
+
+				objectEvents = append(objectEvents, stripeEventName)
+			}
 		}
 
 		// Add pass-through events directly
-		objectEvents = append(objectEvents, events.PassThroughEvents...)
+		for _, passthroughEvent := range events.PassThroughEvents {
+			if !seenEvents[passthroughEvent] {
+				seenEvents[passthroughEvent] = true
+
+				objectEvents = append(objectEvents, passthroughEvent)
+			}
+		}
 
 		objectResponse := *response
 		objectResponse.EnabledEvents = objectEvents
@@ -262,7 +276,7 @@ func getStripeEventName(event common.SubscriptionEventType, obj common.ObjectNam
 }
 
 func getExpectedObjectTypeFromMetadata(objectName string) (string, error) {
-	objMetadata, err := metadata.Schemas.SelectOne(common.ModuleID("root"), objectName)
+	objMetadata, err := metadata.Schemas.SelectOne(common.ModuleRoot, objectName)
 	if err != nil {
 		return "", err
 	}
@@ -280,9 +294,8 @@ func getExpectedObjectTypeFromMetadata(objectName string) (string, error) {
 }
 
 // parseWebhookEndpointResponse parses and validates the webhook endpoint response.
-func parseWebhookEndpointResponse(ctx context.Context,
-	httpResp *http.Response,
-	bodyBytes []byte,
+func parseWebhookEndpointResponse(
+	ctx context.Context, httpResp *http.Response, bodyBytes []byte,
 ) (*WebhookResponse, error) {
 	// Use common JSON parsing utilities
 	jsonResp, err := common.ParseJSONResponse(ctx, httpResp, bodyBytes)
@@ -366,7 +379,7 @@ func (c *Connector) executeFormPostRequest(
 	formEncoded := formData.Encode()
 	formBytes := []byte(formEncoded)
 
-	httpResp, bodyBytes, err := c.JSONHTTPClient().HTTPClient.Post(ctx, endpointURL.String(), formBytes, common.Header{
+	httpResp, bodyBytes, err := c.HTTPClient().Post(ctx, endpointURL.String(), formBytes, common.Header{
 		Key:   "Content-Type",
 		Value: "application/x-www-form-urlencoded",
 		Mode:  common.HeaderModeOverwrite,
@@ -391,139 +404,4 @@ func buildFormData(payload *WebhookPayload) url.Values {
 	}
 
 	return formData
-}
-
-const (
-	stripeSignatureHeader = "Stripe-Signature"
-	keyValuePairParts     = 2
-	defaultTolerance      = 5 * time.Minute
-)
-
-// VerifyWebhookMessage verifies the signature of a webhook message from Stripe.
-// Stripe uses HMAC-SHA256 with the format: signed_payload = timestamp + "." + requestBody.
-func (c *Connector) VerifyWebhookMessage(
-	_ context.Context,
-	request *common.WebhookRequest,
-	params *common.VerificationParams,
-) (bool, error) {
-	if request == nil || params == nil {
-		return false, fmt.Errorf("%w: request and params cannot be nil", errMissingParams)
-	}
-
-	verificationParams, err := common.AssertType[*VerificationParams](params.Param)
-	if err != nil {
-		return false, fmt.Errorf("%w: %w", errMissingParams, err)
-	}
-
-	if verificationParams.Secret == "" {
-		return false, fmt.Errorf("%w: secret cannot be empty", errMissingParams)
-	}
-
-	// Determine tolerance: use provided value or default to 5 minutes
-	tolerance := verificationParams.Tolerance
-	if tolerance == 0 {
-		tolerance = defaultTolerance
-	} else if tolerance < 0 {
-		return false, fmt.Errorf("%w", errInvalidTolerance)
-	}
-
-	signatureHeader := request.Headers.Get(stripeSignatureHeader)
-	if signatureHeader == "" {
-		return false, fmt.Errorf("%w: missing %s header", errMissingSignature, stripeSignatureHeader)
-	}
-
-	timestampStr, signatures, err := parseStripeSignature(signatureHeader)
-	if err != nil {
-		return false, fmt.Errorf("failed to parse Stripe signature: %w", err)
-	}
-
-	if err := validateTimestampRecency(timestampStr, tolerance); err != nil {
-		return false, err
-	}
-
-	return verifySignature(verificationParams.Secret, timestampStr, request.Body, signatures)
-}
-
-// verifySignature computes the expected HMAC-SHA256 signature and compares it with the received signatures.
-func verifySignature(secret, timestampStr string, body []byte, receivedSignatures []string) (bool, error) {
-	// Create signed_payload: timestamp + "." + requestBody
-	signedPayload := fmt.Sprintf("%s.%s", timestampStr, string(body))
-
-	// Compute expected signature using HMAC-SHA256
-	mac := hmac.New(sha256.New, []byte(secret))
-	mac.Write([]byte(signedPayload))
-	expectedSignature := hex.EncodeToString(mac.Sum(nil))
-
-	// Compare signatures using constant-time comparison
-	// Check if any of the received signatures matches the expected signature
-	for _, sig := range receivedSignatures {
-		if hmac.Equal([]byte(expectedSignature), []byte(sig)) {
-			return true, nil
-		}
-	}
-
-	return false, fmt.Errorf("%w: signature mismatch", errInvalidSignature)
-}
-
-// validateTimestampRecency validates that the webhook timestamp is within the allowed tolerance.
-func validateTimestampRecency(timestampStr string, tolerance time.Duration) error {
-	timestamp, err := strconv.ParseInt(timestampStr, 10, 64)
-	if err != nil {
-		return fmt.Errorf("failed to parse timestamp: %w", err)
-	}
-
-	timestampTime := time.Unix(timestamp, 0)
-	now := time.Now()
-	timeDiff := now.Sub(timestampTime)
-
-	if timeDiff < 0 {
-		timeDiff = -timeDiff
-	}
-
-	if timeDiff > tolerance {
-		if timestampTime.Before(now) {
-			return errTimestampTooOld
-		}
-
-		return errTimestampTooFarInFuture
-	}
-
-	return nil
-}
-
-func parseStripeSignature(header string) (string, []string, error) {
-	elements := strings.Split(header, ",")
-
-	var timestamp string
-
-	var signatures []string
-
-	for _, element := range elements {
-		element = strings.TrimSpace(element)
-
-		parts := strings.SplitN(element, "=", keyValuePairParts)
-		if len(parts) != keyValuePairParts {
-			continue
-		}
-
-		prefix := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
-
-		switch prefix {
-		case "t":
-			timestamp = value
-		case "v1", "v2", "v0":
-			signatures = append(signatures, value)
-		}
-	}
-
-	if timestamp == "" {
-		return "", nil, fmt.Errorf("%w", errMissingTimestamp)
-	}
-
-	if len(signatures) == 0 {
-		return "", nil, fmt.Errorf("%w", errNoSignaturesFound)
-	}
-
-	return timestamp, signatures, nil
 }

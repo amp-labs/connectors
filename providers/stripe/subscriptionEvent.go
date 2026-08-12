@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"maps"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -61,6 +62,9 @@ func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 	for field := range previousAttrs {
 		updatedFields = append(updatedFields, field)
 	}
+
+	// Map iteration order is random; sort for deterministic output.
+	sort.Strings(updatedFields)
 
 	return updatedFields, nil
 }

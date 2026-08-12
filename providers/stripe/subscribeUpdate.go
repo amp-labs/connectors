@@ -3,14 +3,14 @@ package stripe
 import (
 	"context"
 	"fmt"
-	"maps"
 
 	"github.com/amp-labs/connectors/common"
 )
 
-// UpdateSubscription updates an existing subscription by comparing the previous
-// subscription state with the new desired state.
-// It merges events: keeps events for objects not in params, adds/updates events for objects in params.
+// UpdateSubscription reconciles the existing subscription (previousResult) with the new
+// desired state (params). params.SubscriptionEvents is the full desired state: objects
+// present in the previous state but absent from params are unsubscribed, since the shared
+// endpoint's enabled_events is replaced with exactly the desired event set.
 // Doc URL: https://docs.stripe.com/api/webhook_endpoints/update
 func (c *Connector) UpdateSubscription(
 	ctx context.Context,
@@ -37,10 +37,13 @@ func (c *Connector) UpdateSubscription(
 		return nil, fmt.Errorf("failed to update webhook endpoint: %w", err)
 	}
 
-	// Build result with merged subscription events
-	mergedSubscriptionEvents := buildMergedSubscriptionEvents(previousResult, params)
+	// Stripe returns the signing secret only when the endpoint is created; carry it over
+	// from the previous state so the stored result keeps verifying webhook signatures.
+	if response.Secret == "" {
+		response.Secret = existingEndpoint.Secret
+	}
 
-	result, err := buildSubscriptionResult(response, mergedSubscriptionEvents)
+	result, err := buildSubscriptionResult(response, params.SubscriptionEvents)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build subscription result: %w", err)
 	}
@@ -84,27 +87,4 @@ func getExistingEndpoint(subscriptions map[common.ObjectName]WebhookResponse) (W
 	}
 
 	return WebhookResponse{}, fmt.Errorf("%w: unable to extract existing endpoint", errMissingParams)
-}
-
-// buildMergedSubscriptionEvents builds a merged subscription events map by keeping previous objects
-// not being updated and adding new/updated objects from params.
-func buildMergedSubscriptionEvents(
-	previousResult *common.SubscriptionResult,
-	params common.SubscribeParams,
-) map[common.ObjectName]common.ObjectEvents {
-	mergedSubscriptionEvents := make(map[common.ObjectName]common.ObjectEvents)
-
-	// Keep previous objects not being updated - use ObjectEvents from previousResult if available
-	if previousResult != nil && previousResult.ObjectEvents != nil {
-		for obj, events := range previousResult.ObjectEvents {
-			if _, isBeingUpdated := params.SubscriptionEvents[obj]; !isBeingUpdated {
-				mergedSubscriptionEvents[obj] = events
-			}
-		}
-	}
-
-	// Add new/updated objects
-	maps.Copy(mergedSubscriptionEvents, params.SubscriptionEvents)
-
-	return mergedSubscriptionEvents
 }
