@@ -1,0 +1,50 @@
+{
+  "data": [
+    {
+      "id": {
+        "workspace_id": "63d34516-b287-4c27-9d28-fe2adbebcd50",
+        "object_id": "1fa986a6-952e-4e92-ba01-acca61a7b616",
+        "record_id": "2db97cee-6c6b-4486-ae52-db8e4b6f44e9"
+      },
+      "created_at": "2025-03-12T07:55:38.327000000Z",
+      "values": {
+        "name": [
+          {
+            "active_from": "2025-03-12T07:55:38.981000000Z",
+            "active_until": null,
+            "created_by_actor": {
+              "type": "system",
+              "id": null
+            },
+            "value": "Attio",
+            "attribute_type": "text"
+          }
+        ],
+        "team": [
+          {
+            "active_from": "2025-03-12T07:55:39.000000000Z",
+            "active_until": null,
+            "created_by_actor": {
+              "type": "workspace-member",
+              "id": "073f4c74-b60d-4de9-992a-0f799b5e442e"
+            },
+            "attribute_type": "record-reference",
+            "target_object": "people",
+            "target_record_id": "891dcbfc-9141-415d-9b2a-2238a6cc012d"
+          },
+          {
+            "active_from": "2025-03-12T07:55:39.100000000Z",
+            "active_until": null,
+            "created_by_actor": {
+              "type": "workspace-member",
+              "id": "073f4c74-b60d-4de9-992a-0f799b5e442e"
+            },
+            "attribute_type": "record-reference",
+            "target_object": "people",
+            "target_record_id": "5e3fb280-007b-495a-a530-9354bde01de1"
+          }
+        ]
+      }
+    }
+  ]
+}
