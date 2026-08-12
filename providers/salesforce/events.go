@@ -289,6 +289,21 @@ func (c *Connector) CreateEventRelayConfig(
 			return recoverDuplicateByDeveloperName[EventRelayConfig](ctx, c, "EventRelayConfig", cfg.FullName)
 		}
 
+		// Salesforce checks channel-binding integrity before name uniqueness, so
+		// a surviving relay carrying our own DeveloperName (left by an earlier
+		// partial teardown) is reported as FIELD_INTEGRITY_EXCEPTION — never as
+		// DUPLICATE_DEVELOPER_NAME. The by-name lookup adopts it exactly like a
+		// duplicate hit; when the channel is owned by a relay under a DIFFERENT
+		// name, the lookup finds nothing and the original error stands.
+		if isChannelBoundToExistingRelay(err) {
+			existing, recErr := recoverDuplicateByDeveloperName[EventRelayConfig](ctx, c, "EventRelayConfig", cfg.FullName)
+			if recErr != nil {
+				return nil, errors.Join(err, recErr)
+			}
+
+			return existing, nil
+		}
+
 		return nil, err
 	}
 
@@ -305,6 +320,15 @@ func (c *Connector) DeleteEventRelayConfig(ctx context.Context, cfgId string) (*
 // nolint: lll
 // https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_eventrelayconfig.htm?q=EventRelayConfig
 func (c *Connector) RunEventRelay(ctx context.Context, cfg *EventRelayConfig) error {
+	// An adopted relay (recovered from a duplicate/channel-bound create, so
+	// fetched with its full metadata) may already be running — nothing to do.
+	if cfg.Metadata != nil && strings.EqualFold(cfg.Metadata.State, "RUN") {
+		logging.Logger(ctx).Info("event relay already running; skipping state change",
+			"eventRelayConfigId", cfg.Id, "fullName", cfg.FullName)
+
+		return nil
+	}
+
 	url, err := c.getURLEventRelayConfig(cfg.Id)
 	if err != nil {
 		return err
@@ -486,7 +510,11 @@ func (c *Connector) deleteToSFAPI(ctx context.Context, path string, entity strin
 	return resp, nil
 }
 
-const errCodeDuplicateDeveloperName = "DUPLICATE_DEVELOPER_NAME"
+const (
+	errCodeDuplicateDeveloperName   = "DUPLICATE_DEVELOPER_NAME"
+	errCodeFieldIntegrityException  = "FIELD_INTEGRITY_EXCEPTION"
+	channelBoundToExistingRelayText = "referenced by an existing event relay"
+)
 
 var (
 	errToolingQueryNoRecordsField  = errors.New("tooling/query response missing 'records' field")
@@ -576,6 +604,34 @@ func isDuplicateDeveloperName(err error) bool {
 
 	for _, e := range entries {
 		if e.ErrorCode == errCodeDuplicateDeveloperName {
+			return true
+		}
+	}
+
+	return false
+}
+
+// isChannelBoundToExistingRelay reports whether err is the 400
+// FIELD_INTEGRITY_EXCEPTION Salesforce returns from EventRelayConfig creation
+// when the target channel is already bound to an existing event relay
+// ("The channel is unique for each event relay and must not be reused").
+// Salesforce evaluates this integrity rule before name uniqueness, so a
+// surviving relay carrying our own DeveloperName (an earlier partial teardown)
+// surfaces as this error rather than DUPLICATE_DEVELOPER_NAME.
+func isChannelBoundToExistingRelay(err error) bool {
+	var httpErr *common.HTTPError
+	if !errors.As(err, &httpErr) || httpErr.Status != http.StatusBadRequest {
+		return false
+	}
+
+	var entries []sfAPIError
+	if jsonErr := json.Unmarshal(httpErr.Body, &entries); jsonErr != nil {
+		return false
+	}
+
+	for _, e := range entries {
+		if e.ErrorCode == errCodeFieldIntegrityException &&
+			strings.Contains(e.Message, channelBoundToExistingRelayText) {
 			return true
 		}
 	}
