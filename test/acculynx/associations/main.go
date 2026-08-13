@@ -24,10 +24,11 @@ import (
 //  2. Read estimates with AssociatedObjects=[jobs] and show every estimate row
 //     carries a "jobs" edge taken from the embedded job stub, with isPrimary
 //     in ProviderAssociationMetadata.
-//  3. Read estimates and show rows are hydrated from GET /estimates/{id}:
-//     estimateNumber, createdDate and financials populate Fields even though
-//     the list payload is a reference stub (verified: ?includes= is ignored
-//     on the list endpoint).
+//  3. Read estimates with ReadParamsOpts.HydrateEstimates and show rows are
+//     hydrated from GET /estimates/{id}: estimateNumber, createdDate and
+//     financials populate Fields even though the list payload is a reference
+//     stub (verified: ?includes= is ignored on the list endpoint). Without
+//     the opt-in (scenario 2), no detail calls are made.
 func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
@@ -121,6 +122,7 @@ func readEstimatesHydrated(ctx context.Context, conn *acculynx.Connector) error 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "estimates",
 		Fields:     connectors.Fields("id", "estimateNumber", "createdDate", "financials"),
+		Opts:       acculynx.ReadParamsOpts{HydrateEstimates: true},
 	})
 	if err != nil {
 		return fmt.Errorf("reading estimates hydrated: %w", err)

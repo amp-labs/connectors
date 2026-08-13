@@ -832,11 +832,13 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		{
 			// The /estimates list returns stubs only (id, isPrimary, job) and
 			// ignores ?includes=; the substantive fields must come from one
-			// GET /estimates/{id} per record.
-			Name: "Read estimates hydrates each row from the detail endpoint",
+			// GET /estimates/{id} per record. Hydration requires the
+			// server-set opt-in.
+			Name: "Read estimates with opts hydrates each row from the detail endpoint",
 			Input: common.ReadParams{
 				ObjectName: "estimates",
 				Fields:     connectors.Fields("id", "estimateNumber", "createdDate", "financials"),
+				Opts:       ReadParamsOpts{HydrateEstimates: true},
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -904,7 +906,10 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			Name: "Read estimates with jobs association attaches the job edge",
+			// No Opts set: the association is a pure reshape of the list
+			// payload. The mock serves only the list — any hydration call
+			// would hit the 500 default and fail the read.
+			Name: "Read estimates with jobs association attaches the job edge without hydration calls",
 			Input: common.ReadParams{
 				ObjectName:        "estimates",
 				Fields:            connectors.Fields("id"),
@@ -919,22 +924,6 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 							mockcond.Path("/api/v2/estimates"),
 						},
 						Then: mockserver.Response(http.StatusOK, estimatesListResponse),
-					},
-					{
-						If: mockcond.And{
-							mockcond.MethodGET(),
-							mockcond.Path("/api/v2/estimates/est-1"),
-							mockcond.QueryParam("includes", "createdBy,modifiedBy,sections"),
-						},
-						Then: mockserver.Response(http.StatusOK, estimateDetailEst1Response),
-					},
-					{
-						If: mockcond.And{
-							mockcond.MethodGET(),
-							mockcond.Path("/api/v2/estimates/est-2"),
-							mockcond.QueryParam("includes", "createdBy,modifiedBy,sections"),
-						},
-						Then: mockserver.Response(http.StatusOK, estimateDetailEst2Response),
 					},
 				},
 				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
@@ -974,6 +963,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Input: common.ReadParams{
 				ObjectName: "estimates",
 				Fields:     connectors.Fields("id", "estimateNumber"),
+				Opts:       ReadParamsOpts{HydrateEstimates: true},
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -1015,6 +1005,44 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					{
 						Fields: map[string]any{"id": "est-2"},
 						Raw:    map[string]any{"id": "est-2"},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			// Default (no Opts): rows pass through as list stubs and no
+			// detail endpoint is called — the mock serves only the list, so
+			// a stray hydration call would hit the 500 default and fail.
+			Name: "Read estimates without opts returns stubs and skips hydration",
+			Input: common.ReadParams{
+				ObjectName: "estimates",
+				Fields:     connectors.Fields("id", "isPrimary"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimatesListResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": "est-1", "isprimary": true},
+						Raw:    map[string]any{"id": "est-1", "isPrimary": true},
+					},
+					{
+						Fields: map[string]any{"id": "est-2", "isprimary": false},
+						Raw:    map[string]any{"id": "est-2", "isPrimary": false},
 					},
 				},
 				Done: true,

@@ -27,6 +27,10 @@ import (
 // Like custom fields, hydration mutates only the marshalled record that feeds
 // ReadResultRow.Fields — Raw stays the untouched list payload.
 //
+// Hydration is opt-in per customer via ReadParamsOpts.HydrateEstimates (see
+// read.go) — the extra call per record is not imposed on installs that only
+// need the stub fields or the Estimate->Job association.
+//
 // References:
 //   - List: https://apidocs.acculynx.com/reference/getestimates
 //   - Detail: https://apidocs.acculynx.com/reference/getestimatebyid

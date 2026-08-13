@@ -61,6 +61,23 @@ const (
 	objectUsers       = "users"
 )
 
+// ReadParamsOpts is the connector-specific shape of common.ReadParams.Opts,
+// set by the server per customer (gong's ReadParamsOpts is the precedent).
+type ReadParamsOpts struct {
+	// HydrateEstimates enriches each /estimates row from its detail endpoint
+	// at the cost of one extra API call per record (up to pageSize per page).
+	// Off by default: plain estimates reads return the list stubs unchanged.
+	HydrateEstimates bool
+}
+
+// shouldHydrateEstimates reports whether the caller opted into estimate
+// hydration. False when Opts is unset or carries a different type.
+func shouldHydrateEstimates(params common.ReadParams) bool {
+	opts, ok := params.Opts.(ReadParamsOpts)
+
+	return ok && opts.HydrateEstimates
+}
+
 // includesByObject lists the AccuLynx ?includes= expansions applied
 // unconditionally on every read of the object. Contacts return phone/email as
 // reference-only stubs unless expanded, so we always request them — downstream
@@ -230,7 +247,7 @@ func (c *Connector) parseReadResponse(
 		if err != nil {
 			return nil, err
 		}
-	case params.ObjectName == objectEstimates:
+	case params.ObjectName == objectEstimates && shouldHydrateEstimates(params):
 		// /estimates rows are reference stubs; every substantive field needs
 		// the per-record detail endpoint — see estimates.go.
 		transformer, err = c.buildEstimateDetailTransformer(ctx, resp)
