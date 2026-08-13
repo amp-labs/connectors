@@ -147,6 +147,7 @@ import (
 	"github.com/amp-labs/connectors/providers/zendesksupport"
 	"github.com/amp-labs/connectors/providers/zoho"
 	"github.com/amp-labs/connectors/providers/zoom"
+	"github.com/amp-labs/connectors/providers/zoominfo"
 )
 
 var ErrInvalidProvider = errors.New("invalid provider")
@@ -308,6 +309,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ZendeskSupport:            wrapper(newZendeskSupportConnector),
 	providers.Zoho:                      wrapper(newZohoConnector),
 	providers.Zoom:                      wrapper(newZoomConnector),
+	providers.ZoomInfo:                  wrapper(newZoomInfoConnector),
 }
 
 type outputConstructorFunc func(p common.ConnectorParams) (connectors.Connector, error)
@@ -1296,4 +1298,8 @@ func newSquareConnector(params common.ConnectorParams) (*square.Connector, error
 
 func newSquareSandboxConnector(params common.ConnectorParams) (*square.Connector, error) {
 	return square.NewSandboxConnector(params)
+}
+
+func newZoomInfoConnector(params common.ConnectorParams) (*zoominfo.Connector, error) {
+	return zoominfo.NewConnector(params)
 }
