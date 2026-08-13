@@ -241,16 +241,8 @@ func (c *Connector) parseReadResponse(
 
 	var transformer common.RecordTransformer
 
-	switch {
-	case usesCustomFields(params.ObjectName):
+	if usesCustomFields(params.ObjectName) {
 		transformer, err = c.buildCustomFieldsTransformer(ctx, params, resp)
-		if err != nil {
-			return nil, err
-		}
-	case params.ObjectName == objectEstimates && shouldHydrateEstimates(params):
-		// /estimates rows are reference stubs; every substantive field needs
-		// the per-record detail endpoint — see estimates.go.
-		transformer, err = c.buildEstimateDetailTransformer(ctx, resp)
 		if err != nil {
 			return nil, err
 		}
@@ -261,20 +253,30 @@ func (c *Connector) parseReadResponse(
 		resp,
 		c.recordsFunc(params.ObjectName),
 		c.makeFilterFunc(params, reqURL),
-		readMarshaller(params, transformer),
+		c.readMarshaller(ctx, params, transformer),
 		params.Fields,
 	)
 }
 
-// readMarshaller wraps the base marshaller with association post-processors
-// for objects whose related-object references ride on the list payload
-// itself — pure reshapes of the parsed rows, no extra API calls:
+// readMarshaller wraps the base marshaller with row post-processors:
 //
-//   - jobs -> contacts: embedded contacts arrive via ?includes=contacts.
-//   - estimates -> jobs: the job stub ({id, _link}) and isPrimary are on
-//     every estimate row.
-func readMarshaller(params common.ReadParams, transformer common.RecordTransformer) common.MarshalFromNodeFunc {
+//   - estimates hydration (opt-in, one detail call per row — see
+//     estimates.go), chained first so the association extractors below see
+//     the final rows;
+//   - jobs -> contacts association: embedded contacts arrive via
+//     ?includes=contacts, pure reshape;
+//   - estimates -> jobs association: the job stub ({id, _link}) and
+//     isPrimary are on every estimate row, pure reshape.
+func (c *Connector) readMarshaller(
+	ctx context.Context,
+	params common.ReadParams,
+	transformer common.RecordTransformer,
+) common.MarshalFromNodeFunc {
 	marshaller := common.MakeMarshaledDataFunc(transformer)
+
+	if params.ObjectName == objectEstimates && shouldHydrateEstimates(params) {
+		marshaller = readhelper.ChainedMarshaller(marshaller, c.hydrateEstimateRows(ctx, params))
+	}
 
 	if params.ObjectName == objectJobs &&
 		slices.Contains(params.AssociatedObjects, jobContactsAssociation) {

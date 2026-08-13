@@ -874,8 +874,9 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Rows: 2,
 				Data: []common.ReadResultRow{
 					{
-						// Fields come from the detail payload; Raw stays the thin
-						// list stub.
+						// The detail is provider data, so it lands in Raw as
+						// well as Fields — raw stays "the object as AccuLynx
+						// gave it", assembled from the list and detail calls.
 						Fields: map[string]any{
 							"id":             "est-1",
 							"estimatenumber": "1042",
@@ -891,7 +892,13 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 								"totalPrice":    142.86,
 							},
 						},
-						Raw: map[string]any{"id": "est-1", "isPrimary": true},
+						Raw: map[string]any{
+							"id":             "est-1",
+							"isPrimary":      true,
+							"estimateNumber": "1042",
+							"createdDate":    "2026-05-10T17:56:54Z",
+							"title":          "Roof replacement",
+						},
 					},
 					{
 						Fields: map[string]any{
@@ -899,7 +906,12 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 							"estimatenumber": "1043",
 							"createddate":    "2026-06-01T08:15:00Z",
 						},
-						Raw: map[string]any{"id": "est-2", "isPrimary": false},
+						Raw: map[string]any{
+							"id":             "est-2",
+							"isPrimary":      false,
+							"estimateNumber": "1043",
+							"title":          "Gutter repair",
+						},
 					},
 				},
 				Done: true,
@@ -1000,11 +1012,67 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{"id": "est-1", "estimatenumber": "1042"},
-						Raw:    map[string]any{"id": "est-1"},
+						Raw:    map[string]any{"id": "est-1", "estimateNumber": "1042"},
 					},
 					{
+						// Skipped detail: the row keeps the thin list stub.
 						Fields: map[string]any{"id": "est-2"},
-						Raw:    map[string]any{"id": "est-2"},
+						Raw:    map[string]any{"id": "est-2", "isPrimary": false},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			// A transient failure (429/5xx) on one estimate's detail must not
+			// sink the page — that row keeps its thin shape, the rest hydrate.
+			Name: "Read estimates keeps the thin row when its detail returns 500",
+			Input: common.ReadParams{
+				ObjectName: "estimates",
+				Fields:     connectors.Fields("id", "estimateNumber"),
+				Opts:       ReadParamsOpts{HydrateEstimates: true},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimatesListResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates/est-1"),
+							mockcond.QueryParam("includes", "createdBy,modifiedBy,sections"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimateDetailEst1Response),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates/est-2"),
+							mockcond.QueryParam("includes", "createdBy,modifiedBy,sections"),
+						},
+						Then: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"boom"}`),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": "est-1", "estimatenumber": "1042"},
+						Raw:    map[string]any{"id": "est-1", "estimateNumber": "1042"},
+					},
+					{
+						// Skipped detail: the row keeps the thin list stub.
+						Fields: map[string]any{"id": "est-2"},
+						Raw:    map[string]any{"id": "est-2", "isPrimary": false},
 					},
 				},
 				Done: true,

@@ -6,10 +6,10 @@ import (
 	"maps"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/internal/simultaneously"
-	"github.com/spyzhov/ajson"
 )
 
 // AccuLynx estimate hydration:
@@ -24,8 +24,9 @@ import (
 // detail call per estimate, following the same per-record fan-out shape as
 // the custom-fields value fetch (see custom.go).
 //
-// Like custom fields, hydration mutates only the marshalled record that feeds
-// ReadResultRow.Fields — Raw stays the untouched list payload.
+// The detail is provider data, so it lands in Raw as well as Fields — raw
+// stays "the object as AccuLynx gave it", just assembled from two calls.
+// Rows whose detail fetch was skipped keep the list stub in both.
 //
 // Hydration is opt-in per customer via ReadParamsOpts.HydrateEstimates (see
 // read.go) — the extra call per record is not imposed on installs that only
@@ -44,38 +45,57 @@ import (
 // data the server already hydrates on demand.
 const estimateDetailIncludes = "createdBy,modifiedBy,sections"
 
-// buildEstimateDetailTransformer plans the detail fan-out for every estimate
-// in the current page and returns a transformer that merges each record's
-// detail over the thin list stub. Rows whose detail returned 404 (deleted
-// between the list and detail calls) keep their stub shape.
-func (c *Connector) buildEstimateDetailTransformer(
+// hydrateEstimateRows returns a row post-processor that fetches each row's
+// detail and overlays it onto the thin list stub in Raw AND Fields — detail
+// wins on overlapping keys, it is the authoritative superset. Fields is
+// re-extracted from the merged Raw with the caller's field selection, the
+// same derivation the base marshaller uses. Rows whose detail fetch failed
+// (404, 429, 5xx — see fetchEstimateDetails) keep their stub shape.
+func (c *Connector) hydrateEstimateRows(
 	ctx context.Context,
-	resp *common.JSONHTTPResponse,
-) (common.RecordTransformer, error) {
-	body, hasBody := resp.Body()
-	if !hasBody {
-		// Nothing to hydrate; the pass-through transformer keeps rows as-is.
-		return mergeEstimateDetail(nil), nil
-	}
+	params common.ReadParams,
+) readhelper.RowPostProcessor {
+	return func(rows []common.ReadResultRow) error {
+		ids := make([]string, 0, len(rows))
 
-	ids, err := c.extractParentIDsFromBody(objectEstimates, body)
-	if err != nil {
-		return nil, err
-	}
+		for idx := range rows {
+			if id, _ := rows[idx].Raw["id"].(string); id != "" {
+				ids = append(ids, id)
+			}
+		}
 
-	details, err := c.fetchEstimateDetails(ctx, ids)
-	if err != nil {
-		return nil, err
-	}
+		details, err := c.fetchEstimateDetails(ctx, ids)
+		if err != nil {
+			return err
+		}
 
-	return mergeEstimateDetail(details), nil
+		fields := append(params.Fields.List(), "id")
+
+		for idx := range rows {
+			id, _ := rows[idx].Raw["id"].(string)
+
+			detail, ok := details[id]
+			if !ok {
+				continue
+			}
+
+			maps.Copy(rows[idx].Raw, detail)
+			rows[idx].Fields = common.ExtractLowercaseFieldsFromRaw(fields, rows[idx].Raw)
+		}
+
+		return nil
+	}
 }
 
 // fetchEstimateDetails fans out one GET /estimates/{id} per estimate
 // concurrently, honouring the per-key rate limit via maxConcurrentChildFetch.
-// A 404 is skipped rather than sinking the read — the row keeps its thin list
-// shape, matching GetRecordsByIds's "missing ids simply don't come back"
-// semantics.
+// A failed detail fetch is skipped rather than sinking the whole page — 404
+// (deleted between the list and detail calls), 429 (a page bursts up to
+// pageSize calls against the 10 req/sec key limit and the base client does
+// not retry), or 5xx: the row keeps its thin list shape either way, so a
+// partial result beats no result. Skips are logged because a skipped row is
+// otherwise indistinguishable from an estimate with no data. Only the read's
+// own cancellation aborts the fan-out.
 func (c *Connector) fetchEstimateDetails(
 	ctx context.Context,
 	estimateIDs []string,
@@ -93,11 +113,14 @@ func (c *Connector) fetchEstimateDetails(
 		jobs[idx] = func(ctx context.Context) error {
 			detail, err := c.fetchEstimateDetail(ctx, id)
 			if err != nil {
-				if isNotFound(err) {
-					return nil
+				if ctx.Err() != nil {
+					return fmt.Errorf("fetch estimate %s detail: %w", id, ctx.Err())
 				}
 
-				return fmt.Errorf("fetch estimate %s detail: %w", id, err)
+				logging.Logger(ctx).Warn("could not fetch estimate detail, keeping thin row",
+					"estimateId", id, "error", err.Error())
+
+				return nil
 			}
 
 			results[idx] = detail
@@ -145,28 +168,4 @@ func (c *Connector) fetchEstimateDetail(ctx context.Context, estimateID string) 
 	}
 
 	return *detail, nil
-}
-
-// mergeEstimateDetail returns a RecordTransformer that overlays the record's
-// detail payload onto the thin list stub. Detail wins on overlapping keys —
-// it is the authoritative superset. Records without a detail (404 mid-read)
-// pass through unchanged.
-func mergeEstimateDetail(details map[string]map[string]any) common.RecordTransformer {
-	return func(node *ajson.Node) (map[string]any, error) {
-		object, err := jsonquery.Convertor.ObjectToMap(node)
-		if err != nil {
-			return nil, err
-		}
-
-		id, _ := object["id"].(string)
-
-		detail, ok := details[id]
-		if !ok {
-			return object, nil
-		}
-
-		maps.Copy(object, detail)
-
-		return object, nil
-	}
 }
