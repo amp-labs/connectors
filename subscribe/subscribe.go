@@ -32,17 +32,17 @@
 // File layout mirrors the server package:
 //
 //   - aliases.go:            ResolveProviderInfoAlias and the providerInfoAliases registry.
-//   - config.go:             ProviderConfig + ProviderConfigRegistry + providerConfigs registry +
+//   - config.go:             ProviderConfig + providerConfigRegistry + providerConfigs registry +
 //     GetProviderConfig + the ProviderInfo derivation helpers.
 //   - deps/ (package):       the resolver seam — types.go (Dependencies, VerificationRequest)
 //     plus one file per resolver interface (project.go, cdcoptimization.go, subscriptions.go).
 //   - events.go:             object-type subscribe-event unwrapping (provider-specific shapes).
-//   - maintenance.go:        MaintenanceConfig + maintenancePeriods + GetMaintenancePeriod.
+//   - maintenance.go:        MaintenanceConfig + maintenancePeriods + getMaintenancePeriod.
 //   - postprocess.go:        PostProcessConfig (derived ShouldPerform only).
 //   - registration.go:       RegistrationConfig + methods.
 //   - subscription.go:       SubscriptionConfig + methods.
-//   - subscriptionevents.go: SubscriptionEventCaster + generic Cast helpers.
-//   - verification.go:       VerificationConfig + methods + IsHookdeckGatewayProvider.
+//   - subscriptionevents.go: subscriptionEventCaster + generic Cast helpers.
+//   - verification.go:       VerificationConfig + methods + isHookdeckGatewayProvider.
 //   - <provider>.go:         per-provider <name>Config literal and helpers.
 package subscribe
 

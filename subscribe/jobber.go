@@ -27,7 +27,7 @@ var jobberConfig = ProviderConfig{
 	Verification: VerificationConfig{
 		paramsFn:          getJobberVerificationParams,
 		verifierConnector: &jobber.Connector{},
-		eventCaster:       CastSubscriptionEvents[jobber.SubscriptionEvent],
+		eventCaster:       castSubscriptionEvents[jobber.SubscriptionEvent],
 	},
 }
 

@@ -33,7 +33,7 @@ var googleConfig = ProviderConfig{
 		// Gmail webhooks arriving at verification are synthetic republishes from the Gmail
 		// event workflow carrying no provider signature, so verification is bypassed.
 		bypassed:    true,
-		eventCaster: CastSubscriptionEvents[google.SubscriptionEvent],
+		eventCaster: castSubscriptionEvents[google.SubscriptionEvent],
 	},
 }
 
@@ -52,15 +52,15 @@ var (
 	errNilRevision = errors.New("nil revision")
 )
 
-// ProviderParamGCPProjectID and ProviderParamGCPPubSubTopicName are the well-known provider-app
+// providerParamGCPProjectID and providerParamGCPPubSubTopicName are the well-known provider-app
 // metadata ProviderParams keys carrying the Gmail Pub/Sub topic configuration. Mirror the
 // server's common.ProviderParam* constants.
 const (
-	ProviderParamGCPProjectID       = "gcpProjectId"
-	ProviderParamGCPPubSubTopicName = "gcpPubSubTopicName"
+	providerParamGCPProjectID       = "gcpProjectId"
+	providerParamGCPPubSubTopicName = "gcpPubSubTopicName"
 )
 
-// GetGmailTopicFullPath resolves the fully qualified Pub/Sub topic path for Gmail
+// getGmailTopicFullPath resolves the fully qualified Pub/Sub topic path for Gmail
 // push notifications (e.g. "projects/my-project/topics/gmail-subscribe").
 //
 // The topic path is built from the provider app's metadata fields:
@@ -82,7 +82,7 @@ const (
 //     subscription that delivers messages via HTTP POST to the Hookdeck endpoint.
 //
 //nolint:cyclop // nil-guards on the nested wire type dominate; the logic is two linear paths.
-func GetGmailTopicFullPath(ctx context.Context, conn *openapi.Connection) (string, error) {
+func getGmailTopicFullPath(ctx context.Context, conn *openapi.Connection) (string, error) {
 	log := logger.Get(ctx)
 
 	var connId, providerAppId string
@@ -98,8 +98,8 @@ func GetGmailTopicFullPath(ctx context.Context, conn *openapi.Connection) (strin
 	if conn != nil && conn.ProviderApp != nil && conn.ProviderApp.Metadata != nil &&
 		conn.ProviderApp.Metadata.ProviderParams != nil {
 		params := *conn.ProviderApp.Metadata.ProviderParams
-		gcpProject := params[ProviderParamGCPProjectID]
-		topicName := params[ProviderParamGCPPubSubTopicName]
+		gcpProject := params[providerParamGCPProjectID]
+		topicName := params[providerParamGCPPubSubTopicName]
 
 		if gcpProject != "" && topicName != "" {
 			fullPath := fmt.Sprintf("projects/%s/topics/%s", gcpProject, topicName)
@@ -121,7 +121,7 @@ func GetGmailTopicFullPath(ctx context.Context, conn *openapi.Connection) (strin
 		return "", fmt.Errorf("%w: GCP_PROJECT_ID unavailable: %w", ErrMissingGmailTopicConfig, err)
 	}
 
-	fullPath := fmt.Sprintf("projects/%s/topics/%s", gcpProjectID, GmailSubscribeTopic(ctx))
+	fullPath := fmt.Sprintf("projects/%s/topics/%s", gcpProjectID, buildGmailSubscribeTopic(ctx))
 	log.Warn("resolved gmail topic via fallback; provider app missing GCP topic config",
 		"topic", fullPath,
 		"connectionId", connId,
@@ -136,7 +136,7 @@ func GetGmailTopicFullPath(ctx context.Context, conn *openapi.Connection) (strin
 //
 // The Gmail watch API requires the topic to reside in the same GCP project as the OAuth
 // credentials (the provider app's project). The fully qualified topic path is resolved
-// via GetGmailTopicFullPath.
+// via getGmailTopicFullPath.
 //
 // Only the "gmail" module is supported here; the calendar module has its own builder
 // (getGoogleCalendarRequest), and other Google modules return ErrUnsupportedGoogleModule.
@@ -157,7 +157,7 @@ func getGoogleRequest(
 		return nil, fmt.Errorf("%w: %s", ErrUnsupportedGoogleModule, rev.Content.Module)
 	}
 
-	topicName, err := GetGmailTopicFullPath(ctx, conn)
+	topicName, err := getGmailTopicFullPath(ctx, conn)
 	if err != nil {
 		return nil, fmt.Errorf("error resolving Gmail topic name: %w", err)
 	}
@@ -168,24 +168,24 @@ func getGoogleRequest(
 }
 
 // gmailSubscribeTopic is the base topic ID for Gmail subscribe Pub/Sub topics.
-// GetPubSubName applies the environment prefix to produce the short topic name
+// getPubSubName applies the environment prefix to produce the short topic name
 // (e.g. "jay-local-gmail-subscribe" in local dev, "gmail-subscribe" in prod).
 //
-// The full topic path used by the Gmail watch API is built by GetGmailTopicFullPath:
+// The full topic path used by the Gmail watch API is built by getGmailTopicFullPath:
 //
 //	"projects/{GCP_PROJECT_ID}/topics/{env-prefix}-gmail-subscribe"
 const gmailSubscribeTopic = "gmail-subscribe"
 
-// GmailSubscribeTopic returns the environment-prefixed short topic name for Gmail
+// buildGmailSubscribeTopic returns the environment-prefixed short topic name for Gmail
 // subscription events (e.g. "jay-local-gmail-subscribe"). This is the topic ID
-// portion only — use GetGmailTopicFullPath for the fully qualified resource path.
-func GmailSubscribeTopic(ctx context.Context) string {
-	return GetPubSubName(ctx, gmailSubscribeTopic)
+// portion only — use getGmailTopicFullPath for the fully qualified resource path.
+func buildGmailSubscribeTopic(ctx context.Context) string {
+	return getPubSubName(ctx, gmailSubscribeTopic)
 }
 
-// GetPubSubName applies the environment prefix (PUBSUB_TOPIC_PREFIX, falling back to
+// getPubSubName applies the environment prefix (PUBSUB_TOPIC_PREFIX, falling back to
 // SUBSCRIBE_E2E_PREFIX) to a base Pub/Sub name. Mirrors the server's pubsub.GetPubSubName.
-func GetPubSubName(ctx context.Context, base string) string {
+func getPubSubName(ctx context.Context, base string) string {
 	return env.String(ctx, "PUBSUB_TOPIC_PREFIX").
 		Map(func(s string) (string, error) {
 			return fmt.Sprintf("%s-%s", s, base), nil

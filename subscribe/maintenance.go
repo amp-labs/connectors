@@ -16,7 +16,7 @@ var errMaintenanceUnsupportedProvider = errors.New("maintenance is not supported
 // runs daily to renew them before expiry.
 //
 // This is the renewal *interval*, which has no ProviderInfo equivalent today; whether maintenance
-// is required at all is derived from ProviderInfo (see ShouldPerformMaintenance).
+// is required at all is derived from ProviderInfo (see shouldPerformMaintenance).
 //
 //nolint:mnd
 var maintenancePeriods = map[providers.Provider]time.Duration{
@@ -24,9 +24,9 @@ var maintenancePeriods = map[providers.Provider]time.Duration{
 	providers.Google: time.Hour * 24,
 }
 
-// GetMaintenancePeriod returns the scheduled maintenance interval for a provider's webhooks.
+// getMaintenancePeriod returns the scheduled maintenance interval for a provider's webhooks.
 // Returns an error if the provider does not require periodic maintenance.
-func GetMaintenancePeriod(provider providers.Provider) (time.Duration, error) {
+func getMaintenancePeriod(provider providers.Provider) (time.Duration, error) {
 	if period, ok := maintenancePeriods[provider]; ok {
 		return period, nil
 	}
@@ -62,9 +62,9 @@ type MaintenanceConfig struct {
 }
 
 // ShouldPerform reports whether the provider's webhook subscriptions require periodic maintenance
-// (renewal). Delegates to ShouldPerformMaintenance.
+// (renewal). Delegates to shouldPerformMaintenance.
 func (m MaintenanceConfig) ShouldPerform() bool {
-	return ShouldPerformMaintenance(m.module, m.providerInfo)
+	return shouldPerformMaintenance(m.module, m.providerInfo)
 }
 
 // Interval returns the renewal interval declared for the provider's webhooks and true, or

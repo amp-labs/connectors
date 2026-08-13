@@ -23,7 +23,7 @@ var providerInfoAliases = map[providers.Provider]providers.Provider{
 // stays accurate. Otherwise the input is returned unchanged.
 //
 // Callers should apply this once, immediately after fetching ProviderInfo from the providers
-// catalog, before passing it into subscribe helpers (SubscriptionViaApiSupported,
+// catalog, before passing it into subscribe helpers (subscriptionViaApiSupported,
 // ProviderRequires*, Should*). Those helpers expect an already-resolved ProviderInfo and do not
 // re-resolve internally.
 func ResolveProviderInfoAlias(providerInfo *providers.ProviderInfo) *providers.ProviderInfo {

@@ -26,7 +26,7 @@ type PostProcessConfig struct {
 }
 
 // ShouldPerform reports whether the provider requires a post-subscribe setup step. Derived from
-// ProviderInfo via ShouldPostProcess.
+// ProviderInfo via shouldPostProcess.
 func (p PostProcessConfig) ShouldPerform() bool {
-	return ShouldPostProcess(p.module, p.providerInfo)
+	return shouldPostProcess(p.module, p.providerInfo)
 }

@@ -26,7 +26,7 @@ var acculynxConfig = ProviderConfig{
 	Verification: VerificationConfig{
 		verifierConnector: &acculynx.Connector{},
 		bypassed:          true,
-		eventCaster:       CastSubscriptionEvents[acculynx.SubscriptionEvent],
+		eventCaster:       castSubscriptionEvents[acculynx.SubscriptionEvent],
 	},
 }
 

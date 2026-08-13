@@ -33,7 +33,7 @@ var stripeConfig = ProviderConfig{
 	Verification: VerificationConfig{
 		paramsFn:          getStripeVerificationParams,
 		verifierConnector: &stripe.Connector{},
-		eventCaster:       CastSubscriptionEvents[stripe.SubscriptionEvent],
+		eventCaster:       castSubscriptionEvents[stripe.SubscriptionEvent],
 	},
 }
 

@@ -18,7 +18,7 @@ var hubspotConfig = ProviderConfig{
 		paramsFn:          getHubspotVerificationParams,
 		verifierConnector: &hubspot.Connector{},
 		bypassed:          true,
-		eventCaster:       CastSubscriptionEvents[hubspot.SubscriptionEvent],
+		eventCaster:       castSubscriptionEvents[hubspot.SubscriptionEvent],
 	},
 }
 

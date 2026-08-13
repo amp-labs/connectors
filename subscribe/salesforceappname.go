@@ -2,12 +2,12 @@ package subscribe
 
 import "strings"
 
-// SanitizeAppNameForSalesforce normalizes an app name for use in Salesforce custom field names.
+// sanitizeAppNameForSalesforce normalizes an app name for use in Salesforce custom field names.
 // It lowercases all characters, keeps alphanumerics and underscores, replaces hyphens
 // and spaces with underscores, removes all other characters, and trims trailing underscores.
 //
 // Mirrors the server's salesforce.SanitizeAppNameForSalesforce.
-func SanitizeAppNameForSalesforce(appName string) string {
+func sanitizeAppNameForSalesforce(appName string) string {
 	var result strings.Builder
 
 	for _, char := range appName {

@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/subscribe/deps"
 )
 
-// SubscriptionRequestBuilder constructs the provider-specific subscribe-time request payload
+// subscriptionRequestBuilder constructs the provider-specific subscribe-time request payload
 // (e.g. Pub/Sub topic name for Google, webhook URL for Outreach/Salesloft/Zoho) that is passed
 // to the connector's Subscribe method.
 //
@@ -17,7 +17,7 @@ import (
 // inst.Connection. deps carries the caller-provided resolver capabilities (bound at
 // GetProviderConfig time). webhookURL is the event-receipt endpoint constructed by the caller;
 // providers that do not need it (e.g. Google's Pub/Sub topic builder) simply ignore it.
-type SubscriptionRequestBuilder func(
+type subscriptionRequestBuilder func(
 	ctx context.Context,
 	deps deps.Dependencies,
 	inst *openapi.Installation,
@@ -49,7 +49,7 @@ type SubscriptionConfig struct {
 
 	// buildRequestFn constructs the subscribe-time request payload passed to the connector's
 	// Subscribe method. Nil when the provider needs no custom payload.
-	buildRequestFn SubscriptionRequestBuilder
+	buildRequestFn subscriptionRequestBuilder
 
 	// module, providerInfo, and deps are bound by GetProviderConfig at call time.
 	module       common.ModuleID
@@ -58,16 +58,16 @@ type SubscriptionConfig struct {
 }
 
 // IsSupportedViaAPI reports whether the provider supports programmatic subscription via API.
-// Derived from ProviderInfo via SubscriptionViaApiSupported.
+// Derived from ProviderInfo via subscriptionViaApiSupported.
 func (s SubscriptionConfig) IsSupportedViaAPI() bool {
-	return SubscriptionViaApiSupported(s.module, s.providerInfo)
+	return subscriptionViaApiSupported(s.module, s.providerInfo)
 }
 
 // SubscribeManually reports whether the provider's webhook subscriptions are configured manually
 // at the provider level (rather than registered programmatically via API by Ampersand). Derived
-// from ProviderInfo via IsProviderLookUpOnly.
+// from ProviderInfo via isProviderLookUpOnly.
 func (s SubscriptionConfig) SubscribeManually() bool {
-	return IsProviderLookUpOnly(s.module, s.providerInfo)
+	return isProviderLookUpOnly(s.module, s.providerInfo)
 }
 
 // RequiresWatchFieldsAutoAll reports whether the provider requires WatchFieldsAuto="all" for

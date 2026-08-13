@@ -190,7 +190,7 @@ func TestSanitizeAppNameForSalesforce(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			t.Parallel()
 
-			result := SanitizeAppNameForSalesforce(testCase.input)
+			result := sanitizeAppNameForSalesforce(testCase.input)
 			if result != testCase.expected {
 				t.Errorf("SanitizeAppNameForSalesforce(%q) = %q, want %q", testCase.input, result, testCase.expected)
 			}
