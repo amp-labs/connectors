@@ -61,6 +61,23 @@ const (
 	objectUsers       = "users"
 )
 
+// ReadParamsOpts is the connector-specific shape of common.ReadParams.Opts,
+// set by the server per customer (gong's ReadParamsOpts is the precedent).
+type ReadParamsOpts struct {
+	// HydrateEstimates enriches each /estimates row from its detail endpoint
+	// at the cost of one extra API call per record (up to pageSize per page).
+	// Off by default: plain estimates reads return the list stubs unchanged.
+	HydrateEstimates bool
+}
+
+// shouldHydrateEstimates reports whether the caller opted into estimate
+// hydration. False when Opts is unset or carries a different type.
+func shouldHydrateEstimates(params common.ReadParams) bool {
+	opts, ok := params.Opts.(ReadParamsOpts)
+
+	return ok && opts.HydrateEstimates
+}
+
 // includesByObject lists the AccuLynx ?includes= expansions applied
 // unconditionally on every read of the object. Contacts return phone/email as
 // reference-only stubs unless expanded, so we always request them — downstream
@@ -231,11 +248,36 @@ func (c *Connector) parseReadResponse(
 		}
 	}
 
+	return common.ParseResultFiltered(
+		params,
+		resp,
+		c.recordsFunc(params.ObjectName),
+		c.makeFilterFunc(params, reqURL),
+		c.readMarshaller(ctx, params, transformer),
+		params.Fields,
+	)
+}
+
+// readMarshaller wraps the base marshaller with row post-processors:
+//
+//   - estimates hydration (opt-in, one detail call per row — see
+//     estimates.go), chained first so the association extractors below see
+//     the final rows;
+//   - jobs -> contacts association: embedded contacts arrive via
+//     ?includes=contacts, pure reshape;
+//   - estimates -> jobs association: the job stub ({id, _link}) and
+//     isPrimary are on every estimate row, pure reshape.
+func (c *Connector) readMarshaller(
+	ctx context.Context,
+	params common.ReadParams,
+	transformer common.RecordTransformer,
+) common.MarshalFromNodeFunc {
 	marshaller := common.MakeMarshaledDataFunc(transformer)
 
-	// Attach the job's embedded contacts as associations when requested. The
-	// contacts ride inline on the job payload (?includes=contacts), so this is a
-	// pure post-process of the parsed rows — no extra API call.
+	if params.ObjectName == objectEstimates && shouldHydrateEstimates(params) {
+		marshaller = readhelper.ChainedMarshaller(marshaller, c.hydrateEstimateRows(ctx, params))
+	}
+
 	if params.ObjectName == objectJobs &&
 		slices.Contains(params.AssociatedObjects, jobContactsAssociation) {
 		marshaller = readhelper.ChainedMarshaller(marshaller, func(rows []common.ReadResultRow) error {
@@ -245,14 +287,16 @@ func (c *Connector) parseReadResponse(
 		})
 	}
 
-	return common.ParseResultFiltered(
-		params,
-		resp,
-		c.recordsFunc(params.ObjectName),
-		c.makeFilterFunc(params, reqURL),
-		marshaller,
-		params.Fields,
-	)
+	if params.ObjectName == objectEstimates &&
+		slices.Contains(params.AssociatedObjects, estimateJobAssociation) {
+		marshaller = readhelper.ChainedMarshaller(marshaller, func(rows []common.ReadResultRow) error {
+			extractEstimateJobs(rows)
+
+			return nil
+		})
+	}
+
+	return marshaller
 }
 
 // buildCustomFieldsTransformer fetches custom-field definitions and per-record
@@ -459,7 +503,7 @@ func (c *Connector) fetchChildPages(
 			return nil, err
 		}
 
-		attachAppointmentAssociations(params, parentID, result.Data)
+		attachNestedAssociations(params, parentID, result.Data)
 		allRows = append(allRows, result.Data...)
 
 		if result.NextPage == "" {

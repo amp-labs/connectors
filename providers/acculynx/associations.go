@@ -66,6 +66,77 @@ func addAssociation(row *common.ReadResultRow, key, objectID string) {
 	row.Associations[key] = append(row.Associations[key], common.Association{ObjectId: objectID})
 }
 
+// attachNestedAssociations attaches the parent-derived edges for nested
+// fan-out rows. Each attacher is a no-op unless params.ObjectName is its
+// object, so fetchChildPages calls this unconditionally per page.
+func attachNestedAssociations(params common.ReadParams, parentID string, rows []common.ReadResultRow) {
+	attachAppointmentAssociations(params, parentID, rows)
+	attachRepresentativeAssociations(params, parentID, rows)
+}
+
+// representativeJobAssociation and estimateJobAssociation are the association
+// keys for the Representative->Job and Estimate->Job edges. Like the
+// appointment keys above, they match the target object name the server
+// hydrates via GetRecordsByIds.
+const (
+	representativeJobAssociation = objectJobs
+	estimateJobAssociation       = objectJobs
+)
+
+// attachRepresentativeAssociations attaches the Representative->Job edge to
+// jobs/representatives rows produced by the nested fan-out. A representative
+// body carries only id, type, user and _link — no jobId (see
+// https://apidocs.acculynx.com/reference/getrepresentativesforjob) — so the
+// job id is threaded in from the fan-out parent, the same way the
+// Appointment->User edge uses the parent calendar id. Reference shape
+// (ObjectId only): jobs are batch-readable, the server hydrates them.
+//
+// It is a no-op for any object other than jobs/representatives, so the nested
+// fan-out can call it unconditionally.
+func attachRepresentativeAssociations(params common.ReadParams, jobID string, rows []common.ReadResultRow) {
+	if params.ObjectName != "jobs/representatives" || jobID == "" {
+		return
+	}
+
+	if !slices.Contains(params.AssociatedObjects, representativeJobAssociation) {
+		return
+	}
+
+	for idx := range rows {
+		addAssociation(&rows[idx], representativeJobAssociation, jobID)
+	}
+}
+
+// extractEstimateJobs attaches each estimate's job as an association. The
+// estimate body carries the job as an embedded reference stub ({id, _link})
+// plus a top-level isPrimary flag, so this is a pure reshape of the parsed
+// rows — no extra fetch. Reference shape like Appointment->Job (ObjectId only,
+// the server hydrates via GetRecordsByIds); isPrimary rides along in
+// ProviderAssociationMetadata like the Job<->Contact edge below.
+func extractEstimateJobs(rows []common.ReadResultRow) {
+	for idx := range rows {
+		job, _ := rows[idx].Raw["job"].(map[string]any)
+
+		jobID, _ := job["id"].(string)
+		if jobID == "" {
+			continue
+		}
+
+		assoc := common.Association{ObjectId: jobID}
+
+		if v, ok := rows[idx].Raw["isPrimary"]; ok {
+			assoc.ProviderAssociationMetadata = map[string]any{"isPrimary": v}
+		}
+
+		if rows[idx].Associations == nil {
+			rows[idx].Associations = make(map[string][]common.Association)
+		}
+
+		rows[idx].Associations[estimateJobAssociation] = append(
+			rows[idx].Associations[estimateJobAssociation], assoc)
+	}
+}
+
 // jobContactsAssociation is the association key Hatch's config requests (see the
 // server's getHatchAssociations). It matches the embedded "contacts" array that
 // AccuLynx returns on /jobs when the read is issued with ?includes=contacts.

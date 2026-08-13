@@ -714,6 +714,31 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "createdBy": {
+              "displayName": "createdBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "estimateNumber": {
+              "displayName": "estimateNumber",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "financials": {
+              "displayName": "financials",
+              "valueType": "other",
+              "providerType": "object"
+            },
             "id": {
               "displayName": "id",
               "valueType": "string",
@@ -728,6 +753,41 @@
               "displayName": "job",
               "valueType": "other",
               "providerType": "object"
+            },
+            "modifiedBy": {
+              "displayName": "modifiedBy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "modifiedDate": {
+              "displayName": "modifiedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "profitMarginRate": {
+              "displayName": "profitMarginRate",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "profitMarginTotal": {
+              "displayName": "profitMarginTotal",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "sections": {
+              "displayName": "sections",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         },

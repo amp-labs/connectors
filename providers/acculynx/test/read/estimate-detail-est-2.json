@@ -1,0 +1,32 @@
+{
+  "id": "est-2",
+  "isPrimary": false,
+  "estimateNumber": "1043",
+  "title": "Gutter repair",
+  "description": "",
+  "notes": "",
+  "createdDate": "2026-06-01T08:15:00Z",
+  "modifiedDate": "2026-06-02T12:30:00Z",
+  "profitMarginRate": 20.0,
+  "profitMarginTotal": 15.0,
+  "financials": {
+    "taxRate": 0.0,
+    "taxTotal": 0.0,
+    "overheadRate": 0.0,
+    "overheadTotal": 0.0,
+    "profitRate": 0.0,
+    "profitTotal": 0.0,
+    "totalCost": 60.0,
+    "totalPrice": 75.0
+  },
+  "sections": [],
+  "createdBy": {
+    "id": "user-20",
+    "_link": "https://api.acculynx.com/api/v2/users/user-20"
+  },
+  "job": {
+    "id": "job-888",
+    "_link": "https://api.acculynx.com/api/v2/jobs/job-888"
+  },
+  "_link": "https://api.acculynx.com/api/v2/estimates/est-2"
+}
