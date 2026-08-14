@@ -58,74 +58,74 @@ type ProviderConfig struct {
 	deps         deps.Dependencies
 }
 
-// ProviderConfigRegistry holds a provider's declarative ProviderConfig entries. A provider may
-// declare module-specific configs in Modules (keyed by module ID, e.g. "crm", "gmail") and/or a
-// DefaultModuleConfig used when no module-specific entry matches the resolved module (or the
+// providerConfigRegistry holds a provider's declarative ProviderConfig entries. A provider may
+// declare module-specific configs in modules (keyed by module ID, e.g. "crm", "gmail") and/or a
+// defaultModuleConfig used when no module-specific entry matches the resolved module (or the
 // provider has no modules). Mirrors the structure of the connectors-library ProviderInfo.Modules.
-type ProviderConfigRegistry struct {
-	// DefaultModuleConfig is the config used when the resolved module has no entry in Modules.
+type providerConfigRegistry struct {
+	// defaultModuleConfig is the config used when the resolved module has no entry in modules.
 	// Nil when the provider declares only module-specific configs.
-	DefaultModuleConfig *ProviderConfig
+	defaultModuleConfig *ProviderConfig
 
-	// Modules holds module-specific configs, keyed by module ID (e.g. ModuleSalesforceCRM "crm",
+	// modules holds module-specific configs, keyed by module ID (e.g. ModuleSalesforceCRM "crm",
 	// ModuleGoogleGmail "gmail"). Nil/empty when the provider's config is module-agnostic.
-	Modules map[common.ModuleID]*ProviderConfig
+	modules map[common.ModuleID]*ProviderConfig
 }
 
 // getConfig resolves the ProviderConfig for the given module: the module-specific entry in
-// Modules if one exists, otherwise DefaultModuleConfig. Returns nil when neither is declared.
-func (r ProviderConfigRegistry) getConfig(module common.ModuleID) *ProviderConfig {
+// modules if one exists, otherwise defaultModuleConfig. Returns nil when neither is declared.
+func (r providerConfigRegistry) getConfig(module common.ModuleID) *ProviderConfig {
 	if module != "" {
-		if cfg, ok := r.Modules[module]; ok {
+		if cfg, ok := r.modules[module]; ok {
 			return cfg
 		}
 	}
 
-	return r.DefaultModuleConfig
+	return r.defaultModuleConfig
 }
 
 // providerConfigs is the registry of per-provider declarative configs. Each provider maps to a
-// ProviderConfigRegistry holding its module-specific configs (Modules) and/or a
+// providerConfigRegistry holding its module-specific configs (Modules) and/or a
 // DefaultModuleConfig fallback. GetProviderConfig resolves the module (falling back to
-// ProviderInfo.DefaultModule) and calls ProviderConfigRegistry.getConfig.
+// ProviderInfo.DefaultModule) and calls providerConfigRegistry.getConfig.
 //
 // Aliases (e.g. SalesforceJWT → Salesforce) register the same config pointer under both provider
 // keys. providerInfoAliases is used by callers fetching ProviderInfo so that twins missing
 // connectors-side SubscribeRequirements resolve correctly.
-var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
+var providerConfigs = map[providers.Provider]providerConfigRegistry{
 	providers.Salesforce: {
-		Modules: map[common.ModuleID]*ProviderConfig{
+		modules: map[common.ModuleID]*ProviderConfig{
 			providers.ModuleSalesforceCRM: &salesforceConfig,
 		},
 	},
 	providers.SalesforceJWT: {
-		Modules: map[common.ModuleID]*ProviderConfig{
+		modules: map[common.ModuleID]*ProviderConfig{
 			providers.ModuleSalesforceCRM: &salesforceConfig,
 		},
 	},
 	providers.Zoho: {
-		Modules: map[common.ModuleID]*ProviderConfig{
+		modules: map[common.ModuleID]*ProviderConfig{
 			providers.ModuleZohoCRM: &zohoConfig,
 		},
 	},
-	providers.Outreach:  {DefaultModuleConfig: &outreachConfig},
-	providers.Salesloft: {DefaultModuleConfig: &salesloftConfig},
+	providers.Outreach:  {defaultModuleConfig: &outreachConfig},
+	providers.Salesloft: {defaultModuleConfig: &salesloftConfig},
 	providers.Google: {
-		Modules: map[common.ModuleID]*ProviderConfig{
+		modules: map[common.ModuleID]*ProviderConfig{
 			providers.ModuleGoogleGmail:    &googleConfig,
 			providers.ModuleGoogleCalendar: &googleCalendarConfig,
 		},
 	},
-	providers.Hubspot:      {DefaultModuleConfig: &hubspotConfig},
-	providers.Gong:         {DefaultModuleConfig: &gongConfig},
-	providers.HousecallPro: {DefaultModuleConfig: &housecallproConfig},
-	providers.ConnectWise:  {DefaultModuleConfig: &connectWiseConfig},
-	providers.AccuLynx:     {DefaultModuleConfig: &acculynxConfig},
-	providers.Jobber:       {DefaultModuleConfig: &jobberConfig},
-	providers.Slack:        {DefaultModuleConfig: &slackConfig},
-	providers.Microsoft:    {DefaultModuleConfig: &microsoftConfig},
-	providers.Attio:        {DefaultModuleConfig: &attioConfig},
-	providers.Stripe:       {DefaultModuleConfig: &stripeConfig},
+	providers.Hubspot:      {defaultModuleConfig: &hubspotConfig},
+	providers.Gong:         {defaultModuleConfig: &gongConfig},
+	providers.HousecallPro: {defaultModuleConfig: &housecallproConfig},
+	providers.ConnectWise:  {defaultModuleConfig: &connectWiseConfig},
+	providers.AccuLynx:     {defaultModuleConfig: &acculynxConfig},
+	providers.Jobber:       {defaultModuleConfig: &jobberConfig},
+	providers.Slack:        {defaultModuleConfig: &slackConfig},
+	providers.Microsoft:    {defaultModuleConfig: &microsoftConfig},
+	providers.Attio:        {defaultModuleConfig: &attioConfig},
+	providers.Stripe:       {defaultModuleConfig: &stripeConfig},
 }
 
 // ErrProviderConfigNotFound is returned by GetProviderConfig when no entry exists in
@@ -195,14 +195,14 @@ func GetProviderConfig(
 // the provider's RegistrationConfig has no buildParamsFn declared.
 var ErrRegistrationParamsBuilderNotDeclared = errors.New("registration params builder not declared for provider")
 
-// IsProviderLookUpOnly reports whether a provider's webhook subscriptions are managed outside of
+// isProviderLookUpOnly reports whether a provider's webhook subscriptions are managed outside of
 // Ampersand. When true, the subscribe workflow persists lookup rows for event routing but skips
 // all provider-side create/update/delete calls.
 //
 // The answer comes from the ProviderInfo: a provider is look-up-only when it supports
 // subscriptions (Support.Subscribe = true) but does NOT support programmatic subscription via API
 // (SubscribeRequirements.SubscribeByAPI is nil or false).
-func IsProviderLookUpOnly(module common.ModuleID, providerInfo *providers.ProviderInfo) bool {
+func isProviderLookUpOnly(module common.ModuleID, providerInfo *providers.ProviderInfo) bool {
 	if providerInfo == nil {
 		return false
 	}
@@ -263,13 +263,13 @@ func providerInfoIsLookUpOnly(module common.ModuleID, providerInfo *providers.Pr
 	return requirements == nil || requirements.SubscribeByAPI == nil || !*requirements.SubscribeByAPI
 }
 
-// ProviderRequiresRegistration determines if a provider requires a one-time registration step
+// providerRequiresRegistration determines if a provider requires a one-time registration step
 // before per-object subscriptions can be created.
 //
 // The answer comes from the ProviderInfo (per-module SubscribeRequirements.Registration, falling
 // back to the provider's DefaultModule, and finally to the top-level
 // SubscribeRequirements.Registration).
-func ProviderRequiresRegistration(module common.ModuleID, providerInfo *providers.ProviderInfo) bool {
+func providerRequiresRegistration(module common.ModuleID, providerInfo *providers.ProviderInfo) bool {
 	// If provider info is nil, we can't determine if registration is required
 	if providerInfo == nil {
 		return false
@@ -292,13 +292,13 @@ func providerInfoRegistrationRequired(module common.ModuleID, providerInfo *prov
 	return *requirements.Registration
 }
 
-// SubscriptionViaApiSupported reports whether the provider supports programmatic subscription via
+// subscriptionViaApiSupported reports whether the provider supports programmatic subscription via
 // API for the given module.
 //
 // The answer comes from the ProviderInfo (per-module SubscribeRequirements.SubscribeByAPI,
 // falling back to the provider's DefaultModule, and finally to the top-level
 // SubscribeRequirements).
-func SubscriptionViaApiSupported(module common.ModuleID, providerInfo *providers.ProviderInfo) bool {
+func subscriptionViaApiSupported(module common.ModuleID, providerInfo *providers.ProviderInfo) bool {
 	if providerInfo == nil {
 		return false
 	}
@@ -324,15 +324,15 @@ func providerInfoSubscribeSupported(module common.ModuleID, providerInfo *provid
 	return *requirements.SubscribeByAPI
 }
 
-// ShouldCreateRegistration determines if registration should be created based on provider info
+// shouldCreateRegistration determines if registration should be created based on provider info
 // and connector. Returns false if the provider doesn't require registration, the connector is
 // nil, or the connector doesn't support registration.
-func ShouldCreateRegistration(
+func shouldCreateRegistration(
 	module common.ModuleID,
 	providerInfo *providers.ProviderInfo,
 	connector connectors.SubscribeConnector,
 ) bool {
-	if !ProviderRequiresRegistration(module, providerInfo) {
+	if !providerRequiresRegistration(module, providerInfo) {
 		return false
 	}
 
@@ -341,18 +341,18 @@ func ShouldCreateRegistration(
 		return false
 	}
 
-	_, ok := CastConnector[connectors.RegisterSubscribeConnector](connector)
+	_, ok := castConnector[connectors.RegisterSubscribeConnector](connector)
 
 	return ok
 }
 
-// ShouldPostProcess determines if a provider requires a third-party setup step after the
+// shouldPostProcess determines if a provider requires a third-party setup step after the
 // connector's subscribe call returns (e.g. Salesforce → AWS EventBridge wiring).
 //
 // The answer comes from the ProviderInfo (per-module SubscribeRequirements.PostProcess, falling
 // back to the provider's DefaultModule, and finally to the top-level
 // SubscribeRequirements.PostProcess).
-func ShouldPostProcess(module common.ModuleID, providerInfo *providers.ProviderInfo) bool {
+func shouldPostProcess(module common.ModuleID, providerInfo *providers.ProviderInfo) bool {
 	// If provider info is nil, we can't determine if post-processing is required
 	if providerInfo == nil {
 		return false
@@ -375,15 +375,15 @@ func providerInfoPostProcessRequired(module common.ModuleID, providerInfo *provi
 	return *requirements.PostProcess
 }
 
-// ShouldPerformMaintenance determines if a provider's webhooks require periodic maintenance
+// shouldPerformMaintenance determines if a provider's webhooks require periodic maintenance
 // (renewal). For example, Gmail watch subscriptions expire after 7 days and must be re-issued
 // before expiry.
 //
 // The answer comes from the ProviderInfo (per-module SubscribeRequirements.Maintenance, falling
 // back to the provider's DefaultModule, and finally to the top-level
 // SubscribeRequirements.Maintenance). The renewal interval itself, when maintenance is required,
-// is read separately from GetMaintenancePeriod / MaintenanceConfig.Interval.
-func ShouldPerformMaintenance(module common.ModuleID, providerInfo *providers.ProviderInfo) bool {
+// is read separately from getMaintenancePeriod / MaintenanceConfig.Interval.
+func shouldPerformMaintenance(module common.ModuleID, providerInfo *providers.ProviderInfo) bool {
 	if providerInfo == nil {
 		return false
 	}
@@ -411,15 +411,15 @@ type connectorWithUnwrap interface {
 	Unwrap() connectors.Connector
 }
 
-// CastConnector attempts to cast a connector to a specific type. If the connector is nil, it
+// castConnector attempts to cast a connector to a specific type. If the connector is nil, it
 // returns a nil value and true. If the cast is successful, it returns the cast connector and
 // true. If the cast fails, it attempts to unwrap the connector if it implements the
-// connectorWithUnwrap interface and recursively calls CastConnector on the unwrapped connector.
+// connectorWithUnwrap interface and recursively calls castConnector on the unwrapped connector.
 // If the cast is still unsuccessful, it returns a nil value and false.
 //
 // Mirrors the server's utils.CastConnector so decorated (e.g. metrics-wrapped) connectors passed
 // in by the server cast identically.
-func CastConnector[ConnectorType connectors.Connector](connector connectors.Connector) (ConnectorType, bool) {
+func castConnector[ConnectorType connectors.Connector](connector connectors.Connector) (ConnectorType, bool) {
 	if connector == nil {
 		var empty ConnectorType
 
@@ -433,7 +433,7 @@ func CastConnector[ConnectorType connectors.Connector](connector connectors.Conn
 
 	unwrapper, ok := connector.(connectorWithUnwrap)
 	if ok {
-		return CastConnector[ConnectorType](unwrapper.Unwrap())
+		return castConnector[ConnectorType](unwrapper.Unwrap())
 	}
 
 	var empty ConnectorType

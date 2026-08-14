@@ -37,13 +37,13 @@ type ProviderConfigRegistry struct {
 }
 ```
 
-**Use `DefaultModuleConfig`** when subscribe behavior is module-agnostic (Outreach, Salesloft, Hubspot, Gong, HousecallPro).
+**Use `defaultModuleConfig`** when subscribe behavior is module-agnostic (Outreach, Salesloft, Hubspot, Gong, HousecallPro).
 
 **Use `Modules`** when your provider has multiple modules with differing subscribe behavior (Salesforce, Zoho, Google all do this — their non-subscribe modules have no entry).
 
-You can use both (one `DefaultModuleConfig` plus a few module overrides) if needed.
+You can use both (one `defaultModuleConfig` plus a few module overrides) if needed.
 
-`GetProviderConfig(module, providerInfo, deps)` resolves the module in this order: the `module` argument (typically the installation revision's module) → `providerInfo.DefaultModule` → empty string. If the resolved module has an entry in `Modules`, that's used; otherwise `DefaultModuleConfig`; if neither matches, it returns `ErrProviderConfigNotFound`. On success the returned pointer is a fresh copy with `module` / `providerInfo` / `deps` bound onto each subcomponent, so subcomponent methods answer module-aware questions without callers threading the arguments per call.
+`GetProviderConfig(module, providerInfo, deps)` resolves the module in this order: the `module` argument (typically the installation revision's module) → `providerInfo.DefaultModule` → empty string. If the resolved module has an entry in `Modules`, that's used; otherwise `defaultModuleConfig`; if neither matches, it returns `ErrProviderConfigNotFound`. On success the returned pointer is a fresh copy with `module` / `providerInfo` / `deps` bound onto each subcomponent, so subcomponent methods answer module-aware questions without callers threading the arguments per call.
 
 ---
 
@@ -152,7 +152,7 @@ var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
 }
 ```
 
-Use `DefaultModuleConfig` when the provider has no module-specific differences. Use `Modules` when it does.
+Use `defaultModuleConfig` when the provider has no module-specific differences. Use `Modules` when it does.
 
 ---
 
@@ -377,7 +377,7 @@ var salesloftConfig = ProviderConfig{
 
 ### Google (Gmail / Calendar) — module-scoped with maintenance and bypass
 
-Only the `gmail` and `calendar` modules support subscribe, so they're registered under `Modules` (as `googleConfig` and `googleCalendarConfig` respectively), not `DefaultModuleConfig`. Webhooks arrive as synthetic Pub/Sub republishes so verification is bypassed.
+Only the `gmail` and `calendar` modules support subscribe, so they're registered under `Modules` (as `googleConfig` and `googleCalendarConfig` respectively), not `defaultModuleConfig`. Webhooks arrive as synthetic Pub/Sub republishes so verification is bypassed.
 
 ```go
 var googleConfig = ProviderConfig{
@@ -448,7 +448,7 @@ This is the recommended way to validate the whole stack (PR 2–6) before openin
 ## Checklist
 
 - [ ] `subscribe/<provider>.go` declares `var <provider>Config = ProviderConfig{...}` populating only the subcomponents the provider needs.
-- [ ] Registered in `providerConfigs` (`subscribe/config.go`) — `DefaultModuleConfig` vs `Modules` matches the provider's module story.
+- [ ] Registered in `providerConfigs` (`subscribe/config.go`) — `defaultModuleConfig` vs `Modules` matches the provider's module story.
 - [ ] Builders use only the wire types and `deps.Dependencies` — no new external dependencies.
 - [ ] If maintenance is declared: `renewalInterval` set **and** `maintenancePeriods` entry added.
 - [ ] Twin providers: `providerInfoAliases` entry + same config pointer under both keys.
@@ -459,4 +459,4 @@ This is the recommended way to validate the whole stack (PR 2–6) before openin
 - The config shape matches the provider's actual capabilities from PR 2–5 (e.g. no `buildRequestFn` for a look-up-only provider; `verifierConnector` matches the PR 2 connector).
 - Zero-value subcomponents are left alone — only populated concerns appear in the literal.
 - Secrets: verification params take secrets from `VerificationRequest` (`req.ProviderAppClientSecret`) or stored results via `deps` — never hardcoded.
-- The registry entry's module scoping is right (module-agnostic providers under `DefaultModuleConfig`; module-specific ones under `Modules` with no entries for non-subscribe modules).
+- The registry entry's module scoping is right (module-agnostic providers under `defaultModuleConfig`; module-specific ones under `Modules` with no entries for non-subscribe modules).

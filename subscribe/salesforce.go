@@ -140,7 +140,7 @@ func buildCDCEventFlagFields(
 		return nil, ErrAppNameRequired
 	}
 
-	sanitizedAppName := SanitizeAppNameForSalesforce(appName)
+	sanitizedAppName := sanitizeAppNameForSalesforce(appName)
 	if sanitizedAppName == "" {
 		return nil, ErrAppNameInvalid
 	}

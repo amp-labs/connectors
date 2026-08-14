@@ -63,7 +63,7 @@ func getZohoRequest(
 	conn *openapi.Connection,
 	webhookURL string,
 ) (any, error) {
-	dur, err := GetMaintenancePeriod(conn.Provider)
+	dur, err := getMaintenancePeriod(conn.Provider)
 	if err != nil {
 		return nil, fmt.Errorf("error getting maintenance period: %w", err)
 	}

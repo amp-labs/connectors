@@ -50,7 +50,7 @@ type RegistrationConfig struct {
 // The connector parameter is passed in at call time because connectors are not always
 // available when ProviderConfig is fetched.
 func (r RegistrationConfig) IsRequired(connector connectors.SubscribeConnector) bool {
-	return ShouldCreateRegistration(r.module, r.providerInfo, connector)
+	return shouldCreateRegistration(r.module, r.providerInfo, connector)
 }
 
 // EmptyResult returns a fresh empty registration result instance with the appropriate provider-
@@ -76,7 +76,7 @@ func (r RegistrationConfig) BuildParams(ctx context.Context, inst *openapi.Insta
 		return r.buildParamsFn(ctx, inst)
 	}
 
-	if !ProviderRequiresRegistration(r.module, r.providerInfo) {
+	if !providerRequiresRegistration(r.module, r.providerInfo) {
 		return nil, ErrRegistrationParamsBuilderNotDeclared
 	}
 

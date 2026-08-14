@@ -12,16 +12,16 @@ import (
 // provider's VerificationConfig declares no eventCaster.
 var errSubscriptionEventCasterNotDeclared = errors.New("subscription event caster not declared for provider")
 
-// SubscriptionEventCaster converts a list of generic maps into a list of typed
+// subscriptionEventCaster converts a list of generic maps into a list of typed
 // SubscriptionEvent implementations for a specific provider. Declared per-provider via
 // VerificationConfig.eventCaster (see the per-provider configs).
-type SubscriptionEventCaster func(list []map[string]any) ([]common.SubscriptionEvent, error)
+type subscriptionEventCaster func(list []map[string]any) ([]common.SubscriptionEvent, error)
 
-// CastSubscriptionEvents wraps CastArray with the conversion to []common.SubscriptionEvent.
-func CastSubscriptionEvents[T common.SubscriptionEvent](
+// castSubscriptionEvents wraps castArray with the conversion to []common.SubscriptionEvent.
+func castSubscriptionEvents[T common.SubscriptionEvent](
 	list []map[string]any,
 ) ([]common.SubscriptionEvent, error) {
-	typedList, err := CastArray[T](list)
+	typedList, err := castArray[T](list)
 	if err != nil {
 		return nil, fmt.Errorf("failed to cast to array: %w", err)
 	}
@@ -34,9 +34,9 @@ func CastSubscriptionEvents[T common.SubscriptionEvent](
 	return result, nil
 }
 
-// CastArray converts a slice of generic maps to a slice of typed structs using mapstructure.
+// castArray converts a slice of generic maps to a slice of typed structs using mapstructure.
 // Generic function that works for any struct type T.
-func CastArray[T any](list []map[string]any) ([]T, error) {
+func castArray[T any](list []map[string]any) ([]T, error) {
 	result := make([]T, len(list))
 
 	for i, item := range list {

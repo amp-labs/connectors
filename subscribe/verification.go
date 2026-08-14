@@ -10,11 +10,11 @@ import (
 	"github.com/amp-labs/connectors/subscribe/deps"
 )
 
-// VerificationParamsFunc is a function that retrieves webhook verification parameters for a
+// verificationParamsFunc is a function that retrieves webhook verification parameters for a
 // specific provider. It takes the bound deps.Dependencies plus the deps.VerificationRequest (payload,
 // integration, installation, provider app details) and returns the verification parameters
 // needed to validate incoming webhook requests from that provider.
-type VerificationParamsFunc func(
+type verificationParamsFunc func(
 	ctx context.Context,
 	deps deps.Dependencies,
 	req *deps.VerificationRequest,
@@ -25,13 +25,15 @@ var (
 	errWebhookVerificationNotSupported = errors.New("webhook verification not supported")
 )
 
-// IsHookdeckGatewayProvider reports whether the given provider's webhooks are routed through
+// isHookdeckGatewayProvider reports whether the given provider's webhooks are routed through
 // Hookdeck. Used both to gate Hookdeck signature verification and to choose between Hookdeck and
 // CloudFunction event endpoints.
 //
 // Salesforce / SalesforceJWT use a CloudFunction endpoint with their own AWS EventBridge wiring,
 // and Hubspot delivers webhooks directly. Everyone else routes through Hookdeck.
-func IsHookdeckGatewayProvider(provider providers.Provider) bool {
+//
+// TODO should this be preserved?
+func isHookdeckGatewayProvider(provider providers.Provider) bool { // nolint:unused
 	return provider != providers.Hubspot &&
 		provider != providers.Salesforce &&
 		provider != providers.SalesforceJWT
@@ -51,7 +53,7 @@ func IsHookdeckGatewayProvider(provider providers.Provider) bool {
 type VerificationConfig struct {
 	// paramsFn builds the provider-specific webhook verification params. Nil when the provider
 	// has none (e.g. Gong, HousecallPro).
-	paramsFn VerificationParamsFunc
+	paramsFn verificationParamsFunc
 
 	// verifierConnector is the connector instance used to verify incoming webhook signatures.
 	// Nil when the provider has no verifier connector. Shared across calls — a zero-value
@@ -64,7 +66,7 @@ type VerificationConfig struct {
 
 	// eventCaster casts raw event maps into typed SubscriptionEvents. Nil when the provider's
 	// events need no provider-specific casting.
-	eventCaster SubscriptionEventCaster
+	eventCaster subscriptionEventCaster
 
 	// deps is bound by GetProviderConfig at call time and threaded into paramsFn.
 	deps deps.Dependencies
