@@ -26,6 +26,8 @@ func TestRead(t *testing.T) {
 	responseEmployees := testutils.DataFromFile(t, "read-employees.json")
 	responseRoutes := testutils.DataFromFile(t, "read-routes.json")
 	responseJobs := testutils.DataFromFile(t, "read-jobs.json")
+	responseEstimates := testutils.DataFromFile(t, "read-estimates.json")
+	responseLeads := testutils.DataFromFile(t, "read-leads.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -441,6 +443,144 @@ func TestRead(t *testing.T) {
 									},
 								},
 							},
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read estimates attaches embedded customer as association",
+			Input: common.ReadParams{
+				ObjectName:        "estimates",
+				Fields:            connectors.Fields("id", "estimate_number", "updated_at"),
+				PageSize:          1,
+				AssociatedObjects: []string{"customers"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/estimates"),
+					mockcond.QueryParam("page_size", "1"),
+					mockcond.QueryParam("sort_by", "updated_at"),
+					mockcond.QueryParam("sort_direction", "desc"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseEstimates),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":              "est_00000000000000000000000000000001",
+							"estimate_number": "12",
+							"updated_at":      "2026-01-02T00:00:00Z",
+						},
+						Raw: map[string]any{
+							"id":              "est_00000000000000000000000000000001",
+							"estimate_number": "12",
+						},
+						Associations: map[string][]common.Association{
+							"customers": {
+								{
+									ObjectId: "cus_00000000000000000000000000000001",
+									Raw: map[string]any{
+										"id":         "cus_00000000000000000000000000000001",
+										"first_name": "Jane",
+										"last_name":  "Sample",
+										"email":      "jane.sample@example.com",
+									},
+								},
+							},
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read leads attaches embedded customer as association",
+			Input: common.ReadParams{
+				ObjectName:        "leads",
+				Fields:            connectors.Fields("id", "number", "status"),
+				PageSize:          1,
+				AssociatedObjects: []string{"customers"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/leads"),
+					mockcond.QueryParam("page_size", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseLeads),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":     "lead_00000000000000000000000000000001",
+							"number": "7",
+							"status": "open",
+						},
+						Raw: map[string]any{
+							"id":     "lead_00000000000000000000000000000001",
+							"number": "7",
+						},
+						Associations: map[string][]common.Association{
+							"customers": {
+								{
+									ObjectId: "cus_00000000000000000000000000000001",
+									Raw: map[string]any{
+										"id":         "cus_00000000000000000000000000000001",
+										"first_name": "Jane",
+										"last_name":  "Sample",
+										"email":      "jane.sample@example.com",
+									},
+								},
+							},
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read leads without customer association request",
+			Input: common.ReadParams{
+				ObjectName: "leads",
+				Fields:     connectors.Fields("id", "number", "status"),
+				PageSize:   1,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/leads"),
+					mockcond.QueryParam("page_size", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseLeads),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"id":     "lead_00000000000000000000000000000001",
+							"number": "7",
+							"status": "open",
+						},
+						Raw: map[string]any{
+							"id":     "lead_00000000000000000000000000000001",
+							"number": "7",
 						},
 					},
 				},

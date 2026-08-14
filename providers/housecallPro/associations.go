@@ -7,8 +7,16 @@ import (
 
 const customerObject = "customers"
 
+// Jobs, estimates and leads all embed the customer object under the same "customer" field,
+// so the association is lifted off the list payload without extra API calls.
 var embeddedAssociationFields = map[string]map[string]string{ //nolint:gochecknoglobals
 	"jobs": {
+		customerObject: "customer",
+	},
+	"estimates": {
+		customerObject: "customer",
+	},
+	"leads": {
 		customerObject: "customer",
 	},
 }
