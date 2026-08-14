@@ -105,7 +105,8 @@ var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
 	},
 	providers.Zoho: {
 		Modules: map[common.ModuleID]*ProviderConfig{
-			providers.ModuleZohoCRM: &zohoConfig,
+			providers.ModuleZohoCRM:  &zohoConfig,
+			providers.ModuleZohoMail: &zohoMailConfig,
 		},
 	},
 	providers.Outreach:  {DefaultModuleConfig: &outreachConfig},

@@ -132,7 +132,7 @@ func init() {
 				DisplayName: "Zoho Mail",
 				Support: Support{
 					Read:      true,
-					Subscribe: false,
+					Subscribe: true,
 					Write:     true,
 				},
 				// Zoho Mail has no API to create/manage webhook subscriptions; the
