@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/url"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -56,6 +58,12 @@ func Body(expected string, rules ...FieldIgnoreRule) Check {
 		jsonEquals := jsonBodyMatch(body, expected, rules)
 		arrayJsonEquals := jsonBodyArrayMatch(body, expected, rules)
 		xmlEquals := xmlBodyMatch(body, expected)
+
+		if header := r.Header.Get("Content-Type"); header == "application/x-www-form-urlencoded" {
+			if formUrlEncodedMatch(body, expected) {
+				return true
+			}
+		}
 
 		return textEquals || jsonEquals || arrayJsonEquals || xmlEquals
 	}
@@ -222,6 +230,56 @@ func textBodyMatch(actual []byte, expected string) bool {
 	second := stringCleaner(expected, []string{"\n", "\t"})
 
 	return first == second
+}
+
+// formUrlEncodedMatch compares two application/x-www-form-urlencoded bodies
+// by their decoded key-value pairs.
+//
+// Parameter order and the order of values for repeated parameters are ignored.
+// Whitespace and newlines surrounding '&' are ignored. Percent-encoded values
+// and '+'-encoded spaces are decoded before comparison.
+func formUrlEncodedMatch(actual []byte, expected string) bool {
+	actualValues, ok := parseFormUrlEncoded(string(actual))
+	if !ok {
+		return false
+	}
+
+	expectedValues, ok := parseFormUrlEncoded(expected)
+	if !ok {
+		return false
+	}
+
+	sortFormValues(actualValues)
+	sortFormValues(expectedValues)
+
+	return reflect.DeepEqual(actualValues, expectedValues)
+}
+
+func sortFormValues(values url.Values) {
+	for key := range values {
+		sort.Strings(values[key])
+	}
+}
+
+func parseFormUrlEncoded(value string) (url.Values, bool) {
+	normalized := normalizeFormURLEncoded(value)
+
+	parsed, err := url.ParseQuery(normalized)
+	if err != nil {
+		return nil, false
+	}
+
+	return parsed, true
+}
+
+func normalizeFormURLEncoded(value string) string {
+	parts := strings.Split(value, "&")
+
+	for i := range parts {
+		parts[i] = strings.TrimSpace(parts[i])
+	}
+
+	return strings.Join(parts, "&")
 }
 
 func stringCleaner(text string, toRemove []string) string {

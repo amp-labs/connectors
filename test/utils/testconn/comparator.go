@@ -329,6 +329,10 @@ func ComparatorSubscriptionWithResult[R any](
 	resultComparator func(expectedResult, actualResult *R) *testutils.CompareResult,
 ) Comparator[*common.SubscriptionResult] {
 	return func(_ string, actual, expected *common.SubscriptionResult) *testutils.CompareResult {
+		if result := compareSubscriptionPresence(actual, expected); !result.OK {
+			return result
+		}
+
 		result := testutils.NewCompareResult()
 		result.Merge(mockutils.SubscriptionResultComparator.CompareWithoutResultArg(actual, expected))
 
@@ -350,7 +354,28 @@ func ComparatorSubscriptionWithResult[R any](
 func ComparatorSubscriptionWithoutResult(
 	_ string, actual, expected *common.SubscriptionResult,
 ) *testutils.CompareResult {
+	if result := compareSubscriptionPresence(actual, expected); !result.OK {
+		return result
+	}
+
 	return mockutils.SubscriptionResultComparator.CompareWithoutResultArg(actual, expected)
+}
+
+func compareSubscriptionPresence(
+	actual, expected *common.SubscriptionResult,
+) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+
+	switch {
+	case actual == nil && expected == nil:
+		// No actual hence it is ok to have no expectation.
+	case actual != nil && expected == nil:
+		result.AddDiff("unexpected SubscriptionResult: got non-nil, want nil")
+	case actual == nil:
+		result.AddDiff("missing SubscriptionResult: got nil, want non-nil")
+	}
+
+	return result
 }
 
 func isPointer(v any) bool {

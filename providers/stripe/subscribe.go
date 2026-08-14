@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers/stripe/internal/metadata"
+	"github.com/amp-labs/connectors/providers/stripe/internal/webhook"
 	"github.com/go-playground/validator"
 )
 
@@ -100,7 +101,7 @@ func buildRequestedEventSet(subscriptionEvents map[common.ObjectName]common.Obje
 		}
 
 		for _, event := range events.Events {
-			stripeEventName, err := getStripeEventName(event, obj)
+			stripeEventName, err := webhook.GetEventName(event, obj)
 			if err != nil {
 				return nil, fmt.Errorf("failed to convert event type %s for object %s: %w", event, obj, err)
 			}
@@ -145,7 +146,7 @@ func buildSubscriptionResult(
 		objectEvents := make([]string, 0)
 
 		for _, event := range events.Events {
-			stripeEventName, err := getStripeEventName(event, obj)
+			stripeEventName, err := webhook.GetEventName(event, obj)
 			if err != nil {
 				return nil, fmt.Errorf("failed to convert event type %s for object %s: %w", event, obj, err)
 			}
@@ -251,28 +252,6 @@ func (c *Connector) deleteWebhookEndpoint(ctx context.Context, endpointID string
 	}
 
 	return nil
-}
-
-// getStripeEventName converts normalized CRUD events to Stripe event type strings.
-// It only generates Stripe's standard *.created / *.updated / *.deleted actions.
-// For any other actions, callers must provide full Stripe event names via PassThroughEvents.
-// Doc URL: https://docs.stripe.com/api/events/types
-func getStripeEventName(event common.SubscriptionEventType, obj common.ObjectName) (string, error) {
-	objectName := strings.ToLower(string(obj))
-
-	switch event {
-	case common.SubscriptionEventTypeCreate:
-		return objectName + ".created", nil
-	case common.SubscriptionEventTypeUpdate:
-		return objectName + ".updated", nil
-	case common.SubscriptionEventTypeDelete:
-		return objectName + ".deleted", nil
-	case common.SubscriptionEventTypeAssociationUpdate,
-		common.SubscriptionEventTypeOther:
-		return "", fmt.Errorf("%w: %s", errUnsupportedEventType, event)
-	default:
-		return "", fmt.Errorf("%w: %s", errUnsupportedEventType, event)
-	}
 }
 
 func getExpectedObjectTypeFromMetadata(objectName string) (string, error) {

@@ -42,9 +42,8 @@ func TestSubscribe(t *testing.T) { // nolint:funlen
 			Name: "Subscribe single object",
 			Input: common.SubscribeParams{
 				SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-					"account": {
+					"accounts": {
 						Events: []common.SubscriptionEventType{
-							common.SubscriptionEventTypeCreate,
 							common.SubscriptionEventTypeUpdate,
 						},
 					},
@@ -58,6 +57,10 @@ func TestSubscribe(t *testing.T) { // nolint:funlen
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/v1/webhook_endpoints"),
+					mockcond.Body(`
+						enabled_events[]=account.updated&
+						url=https://webhook.site/test`,
+					),
 				},
 				Then: mockserver.Response(http.StatusOK, webhookEndpointResponse),
 			}.Server(),
@@ -68,7 +71,7 @@ func TestSubscribe(t *testing.T) { // nolint:funlen
 			Name: "Subscribe multiple objects",
 			Input: common.SubscribeParams{
 				SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-					"account": {
+					"accounts": {
 						Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
 						PassThroughEvents: []string{"account.application.authorized", "account.application.deauthorized"},
 					},
@@ -81,6 +84,13 @@ func TestSubscribe(t *testing.T) { // nolint:funlen
 					"charge": {
 						PassThroughEvents: []string{"charge.dispute.funds_withdrawn", "charge.succeeded"},
 					},
+					"customers": {
+						Events: []common.SubscriptionEventType{
+							common.SubscriptionEventTypeCreate,
+							common.SubscriptionEventTypeUpdate,
+							common.SubscriptionEventTypeDelete,
+						},
+					},
 				},
 				Request: &SubscriptionRequest{
 					WebhookEndPoint: "https://webhook.site/test",
@@ -91,6 +101,19 @@ func TestSubscribe(t *testing.T) { // nolint:funlen
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/v1/webhook_endpoints"),
+					mockcond.Body(`
+						enabled_events[]=account.application.authorized&
+						enabled_events[]=account.application.deauthorized&
+						enabled_events[]=account.updated&
+						enabled_events[]=balance.available&
+						enabled_events[]=billing_portal.configuration.created&
+						enabled_events[]=charge.dispute.funds_withdrawn&
+						enabled_events[]=charge.succeeded&
+						enabled_events[]=customer.created&
+						enabled_events[]=customer.deleted&
+						enabled_events[]=customer.updated&
+						url=https://webhook.site/test`,
+					),
 				},
 				Then: mockserver.Response(http.StatusOK, webhookEndpointResponse),
 			}.Server(),
@@ -146,18 +169,18 @@ func TestBuildRequestedEventSet(t *testing.T) {
 		{
 			name: "Single object, single event",
 			subscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-				"account": {
-					Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
+				"accounts": {
+					Events: []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
 				},
 			},
-			expected:    map[string]bool{"account.created": true},
+			expected:    map[string]bool{"account.updated": true},
 			expectedErr: nil,
 			description: "Test building event set from single object with single event",
 		},
 		{
 			name: "Single object with pass-through event",
 			subscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-				"account": {
+				"accounts": {
 					PassThroughEvents: []string{"account.application.authorized"},
 				},
 			},
@@ -168,10 +191,10 @@ func TestBuildRequestedEventSet(t *testing.T) {
 		{
 			name: "Object with no events is rejected",
 			subscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-				"account": {
-					Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
+				"accounts": {
+					Events: []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
 				},
-				"charge": {},
+				"refunds": {},
 			},
 			expected:    nil,
 			expectedErr: errMissingParams,
@@ -180,28 +203,28 @@ func TestBuildRequestedEventSet(t *testing.T) {
 		{
 			name: "Multiple objects, multiple events",
 			subscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-				"account": {
+				"accounts": {
 					Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
 					PassThroughEvents: []string{"account.application.authorized", "account.application.deauthorized"},
 				},
-				"balance": {
-					PassThroughEvents: []string{"balance.available"},
+				"refunds": {
+					PassThroughEvents: []string{"refund.created"},
 				},
-				"billing_portal": {
-					PassThroughEvents: []string{"billing_portal.configuration.created"},
+				"billing/meters": {
+					PassThroughEvents: []string{"billing.meter.deactivated"},
 				},
-				"charge": {
-					PassThroughEvents: []string{"charge.dispute.funds_withdrawn", "charge.succeeded"},
+				"issuing/disputes": {
+					PassThroughEvents: []string{"issuing_dispute.submitted", "issuing_dispute.funds_reinstated"},
 				},
 			},
 			expected: map[string]bool{
-				"account.application.authorized":       true,
-				"account.application.deauthorized":     true,
-				"account.updated":                      true,
-				"balance.available":                    true,
-				"billing_portal.configuration.created": true,
-				"charge.dispute.funds_withdrawn":       true,
-				"charge.succeeded":                     true,
+				"account.application.authorized":   true,
+				"account.application.deauthorized": true,
+				"account.updated":                  true,
+				"refund.created":                   true,
+				"billing.meter.deactivated":        true,
+				"issuing_dispute.submitted":        true,
+				"issuing_dispute.funds_reinstated": true,
 			},
 			expectedErr: nil,
 			description: "Test building event set with all sample events using pass-through",
@@ -252,8 +275,8 @@ func TestBuildSubscriptionResult(t *testing.T) {
 				EnabledEvents: []string{"account.created"},
 			},
 			subscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-				"account": {
-					Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
+				"accounts": {
+					Events: []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
 				},
 			},
 			expectedCount: 1,
@@ -266,10 +289,10 @@ func TestBuildSubscriptionResult(t *testing.T) {
 				EnabledEvents: []string{"account.created", "charge.created"},
 			},
 			subscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-				"account": {
-					Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
+				"accounts": {
+					Events: []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
 				},
-				"charge": {
+				"tax_ids": {
 					Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
 				},
 			},
@@ -291,18 +314,18 @@ func TestBuildSubscriptionResult(t *testing.T) {
 				},
 			},
 			subscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-				"account": {
+				"accounts": {
 					Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
 					PassThroughEvents: []string{"account.application.authorized", "account.application.deauthorized"},
 				},
-				"balance": {
-					PassThroughEvents: []string{"balance.available"},
+				"refunds": {
+					PassThroughEvents: []string{"refund.created"},
 				},
-				"billing_portal": {
-					PassThroughEvents: []string{"billing_portal.configuration.created"},
+				"billing/meters": {
+					PassThroughEvents: []string{"billing.meter.deactivated"},
 				},
-				"charge": {
-					PassThroughEvents: []string{"charge.dispute.funds_withdrawn", "charge.succeeded"},
+				"issuing/disputes": {
+					PassThroughEvents: []string{"issuing_dispute.submitted", "issuing_dispute.funds_reinstated"},
 				},
 			},
 			expectedCount: 4,
@@ -351,7 +374,7 @@ func TestBuildSubscriptionResultDedup(t *testing.T) {
 	// The same Stripe event expressed through both Events and PassThroughEvents
 	// must be stored once, matching the deduplicated enabled_events sent to Stripe.
 	subscriptionEvents := map[common.ObjectName]common.ObjectEvents{
-		"account": {
+		"accounts": {
 			Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
 			PassThroughEvents: []string{"account.updated"},
 		},
@@ -367,7 +390,7 @@ func TestBuildSubscriptionResultDedup(t *testing.T) {
 		t.Fatalf("expected SubscriptionResult, got %T", result.Result)
 	}
 
-	enabledEvents := subResult.Subscriptions["account"].EnabledEvents
+	enabledEvents := subResult.Subscriptions["accounts"].EnabledEvents
 	if len(enabledEvents) != 1 || enabledEvents[0] != "account.updated" {
 		t.Errorf("expected deduplicated [account.updated], got %v", enabledEvents)
 	}

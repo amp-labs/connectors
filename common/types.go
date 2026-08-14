@@ -118,6 +118,10 @@ var (
 	// ErrOperationNotSupportedForObject is returned when operation is not supported for this object.
 	ErrOperationNotSupportedForObject = errors.New("operation is not supported for this object in this module")
 
+	// ErrSubscribeEventNotSupportedForObject is returned when subscribe event type is not supported for this object.
+	ErrSubscribeEventNotSupportedForObject = errors.New("subscribe event type " +
+		"is not supported for this object in this module")
+
 	// ErrObjectNotSupported is returned when operation is not supported for this object.
 	ErrObjectNotSupported = errors.New("operation is not supported for this object")
 

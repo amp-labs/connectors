@@ -36,7 +36,7 @@ func TestDeleteSubscription(t *testing.T) {
 			Input: common.SubscriptionResult{
 				Result: &SubscriptionResult{
 					Subscriptions: map[common.ObjectName]WebhookResponse{
-						"account": {
+						"accounts": {
 							ID:            "we_123:account",
 							EnabledEvents: []string{"account.application.authorized", "account.updated"},
 						},
