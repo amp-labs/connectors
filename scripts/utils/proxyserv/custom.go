@@ -24,7 +24,7 @@ func (f Factory) CreateProxyCustom(ctx context.Context) *Proxy {
 	// Multi-step providers acquire their request-time secrets (referenced by the
 	// header templates) by running the registered connect flow, the way the
 	// Ampersand server would.
-	if flow, ok := providers.CustomAuthFlowFor(providers.Provider(f.Provider)); ok {
+	if flow, ok := providers.CustomAuthFlowFor(f.Provider); ok {
 		maps.Copy(secrets, f.runCustomAuthFlow(ctx, providerInfo, flow, secrets))
 	}
 
