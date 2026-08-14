@@ -125,6 +125,7 @@ var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
 	providers.Slack:        {DefaultModuleConfig: &slackConfig},
 	providers.Microsoft:    {DefaultModuleConfig: &microsoftConfig},
 	providers.Attio:        {DefaultModuleConfig: &attioConfig},
+	providers.Stripe:       {DefaultModuleConfig: &stripeConfig},
 }
 
 // ErrProviderConfigNotFound is returned by GetProviderConfig when no entry exists in

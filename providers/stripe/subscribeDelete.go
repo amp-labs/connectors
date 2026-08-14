@@ -7,7 +7,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// DeleteSubscription deletes webhook subscriptions for the specified objects.
+// DeleteSubscription removes the shared webhook endpoint carrying all of the
+// installation's object subscriptions.
 // Extracts the real endpoint ID from composite IDs (format: "endpointID:objectName").
 func (c *Connector) DeleteSubscription(
 	ctx context.Context,
@@ -18,12 +19,12 @@ func (c *Connector) DeleteSubscription(
 		return err
 	}
 
-	endpointInfo, err := extractEndpointInfo(subscriptionData)
+	endpointID, err := extractEndpointID(subscriptionData)
 	if err != nil {
 		return err
 	}
 
-	return c.deleteWebhookEndpoint(ctx, endpointInfo.ID)
+	return c.deleteWebhookEndpoint(ctx, endpointID)
 }
 
 // validateSubscriptionResult validates the subscription result and extracts the subscription data.
@@ -49,20 +50,13 @@ func validateSubscriptionResult(result common.SubscriptionResult) (*Subscription
 	return subscriptionData, nil
 }
 
-// endpointInfo holds information about the endpoint to delete from.
-type endpointInfo struct {
-	ID              string
-	ObjectsToDelete map[common.ObjectName]bool
-}
-
-// extractEndpointInfo extracts the real endpoint ID and objects to delete from composite IDs.
-func extractEndpointInfo(subscriptionData *SubscriptionResult) (*endpointInfo, error) {
+// extractEndpointID extracts the real endpoint ID shared by all composite IDs.
+func extractEndpointID(subscriptionData *SubscriptionResult) (string, error) {
 	endpointIDs := make(map[string]bool)
-	objectsToDelete := make(map[common.ObjectName]bool)
 
 	var realEndpointID string
 
-	for obj, response := range subscriptionData.Subscriptions {
+	for _, response := range subscriptionData.Subscriptions {
 		compositeID := response.ID
 		baseID := extractBaseEndpointID(compositeID)
 		endpointIDs[baseID] = true
@@ -70,12 +64,10 @@ func extractEndpointInfo(subscriptionData *SubscriptionResult) (*endpointInfo, e
 		if realEndpointID == "" {
 			realEndpointID = baseID
 		}
-
-		objectsToDelete[obj] = true
 	}
 
 	if len(endpointIDs) != 1 {
-		return nil, fmt.Errorf(
+		return "", fmt.Errorf(
 			"%w: expected all subscriptions to share the same endpoint ID, but found %d different IDs: %v",
 			errInvalidRequestType,
 			len(endpointIDs),
@@ -84,11 +76,8 @@ func extractEndpointInfo(subscriptionData *SubscriptionResult) (*endpointInfo, e
 	}
 
 	if realEndpointID == "" {
-		return nil, fmt.Errorf("%w: endpoint ID is empty", errMissingParams)
+		return "", fmt.Errorf("%w: endpoint ID is empty", errMissingParams)
 	}
 
-	return &endpointInfo{
-		ID:              realEndpointID,
-		ObjectsToDelete: objectsToDelete,
-	}, nil
+	return realEndpointID, nil
 }

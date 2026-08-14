@@ -17,6 +17,7 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/slack"
+	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/zoho"
 )
 
@@ -68,6 +69,8 @@ func GetObjectTypeSubscribeEventsList(
 		collapsedEvents = microsoft.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Attio:
 		collapsedEvents = attio.CollapsedSubscriptionEvent(rawEvent)
+	case providers.Stripe:
+		collapsedEvents = stripe.CollapsedSubscriptionEvent(rawEvent)
 	default:
 		return nil, fmt.Errorf("%w with non-array object webhook message: %s", errUnsupportedProvider, provider)
 	}
