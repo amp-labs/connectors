@@ -2,7 +2,6 @@ package stripe
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -64,8 +63,7 @@ func TestSubscribe(t *testing.T) { // nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, webhookEndpointResponse),
 			}.Server(),
-			ExpectedErrs: nil,
-			Comparator:   compareSubscriptionSuccess,
+			Comparator: testconn.ComparatorSubscriptionSuccess,
 		},
 		{
 			Name: "Subscribe multiple objects",
@@ -117,8 +115,7 @@ func TestSubscribe(t *testing.T) { // nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, webhookEndpointResponse),
 			}.Server(),
-			ExpectedErrs: nil,
-			Comparator:   compareSubscriptionSuccess,
+			Comparator: testconn.ComparatorSubscriptionSuccess,
 		},
 	}
 
@@ -132,21 +129,6 @@ func TestSubscribe(t *testing.T) { // nolint:funlen
 			})
 		})
 	}
-}
-
-// compareSubscriptionSuccess verifies the operation returned a successful subscription result.
-func compareSubscriptionSuccess(
-	_ string, actual, _ *common.SubscriptionResult,
-) *testutils.CompareResult {
-	result := testutils.NewCompareResult()
-
-	if actual == nil {
-		return result.AddDiff("subscription result is nil")
-	}
-
-	result.Assert("Status", common.SubscriptionStatusSuccess, actual.Status)
-
-	return result
 }
 
 func TestBuildRequestedEventSet(t *testing.T) {
@@ -249,7 +231,7 @@ func TestBuildRequestedEventSet(t *testing.T) {
 					t.Errorf("expected %d events, got %d", len(tt.expected), len(result))
 				}
 				for event, expected := range tt.expected {
-					if result[event] != expected {
+					if result.Has(event) != expected {
 						t.Errorf("expected event %s to be %v, got %v", event, expected, result[event])
 					}
 				}
@@ -352,13 +334,6 @@ func TestBuildSubscriptionResult(t *testing.T) {
 			if len(subResult.Subscriptions) != tt.expectedCount {
 				t.Errorf("expected %d subscriptions, got %d", tt.expectedCount, len(subResult.Subscriptions))
 			}
-			// Verify all subscriptions have composite IDs with format endpointID:objectName
-			for obj, endpoint := range subResult.Subscriptions {
-				expectedID := fmt.Sprintf("%s:%s", tt.response.ID, string(obj))
-				if endpoint.ID != expectedID {
-					t.Errorf("expected endpoint ID %s for object %s, got %s", expectedID, obj, endpoint.ID)
-				}
-			}
 		})
 	}
 }
@@ -390,7 +365,7 @@ func TestBuildSubscriptionResultDedup(t *testing.T) {
 		t.Fatalf("expected SubscriptionResult, got %T", result.Result)
 	}
 
-	enabledEvents := subResult.Subscriptions["accounts"].EnabledEvents
+	enabledEvents := subResult.Subscriptions["accounts"]
 	if len(enabledEvents) != 1 || enabledEvents[0] != "account.updated" {
 		t.Errorf("expected deduplicated [account.updated], got %v", enabledEvents)
 	}

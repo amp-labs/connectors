@@ -74,7 +74,6 @@ func main() {
 				},
 			},
 			WebhookProcessor:       &testscenario.WebhookProcessor{},
-			VerificationParams:     nil,
 			AutoRemoveSubscription: true,
 		},
 	)

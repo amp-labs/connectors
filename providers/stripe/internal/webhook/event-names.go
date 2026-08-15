@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 // eventDefinition contains the Stripe webhook event names associated with
@@ -318,13 +319,14 @@ var eventDefinitions = map[string]eventDefinition{ // nolint:gochecknoglobals
 	},
 }
 
-// GetEventName returns the Stripe webhook event type associated with eventType
-// for objectName.
+// resolveStripeEventName maps a connector subscription event and object name
+// to the corresponding Stripe webhook event type.
 //
-// It returns common.ErrObjectNotSupported when objectName is not registered.
-// It returns common.ErrSubscribeEventNotSupportedForObject when the object is
-// registered but does not support the requested subscription operation.
-func GetEventName(eventType common.SubscriptionEventType, objectName common.ObjectName) (string, error) {
+// Create, update, and delete events are resolved through the connector's
+// object-event definitions. An unsupported object returns
+// common.ErrObjectNotSupported. An unsupported operation for a known object
+// returns common.ErrSubscribeEventNotSupportedForObject.
+func resolveStripeEventName(objectName common.ObjectName, eventType common.SubscriptionEventType) (string, error) {
 	definition, ok := eventDefinitions[objectName.String()]
 	if !ok {
 		return "", fmt.Errorf("%w: object %v", common.ErrObjectNotSupported, objectName)
@@ -346,4 +348,28 @@ func GetEventName(eventType common.SubscriptionEventType, objectName common.Obje
 	}
 
 	return "", fmt.Errorf("%w: event %s", common.ErrSubscribeEventNotSupportedForObject, eventType)
+}
+
+// BuildStripeEventNames converts the configured connector events for objectName
+// into the deduplicated Stripe webhook event types required by the subscription.
+//
+// Standard create, update, and delete events are resolved through the Stripe
+// event definitions. Pass-through events are assumed to already contain valid
+// Stripe webhook event type names and are added unchanged.
+func BuildStripeEventNames(objectName common.ObjectName, events common.ObjectEvents) ([]string, error) {
+	objectEvents := make(datautils.Set[string])
+
+	for _, event := range events.Events {
+		stripeEventName, err := resolveStripeEventName(objectName, event)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert event type %s for object %s: %w", event, objectName, err)
+		}
+
+		objectEvents.AddOne(stripeEventName)
+	}
+
+	// Add pass-through events directly
+	objectEvents.Add(events.PassThroughEvents)
+
+	return objectEvents.List(), nil
 }

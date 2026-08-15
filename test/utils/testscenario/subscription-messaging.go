@@ -25,6 +25,8 @@ type ConnectorWebhookSubscriber interface {
 
 type SubscribeParamBuilder func(webhookURL string) *common.SubscribeParams
 
+type VerificationParamsBuilder func(subscriptionResult *common.SubscriptionResult) (*common.VerificationParams, error)
+
 type SubscribeReceiveEventsSuite struct {
 	SubscribeParamBuilder SubscribeParamBuilder
 	// ExpectedWebhookCalls is the number of events to wait before quiting the script.
@@ -40,8 +42,10 @@ type SubscribeReceiveEventsSuite struct {
 	// WebhookProcessor handles incoming webhook events.
 	// The webhook.Server runs in the background, passes events to the connector for verification,
 	// and then sends them to this Processor.
-	WebhookProcessor   *WebhookProcessor
-	VerificationParams *common.VerificationParams
+	WebhookProcessor *WebhookProcessor
+	// VerificationParamsBuilder creates the parameters required to verify
+	// webhook requests after Subscribe has returned its result.
+	VerificationParamsBuilder VerificationParamsBuilder
 	// AutoRemoveSubscription, if true, removes at the end of script execution any subscriptions
 	// that were created as part of this test run. If false, subscriptions are left in place
 	// and must be cleaned up manually.
@@ -92,7 +96,7 @@ func ValidateSubscribeReceiveEvents(
 
 	fmt.Println("============== Starting Webhook Handler ==================")
 
-	server := webhook.CreateServer(ctx, suite.WebhookProcessor, conn, suite.VerificationParams)
+	server := webhook.CreateServer(ctx, suite.WebhookProcessor)
 	webhookURL, shutdown := server.Start(ctx)
 	defer shutdown()
 
@@ -134,6 +138,21 @@ func ValidateSubscribeReceiveEvents(
 
 	// Register a defer function to clean up the successful subscription at the end of the script.
 	defer cleanupSubscription(conn, suite, subscriptionResult)()
+
+	verificationParamBuilder := suite.VerificationParamsBuilder
+	if verificationParamBuilder == nil {
+		verificationParamBuilder = func(_ *common.SubscriptionResult) (*common.VerificationParams, error) {
+			return nil, nil
+		}
+	}
+
+	verificationParams, err := verificationParamBuilder(subscriptionResult)
+	if err != nil {
+		fmt.Printf("Unable to configure webhook verification: %v\n", err)
+		return
+	}
+
+	server.SetupConnectorVerification(conn, verificationParams)
 
 	fmt.Println("============== Invoking connector.Write/Delete() ==================")
 	for _, trigger := range suite.Operations {

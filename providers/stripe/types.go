@@ -73,10 +73,12 @@ type WebhookResponse struct {
 	Secret        string   `json:"secret,omitempty"`
 }
 
-// SubscriptionResult contains the result of a subscription operation, mapping
-// object names to their webhook endpoint responses.
+// SubscriptionResult contains the result of a subscription operation.
+// Single webhook resource hold the complete list of `enabled_events` for each object.
 type SubscriptionResult struct {
-	Subscriptions map[common.ObjectName]WebhookResponse `json:"subscriptions"`
+	WebhookId     string                         `json:"webhookId"`
+	Secret        string                         `json:"secret,omitempty"`
+	Subscriptions map[common.ObjectName][]string `json:"subscriptions"`
 }
 
 // VerificationParams contains the parameters needed to verify Stripe webhook signatures.

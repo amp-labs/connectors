@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/stripe/internal/metadata"
 	"github.com/amp-labs/connectors/providers/stripe/internal/webhook"
 	"github.com/go-playground/validator"
@@ -25,9 +25,7 @@ func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
 
 func (c *Connector) EmptySubscriptionResult() *common.SubscriptionResult {
 	return &common.SubscriptionResult{
-		Result: &SubscriptionResult{
-			Subscriptions: make(map[common.ObjectName]WebhookResponse),
-		},
+		Result: &SubscriptionResult{},
 	}
 }
 
@@ -72,18 +70,13 @@ func buildWebhookPayloadFromParams(
 		return nil, err
 	}
 
-	if len(requestedEventsSet) == 0 {
+	if requestedEventsSet.IsEmpty() {
 		return nil, fmt.Errorf("%w: no events to subscribe to", errMissingParams)
-	}
-
-	enabledEvents := make([]string, 0, len(requestedEventsSet))
-	for event := range requestedEventsSet {
-		enabledEvents = append(enabledEvents, event)
 	}
 
 	payload := &WebhookPayload{
 		URL:           req.WebhookEndPoint,
-		EnabledEvents: enabledEvents,
+		EnabledEvents: requestedEventsSet.List(),
 	}
 
 	return payload, nil
@@ -92,41 +85,25 @@ func buildWebhookPayloadFromParams(
 // buildRequestedEventSet builds a set of requested events from subscription events.
 // Every object must resolve to at least one Stripe event; otherwise the object would be
 // reported as successfully subscribed while no event is enabled for it on the endpoint.
-func buildRequestedEventSet(subscriptionEvents map[common.ObjectName]common.ObjectEvents) (map[string]bool, error) {
-	requestedEventsSet := make(map[string]bool)
+func buildRequestedEventSet(
+	subscriptionEvents map[common.ObjectName]common.ObjectEvents,
+) (datautils.Set[string], error) {
+	requestedEventsSet := make(datautils.Set[string])
 
 	for obj, events := range subscriptionEvents {
-		if len(events.Events) == 0 && len(events.PassThroughEvents) == 0 {
+		stripeEventNames, err := webhook.BuildStripeEventNames(obj, events)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(stripeEventNames) == 0 {
 			return nil, fmt.Errorf("%w: object %s has no events to subscribe to", errMissingParams, obj)
 		}
 
-		for _, event := range events.Events {
-			stripeEventName, err := webhook.GetEventName(event, obj)
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert event type %s for object %s: %w", event, obj, err)
-			}
-
-			requestedEventsSet[stripeEventName] = true
-		}
-
-		// Add pass-through events directly
-		for _, passthroughEvent := range events.PassThroughEvents {
-			requestedEventsSet[passthroughEvent] = true
-		}
+		requestedEventsSet.Add(stripeEventNames)
 	}
 
 	return requestedEventsSet, nil
-}
-
-// extractBaseEndpointID extracts the base endpoint ID from a composite ID.
-// Composite IDs are in the format "endpointID:objectName", so we extract everything before the last colon.
-// If no colon is found, the ID is returned as-is (for backward compatibility).
-func extractBaseEndpointID(compositeID string) string {
-	if idx := strings.LastIndex(compositeID, ":"); idx != -1 {
-		return compositeID[:idx]
-	}
-
-	return compositeID
 }
 
 // buildSubscriptionResult builds a subscription result from the response and subscription events.
@@ -136,50 +113,25 @@ func buildSubscriptionResult(
 	response *WebhookResponse,
 	subscriptionEvents map[common.ObjectName]common.ObjectEvents,
 ) (*common.SubscriptionResult, error) {
-	subscriptionsMap := make(map[common.ObjectName]WebhookResponse)
+	subResult := &SubscriptionResult{
+		WebhookId:     response.ID,
+		Secret:        response.Secret,
+		Subscriptions: make(map[common.ObjectName][]string),
+	}
 
-	for obj, events := range subscriptionEvents {
-		// Filter enabled events to only include events for this object.
-		// Deduplicate so stored state matches the deduplicated enabled_events
-		// actually sent to Stripe (Events and PassThroughEvents may overlap).
-		seenEvents := make(map[string]bool)
-		objectEvents := make([]string, 0)
-
-		for _, event := range events.Events {
-			stripeEventName, err := webhook.GetEventName(event, obj)
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert event type %s for object %s: %w", event, obj, err)
-			}
-
-			if !seenEvents[stripeEventName] {
-				seenEvents[stripeEventName] = true
-
-				objectEvents = append(objectEvents, stripeEventName)
-			}
+	for objectName, objectEvents := range subscriptionEvents {
+		eventNames, err := webhook.BuildStripeEventNames(objectName, objectEvents)
+		if err != nil {
+			return nil, err
 		}
 
-		// Add pass-through events directly
-		for _, passthroughEvent := range events.PassThroughEvents {
-			if !seenEvents[passthroughEvent] {
-				seenEvents[passthroughEvent] = true
-
-				objectEvents = append(objectEvents, passthroughEvent)
-			}
-		}
-
-		objectResponse := *response
-		objectResponse.EnabledEvents = objectEvents
-		// Make ID unique per object: endpointID:objectName
-		objectResponse.ID = fmt.Sprintf("%s:%s", response.ID, string(obj))
-		subscriptionsMap[obj] = objectResponse
+		subResult.Subscriptions[objectName] = eventNames
 	}
 
 	return &common.SubscriptionResult{
 		Status:       common.SubscriptionStatusSuccess,
 		ObjectEvents: subscriptionEvents,
-		Result: &SubscriptionResult{
-			Subscriptions: subscriptionsMap,
-		},
+		Result:       subResult,
 	}, nil
 }
 

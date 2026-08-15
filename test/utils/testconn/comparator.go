@@ -316,6 +316,21 @@ func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMet
 	return result
 }
 
+// ComparatorSubscriptionSuccess verifies the operation returned a successful subscription result.
+func ComparatorSubscriptionSuccess(
+	_ string, actual, _ *common.SubscriptionResult,
+) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+
+	if actual == nil {
+		return result.AddDiff("subscription result is nil")
+	}
+
+	result.Assert("Status", common.SubscriptionStatusSuccess, actual.Status)
+
+	return result
+}
+
 // ComparatorSubscriptionWithResult returns a comparator for subscription results
 // that first compares the common SubscriptionResult fields and then compares the
 // nested Result values with the provided resultComparator.

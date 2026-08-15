@@ -12,6 +12,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os/signal"
 	"syscall"
 
@@ -46,11 +47,24 @@ func main() {
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
 						// Object names map onto Stripe event prefixes (customer.created, ...).
 						// https://docs.stripe.com/api/events/types
-						"customer": {
+						"customers": {
 							Events: []common.SubscriptionEventType{
 								common.SubscriptionEventTypeCreate,
 								common.SubscriptionEventTypeDelete,
 							},
+						},
+						"accounts": {
+							Events:            []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
+							PassThroughEvents: []string{"account.application.authorized", "account.application.deauthorized"},
+						},
+						"refunds": {
+							PassThroughEvents: []string{"refund.created"},
+						},
+						"billing/meters": {
+							PassThroughEvents: []string{"billing.meter.deactivated"},
+						},
+						"issuing/disputes": {
+							PassThroughEvents: []string{"issuing_dispute.submitted", "issuing_dispute.funds_reinstated"},
 						},
 					},
 				}
@@ -75,8 +89,18 @@ func main() {
 					},
 				},
 			},
-			WebhookProcessor:       &testscenario.WebhookProcessor{},
-			VerificationParams:     nil,
+			WebhookProcessor: &testscenario.WebhookProcessor{},
+			VerificationParamsBuilder: func(result *common.SubscriptionResult) (*common.VerificationParams, error) {
+				subResult, ok := result.Result.(*stripe.SubscriptionResult)
+				if !ok {
+					return nil, fmt.Errorf("%w: VerificationParamsBuilder couldn't cast Result",
+						common.ErrInvalidImplementation)
+				}
+
+				return &common.VerificationParams{Param: &stripe.VerificationParams{
+					Secret: subResult.Secret,
+				}}, nil
+			},
 			AutoRemoveSubscription: true,
 		},
 	)

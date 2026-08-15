@@ -14,17 +14,12 @@ func (c *Connector) DeleteSubscription(
 	ctx context.Context,
 	result common.SubscriptionResult,
 ) error {
-	subscriptionData, err := validateSubscriptionResult(result)
+	subscriptionResult, err := validateSubscriptionResult(result)
 	if err != nil {
 		return err
 	}
 
-	endpointID, err := extractEndpointID(subscriptionData)
-	if err != nil {
-		return err
-	}
-
-	return c.deleteWebhookEndpoint(ctx, endpointID)
+	return c.deleteWebhookEndpoint(ctx, subscriptionResult.WebhookId)
 }
 
 // validateSubscriptionResult validates the subscription result and extracts the subscription data.
@@ -48,36 +43,4 @@ func validateSubscriptionResult(result common.SubscriptionResult) (*Subscription
 	}
 
 	return subscriptionData, nil
-}
-
-// extractEndpointID extracts the real endpoint ID shared by all composite IDs.
-func extractEndpointID(subscriptionData *SubscriptionResult) (string, error) {
-	endpointIDs := make(map[string]bool)
-
-	var realEndpointID string
-
-	for _, response := range subscriptionData.Subscriptions {
-		compositeID := response.ID
-		baseID := extractBaseEndpointID(compositeID)
-		endpointIDs[baseID] = true
-
-		if realEndpointID == "" {
-			realEndpointID = baseID
-		}
-	}
-
-	if len(endpointIDs) != 1 {
-		return "", fmt.Errorf(
-			"%w: expected all subscriptions to share the same endpoint ID, but found %d different IDs: %v",
-			errInvalidRequestType,
-			len(endpointIDs),
-			endpointIDs,
-		)
-	}
-
-	if realEndpointID == "" {
-		return "", fmt.Errorf("%w: endpoint ID is empty", errMissingParams)
-	}
-
-	return realEndpointID, nil
 }

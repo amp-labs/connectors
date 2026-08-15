@@ -78,8 +78,7 @@ func getStripeVerificationParams(
 
 // stripeWebhookSecret returns the signing secret for the installation's webhook endpoint.
 // Stripe returns the secret once, at endpoint-creation time, and the connector persists it
-// in the SubscriptionResult; all of an installation's object subscriptions share a single
-// endpoint (composite IDs "endpointID:objectName"), so the first stored secret applies.
+// in the SubscriptionResult; all of an installation's object subscriptions share a single endpoint.
 func stripeWebhookSecret(
 	ctx context.Context, deps deps.Dependencies, installationID string,
 ) (string, error) {
@@ -96,16 +95,12 @@ func stripeWebhookSecret(
 			continue
 		}
 
-		result, ok := full.Result.(*stripe.SubscriptionResult)
+		stripeResult, ok := full.Result.(*stripe.SubscriptionResult)
 		if !ok {
 			continue
 		}
 
-		for _, endpoint := range result.Subscriptions {
-			if endpoint.Secret != "" {
-				return endpoint.Secret, nil
-			}
-		}
+		return stripeResult.Secret, nil
 	}
 
 	return "", fmt.Errorf("%w: %q", errStripeWebhookSecretNotFound, installationID)
