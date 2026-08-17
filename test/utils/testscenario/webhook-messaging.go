@@ -35,9 +35,11 @@ func RunWebhookConsumer(ctx context.Context,
 	conn testconn.TestableWebhookMessageVerifier,
 	verificationParams *common.VerificationParams,
 ) {
-	server := webhook.CreateServer(ctx, processor, conn, verificationParams)
+	server := webhook.CreateServer(ctx, processor)
 	_, shutdown := server.Start(ctx)
 	defer shutdown()
+
+	server.SetupConnectorVerification(conn, verificationParams)
 
 	processor.Run(ctx, func(event webhook.Event) bool {
 		if event.Error == "" {

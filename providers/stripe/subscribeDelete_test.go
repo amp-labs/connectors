@@ -24,9 +24,7 @@ func TestDeleteSubscription(t *testing.T) {
 		{
 			Name: "Empty subscriptions",
 			Input: common.SubscriptionResult{
-				Result: &SubscriptionResult{
-					Subscriptions: map[common.ObjectName]WebhookResponse{},
-				},
+				Result: &SubscriptionResult{},
 			},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{errMissingParams},
@@ -35,11 +33,9 @@ func TestDeleteSubscription(t *testing.T) {
 			Name: "Delete subscription always deletes endpoint",
 			Input: common.SubscriptionResult{
 				Result: &SubscriptionResult{
-					Subscriptions: map[common.ObjectName]WebhookResponse{
-						"account": {
-							ID:            "we_123:account",
-							EnabledEvents: []string{"account.application.authorized", "account.updated"},
-						},
+					WebhookId: "we_123",
+					Subscriptions: map[common.ObjectName][]string{
+						"accounts": {"account.application.authorized", "account.updated"},
 					},
 				},
 			},
@@ -97,9 +93,7 @@ func TestValidateSubscriptionResult(t *testing.T) {
 		{
 			name: "Empty subscriptions",
 			input: common.SubscriptionResult{
-				Result: &SubscriptionResult{
-					Subscriptions: map[common.ObjectName]WebhookResponse{},
-				},
+				Result: &SubscriptionResult{},
 			},
 			expectedErr: errMissingParams,
 			description: "Test validation with empty subscriptions map",
@@ -108,11 +102,9 @@ func TestValidateSubscriptionResult(t *testing.T) {
 			name: "Valid result",
 			input: common.SubscriptionResult{
 				Result: &SubscriptionResult{
-					Subscriptions: map[common.ObjectName]WebhookResponse{
-						"account": {
-							ID:            "we_123:account",
-							EnabledEvents: []string{"account.updated"},
-						},
+					WebhookId: "we_123",
+					Subscriptions: map[common.ObjectName][]string{
+						"account": {"account.updated"},
 					},
 				},
 			},

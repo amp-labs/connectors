@@ -5,7 +5,6 @@ import "errors"
 var (
 	errInvalidRequestType      = errors.New("invalid request type")
 	errMissingParams           = errors.New("missing required parameters")
-	errUnsupportedEventType    = errors.New("unsupported event type")
 	errObjectTypeMismatch      = errors.New("object type mismatch")
 	errObjectFieldNotFound     = errors.New("object field not found in metadata")
 	errNoValuesDefined         = errors.New("no values defined for object field in metadata")

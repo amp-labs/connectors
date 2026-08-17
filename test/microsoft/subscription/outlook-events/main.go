@@ -69,7 +69,6 @@ func main() {
 				},
 			},
 			WebhookProcessor:       subscription.NewWebhookProcessor(),
-			VerificationParams:     nil,
 			AutoRemoveSubscription: true,
 		},
 	)

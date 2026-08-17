@@ -2,7 +2,10 @@ package stripe
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+	"sort"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -23,8 +26,8 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen
 			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-						"account": {
-							Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
+						"accounts": {
+							Events: []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
 						},
 					},
 				},
@@ -38,8 +41,8 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen
 			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-						"account": {
-							Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
+						"accounts": {
+							Events: []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
 						},
 					},
 				},
@@ -55,8 +58,8 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen
 			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-						"account": {
-							Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
+						"accounts": {
+							Events: []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate},
 						},
 					},
 				},
@@ -72,10 +75,16 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen
 			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-						"account": {
+						"customers": {
 							Events: []common.SubscriptionEventType{
 								common.SubscriptionEventTypeCreate,
 								common.SubscriptionEventTypeUpdate,
+								common.SubscriptionEventTypeDelete,
+							},
+						},
+						"invoices": {
+							Events: []common.SubscriptionEventType{
+								common.SubscriptionEventTypeDelete,
 							},
 						},
 					},
@@ -85,15 +94,16 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen
 				},
 				PreviousResult: &common.SubscriptionResult{
 					Result: &SubscriptionResult{
-						Subscriptions: map[common.ObjectName]WebhookResponse{
-							"account": {
-								ID:            "we_123:account",
-								EnabledEvents: []string{"account.created"},
-							},
+						WebhookId: "we_123",
+						Secret:    "secret_7",
+						Subscriptions: map[common.ObjectName][]string{
+							"customers": {"customer.create"},
+							"invoices":  {"invoice.created", "invoice.updated"},
 						},
 					},
 				},
 			},
+			Comparator: testconn.ComparatorSubscriptionWithResult(resultComparator),
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -102,21 +112,44 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, webhookEndpointUpdatedResponse),
 			}.Server(),
-			ExpectedErrs: nil,
-			Comparator:   compareUpdateResultObjects("account"),
+			Expected: &common.SubscriptionResult{
+				Result: &SubscriptionResult{
+					WebhookId: "we_123",
+					Secret:    "secret_7",
+					Subscriptions: map[common.ObjectName][]string{
+						"customers": {"customer.created", "customer.updated", "customer.deleted"},
+						"invoices":  {"invoice.deleted"},
+					},
+				},
+				ObjectEvents: map[common.ObjectName]common.ObjectEvents{
+					"customers": {
+						Events: common.SubscriptionEventTypes{
+							common.SubscriptionEventTypeCreate,
+							common.SubscriptionEventTypeUpdate,
+							common.SubscriptionEventTypeDelete,
+						},
+					},
+					"invoices": {
+						Events: common.SubscriptionEventTypes{
+							common.SubscriptionEventTypeDelete,
+						},
+					},
+				},
+				Status: "success",
+			},
 		},
 		{
 			Name: "Desired state replaces previous objects (removal reconciliation)",
 			Input: testconn.UpdateSubscriptionParams{
 				Params: common.SubscribeParams{
 					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
-						"account": {
+						"customers": {
 							Events: []common.SubscriptionEventType{
 								common.SubscriptionEventTypeCreate,
 								common.SubscriptionEventTypeUpdate,
 							},
 						},
-						"charge": {
+						"quotes": {
 							Events: []common.SubscriptionEventType{
 								common.SubscriptionEventTypeCreate,
 							},
@@ -128,16 +161,15 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen
 				},
 				PreviousResult: &common.SubscriptionResult{
 					ObjectEvents: map[common.ObjectName]common.ObjectEvents{
-						"balance": {
+						"payment_links": {
 							Events: []common.SubscriptionEventType{common.SubscriptionEventTypeCreate},
 						},
 					},
 					Result: &SubscriptionResult{
-						Subscriptions: map[common.ObjectName]WebhookResponse{
-							"balance": {
-								ID:            "we_123:balance",
-								EnabledEvents: []string{"balance.created"},
-							},
+						WebhookId: "we_123",
+						Secret:    "secret_7",
+						Subscriptions: map[common.ObjectName][]string{
+							"payment_links": {"payment_link.created"},
 						},
 					},
 				},
@@ -150,9 +182,31 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, webhookEndpointUpdatedResponse),
 			}.Server(),
-			ExpectedErrs: nil,
-			// "balance" is absent from the desired state, so it must not survive the update.
-			Comparator: compareUpdateResultObjects("account", "charge"),
+			Comparator: testconn.ComparatorSubscriptionWithResult(resultComparator),
+			Expected: &common.SubscriptionResult{
+				Result: &SubscriptionResult{
+					WebhookId: "we_123",
+					Secret:    "secret_7",
+					Subscriptions: map[common.ObjectName][]string{
+						"customers": {"customer.created", "customer.updated"},
+						"quotes":    {"quote.created"},
+					},
+				},
+				ObjectEvents: map[common.ObjectName]common.ObjectEvents{
+					"customers": {
+						Events: common.SubscriptionEventTypes{
+							common.SubscriptionEventTypeCreate,
+							common.SubscriptionEventTypeUpdate,
+						},
+					},
+					"quotes": {
+						Events: common.SubscriptionEventTypes{
+							common.SubscriptionEventTypeCreate,
+						},
+					},
+				},
+				Status: "success",
+			},
 		},
 	}
 
@@ -170,38 +224,36 @@ func TestUpdateSubscription(t *testing.T) { // nolint:funlen
 
 // compareUpdateResultObjects verifies the update succeeded and that the resulting state
 // contains exactly the desired objects (both in ObjectEvents and stored Subscriptions).
-func compareUpdateResultObjects(
-	objects ...common.ObjectName,
-) func(string, *common.SubscriptionResult, *common.SubscriptionResult) *testutils.CompareResult {
-	return func(_ string, actual, _ *common.SubscriptionResult) *testutils.CompareResult {
-		result := testutils.NewCompareResult()
+func resultComparator(expectedResult, actualResult *SubscriptionResult) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+	result.Assert("Result.WebhookId", expectedResult.WebhookId, actualResult.WebhookId)
+	result.Assert("Result.Secret", expectedResult.Secret, actualResult.Secret)
 
-		if actual == nil {
-			return result.AddDiff("subscription result is nil")
-		}
-
-		result.Assert("Status", common.SubscriptionStatusSuccess, actual.Status)
-		result.Assert("ObjectEvents length", len(objects), len(actual.ObjectEvents))
-
-		subscriptionData, ok := actual.Result.(*SubscriptionResult)
-		if !ok {
-			return result.AddDiff("expected Result of type *SubscriptionResult, got %T", actual.Result)
-		}
-
-		result.Assert("Subscriptions length", len(objects), len(subscriptionData.Subscriptions))
-
-		for _, obj := range objects {
-			if _, found := actual.ObjectEvents[obj]; !found {
-				result.AddDiff("ObjectEvents is missing object [%v]", obj)
-			}
-
-			if _, found := subscriptionData.Subscriptions[obj]; !found {
-				result.AddDiff("Subscriptions is missing object [%v]", obj)
-			}
-		}
-
+	if !result.Assert("Result.Subscriptions length",
+		len(expectedResult.Subscriptions), len(actualResult.Subscriptions)) {
 		return result
 	}
+
+	for key, expectedEvents := range expectedResult.Subscriptions {
+		actualEvents, ok := actualResult.Subscriptions[key]
+		if !ok {
+			actualKeys := make([]string, 0)
+			for name := range actualResult.Subscriptions {
+				actualKeys = append(actualKeys, name.String())
+			}
+			result.AddDiff("Result.Subscriptions is missing key [%v], but have (%v)",
+				key, strings.Join(actualKeys, ","))
+
+			continue
+		}
+
+		sort.Strings(expectedEvents)
+		sort.Strings(actualEvents)
+
+		result.Assert(fmt.Sprintf("Result.Subscriptions[%v]", key), expectedEvents, actualEvents)
+	}
+
+	return result
 }
 
 func TestValidatePreviousResult(t *testing.T) {
@@ -239,11 +291,9 @@ func TestValidatePreviousResult(t *testing.T) {
 			name: "Valid result",
 			previousResult: &common.SubscriptionResult{
 				Result: &SubscriptionResult{
-					Subscriptions: map[common.ObjectName]WebhookResponse{
-						"account": {
-							ID:            "we_123:account",
-							EnabledEvents: []string{"account.updated"},
-						},
+					WebhookId: "we_123",
+					Subscriptions: map[common.ObjectName][]string{
+						"accounts": {"account.updated"},
 					},
 				},
 			},
@@ -265,86 +315,6 @@ func TestValidatePreviousResult(t *testing.T) {
 			} else {
 				if err != nil {
 					t.Errorf("unexpected error: %v", err)
-				}
-			}
-		})
-	}
-}
-
-func TestGetExistingEndpoint(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name          string
-		subscriptions map[common.ObjectName]WebhookResponse
-		expectedErr   error
-		expectedID    string
-		description   string
-	}{
-		{
-			name:          "Empty subscriptions",
-			subscriptions: map[common.ObjectName]WebhookResponse{},
-			expectedErr:   errMissingParams,
-			description:   "Test extracting endpoint from empty subscriptions",
-		},
-		{
-			name: "Single subscription with composite ID",
-			subscriptions: map[common.ObjectName]WebhookResponse{
-				"account": {
-					ID:            "we_123:account",
-					EnabledEvents: []string{"account.updated"},
-				},
-			},
-			expectedErr: nil,
-			expectedID:  "we_123",
-			description: "Test extracting endpoint ID from single composite ID",
-		},
-		{
-			name: "Multiple subscriptions with same endpoint",
-			subscriptions: map[common.ObjectName]WebhookResponse{
-				"account": {
-					ID:            "we_123:account",
-					EnabledEvents: []string{"account.updated"},
-				},
-				"charge": {
-					ID:            "we_123:charge",
-					EnabledEvents: []string{"charge.created"},
-				},
-			},
-			expectedErr: nil,
-			expectedID:  "we_123",
-			description: "Test extracting endpoint ID from multiple subscriptions with same endpoint",
-		},
-		{
-			name: "Backward compatible - no colon in ID",
-			subscriptions: map[common.ObjectName]WebhookResponse{
-				"account": {
-					ID:            "we_123",
-					EnabledEvents: []string{"account.updated"},
-				},
-			},
-			expectedErr: nil,
-			expectedID:  "we_123",
-			description: "Test extracting endpoint ID from non-composite ID (backward compatibility)",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result, err := getExistingEndpoint(tt.subscriptions)
-			if tt.expectedErr != nil {
-				if err == nil {
-					t.Fatal("expected error, got nil")
-				}
-				if !errors.Is(err, tt.expectedErr) {
-					t.Errorf("expected error %v, got %v", tt.expectedErr, err)
-				}
-			} else {
-				if err != nil {
-					t.Fatalf("unexpected error: %v", err)
-				}
-				if result.ID != tt.expectedID {
-					t.Errorf("expected ID %s, got %s", tt.expectedID, result.ID)
 				}
 			}
 		})

@@ -22,26 +22,19 @@ func (c *Connector) UpdateSubscription(
 		return nil, err
 	}
 
-	existingEndpoint, err := getExistingEndpoint(prevState.Subscriptions)
-	if err != nil {
-		return nil, err
-	}
-
 	payload, err := buildWebhookPayloadFromParams(params)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := c.updateWebhookEndpoint(ctx, existingEndpoint.ID, payload)
+	response, err := c.updateWebhookEndpoint(ctx, prevState.WebhookId, payload)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update webhook endpoint: %w", err)
 	}
 
 	// Stripe returns the signing secret only when the endpoint is created; carry it over
 	// from the previous state so the stored result keeps verifying webhook signatures.
-	if response.Secret == "" {
-		response.Secret = existingEndpoint.Secret
-	}
+	response.Secret = prevState.Secret
 
 	result, err := buildSubscriptionResult(response, params.SubscriptionEvents)
 	if err != nil {
@@ -68,23 +61,4 @@ func validatePreviousResult(previousResult *common.SubscriptionResult) (*Subscri
 	}
 
 	return prevState, nil
-}
-
-// getExistingEndpoint extracts the real endpoint ID from subscriptions.
-// Since IDs are stored as "endpointID:objectName", we extract the base endpoint ID.
-func getExistingEndpoint(subscriptions map[common.ObjectName]WebhookResponse) (WebhookResponse, error) {
-	if len(subscriptions) == 0 {
-		return WebhookResponse{}, fmt.Errorf("%w: no existing subscriptions", errMissingParams)
-	}
-
-	for _, endpoint := range subscriptions {
-		realEndpointID := extractBaseEndpointID(endpoint.ID)
-
-		result := endpoint
-		result.ID = realEndpointID
-
-		return result, nil
-	}
-
-	return WebhookResponse{}, fmt.Errorf("%w: unable to extract existing endpoint", errMissingParams)
 }
