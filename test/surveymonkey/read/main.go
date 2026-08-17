@@ -84,6 +84,20 @@ func main() {
 		PageSize:   2,
 	})
 
+	slog.Info("=== Reading organizations ===")
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "organizations",
+		Fields:     connectors.Fields("id", "default_role_id", "updated_at"),
+		PageSize:   2,
+	})
+
+	slog.Info("=== Reading roles ===")
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "roles",
+		Fields:     connectors.Fields("id", "name", "description", "is_enabled"),
+		PageSize:   2,
+	})
+
 	slog.Info("=== Reading benchmark_bundles ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "benchmark_bundles",
