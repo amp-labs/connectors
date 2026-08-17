@@ -5,8 +5,8 @@
     "total_items": 1,
     "leads": [
         {
-            "id": "lead_00000000000000000000000000000001",
-            "number": "7",
+            "id": "lea_00000000000000000000000000000001",
+            "number": 14,
             "customer": {
                 "id": "cus_00000000000000000000000000000001",
                 "first_name": "Jane",
@@ -36,14 +36,25 @@
                 "zip": "00000",
                 "country": "USA"
             },
-            "status": "open",
-            "pipeline_status": {
-                "id": "pst_00000000000000000000000000000001",
-                "name": "New Lead"
+            "assigned_employee": null,
+            "conversions": [
+                {
+                    "id": "job_00000000000000000000000000000001",
+                    "type": "Job"
+                }
+            ],
+            "job_fields": {
+                "business_unit_uuid": null,
+                "job_type_uuid": null
             },
-            "total_amount": 0,
             "lead_source": null,
-            "tags": []
+            "lost_at": null,
+            "pipeline_status": null,
+            "status": "won",
+            "tags": [],
+            "total_amount": 0,
+            "company_id": "00000000-0000-0000-0000-000000000000",
+            "company_name": "Acme"
         }
     ]
 }

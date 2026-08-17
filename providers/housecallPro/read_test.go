@@ -475,13 +475,13 @@ func TestRead(t *testing.T) {
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
-							"id":              "est_00000000000000000000000000000001",
-							"estimate_number": "12",
+							"id":              "csr_00000000000000000000000000000001",
+							"estimate_number": "15",
 							"updated_at":      "2026-01-02T00:00:00Z",
 						},
 						Raw: map[string]any{
-							"id":              "est_00000000000000000000000000000001",
-							"estimate_number": "12",
+							"id":              "csr_00000000000000000000000000000001",
+							"estimate_number": "15",
 						},
 						Associations: map[string][]common.Association{
 							"customers": {
@@ -507,7 +507,7 @@ func TestRead(t *testing.T) {
 			Name: "Read leads attaches embedded customer as association",
 			Input: common.ReadParams{
 				ObjectName:        "leads",
-				Fields:            connectors.Fields("id", "number", "status"),
+				Fields:            connectors.Fields("id", "status"),
 				PageSize:          1,
 				AssociatedObjects: []string{"customers"},
 			},
@@ -525,13 +525,11 @@ func TestRead(t *testing.T) {
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
-							"id":     "lead_00000000000000000000000000000001",
-							"number": "7",
-							"status": "open",
+							"id":     "lea_00000000000000000000000000000001",
+							"status": "won",
 						},
 						Raw: map[string]any{
-							"id":     "lead_00000000000000000000000000000001",
-							"number": "7",
+							"id": "lea_00000000000000000000000000000001",
 						},
 						Associations: map[string][]common.Association{
 							"customers": {
@@ -557,7 +555,7 @@ func TestRead(t *testing.T) {
 			Name: "Read leads without customer association request",
 			Input: common.ReadParams{
 				ObjectName: "leads",
-				Fields:     connectors.Fields("id", "number", "status"),
+				Fields:     connectors.Fields("id", "status"),
 				PageSize:   1,
 			},
 			Server: mockserver.Conditional{
@@ -574,13 +572,11 @@ func TestRead(t *testing.T) {
 				Data: []common.ReadResultRow{
 					{
 						Fields: map[string]any{
-							"id":     "lead_00000000000000000000000000000001",
-							"number": "7",
-							"status": "open",
+							"id":     "lea_00000000000000000000000000000001",
+							"status": "won",
 						},
 						Raw: map[string]any{
-							"id":     "lead_00000000000000000000000000000001",
-							"number": "7",
+							"id": "lea_00000000000000000000000000000001",
 						},
 					},
 				},
