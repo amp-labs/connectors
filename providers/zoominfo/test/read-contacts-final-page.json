@@ -20,16 +20,14 @@
     }
   ],
   "meta": {
-    "totalResults": 1660,
+    "totalResults": 2,
     "page": {
-      "number": 2,
+      "number": 1,
       "total": 2
     }
   },
   "links": {
     "first": "uri=/data/v1/contacts/search?page[number]=1&page[size]=2",
-    "prev": "uri=/data/v1/contacts/search?page[number]=1&page[size]=2",
-    "next": "uri=/data/v1/contacts/search?page[number]=3&page[size]=2",
-    "last": "uri=/data/v1/contacts/search?page[number]=830&page[size]=2"
+    "last": "uri=/data/v1/contacts/search?page[number]=1&page[size]=2"
   }
 }
