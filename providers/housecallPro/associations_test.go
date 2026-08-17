@@ -53,6 +53,29 @@ func TestExtractAssociationsAttachesJobCustomer(t *testing.T) {
 	assert.Equal(t, "cus_b0f661aa89324111b575da039c45e19f", rows[0].Associations[customerObject][0].ObjectId)
 }
 
+func TestExtractAssociationsAttachesEstimateAndLeadCustomer(t *testing.T) {
+	t.Parallel()
+
+	customer := map[string]any{
+		"id":         "cus_b0f661aa89324111b575da039c45e19f",
+		"first_name": "Walter",
+	}
+
+	for _, objectName := range []string{"estimates", "leads"} {
+		rows := []common.ReadResultRow{{
+			Id:  "rec_2fad85ca2c6c43b7bdbc01f0d12ff1c4",
+			Raw: map[string]any{"id": "rec_2fad85ca2c6c43b7bdbc01f0d12ff1c4", "customer": customer},
+		}}
+
+		extractAssociations(objectName, []string{customerObject}, rows)
+
+		require.Len(t, rows[0].Associations[customerObject], 1, "object %v", objectName)
+		assert.Equal(t, "cus_b0f661aa89324111b575da039c45e19f",
+			rows[0].Associations[customerObject][0].ObjectId, "object %v", objectName)
+		assert.Equal(t, customer, rows[0].Associations[customerObject][0].Raw, "object %v", objectName)
+	}
+}
+
 func TestAttachEmbeddedAssociation(t *testing.T) {
 	t.Parallel()
 
