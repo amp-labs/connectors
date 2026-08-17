@@ -762,6 +762,7 @@ func TestParseJSONResponse_TruncatedBodyIsRetryable(t *testing.T) {
 		body          string
 		wantRetryable bool
 	}{
+		// Cuts at a structural boundary. ajson reports these as UnexpectedEOF.
 		{
 			name:          "truncated object",
 			body:          `{"value":[{"id":"1"`,
@@ -773,10 +774,40 @@ func TestParseJSONResponse_TruncatedBodyIsRetryable(t *testing.T) {
 			wantRetryable: true,
 		},
 		{
+			name:          "truncated after colon",
+			body:          `{"value":[{"subject":`,
+			wantRetryable: true,
+		},
+		{
+			name:          "truncated mid-number",
+			body:          `{"value":[{"count":123`,
+			wantRetryable: true,
+		},
+		// Cuts inside a string or key. ajson reports these as WrongSymbol, not
+		// UnexpectedEOF, and since most bytes of a payload live inside string values
+		// this is where a truncated stream most often stops.
+		{
+			name:          "truncated mid-string",
+			body:          `{"value":[{"subject":"Hello wor`,
+			wantRetryable: true,
+		},
+		{
+			name:          "truncated mid-string containing a space",
+			body:          `{"value":[{"from":"Shain John`,
+			wantRetryable: true,
+		},
+		{
+			name:          "truncated mid-key",
+			body:          `{"value":[{"subj`,
+			wantRetryable: true,
+		},
+		{
 			name:          "whitespace only",
 			body:          "   \n",
 			wantRetryable: true,
 		},
+		// Complete but invalid bodies. These report the offending character, so they
+		// must stay unclassified: retrying cannot make them parse.
 		{
 			name:          "complete but not JSON",
 			body:          `invalid json`,
@@ -785,6 +816,11 @@ func TestParseJSONResponse_TruncatedBodyIsRetryable(t *testing.T) {
 		{
 			name:          "HTML error page mislabelled as JSON",
 			body:          `<html><body>Bad Gateway</body></html>`,
+			wantRetryable: false,
+		},
+		{
+			name:          "complete with a stray closing brace",
+			body:          `{"value":[]}}`,
 			wantRetryable: false,
 		},
 	}
