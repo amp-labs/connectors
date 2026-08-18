@@ -1,6 +1,6 @@
 package providers
 
-const ZoomInfo Provider = "zoominfo"
+const ZoomInfo Provider = "zoomInfo"
 
 func init() {
 	// ZoomInfo configuration
