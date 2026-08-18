@@ -74,6 +74,16 @@ func init() {
 				},
 			},
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1787032905/media/redtailtechnology.com_1787032905.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1787032995/media/redtailtechnology.com_1787032994.png",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1787032905/media/redtailtechnology.com_1787032905.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1787032995/media/redtailtechnology.com_1787032994.png",
+			},
+		},
 	})
 
 	RegisterCustomAuthFlow(Redtail, CustomAuthFlow{
