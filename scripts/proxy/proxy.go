@@ -44,6 +44,7 @@ const (
 	DefaultPort      = 4444
 
 	MetadataFieldName = "Metadata"
+	SecretsFieldName  = "Secrets"
 )
 
 // ==============================
@@ -57,6 +58,11 @@ var readers = []scanning.Reader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['metadata']",
 		KeyName:  MetadataFieldName,
+	},
+	&scanning.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['secrets']",
+		KeyName:  SecretsFieldName,
 	},
 	credscanning.Fields.Provider.GetJSONReader(DefaultCredsFile),
 	credscanning.Fields.ClientId.GetJSONReader(DefaultCredsFile),
@@ -108,6 +114,14 @@ func main() {
 
 	metadataMap := substitutions.Registry[*ajson.Node](metadata)
 
+	// Optional pre-supplied secrets for multi-step custom auth (offline mode).
+	secrets, err := registry.GetMap(SecretsFieldName)
+	if err != nil {
+		secrets = nil
+	}
+
+	secretsMap := substitutions.Registry[*ajson.Node](secrets)
+
 	proxy := createProviderProxy(ctx, info, proxyserv.Factory{
 		Provider:         provider,
 		CatalogVariables: catalogVariables,
@@ -115,6 +129,7 @@ func main() {
 		Registry:         registry,
 		CredsFilePath:    DefaultCredsFile,
 		Metadata:         metadataMap.ConvertStrMap(),
+		Secrets:          secretsMap.ConvertStrMap(),
 	})
 
 	proxy.Start(ctx, DefaultPort)
