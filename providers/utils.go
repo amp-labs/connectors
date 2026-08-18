@@ -360,14 +360,30 @@ type NewClientParams struct {
 	// CustomCreds is the custom auth credentials to use for the client. If the provider uses
 	// custom auth, this field must be set.
 	CustomCreds *CustomAuthParams
+
+	// HTTPOptions are extra headers or query parameters attached to every
+	// request the client makes, in addition to the auth credential. They are
+	// applied set-if-missing, so values already present on a request win.
+	// Works with any auth type.
+	HTTPOptions []common.HTTPOption
 }
 
 // NewClient will create a new authenticated client based on the provider's auth type.
-func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) { //nolint:lll,cyclop,ireturn,funlen
+func (i *ProviderInfo) NewClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) { //nolint:lll,ireturn
 	if params == nil {
 		params = &NewClientParams{}
 	}
 
+	client, err := i.newAuthClient(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	return common.NewHTTPOptionsClient(client, params.HTTPOptions), nil
+}
+
+// newAuthClient creates the auth-type-specific client for the provider.
+func (i *ProviderInfo) newAuthClient(ctx context.Context, params *NewClientParams) (common.AuthenticatedHTTPClient, error) { //nolint:lll,cyclop,ireturn,funlen
 	switch i.AuthType {
 	case None:
 		return createUnauthenticatedClient(ctx, params.Client, params.Debug)
