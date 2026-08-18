@@ -1,6 +1,6 @@
 package providers
 
-const ZoomInfo Provider = "zoominfo"
+const ZoomInfo Provider = "zoomInfo"
 
 func init() {
 	// ZoomInfo configuration
@@ -36,9 +36,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 	})
 }
