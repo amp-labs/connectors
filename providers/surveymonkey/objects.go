@@ -1,5 +1,7 @@
 package surveymonkey
 
+import "github.com/amp-labs/connectors/internal/datautils"
+
 // Object names for read routing (match schemas.json keys).
 const (
 	objectBenchmarkBundles      = "benchmark_bundles"
@@ -14,4 +16,20 @@ const (
 	objectSurveyLanguages       = "survey_languages"
 	objectSurveyTemplates       = "survey_templates"
 	objectTeamSurveyTemplates   = "team_survey_templates"
+)
+
+//nolint:gochecknoglobals
+var supportedReadObjects = datautils.NewStringSet(
+	objectBenchmarkBundles,
+	objectContactLists,
+	objectContacts,
+	objectGroups,
+	objectOrganizations,
+	objectQuestionBankQuestions,
+	objectRoles,
+	objectSurveyCategories,
+	objectSurveyFolders,
+	objectSurveyLanguages,
+	objectSurveyTemplates,
+	objectTeamSurveyTemplates,
 )

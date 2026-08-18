@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/surveymonkey/metadata"
 	"github.com/spyzhov/ajson"
@@ -20,22 +19,6 @@ const (
 
 	pageKey    = "page"
 	perPageKey = "per_page"
-)
-
-//nolint:gochecknoglobals
-var supportedReadObjects = datautils.NewStringSet(
-	objectGroups,
-	objectSurveyCategories,
-	objectSurveyTemplates,
-	objectTeamSurveyTemplates,
-	objectSurveyLanguages,
-	objectQuestionBankQuestions,
-	objectSurveyFolders,
-	objectContacts,
-	objectContactLists,
-	objectOrganizations,
-	objectRoles,
-	objectBenchmarkBundles,
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
