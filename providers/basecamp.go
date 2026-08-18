@@ -46,7 +46,7 @@ func init() {
 				{
 					Name:        "workspace",
 					DisplayName: "Account ID",
-					Prompt:      "our account ID is the unique number located in your Basecamp URL. For example, in `https://app.basecamp.com/6258233/projects`, the account ID is 6258233.`",
+					Prompt:      "our account ID is the unique number located in your Basecamp URL. For example, in `https://app.basecamp.com/6258233/projects`, the account ID is 6258233.`", // nolint:lll
 				},
 			},
 		},
