@@ -52,16 +52,22 @@ func (a *Adapter) ListObjectMetadata(ctx context.Context, objectNames []string,
 	}
 
 	for _, obj := range objectNames {
-		url, err := a.constructMetadataURL(obj)
-		if err != nil {
-			return nil, err
-		}
+		var res *common.JSONHTTPResponse
 
-		res, err := a.Client.Get(ctx, url.String())
-		if err != nil {
-			objMetadata.Errors[obj] = err
+		// Objects without a metadata discovery endpoint are served from the static schema
+		// file, so there is nothing to sample from the API.
+		if metadataDiscoveryEndpoints.Has(obj) {
+			url, err := a.constructMetadataURL(obj)
+			if err != nil {
+				return nil, err
+			}
 
-			continue
+			res, err = a.Client.Get(ctx, url.String())
+			if err != nil {
+				objMetadata.Errors[obj] = err
+
+				continue
+			}
 		}
 
 		data, err := parseMetadata(res, obj)
@@ -93,7 +99,7 @@ func parseMetadata(
 	if !metadataDiscoveryEndpoints.Has(obj) {
 		// we currently use static schema all objects, excepts for those having
 		// discovery metadata endpoints.
-		mdt, err = metadata.Schemas.SelectOne(providers.ModulePipedriveLegacy, obj)
+		mdt, err = metadata.Schemas.SelectOne(providers.ModulePipedriveLegacy, canonicalObjectName(obj))
 		if err != nil {
 			return nil, err
 		}

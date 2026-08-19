@@ -49,7 +49,7 @@ var displayName = map[string]string{ // nolint:gochecknoglobals
 	"leadSources":               "Lead Sources",
 	"leads":                     "Leads",
 	"legacyTeams":               "Legacy Teams",
-	"mailThreads":               "Mail Threads",
+	"mailboxes/mailThreads":     "Mail Threads",
 	"noteFields":                "Note Fields",
 	"notes":                     "Notes",
 	"organizationFields":        "organization Fields",
@@ -72,6 +72,13 @@ var displayName = map[string]string{ // nolint:gochecknoglobals
 	"webhooks":                  "Webhooks",
 }
 
+// objectEndpoints maps a URL path to the object name it is exposed as, for paths where the
+// last path segment isn't the name we want. Without this the generator would infer
+// "mailThreads" from /mailbox/mailThreads.
+var objectEndpoints = map[string]string{ // nolint:gochecknoglobals
+	"/mailbox/mailThreads": "mailboxes/mailThreads",
+}
+
 func main() {
 	explorer, err := openapi.FileManager.GetExplorer()
 	if err != nil {
@@ -80,7 +87,7 @@ func main() {
 
 	objects, err := explorer.ReadObjectsGet(
 		api3.NewDenyPathStrategy(ignoreEndpoints),
-		nil, displayName,
+		objectEndpoints, displayName,
 		api3.DataObjectLocator)
 	if err != nil {
 		log.Fatalln(err)
