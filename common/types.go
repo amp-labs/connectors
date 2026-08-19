@@ -885,6 +885,33 @@ type CollapsedSubscriptionEvent interface {
 	SubscriptionEventList() ([]SubscriptionEvent, error)
 }
 
+// BulkSubscriptionEvent is an optional interface implemented only by provider
+// events that originate from a bulk provider operation and may therefore be
+// delivered more than once (e.g. provider retries, overlapping delivery
+// channels, or fan-out of a single bulk change). It lets the server deduplicate
+// such events with a short-lived idempotency key.
+//
+// It is a separate interface from SubscriptionEvent, detected downstream via a
+// type assertion, so adding it does not change the SubscriptionEvent contract or
+// require any change to existing providers. Only providers with real bulk
+// semantics implement it.
+type BulkSubscriptionEvent interface {
+	SubscriptionEvent
+
+	// IsBulk reports whether this specific event came from a bulk operation and
+	// may be delivered more than once. A provider whose event type is only
+	// sometimes bulk can decide this per event at runtime.
+	IsBulk() (bool, error)
+
+	// UniqueRef returns a stable idempotency key for this event — the same
+	// logical event, redelivered, must yield the same value. It should be
+	// derived from the provider's own event/delivery id, not from RecordId (the
+	// same record changing twice is two legitimate events). Returns "" when the
+	// provider gives us nothing to deduplicate on, in which case the event is
+	// always processed.
+	UniqueRef() (string, error)
+}
+
 // WebhookRequest is a struct that contains the request parameters for a webhook.
 type WebhookRequest struct {
 	Headers http.Header
