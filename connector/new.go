@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/mocksub"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/acculynx"
 	"github.com/amp-labs/connectors/providers/acuityscheduling"
@@ -257,6 +258,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Microsoft:                 wrapper(newMicrosoftConnector),
 	providers.MicrosoftAdminConsent:     wrapper(newMicrosoftAdminConsentConnector),
 	providers.Mixmax:                    wrapper(newMixmaxConnector),
+	providers.MockSalesloft:             wrapper(newMockSalesloftConnector),
 	providers.Monday:                    wrapper(newMondayConnector),
 	providers.Netsuite:                  wrapper(newNetsuiteConnector),
 	providers.NetsuiteM2M:               wrapper(newNetsuiteM2MConnector),
@@ -422,6 +424,13 @@ func newSalesloftConnector(
 	return salesloft.NewConnector(
 		salesloft.WithAuthenticatedClient(params.AuthenticatedClient),
 	)
+}
+
+// newMockSalesloftConnector constructs the mocksalesloft subscribe-testing connector (see the
+// mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned
+// records from the provider's process-wide mocksub store.
+func newMockSalesloftConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
+	return mocksub.NewConnector(providers.MockSalesloft), nil
 }
 
 func newDynamicsCRMConnector(

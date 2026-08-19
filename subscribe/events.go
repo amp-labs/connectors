@@ -51,7 +51,7 @@ func GetObjectTypeSubscribeEventsList(
 		collapsedEvents = zoho.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Outreach:
 		collapsedEvents = outreach.CollapsedSubscriptionEvent(rawEvent)
-	case providers.Salesloft:
+	case providers.Salesloft, providers.MockSalesloft:
 		collapsedEvents = salesloft.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Gong:
 		collapsedEvents = gong.CollapsedSubscriptionEvent(rawEvent)
