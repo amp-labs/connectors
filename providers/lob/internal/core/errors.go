@@ -2,7 +2,9 @@ package core
 
 import (
 	"fmt"
+	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
@@ -14,6 +16,10 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 		},
 	}...,
 )
+
+var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+	http.StatusUnprocessableEntity: common.ErrBadRequest,
+}
 
 type ResponseError struct {
 	Error ErrorDetails `json:"error"`

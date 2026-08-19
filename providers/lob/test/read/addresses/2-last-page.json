@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "id": "adr_eef4879a15726a16",
+      "description": null,
+      "name": "HARRY ZHANG",
+      "company": null,
+      "phone": null,
+      "email": "harry@lob.com",
+      "address_line1": "210 KING ST",
+      "address_line2": null,
+      "address_city": "SAN FRANCISCO",
+      "address_state": "CA",
+      "address_zip": "94107-1702",
+      "address_country": "UNITED STATES",
+      "metadata": {},
+      "date_created": "2026-08-18T21:35:23.215Z",
+      "date_modified": "2026-08-18T21:35:23.215Z",
+      "recipient_moved": false,
+      "object": "address"
+    }
+  ],
+  "object": "list",
+  "next_url": null,
+  "previous_url": "https://api.lob.com/v1/addresses?limit=2&before=eyJkYXRlT2Zmc2V0IjoiMjAyNi0wOC0xOFQyMTozNToyMy4yMTVaIiwiaWRPZmZzZXQiOiJhZHJfZWVmNDg3OWExNTcyNmExNiJ9",
+  "count": 1
+}
