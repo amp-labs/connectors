@@ -13,12 +13,19 @@ import (
 type Store struct {
 	mu      sync.RWMutex
 	records map[string]map[string]map[string]any
+
+	// objectNames indexes provider-side object ids to object names, for mock providers
+	// mimicking a provider whose events identify their object only by id (e.g. Attio's
+	// record.* events carry an id.object_id UUID). Seeded via SeedObjectName and consumed
+	// by ObjectIDIndexResolver.
+	objectNames map[string]string
 }
 
 // NewStore returns an empty Store.
 func NewStore() *Store {
 	return &Store{
-		records: map[string]map[string]map[string]any{},
+		records:     map[string]map[string]map[string]any{},
+		objectNames: map[string]string{},
 	}
 }
 
@@ -49,12 +56,32 @@ func (s *Store) Get(objectName, recordID string) (map[string]any, bool) {
 	return maps.Clone(record), true
 }
 
-// Clear removes all seeded records.
+// SeedObjectName indexes a provider-side object id to its object name (see Store.objectNames).
+func (s *Store) SeedObjectName(objectID, objectName string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.objectNames[objectID] = objectName
+}
+
+// ObjectNameFor returns the object name indexed under the provider-side object id, and whether
+// one is seeded.
+func (s *Store) ObjectNameFor(objectID string) (string, bool) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	name, ok := s.objectNames[objectID]
+
+	return name, ok
+}
+
+// Clear removes all seeded records and object-name index entries.
 func (s *Store) Clear() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	s.records = map[string]map[string]map[string]any{}
+	s.objectNames = map[string]string{}
 }
 
 // stores holds the per-provider singletons handed out by StoreFor.

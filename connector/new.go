@@ -258,6 +258,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Microsoft:                 wrapper(newMicrosoftConnector),
 	providers.MicrosoftAdminConsent:     wrapper(newMicrosoftAdminConsentConnector),
 	providers.Mixmax:                    wrapper(newMixmaxConnector),
+	providers.MockAttio:                 wrapper(newMockAttioConnector),
+	providers.MockHubspot:               wrapper(newMockHubspotConnector),
 	providers.MockSalesloft:             wrapper(newMockSalesloftConnector),
 	providers.Monday:                    wrapper(newMondayConnector),
 	providers.Netsuite:                  wrapper(newNetsuiteConnector),
@@ -431,6 +433,27 @@ func newSalesloftConnector(
 // records from the provider's process-wide mocksub store.
 func newMockSalesloftConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
 	return mocksub.NewConnector(providers.MockSalesloft), nil
+}
+
+// newMockHubspotConnector constructs the mockhubspot subscribe-testing connector (see the
+// mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned
+// records from the provider's process-wide mocksub store.
+func newMockHubspotConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
+	return mocksub.NewConnector(providers.MockHubspot), nil
+}
+
+// newMockAttioConnector constructs the mockattio subscribe-testing connector (see the mocksub
+// package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned records
+// from the provider's process-wide mocksub store. The object-name resolver stands in for
+// Attio's API-backed GetObjectNameFromEvent, answering record.* events' id.object_id from the
+// same store's seeded object-name index.
+func newMockAttioConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
+	store := mocksub.StoreFor(providers.MockAttio)
+
+	return mocksub.NewConnector(
+		providers.MockAttio,
+		mocksub.WithObjectNameFromEvent(mocksub.ObjectIDIndexResolver(store)),
+	), nil
 }
 
 func newDynamicsCRMConnector(
