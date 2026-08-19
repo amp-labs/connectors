@@ -24,7 +24,7 @@ func NewBase(params common.ConnectorParams) (*Base, error) {
 
 func constructor(params common.ConnectorParams, base *components.Connector) (*Base, error) {
 	errorHandler := interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}.Handle
 	base.SetErrorHandler(errorHandler)
 
