@@ -1,0 +1,19 @@
+{
+  "id": "adr_62882589e176345e",
+  "description": null,
+  "name": "CAMYLLE KOELPIN",
+  "company": null,
+  "phone": null,
+  "email": "arvidschaden@collins.org",
+  "address_line1": "210 KING ST",
+  "address_line2": null,
+  "address_city": "SAN FRANCISCO",
+  "address_state": "CA",
+  "address_zip": "94107-1702",
+  "address_country": "UNITED STATES",
+  "metadata": {},
+  "date_created": "2026-08-19T18:19:29.102Z",
+  "date_modified": "2026-08-19T18:19:29.102Z",
+  "recipient_moved": false,
+  "object": "address"
+}
