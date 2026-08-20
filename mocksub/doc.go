@@ -12,7 +12,7 @@
 // test:
 //
 //	providers.SetupMockSalesloftProvider()
-//	mocksub.StoreFor(providers.MockSalesloft).Seed("people", "42", map[string]any{"id": 42, ...})
+//	mocksub.StoreFor(providers.MockSalesloft).Seed("people", "42", map[string]any{"id": float64(42), ...})
 //
 // The connector constructed by the connector.New factory for a mock provider reads from that
 // same store.
