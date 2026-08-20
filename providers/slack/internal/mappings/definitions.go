@@ -2,6 +2,7 @@ package mappings
 
 import (
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -30,6 +31,8 @@ type ReadListInfo struct {
 	SinceQP string
 	// UntilQP is until query param.
 	UntilQP string
+	// RangeTimestampFormat is time format for SinceQP and UntilQP.
+	RangeTimestampFormat string
 }
 
 type ReadItemInfo struct {
@@ -122,4 +125,8 @@ func GetDeleteInfo(provider providers.Provider, objectName string) (DeleteInfo, 
 	}
 
 	return *object.deleteInfo, nil
+}
+
+func (i ReadListInfo) GetIdFieldQuery() readhelper.IdFieldQuery {
+	return readhelper.NewNestedIdField(i.NestedResponseIdField, i.ResponseIdField)
 }

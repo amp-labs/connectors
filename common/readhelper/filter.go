@@ -13,17 +13,24 @@ import (
 // ErrTimestampKeyNotFound is returned when a unix-ms timestamp field is absent from a record.
 var ErrTimestampKeyNotFound = errors.New("bad since timestamp key: field not found")
 
+// TimestampFormatUnixSec is a special format string that signals the timestamp field
+// holds a Unix epoch value in seconds (int64), rather than a formatted string.
+// Internally this maps to time.Unix, allowing reuse of MakeTimeFilterFunc
+// for providers that store timestamps as integer seconds.
+const TimestampFormatUnixSec = "unix_sec"
+
 // TimestampFormatUnixMs is a special format string that signals the timestamp field
 // holds a Unix epoch value in milliseconds (int64), rather than a formatted string.
 // Internally this maps to time.UnixMilli, allowing reuse of MakeTimeFilterFunc
 // for providers that store timestamps as integer milliseconds.
 const TimestampFormatUnixMs = "unix_ms"
 
-// TimestampFormatUnixSec is a special format string that signals the timestamp field
-// holds a Unix epoch value in seconds (int64), rather than a formatted string.
-// Internally this maps to time.Unix, allowing reuse of MakeTimeFilterFunc
-// for providers that store timestamps as integer seconds.
-const TimestampFormatUnixSec = "unix_sec"
+// TimestampFormatUnixUs is a special format string that signals the timestamp field
+// holds a Unix epoch value in microseconds (int64), rather than a formatted string.
+// Internally this maps to time.Unix(sec, nsec), allowing reuse of MakeTimeFilterFunc
+// for providers that store timestamps as integer microseconds.
+// Microsecond is referred to as `us`. See: https://en.wikipedia.org/wiki/Microsecond.
+const TimestampFormatUnixUs = "unix_us"
 
 // FilterSortedRecords filters and returns only the records that have changed since the last sync,
 // based on a provided timestamp key and reference value.
@@ -238,26 +245,33 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 
 func extractTimestamp(nodeRecord *ajson.Node, timestampKey string, timestampFormat string, zoom ...string,
 ) (*time.Time, error) {
-	if timestampFormat == TimestampFormatUnixMs {
-		return extractUnixMsTimestamp(nodeRecord, timestampKey, zoom...)
-	}
-
-	if timestampFormat == TimestampFormatUnixSec {
+	switch timestampFormat {
+	case TimestampFormatUnixSec:
 		return extractUnixSecTimestamp(nodeRecord, timestampKey, zoom...)
+	case TimestampFormatUnixMs:
+		return extractUnixMsTimestamp(nodeRecord, timestampKey, zoom...)
+	case TimestampFormatUnixUs:
+		return extractUnixUsTimestamp(nodeRecord, timestampKey, zoom...)
+	default:
+		return extractTimestampWithFormat(nodeRecord, timestampKey, timestampFormat, zoom)
 	}
+}
 
-	// Extract the timestamp value from the record as a formatted string.
-	timestamp, err := jsonquery.New(nodeRecord, zoom...).StringRequired(timestampKey)
+// extractUnixSecTimestamp reads an integer seconds epoch field and converts it
+// to a time.Time using time.Unix.
+func extractUnixSecTimestamp(nodeRecord *ajson.Node, timestampKey string, zoom ...string) (*time.Time, error) {
+	val, err := jsonquery.New(nodeRecord, zoom...).IntegerOptional(timestampKey)
 	if err != nil {
 		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
 	}
 
-	recordTimestamp, err := time.Parse(timestampFormat, timestamp)
-	if err != nil {
-		return nil, fmt.Errorf("error: cannot parse timestamp for key %q: %w", timestampKey, err)
+	if val == nil {
+		return nil, fmt.Errorf("%w: %q", ErrTimestampKeyNotFound, timestampKey)
 	}
 
-	return &recordTimestamp, nil
+	t := time.Unix(*val, 0)
+
+	return &t, nil
 }
 
 // extractUnixMsTimestamp reads an integer millisecond epoch field and converts it
@@ -277,9 +291,9 @@ func extractUnixMsTimestamp(nodeRecord *ajson.Node, timestampKey string, zoom ..
 	return &t, nil
 }
 
-// extractUnixSecTimestamp reads an integer seconds epoch field and converts it
-// to a time.Time using time.Unix.
-func extractUnixSecTimestamp(nodeRecord *ajson.Node, timestampKey string, zoom ...string) (*time.Time, error) {
+// extractUnixMsTimestamp reads an integer microsecond epoch field and converts it
+// to a time.Time using time.UnixMicro.
+func extractUnixUsTimestamp(nodeRecord *ajson.Node, timestampKey string, zoom ...string) (*time.Time, error) {
 	val, err := jsonquery.New(nodeRecord, zoom...).IntegerOptional(timestampKey)
 	if err != nil {
 		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
@@ -289,7 +303,24 @@ func extractUnixSecTimestamp(nodeRecord *ajson.Node, timestampKey string, zoom .
 		return nil, fmt.Errorf("%w: %q", ErrTimestampKeyNotFound, timestampKey)
 	}
 
-	t := time.Unix(*val, 0)
+	t := time.UnixMicro(*val)
 
 	return &t, nil
+}
+
+func extractTimestampWithFormat(nodeRecord *ajson.Node, timestampKey string,
+	timestampFormat string, zoom []string,
+) (*time.Time, error) {
+	// Extract the timestamp value from the record as a formatted string.
+	timestamp, err := jsonquery.New(nodeRecord, zoom...).StringRequired(timestampKey)
+	if err != nil {
+		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
+	}
+
+	recordTimestamp, err := time.Parse(timestampFormat, timestamp)
+	if err != nil {
+		return nil, fmt.Errorf("error: cannot parse timestamp for key %q: %w", timestampKey, err)
+	}
+
+	return &recordTimestamp, nil
 }

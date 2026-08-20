@@ -14,8 +14,8 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
-func TestObjectResponseField(t *testing.T) {
-	var objectResponseFieldDuplicate = datautils.Map[string, string]{
+func TestReadMappingsForBot(t *testing.T) {
+	var responseFields = datautils.Map[string, string]{
 		"auth.teams":                        "teams",
 		"chat.scheduledMessages":            "scheduled_messages",
 		"conversations":                     "channels",
@@ -29,16 +29,21 @@ func TestObjectResponseField(t *testing.T) {
 		"users.conversations":               "channels",
 	}
 
-	var objectsWithConnectorSideFilterDuplicate = datautils.Map[string, string]{
+	var connectorSideFilter = datautils.Map[string, string]{
+		"chat.scheduledMessages":            "date_created",
 		"conversations":                     "updated",
 		"conversations.listConnectInvites":  "date_last_updated",
 		"conversations.requestSharedInvite": "date_last_updated",
-		"files":                             "created", // TODO must use Since/Until instead of connector side.
 		"usergroups":                        "date_update",
 		"users":                             "updated",
 	}
 
 	readRequestMap := map[string]mockcond.Condition{
+		"admin.apps.activities": mockcond.And{
+			mockcond.MethodPOST(),
+			mockcond.Path("/api/admin.apps.activities.list"),
+			mockcond.Body(`{"limit":"200","min_date_created":"1050","max_date_created":"2050"}`),
+		},
 		"auth.teams": mockcond.And{
 			mockcond.MethodPOST(),
 			mockcond.Path("/api/auth.teams.list"),
@@ -52,11 +57,19 @@ func TestObjectResponseField(t *testing.T) {
 			mockcond.Path("/api/conversations.list"),
 		},
 		"files": mockcond.And{
-			mockcond.MethodGET(),
+			mockcond.And{
+				mockcond.MethodGET(),
+				mockcond.QueryParam("ts_from", "1050"),
+				mockcond.QueryParam("ts_to", "2050"),
+			},
 			mockcond.Path("/api/files.list"),
 		},
 		"files.remote": mockcond.And{
-			mockcond.MethodGET(),
+			mockcond.And{
+				mockcond.MethodGET(),
+				mockcond.QueryParam("ts_from", "1050"),
+				mockcond.QueryParam("ts_to", "2050"),
+			},
 			mockcond.Path("/api/files.remote.list"),
 		},
 		"reactions": mockcond.And{
@@ -89,20 +102,39 @@ func TestObjectResponseField(t *testing.T) {
 		},
 	}
 
-	tests := make([]testconn.TestCaseRead, 0, len(objectResponseFieldDuplicate))
-	objectNames := objectResponseFieldDuplicate.Keys()
+	tests := createTestsForReadMappings(t, responseFields, connectorSideFilter, readRequestMap)
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
+				return constructTestConnector(tt.Server)
+			})
+		})
+	}
+}
+
+func createTestsForReadMappings(t *testing.T,
+	objectResponseField datautils.Map[string, string],
+	objectsWithConnectorSideFilter datautils.Map[string, string],
+	readRequestMap map[string]mockcond.Condition,
+) []testconn.TestCaseRead {
+	tests := make([]testconn.TestCaseRead, 0, len(objectResponseField))
+	objectNames := objectResponseField.Keys()
 	sort.Strings(objectNames)
 
 	for _, objectName := range objectNames {
-		arrayKey := objectResponseFieldDuplicate[objectName]
+		arrayKey := objectResponseField[objectName]
 		record1 := map[string]any{"id": "test1"}
 		record2 := map[string]any{"id": "test2"}
 		array := []map[string]any{record1, record2}
 		expectedRows := int64(2)
-		if tsField, ok := objectsWithConnectorSideFilterDuplicate[objectName]; ok {
+		if tsField, ok := objectsWithConnectorSideFilter[objectName]; ok {
 			record1[tsField] = 1000
 			record2[tsField] = 2000
 			expectedRows = 1
+
+			// Note: when testing provider side filtering it doesn't matter what mock server returns
+			// 1 or 2 records, as long as it satisfies the request condition and contains the query param thats all that matters.
 		}
 
 		tests = append(tests, testconn.TestCaseRead{
@@ -111,6 +143,7 @@ func TestObjectResponseField(t *testing.T) {
 				ObjectName: objectName,
 				Fields:     connectors.Fields("id"),
 				Since:      time.Unix(1050, 0), // between 1000 and 2000.
+				Until:      time.Unix(2050, 0),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -128,11 +161,5 @@ func TestObjectResponseField(t *testing.T) {
 		})
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.Name, func(t *testing.T) {
-			tt.Run(t, func() (testconn.TestableReader, error) {
-				return constructTestConnector(tt.Server)
-			})
-		})
-	}
+	return tests
 }

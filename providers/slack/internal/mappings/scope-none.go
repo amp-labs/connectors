@@ -1,6 +1,8 @@
 package mappings
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func init() {
 	for name, object := range map[string]Object{
@@ -11,9 +13,7 @@ func init() {
 				Method:          http.MethodPost,
 				ResponseField:   "scheduled_messages",
 				ResponseIdField: "id",
-				TimeFilterField: "",
-				SinceQP:         "oldest",
-				UntilQP:         "latest",
+				TimeFilterField: "date_created",
 			},
 		},
 		"auth.teams": {
@@ -23,7 +23,6 @@ func init() {
 				Method:          http.MethodPost,
 				ResponseField:   "teams",
 				ResponseIdField: "id",
-				TimeFilterField: "",
 			},
 		},
 	} {

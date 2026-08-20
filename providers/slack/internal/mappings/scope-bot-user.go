@@ -1,6 +1,10 @@
 package mappings
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/amp-labs/connectors/common/readhelper"
+)
 
 func init() { // nolint:funlen,maintidx
 	for name, object := range map[string]Object{
@@ -133,13 +137,13 @@ func init() { // nolint:funlen,maintidx
 		"files": {
 			// https://docs.slack.dev/reference/methods/files.list
 			readListInfo: &ReadListInfo{
-				Href:            "files.list",
-				Method:          http.MethodGet,
-				ResponseField:   "files",
-				ResponseIdField: "id",
-				TimeFilterField: "created",
-				SinceQP:         "ts_from", // TODO use it instead of connector side filtering
-				UntilQP:         "ts_to",   // TODO use it instead of connector side filtering
+				Href:                 "files.list",
+				Method:               http.MethodGet,
+				ResponseField:        "files",
+				ResponseIdField:      "id",
+				SinceQP:              "ts_from",
+				UntilQP:              "ts_to",
+				RangeTimestampFormat: readhelper.TimestampFormatUnixSec,
 			},
 			// https://docs.slack.dev/reference/methods/files.info
 			readItemInfo: &ReadItemInfo{
@@ -162,13 +166,13 @@ func init() { // nolint:funlen,maintidx
 		"files.remote": {
 			// https://docs.slack.dev/reference/methods/files.remote.list
 			readListInfo: &ReadListInfo{
-				Href:            "files.remote.list",
-				Method:          http.MethodGet,
-				ResponseField:   "files",
-				ResponseIdField: "id",
-				TimeFilterField: "",
-				SinceQP:         "ts_from",
-				UntilQP:         "ts_to",
+				Href:                 "files.remote.list",
+				Method:               http.MethodGet,
+				ResponseField:        "files",
+				ResponseIdField:      "id",
+				SinceQP:              "ts_from",
+				UntilQP:              "ts_to",
+				RangeTimestampFormat: readhelper.TimestampFormatUnixSec,
 			},
 			// https://docs.slack.dev/reference/methods/files.remote.info
 			readItemInfo: &ReadItemInfo{
@@ -236,8 +240,6 @@ func init() { // nolint:funlen,maintidx
 				ResponseField:   "usergroups",
 				ResponseIdField: "id",
 				TimeFilterField: "date_update",
-				SinceQP:         "",
-				UntilQP:         "",
 			},
 			readItemInfo: nil, // N/a
 			// https://docs.slack.dev/reference/methods/usergroups.create
@@ -270,8 +272,6 @@ func init() { // nolint:funlen,maintidx
 				ResponseIdField: "id",
 				TimeFilterField: "", // Can be filtered by `created` but it is too restrictive
 				// and would miss records that should be returned for existing clients.
-				SinceQP: "",
-				UntilQP: "",
 			},
 		},
 		"users": {
@@ -282,8 +282,6 @@ func init() { // nolint:funlen,maintidx
 				ResponseField:   "members",
 				ResponseIdField: "id",
 				TimeFilterField: "updated",
-				SinceQP:         "",
-				UntilQP:         "",
 			},
 			// https://docs.slack.dev/reference/methods/users.info
 			readItemInfo: &ReadItemInfo{
