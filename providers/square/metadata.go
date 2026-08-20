@@ -11,9 +11,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-// buildSingleObjectMetadataRequest samples a single record to infer field
-// metadata from. That is just a one-record read, so it reuses the read request
-// builder, which knows whether the object lists via GET or a search POST.
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	return c.buildReadRequest(ctx, common.ReadParams{ObjectName: objectName, PageSize: 1})
 }
