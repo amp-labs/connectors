@@ -2,643 +2,2774 @@
   "modules": {
     "root": {
       "id": "root",
-      "path": "/api",
+      "path": "",
       "objects": {
         "accounts": {
           "displayName": "Accounts",
-          "path": "/accounts",
+          "path": "/api/accounts",
           "responseKey": "data",
           "fields": {
-            "contact_information": "contact_information",
-            "id": "id",
-            "industry": "industry",
-            "links": "links",
-            "locale": "locale",
-            "preferred_currency": "preferred_currency",
-            "public_api_key": "public_api_key",
-            "test_account": "test_account",
-            "timezone": "timezone",
-            "type": "type"
+            "contact_information": {
+              "displayName": "contact_information",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "industry": {
+              "displayName": "industry",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "locale": {
+              "displayName": "locale",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "preferred_currency": {
+              "displayName": "preferred_currency",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "public_api_key": {
+              "displayName": "public_api_key",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "test_account": {
+              "displayName": "test_account",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "timezone": {
+              "displayName": "timezone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "account",
+                  "displayValue": "account"
+                }
+              ]
+            }
           }
         },
         "campaigns": {
           "displayName": "Campaigns",
-          "path": "/campaigns",
+          "path": "/api/campaigns",
           "responseKey": "data",
           "fields": {
-            "archived": "archived",
-            "audiences": "audiences",
-            "created_at": "created_at",
-            "id": "id",
-            "links": "links",
-            "name": "name",
-            "relationships": "relationships",
-            "scheduled_at": "scheduled_at",
-            "send_options": "send_options",
-            "send_strategy": "send_strategy",
-            "send_time": "send_time",
-            "status": "status",
-            "tracking_options": "tracking_options",
-            "type": "type",
-            "updated_at": "updated_at"
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "audiences": {
+              "displayName": "audiences",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "scheduled_at": {
+              "displayName": "scheduled_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "send_options": {
+              "displayName": "send_options",
+              "valueType": "other"
+            },
+            "send_strategy": {
+              "displayName": "send_strategy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "send_time": {
+              "displayName": "send_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "tracking_options": {
+              "displayName": "tracking_options",
+              "valueType": "other"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "campaign",
+                  "displayValue": "campaign"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "catalog-categories": {
           "displayName": "Catalog Categories",
-          "path": "/catalog-categories",
+          "path": "/api/catalog-categories",
           "responseKey": "data",
           "fields": {
-            "external_id": "external_id",
-            "id": "id",
-            "links": "links",
-            "name": "name",
-            "relationships": "relationships",
-            "type": "type",
-            "updated": "updated"
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-category",
+                  "displayValue": "catalog-category"
+                }
+              ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "catalog-category-bulk-create-jobs": {
           "displayName": "Catalog Category Bulk Create Jobs",
-          "path": "/catalog-category-bulk-create-jobs",
+          "path": "/api/catalog-category-bulk-create-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "errors": "errors",
-            "expires_at": "expires_at",
-            "failed_count": "failed_count",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "errors": {
+              "displayName": "errors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failed_count": {
+              "displayName": "failed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-category-bulk-create-job",
+                  "displayValue": "catalog-category-bulk-create-job"
+                }
+              ]
+            }
           }
         },
         "catalog-category-bulk-delete-jobs": {
           "displayName": "Catalog Category Bulk Delete Jobs",
-          "path": "/catalog-category-bulk-delete-jobs",
+          "path": "/api/catalog-category-bulk-delete-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "errors": "errors",
-            "expires_at": "expires_at",
-            "failed_count": "failed_count",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "errors": {
+              "displayName": "errors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failed_count": {
+              "displayName": "failed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-category-bulk-delete-job",
+                  "displayValue": "catalog-category-bulk-delete-job"
+                }
+              ]
+            }
           }
         },
         "catalog-category-bulk-update-jobs": {
           "displayName": "Catalog Category Bulk Update Jobs",
-          "path": "/catalog-category-bulk-update-jobs",
+          "path": "/api/catalog-category-bulk-update-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "errors": "errors",
-            "expires_at": "expires_at",
-            "failed_count": "failed_count",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "errors": {
+              "displayName": "errors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failed_count": {
+              "displayName": "failed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-category-bulk-update-job",
+                  "displayValue": "catalog-category-bulk-update-job"
+                }
+              ]
+            }
           }
         },
         "catalog-item-bulk-create-jobs": {
           "displayName": "Catalog Item Bulk Create Jobs",
-          "path": "/catalog-item-bulk-create-jobs",
+          "path": "/api/catalog-item-bulk-create-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "errors": "errors",
-            "expires_at": "expires_at",
-            "failed_count": "failed_count",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "errors": {
+              "displayName": "errors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failed_count": {
+              "displayName": "failed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-item-bulk-create-job",
+                  "displayValue": "catalog-item-bulk-create-job"
+                }
+              ]
+            }
           }
         },
         "catalog-item-bulk-delete-jobs": {
           "displayName": "Catalog Item Bulk Delete Jobs",
-          "path": "/catalog-item-bulk-delete-jobs",
+          "path": "/api/catalog-item-bulk-delete-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "errors": "errors",
-            "expires_at": "expires_at",
-            "failed_count": "failed_count",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "errors": {
+              "displayName": "errors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failed_count": {
+              "displayName": "failed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-item-bulk-delete-job",
+                  "displayValue": "catalog-item-bulk-delete-job"
+                }
+              ]
+            }
           }
         },
         "catalog-item-bulk-update-jobs": {
           "displayName": "Catalog Item Bulk Update Jobs",
-          "path": "/catalog-item-bulk-update-jobs",
+          "path": "/api/catalog-item-bulk-update-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "errors": "errors",
-            "expires_at": "expires_at",
-            "failed_count": "failed_count",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "errors": {
+              "displayName": "errors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failed_count": {
+              "displayName": "failed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-item-bulk-update-job",
+                  "displayValue": "catalog-item-bulk-update-job"
+                }
+              ]
+            }
           }
         },
         "catalog-items": {
           "displayName": "Catalog Items",
-          "path": "/catalog-items",
+          "path": "/api/catalog-items",
           "responseKey": "data",
           "fields": {
-            "created": "created",
-            "custom_metadata": "custom_metadata",
-            "description": "description",
-            "external_id": "external_id",
-            "id": "id",
-            "image_full_url": "image_full_url",
-            "image_thumbnail_url": "image_thumbnail_url",
-            "images": "images",
-            "links": "links",
-            "price": "price",
-            "published": "published",
-            "relationships": "relationships",
-            "title": "title",
-            "type": "type",
-            "updated": "updated",
-            "url": "url"
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_metadata": {
+              "displayName": "custom_metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image_full_url": {
+              "displayName": "image_full_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image_thumbnail_url": {
+              "displayName": "image_thumbnail_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "images": {
+              "displayName": "images",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "price": {
+              "displayName": "price",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "published": {
+              "displayName": "published",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-item",
+                  "displayValue": "catalog-item"
+                }
+              ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "catalog-variant-bulk-create-jobs": {
           "displayName": "Catalog Variant Bulk Create Jobs",
-          "path": "/catalog-variant-bulk-create-jobs",
+          "path": "/api/catalog-variant-bulk-create-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "errors": "errors",
-            "expires_at": "expires_at",
-            "failed_count": "failed_count",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "errors": {
+              "displayName": "errors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failed_count": {
+              "displayName": "failed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-variant-bulk-create-job",
+                  "displayValue": "catalog-variant-bulk-create-job"
+                }
+              ]
+            }
           }
         },
         "catalog-variant-bulk-delete-jobs": {
           "displayName": "Catalog Variant Bulk Delete Jobs",
-          "path": "/catalog-variant-bulk-delete-jobs",
+          "path": "/api/catalog-variant-bulk-delete-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "errors": "errors",
-            "expires_at": "expires_at",
-            "failed_count": "failed_count",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "errors": {
+              "displayName": "errors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failed_count": {
+              "displayName": "failed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-variant-bulk-delete-job",
+                  "displayValue": "catalog-variant-bulk-delete-job"
+                }
+              ]
+            }
           }
         },
         "catalog-variant-bulk-update-jobs": {
           "displayName": "Catalog Variant Bulk Update Jobs",
-          "path": "/catalog-variant-bulk-update-jobs",
+          "path": "/api/catalog-variant-bulk-update-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "errors": "errors",
-            "expires_at": "expires_at",
-            "failed_count": "failed_count",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "errors": {
+              "displayName": "errors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failed_count": {
+              "displayName": "failed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-variant-bulk-update-job",
+                  "displayValue": "catalog-variant-bulk-update-job"
+                }
+              ]
+            }
           }
         },
         "catalog-variants": {
           "displayName": "Catalog Variants",
-          "path": "/catalog-variants",
+          "path": "/api/catalog-variants",
           "responseKey": "data",
           "fields": {
-            "created": "created",
-            "custom_metadata": "custom_metadata",
-            "description": "description",
-            "external_id": "external_id",
-            "id": "id",
-            "image_full_url": "image_full_url",
-            "image_thumbnail_url": "image_thumbnail_url",
-            "images": "images",
-            "inventory_policy": "inventory_policy",
-            "inventory_quantity": "inventory_quantity",
-            "links": "links",
-            "price": "price",
-            "published": "published",
-            "relationships": "relationships",
-            "sku": "sku",
-            "title": "title",
-            "type": "type",
-            "updated": "updated",
-            "url": "url"
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "custom_metadata": {
+              "displayName": "custom_metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image_full_url": {
+              "displayName": "image_full_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image_thumbnail_url": {
+              "displayName": "image_thumbnail_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "images": {
+              "displayName": "images",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "inventory_policy": {
+              "displayName": "inventory_policy",
+              "valueType": "int",
+              "providerType": "integer",
+              "values": [
+                {
+                  "value": "0",
+                  "displayValue": "0"
+                },
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                },
+                {
+                  "value": "2",
+                  "displayValue": "2"
+                }
+              ]
+            },
+            "inventory_quantity": {
+              "displayName": "inventory_quantity",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "price": {
+              "displayName": "price",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "published": {
+              "displayName": "published",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sku": {
+              "displayName": "sku",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "catalog-variant",
+                  "displayValue": "catalog-variant"
+                }
+              ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "coupon-code-bulk-create-jobs": {
           "displayName": "Coupon Code Bulk Create Jobs",
-          "path": "/coupon-code-bulk-create-jobs",
+          "path": "/api/coupon-code-bulk-create-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "errors": "errors",
-            "expires_at": "expires_at",
-            "failed_count": "failed_count",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "errors": {
+              "displayName": "errors",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failed_count": {
+              "displayName": "failed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "coupon-code-bulk-create-job",
+                  "displayValue": "coupon-code-bulk-create-job"
+                }
+              ]
+            }
           }
         },
         "coupon-codes": {
           "displayName": "Coupon Codes",
-          "path": "/coupon-codes",
+          "path": "/api/coupon-codes",
           "responseKey": "data",
           "fields": {
-            "expires_at": "expires_at",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "status": "status",
-            "type": "type",
-            "unique_code": "unique_code"
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "ASSIGNED_TO_PROFILE",
+                  "displayValue": "ASSIGNED_TO_PROFILE"
+                },
+                {
+                  "value": "DELETING",
+                  "displayValue": "DELETING"
+                },
+                {
+                  "value": "PROCESSING",
+                  "displayValue": "PROCESSING"
+                },
+                {
+                  "value": "UNASSIGNED",
+                  "displayValue": "UNASSIGNED"
+                },
+                {
+                  "value": "USED",
+                  "displayValue": "USED"
+                },
+                {
+                  "value": "VERSION_NOT_ACTIVE",
+                  "displayValue": "VERSION_NOT_ACTIVE"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "coupon-code",
+                  "displayValue": "coupon-code"
+                }
+              ]
+            },
+            "unique_code": {
+              "displayName": "unique_code",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "coupons": {
           "displayName": "Coupons",
-          "path": "/coupons",
+          "path": "/api/coupons",
           "responseKey": "data",
           "fields": {
-            "description": "description",
-            "external_id": "external_id",
-            "id": "id",
-            "links": "links",
-            "type": "type"
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "coupon",
+                  "displayValue": "coupon"
+                }
+              ]
+            }
           }
         },
         "events": {
           "displayName": "Events",
-          "path": "/events",
+          "path": "/api/events",
           "responseKey": "data",
           "fields": {
-            "datetime": "datetime",
-            "event_properties": "event_properties",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "timestamp": "timestamp",
-            "type": "type",
-            "uuid": "uuid"
+            "datetime": {
+              "displayName": "datetime",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "event_properties": {
+              "displayName": "event_properties",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "timestamp": {
+              "displayName": "timestamp",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "event",
+                  "displayValue": "event"
+                }
+              ]
+            },
+            "uuid": {
+              "displayName": "uuid",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "flows": {
           "displayName": "Flows",
-          "path": "/flows",
+          "path": "/api/flows",
           "responseKey": "data",
           "fields": {
-            "archived": "archived",
-            "created": "created",
-            "id": "id",
-            "links": "links",
-            "name": "name",
-            "relationships": "relationships",
-            "status": "status",
-            "trigger_type": "trigger_type",
-            "type": "type",
-            "updated": "updated"
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "trigger_type": {
+              "displayName": "trigger_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Added to List",
+                  "displayValue": "Added to List"
+                },
+                {
+                  "value": "Date Based",
+                  "displayValue": "Date Based"
+                },
+                {
+                  "value": "Low Inventory",
+                  "displayValue": "Low Inventory"
+                },
+                {
+                  "value": "Metric",
+                  "displayValue": "Metric"
+                },
+                {
+                  "value": "Price Drop",
+                  "displayValue": "Price Drop"
+                },
+                {
+                  "value": "Unconfigured",
+                  "displayValue": "Unconfigured"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "flow",
+                  "displayValue": "flow"
+                }
+              ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "forms": {
           "displayName": "Forms",
-          "path": "/forms",
+          "path": "/api/forms",
           "responseKey": "data",
           "fields": {
-            "ab_test": "ab_test",
-            "created_at": "created_at",
-            "id": "id",
-            "links": "links",
-            "name": "name",
-            "relationships": "relationships",
-            "status": "status",
-            "type": "type",
-            "updated_at": "updated_at"
+            "ab_test": {
+              "displayName": "ab_test",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "draft",
+                  "displayValue": "draft"
+                },
+                {
+                  "value": "live",
+                  "displayValue": "live"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "form",
+                  "displayValue": "form"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "images": {
           "displayName": "Images",
-          "path": "/images",
+          "path": "/api/images",
           "responseKey": "data",
           "fields": {
-            "format": "format",
-            "hidden": "hidden",
-            "id": "id",
-            "image_url": "image_url",
-            "links": "links",
-            "name": "name",
-            "size": "size",
-            "type": "type",
-            "updated_at": "updated_at"
+            "format": {
+              "displayName": "format",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hidden": {
+              "displayName": "hidden",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image_url": {
+              "displayName": "image_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "size": {
+              "displayName": "size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "image",
+                  "displayValue": "image"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "lists": {
           "displayName": "Lists",
-          "path": "/lists",
+          "path": "/api/lists",
           "responseKey": "data",
           "fields": {
-            "created": "created",
-            "id": "id",
-            "links": "links",
-            "name": "name",
-            "opt_in_process": "opt_in_process",
-            "relationships": "relationships",
-            "type": "type",
-            "updated": "updated"
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "opt_in_process": {
+              "displayName": "opt_in_process",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "double_opt_in",
+                  "displayValue": "double_opt_in"
+                },
+                {
+                  "value": "single_opt_in",
+                  "displayValue": "single_opt_in"
+                }
+              ]
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "list",
+                  "displayValue": "list"
+                }
+              ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "metrics": {
           "displayName": "Metrics",
-          "path": "/metrics",
+          "path": "/api/metrics",
           "responseKey": "data",
           "fields": {
-            "created": "created",
-            "id": "id",
-            "integration": "integration",
-            "links": "links",
-            "name": "name",
-            "relationships": "relationships",
-            "type": "type",
-            "updated": "updated"
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "integration": {
+              "displayName": "integration",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "metric",
+                  "displayValue": "metric"
+                }
+              ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "profile-bulk-import-jobs": {
           "displayName": "Profile Bulk Import Jobs",
-          "path": "/profile-bulk-import-jobs",
+          "path": "/api/profile-bulk-import-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "expires_at": "expires_at",
-            "failed_count": "failed_count",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "started_at": "started_at",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expires_at": {
+              "displayName": "expires_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failed_count": {
+              "displayName": "failed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "started_at": {
+              "displayName": "started_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "profile-bulk-import-job",
+                  "displayValue": "profile-bulk-import-job"
+                }
+              ]
+            }
           }
         },
         "profile-suppression-bulk-create-jobs": {
           "displayName": "Profile Suppression Bulk Create Jobs",
-          "path": "/profile-suppression-bulk-create-jobs",
+          "path": "/api/profile-suppression-bulk-create-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "skipped_count": "skipped_count",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "skipped_count": {
+              "displayName": "skipped_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "profile-suppression-bulk-create-job",
+                  "displayValue": "profile-suppression-bulk-create-job"
+                }
+              ]
+            }
           }
         },
         "profile-suppression-bulk-delete-jobs": {
           "displayName": "Profile Suppression Bulk Delete Jobs",
-          "path": "/profile-suppression-bulk-delete-jobs",
+          "path": "/api/profile-suppression-bulk-delete-jobs",
           "responseKey": "data",
           "fields": {
-            "completed_at": "completed_at",
-            "completed_count": "completed_count",
-            "created_at": "created_at",
-            "id": "id",
-            "links": "links",
-            "relationships": "relationships",
-            "skipped_count": "skipped_count",
-            "status": "status",
-            "total_count": "total_count",
-            "type": "type"
+            "completed_at": {
+              "displayName": "completed_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "completed_count": {
+              "displayName": "completed_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "skipped_count": {
+              "displayName": "skipped_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "complete",
+                  "displayValue": "complete"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "queued",
+                  "displayValue": "queued"
+                }
+              ]
+            },
+            "total_count": {
+              "displayName": "total_count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "profile-suppression-bulk-delete-job",
+                  "displayValue": "profile-suppression-bulk-delete-job"
+                }
+              ]
+            }
           }
         },
         "profiles": {
           "displayName": "Profiles",
-          "path": "/profiles",
+          "path": "/api/profiles",
           "responseKey": "data",
           "fields": {
-            "created": "created",
-            "email": "email",
-            "external_id": "external_id",
-            "first_name": "first_name",
-            "id": "id",
-            "image": "image",
-            "last_event_date": "last_event_date",
-            "last_name": "last_name",
-            "links": "links",
-            "locale": "locale",
-            "location": "location",
-            "organization": "organization",
-            "phone_number": "phone_number",
-            "predictive_analytics": "predictive_analytics",
-            "properties": "properties",
-            "relationships": "relationships",
-            "subscriptions": "subscriptions",
-            "title": "title",
-            "type": "type",
-            "updated": "updated"
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image": {
+              "displayName": "image",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_event_date": {
+              "displayName": "last_event_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "locale": {
+              "displayName": "locale",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "organization": {
+              "displayName": "organization",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_number": {
+              "displayName": "phone_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "predictive_analytics": {
+              "displayName": "predictive_analytics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "properties": {
+              "displayName": "properties",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "subscriptions": {
+              "displayName": "subscriptions",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "profile",
+                  "displayValue": "profile"
+                }
+              ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "reviews": {
           "displayName": "Reviews",
-          "path": "/reviews",
+          "path": "/api/reviews",
           "responseKey": "data",
           "fields": {
-            "author": "author",
-            "content": "content",
-            "created": "created",
-            "email": "email",
-            "id": "id",
-            "images": "images",
-            "links": "links",
-            "product": "product",
-            "public_reply": "public_reply",
-            "rating": "rating",
-            "relationships": "relationships",
-            "review_type": "review_type",
-            "smart_quote": "smart_quote",
-            "status": "status",
-            "title": "title",
-            "type": "type",
-            "updated": "updated",
-            "verified": "verified"
+            "author": {
+              "displayName": "author",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "content": {
+              "displayName": "content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "images": {
+              "displayName": "images",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "product": {
+              "displayName": "product",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "public_reply": {
+              "displayName": "public_reply",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "rating": {
+              "displayName": "rating",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "review_type": {
+              "displayName": "review_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "question",
+                  "displayValue": "question"
+                },
+                {
+                  "value": "rating",
+                  "displayValue": "rating"
+                },
+                {
+                  "value": "review",
+                  "displayValue": "review"
+                }
+              ]
+            },
+            "smart_quote": {
+              "displayName": "smart_quote",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "featured",
+                  "displayValue": "featured"
+                },
+                {
+                  "value": "pending",
+                  "displayValue": "pending"
+                },
+                {
+                  "value": "published",
+                  "displayValue": "published"
+                },
+                {
+                  "value": "rejected",
+                  "displayValue": "rejected"
+                },
+                {
+                  "value": "unpublished",
+                  "displayValue": "unpublished"
+                }
+              ]
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "review",
+                  "displayValue": "review"
+                }
+              ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "verified": {
+              "displayName": "verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
           }
         },
         "segments": {
           "displayName": "Segments",
-          "path": "/segments",
+          "path": "/api/segments",
           "responseKey": "data",
           "fields": {
-            "created": "created",
-            "definition": "definition",
-            "id": "id",
-            "is_active": "is_active",
-            "is_processing": "is_processing",
-            "is_starred": "is_starred",
-            "links": "links",
-            "name": "name",
-            "relationships": "relationships",
-            "type": "type",
-            "updated": "updated"
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "definition": {
+              "displayName": "definition",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_active": {
+              "displayName": "is_active",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_processing": {
+              "displayName": "is_processing",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_starred": {
+              "displayName": "is_starred",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "segment",
+                  "displayValue": "segment"
+                }
+              ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "tag-groups": {
           "displayName": "Tag Groups",
-          "path": "/tag-groups",
+          "path": "/api/tag-groups",
           "responseKey": "data",
           "fields": {
-            "default": "default",
-            "exclusive": "exclusive",
-            "id": "id",
-            "links": "links",
-            "name": "name",
-            "relationships": "relationships",
-            "type": "type"
+            "default": {
+              "displayName": "default",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "exclusive": {
+              "displayName": "exclusive",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "tag-group",
+                  "displayValue": "tag-group"
+                }
+              ]
+            }
           }
         },
         "tags": {
           "displayName": "Tags",
-          "path": "/tags",
+          "path": "/api/tags",
           "responseKey": "data",
           "fields": {
-            "id": "id",
-            "links": "links",
-            "name": "name",
-            "relationships": "relationships",
-            "type": "type"
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "tag",
+                  "displayValue": "tag"
+                }
+              ]
+            }
           }
         },
         "template-universal-content": {
           "displayName": "Template Universal Content",
-          "path": "/template-universal-content",
+          "path": "/api/template-universal-content",
           "responseKey": "data",
           "fields": {
-            "created": "created",
-            "definition": "definition",
-            "id": "id",
-            "links": "links",
-            "name": "name",
-            "screenshot_status": "screenshot_status",
-            "screenshot_url": "screenshot_url",
-            "type": "type",
-            "updated": "updated"
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "definition": {
+              "displayName": "definition",
+              "valueType": "other"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "screenshot_status": {
+              "displayName": "screenshot_status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "completed",
+                  "displayValue": "completed"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                },
+                {
+                  "value": "generating",
+                  "displayValue": "generating"
+                },
+                {
+                  "value": "never_generated",
+                  "displayValue": "never_generated"
+                },
+                {
+                  "value": "not_renderable",
+                  "displayValue": "not_renderable"
+                }
+              ]
+            },
+            "screenshot_url": {
+              "displayName": "screenshot_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "template-universal-content",
+                  "displayValue": "template-universal-content"
+                }
+              ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "templates": {
           "displayName": "Templates",
-          "path": "/templates",
+          "path": "/api/templates",
           "responseKey": "data",
           "fields": {
-            "created": "created",
-            "editor_type": "editor_type",
-            "html": "html",
-            "id": "id",
-            "links": "links",
-            "name": "name",
-            "text": "text",
-            "type": "type",
-            "updated": "updated"
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "editor_type": {
+              "displayName": "editor_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html": {
+              "displayName": "html",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "text": {
+              "displayName": "text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "template",
+                  "displayValue": "template"
+                }
+              ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "tracking-settings": {
           "displayName": "Tracking Settings",
-          "path": "/tracking-settings",
+          "path": "/api/tracking-settings",
           "responseKey": "data",
           "fields": {
-            "auto_add_parameters": "auto_add_parameters",
-            "custom_parameters": "custom_parameters",
-            "id": "id",
-            "links": "links",
-            "type": "type",
-            "utm_campaign": "utm_campaign",
-            "utm_id": "utm_id",
-            "utm_medium": "utm_medium",
-            "utm_source": "utm_source",
-            "utm_term": "utm_term"
+            "auto_add_parameters": {
+              "displayName": "auto_add_parameters",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "custom_parameters": {
+              "displayName": "custom_parameters",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "tracking-setting",
+                  "displayValue": "tracking-setting"
+                }
+              ]
+            },
+            "utm_campaign": {
+              "displayName": "utm_campaign",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "utm_id": {
+              "displayName": "utm_id",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "utm_medium": {
+              "displayName": "utm_medium",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "utm_source": {
+              "displayName": "utm_source",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "utm_term": {
+              "displayName": "utm_term",
+              "valueType": "other",
+              "providerType": "object"
+            }
           }
         },
         "webhook-topics": {
           "displayName": "Webhook Topics",
-          "path": "/webhook-topics",
+          "path": "/api/webhook-topics",
           "responseKey": "data",
           "fields": {
-            "id": "id",
-            "links": "links",
-            "type": "type"
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "webhook-topic",
+                  "displayValue": "webhook-topic"
+                }
+              ]
+            }
           }
         },
         "webhooks": {
           "displayName": "Webhooks",
-          "path": "/webhooks",
+          "path": "/api/webhooks",
           "responseKey": "data",
           "fields": {
-            "created_at": "created_at",
-            "description": "description",
-            "enabled": "enabled",
-            "endpoint_url": "endpoint_url",
-            "id": "id",
-            "links": "links",
-            "name": "name",
-            "relationships": "relationships",
-            "type": "type",
-            "updated_at": "updated_at"
+            "created_at": {
+              "displayName": "created_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enabled": {
+              "displayName": "enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "endpoint_url": {
+              "displayName": "endpoint_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "links": {
+              "displayName": "links",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "relationships": {
+              "displayName": "relationships",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "webhook",
+                  "displayValue": "webhook"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "updated_at",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         }
       }
