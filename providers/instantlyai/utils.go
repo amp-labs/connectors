@@ -24,7 +24,14 @@ var postEndpointsOfRead = datautils.NewSet( //nolint:gochecknoglobals
 	"leads/list",
 )
 
+// https://developer.instantly.ai/api/v2/analytics/getdailycampaignanalytics
 var sinceSupportedEndpoints = datautils.NewSet( //nolint:gochecknoglobals
+	"campaigns/analytics/daily",
+	"campaigns/analytics/steps",
+)
+
+// https://developer.instantly.ai/api/v2/analytics/getdailycampaignanalytics
+var untilSupportedEndpoints = datautils.NewSet( //nolint:gochecknoglobals
 	"campaigns/analytics/daily",
 	"campaigns/analytics/steps",
 )
