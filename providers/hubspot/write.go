@@ -49,7 +49,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	json, err := write(ctx, url.String(), data)
 	if err != nil {
 		return nil, err
-	}
+	} 
 
 	rsp, err := common.UnmarshalJSON[writeResponse](json)
 	if err != nil {
