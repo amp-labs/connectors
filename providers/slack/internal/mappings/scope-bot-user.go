@@ -28,7 +28,6 @@ func init() { // nolint:funlen,maintidx
 			// https://docs.slack.dev/reference/methods/bookmarks.remove
 			deleteInfo: &DeleteInfo{
 				Href:           "bookmarks.remove",
-				Method:         http.MethodPost,
 				RequestIdField: "bookmark_id", // Looks like channel_id is also required.
 			},
 		},
@@ -69,7 +68,6 @@ func init() { // nolint:funlen,maintidx
 			// https://docs.slack.dev/reference/methods/calls.end
 			deleteInfo: &DeleteInfo{
 				Href:           "calls.end",
-				Method:         http.MethodPost,
 				RequestIdField: "id",
 			},
 		},
@@ -92,7 +90,6 @@ func init() { // nolint:funlen,maintidx
 			// https://docs.slack.dev/reference/methods/canvases.delete
 			deleteInfo: &DeleteInfo{
 				Href:           "canvases.delete",
-				Method:         http.MethodPost,
 				RequestIdField: "canvas_id",
 			},
 		},
@@ -123,7 +120,6 @@ func init() { // nolint:funlen,maintidx
 			// https://docs.slack.dev/reference/methods/conversations.archive
 			deleteInfo: &DeleteInfo{
 				Href:           "conversations.archive",
-				Method:         http.MethodPost,
 				RequestIdField: "channel",
 			},
 		},
@@ -159,7 +155,6 @@ func init() { // nolint:funlen,maintidx
 			// https://docs.slack.dev/reference/methods/files.delete
 			deleteInfo: &DeleteInfo{
 				Href:           "files.delete",
-				Method:         http.MethodPost,
 				RequestIdField: "file",
 			},
 		},
@@ -258,7 +253,6 @@ func init() { // nolint:funlen,maintidx
 			// https://docs.slack.dev/reference/methods/usergroups.disable
 			deleteInfo: &DeleteInfo{
 				Href:           "usergroups.disable",
-				Method:         http.MethodPost,
 				RequestIdField: "usergroup",
 			},
 		},
