@@ -46,8 +46,8 @@ func main() {
 	utils.DumpJSON(res, os.Stdout)
 
 	res, err = conn.Read(ctx, common.ReadParams{
-		ObjectName: "payments",
-		Fields:     connectors.Fields("id", "amount_money", "status", "created_at"),
+		ObjectName: "catalog/search-catalog-items",
+		Fields:     connectors.Fields("id", "type", "item_data", "created_at"),
 		PageSize:   2,
 	})
 	if err != nil {

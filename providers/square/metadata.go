@@ -7,28 +7,15 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
+// buildSingleObjectMetadataRequest samples a single record to infer field
+// metadata from. That is just a one-record read, so it reuses the read request
+// builder, which knows whether the object lists via GET or a search POST.
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	cfg, ok := objects[objectName]
-	if !ok {
-		return nil, fmt.Errorf("%w: %q", common.ErrObjectNotSupported, objectName)
-	}
-
-	u, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, cfg.path)
-	if err != nil {
-		return nil, err
-	}
-
-	// Fetch a single record to infer field metadata from.
-	if cfg.supportsLimit {
-		u.WithQueryParam("limit", "1")
-	}
-
-	return http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	return c.buildReadRequest(ctx, common.ReadParams{ObjectName: objectName, PageSize: 1})
 }
 
 func (c *Connector) parseSingleObjectMetadataResponse(
@@ -43,9 +30,11 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	objectMetadata := common.ObjectMetadata{
-		Fields:      make(map[string]common.FieldMetadata),
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(naming.SeparateUnderscoreWords(objectName)),
+		Fields:    make(map[string]common.FieldMetadata),
+		FieldsMap: make(map[string]string),
+		DisplayName: naming.CapitalizeFirstLetterEveryWord(
+			naming.SeparateCamelCaseWords(naming.SeparateUnderscoreWords(objectName)),
+		),
 	}
 
 	body, ok := response.Body()

@@ -2,6 +2,10 @@ package square
 
 const apiVersion = "v2"
 
+// objectCatalogItems reads the catalog through the SearchCatalogItems endpoint,
+// which returns item objects only, unlike the mixed-type "catalog" list.
+const objectCatalogItems = "catalogItems"
+
 // objectConfig is the single source of truth for a Square object: how to list
 // its records, and (when supported) how to create/update them. Write fields
 // left at their zero value mean the object is read-only.
@@ -36,6 +40,10 @@ type objectConfig struct {
 	// topLevelFields are record fields the endpoint expects as siblings of the
 	// envelope rather than inside it, e.g. source_id when creating a card.
 	topLevelFields []string
+	// readViaPOST reports whether reads send their pagination and filter
+	// criteria as a JSON body via POST instead of GET query params, as
+	// Square's search endpoints require.
+	readViaPOST bool
 	// upsertPath, when set, is where writes go instead of path, and marks the
 	// endpoint as an upsert: updates POST there with the record id injected
 	// into the body instead of PUT path/{id} (the catalog upsert endpoint).
@@ -96,6 +104,14 @@ var objects = map[string]objectConfig{ //nolint:gochecknoglobals
 		writeKey:         "object",
 		writeResponseKey: "catalog_object",
 		needsIdempotency: true,
+	},
+	// https://developer.squareup.com/reference/square/catalog-api/search-catalog-items
+	objectCatalogItems: {
+		path:           "/catalog/search-catalog-items",
+		responseKey:    "items",
+		supportsLimit:  true,
+		supportsCursor: true,
+		readViaPOST:    true,
 	},
 	// https://developer.squareup.com/reference/square/cards-api/create-card
 	// source_id and verification_token sit beside the "card" envelope.

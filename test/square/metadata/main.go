@@ -18,6 +18,7 @@ func main() {
 		"payments",
 		"catalog",
 		"merchants",
+		"catalog/search-catalog-items",
 	})
 	if err != nil {
 		utils.Fail(err.Error())
