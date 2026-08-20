@@ -135,8 +135,8 @@ var slackInterceptor = testscenario.WebhookInterceptorFunc(
         }
 
         // 2. Respond to Slack
-        writer.WriteHeader(http.StatusOK)
         writer.Header().Set("Content-Type", "text/plain")
+        writer.WriteHeader(http.StatusOK)
         writer.Write([]byte(body.Challenge))
 
         return true // Request handled

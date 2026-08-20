@@ -8,8 +8,9 @@ import (
 	"os"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/slack"
-	"github.com/amp-labs/connectors/test/slack/slackuser"
+	slackshared "github.com/amp-labs/connectors/test/slack"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 func run() error {
 	ctx := context.Background()
 
-	conn := slackuser.NewConnector(ctx)
+	conn := slackshared.NewConnector(ctx, providers.SlackUserScope)
 
 	callId, err := testCreatingCalls(ctx, conn)
 	if err != nil {

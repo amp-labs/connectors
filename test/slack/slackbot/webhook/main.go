@@ -5,8 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/test/slack/slackuser"
-	"github.com/amp-labs/connectors/test/slack/slackuser/subscription"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/test/slack"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
@@ -15,7 +15,7 @@ func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	conn := slackuser.NewConnector(ctx)
+	conn := slackshared.NewConnector(ctx, providers.Slack)
 
-	testscenario.RunWebhookConsumer(ctx, subscription.NewWebhookProcessor(), conn, nil)
+	testscenario.RunWebhookConsumer(ctx, slackshared.NewWebhookProcessor(), conn, nil)
 }
