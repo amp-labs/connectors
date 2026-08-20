@@ -10,7 +10,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/slack"
+	"github.com/amp-labs/connectors/test/slack/slackbot"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -22,7 +22,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := slack.NewConnector(ctx)
+	conn := slackbot.NewConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "conversations",

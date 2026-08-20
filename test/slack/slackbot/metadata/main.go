@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/test/slack"
+	"github.com/amp-labs/connectors/test/slack/slackbot"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -20,7 +20,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := slack.NewConnector(ctx)
+	conn := slackbot.NewConnector(ctx)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"conversations", "users", "auth.teams"})
 	if err != nil {

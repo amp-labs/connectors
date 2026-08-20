@@ -1,6 +1,7 @@
 package slack
 
 import (
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
@@ -15,6 +16,13 @@ import (
 type (
 	SubscriptionEvent          = webhook.Event
 	CollapsedSubscriptionEvent = webhook.CollapsedSubscriptionEvent
+)
+
+var (
+	_ connectors.ReadConnector              = (*Connector)(nil)
+	_ connectors.WriteConnector             = (*Connector)(nil)
+	_ connectors.BatchRecordReaderConnector = (*Connector)(nil)
+	_ connectors.AuthMetadataConnector      = (*Connector)(nil)
 )
 
 type Connector struct {
@@ -33,7 +41,7 @@ type Connector struct {
 	teamId string
 }
 
-func NewConnector(params common.ConnectorParams) (*Connector, error) {
+func NewBotConnector(params common.ConnectorParams) (*Connector, error) {
 	return components.Init(providers.Slack, params, constructor)
 }
 
@@ -42,7 +50,7 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 	// Signing Secret is used by the event message verifier.
 	// If the value is empty then all messages will be marked as invalid.
 	signingSecret := params.Metadata["signingSecret"]
-	verifier := webhook.NewVerifier(base.JSONHTTPClient(), base.ProviderInfo(), signingSecret)
+	verifier := webhook.NewVerifier(signingSecret)
 
 	connector := &Connector{
 		Connector: base,

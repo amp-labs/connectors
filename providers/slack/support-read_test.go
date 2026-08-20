@@ -20,30 +20,31 @@ func TestObjectResponseField(t *testing.T) {
 		"chat.scheduledMessages":            "scheduled_messages",
 		"conversations":                     "channels",
 		"conversations.listConnectInvites":  "invites",
-		"conversations.requestSharedInvite": "invites",
+		"conversations.requestSharedInvite": "invite_requests",
 		"files":                             "files",
 		"files.remote":                      "files",
-		"reactions":                         "items",
-		"team.externalTeams":                "external_teams",
+		"team.externalTeams":                "organizations",
 		"usergroups":                        "usergroups",
 		"users":                             "members",
 		"users.conversations":               "channels",
 	}
 
 	var objectsWithConnectorSideFilterDuplicate = datautils.Map[string, string]{
-		"conversations": "updated",
-		"files":         "created",
-		"usergroups":    "date_update",
-		"users":         "updated",
+		"conversations":                     "updated",
+		"conversations.listConnectInvites":  "date_last_updated",
+		"conversations.requestSharedInvite": "date_last_updated",
+		"files":                             "created", // TODO must use Since/Until instead of connector side.
+		"usergroups":                        "date_update",
+		"users":                             "updated",
 	}
 
 	readRequestMap := map[string]mockcond.Condition{
 		"auth.teams": mockcond.And{
-			mockcond.MethodGET(),
+			mockcond.MethodPOST(),
 			mockcond.Path("/api/auth.teams.list"),
 		},
 		"chat.scheduledMessages": mockcond.And{
-			mockcond.MethodGET(),
+			mockcond.MethodPOST(),
 			mockcond.Path("/api/chat.scheduledMessages.list"),
 		},
 		"conversations": mockcond.And{

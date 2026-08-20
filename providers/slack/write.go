@@ -2,22 +2,39 @@ package slack
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/slack/internal/mappings"
 	"github.com/spyzhov/ajson"
 )
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	suffix, err := getWriteSuffix(params)
-	if err != nil {
-		return nil, err
+	var (
+		resourceName string
+		idKey        string
+	)
+
+	if params.IsUpdate() {
+		info, err := mappings.GetWriteUpdateInfo(c.Provider(), params.ObjectName)
+		if err != nil {
+			return nil, err
+		}
+
+		resourceName = info.Href
+		idKey = info.RequestIdField
+	} else {
+		info, err := mappings.GetWriteCreateInfo(c.Provider(), params.ObjectName)
+		if err != nil {
+			return nil, err
+		}
+
+		resourceName = info.Href
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, params.ObjectName+suffix)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, resourceName)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +45,6 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	if params.IsUpdate() {
-		idKey := writeUpdateIdField[params.ObjectName]
 		body[idKey] = params.RecordId
 	}
 
@@ -68,18 +84,32 @@ func (c *Connector) parseWriteResponse(
 		return nil, common.ErrBadProviderResponse
 	}
 
-	spec, found := writeResponseField[params.ObjectName]
-	if !found || spec.idField == "" {
-		// If the Ok field is true but we don't have a spec for this object,
-		// optimistically return success with no ID or data.
-		// There are some write objects (e.g. reactions.add) that return no record data on success,
-		return &common.WriteResult{Success: true}, nil
+	var (
+		recordKey string
+		idField   string
+	)
+
+	if params.IsUpdate() {
+		info, err := mappings.GetWriteUpdateInfo(c.Provider(), params.ObjectName)
+		if err != nil {
+			return nil, err
+		}
+
+		recordKey = info.ResponseField
+		idField = info.ResponseIdField
+	} else {
+		info, err := mappings.GetWriteCreateInfo(c.Provider(), params.ObjectName)
+		if err != nil {
+			return nil, err
+		}
+
+		recordKey = info.ResponseField
+		idField = info.ResponseIdField
 	}
 
 	var recordNode *ajson.Node
-
-	if spec.recordKey != "" {
-		recordNode, err = jsonquery.New(body).ObjectRequired(spec.recordKey)
+	if recordKey != "" {
+		recordNode, err = jsonquery.New(body).ObjectRequired(recordKey)
 		if err != nil {
 			return nil, err
 		}
@@ -87,9 +117,15 @@ func (c *Connector) parseWriteResponse(
 		recordNode = body
 	}
 
-	recordID, err := jsonquery.New(recordNode).StrWithDefault(spec.idField, "")
-	if err != nil {
-		return nil, err
+	recordID := params.RecordId
+	if idField != "" {
+		// Most responses contain a field that identifies the affected record.
+		// Some successful operations return only a status response without a
+		// meaningful record ID. In that case, fall back to the ID from the params.
+		recordID, err = jsonquery.New(recordNode).StrWithDefault(idField, params.RecordId)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	dataMap, err := jsonquery.Convertor.ObjectToMap(recordNode)
@@ -102,23 +138,4 @@ func (c *Connector) parseWriteResponse(
 		RecordId: recordID,
 		Data:     dataMap,
 	}, nil
-}
-
-func getWriteSuffix(params common.WriteParams) (string, error) {
-	if params.IsUpdate() {
-		updateSuffix, supported := writeUpdateSuffix[params.ObjectName]
-		if !supported {
-			return "", fmt.Errorf("%w: %s does not support updates",
-				common.ErrOperationNotSupportedForObject, params.ObjectName)
-		}
-
-		return updateSuffix, nil
-	}
-
-	// Create: append ".add" or ".create" suffix.
-	if writeObjectsUsingAddSuffix.Has(params.ObjectName) {
-		return ".add", nil
-	}
-
-	return ".create", nil
 }

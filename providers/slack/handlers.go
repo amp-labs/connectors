@@ -10,20 +10,21 @@ import (
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/slack/internal/mappings"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	urlPath := objectName
-	if !objectsWithoutListSuffix.Has(objectName) {
-		urlPath = objectName + ".list"
-	}
-
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, urlPath)
+	info, err := mappings.GetReadListInfo(c.Provider(), objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	if objectsReadViaPost.Has(objectName) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, info.Href)
+	if err != nil {
+		return nil, err
+	}
+
+	if info.Method == http.MethodPost {
 		return jsonPostRequest(ctx, url.String(), map[string]any{"limit": 1})
 	}
 
@@ -48,7 +49,12 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrFailedToUnmarshalBody
 	}
 
-	recordsArr, err := getResponseCollectionRecords(body, objectName)
+	info, err := mappings.GetReadListInfo(c.Provider(), objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	recordsArr, err := getResponseCollectionRecords(body, info.ResponseField)
 	if err != nil {
 		return nil, err
 	}
@@ -75,12 +81,12 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	urlPath := params.ObjectName
-	if !objectsWithoutListSuffix.Has(params.ObjectName) {
-		urlPath = params.ObjectName + ".list"
+	info, err := mappings.GetReadListInfo(c.Provider(), params.ObjectName)
+	if err != nil {
+		return nil, err
 	}
 
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, urlPath)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, info.Href)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +97,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	// Ref: https://docs.slack.dev/apis/web-api/pagination/
 	pageSize := readhelper.PageSizeWithDefaultStr(params, "200")
 
-	if objectsReadViaPost.Has(params.ObjectName) {
+	if info.Method == http.MethodPost {
 		body := map[string]any{"limit": pageSize}
 		if params.NextPage != "" {
 			body["cursor"] = params.NextPage.String()
@@ -115,12 +121,17 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 	request *http.Request, //nolint:revive
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	if objectsWithConnectorSideFilter.Has(params.ObjectName) {
+	info, err := mappings.GetReadListInfo(c.Provider(), params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if info.TimeFilterField != "" {
 		return common.ParseResultFiltered(
 			params,
 			response,
-			nodeRecords(params.ObjectName),
-			makeTimeFilter(params.ObjectName),
+			nodeRecords(info.ResponseField),
+			makeTimeFilter(info),
 			readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id")),
 			params.Fields,
 		)
@@ -128,7 +139,7 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 
 	return common.ParseResult(
 		response,
-		recordsFunc(params.ObjectName),
+		recordsFunc(info.ResponseField),
 		nextRecordsURL(),
 		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
 		params.Fields,
@@ -139,13 +150,11 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 // using the timestamp field for the given object. Slack does not support server-side
 // date filtering, so we filter records in memory after fetching each page.
 // Records are unordered, so pagination continues until all pages are exhausted.
-func makeTimeFilter(objectName string) common.RecordsFilterFunc {
-	timestampField := objectsWithConnectorSideFilter[objectName]
-
+func makeTimeFilter(info mappings.ReadListInfo) common.RecordsFilterFunc {
 	return readhelper.MakeTimeFilterFunc(
 		readhelper.Unordered,
 		readhelper.NewTimeBoundary(),
-		timestampField,
+		info.TimeFilterField,
 		readhelper.TimestampFormatUnixSec,
 		nextRecordsURL(),
 	)
