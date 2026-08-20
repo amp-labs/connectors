@@ -8,7 +8,8 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/slack/slackbot"
+	"github.com/amp-labs/connectors/providers"
+	slackshared "github.com/amp-labs/connectors/test/slack"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
@@ -17,7 +18,7 @@ func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	conn := slackbot.NewConnector(ctx)
+	conn := slackshared.NewConnector(ctx, providers.Slack)
 
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "files",

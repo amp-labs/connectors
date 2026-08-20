@@ -13,8 +13,9 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/slack"
-	"github.com/amp-labs/connectors/test/slack/slackuser"
+	slackshared "github.com/amp-labs/connectors/test/slack"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
 	"github.com/brianvoe/gofakeit/v6"
@@ -34,7 +35,7 @@ func run() error {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	conn := slackuser.NewConnector(ctx)
+	conn := slackshared.NewConnector(ctx, providers.SlackUserScope)
 
 	identifiers := make([]string, 2)
 

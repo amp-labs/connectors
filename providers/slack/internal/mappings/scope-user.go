@@ -26,7 +26,7 @@ func init() { // nolint:funlen,maintidx
 				Href:                  "admin.apps.approved.list",
 				Method:                http.MethodGet,
 				ResponseField:         "approved_apps",
-				NestedResponseIdField: []string{"apps"},
+				NestedResponseIdField: []string{"app"},
 				ResponseIdField:       "id",
 				TimeFilterField:       "date_updated",
 			},
@@ -130,20 +130,6 @@ func init() { // nolint:funlen,maintidx
 				Method:          http.MethodPost,
 				ResponseField:   "active_sessions",
 				ResponseIdField: "session_id",
-			},
-		},
-		"stars": {
-			// https://docs.slack.dev/reference/methods/stars.list
-			// End-users can use the new Later view, but Later APIs are not currently available.
-			// As a result of this transition, the stars.list method will no longer
-			// reflect anything new that users are saving.
-			readListInfo: &ReadListInfo{
-				Href:                  "stars.list",
-				Method:                http.MethodGet,
-				ResponseField:         "items",
-				NestedResponseIdField: []string{"message"},
-				ResponseIdField:       "permalink",
-				TimeFilterField:       "date_create",
 			},
 		},
 	} {

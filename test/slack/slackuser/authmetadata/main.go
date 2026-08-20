@@ -6,8 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/slack"
-	"github.com/amp-labs/connectors/test/slack/slackuser"
+	slackshared "github.com/amp-labs/connectors/test/slack"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -15,7 +16,7 @@ func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	conn := slackuser.NewConnector(ctx)
+	conn := slackshared.NewConnector(ctx, providers.SlackUserScope)
 
 	info, err := conn.GetPostAuthInfo(ctx)
 	if err != nil || info.CatalogVars == nil {

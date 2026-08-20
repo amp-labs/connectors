@@ -8,7 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/test/slack/slackuser"
+	"github.com/amp-labs/connectors/providers"
+	slackshared "github.com/amp-labs/connectors/test/slack"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -17,7 +18,7 @@ func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	conn := slackuser.NewConnector(ctx)
+	conn := slackshared.NewConnector(ctx, providers.SlackUserScope)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"conversations", "users", "auth.teams"})
 	if err != nil {
