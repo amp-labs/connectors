@@ -46,7 +46,7 @@ func main() {
 	utils.DumpJSON(res, os.Stdout)
 
 	res, err = conn.Read(ctx, common.ReadParams{
-		ObjectName: "catalog/search-catalog-items",
+		ObjectName: "catalogItems.",
 		Fields:     connectors.Fields("id", "type", "item_data", "created_at"),
 		PageSize:   2,
 	})
