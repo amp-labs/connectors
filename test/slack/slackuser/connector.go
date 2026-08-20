@@ -1,0 +1,50 @@
+package slackuser
+
+import (
+	"context"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/scanning/credscanning"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/slack"
+	"github.com/amp-labs/connectors/test/utils"
+	"golang.org/x/oauth2"
+)
+
+var signingSecretField = credscanning.Field{
+	Name:      "signingSecret",
+	PathJSON:  "metadata.signingSecret",
+	SuffixENV: "SIGNING_SECRET",
+}
+
+func NewConnector(ctx context.Context) *slack.Connector {
+	filePath := credscanning.LoadPath(providers.SlackUserScope)
+	reader := utils.MustCreateProvCredJSON(filePath, true, signingSecretField)
+
+	conn, err := slack.NewUserConnector(common.ConnectorParams{
+		AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
+		Metadata: map[string]string{
+			"signingSecret": reader.Get(signingSecretField),
+		},
+	})
+	if err != nil {
+		utils.Fail("create slack connector", "error: ", err)
+	}
+
+	return conn
+}
+
+func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
+	cfg := &oauth2.Config{
+		ClientID:     reader.Get(credscanning.Fields.ClientId),
+		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
+		RedirectURL:  "https://dev-api.withampersand.com/callbacks/v1/oauth",
+		Endpoint: oauth2.Endpoint{
+			AuthURL:   "https://slack.com/oauth/v2/authorize",
+			TokenURL:  "https://slack.com/api/oauth.v2.user.access",
+			AuthStyle: oauth2.AuthStyleAutoDetect,
+		},
+	}
+
+	return cfg
+}

@@ -298,6 +298,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ServiceNow:                wrapper(newServiceNowConnector),
 	providers.Shopify:                   wrapper(newShopifyConnector),
 	providers.Slack:                     wrapper(newSlackBotConnector),
+	providers.SlackUserScope:            wrapper(newSlackUserConnector),
 	providers.Smartlead:                 wrapper(newSmartleadConnector),
 	providers.SnapchatAds:               wrapper(newSnapchatAdsConnector),
 	providers.Snowflake:                 wrapper(newSnowflakeConnector),
@@ -1306,6 +1307,10 @@ func newSalesfinityConnector(params common.ConnectorParams) (*salesfinity.Connec
 
 func newSlackBotConnector(params common.ConnectorParams) (*slack.Connector, error) {
 	return slack.NewBotConnector(params)
+}
+
+func newSlackUserConnector(params common.ConnectorParams) (*slack.Connector, error) {
+	return slack.NewUserConnector(params)
 }
 
 func newDevRevConnector(params common.ConnectorParams) (*devrev.Connector, error) {
