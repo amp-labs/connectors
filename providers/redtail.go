@@ -26,7 +26,7 @@ const (
 	rtAuthURLTemplate = "https://%s.redtailtechnology.com/api/public/v1/authentication"
 )
 
-func init() {
+func init() { // nolint:funlen
 	SetInfo(Redtail, ProviderInfo{
 		DisplayName: "Redtail",
 		AuthType:    Custom,
@@ -38,12 +38,10 @@ func init() {
 		},
 		CustomOpts: &CustomAuthOpts{
 			MultiStep: true,
-			// The API key is issued to the integration vendor by Redtail
-			// (partnersupport@redtailtechnology.com), not to the end user.
-			ProviderInputs: []CustomAuthInput{
-				{Name: "apiKey", DisplayName: "API Key", FieldType: FieldTypePassword},
-			},
 			Inputs: []CustomAuthInput{
+				// The API key is issued to the integration vendor by Redtail
+				// (partnersupport@redtailtechnology.com), not to the end user.
+				{Name: "apiKey", DisplayName: "API Key", FieldType: FieldTypePassword},
 				{Name: "username", DisplayName: "Username", FieldType: FieldTypeText},
 				{Name: "password", DisplayName: "Password", FieldType: FieldTypePassword},
 			},
@@ -72,6 +70,16 @@ func init() {
 					Prompt: "The host of your Redtail CRM environment " +
 						"(for example, 'crm' for 'https://crm.redtailtechnology.com')",
 				},
+			},
+		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1787032905/media/redtailtechnology.com_1787032905.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1787032995/media/redtailtechnology.com_1787032994.png",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1787032905/media/redtailtechnology.com_1787032905.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1787032995/media/redtailtechnology.com_1787032994.png",
 			},
 		},
 	})
@@ -132,11 +140,11 @@ func rtBuildAuthRequest(ctx context.Context, state AuthContext) (AuthContext, *h
 func rtParseAuthResponse(_ context.Context, state AuthContext, resp *http.Response) (AuthContext, error) {
 	defer resp.Body.Close()
 
+	// Response shape: {"authenticated_user":{"database_id":…,"user_id":…,"user_key":"…"}}
 	var body struct {
 		AuthenticatedUser struct {
 			UserKey string `json:"user_key"`
 		} `json:"authenticated_user"`
-		UserKey string `json:"user_key"`
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
@@ -144,10 +152,6 @@ func rtParseAuthResponse(_ context.Context, state AuthContext, resp *http.Respon
 	}
 
 	userKey := body.AuthenticatedUser.UserKey
-	if userKey == "" {
-		userKey = body.UserKey
-	}
-
 	if userKey == "" {
 		return state, errRtMissingUserKey
 	}
