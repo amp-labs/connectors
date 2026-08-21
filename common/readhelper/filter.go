@@ -181,11 +181,19 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 			return nil, "", nil
 		}
 
+		// No time bounds: preserve all records and continue pagination.
+		if params.Since.IsZero() && params.Until.IsZero() {
+			next, err := nextPageFunc(body)
+
+			return records, next, err
+		}
+
 		var (
 			filtered   []*ajson.Node
 			stopPaging bool
 		)
 
+		// Filter records and determine whether later pages can be skipped.
 		for _, nodeRecord := range records {
 			recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat, zoom...)
 			if err != nil {
@@ -216,7 +224,7 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 					stopPaging = true
 				}
 			case Unordered:
-				// cannot infer anything
+				// Record order provides no basis for stopping early.
 			}
 
 			if stopPaging {
@@ -224,7 +232,7 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 			}
 		}
 
-		// Proven exhaustion.
+		// A timestamp outside the boundary proves later pages cannot match.
 		if stopPaging {
 			return filtered, "", nil
 		}
