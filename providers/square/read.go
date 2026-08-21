@@ -90,7 +90,7 @@ func buildPOSTRequest(
 	}
 
 	if cfg.supportsLimit {
-		body["limit"] = readhelper.PageSizeWithDefaultStr(params, strconv.Itoa(defaultPageSize))
+		body["limit"] = readhelper.PageSizeWithDefault(params, defaultPageSize)
 	}
 
 	if cfg.supportsTimeRange {
