@@ -1,9 +1,12 @@
 package square
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -13,7 +16,7 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-const defaultPageSize = "100"
+const defaultPageSize = 100
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	cfg, ok := objects[params.ObjectName]
@@ -26,28 +29,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	if cfg.supportsCursor && params.NextPage != "" {
-		url.WithQueryParam("cursor", params.NextPage.String())
+	if cfg.readViaPOST {
+		return buildPOSTRequest(ctx, cfg, params, url)
 	}
 
-	// When the object supports it, always request the maximum page size so we
-	// minimize round trips. params.PageSize is treated as an override: when the
-	// caller sets it we honor that value, otherwise we fall back to the max.
-	if cfg.supportsLimit {
-		url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, defaultPageSize))
-	}
-
-	if cfg.supportsTimeRange {
-		if !params.Since.IsZero() {
-			url.WithQueryParam("begin_time", params.Since.UTC().Format(time.RFC3339))
-		}
-
-		if !params.Until.IsZero() {
-			url.WithQueryParam("end_time", params.Until.UTC().Format(time.RFC3339))
-		}
-	}
-
-	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	return buildGETRequest(ctx, cfg, params, url)
 }
 
 func (c *Connector) parseReadResponse(
@@ -85,15 +71,75 @@ func makeRecordsFunc(responseKey string) common.NodeRecordsFunc {
 //	}
 func makeNextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		cursor, err := jsonquery.New(node).StringOptional("cursor")
-		if err != nil {
-			return "", err
-		}
-
-		if cursor == nil {
-			return "", nil
-		}
-
-		return *cursor, nil
+		return jsonquery.New(node).StrWithDefault("cursor", "")
 	}
+}
+
+// buildPOSTRequest builds a read against a search endpoint, which takes its
+// pagination and filter criteria as a JSON body rather than query params.
+func buildPOSTRequest(
+	ctx context.Context,
+	cfg objectConfig,
+	params common.ReadParams,
+	url *urlbuilder.URL,
+) (*http.Request, error) {
+	body := map[string]any{}
+
+	if params.NextPage != "" {
+		body["cursor"] = params.NextPage.String()
+	}
+
+	if cfg.supportsLimit {
+		body["limit"] = readhelper.PageSizeWithDefault(params, defaultPageSize)
+	}
+
+	if cfg.supportsTimeRange {
+		if !params.Since.IsZero() {
+			body["begin_time"] = params.Since.UTC().Format(time.RFC3339)
+		}
+
+		if !params.Until.IsZero() {
+			body["end_time"] = params.Until.UTC().Format(time.RFC3339)
+		}
+	}
+
+	// Archived items are excluded by default; read them too so archiving an item
+	// doesn't silently drop it from a sync.
+	if params.ObjectName == objectCatalogItems {
+		body["archived_state"] = "ARCHIVED_STATE_ALL"
+	}
+
+	jsonData, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodPost, url.String(), bytes.NewReader(jsonData))
+}
+
+func buildGETRequest(
+	ctx context.Context,
+	cfg objectConfig,
+	params common.ReadParams,
+	url *urlbuilder.URL,
+) (*http.Request, error) {
+	if params.NextPage != "" {
+		url.WithQueryParam("cursor", params.NextPage.String())
+	}
+
+	if cfg.supportsLimit {
+		url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, strconv.Itoa(defaultPageSize)))
+	}
+
+	if cfg.supportsTimeRange {
+		if !params.Since.IsZero() {
+			url.WithQueryParam("begin_time", params.Since.UTC().Format(time.RFC3339))
+		}
+
+		if !params.Until.IsZero() {
+			url.WithQueryParam("end_time", params.Until.UTC().Format(time.RFC3339))
+		}
+	}
+
+	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 }

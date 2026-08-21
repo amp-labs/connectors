@@ -15,3 +15,13 @@ func PageSizeWithDefaultStr(params common.ReadParams, defaultPageSize string) st
 
 	return strconv.Itoa(params.PageSize)
 }
+
+// PageSizeWithDefault returns the user-specified page size from params.
+// If params.PageSize is empty value, defaultPageSize is returned instead.
+func PageSizeWithDefault(params common.ReadParams, defaultPageSize int) int {
+	if params.PageSize <= 0 {
+		return defaultPageSize
+	}
+
+	return params.PageSize
+}
