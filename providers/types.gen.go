@@ -532,6 +532,14 @@ type Oauth2Opts struct {
 	// Example: {"default":"https://{{.workspace}}.api.com/default"}
 	ScopeMappings map[string]string `json:"scopeMappings,omitempty"`
 
+	// ScopeQueryParam The query parameter name used to pass OAuth scopes in the authorization URL.
+	// Defaults to "scope" when not specified. Some providers use a different
+	// parameter name, such as "user_scope" for Slack user scopes.
+	//
+	//
+	// Example: user_scope
+	ScopeQueryParam string `json:"scopeQueryParam,omitempty"`
+
 	// TokenMetadataFields Fields to be used to extract token metadata from the token response.
 	TokenMetadataFields TokenMetadataFields `json:"tokenMetadataFields"`
 
