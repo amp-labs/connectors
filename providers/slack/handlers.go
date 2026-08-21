@@ -80,7 +80,9 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
-func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+func (c *Connector) buildReadRequest( // nolint:cyclop
+	ctx context.Context, params common.ReadParams,
+) (*http.Request, error) {
 	info, err := mappings.GetReadListInfo(c.Provider(), params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -103,6 +105,16 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 			body["cursor"] = params.NextPage.String()
 		}
 
+		if !params.Since.IsZero() && info.SinceQP != "" {
+			value := readhelper.TimeFormat(params.Since, info.RangeTimestampFormat)
+			body[info.SinceQP] = value
+		}
+
+		if !params.Until.IsZero() && info.UntilQP != "" {
+			value := readhelper.TimeFormat(params.Until, info.RangeTimestampFormat)
+			body[info.UntilQP] = value
+		}
+
 		return jsonPostRequest(ctx, url.String(), body)
 	}
 
@@ -110,6 +122,16 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	if params.NextPage != "" {
 		url.WithQueryParam("cursor", params.NextPage.String())
+	}
+
+	if !params.Since.IsZero() && info.SinceQP != "" {
+		value := readhelper.TimeFormat(params.Since, info.RangeTimestampFormat)
+		url.WithQueryParam(info.SinceQP, value)
+	}
+
+	if !params.Until.IsZero() && info.UntilQP != "" {
+		value := readhelper.TimeFormat(params.Until, info.RangeTimestampFormat)
+		url.WithQueryParam(info.UntilQP, value)
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -126,13 +148,15 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 		return nil, err
 	}
 
+	idField := info.GetIdFieldQuery()
+
 	if info.TimeFilterField != "" {
 		return common.ParseResultFiltered(
 			params,
 			response,
 			nodeRecords(info.ResponseField),
 			makeTimeFilter(info),
-			readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id")),
+			readhelper.MakeMarshaledDataFuncWithId(nil, idField),
 			params.Fields,
 		)
 	}
@@ -141,7 +165,7 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 		response,
 		recordsFunc(info.ResponseField),
 		nextRecordsURL(),
-		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
+		readhelper.MakeGetMarshaledDataWithId(idField),
 		params.Fields,
 	)
 }

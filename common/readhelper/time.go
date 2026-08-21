@@ -1,6 +1,7 @@
 package readhelper
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -120,4 +121,25 @@ func (b TimeBoundary) After(params common.ReadParams, timestamp time.Time) bool 
 	}
 
 	return timestamp.After(params.Until)
+}
+
+// TimeFormat formats input according to the given timestamp format kind.
+// Supported kinds:
+//   - TimestampFormatUnixSec
+//   - TimestampFormatUnixMs
+//   - TimestampFormatUnixUs
+//   - time.RFC3339, time.RFC3339Nano, or any Go layout string.
+func TimeFormat(input time.Time, formatKind string) string {
+	switch formatKind {
+	case TimestampFormatUnixSec:
+		return strconv.FormatInt(input.Unix(), 10)
+	case TimestampFormatUnixMs:
+		return strconv.FormatInt(input.UnixMilli(), 10)
+	case TimestampFormatUnixUs:
+		return strconv.FormatInt(input.UnixMicro(), 10)
+	default:
+		// Treat as a standard Go layout string. Example: "time.RFC3339".
+		// Normalize to UTC so query params are always in UTC.
+		return input.UTC().Format(formatKind)
+	}
 }

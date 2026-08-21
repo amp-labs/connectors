@@ -13,8 +13,6 @@ func init() {
 				NestedResponseIdField: []string{"invite"},
 				ResponseIdField:       "id",
 				TimeFilterField:       "date_last_updated",
-				SinceQP:               "",
-				UntilQP:               "",
 			},
 		},
 		"conversations.requestSharedInvite": {
@@ -25,8 +23,6 @@ func init() {
 				ResponseField:   "invite_requests",
 				ResponseIdField: "id",
 				TimeFilterField: "date_last_updated",
-				SinceQP:         "",
-				UntilQP:         "",
 			},
 		},
 		"files.remote": {
@@ -59,9 +55,6 @@ func init() {
 				Method:          http.MethodGet,
 				ResponseField:   "organizations",
 				ResponseIdField: "team_id",
-				TimeFilterField: "",
-				SinceQP:         "",
-				UntilQP:         "",
 			},
 		},
 	} {
