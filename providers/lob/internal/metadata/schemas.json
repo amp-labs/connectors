@@ -1,0 +1,3325 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "addresses": {
+          "displayName": "Addresses",
+          "path": "/addresses",
+          "responseKey": "data",
+          "fields": {
+            "address_city": {
+              "displayName": "Address City",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address_country": {
+              "displayName": "Address Country",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "AFGHANISTAN",
+                  "displayValue": "AFGHANISTAN"
+                },
+                {
+                  "value": "ALBANIA",
+                  "displayValue": "ALBANIA"
+                },
+                {
+                  "value": "ALGERIA",
+                  "displayValue": "ALGERIA"
+                },
+                {
+                  "value": "AMERICAN SAMOA",
+                  "displayValue": "AMERICAN SAMOA"
+                },
+                {
+                  "value": "ANDORRA",
+                  "displayValue": "ANDORRA"
+                },
+                {
+                  "value": "ANGOLA",
+                  "displayValue": "ANGOLA"
+                },
+                {
+                  "value": "ANGUILLA",
+                  "displayValue": "ANGUILLA"
+                },
+                {
+                  "value": "ANTARCTICA",
+                  "displayValue": "ANTARCTICA"
+                },
+                {
+                  "value": "ANTIGUA AND BARBUDA",
+                  "displayValue": "ANTIGUA AND BARBUDA"
+                },
+                {
+                  "value": "ARGENTINA",
+                  "displayValue": "ARGENTINA"
+                },
+                {
+                  "value": "ARUBA",
+                  "displayValue": "ARUBA"
+                },
+                {
+                  "value": "AUSTRALIA",
+                  "displayValue": "AUSTRALIA"
+                },
+                {
+                  "value": "AUSTRIA",
+                  "displayValue": "AUSTRIA"
+                },
+                {
+                  "value": "AZERBAIJAN",
+                  "displayValue": "AZERBAIJAN"
+                },
+                {
+                  "value": "BAHRAIN",
+                  "displayValue": "BAHRAIN"
+                },
+                {
+                  "value": "BANGLADESH",
+                  "displayValue": "BANGLADESH"
+                },
+                {
+                  "value": "BARBADOS",
+                  "displayValue": "BARBADOS"
+                },
+                {
+                  "value": "BELARUS",
+                  "displayValue": "BELARUS"
+                },
+                {
+                  "value": "BELGIUM",
+                  "displayValue": "BELGIUM"
+                },
+                {
+                  "value": "BELIZE",
+                  "displayValue": "BELIZE"
+                },
+                {
+                  "value": "BENIN",
+                  "displayValue": "BENIN"
+                },
+                {
+                  "value": "BERMUDA",
+                  "displayValue": "BERMUDA"
+                },
+                {
+                  "value": "BHUTAN",
+                  "displayValue": "BHUTAN"
+                },
+                {
+                  "value": "BOLIVIA (PLURINATIONAL STATE OF)",
+                  "displayValue": "BOLIVIA (PLURINATIONAL STATE OF)"
+                },
+                {
+                  "value": "BONAIRE, SAINT EUSTATIUS AND SABA",
+                  "displayValue": "BONAIRE, SAINT EUSTATIUS AND SABA"
+                },
+                {
+                  "value": "BOSNIA AND HERZEGOVINA",
+                  "displayValue": "BOSNIA AND HERZEGOVINA"
+                },
+                {
+                  "value": "BOTSWANA",
+                  "displayValue": "BOTSWANA"
+                },
+                {
+                  "value": "BRAZIL",
+                  "displayValue": "BRAZIL"
+                },
+                {
+                  "value": "BRITISH INDIAN OCEAN TERRITORY",
+                  "displayValue": "BRITISH INDIAN OCEAN TERRITORY"
+                },
+                {
+                  "value": "BRITISH VIRGIN ISLANDS",
+                  "displayValue": "BRITISH VIRGIN ISLANDS"
+                },
+                {
+                  "value": "BRUNEI DARUSSALAM",
+                  "displayValue": "BRUNEI DARUSSALAM"
+                },
+                {
+                  "value": "BULGARIA",
+                  "displayValue": "BULGARIA"
+                },
+                {
+                  "value": "BURKINA FASO",
+                  "displayValue": "BURKINA FASO"
+                },
+                {
+                  "value": "BURUNDI",
+                  "displayValue": "BURUNDI"
+                },
+                {
+                  "value": "CABO VERDE",
+                  "displayValue": "CABO VERDE"
+                },
+                {
+                  "value": "CAMBODIA",
+                  "displayValue": "CAMBODIA"
+                },
+                {
+                  "value": "CAMEROON",
+                  "displayValue": "CAMEROON"
+                },
+                {
+                  "value": "CANADA",
+                  "displayValue": "CANADA"
+                },
+                {
+                  "value": "CAYMAN ISLANDS",
+                  "displayValue": "CAYMAN ISLANDS"
+                },
+                {
+                  "value": "CENTRAL AFRICAN REPUBLIC",
+                  "displayValue": "CENTRAL AFRICAN REPUBLIC"
+                },
+                {
+                  "value": "CHAD",
+                  "displayValue": "CHAD"
+                },
+                {
+                  "value": "CHILE",
+                  "displayValue": "CHILE"
+                },
+                {
+                  "value": "CHINA",
+                  "displayValue": "CHINA"
+                },
+                {
+                  "value": "COLOMBIA",
+                  "displayValue": "COLOMBIA"
+                },
+                {
+                  "value": "COMOROS",
+                  "displayValue": "COMOROS"
+                },
+                {
+                  "value": "CONGO",
+                  "displayValue": "CONGO"
+                },
+                {
+                  "value": "CONGO, DEMOCRATIC REPUBLIC OF THE",
+                  "displayValue": "CONGO, DEMOCRATIC REPUBLIC OF THE"
+                },
+                {
+                  "value": "COOK ISLANDS",
+                  "displayValue": "COOK ISLANDS"
+                },
+                {
+                  "value": "COSTA RICA",
+                  "displayValue": "COSTA RICA"
+                },
+                {
+                  "value": "CÔTE D'IVOIRE",
+                  "displayValue": "CÔTE D'IVOIRE"
+                },
+                {
+                  "value": "CROATIA",
+                  "displayValue": "CROATIA"
+                },
+                {
+                  "value": "CUBA",
+                  "displayValue": "CUBA"
+                },
+                {
+                  "value": "CURAÇAO",
+                  "displayValue": "CURAÇAO"
+                },
+                {
+                  "value": "CYPRUS",
+                  "displayValue": "CYPRUS"
+                },
+                {
+                  "value": "CZECH REPUBLIC",
+                  "displayValue": "CZECH REPUBLIC"
+                },
+                {
+                  "value": "DENMARK",
+                  "displayValue": "DENMARK"
+                },
+                {
+                  "value": "DJIBOUTI",
+                  "displayValue": "DJIBOUTI"
+                },
+                {
+                  "value": "DOMINICA",
+                  "displayValue": "DOMINICA"
+                },
+                {
+                  "value": "DOMINICAN REPUBLIC",
+                  "displayValue": "DOMINICAN REPUBLIC"
+                },
+                {
+                  "value": "ECUADOR",
+                  "displayValue": "ECUADOR"
+                },
+                {
+                  "value": "EGYPT",
+                  "displayValue": "EGYPT"
+                },
+                {
+                  "value": "EL SALVADOR",
+                  "displayValue": "EL SALVADOR"
+                },
+                {
+                  "value": "EQUATORIAL GUINEA",
+                  "displayValue": "EQUATORIAL GUINEA"
+                },
+                {
+                  "value": "ERITREA",
+                  "displayValue": "ERITREA"
+                },
+                {
+                  "value": "ESTONIA",
+                  "displayValue": "ESTONIA"
+                },
+                {
+                  "value": "ESWATINI",
+                  "displayValue": "ESWATINI"
+                },
+                {
+                  "value": "ETHIOPIA",
+                  "displayValue": "ETHIOPIA"
+                },
+                {
+                  "value": "FALKLAND ISLANDS (MALVINAS)",
+                  "displayValue": "FALKLAND ISLANDS (MALVINAS)"
+                },
+                {
+                  "value": "FAROE ISLANDS",
+                  "displayValue": "FAROE ISLANDS"
+                },
+                {
+                  "value": "FIJI",
+                  "displayValue": "FIJI"
+                },
+                {
+                  "value": "FINLAND",
+                  "displayValue": "FINLAND"
+                },
+                {
+                  "value": "FRANCE",
+                  "displayValue": "FRANCE"
+                },
+                {
+                  "value": "GABON",
+                  "displayValue": "GABON"
+                },
+                {
+                  "value": "GAMBIA",
+                  "displayValue": "GAMBIA"
+                },
+                {
+                  "value": "GEORGIA",
+                  "displayValue": "GEORGIA"
+                },
+                {
+                  "value": "GERMANY",
+                  "displayValue": "GERMANY"
+                },
+                {
+                  "value": "GHANA",
+                  "displayValue": "GHANA"
+                },
+                {
+                  "value": "GIBRALTAR",
+                  "displayValue": "GIBRALTAR"
+                },
+                {
+                  "value": "GREECE",
+                  "displayValue": "GREECE"
+                },
+                {
+                  "value": "GREENLAND",
+                  "displayValue": "GREENLAND"
+                },
+                {
+                  "value": "GRENADA",
+                  "displayValue": "GRENADA"
+                },
+                {
+                  "value": "GUATEMALA",
+                  "displayValue": "GUATEMALA"
+                },
+                {
+                  "value": "GUINEA",
+                  "displayValue": "GUINEA"
+                },
+                {
+                  "value": "GUINEA-BISSAU",
+                  "displayValue": "GUINEA-BISSAU"
+                },
+                {
+                  "value": "GUYANA",
+                  "displayValue": "GUYANA"
+                },
+                {
+                  "value": "HAITI",
+                  "displayValue": "HAITI"
+                },
+                {
+                  "value": "HOLY SEE",
+                  "displayValue": "HOLY SEE"
+                },
+                {
+                  "value": "HONDURAS",
+                  "displayValue": "HONDURAS"
+                },
+                {
+                  "value": "HONG KONG",
+                  "displayValue": "HONG KONG"
+                },
+                {
+                  "value": "HUNGARY",
+                  "displayValue": "HUNGARY"
+                },
+                {
+                  "value": "ICELAND",
+                  "displayValue": "ICELAND"
+                },
+                {
+                  "value": "INDIA",
+                  "displayValue": "INDIA"
+                },
+                {
+                  "value": "INDONESIA",
+                  "displayValue": "INDONESIA"
+                },
+                {
+                  "value": "IRAN (ISLAMIC REPUBLIC OF)",
+                  "displayValue": "IRAN (ISLAMIC REPUBLIC OF)"
+                },
+                {
+                  "value": "IRAQ",
+                  "displayValue": "IRAQ"
+                },
+                {
+                  "value": "IRELAND",
+                  "displayValue": "IRELAND"
+                },
+                {
+                  "value": "ISRAEL",
+                  "displayValue": "ISRAEL"
+                },
+                {
+                  "value": "ITALY",
+                  "displayValue": "ITALY"
+                },
+                {
+                  "value": "JAMAICA",
+                  "displayValue": "JAMAICA"
+                },
+                {
+                  "value": "JAPAN",
+                  "displayValue": "JAPAN"
+                },
+                {
+                  "value": "JORDAN",
+                  "displayValue": "JORDAN"
+                },
+                {
+                  "value": "KAZAKHSTAN",
+                  "displayValue": "KAZAKHSTAN"
+                },
+                {
+                  "value": "KENYA",
+                  "displayValue": "KENYA"
+                },
+                {
+                  "value": "KIRIBATI",
+                  "displayValue": "KIRIBATI"
+                },
+                {
+                  "value": "KOREA (DEMOCRATIC PEOPLE’S REPUBLIC OF)",
+                  "displayValue": "KOREA (DEMOCRATIC PEOPLE’S REPUBLIC OF)"
+                },
+                {
+                  "value": "KOREA, REPUBLIC OF",
+                  "displayValue": "KOREA, REPUBLIC OF"
+                },
+                {
+                  "value": "KUWAIT",
+                  "displayValue": "KUWAIT"
+                },
+                {
+                  "value": "KYRGYZSTAN",
+                  "displayValue": "KYRGYZSTAN"
+                },
+                {
+                  "value": "LAO PEOPLE’S DEMOCRATIC REPUBLIC",
+                  "displayValue": "LAO PEOPLE’S DEMOCRATIC REPUBLIC"
+                },
+                {
+                  "value": "LATVIA",
+                  "displayValue": "LATVIA"
+                },
+                {
+                  "value": "LEBANON",
+                  "displayValue": "LEBANON"
+                },
+                {
+                  "value": "LESOTHO",
+                  "displayValue": "LESOTHO"
+                },
+                {
+                  "value": "LIBERIA",
+                  "displayValue": "LIBERIA"
+                },
+                {
+                  "value": "LIBYA",
+                  "displayValue": "LIBYA"
+                },
+                {
+                  "value": "LIECHTENSTEIN",
+                  "displayValue": "LIECHTENSTEIN"
+                },
+                {
+                  "value": "LITHUANIA",
+                  "displayValue": "LITHUANIA"
+                },
+                {
+                  "value": "LUXEMBOURG",
+                  "displayValue": "LUXEMBOURG"
+                },
+                {
+                  "value": "MACAO",
+                  "displayValue": "MACAO"
+                },
+                {
+                  "value": "MACEDONIA",
+                  "displayValue": "MACEDONIA"
+                },
+                {
+                  "value": "MADAGASCAR",
+                  "displayValue": "MADAGASCAR"
+                },
+                {
+                  "value": "MALAWI",
+                  "displayValue": "MALAWI"
+                },
+                {
+                  "value": "MALAYSIA",
+                  "displayValue": "MALAYSIA"
+                },
+                {
+                  "value": "MALDIVES",
+                  "displayValue": "MALDIVES"
+                },
+                {
+                  "value": "MALI",
+                  "displayValue": "MALI"
+                },
+                {
+                  "value": "MALTA",
+                  "displayValue": "MALTA"
+                },
+                {
+                  "value": "MAURITANIA",
+                  "displayValue": "MAURITANIA"
+                },
+                {
+                  "value": "MAURITIUS",
+                  "displayValue": "MAURITIUS"
+                },
+                {
+                  "value": "MEXICO",
+                  "displayValue": "MEXICO"
+                },
+                {
+                  "value": "MOLDOVA, REPUBLIC OF",
+                  "displayValue": "MOLDOVA, REPUBLIC OF"
+                },
+                {
+                  "value": "MONACO",
+                  "displayValue": "MONACO"
+                },
+                {
+                  "value": "MONGOLIA",
+                  "displayValue": "MONGOLIA"
+                },
+                {
+                  "value": "MONTENEGRO",
+                  "displayValue": "MONTENEGRO"
+                },
+                {
+                  "value": "MONTSERRAT",
+                  "displayValue": "MONTSERRAT"
+                },
+                {
+                  "value": "MOROCCO",
+                  "displayValue": "MOROCCO"
+                },
+                {
+                  "value": "MOZAMBIQUE",
+                  "displayValue": "MOZAMBIQUE"
+                },
+                {
+                  "value": "MYANMAR",
+                  "displayValue": "MYANMAR"
+                },
+                {
+                  "value": "NAMIBIA",
+                  "displayValue": "NAMIBIA"
+                },
+                {
+                  "value": "NAURU",
+                  "displayValue": "NAURU"
+                },
+                {
+                  "value": "NEPAL",
+                  "displayValue": "NEPAL"
+                },
+                {
+                  "value": "NETHERLAND ANTILLES",
+                  "displayValue": "NETHERLAND ANTILLES"
+                },
+                {
+                  "value": "NETHERLANDS",
+                  "displayValue": "NETHERLANDS"
+                },
+                {
+                  "value": "NEW ZEALAND",
+                  "displayValue": "NEW ZEALAND"
+                },
+                {
+                  "value": "NICARAGUA",
+                  "displayValue": "NICARAGUA"
+                },
+                {
+                  "value": "NIGER",
+                  "displayValue": "NIGER"
+                },
+                {
+                  "value": "NIGERIA",
+                  "displayValue": "NIGERIA"
+                },
+                {
+                  "value": "NIUE",
+                  "displayValue": "NIUE"
+                },
+                {
+                  "value": "NORFOLK ISLAND",
+                  "displayValue": "NORFOLK ISLAND"
+                },
+                {
+                  "value": "NORWAY",
+                  "displayValue": "NORWAY"
+                },
+                {
+                  "value": "OMAN",
+                  "displayValue": "OMAN"
+                },
+                {
+                  "value": "PAKISTAN",
+                  "displayValue": "PAKISTAN"
+                },
+                {
+                  "value": "PANAMA",
+                  "displayValue": "PANAMA"
+                },
+                {
+                  "value": "PAPUA NEW GUINEA",
+                  "displayValue": "PAPUA NEW GUINEA"
+                },
+                {
+                  "value": "PARAGUAY",
+                  "displayValue": "PARAGUAY"
+                },
+                {
+                  "value": "PERU",
+                  "displayValue": "PERU"
+                },
+                {
+                  "value": "PHILIPPINES",
+                  "displayValue": "PHILIPPINES"
+                },
+                {
+                  "value": "PITCAIRN",
+                  "displayValue": "PITCAIRN"
+                },
+                {
+                  "value": "POLAND",
+                  "displayValue": "POLAND"
+                },
+                {
+                  "value": "PORTUGAL",
+                  "displayValue": "PORTUGAL"
+                },
+                {
+                  "value": "QATAR",
+                  "displayValue": "QATAR"
+                },
+                {
+                  "value": "ROMANIA",
+                  "displayValue": "ROMANIA"
+                },
+                {
+                  "value": "RUSSIAN FEDERATION",
+                  "displayValue": "RUSSIAN FEDERATION"
+                },
+                {
+                  "value": "RWANDA",
+                  "displayValue": "RWANDA"
+                },
+                {
+                  "value": "SAINT HELENA",
+                  "displayValue": "SAINT HELENA"
+                },
+                {
+                  "value": "SAINT KITTS AND NEVIS",
+                  "displayValue": "SAINT KITTS AND NEVIS"
+                },
+                {
+                  "value": "SAINT LUCIA",
+                  "displayValue": "SAINT LUCIA"
+                },
+                {
+                  "value": "SAINT VINCENT AND THE GRENADINES",
+                  "displayValue": "SAINT VINCENT AND THE GRENADINES"
+                },
+                {
+                  "value": "SAMOA",
+                  "displayValue": "SAMOA"
+                },
+                {
+                  "value": "SAN MARINO",
+                  "displayValue": "SAN MARINO"
+                },
+                {
+                  "value": "SAO TOME AND PRINCIPE",
+                  "displayValue": "SAO TOME AND PRINCIPE"
+                },
+                {
+                  "value": "SAUDI ARABIA",
+                  "displayValue": "SAUDI ARABIA"
+                },
+                {
+                  "value": "SENEGAL",
+                  "displayValue": "SENEGAL"
+                },
+                {
+                  "value": "SERBIA",
+                  "displayValue": "SERBIA"
+                },
+                {
+                  "value": "SEYCHELLES",
+                  "displayValue": "SEYCHELLES"
+                },
+                {
+                  "value": "SIERRA LEONE",
+                  "displayValue": "SIERRA LEONE"
+                },
+                {
+                  "value": "SINGAPORE",
+                  "displayValue": "SINGAPORE"
+                },
+                {
+                  "value": "SINT MAARTEN",
+                  "displayValue": "SINT MAARTEN"
+                },
+                {
+                  "value": "SLOVAKIA",
+                  "displayValue": "SLOVAKIA"
+                },
+                {
+                  "value": "SLOVENIA",
+                  "displayValue": "SLOVENIA"
+                },
+                {
+                  "value": "SOLOMON ISLANDS",
+                  "displayValue": "SOLOMON ISLANDS"
+                },
+                {
+                  "value": "SOMALIA",
+                  "displayValue": "SOMALIA"
+                },
+                {
+                  "value": "SOUTH AFRICA",
+                  "displayValue": "SOUTH AFRICA"
+                },
+                {
+                  "value": "SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS",
+                  "displayValue": "SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS"
+                },
+                {
+                  "value": "SOUTH SUDAN",
+                  "displayValue": "SOUTH SUDAN"
+                },
+                {
+                  "value": "SPAIN",
+                  "displayValue": "SPAIN"
+                },
+                {
+                  "value": "SRI LANKA",
+                  "displayValue": "SRI LANKA"
+                },
+                {
+                  "value": "SUDAN",
+                  "displayValue": "SUDAN"
+                },
+                {
+                  "value": "SURINAME",
+                  "displayValue": "SURINAME"
+                },
+                {
+                  "value": "SWEDEN",
+                  "displayValue": "SWEDEN"
+                },
+                {
+                  "value": "SWITZERLAND",
+                  "displayValue": "SWITZERLAND"
+                },
+                {
+                  "value": "SYRIAN ARAB REPUBLIC",
+                  "displayValue": "SYRIAN ARAB REPUBLIC"
+                },
+                {
+                  "value": "TAIWAN",
+                  "displayValue": "TAIWAN"
+                },
+                {
+                  "value": "TAJIKISTAN",
+                  "displayValue": "TAJIKISTAN"
+                },
+                {
+                  "value": "TANZANIA",
+                  "displayValue": "TANZANIA"
+                },
+                {
+                  "value": "THAILAND",
+                  "displayValue": "THAILAND"
+                },
+                {
+                  "value": "THE BAHAMAS",
+                  "displayValue": "THE BAHAMAS"
+                },
+                {
+                  "value": "TIMOR-LESTE",
+                  "displayValue": "TIMOR-LESTE"
+                },
+                {
+                  "value": "TOGO",
+                  "displayValue": "TOGO"
+                },
+                {
+                  "value": "TOKELAU",
+                  "displayValue": "TOKELAU"
+                },
+                {
+                  "value": "TONGA",
+                  "displayValue": "TONGA"
+                },
+                {
+                  "value": "TRINIDAD AND TOBAGO",
+                  "displayValue": "TRINIDAD AND TOBAGO"
+                },
+                {
+                  "value": "TUNISIA",
+                  "displayValue": "TUNISIA"
+                },
+                {
+                  "value": "TURKEY",
+                  "displayValue": "TURKEY"
+                },
+                {
+                  "value": "TURKMENISTAN",
+                  "displayValue": "TURKMENISTAN"
+                },
+                {
+                  "value": "TURKS AND CAICOS ISLANDS",
+                  "displayValue": "TURKS AND CAICOS ISLANDS"
+                },
+                {
+                  "value": "TUVALU",
+                  "displayValue": "TUVALU"
+                },
+                {
+                  "value": "UGANDA",
+                  "displayValue": "UGANDA"
+                },
+                {
+                  "value": "UKRAINE",
+                  "displayValue": "UKRAINE"
+                },
+                {
+                  "value": "UNITED ARAB EMIRATES",
+                  "displayValue": "UNITED ARAB EMIRATES"
+                },
+                {
+                  "value": "UNITED KINGDOM",
+                  "displayValue": "UNITED KINGDOM"
+                },
+                {
+                  "value": "URUGUAY",
+                  "displayValue": "URUGUAY"
+                },
+                {
+                  "value": "UZBEKISTAN",
+                  "displayValue": "UZBEKISTAN"
+                },
+                {
+                  "value": "VANUATU",
+                  "displayValue": "VANUATU"
+                },
+                {
+                  "value": "VENEZUELA",
+                  "displayValue": "VENEZUELA"
+                },
+                {
+                  "value": "VIET NAM",
+                  "displayValue": "VIET NAM"
+                },
+                {
+                  "value": "WESTERN SAHARA",
+                  "displayValue": "WESTERN SAHARA"
+                },
+                {
+                  "value": "YEMEN",
+                  "displayValue": "YEMEN"
+                },
+                {
+                  "value": "ZAMBIA",
+                  "displayValue": "ZAMBIA"
+                },
+                {
+                  "value": "ZIMBABWE",
+                  "displayValue": "ZIMBABWE"
+                }
+              ]
+            },
+            "address_line1": {
+              "displayName": "Address Line1",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address_line2": {
+              "displayName": "Address Line2",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address_state": {
+              "displayName": "Address State",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "address_zip": {
+              "displayName": "Address Zip",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "company": {
+              "displayName": "Company",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "address",
+                  "displayValue": "address"
+                }
+              ]
+            },
+            "phone": {
+              "displayName": "Phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recipient_moved": {
+              "displayName": "Recipient Moved",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "bank_accounts": {
+          "displayName": "Bank Accounts",
+          "path": "/bank_accounts",
+          "responseKey": "data",
+          "fields": {
+            "account_number": {
+              "displayName": "Account Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "account_type": {
+              "displayName": "Account Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "company",
+                  "displayValue": "company"
+                },
+                {
+                  "value": "individual",
+                  "displayValue": "individual"
+                }
+              ]
+            },
+            "bank_name": {
+              "displayName": "Bank Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "check_template": {
+              "displayName": "Check Template",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "common",
+                  "displayValue": "common"
+                },
+                {
+                  "value": "jpm",
+                  "displayValue": "jpm"
+                }
+              ]
+            },
+            "city": {
+              "displayName": "City",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fractional_routing_number": {
+              "displayName": "Fractional Routing Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "other"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "microdeposit_type": {
+              "displayName": "Microdeposit Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "amounts",
+                  "displayValue": "amounts"
+                },
+                {
+                  "value": "descriptor_code",
+                  "displayValue": "descriptor_code"
+                }
+              ]
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "bank_account",
+                  "displayValue": "bank_account"
+                }
+              ]
+            },
+            "routing_number": {
+              "displayName": "Routing Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signatory": {
+              "displayName": "Signatory",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "signature_url": {
+              "displayName": "Signature Url",
+              "valueType": "other"
+            },
+            "state": {
+              "displayName": "State",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "verified": {
+              "displayName": "Verified",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "zipcode": {
+              "displayName": "Zipcode",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "billing_groups": {
+          "displayName": "Billing Groups",
+          "path": "/billing_groups",
+          "responseKey": "data",
+          "fields": {
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "billing_group",
+                  "displayValue": "billing_group"
+                }
+              ]
+            }
+          }
+        },
+        "booklets": {
+          "displayName": "Booklets",
+          "path": "/booklets",
+          "responseKey": "data",
+          "fields": {
+            "campaign_id": {
+              "displayName": "Campaign Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "carrier": {
+              "displayName": "Carrier",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "USPS",
+                  "displayValue": "USPS"
+                }
+              ]
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expected_delivery_date": {
+              "displayName": "Expected Delivery Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failure_reason": {
+              "displayName": "Failure Reason",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "from": {
+              "displayName": "From",
+              "valueType": "other"
+            },
+            "fsc": {
+              "displayName": "Fsc",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mail_type": {
+              "displayName": "Mail Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "usps_first_class",
+                  "displayValue": "usps_first_class"
+                },
+                {
+                  "value": "usps_standard",
+                  "displayValue": "usps_standard"
+                }
+              ]
+            },
+            "merge_variables": {
+              "displayName": "Merge Variables",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "booklet",
+                  "displayValue": "booklet"
+                }
+              ]
+            },
+            "pages": {
+              "displayName": "Pages",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "send_date": {
+              "displayName": "Send Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "size": {
+              "displayName": "Size",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "8.375x5.375",
+                  "displayValue": "8.375x5.375"
+                }
+              ]
+            },
+            "source_material": {
+              "displayName": "Source Material",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "60# Gloss Text",
+                  "displayValue": "60# Gloss Text"
+                }
+              ]
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "processed",
+                  "displayValue": "processed"
+                },
+                {
+                  "value": "rendered",
+                  "displayValue": "rendered"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "template_id": {
+              "displayName": "Template Id",
+              "valueType": "other"
+            },
+            "template_version_id": {
+              "displayName": "Template Version Id",
+              "valueType": "other"
+            },
+            "thumbnails": {
+              "displayName": "Thumbnails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "to": {
+              "displayName": "To",
+              "valueType": "other"
+            },
+            "tracking_events": {
+              "displayName": "Tracking Events",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "use_type": {
+              "displayName": "Use Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "marketing",
+                  "displayValue": "marketing"
+                },
+                {
+                  "value": "operational",
+                  "displayValue": "operational"
+                },
+                {
+                  "value": "null",
+                  "displayValue": "null"
+                }
+              ]
+            }
+          }
+        },
+        "buckslips": {
+          "displayName": "Buckslips",
+          "path": "/buckslips",
+          "responseKey": "data",
+          "fields": {
+            "allocated_quantity": {
+              "displayName": "Allocated Quantity",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "auto_reorder": {
+              "displayName": "Auto Reorder",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "available_quantity": {
+              "displayName": "Available Quantity",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "back_original_url": {
+              "displayName": "Back Original Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "buckslip_orders": {
+              "displayName": "Buckslip Orders",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "finish": {
+              "displayName": "Finish",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "gloss",
+                  "displayValue": "gloss"
+                },
+                {
+                  "value": "matte",
+                  "displayValue": "matte"
+                }
+              ]
+            },
+            "front_original_url": {
+              "displayName": "Front Original Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "buckslip",
+                  "displayValue": "buckslip"
+                }
+              ]
+            },
+            "onhand_quantity": {
+              "displayName": "Onhand Quantity",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "pending_quantity": {
+              "displayName": "Pending Quantity",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "projected_quantity": {
+              "displayName": "Projected Quantity",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "raw_url": {
+              "displayName": "Raw Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reorder_quantity": {
+              "displayName": "Reorder Quantity",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "size": {
+              "displayName": "Size",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "8.75x3.75",
+                  "displayValue": "8.75x3.75"
+                }
+              ]
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "processed",
+                  "displayValue": "processed"
+                },
+                {
+                  "value": "rendered",
+                  "displayValue": "rendered"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "stock": {
+              "displayName": "Stock",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "text",
+                  "displayValue": "text"
+                },
+                {
+                  "value": "cover",
+                  "displayValue": "cover"
+                }
+              ]
+            },
+            "threshold_amount": {
+              "displayName": "Threshold Amount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "thumbnails": {
+              "displayName": "Thumbnails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "weight": {
+              "displayName": "Weight",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "80#",
+                  "displayValue": "80#"
+                }
+              ]
+            }
+          }
+        },
+        "campaigns": {
+          "displayName": "Campaigns",
+          "path": "/campaigns",
+          "responseKey": "data",
+          "fields": {
+            "auto_cancel_if_ncoa": {
+              "displayName": "Auto Cancel If Ncoa",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "billing_group_id": {
+              "displayName": "Billing Group Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cancel_window_campaign_minutes": {
+              "displayName": "Cancel Window Campaign Minutes",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "creatives": {
+              "displayName": "Creatives",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_draft": {
+              "displayName": "Is Draft",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "campaign",
+                  "displayValue": "campaign"
+                }
+              ]
+            },
+            "print_speed": {
+              "displayName": "Print Speed",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "core",
+                  "displayValue": "core"
+                }
+              ]
+            },
+            "schedule_type": {
+              "displayName": "Schedule Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "immediate",
+                  "displayValue": "immediate"
+                }
+              ]
+            },
+            "send_date": {
+              "displayName": "Send Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "target_delivery_date": {
+              "displayName": "Target Delivery Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "uploads": {
+              "displayName": "Uploads",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "use_type": {
+              "displayName": "Use Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "marketing",
+                  "displayValue": "marketing"
+                },
+                {
+                  "value": "operational",
+                  "displayValue": "operational"
+                },
+                {
+                  "value": "null",
+                  "displayValue": "null"
+                }
+              ]
+            }
+          }
+        },
+        "cards": {
+          "displayName": "Cards",
+          "path": "/cards",
+          "responseKey": "data",
+          "fields": {
+            "auto_reorder": {
+              "displayName": "Auto Reorder",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "available_quantity": {
+              "displayName": "Available Quantity",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "back_original_url": {
+              "displayName": "Back Original Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "front_original_url": {
+              "displayName": "Front Original Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "card",
+                  "displayValue": "card"
+                }
+              ]
+            },
+            "orientation": {
+              "displayName": "Orientation",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "horizontal",
+                  "displayValue": "horizontal"
+                },
+                {
+                  "value": "vertical",
+                  "displayValue": "vertical"
+                }
+              ]
+            },
+            "pending_quantity": {
+              "displayName": "Pending Quantity",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "raw_url": {
+              "displayName": "Raw Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reorder_quantity": {
+              "displayName": "Reorder Quantity",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "size": {
+              "displayName": "Size",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "3.375x2.125",
+                  "displayValue": "3.375x2.125"
+                },
+                {
+                  "value": "2.125x3.375",
+                  "displayValue": "2.125x3.375"
+                }
+              ]
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "processed",
+                  "displayValue": "processed"
+                },
+                {
+                  "value": "rendered",
+                  "displayValue": "rendered"
+                }
+              ]
+            },
+            "threshold_amount": {
+              "displayName": "Threshold Amount",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "thumbnails": {
+              "displayName": "Thumbnails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "checks": {
+          "displayName": "Checks",
+          "path": "/checks",
+          "responseKey": "data",
+          "fields": {
+            "amount": {
+              "displayName": "Amount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "attachment_template_id": {
+              "displayName": "Attachment Template Id",
+              "valueType": "other"
+            },
+            "attachment_template_version_id": {
+              "displayName": "Attachment Template Version Id",
+              "valueType": "other"
+            },
+            "bank_account": {
+              "displayName": "Bank Account",
+              "valueType": "other"
+            },
+            "carrier": {
+              "displayName": "Carrier",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "USPS",
+                  "displayValue": "USPS"
+                }
+              ]
+            },
+            "check_bottom_template_id": {
+              "displayName": "Check Bottom Template Id",
+              "valueType": "other"
+            },
+            "check_bottom_template_version_id": {
+              "displayName": "Check Bottom Template Version Id",
+              "valueType": "other"
+            },
+            "check_number": {
+              "displayName": "Check Number",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expected_delivery_date": {
+              "displayName": "Expected Delivery Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failure_reason": {
+              "displayName": "Failure Reason",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "from": {
+              "displayName": "From",
+              "valueType": "other"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mail_type": {
+              "displayName": "Mail Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "usps_first_class",
+                  "displayValue": "usps_first_class"
+                }
+              ]
+            },
+            "memo": {
+              "displayName": "Memo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "merge_variables": {
+              "displayName": "Merge Variables",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "message": {
+              "displayName": "Message",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "check",
+                  "displayValue": "check"
+                }
+              ]
+            },
+            "send_date": {
+              "displayName": "Send Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "processed",
+                  "displayValue": "processed"
+                },
+                {
+                  "value": "rendered",
+                  "displayValue": "rendered"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "thumbnails": {
+              "displayName": "Thumbnails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "to": {
+              "displayName": "To",
+              "valueType": "other"
+            },
+            "tracking_events": {
+              "displayName": "Tracking Events",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "use_type": {
+              "displayName": "Use Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "marketing",
+                  "displayValue": "marketing"
+                },
+                {
+                  "value": "operational",
+                  "displayValue": "operational"
+                },
+                {
+                  "value": "null",
+                  "displayValue": "null"
+                }
+              ]
+            }
+          }
+        },
+        "domains": {
+          "displayName": "Domains",
+          "path": "/domains",
+          "responseKey": "data",
+          "fields": {
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "domain": {
+              "displayName": "Domain",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "error_redirect_link": {
+              "displayName": "Error Redirect Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "configured",
+                  "displayValue": "configured"
+                },
+                {
+                  "value": "not_configured",
+                  "displayValue": "not_configured"
+                }
+              ]
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "informed_delivery_campaigns": {
+          "displayName": "Informed Delivery Campaigns",
+          "path": "/informed_delivery_campaigns",
+          "responseKey": "data",
+          "fields": {
+            "account_id": {
+              "displayName": "Account Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "brand_name": {
+              "displayName": "Brand Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "campaign_code": {
+              "displayName": "Campaign Code",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "end_date": {
+              "displayName": "End Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "end_serial": {
+              "displayName": "End Serial",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lob_campaign_id": {
+              "displayName": "Lob Campaign Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mode": {
+              "displayName": "Mode",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "live",
+                  "displayValue": "live"
+                },
+                {
+                  "value": "test",
+                  "displayValue": "test"
+                }
+              ]
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "informed_delivery_campaign",
+                  "displayValue": "informed_delivery_campaign"
+                }
+              ]
+            },
+            "quantity": {
+              "displayName": "Quantity",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "representative_image_s3_link": {
+              "displayName": "Representative Image S3 Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ride_along_image_s3_link": {
+              "displayName": "Ride Along Image S3 Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ride_along_url": {
+              "displayName": "Ride Along Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "service_request_number": {
+              "displayName": "Service Request Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_date": {
+              "displayName": "Start Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_serial": {
+              "displayName": "Start Serial",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "usps_campaign_id": {
+              "displayName": "Usps Campaign Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "usps_title": {
+              "displayName": "Usps Title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "letters": {
+          "displayName": "Letters",
+          "path": "/letters",
+          "responseKey": "data",
+          "fields": {
+            "address_placement": {
+              "displayName": "Address Placement",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "top_first_page",
+                  "displayValue": "top_first_page"
+                },
+                {
+                  "value": "insert_blank_page",
+                  "displayValue": "insert_blank_page"
+                },
+                {
+                  "value": "bottom_first_page_center",
+                  "displayValue": "bottom_first_page_center"
+                },
+                {
+                  "value": "bottom_first_page",
+                  "displayValue": "bottom_first_page"
+                }
+              ]
+            },
+            "buckslips": {
+              "displayName": "Buckslips",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "campaign_id": {
+              "displayName": "Campaign Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cards": {
+              "displayName": "Cards",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "carrier": {
+              "displayName": "Carrier",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "USPS",
+                  "displayValue": "USPS"
+                }
+              ]
+            },
+            "color": {
+              "displayName": "Color",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "custom_envelope": {
+              "displayName": "Custom Envelope",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "double_sided": {
+              "displayName": "Double Sided",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "expected_delivery_date": {
+              "displayName": "Expected Delivery Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "extra_service": {
+              "displayName": "Extra Service",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "certified",
+                  "displayValue": "certified"
+                },
+                {
+                  "value": "certified_return_receipt",
+                  "displayValue": "certified_return_receipt"
+                }
+              ]
+            },
+            "failure_reason": {
+              "displayName": "Failure Reason",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "from": {
+              "displayName": "From",
+              "valueType": "other"
+            },
+            "fsc": {
+              "displayName": "Fsc",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mail_type": {
+              "displayName": "Mail Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "usps_first_class",
+                  "displayValue": "usps_first_class"
+                },
+                {
+                  "value": "usps_standard",
+                  "displayValue": "usps_standard"
+                }
+              ]
+            },
+            "merge_variables": {
+              "displayName": "Merge Variables",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "letter",
+                  "displayValue": "letter"
+                }
+              ]
+            },
+            "perforated_page": {
+              "displayName": "Perforated Page",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "return_address": {
+              "displayName": "Return Address",
+              "valueType": "other"
+            },
+            "return_envelope": {
+              "displayName": "Return Envelope",
+              "valueType": "other"
+            },
+            "send_date": {
+              "displayName": "Send Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "processed",
+                  "displayValue": "processed"
+                },
+                {
+                  "value": "rendered",
+                  "displayValue": "rendered"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "template_id": {
+              "displayName": "Template Id",
+              "valueType": "other"
+            },
+            "template_version_id": {
+              "displayName": "Template Version Id",
+              "valueType": "other"
+            },
+            "thumbnails": {
+              "displayName": "Thumbnails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "to": {
+              "displayName": "To",
+              "valueType": "other"
+            },
+            "tracking_events": {
+              "displayName": "Tracking Events",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tracking_number": {
+              "displayName": "Tracking Number",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "use_type": {
+              "displayName": "Use Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "marketing",
+                  "displayValue": "marketing"
+                },
+                {
+                  "value": "operational",
+                  "displayValue": "operational"
+                },
+                {
+                  "value": "null",
+                  "displayValue": "null"
+                }
+              ]
+            }
+          }
+        },
+        "links": {
+          "displayName": "Links",
+          "path": "/links",
+          "responseKey": "data",
+          "fields": {
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "domain_id": {
+              "displayName": "Domain Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "redirect_link": {
+              "displayName": "Redirect Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "short_link": {
+              "displayName": "Short Link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "postcards": {
+          "displayName": "Postcards",
+          "path": "/postcards",
+          "responseKey": "data",
+          "fields": {
+            "back_template_id": {
+              "displayName": "Back Template Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "back_template_version_id": {
+              "displayName": "Back Template Version Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "campaign_id": {
+              "displayName": "Campaign Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "carrier": {
+              "displayName": "Carrier",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "USPS",
+                  "displayValue": "USPS"
+                }
+              ]
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expected_delivery_date": {
+              "displayName": "Expected Delivery Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failure_reason": {
+              "displayName": "Failure Reason",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "from": {
+              "displayName": "From",
+              "valueType": "other"
+            },
+            "front_template_id": {
+              "displayName": "Front Template Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "front_template_version_id": {
+              "displayName": "Front Template Version Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fsc": {
+              "displayName": "Fsc",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mail_type": {
+              "displayName": "Mail Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "usps_first_class",
+                  "displayValue": "usps_first_class"
+                },
+                {
+                  "value": "usps_standard",
+                  "displayValue": "usps_standard"
+                }
+              ]
+            },
+            "merge_variables": {
+              "displayName": "Merge Variables",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "postcard",
+                  "displayValue": "postcard"
+                }
+              ]
+            },
+            "print_speed": {
+              "displayName": "Print Speed",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "core",
+                  "displayValue": "core"
+                }
+              ]
+            },
+            "send_date": {
+              "displayName": "Send Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "size": {
+              "displayName": "Size",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "4x6",
+                  "displayValue": "4x6"
+                },
+                {
+                  "value": "6x9",
+                  "displayValue": "6x9"
+                },
+                {
+                  "value": "6x11",
+                  "displayValue": "6x11"
+                }
+              ]
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "processed",
+                  "displayValue": "processed"
+                },
+                {
+                  "value": "rendered",
+                  "displayValue": "rendered"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "thumbnails": {
+              "displayName": "Thumbnails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "to": {
+              "displayName": "To",
+              "valueType": "other"
+            },
+            "tracking_events": {
+              "displayName": "Tracking Events",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "use_type": {
+              "displayName": "Use Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "marketing",
+                  "displayValue": "marketing"
+                },
+                {
+                  "value": "operational",
+                  "displayValue": "operational"
+                },
+                {
+                  "value": "null",
+                  "displayValue": "null"
+                }
+              ]
+            }
+          }
+        },
+        "self_mailers": {
+          "displayName": "Self Mailers",
+          "path": "/self_mailers",
+          "responseKey": "data",
+          "fields": {
+            "campaign_id": {
+              "displayName": "Campaign Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "carrier": {
+              "displayName": "Carrier",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "USPS",
+                  "displayValue": "USPS"
+                }
+              ]
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expected_delivery_date": {
+              "displayName": "Expected Delivery Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failure_reason": {
+              "displayName": "Failure Reason",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "from": {
+              "displayName": "From",
+              "valueType": "other"
+            },
+            "fsc": {
+              "displayName": "Fsc",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inside_template_id": {
+              "displayName": "Inside Template Id",
+              "valueType": "other"
+            },
+            "inside_template_version_id": {
+              "displayName": "Inside Template Version Id",
+              "valueType": "other"
+            },
+            "mail_type": {
+              "displayName": "Mail Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "usps_first_class",
+                  "displayValue": "usps_first_class"
+                },
+                {
+                  "value": "usps_standard",
+                  "displayValue": "usps_standard"
+                }
+              ]
+            },
+            "merge_variables": {
+              "displayName": "Merge Variables",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "self_mailer",
+                  "displayValue": "self_mailer"
+                }
+              ]
+            },
+            "outside_template_id": {
+              "displayName": "Outside Template Id",
+              "valueType": "other"
+            },
+            "outside_template_version_id": {
+              "displayName": "Outside Template Version Id",
+              "valueType": "other"
+            },
+            "print_speed": {
+              "displayName": "Print Speed",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "core",
+                  "displayValue": "core"
+                }
+              ]
+            },
+            "send_date": {
+              "displayName": "Send Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "size": {
+              "displayName": "Size",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "6x18_bifold",
+                  "displayValue": "6x18_bifold"
+                },
+                {
+                  "value": "11x9_bifold",
+                  "displayValue": "11x9_bifold"
+                },
+                {
+                  "value": "12x9_bifold",
+                  "displayValue": "12x9_bifold"
+                },
+                {
+                  "value": "17.75x9_trifold",
+                  "displayValue": "17.75x9_trifold"
+                }
+              ]
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "processed",
+                  "displayValue": "processed"
+                },
+                {
+                  "value": "rendered",
+                  "displayValue": "rendered"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "thumbnails": {
+              "displayName": "Thumbnails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "to": {
+              "displayName": "To",
+              "valueType": "other"
+            },
+            "tracking_events": {
+              "displayName": "Tracking Events",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "use_type": {
+              "displayName": "Use Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "marketing",
+                  "displayValue": "marketing"
+                },
+                {
+                  "value": "operational",
+                  "displayValue": "operational"
+                },
+                {
+                  "value": "null",
+                  "displayValue": "null"
+                }
+              ]
+            }
+          }
+        },
+        "snap_packs": {
+          "displayName": "Snap Packs",
+          "path": "/snap_packs",
+          "responseKey": "data",
+          "fields": {
+            "campaign_id": {
+              "displayName": "Campaign Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "carrier": {
+              "displayName": "Carrier",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "USPS",
+                  "displayValue": "USPS"
+                }
+              ]
+            },
+            "color": {
+              "displayName": "Color",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expected_delivery_date": {
+              "displayName": "Expected Delivery Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failure_reason": {
+              "displayName": "Failure Reason",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "from": {
+              "displayName": "From",
+              "valueType": "other"
+            },
+            "fsc": {
+              "displayName": "Fsc",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inside_template_id": {
+              "displayName": "Inside Template Id",
+              "valueType": "other"
+            },
+            "inside_template_version_id": {
+              "displayName": "Inside Template Version Id",
+              "valueType": "other"
+            },
+            "mail_type": {
+              "displayName": "Mail Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "usps_first_class",
+                  "displayValue": "usps_first_class"
+                },
+                {
+                  "value": "usps_standard",
+                  "displayValue": "usps_standard"
+                }
+              ]
+            },
+            "merge_variables": {
+              "displayName": "Merge Variables",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "snap_pack",
+                  "displayValue": "snap_pack"
+                }
+              ]
+            },
+            "outside_template_id": {
+              "displayName": "Outside Template Id",
+              "valueType": "other"
+            },
+            "outside_template_version_id": {
+              "displayName": "Outside Template Version Id",
+              "valueType": "other"
+            },
+            "print_speed": {
+              "displayName": "Print Speed",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "core",
+                  "displayValue": "core"
+                }
+              ]
+            },
+            "send_date": {
+              "displayName": "Send Date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "size": {
+              "displayName": "Size",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "8.5x11",
+                  "displayValue": "8.5x11"
+                }
+              ]
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "processed",
+                  "displayValue": "processed"
+                },
+                {
+                  "value": "rendered",
+                  "displayValue": "rendered"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                }
+              ]
+            },
+            "thumbnails": {
+              "displayName": "Thumbnails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "to": {
+              "displayName": "To",
+              "valueType": "other"
+            },
+            "tracking_events": {
+              "displayName": "Tracking Events",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "url": {
+              "displayName": "Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "use_type": {
+              "displayName": "Use Type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "marketing",
+                  "displayValue": "marketing"
+                },
+                {
+                  "value": "operational",
+                  "displayValue": "operational"
+                },
+                {
+                  "value": "null",
+                  "displayValue": "null"
+                }
+              ]
+            }
+          }
+        },
+        "templates": {
+          "displayName": "Templates",
+          "path": "/templates",
+          "responseKey": "data",
+          "fields": {
+            "date_created": {
+              "displayName": "Date Created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_modified": {
+              "displayName": "Date Modified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "Deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "object": {
+              "displayName": "Object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "template",
+                  "displayValue": "template"
+                }
+              ]
+            },
+            "published_version": {
+              "displayName": "Published Version",
+              "valueType": "other"
+            },
+            "versions": {
+              "displayName": "Versions",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "uploads": {
+          "displayName": "Uploads",
+          "path": "/uploads",
+          "responseKey": "",
+          "fields": {
+            "accountId": {
+              "displayName": "Accountid",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bytesProcessed": {
+              "displayName": "Bytesprocessed",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "campaignId": {
+              "displayName": "Campaignid",
+              "valueType": "other"
+            },
+            "dateCreated": {
+              "displayName": "Datecreated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dateModified": {
+              "displayName": "Datemodified",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "failedMailpieces": {
+              "displayName": "Failedmailpieces",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "failuresUrl": {
+              "displayName": "Failuresurl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mergeVariableColumnMapping": {
+              "displayName": "Mergevariablecolumnmapping",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "mode": {
+              "displayName": "Mode",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "test",
+                  "displayValue": "test"
+                },
+                {
+                  "value": "live",
+                  "displayValue": "live"
+                }
+              ]
+            },
+            "optionalAddressColumnMapping": {
+              "displayName": "Optionaladdresscolumnmapping",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "originalFilename": {
+              "displayName": "Originalfilename",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "requiredAddressColumnMapping": {
+              "displayName": "Requiredaddresscolumnmapping",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "state": {
+              "displayName": "State",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Preprocessing",
+                  "displayValue": "Preprocessing"
+                },
+                {
+                  "value": "Draft",
+                  "displayValue": "Draft"
+                },
+                {
+                  "value": "Ready for Validation",
+                  "displayValue": "Ready for Validation"
+                },
+                {
+                  "value": "Validating",
+                  "displayValue": "Validating"
+                },
+                {
+                  "value": "Scheduled",
+                  "displayValue": "Scheduled"
+                },
+                {
+                  "value": "Cancelled",
+                  "displayValue": "Cancelled"
+                },
+                {
+                  "value": "Errored",
+                  "displayValue": "Errored"
+                }
+              ]
+            },
+            "totalMailpieces": {
+              "displayName": "Totalmailpieces",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "validatedMailpieces": {
+              "displayName": "Validatedmailpieces",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        }
+      }
+    }
+  }
+}
