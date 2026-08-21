@@ -78,7 +78,6 @@ func init() { // nolint:funlen,maintidx
 			// https://docs.slack.dev/reference/methods/admin.barriers.delete
 			deleteInfo: &DeleteInfo{
 				Href:           "admin.barriers.delete",
-				Method:         http.MethodPost,
 				RequestIdField: "barrier_id",
 			},
 		},
@@ -94,7 +93,6 @@ func init() { // nolint:funlen,maintidx
 			// https://docs.slack.dev/reference/methods/admin.conversations.delete
 			deleteInfo: &DeleteInfo{
 				Href:           "admin.conversations.delete",
-				Method:         http.MethodPost,
 				RequestIdField: "channel_id",
 			},
 		},

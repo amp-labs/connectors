@@ -44,7 +44,6 @@ func init() {
 			// "https://docs.slack.dev/reference/methods/files.remote.remove"
 			deleteInfo: &DeleteInfo{
 				Href:           "files.remote.remove",
-				Method:         http.MethodPost,
 				RequestIdField: "file",
 			},
 		},
