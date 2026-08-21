@@ -12,25 +12,19 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/httpkit"
-	"github.com/amp-labs/connectors/providers"
 )
 
 var ErrSigningSecretIsNotSet = errors.New("signing secret is not set")
 
 type Verifier struct {
-	client       *common.JSONHTTPClient
-	providerInfo *providers.ProviderInfo
-
 	signingSecret string
 }
 
 // NewVerifier constructs an event message verifier.
 // The empty signingSecret won't trigger a failure to preserve backward compatibility.
 // However, no event message will be accepted.
-func NewVerifier(client *common.JSONHTTPClient, providerInfo *providers.ProviderInfo, signingSecret string) *Verifier {
+func NewVerifier(signingSecret string) *Verifier {
 	return &Verifier{
-		client:        client,
-		providerInfo:  providerInfo,
 		signingSecret: signingSecret,
 	}
 }

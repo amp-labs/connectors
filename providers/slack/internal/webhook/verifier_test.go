@@ -6,14 +6,11 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"strconv"
 	"testing"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -120,23 +117,14 @@ func TestVerifyWebhookMessage(t *testing.T) {
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableWebhookMessageVerifier, error) {
-				return constructTestVerifier(tt.Server)
+				return constructTestVerifier()
 			})
 		})
 	}
 }
 
-func constructTestVerifier(server *httptest.Server) (*Verifier, error) {
-	transport, err := components.NewTransport(providers.ConnectWise, common.ConnectorParams{
-		AuthenticatedClient: server.Client(),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	transport.SetUnitTestMockServerBaseURL(server.URL)
-
-	verifier := NewVerifier(transport.JSONHTTPClient(), transport.ProviderInfo(), testSigningKey)
+func constructTestVerifier() (*Verifier, error) {
+	verifier := NewVerifier(testSigningKey)
 
 	return verifier, nil
 }

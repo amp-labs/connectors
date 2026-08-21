@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/amp-labs/connectors/common"
-	cc "github.com/amp-labs/connectors/providers/slack"
-	"github.com/amp-labs/connectors/test/slack"
+	"github.com/amp-labs/connectors/providers/slack"
+	"github.com/amp-labs/connectors/test/slack/slackbot"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 func run() error {
 	ctx := context.Background()
 
-	conn := slack.NewConnector(ctx)
+	conn := slackbot.NewConnector(ctx)
 
 	callId, err := testCreatingCalls(ctx, conn)
 	if err != nil {
@@ -36,7 +36,7 @@ func run() error {
 	return nil
 }
 
-func testCreatingCalls(ctx context.Context, conn *cc.Connector) (string, error) {
+func testCreatingCalls(ctx context.Context, conn *slack.Connector) (string, error) {
 	params := common.WriteParams{
 		ObjectName: "calls",
 		RecordData: map[string]any{
@@ -64,7 +64,7 @@ func testCreatingCalls(ctx context.Context, conn *cc.Connector) (string, error) 
 	return res.Data["id"].(string), nil
 }
 
-func testUpdatingCalls(ctx context.Context, conn *cc.Connector, callId string) error {
+func testUpdatingCalls(ctx context.Context, conn *slack.Connector, callId string) error {
 	params := common.WriteParams{
 		ObjectName: "calls",
 		RecordId:   callId,
