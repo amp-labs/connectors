@@ -71,16 +71,7 @@ func makeRecordsFunc(responseKey string) common.NodeRecordsFunc {
 //	}
 func makeNextRecordsURL() common.NextPageFunc {
 	return func(node *ajson.Node) (string, error) {
-		cursor, err := jsonquery.New(node).StringOptional("cursor")
-		if err != nil {
-			return "", err
-		}
-
-		if cursor == nil {
-			return "", nil
-		}
-
-		return *cursor, nil
+		return jsonquery.New(node).StrWithDefault("cursor", "")
 	}
 }
 
@@ -94,12 +85,12 @@ func buildPOSTRequest(
 ) (*http.Request, error) {
 	body := map[string]any{}
 
-	if cfg.supportsCursor && params.NextPage != "" {
+	if params.NextPage != "" {
 		body["cursor"] = params.NextPage.String()
 	}
 
 	if cfg.supportsLimit {
-		body["limit"] = pageSize(params)
+		body["limit"] = readhelper.PageSizeWithDefaultStr(params, strconv.Itoa(defaultPageSize))
 	}
 
 	if cfg.supportsTimeRange {
@@ -132,12 +123,12 @@ func buildGETRequest(
 	params common.ReadParams,
 	url *urlbuilder.URL,
 ) (*http.Request, error) {
-	if cfg.supportsCursor && params.NextPage != "" {
+	if params.NextPage != "" {
 		url.WithQueryParam("cursor", params.NextPage.String())
 	}
 
 	if cfg.supportsLimit {
-		url.WithQueryParam("limit", strconv.Itoa(pageSize(params)))
+		url.WithQueryParam("limit", readhelper.PageSizeWithDefaultStr(params, strconv.Itoa(defaultPageSize)))
 	}
 
 	if cfg.supportsTimeRange {
@@ -151,14 +142,4 @@ func buildGETRequest(
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
-}
-
-// pageSize returns how many records to request per page. We always ask for the
-// maximum so we minimize round trips; params.PageSize is treated as an override.
-func pageSize(params common.ReadParams) int {
-	if params.PageSize <= 0 {
-		return defaultPageSize
-	}
-
-	return params.PageSize
 }
