@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	neturl "net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -21,6 +23,12 @@ const (
 
 	pageNumberParam = "page[number]"
 	pageSizeParam   = "page[size]"
+
+	// linksURIPrefix is a ZoomInfo serialization quirk: on the Data API surface the
+	// values inside "links" are strings of the form "uri=/data/v1/...?page[number]=2"
+	// rather than bare URLs. The Studio and Copilot surfaces return plain absolute
+	// URLs instead, so the prefix is trimmed when present.
+	linksURIPrefix = "uri="
 )
 
 // jsonAPIRequestBody is the JSON:API envelope POSTed to a search endpoint.
@@ -113,7 +121,7 @@ func (c *Connector) buildSearchReadRequest(ctx context.Context, params common.Re
 
 // parseReadResponse turns a JSON:API list response into a ReadResult: records live
 // under data[], their fields are flattened out of "attributes", and the next page
-// is derived from meta.page.
+// is derived from the "links" object.
 func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
@@ -123,7 +131,7 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResult(
 		response,
 		getRecords,
-		nextPageFromMeta,
+		nextPageFromLinks(effectivePageSize(params)),
 		common.MakeMarshaledDataFunc(common.FlattenNestedFields(attributesField)),
 		params.Fields,
 	)
@@ -136,38 +144,93 @@ func getRecords(node *ajson.Node) ([]*ajson.Node, error) {
 	return jsonquery.New(node).ArrayOptional("data")
 }
 
-// nextPageFromMeta returns the next page number (as a string token) from
-// meta.page, or "" when the current page is the last (or meta.page is absent,
-// e.g. lookup endpoints that return a single unpaginated page).
-func nextPageFromMeta(node *ajson.Node) (string, error) {
-	page := jsonquery.New(node, "meta", "page")
+// nextPageFromLinks returns the next page number (as a string token) taken from the
+// JSON:API "links" object, or "" when the read is finished.
+//
+// links.next is the only trustworthy end-of-results signal ZoomInfo provides: it is
+// sent while further pages exist and omitted on the final page. It also keeps reads
+// inside ZoomInfo's hard 10,000-record pagination limit, past which the API answers
+// PFAPI0006 ("Total record pagination is over max allowed value (10000)") — at the
+// boundary page links.next simply stops being sent.
+//
+// meta.page.total is deliberately NOT consulted. Despite its name and ZoomInfo's own
+// documentation, it is not a page count: it reports how many records the page just
+// returned holds (a full page[size]=100 page reports 100; a 60-record final page
+// reports 60). Comparing it against meta.page.number therefore compares a page
+// number to a record count, which either walks off the end of the result set into
+// PFAPI0004 ("Page number (page) requested is greater than the available results")
+// or, at small page sizes, stops after page[size] pages and silently truncates the
+// read.
+//
+// A page shorter than the requested page[size] also ends the read. That is redundant
+// with links.next against today's API and is kept so a missing or over-eager link
+// cannot resurrect the overrun.
+func nextPageFromLinks(pageSize int) func(*ajson.Node) (string, error) {
+	return func(node *ajson.Node) (string, error) {
+		records, err := getRecords(node)
+		if err != nil {
+			return "", err
+		}
 
-	number, err := page.IntegerOptional("number")
-	if err != nil || number == nil {
-		return "", nil //nolint:nilerr // absent pagination metadata means a single page
+		if pageSize > 0 && len(records) < pageSize {
+			return "", nil
+		}
+
+		// Unpaginated endpoints (e.g. lookup/{fieldName}) omit "links" entirely.
+		links, err := jsonquery.New(node).ObjectOptional("links")
+		if err != nil {
+			return "", err
+		}
+
+		if links == nil {
+			return "", nil
+		}
+
+		next, err := jsonquery.New(links).StrWithDefault("next", "")
+		if err != nil {
+			return "", err
+		}
+
+		if next == "" {
+			return "", nil
+		}
+
+		return pageNumberFromLink(next)
+	}
+}
+
+// pageNumberFromLink extracts page[number] from a "links" entry. A link we cannot
+// read is reported as an error rather than treated as end-of-results, so a change in
+// ZoomInfo's link format surfaces instead of silently truncating every read.
+func pageNumberFromLink(link string) (string, error) {
+	parsed, err := neturl.Parse(strings.TrimPrefix(link, linksURIPrefix))
+	if err != nil {
+		return "", fmt.Errorf("%w: cannot parse links.next %q: %w", common.ErrNextPageInvalid, link, err)
 	}
 
-	total, err := page.IntegerOptional("total")
-	if err != nil || total == nil {
-		return "", nil //nolint:nilerr
+	number := parsed.Query().Get(pageNumberParam)
+	if number == "" {
+		return "", fmt.Errorf("%w: links.next %q carries no %s", common.ErrNextPageInvalid, link, pageNumberParam)
 	}
 
-	if *number >= *total {
-		return "", nil
+	return number, nil
+}
+
+// effectivePageSize is the page[size] actually sent for a read, clamped to the
+// provider maximum. parseReadResponse needs the same value to recognise a short
+// final page, so both sides derive it here rather than duplicating the clamp.
+func effectivePageSize(params common.ReadParams) int {
+	if params.PageSize > 0 && params.PageSize <= maxPageSize {
+		return params.PageSize
 	}
 
-	return strconv.FormatInt(*number+1, 10), nil
+	return defaultPageSize
 }
 
 // applyPagination sets page[size] (capped at the provider max) and page[number]
 // (from the opaque NextPage token) on the request URL.
 func applyPagination(url *urlbuilder.URL, params common.ReadParams) {
-	size := defaultPageSize
-	if params.PageSize > 0 && params.PageSize <= maxPageSize {
-		size = params.PageSize
-	}
-
-	url.WithQueryParam(pageSizeParam, strconv.Itoa(size))
+	url.WithQueryParam(pageSizeParam, strconv.Itoa(effectivePageSize(params)))
 
 	if params.NextPage != "" {
 		url.WithQueryParam(pageNumberParam, params.NextPage.String())

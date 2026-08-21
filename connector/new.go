@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/mocksub"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/acculynx"
 	"github.com/amp-labs/connectors/providers/acuityscheduling"
@@ -257,6 +258,12 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Microsoft:                 wrapper(newMicrosoftConnector),
 	providers.MicrosoftAdminConsent:     wrapper(newMicrosoftAdminConsentConnector),
 	providers.Mixmax:                    wrapper(newMixmaxConnector),
+	providers.MockAttio:                 wrapper(newMockAttioConnector),
+	providers.MockConnectWise:           wrapper(newMockConnectWiseConnector),
+	providers.MockGmail:                 wrapper(newMockGmailConnector),
+	providers.MockHubspot:               wrapper(newMockHubspotConnector),
+	providers.MockSalesforce:            wrapper(newMockSalesforceConnector),
+	providers.MockSalesloft:             wrapper(newMockSalesloftConnector),
 	providers.Monday:                    wrapper(newMondayConnector),
 	providers.Netsuite:                  wrapper(newNetsuiteConnector),
 	providers.NetsuiteM2M:               wrapper(newNetsuiteM2MConnector),
@@ -422,6 +429,55 @@ func newSalesloftConnector(
 	return salesloft.NewConnector(
 		salesloft.WithAuthenticatedClient(params.AuthenticatedClient),
 	)
+}
+
+// newMockSalesloftConnector constructs the mocksalesloft subscribe-testing connector (see the
+// mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned
+// records from the provider's process-wide mocksub store.
+func newMockSalesloftConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
+	return mocksub.NewConnector(providers.MockSalesloft), nil
+}
+
+// newMockHubspotConnector constructs the mockhubspot subscribe-testing connector (see the
+// mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned
+// records from the provider's process-wide mocksub store.
+func newMockHubspotConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
+	return mocksub.NewConnector(providers.MockHubspot), nil
+}
+
+// newMockAttioConnector constructs the mockattio subscribe-testing connector (see the mocksub
+// package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned records
+// from the provider's process-wide mocksub store. The object-name resolver stands in for
+// Attio's API-backed GetObjectNameFromEvent, answering record.* events' id.object_id from the
+// same store's seeded object-name index.
+func newMockAttioConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
+	store := mocksub.StoreFor(providers.MockAttio)
+
+	return mocksub.NewConnector(
+		providers.MockAttio,
+		mocksub.WithObjectNameFromEvent(mocksub.ObjectIDIndexResolver(store)),
+	), nil
+}
+
+// newMockSalesforceConnector constructs the mocksalesforce subscribe-testing connector (see the
+// mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned
+// records from the provider's process-wide mocksub store.
+func newMockSalesforceConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
+	return mocksub.NewConnector(providers.MockSalesforce), nil
+}
+
+// newMockConnectWiseConnector constructs the mockconnectwise subscribe-testing connector (see
+// the mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves
+// canned records from the provider's process-wide mocksub store.
+func newMockConnectWiseConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
+	return mocksub.NewConnector(providers.MockConnectWise), nil
+}
+
+// newMockGmailConnector constructs the mockgmail subscribe-testing connector (see the mocksub
+// package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned records
+// from the provider's process-wide mocksub store.
+func newMockGmailConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
+	return mocksub.NewConnector(providers.MockGmail), nil
 }
 
 func newDynamicsCRMConnector(
