@@ -66,7 +66,8 @@ func Test_FilterSortedRecords(t *testing.T) {
 	}
 }
 
-func testEmptyRecords(createTestData func([]map[string]any) *ajson.Node, mockNextPageFunc func(*ajson.Node) (string, error),
+func testEmptyRecords(createTestData func([]map[string]any) *ajson.Node,
+	mockNextPageFunc func(*ajson.Node) (string, error),
 ) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()

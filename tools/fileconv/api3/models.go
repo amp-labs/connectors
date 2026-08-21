@@ -233,17 +233,23 @@ func flattenSchema(schema *openapi3.Schema) *openapi3.Schema {
 	// Merge all composite schemas.
 	compositeRefs := datautils.MergeSlices(schema.AllOf, schema.OneOf, schema.AnyOf)
 	for _, ref := range compositeRefs {
-		if ref != nil && ref.Value != nil {
-			flattenedRef := flattenSchema(ref.Value)
+		if ref == nil || ref.Value == nil {
+			continue
+		}
 
-			if flat.Type != nil && flattenedRef.Type != nil &&
-				!slices.Equal(flat.Type.Slice(), flattenedRef.Type.Slice()) {
-				slog.Warn("type of flattened schema does not match the parent")
-			} else {
-				flat.Type = flattenedRef.Type
-			}
+		flattenedRef := flattenSchema(ref.Value)
 
-			maps.Copy(flat.Properties, flattenedRef.Properties)
+		if flat.Type == nil {
+			flat.Type = flattenedRef.Type
+		} else if flattenedRef.Type != nil &&
+			!slices.Equal(flat.Type.Slice(), flattenedRef.Type.Slice()) {
+			slog.Warn("type of flattened schema does not match the parent")
+		}
+
+		maps.Copy(flat.Properties, flattenedRef.Properties)
+
+		if flat.Items == nil {
+			flat.Items = flattenedRef.Items
 		}
 	}
 
