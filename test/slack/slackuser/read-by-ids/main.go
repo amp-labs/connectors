@@ -35,7 +35,7 @@ func run() error {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	conn := slackshared.NewConnector(ctx, providers.Slack)
+	conn := slackshared.NewConnector(ctx, providers.SlackUserScope)
 
 	identifiers := make([]string, 2)
 

@@ -54,6 +54,13 @@ func getObject(provider providers.Provider, objectName string) (*Object, error) 
 		}
 
 		return &object, nil
+	case providers.SlackUserScope:
+		object, ok := objectsUserConnector[objectName]
+		if !ok {
+			return nil, common.ErrObjectNotSupported
+		}
+
+		return &object, nil
 	default:
 		return nil, common.ErrInvalidImplementation
 	}

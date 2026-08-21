@@ -35,8 +35,8 @@ var subscriptionConfirmation = testscenario.WebhookInterceptorFunc(
 			return true
 		}
 
-		writer.WriteHeader(http.StatusOK)
 		writer.Header().Set("Content-Type", "text/plain")
+		writer.WriteHeader(http.StatusOK)
 		_, _ = writer.Write([]byte(validationToken)) // nosemgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 
 		return true

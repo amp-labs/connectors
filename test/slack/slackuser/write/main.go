@@ -22,7 +22,7 @@ func main() {
 func run() error {
 	ctx := context.Background()
 
-	conn := slackshared.NewConnector(ctx, providers.Slack)
+	conn := slackshared.NewConnector(ctx, providers.SlackUserScope)
 
 	callId, err := testCreatingCalls(ctx, conn)
 	if err != nil {

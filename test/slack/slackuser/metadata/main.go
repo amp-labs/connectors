@@ -18,10 +18,7 @@ func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	// Set up slog logging.
-	utils.SetupLogging()
-
-	conn := slackshared.NewConnector(ctx, providers.Slack)
+	conn := slackshared.NewConnector(ctx, providers.SlackUserScope)
 
 	m, err := conn.ListObjectMetadata(ctx, []string{"conversations", "users", "auth.teams"})
 	if err != nil {
