@@ -38,7 +38,7 @@ func main() {
 		slog.Error(err.Error())
 	}
 
-	for _, objectName := range []string{"mailboxes/mailThreads", "mailThreads"} {
+	for _, objectName := range mailThreadObjectNames {
 		if err := readMailThreads(ctx, conn, objectName); err != nil {
 			slog.Error(err.Error(), "objectName", objectName)
 		}
@@ -118,8 +118,14 @@ func readLeads(ctx context.Context, conn *pipedrive.Connector) error {
 	return nil
 }
 
-// readMailThreads reads mail threads under the given object name. Both
-// "mailboxes/mailThreads" and the "mailThreads" alias resolve to /v1/mailbox/mailThreads.
+// mailThreadObjectNames are the accepted names for mail threads: the canonical
+// "mailThreads" and the "mailbox/mailThreads" alias. Both resolve to /v1/mailbox/mailThreads.
+var mailThreadObjectNames = []string{ //nolint:gochecknoglobals
+	"mailThreads",
+	"mailbox/mailThreads",
+}
+
+// readMailThreads reads mail threads under the given object name.
 func readMailThreads(ctx context.Context, conn *pipedrive.Connector, objectName string) error {
 	config := connectors.ReadParams{
 		ObjectName: objectName,

@@ -21,12 +21,14 @@ var metadataDiscoveryEndpoints = datautils.Map[string, string]{ // nolint: goche
 	"notes":         "noteFields",
 }
 
-// objectNameAliases maps alternative object names onto the name they are stored under in
-// the static schema file. Reads and metadata resolve the schema and URL path through this,
-// so callers may use either spelling. The name the caller supplied is never rewritten:
-// it is what comes back in the metadata result and it is what they keep referring to.
+// objectNameAliases maps alternative spellings onto the name an object is stored under in
+// the static schema file. Read and ListObjectMetadata both resolve the schema and URL path
+// through this, so callers may use any listed spelling. The name the caller supplied is
+// never rewritten: it is what comes back keyed in the metadata result.
 var objectNameAliases = datautils.Map[string, string]{ // nolint: gochecknoglobals
-	"mailThreads": objectNameMailThreads,
+	// Mail threads sit under the /mailbox resource, so the path-style spelling is
+	// accepted alongside the canonical name.
+	"mailbox/mailThreads": objectNameMailThreads,
 }
 
 // canonicalObjectName resolves an object name to the name used in the static schema file.
@@ -40,7 +42,7 @@ func canonicalObjectName(objectName string) string {
 }
 
 const (
-	objectNameMailThreads = "mailboxes/mailThreads"
+	objectNameMailThreads = "mailThreads"
 
 	// mailboxFolderInbox is the folder read for mail threads. The API accepts inbox,
 	// drafts, sent or archive and already defaults to inbox; we only read the inbox.

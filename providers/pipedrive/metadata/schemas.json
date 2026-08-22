@@ -1720,7 +1720,7 @@
             }
           }
         },
-        "mailboxes/mailThreads": {
+        "mailThreads": {
           "displayName": "Mail Threads",
           "path": "/mailbox/mailThreads",
           "responseKey": "data",
