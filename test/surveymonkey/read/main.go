@@ -70,6 +70,13 @@ func main() {
 		PageSize:   2,
 	})
 
+	slog.Info("=== Reading surveys ===")
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "surveys",
+		Fields:     connectors.Fields("id", "title", "owner"),
+		PageSize:   2,
+	})
+
 	slog.Info("=== Reading contacts ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "contacts",
@@ -84,10 +91,24 @@ func main() {
 		PageSize:   2,
 	})
 
+	slog.Info("=== Reading contact_fields ===")
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "contact_fields",
+		Fields:     connectors.Fields("id", "label"),
+		PageSize:   2,
+	})
+
 	slog.Info("=== Reading benchmark_bundles ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "benchmark_bundles",
 		Fields:     connectors.Fields("id", "title"),
+		PageSize:   2,
+	})
+
+	slog.Info("=== Reading workgroups ===")
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "workgroups",
+		Fields:     connectors.Fields("id", "name", "organization_id"),
 		PageSize:   2,
 	})
 }

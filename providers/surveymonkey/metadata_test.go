@@ -23,11 +23,14 @@ func TestListObjectMetadata(t *testing.T) {
 				"survey_languages",
 				"question_bank_questions",
 				"survey_folders",
+				"surveys",
 				"contacts",
 				"contact_lists",
+				"contact_fields",
 				"organizations",
 				"roles",
 				"benchmark_bundles",
+				"workgroups",
 			},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
@@ -138,6 +141,21 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
+					"surveys": {
+						DisplayName: "Surveys",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Survey Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"title": {
+								DisplayName:  "Title",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
 					"contacts": {
 						DisplayName: "Contacts",
 						Fields: map[string]common.FieldMetadata{
@@ -163,6 +181,21 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 							"name": {
 								DisplayName:  "Name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"contact_fields": {
+						DisplayName: "Contact Fields",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Contact Field Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"label": {
+								DisplayName:  "Label",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
@@ -203,6 +236,21 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 							"title": {
 								DisplayName:  "Title",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"workgroups": {
+						DisplayName: "Workgroups",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Workgroup Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "Name",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
