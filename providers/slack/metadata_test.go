@@ -142,7 +142,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop,main
 }
 
 func constructTestConnector(server *httptest.Server) (*Connector, error) {
-	connector, err := NewConnector(common.ConnectorParams{
+	connector, err := NewBotConnector(common.ConnectorParams{
 		AuthenticatedClient: server.Client(),
 	})
 	if err != nil {

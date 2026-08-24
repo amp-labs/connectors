@@ -2,6 +2,9 @@
 package main
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/tools/fileconv"
@@ -25,6 +28,7 @@ type GroupedMethods struct {
 	Both     map[string]string `json:"both"`
 	UserOnly map[string]string `json:"userOnly"`
 	BotOnly  map[string]string `json:"botOnly"`
+	Others   map[string]string `json:"others"`
 }
 
 func main() {
@@ -39,17 +43,36 @@ func main() {
 func groupMethodsByTokenType(scopes []Scope) GroupedMethods {
 	botMethods := make(datautils.Map[string, string])
 	userMethods := make(datautils.Map[string, string])
+	otherMethods := make(datautils.Map[string, string])
+
+	uniqueMethods := make(map[string]Method)
 
 	for _, scope := range scopes {
 		for _, method := range scope.Methods {
-			for _, tokenType := range scope.TokenTypes {
-				switch tokenType {
-				case "User":
-					userMethods[method.Name] = method.URL
-				case "Bot":
-					botMethods[method.Name] = method.URL
-				}
-			}
+			uniqueMethods[method.Name] = method
+		}
+	}
+
+	index := 0
+	for _, method := range uniqueMethods {
+		index += 1
+		fmt.Printf("[%v/%v]\n", index, len(uniqueMethods))
+
+		scope := getScopeText(method.URL)
+		saved := false
+
+		if strings.Contains(scope, "Bot token:") {
+			botMethods[method.Name] = method.URL
+			saved = true
+		}
+
+		if strings.Contains(scope, "User token:") {
+			userMethods[method.Name] = method.URL
+			saved = true
+		}
+
+		if !saved {
+			otherMethods[method.Name] = method.URL
 		}
 	}
 
@@ -64,5 +87,14 @@ func groupMethodsByTokenType(scopes []Scope) GroupedMethods {
 		Both:     botMethods.ShallowSubset(both),
 		UserOnly: userMethods.ShallowSubset(userOnly),
 		BotOnly:  botMethods.ShallowSubset(botOnly),
+		Others:   otherMethods,
 	}
+}
+
+func getScopeText(url string) string {
+	doc := scrapper.QueryHTML(url)
+
+	key := strings.TrimSpace(doc.Find(".scope-row").Text())
+
+	return key
 }

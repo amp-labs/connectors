@@ -17,13 +17,16 @@ import (
 // SurveyMonkey write API references:
 // - POST /contacts, PATCH /contacts/{contact_id}
 // - POST /contact_lists, PATCH /contact_lists/{contact_list_id}
+// - POST /surveys, PATCH /surveys/{survey_id}
+// - POST /survey_folders (create only)
+// - PATCH /contact_fields/{contact_field_id} (update only)
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	if err := params.ValidateParams(); err != nil {
 		return nil, err
 	}
 
-	if !writeAndDeleteSupportedObjects.Has(params.ObjectName) {
-		return nil, common.ErrOperationNotSupportedForObject
+	if err := validateWriteOperation(params); err != nil {
+		return nil, err
 	}
 
 	record, err := common.RecordDataToMap(params.RecordData)

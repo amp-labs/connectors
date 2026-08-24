@@ -138,8 +138,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: []error{common.ErrBadProviderResponse},
 		},
 		{
-			Name:  "Read conversations.listConnectInvites via POST",
-			Input: common.ReadParams{ObjectName: "conversations.listConnectInvites", Fields: connectors.Fields("id", "channel_id")},
+			Name: "Read conversations.listConnectInvites via POST",
+			Input: common.ReadParams{
+				ObjectName: "conversations.listConnectInvites",
+				Fields:     connectors.Fields("id", "channel_id"),
+			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -157,9 +160,13 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"channel_id": "C0ABCDEF123",
 					},
 					Raw: map[string]any{
-						"inviting_team": map[string]any{
-							"id":   "T012AB3C4",
-							"name": "Acme Corp",
+						"date_last_updated": float64(1622591318),
+						"invite": map[string]any{
+							"id": "I0139HVDSDQ",
+							"inviting_team": map[string]any{
+								"id":   "T012AB3C4",
+								"name": "Acme Corp",
+							},
 						},
 					},
 				}},
@@ -169,7 +176,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		},
 		{
 			Name:  "Read conversations.requestSharedInvite via POST",
-			Input: common.ReadParams{ObjectName: "conversations.requestSharedInvite", Fields: connectors.Fields("id", "invite_id")},
+			Input: common.ReadParams{ObjectName: "conversations.requestSharedInvite", Fields: connectors.Fields("id", "inviting_team")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
@@ -183,13 +190,17 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"id":        "I0XYZ789",
-						"invite_id": "INV123",
+						"id": "I12345",
+						"inviting_team": map[string]any{
+							"id":   "E12345",
+							"name": "Acme corp",
+						},
 					},
 					Raw: map[string]any{
-						"channel": map[string]any{
-							"id":   "C0ABCDEF123",
-							"name": "general",
+						"inviting_user": map[string]any{
+							"id":      "U12345",
+							"team_id": "E12345",
+							"name":    "acme-corp-user",
 						},
 					},
 				}},

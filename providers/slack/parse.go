@@ -35,15 +35,15 @@ func validateResponse(node *ajson.Node) error {
 }
 
 // getResponseCollectionRecords parses node to get a list of records.
-func getResponseCollectionRecords(node *ajson.Node, objectName string) ([]*ajson.Node, error) {
+func getResponseCollectionRecords(node *ajson.Node, responseField string) ([]*ajson.Node, error) {
 	if err := validateResponse(node); err != nil {
 		return nil, err
 	}
 
-	return jsonquery.New(node).ArrayRequired(objectResponseField.Get(objectName))
+	return jsonquery.New(node).ArrayRequired(responseField)
 }
 
-// getResponseCollectionRecords parses node to get a single record.
+// getResponseSingleRecord parses node to get a single record.
 // Example response:
 //
 //	{
@@ -54,17 +54,17 @@ func getResponseCollectionRecords(node *ajson.Node, objectName string) ([]*ajson
 //	       "creator": "U0B9R8LFG1F",
 //		  }
 //	}
-func getResponseSingleRecord(node *ajson.Node, resourceName string) (*ajson.Node, error) {
+func getResponseSingleRecord(node *ajson.Node, responseField string) (*ajson.Node, error) {
 	if err := validateResponse(node); err != nil {
 		return nil, err
 	}
 
-	return jsonquery.New(node).ObjectRequired(readSingleRecordResourceNameToResponseField[resourceName])
+	return jsonquery.New(node).ObjectRequired(responseField)
 }
 
-func recordsFunc(objectName string) common.RecordsFunc {
+func recordsFunc(responseField string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
-		arr, err := getResponseCollectionRecords(node, objectName)
+		arr, err := getResponseCollectionRecords(node, responseField)
 		if err != nil {
 			return nil, err
 		}
@@ -73,9 +73,9 @@ func recordsFunc(objectName string) common.RecordsFunc {
 	}
 }
 
-func nodeRecords(objectName string) common.NodeRecordsFunc {
+func nodeRecords(responseField string) common.NodeRecordsFunc {
 	return func(node *ajson.Node) ([]*ajson.Node, error) {
-		return getResponseCollectionRecords(node, objectName)
+		return getResponseCollectionRecords(node, responseField)
 	}
 }
 

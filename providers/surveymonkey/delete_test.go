@@ -63,6 +63,22 @@ func TestDelete(t *testing.T) {
 			}.Server(),
 			Expected: &common.DeleteResult{Success: true},
 		},
+		{
+			Name: "Delete survey",
+			Input: common.DeleteParams{
+				ObjectName: objectSurveys,
+				RecordId:   "1234",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodDELETE(),
+					mockcond.Path("/v3/surveys/1234"),
+				},
+				Then: mockserver.Response(http.StatusNoContent, nil),
+			}.Server(),
+			Expected: &common.DeleteResult{Success: true},
+		},
 	}
 
 	for _, tt := range tests {

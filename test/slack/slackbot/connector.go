@@ -1,4 +1,4 @@
-package slack
+package slackbot
 
 import (
 	"context"
@@ -21,7 +21,7 @@ func NewConnector(ctx context.Context) *slack.Connector {
 	filePath := credscanning.LoadPath(providers.Slack)
 	reader := utils.MustCreateProvCredJSON(filePath, true, signingSecretField)
 
-	conn, err := slack.NewConnector(common.ConnectorParams{
+	conn, err := slack.NewBotConnector(common.ConnectorParams{
 		AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
 		Metadata: map[string]string{
 			"signingSecret": reader.Get(signingSecretField),
