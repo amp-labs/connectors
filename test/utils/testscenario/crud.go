@@ -97,17 +97,17 @@ func ValidateCreateUpdateDelete[CP, UP any](
 		time.Sleep(suite.WaitBeforeSearch)
 	}
 
-	// READ
-	fmt.Println("Reading", objectName)
-	res, err := readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
-	failOnError(err)
-
-	// SEARCH
-	fmt.Println("Finding recently created", objectName)
-
 	objectID := createResult.RecordId
 
 	if !suite.SearchBy.isZero() {
+		// READ
+		fmt.Println("Reading", objectName)
+		res, err := readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
+		failOnError(err)
+
+		// SEARCH
+		fmt.Println("Finding recently created", objectName)
+
 		search := suite.SearchBy
 		object, err := searchObjectRecord(res, search.Key, search.Value)
 		failOnError(err)
@@ -127,7 +127,7 @@ func ValidateCreateUpdateDelete[CP, UP any](
 
 	// UPDATE
 	fmt.Println("Updating some object properties")
-	_, err = updateObject(ctx, conn, objectName, objectID, &updatePayload)
+	updateRes, err := updateObject(ctx, conn, objectName, objectID, &updatePayload)
 	failOnError(err)
 	fmt.Println("Validate object has changed accordingly")
 
@@ -150,11 +150,20 @@ func ValidateCreateUpdateDelete[CP, UP any](
 		}
 	}
 
-	res, err = readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
-	failOnError(err)
-	object, err := searchObjectRecord(res, suite.RecordIdentifierKey, objectID)
-	failOnError(err)
-	validateUpdatedFieldsFunc(object.Fields)
+	var updatedFields map[string]any
+
+	if !suite.SearchBy.isZero() {
+		res, err := readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
+		failOnError(err)
+		object, err := searchObjectRecord(res, suite.RecordIdentifierKey, objectID)
+		failOnError(err)
+		updatedFields = object.Fields
+	} else {
+		fmt.Println("Using response of update operation to validate the changes")
+		updatedFields = updateRes.Data
+	}
+
+	validateUpdatedFieldsFunc(updatedFields)
 
 	// DELETE
 	fmt.Println("Removing this", objectName)
