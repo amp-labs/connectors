@@ -1,6 +1,10 @@
 package mappings
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/amp-labs/connectors/common/readhelper"
+)
 
 func init() {
 	for name, object := range map[string]Object{
@@ -11,9 +15,11 @@ func init() {
 				Method:          http.MethodPost,
 				ResponseField:   "scheduled_messages",
 				ResponseIdField: "id",
-				TimeFilterField: "",
-				SinceQP:         "oldest",
-				UntilQP:         "latest",
+				TimeFilterField: "date_created",
+				// Docs example:
+				//	"date_created" -> 1551891734 seconds
+				//		= 2019-03-06T17:02:14.000Z
+				FilterTimestampFormat: readhelper.TimestampFormatUnixSec,
 			},
 		},
 		"auth.teams": {
@@ -23,7 +29,6 @@ func init() {
 				Method:          http.MethodPost,
 				ResponseField:   "teams",
 				ResponseIdField: "id",
-				TimeFilterField: "",
 			},
 		},
 	} {

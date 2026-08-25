@@ -1,6 +1,10 @@
 package mappings
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/amp-labs/connectors/common/readhelper"
+)
 
 func init() {
 	for name, object := range map[string]Object{
@@ -13,8 +17,10 @@ func init() {
 				NestedResponseIdField: []string{"invite"},
 				ResponseIdField:       "id",
 				TimeFilterField:       "date_last_updated",
-				SinceQP:               "",
-				UntilQP:               "",
+				// Docs example:
+				//	"date_last_updated" -> 1622591318 seconds
+				//		= 2021-06-01T23:48:38.000Z
+				FilterTimestampFormat: readhelper.TimestampFormatUnixSec,
 			},
 		},
 		"conversations.requestSharedInvite": {
@@ -25,8 +31,10 @@ func init() {
 				ResponseField:   "invite_requests",
 				ResponseIdField: "id",
 				TimeFilterField: "date_last_updated",
-				SinceQP:         "",
-				UntilQP:         "",
+				// Docs example:
+				//	"date_last_updated" -> 1722372331 seconds
+				//		= 2024-07-30T20:45:31.000Z
+				FilterTimestampFormat: readhelper.TimestampFormatUnixSec,
 			},
 		},
 		"files.remote": {
@@ -59,9 +67,6 @@ func init() {
 				Method:          http.MethodGet,
 				ResponseField:   "organizations",
 				ResponseIdField: "team_id",
-				TimeFilterField: "",
-				SinceQP:         "",
-				UntilQP:         "",
 			},
 		},
 	} {

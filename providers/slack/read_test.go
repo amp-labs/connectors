@@ -47,15 +47,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"id":         "C0ABCDEF123",
-						"name":       "general",
+						"id":         "C0B9KKUG937",
+						"name":       "new-channel",
 						"is_private": false,
 					},
-					Raw: map[string]any{
-						"is_channel":  true,
-						"is_archived": false,
-						"is_member":   true,
-					},
+					Raw: map[string]any{"is_channel": true, "is_archived": false, "is_member": true},
 				}},
 				Done: true,
 			},
@@ -209,13 +205,16 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			// conversations.updated = 1449252889 (2015-12-04). Since is set before that,
+			// conversations.updated = 1,785,171,008,955. Since is set before that,
 			// so the record should pass through the client-side filter.
 			Name: "Since filter includes record updated after threshold",
 			Input: common.ReadParams{
 				ObjectName: "conversations",
 				Fields:     connectors.Fields("id", "name"),
-				Since:      time.Unix(1449252800, 0),
+				// Nanoseconds are ignored.
+				// 008 == 008, so that works, the 007 is before so also works.
+				// 009 is later and won't work. See another test below.
+				Since: time.Unix(1_785_171_007, 0),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -229,27 +228,21 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"id":   "C0ABCDEF123",
-						"name": "general",
-					},
-					Raw: map[string]any{
-						"is_channel": true,
-						"is_member":  true,
-					},
+					Fields: map[string]any{"id": "C0B9KKUG937", "name": "new-channel"},
+					Raw:    map[string]any{"is_channel": true, "is_member": true},
 				}},
 				Done: true,
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			// conversations.updated = 1449252889 (2015-12-04). Since is set after that,
+			// conversations.updated = 1,785,171,008,955. Since is set after that,
 			// so the record is too old and should be filtered out.
 			Name: "Since filter excludes record updated before threshold",
 			Input: common.ReadParams{
 				ObjectName: "conversations",
 				Fields:     connectors.Fields("id", "name"),
-				Since:      time.Unix(1449252900, 0),
+				Since:      time.Unix(1_785_171_009, 0),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
