@@ -195,6 +195,39 @@
             }
           }
         },
+        "surveys": {
+          "displayName": "Surveys",
+          "path": "/surveys",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-surveys",
+          "fields": {
+            "id": {
+              "displayName": "Survey Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "nickname": {
+              "displayName": "Nickname",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "owner": {
+              "displayName": "Owner",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "Href",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "contacts": {
           "displayName": "Contacts",
           "path": "/contacts",
@@ -270,6 +303,29 @@
             },
             "name": {
               "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "href": {
+              "displayName": "Href",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contact_fields": {
+          "displayName": "Contact Fields",
+          "path": "/contact_fields",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-contact_fields",
+          "fields": {
+            "id": {
+              "displayName": "Contact Field Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "label": {
+              "displayName": "Label",
               "valueType": "string",
               "providerType": "string"
             },
@@ -376,6 +432,79 @@
               "displayName": "Title",
               "valueType": "string",
               "providerType": "string"
+            }
+          }
+        },
+        "workgroups": {
+          "displayName": "Workgroups",
+          "path": "/workgroups",
+          "responseKey": "data",
+          "docs": "https://api.surveymonkey.com/v3/docs#api-endpoints-get-workgroups",
+          "fields": {
+            "id": {
+              "displayName": "Workgroup Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_visible": {
+              "displayName": "Is Visible",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "organization_id": {
+              "displayName": "Organization Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "share_count": {
+              "displayName": "Share Count",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "members_count": {
+              "displayName": "Members Count",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "default_role": {
+              "displayName": "Default Role",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "members": {
+              "displayName": "Members",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "membership": {
+              "displayName": "Membership",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "metadata": {
+              "displayName": "Metadata",
+              "valueType": "other",
+              "providerType": "object"
             }
           }
         }

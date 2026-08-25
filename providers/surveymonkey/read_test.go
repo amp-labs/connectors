@@ -19,6 +19,9 @@ func TestRead(t *testing.T) { //nolint:funlen
 	responseGroupsPage1 := testutils.DataFromFile(t, "read/groups-page1.json")
 	responseGroupsEmpty := testutils.DataFromFile(t, "read/groups-empty.json")
 	responseContacts := testutils.DataFromFile(t, "read/contacts.json")
+	responseSurveys := testutils.DataFromFile(t, "read/surveys.json")
+	responseContactFields := testutils.DataFromFile(t, "read/contact-fields.json")
+	responseWorkgroups := testutils.DataFromFile(t, "read/workgroups.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -149,6 +152,112 @@ func TestRead(t *testing.T) { //nolint:funlen
 						"status":       "active",
 					},
 					Id: "1234",
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read surveys",
+			Input: common.ReadParams{ObjectName: objectSurveys, Fields: connectors.Fields("id", "title", "owner")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/surveys"),
+					mockcond.QueryParam("page", "1"),
+					mockcond.QueryParam("per_page", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseSurveys),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":    "1234",
+						"title": "My Survey",
+						"owner": "5678",
+					},
+					Raw: map[string]any{
+						"id":       "1234",
+						"title":    "My Survey",
+						"nickname": "",
+						"owner":    "5678",
+						"href":     "https://api.surveymonkey.com/v3/surveys/1234",
+					},
+					Id: "1234",
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read contact fields",
+			Input: common.ReadParams{ObjectName: objectContactFields, Fields: connectors.Fields("id", "label")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/contact_fields"),
+					mockcond.QueryParam("page", "1"),
+					mockcond.QueryParam("per_page", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContactFields),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":    "1",
+						"label": "Custom 1",
+					},
+					Raw: map[string]any{
+						"id":    "1",
+						"label": "Custom 1",
+						"href":  "https://api.surveymonkey.com/v3/contact_fields/1",
+					},
+					Id: "1",
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name:  "Read workgroups",
+			Input: common.ReadParams{ObjectName: objectWorkgroups, Fields: connectors.Fields("id", "name", "organization_id")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v3/workgroups"),
+					mockcond.QueryParam("page", "1"),
+					mockcond.QueryParam("per_page", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseWorkgroups),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":              "9bccda1faa0d45363edb7fc22",
+						"name":            "Brand Awareness",
+						"organization_id": "2112",
+					},
+					Raw: map[string]any{
+						"id":              "9bccda1faa0d45363edb7fc22",
+						"name":            "Brand Awareness",
+						"description":     "Spreading the company brand",
+						"is_visible":      true,
+						"organization_id": "2112",
+						"share_count":     "0",
+						"members_count":   float64(1),
+						"created_at":      "2022-12-01T18:03:45",
+						"updated_at":      "2022-12-05T18:03:45",
+					},
+					Id: "9bccda1faa0d45363edb7fc22",
 				}},
 				NextPage: "",
 				Done:     true,

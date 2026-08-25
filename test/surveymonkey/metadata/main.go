@@ -21,11 +21,14 @@ func main() {
 		"survey_languages",
 		"question_bank_questions",
 		"survey_folders",
+		"surveys",
 		"contacts",
 		"contact_lists",
+		"contact_fields",
 		"organizations",
 		"roles",
 		"benchmark_bundles",
+		"workgroups",
 	})
 	if err != nil {
 		log.Fatalf("ListObjectMetadata error: %v", err)
