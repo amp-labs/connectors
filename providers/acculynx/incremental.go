@@ -19,24 +19,24 @@ const (
 	paginationNone
 )
 
-// objectReadSpec captures the per-object pagination style and incremental
-// timeKey. timeKey is the response field used for connector-side Since/Until
+// objectReadSpec captures the per-object pagination style and the
+// timeFilterField — the response field used for connector-side Since/Until
 // filtering; per repo convention only the "updated_at" semantic field qualifies
 // (modifiedDate on AccuLynx) — never createdDate.
 type objectReadSpec struct {
-	pagination paginationStyle
-	timeKey    string
+	pagination      paginationStyle
+	timeFilterField string
 }
 
 //nolint:gochecknoglobals
 var objectReadSpecs = datautils.NewDefaultMap(map[string]objectReadSpec{
 	// jobs is the only endpoint with a provider-side ModifiedDate filter; we
 	// still apply connector-side filtering on top to enforce time bounds precisely.
-	"jobs":                           {pagination: paginationOffsetPage, timeKey: "modifiedDate"},
-	"jobs/custom-fields":             {pagination: paginationOffsetPage, timeKey: "modifiedDate"},
-	"contacts/custom-fields":         {pagination: paginationOffsetPage, timeKey: "modifiedDate"},
-	"estimates/sections":             {pagination: paginationNone, timeKey: "modifiedDate"},
-	"company-settings/custom-fields": {pagination: paginationOffsetPage, timeKey: "modifiedDate"},
+	"jobs":                           {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
+	"jobs/custom-fields":             {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
+	"contacts/custom-fields":         {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
+	"estimates/sections":             {pagination: paginationNone, timeFilterField: "modifiedDate"},
+	"company-settings/custom-fields": {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
 
 	"calendars":             {pagination: paginationOffsetPage},
 	"users":                 {pagination: paginationOffsetPage},
@@ -44,7 +44,7 @@ var objectReadSpecs = datautils.NewDefaultMap(map[string]objectReadSpec{
 	"supplements/items":     {pagination: paginationOffsetPage},
 	"supplements/notations": {pagination: paginationOffsetPage},
 	"jobs/estimates":        {pagination: paginationOffsetPage},
-	"jobs/history":          {pagination: paginationOffsetPage, timeKey: "date"},
+	"jobs/history":          {pagination: paginationOffsetPage, timeFilterField: "date"},
 	"jobs/representatives":  {pagination: paginationOffsetPage},
 	"company-settings/job-file-settings/document-folders":    {pagination: paginationOffsetPage},
 	"company-settings/job-file-settings/insurance-companies": {pagination: paginationOffsetPage},
@@ -79,7 +79,7 @@ func (c *Connector) makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.
 	nextPage := c.makeNextPage(params.ObjectName, reqURL)
 
 	spec := objectReadSpecs.Get(params.ObjectName)
-	if spec.timeKey == "" {
+	if spec.timeFilterField == "" {
 		return readhelper.MakeIdentityFilterFunc(nextPage)
 	}
 
@@ -90,7 +90,7 @@ func (c *Connector) makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.
 	return readhelper.MakeTimeFilterFunc(
 		readhelper.Unordered,
 		readhelper.NewTimeBoundary(),
-		spec.timeKey,
+		spec.timeFilterField,
 		time.RFC3339,
 		nextPage,
 	)

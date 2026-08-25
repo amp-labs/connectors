@@ -2,7 +2,10 @@ package acculynx
 
 import (
 	_ "embed"
+	"encoding/json"
 	"net/http"
+	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 
@@ -1168,23 +1171,35 @@ func constructTestReadConnector(serverURL string) (*Connector, error) {
 	return connector, nil
 }
 
-//go:embed test/read/pagination/runaway-ignored-offset.json
-var paginationRunawayResponse []byte
+// buildPaginationServer returns a server that answers every request with the
+// given envelope plus numItems dummy records, so each test case shows the
+// connector input, the envelope, and the expected pagination output in one
+// place. Omit "count" from the envelope to simulate a response with no total.
+func buildPaginationServer(t *testing.T, envelope map[string]int, numItems int) *httptest.Server {
+	t.Helper()
 
-//go:embed test/read/pagination/count-page-1.json
-var paginationCountPage1Response []byte
+	items := make([]map[string]any, numItems)
+	for i := range items {
+		items[i] = map[string]any{"id": "j" + strconv.Itoa(i), "jobNumber": strconv.Itoa(i)}
+	}
 
-//go:embed test/read/pagination/count-page-2.json
-var paginationCountPage2Response []byte
+	body := make(map[string]any, len(envelope)+1)
+	for key, value := range envelope {
+		body[key] = value
+	}
 
-//go:embed test/read/pagination/stale-echo.json
-var paginationStaleEchoResponse []byte
+	body["items"] = items
 
-//go:embed test/read/pagination/no-count-at-cap.json
-var paginationNoCountAtCapResponse []byte
+	payload, err := json.Marshal(body)
+	if err != nil {
+		t.Fatalf("marshal pagination response: %v", err)
+	}
 
-//go:embed test/read/pagination/large-account-past-cap.json
-var paginationLargeAccountResponse []byte
+	return mockserver.Fixed{
+		Setup:  mockserver.ContentJSON(),
+		Always: mockserver.Response(http.StatusOK, payload),
+	}.Server()
+}
 
 // TestReadPaginationTermination covers the exit conditions that keep Read from
 // looping when AccuLynx misreports paging (CON-3512). Before the fix the
@@ -1205,17 +1220,10 @@ func TestReadPaginationTermination(t *testing.T) {
 				PageSize:   25,
 				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=25",
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, paginationRunawayResponse),
-			}.Server(),
-			Comparator: testconn.ComparatorSubsetRead,
+			Server:     buildPaginationServer(t, map[string]int{"count": 163, "pageSize": 25, "pageStartIndex": 0}, 25),
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 25,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{"id": "j0"},
-					Raw:    map[string]any{"id": "j0", "jobNumber": "0"},
-				}},
+				Rows:     25,
 				NextPage: "",
 				Done:     true,
 			},
@@ -1228,17 +1236,10 @@ func TestReadPaginationTermination(t *testing.T) {
 				Fields:     connectors.Fields("id"),
 				PageSize:   25,
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, paginationCountPage1Response),
-			}.Server(),
-			Comparator: testconn.ComparatorSubsetRead,
+			Server:     buildPaginationServer(t, map[string]int{"count": 50, "pageSize": 25, "pageStartIndex": 0}, 25),
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 25,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{"id": "j0"},
-					Raw:    map[string]any{"id": "j0", "jobNumber": "0"},
-				}},
 				NextPage: testconn.URLTestServer +
 					"/api/v2/jobs?includes=initialAppointment&pageSize=25&pageStartIndex=25",
 				Done: false,
@@ -1254,17 +1255,10 @@ func TestReadPaginationTermination(t *testing.T) {
 				PageSize:   25,
 				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=25",
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, paginationCountPage2Response),
-			}.Server(),
-			Comparator: testconn.ComparatorSubsetRead,
+			Server:     buildPaginationServer(t, map[string]int{"count": 50, "pageSize": 25, "pageStartIndex": 25}, 25),
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 25,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{"id": "j25"},
-					Raw:    map[string]any{"id": "j25", "jobNumber": "25"},
-				}},
+				Rows:     25,
 				NextPage: "",
 				Done:     true,
 			},
@@ -1279,24 +1273,17 @@ func TestReadPaginationTermination(t *testing.T) {
 				PageSize:   25,
 				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=25",
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, paginationStaleEchoResponse),
-			}.Server(),
-			Comparator: testconn.ComparatorSubsetRead,
+			Server:     buildPaginationServer(t, map[string]int{"count": 163, "pageSize": 25, "pageStartIndex": 0}, 25),
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 25,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{"id": "j0"},
-					Raw:    map[string]any{"id": "j0", "jobNumber": "0"},
-				}},
+				Rows:     25,
 				NextPage: "",
 				Done:     true,
 			},
 		},
 		{
 			// A real account can legitimately hold more than
-			// maxTopLevelPages*pageSize records. When the envelope reports a
+			// maxPagesForUnknownTotal*pageSize records. When the envelope reports a
 			// count, termination is already exact, so the cap must not fire and
 			// turn a valid large read into an error.
 			Name: "Large account keeps paging past the cap when count is reported",
@@ -1306,17 +1293,10 @@ func TestReadPaginationTermination(t *testing.T) {
 				PageSize:   25,
 				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=10000",
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, paginationLargeAccountResponse),
-			}.Server(),
-			Comparator: testconn.ComparatorSubsetRead,
+			Server:     buildPaginationServer(t, map[string]int{"count": 50000, "pageSize": 25, "pageStartIndex": 10000}, 25),
+			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 25,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{"id": "j10000"},
-					Raw:    map[string]any{"id": "j10000", "jobNumber": "10000"},
-				}},
+				Rows:     25,
 				NextPage: testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=10025",
 				Done:     false,
 			},
@@ -1331,10 +1311,7 @@ func TestReadPaginationTermination(t *testing.T) {
 				PageSize:   25,
 				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=10000",
 			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusOK, paginationNoCountAtCapResponse),
-			}.Server(),
+			Server:       buildPaginationServer(t, map[string]int{"pageSize": 25, "pageStartIndex": 10000}, 25),
 			ExpectedErrs: []error{errTopLevelPagesExceeded},
 		},
 	}

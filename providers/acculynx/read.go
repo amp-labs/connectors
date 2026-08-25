@@ -52,11 +52,12 @@ const (
 	// with a clear error pointing the caller at Since/Until — see fetchChildPages.
 	maxChildPagesPerParent = 200
 
-	// maxTopLevelPages bounds pagination for a single top-level object, the
-	// counterpart to maxChildPagesPerParent for nested fetches. At 25 records
-	// per page it allows 10,000 records before erroring. It applies only when
-	// the response reports no count — see makeNextPage.
-	maxTopLevelPages = 400
+	// maxPagesForUnknownTotal caps how many pages a read may request when the
+	// response reports no count, i.e. the total is unknown and exact
+	// termination is impossible — see makeNextPage. At 25 records per page it
+	// allows 10,000 records before erroring. Counterpart to
+	// maxChildPagesPerParent, which bounds the nested fan-out fetches.
+	maxPagesForUnknownTotal = 400
 
 	// /calendars/{calendarId}/appointments requires startDate/endDate. When the
 	// caller supplies neither, default to a 30-day window ending now.
@@ -597,10 +598,10 @@ func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) comm
 		// regression could still walk unbounded. Accounts whose envelope does
 		// carry count are deliberately exempt — termination is already exact
 		// there, and capping them would fail legitimate reads of accounts
-		// holding more than maxTopLevelPages*pageSize records.
-		if _, reported := envelopeInt(root, countKey); !reported && requested/per >= maxTopLevelPages {
+		// holding more than maxPagesForUnknownTotal*pageSize records.
+		if _, reported := envelopeInt(root, countKey); !reported && requested/per >= maxPagesForUnknownTotal {
 			return "", fmt.Errorf("%w: %s after %d pages — pass Since/Until to narrow the read",
-				errTopLevelPagesExceeded, objectName, maxTopLevelPages)
+				errTopLevelPagesExceeded, objectName, maxPagesForUnknownTotal)
 		}
 
 		next, err := cloneURL(reqURL)
