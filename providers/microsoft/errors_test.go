@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/interpreter"
 )
 
 func TestHandleErrorResponse(t *testing.T) { //nolint:funlen
@@ -127,6 +128,128 @@ func TestHandleErrorResponse(t *testing.T) { //nolint:funlen
 				t.Errorf("expected error to contain %q, got %v", tt.wantErrSubstring, err)
 			}
 		})
+	}
+}
+
+// TestFallbackDispatch calls ErrorHandler.Handle rather than the callbacks
+// directly. Graph sends its bodyless 500 with no Content-Type, so media-type
+// dispatch is the part that decides which callback runs.
+func TestFallbackDispatch(t *testing.T) {
+	t.Parallel()
+
+	handler := interpreter.ErrorHandler{
+		JSON:     interpreter.DirectFaultyResponder{Callback: handleErrorResponse},
+		Fallback: interpreter.DirectFaultyResponder{Callback: handleNonJSONErrorResponse},
+	}
+
+	tests := []struct {
+		name             string
+		contentType      string
+		status           int
+		body             string
+		wantNonRetryable bool
+		wantHTTPError    bool
+		wantClass        common.ErrorClass
+	}{
+		{
+			// The exact production shape: 500, Content-Length 0, no Content-Type.
+			name:             "bodyless 500 with no content-type is non-retryable",
+			status:           http.StatusInternalServerError,
+			wantNonRetryable: true,
+			wantClass:        common.ErrorClassProvider5xxPermanent,
+		},
+		{
+			// The critical negative: an error envelope means Graph took its
+			// normal path, so the failure may be transient.
+			name:          "500 with an error envelope stays retryable",
+			status:        http.StatusInternalServerError,
+			body:          `{"error":{"code":"InternalServerError","message":"An internal server error occurred."}}`,
+			wantHTTPError: true,
+			wantClass:     common.ErrorClassProvider5xx,
+		},
+		{
+			name:          "bodyless 503 stays retryable",
+			status:        http.StatusServiceUnavailable,
+			wantHTTPError: true,
+			wantClass:     common.ErrorClassProvider5xx,
+		},
+		{
+			// Regression guard: wiring a Fallback must not degrade non-JSON
+			// errors, which previously reached common.InterpretError and kept
+			// their HTTPError wrapper.
+			name:          "html error response keeps its HTTPError wrapper",
+			contentType:   "text/html",
+			status:        http.StatusInternalServerError,
+			body:          "<html>oops</html>",
+			wantHTTPError: true,
+			wantClass:     common.ErrorClassProvider5xx,
+		},
+		{
+			name:          "401 with no content-type still reports auth failure",
+			status:        http.StatusUnauthorized,
+			wantHTTPError: true,
+			wantClass:     common.ErrorClassAuthInvalidated,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := &http.Response{StatusCode: tt.status, Header: http.Header{}}
+			if tt.contentType != "" {
+				res.Header.Set("Content-Type", tt.contentType)
+			}
+
+			err := handler.Handle(res, []byte(tt.body))
+			if err == nil {
+				t.Fatal("expected error, got nil")
+			}
+
+			if got := errors.Is(err, common.ErrServerNonRetryable); got != tt.wantNonRetryable {
+				t.Errorf("errors.Is(err, ErrServerNonRetryable): got %v, want %v (err=%v)",
+					got, tt.wantNonRetryable, err)
+			}
+
+			var httpErr *common.HTTPError
+			if got := errors.As(err, &httpErr); got != tt.wantHTTPError {
+				t.Errorf("errors.As(err, *HTTPError): got %v, want %v (err=%v)",
+					got, tt.wantHTTPError, err)
+			}
+
+			if got := common.ClassOf(err); got != tt.wantClass {
+				t.Errorf("ClassOf: got %q, want %q (err=%v)", got, tt.wantClass, err)
+			}
+		})
+	}
+}
+
+// TestBodylessServerErrorSurvivesFlattening covers the Temporal boundary: the
+// typed chain is serialized away, so the class has to be recoverable from the
+// message alone via classOfMessage.
+func TestBodylessServerErrorSurvivesFlattening(t *testing.T) {
+	t.Parallel()
+
+	reqURL, err := url.Parse("https://graph.microsoft.com/v1.0/me/messages")
+	if err != nil {
+		t.Fatalf("parse url: %v", err)
+	}
+
+	res := &http.Response{
+		StatusCode: http.StatusInternalServerError,
+		Header:     http.Header{},
+		Request:    &http.Request{Method: http.MethodGet, URL: reqURL},
+	}
+
+	returned := handleNonJSONErrorResponse(res, nil)
+
+	if !strings.Contains(returned.Error(), "GET https://graph.microsoft.com/v1.0/me/messages") {
+		t.Errorf("expected error to name the failing request, got %v", returned)
+	}
+
+	flattened := errors.New(returned.Error()) //nolint:err113
+	if got := common.ClassOf(flattened); got != common.ErrorClassProvider5xxPermanent {
+		t.Errorf("ClassOf(flattened): got %q, want %q", got, common.ErrorClassProvider5xxPermanent)
 	}
 }
 

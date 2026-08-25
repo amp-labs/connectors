@@ -22,6 +22,13 @@ type ErrorHandler struct {
 	XML    FaultyResponseHandler
 	HTML   FaultyResponseHandler
 	Custom map[Mime]FaultyResponseHandler
+
+	// Fallback handles responses no handler above claimed: missing or
+	// unparseable Content-Type, or a media type with none registered.
+	// Nil defers to common.InterpretError. A Fallback that recognizes only
+	// certain responses should return common.InterpretError(res, body) for
+	// the rest, leaving them unchanged.
+	Fallback FaultyResponseHandler
 }
 
 func (h ErrorHandler) Handle(res *http.Response, body []byte) error { // nolint:cyclop
@@ -42,6 +49,10 @@ func (h ErrorHandler) Handle(res *http.Response, body []byte) error { // nolint:
 		if customHandler, ok := h.Custom[mediaType]; ok {
 			return customHandler.HandleErrorResponse(res, body)
 		}
+	}
+
+	if h.Fallback != nil {
+		return h.Fallback.HandleErrorResponse(res, body)
 	}
 
 	// Default fallback, which treats body as opaque string to produce golang error.
