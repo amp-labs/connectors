@@ -21,7 +21,10 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-var errChildPagesExceeded = errors.New("acculynx: nested fetch exceeded page cap")
+var (
+	errChildPagesExceeded    = errors.New("acculynx: nested fetch exceeded page cap")
+	errTopLevelPagesExceeded = errors.New("acculynx: read exceeded page cap")
+)
 
 const (
 	// AccuLynx OpenAPI does not document maximum pageSize, but its API enforces
@@ -31,10 +34,12 @@ const (
 	defaultPageSize = "25"
 	maxPageSize     = 25
 
-	pageSizeParam    = "pageSize"
-	recordStartParam = "recordStartIndex"
-	pageStartParam   = "pageStartIndex"
-	pageNumberParam  = "pageNumber"
+	pageSizeParam  = "pageSize"
+	pageStartParam = "pageStartIndex"
+
+	// countKey is the envelope field holding the total number of unfiltered
+	// items for the object; used to terminate pagination exactly.
+	countKey = "count"
 
 	// AccuLynx 10 req/sec per API key gives plenty of headroom; 4 is a
 	// conservative cap for the per-parent fan-out.
@@ -46,6 +51,12 @@ const (
 	// (e.g. jobs with hundreds of thousands of history entries), the cap fires
 	// with a clear error pointing the caller at Since/Until — see fetchChildPages.
 	maxChildPagesPerParent = 200
+
+	// maxTopLevelPages bounds pagination for a single top-level object, the
+	// counterpart to maxChildPagesPerParent for nested fetches. At 25 records
+	// per page it allows 10,000 records before erroring. It applies only when
+	// the response reports no count — see makeNextPage.
+	maxTopLevelPages = 400
 
 	// /calendars/{calendarId}/appointments requires startDate/endDate. When the
 	// caller supplies neither, default to a 30-day window ending now.
@@ -201,16 +212,7 @@ func applyPagination(url *urlbuilder.URL, objectName string, params common.ReadP
 
 	url.WithQueryParam(pageSizeParam, pageSizeWithCap(params))
 
-	switch spec.pagination {
-	case paginationOffsetRecord:
-		url.WithQueryParam(recordStartParam, "0")
-	case paginationOffsetPage:
-		url.WithQueryParam(pageStartParam, "0")
-	case paginationPageNumber:
-		url.WithQueryParam(pageNumberParam, "1")
-	case paginationNone:
-		// No-op — handled above.
-	}
+	url.WithQueryParam(pageStartParam, "0")
 }
 
 // pageSizeWithCap returns params.PageSize when within bounds, otherwise
@@ -549,8 +551,26 @@ func applyAppointmentsDateWindow(url *urlbuilder.URL, params common.ReadParams) 
 }
 
 // makeNextPage returns a NextPageFunc tailored to the object's paginationStyle.
-// Pagination terminates when the records array is shorter than pageSize (the
-// universal "partial page = last page" signal used elsewhere in the repo).
+//
+// Pagination stops on any of four signals, in order of reliability:
+//
+//  1. The server ignored our offset — the echoed pageStartIndex does not match
+//     what we asked for. Continuing would re-request the same page forever,
+//     since a server replaying page one always returns a full page and so
+//     never trips the partial-page check below.
+//  2. Every record has been consumed — the echoed offset plus this page's
+//     record count has reached the envelope's total count.
+//  3. Partial page — fewer records than pageSize.
+//  4. Page cap — a safety net mirroring maxChildPagesPerParent for nested
+//     fetches, so a future provider-side regression surfaces as an error
+//     rather than an unbounded loop.
+//
+// Signals 1 and 2 read the shared AccuLynx list envelope:
+//
+//	{ "count": 163, "pageSize": 25, "pageStartIndex": 0, "items": [...] }
+//
+// Objects whose responses carry no envelope are all paginationNone and return
+// early, so their absence is never a problem.
 func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) common.NextPageFunc {
 	spec := objectReadSpecs.Get(objectName)
 	recordsKey := c.arrayFieldName(objectName)
@@ -565,9 +585,22 @@ func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) comm
 			return "", err
 		}
 
+		requested := queryParamIntOrDefault(reqURL, pageStartParam, 0)
 		per := queryParamIntOrDefault(reqURL, pageSizeParam, maxPageSize)
-		if records < per {
+
+		if envelopeExhausted(root, records, requested, per) {
 			return "", nil
+		}
+
+		// Safety net for responses that report no total: without count the only
+		// remaining exits are the echoed offset and a short page, so a provider
+		// regression could still walk unbounded. Accounts whose envelope does
+		// carry count are deliberately exempt — termination is already exact
+		// there, and capping them would fail legitimate reads of accounts
+		// holding more than maxTopLevelPages*pageSize records.
+		if _, reported := envelopeInt(root, countKey); !reported && requested/per >= maxTopLevelPages {
+			return "", fmt.Errorf("%w: %s after %d pages — pass Since/Until to narrow the read",
+				errTopLevelPagesExceeded, objectName, maxTopLevelPages)
 		}
 
 		next, err := cloneURL(reqURL)
@@ -575,23 +608,59 @@ func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) comm
 			return "", err
 		}
 
-		advancePagination(next, spec.pagination, records)
+		advanceOffset(next, pageStartParam, records)
 
 		return next.String(), nil
 	}
 }
 
-func advancePagination(u *urlbuilder.URL, style paginationStyle, records int) {
-	switch style {
-	case paginationOffsetRecord:
-		advanceOffset(u, recordStartParam, records)
-	case paginationOffsetPage:
-		advanceOffset(u, pageStartParam, records)
-	case paginationPageNumber:
-		advancePageNumber(u)
-	case paginationNone:
-		// No-op.
+// paginationExhausted reports whether a paged sweep should stop, given the page
+// just received. It encodes the same three data-driven signals makeNextPage
+// applies, for the hand-rolled loops in custom.go:
+//
+//   - the server echoed an offset other than the one requested, meaning it
+//     ignored our paging and re-served an earlier page;
+//   - the echoed offset plus this page's records reached the envelope total;
+//   - the page came back short.
+//
+// A zero count is treated as "no total reported" rather than "no records",
+// since an empty page already terminates via the short-page check.
+func paginationExhausted(records, requested, echoedOffset, total, per int) bool {
+	if echoedOffset != requested {
+		return true
 	}
+
+	if total > 0 && requested+records >= total {
+		return true
+	}
+
+	return records < per
+}
+
+// envelopeExhausted applies paginationExhausted to a raw list response. A
+// missing echoed offset is read as "the server agreed with us" and a missing
+// count as "no total reported", so endpoints that omit either field fall back
+// to the short-page signal alone.
+func envelopeExhausted(root *ajson.Node, records, requested, per int) bool {
+	echoed, ok := envelopeInt(root, pageStartParam)
+	if !ok {
+		echoed = requested
+	}
+
+	total, _ := envelopeInt(root, countKey)
+
+	return paginationExhausted(records, requested, echoed, total, per)
+}
+
+// envelopeInt reads a top-level integer from the AccuLynx list envelope,
+// reporting whether the field was present and numeric.
+func envelopeInt(root *ajson.Node, key string) (int, bool) {
+	value, err := jsonquery.New(root).IntegerOptional(key)
+	if err != nil || value == nil {
+		return 0, false
+	}
+
+	return int(*value), true
 }
 
 func arrayLength(root *ajson.Node, recordsKey string) (int, error) {
@@ -607,17 +676,6 @@ func advanceOffset(u *urlbuilder.URL, paramName string, increment int) {
 	current, _ := u.GetFirstQueryParam(paramName)
 	currentInt, _ := strconv.Atoi(current)
 	u.WithQueryParam(paramName, strconv.Itoa(currentInt+increment))
-}
-
-func advancePageNumber(u *urlbuilder.URL) {
-	current, _ := u.GetFirstQueryParam(pageNumberParam)
-
-	currentInt, err := strconv.Atoi(current)
-	if err != nil || currentInt < 1 {
-		currentInt = 1
-	}
-
-	u.WithQueryParam(pageNumberParam, strconv.Itoa(currentInt+1))
 }
 
 func queryParamIntOrDefault(u *urlbuilder.URL, key string, defaultValue int) int {
