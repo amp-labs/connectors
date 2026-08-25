@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
 	connTest "github.com/amp-labs/connectors/test/surveymonkey"
@@ -33,7 +34,12 @@ func main() {
 
 	testscenario.ValidateCreateUpdateDelete(ctx, conn, "surveys", createPayload, updatePayload,
 		testscenario.CRUDTestSuite{
-			ReadFields:          datautils.NewSet("id", "title"),
+			ReadFields:       datautils.NewSet("id", "title"),
+			WaitBeforeSearch: 3 * time.Second,
+			SearchBy: testscenario.Property{
+				Key:   "title",
+				Value: title,
+			},
 			RecordIdentifierKey: "id",
 			UpdatedFields: map[string]string{
 				"title": title + " (Updated)",
