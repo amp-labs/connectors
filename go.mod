@@ -5,7 +5,7 @@ go 1.26.5
 require (
 	cloud.google.com/go/bigquery v1.79.1
 	github.com/PuerkitoBio/goquery v1.12.0
-	github.com/amp-labs/amp-common v0.0.0-20260820000535-9e73f2625864
+	github.com/amp-labs/amp-common v0.0.0-20260825011530-47a7631cb3af
 	github.com/antchfx/xmlquery v1.5.1
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/aws/aws-sdk-go-v2 v1.43.6
@@ -29,7 +29,7 @@ require (
 	github.com/mitchellh/hashstructure v1.1.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/spyzhov/ajson v0.9.6
-	github.com/stretchr/testify v1.12.0
+	github.com/stretchr/testify v1.12.1
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
 	go.uber.org/atomic v1.11.0
 	golang.org/x/net v0.58.0
@@ -105,6 +105,7 @@ require (
 	go.opentelemetry.io/otel/log v0.21.0 // indirect
 	go.opentelemetry.io/otel/metric v1.45.0 // indirect
 	go.opentelemetry.io/otel/trace v1.45.0 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	go.yaml.in/yaml/v4 v4.0.0-rc.2 // indirect
 	golang.org/x/crypto v0.55.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
