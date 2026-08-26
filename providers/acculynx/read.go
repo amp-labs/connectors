@@ -22,8 +22,8 @@ import (
 )
 
 var (
-	errChildPagesExceeded    = errors.New("acculynx: nested fetch exceeded page cap")
-	errTopLevelPagesExceeded = errors.New("acculynx: read exceeded page cap")
+	errChildPagesExceeded = errors.New("acculynx: nested fetch exceeded page cap")
+	errMissingCount       = errors.New("acculynx: list response omitted count, cannot determine when pagination ends")
 )
 
 const (
@@ -51,13 +51,6 @@ const (
 	// (e.g. jobs with hundreds of thousands of history entries), the cap fires
 	// with a clear error pointing the caller at Since/Until — see fetchChildPages.
 	maxChildPagesPerParent = 200
-
-	// maxPagesForUnknownTotal caps how many pages a read may request when the
-	// response reports no count, i.e. the total is unknown and exact
-	// termination is impossible — see makeNextPage. At 25 records per page it
-	// allows 10,000 records before erroring. Counterpart to
-	// maxChildPagesPerParent, which bounds the nested fan-out fetches.
-	maxPagesForUnknownTotal = 400
 
 	// /calendars/{calendarId}/appointments requires startDate/endDate. When the
 	// caller supplies neither, default to a 30-day window ending now.
@@ -553,7 +546,7 @@ func applyAppointmentsDateWindow(url *urlbuilder.URL, params common.ReadParams) 
 
 // makeNextPage returns a NextPageFunc tailored to the object's paginationStyle.
 //
-// Pagination stops on any of four signals, in order of reliability:
+// Pagination stops on any of three signals, in order of reliability:
 //
 //  1. The server ignored our offset — the echoed pageStartIndex does not match
 //     what we asked for. Continuing would re-request the same page forever,
@@ -562,14 +555,14 @@ func applyAppointmentsDateWindow(url *urlbuilder.URL, params common.ReadParams) 
 //  2. Every record has been consumed — the echoed offset plus this page's
 //     record count has reached the envelope's total count.
 //  3. Partial page — fewer records than pageSize.
-//  4. Page cap — a safety net mirroring maxChildPagesPerParent for nested
-//     fetches, so a future provider-side regression surfaces as an error
-//     rather than an unbounded loop.
 //
 // Signals 1 and 2 read the shared AccuLynx list envelope:
 //
 //	{ "count": 163, "pageSize": 25, "pageStartIndex": 0, "items": [...] }
 //
+// A full page carrying no count means the total is unknown, so no signal can
+// prove the read ever ends: that errors rather than paging on, surfacing the
+// provider change immediately instead of after an arbitrary page budget.
 // Objects whose responses carry no envelope are all paginationNone and return
 // early, so their absence is never a problem.
 func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) common.NextPageFunc {
@@ -593,15 +586,12 @@ func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) comm
 			return "", nil
 		}
 
-		// Safety net for responses that report no total: without count the only
-		// remaining exits are the echoed offset and a short page, so a provider
-		// regression could still walk unbounded. Accounts whose envelope does
-		// carry count are deliberately exempt — termination is already exact
-		// there, and capping them would fail legitimate reads of accounts
-		// holding more than maxPagesForUnknownTotal*pageSize records.
-		if _, reported := envelopeInt(root, countKey); !reported && requested/per >= maxPagesForUnknownTotal {
-			return "", fmt.Errorf("%w: %s after %d pages — pass Since/Until to narrow the read",
-				errTopLevelPagesExceeded, objectName, maxPagesForUnknownTotal)
+		// Reaching here means the page was full and the offset was honoured, so
+		// the sweep would continue. Without count there is no signal that can
+		// bound it, so fail loudly now rather than page on and hope a short
+		// page eventually arrives.
+		if _, reported := envelopeInt(root, countKey); !reported {
+			return "", fmt.Errorf("%w: %s", errMissingCount, objectName)
 		}
 
 		next, err := cloneURL(reqURL)

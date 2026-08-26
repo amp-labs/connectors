@@ -1282,11 +1282,9 @@ func TestReadPaginationTermination(t *testing.T) {
 			},
 		},
 		{
-			// A real account can legitimately hold more than
-			// maxPagesForUnknownTotal*pageSize records. When the envelope reports a
-			// count, termination is already exact, so the cap must not fire and
-			// turn a valid large read into an error.
-			Name: "Large account keeps paging past the cap when count is reported",
+			// A count-reporting account is bounded no matter how deep the sweep
+			// goes, so an arbitrarily large offset must keep paging normally.
+			Name: "Deep offset keeps paging when count is reported",
 			Input: common.ReadParams{
 				ObjectName: "jobs",
 				Fields:     connectors.Fields("id"),
@@ -1302,17 +1300,33 @@ func TestReadPaginationTermination(t *testing.T) {
 			},
 		},
 		{
-			// No count field, offset honoured, pages never shrink: only the page
-			// cap can stop this. The error must name the object.
-			Name: "Page cap trips when no count is reported",
+			// Full page, offset honoured, no count: nothing can bound the sweep,
+			// so the read must error immediately and name the object.
+			Name: "Missing count on a full page errors immediately",
 			Input: common.ReadParams{
 				ObjectName: "jobs",
 				Fields:     connectors.Fields("id"),
 				PageSize:   25,
-				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=10000",
 			},
-			Server:       buildPaginationServer(t, map[string]int{"pageSize": 25, "pageStartIndex": 10000}, 25),
-			ExpectedErrs: []error{errTopLevelPagesExceeded},
+			Server:       buildPaginationServer(t, map[string]int{"pageSize": 25, "pageStartIndex": 0}, 25),
+			ExpectedErrs: []error{errMissingCount},
+		},
+		{
+			// No count, but the page is short — that is an unambiguous last page,
+			// so the read completes rather than erroring.
+			Name: "Missing count on a short page still terminates cleanly",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+			},
+			Server:     buildPaginationServer(t, map[string]int{"pageSize": 25, "pageStartIndex": 0}, 10),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     10,
+				NextPage: "",
+				Done:     true,
+			},
 		},
 	}
 
