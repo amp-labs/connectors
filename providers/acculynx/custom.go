@@ -144,11 +144,17 @@ type customFieldValue struct {
 // schema (an `items` array on top of baseCollection).
 type customFieldDefinitionsResponse struct {
 	Items []customFieldDefinition `json:"items"`
+	// Count and PageStartIndex come from the shared baseCollection envelope and
+	// drive pagination termination — see paginationExhausted.
+	Count          int `json:"count"`
+	PageStartIndex int `json:"pageStartIndex"`
 }
 
 // customFieldsResponse mirrors the customFieldsCollection schema.
 type customFieldsResponse struct {
-	Items []customFieldValue `json:"items"`
+	Items          []customFieldValue `json:"items"`
+	Count          int                `json:"count"`
+	PageStartIndex int                `json:"pageStartIndex"`
 }
 
 // fetchCustomFieldDefinitions retrieves all active custom-field definitions
@@ -163,7 +169,7 @@ func (c *Connector) fetchCustomFieldDefinitions(
 	}
 
 	url.WithQueryParam(pageSizeParam, defaultPageSize)
-	url.WithQueryParam(recordStartParam, "0")
+	url.WithQueryParam(pageStartParam, "0")
 
 	registry := make(datautils.NamedLists[customFieldDefinition])
 
@@ -186,13 +192,12 @@ func (c *Connector) fetchCustomFieldDefinitions(
 			registry.Add(strings.ToLower(def.EntityType), def)
 		}
 
-		if len(page.Items) < maxPageSize {
+		requested := queryParamIntOrDefault(url, pageStartParam, 0)
+		if paginationExhausted(len(page.Items), requested, page.PageStartIndex, page.Count, maxPageSize) {
 			break
 		}
 
-		current, _ := url.GetFirstQueryParam(recordStartParam)
-		currentInt, _ := strconv.Atoi(current)
-		url.WithQueryParam(recordStartParam, strconv.Itoa(currentInt+len(page.Items)))
+		url.WithQueryParam(pageStartParam, strconv.Itoa(requested+len(page.Items)))
 	}
 
 	return registry, nil
@@ -251,7 +256,7 @@ func (c *Connector) fetchCustomFieldValuesForRecord(
 	}
 
 	url.WithQueryParam(pageSizeParam, defaultPageSize)
-	url.WithQueryParam(recordStartParam, "0")
+	url.WithQueryParam(pageStartParam, "0")
 
 	var collected []customFieldValue
 
@@ -272,13 +277,12 @@ func (c *Connector) fetchCustomFieldValuesForRecord(
 
 		collected = append(collected, page.Items...)
 
-		if len(page.Items) < maxPageSize {
+		requested := queryParamIntOrDefault(url, pageStartParam, 0)
+		if paginationExhausted(len(page.Items), requested, page.PageStartIndex, page.Count, maxPageSize) {
 			break
 		}
 
-		current, _ := url.GetFirstQueryParam(recordStartParam)
-		currentInt, _ := strconv.Atoi(current)
-		url.WithQueryParam(recordStartParam, strconv.Itoa(currentInt+len(page.Items)))
+		url.WithQueryParam(pageStartParam, strconv.Itoa(requested+len(page.Items)))
 	}
 
 	return collected, nil

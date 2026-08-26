@@ -11,54 +11,49 @@ import (
 
 type paginationStyle int
 
+// Paginated AccuLynx /api/v2 list endpoints all advance through pageStartIndex,
+// the offset their shared response envelope echoes back. Endpoints returning a
+// bare array carry no offset at all and are paginationNone.
 const (
-	paginationOffsetRecord paginationStyle = iota
-	paginationOffsetPage
-	paginationPageNumber
+	paginationOffsetPage paginationStyle = iota
 	paginationNone
 )
 
-// objectReadSpec captures the per-object pagination style and incremental
-// timeKey. timeKey is the response field used for connector-side Since/Until
+// objectReadSpec captures the per-object pagination style and the
+// timeFilterField — the response field used for connector-side Since/Until
 // filtering; per repo convention only the "updated_at" semantic field qualifies
 // (modifiedDate on AccuLynx) — never createdDate.
 type objectReadSpec struct {
-	pagination paginationStyle
-	timeKey    string
+	pagination      paginationStyle
+	timeFilterField string
 }
 
 //nolint:gochecknoglobals
 var objectReadSpecs = datautils.NewDefaultMap(map[string]objectReadSpec{
 	// jobs is the only endpoint with a provider-side ModifiedDate filter; we
 	// still apply connector-side filtering on top to enforce time bounds precisely.
-	"jobs":                           {pagination: paginationOffsetRecord, timeKey: "modifiedDate"},
-	"jobs/custom-fields":             {pagination: paginationOffsetRecord, timeKey: "modifiedDate"},
-	"contacts/custom-fields":         {pagination: paginationOffsetRecord, timeKey: "modifiedDate"},
-	"estimates/sections":             {pagination: paginationNone, timeKey: "modifiedDate"},
-	"company-settings/custom-fields": {pagination: paginationOffsetRecord, timeKey: "modifiedDate"},
+	"jobs":                           {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
+	"jobs/custom-fields":             {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
+	"contacts/custom-fields":         {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
+	"estimates/sections":             {pagination: paginationNone, timeFilterField: "modifiedDate"},
+	"company-settings/custom-fields": {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
 
-	"calendars":             {pagination: paginationOffsetRecord},
-	"users":                 {pagination: paginationOffsetRecord},
-	"supplements":           {pagination: paginationOffsetRecord},
-	"supplements/items":     {pagination: paginationOffsetRecord},
-	"supplements/notations": {pagination: paginationOffsetRecord},
-	"jobs/estimates":        {pagination: paginationOffsetRecord},
-	"jobs/history":          {pagination: paginationOffsetRecord, timeKey: "date"},
-	"jobs/representatives":  {pagination: paginationOffsetRecord},
-	"company-settings/job-file-settings/document-folders":    {pagination: paginationOffsetRecord},
-	"company-settings/job-file-settings/insurance-companies": {pagination: paginationOffsetRecord},
-	"company-settings/job-file-settings/job-categories":      {pagination: paginationOffsetRecord},
-	"company-settings/job-file-settings/photo-video-tags":    {pagination: paginationOffsetRecord},
-	"company-settings/job-file-settings/trade-types":         {pagination: paginationOffsetRecord},
-	"company-settings/job-file-settings/work-types":          {pagination: paginationOffsetRecord},
-	"company-settings/leads/lead-sources":                    {pagination: paginationOffsetRecord},
+	"calendars":             {pagination: paginationOffsetPage},
+	"users":                 {pagination: paginationOffsetPage},
+	"supplements":           {pagination: paginationOffsetPage},
+	"supplements/items":     {pagination: paginationOffsetPage},
+	"supplements/notations": {pagination: paginationOffsetPage},
+	"jobs/estimates":        {pagination: paginationOffsetPage},
+	"jobs/history":          {pagination: paginationOffsetPage, timeFilterField: "date"},
+	"jobs/representatives":  {pagination: paginationOffsetPage},
+	"company-settings/job-file-settings/document-folders":    {pagination: paginationOffsetPage},
+	"company-settings/job-file-settings/insurance-companies": {pagination: paginationOffsetPage},
+	"company-settings/job-file-settings/job-categories":      {pagination: paginationOffsetPage},
+	"company-settings/job-file-settings/photo-video-tags":    {pagination: paginationOffsetPage},
+	"company-settings/job-file-settings/trade-types":         {pagination: paginationOffsetPage},
+	"company-settings/job-file-settings/work-types":          {pagination: paginationOffsetPage},
+	"company-settings/leads/lead-sources":                    {pagination: paginationOffsetPage},
 
-	// pageStartIndex is the AccuLynx-side offset for these endpoints, advanced
-	// by the per-page record count (see advancePagination). Verified via
-	// metadata/queryParamStats.json — pageNumber is not an accepted param on
-	// any /api/v2 list endpoint, so previously routing these through
-	// paginationPageNumber caused the connector to loop on page 1 (AccuLynx
-	// silently ignores pageNumber and returns the first page every time).
 	"estimates":              {pagination: paginationOffsetPage},
 	"calendars/appointments": {pagination: paginationOffsetPage},
 	"contacts":               {pagination: paginationOffsetPage},
@@ -74,7 +69,7 @@ var objectReadSpecs = datautils.NewDefaultMap(map[string]objectReadSpec{
 	"company-settings/job-file-settings/workflow-milestones": {pagination: paginationNone},
 	"company-settings/location-settings/account-types":       {pagination: paginationNone},
 }, func(string) objectReadSpec {
-	return objectReadSpec{pagination: paginationOffsetRecord}
+	return objectReadSpec{pagination: paginationOffsetPage}
 })
 
 // makeFilterFunc returns an identity filter when the object exposes no usable
@@ -84,7 +79,7 @@ func (c *Connector) makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.
 	nextPage := c.makeNextPage(params.ObjectName, reqURL)
 
 	spec := objectReadSpecs.Get(params.ObjectName)
-	if spec.timeKey == "" {
+	if spec.timeFilterField == "" {
 		return readhelper.MakeIdentityFilterFunc(nextPage)
 	}
 
@@ -95,7 +90,7 @@ func (c *Connector) makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.
 	return readhelper.MakeTimeFilterFunc(
 		readhelper.Unordered,
 		readhelper.NewTimeBoundary(),
-		spec.timeKey,
+		spec.timeFilterField,
 		time.RFC3339,
 		nextPage,
 	)

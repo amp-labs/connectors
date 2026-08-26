@@ -1,7 +1,7 @@
 {
   "count": 2,
   "pageSize": 25,
-  "recordStartIndex": 0,
+  "pageStartIndex": 0,
   "items": [
     {
       "id": "rep-1",

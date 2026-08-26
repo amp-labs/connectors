@@ -2,7 +2,10 @@ package acculynx
 
 import (
 	_ "embed"
+	"encoding/json"
 	"net/http"
+	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 
@@ -312,7 +315,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 							mockcond.MethodGET(),
 							mockcond.Path("/api/v2/users"),
 							mockcond.QueryParam("pageSize", "2"),
-							mockcond.QueryParam("recordStartIndex", "0"),
+							mockcond.QueryParam("pageStartIndex", "0"),
 						},
 						Then: mockserver.Response(http.StatusOK, usersFirstPageResponse),
 					},
@@ -341,7 +344,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						"status":      "Active",
 					},
 				}},
-				NextPage: testconn.URLTestServer + "/api/v2/users?pageSize=2&recordStartIndex=2",
+				NextPage: testconn.URLTestServer + "/api/v2/users?pageSize=2&pageStartIndex=2",
 				Done:     false,
 			},
 		},
@@ -351,7 +354,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				ObjectName: "users",
 				Fields:     connectors.Fields("id"),
 				PageSize:   2,
-				NextPage:   testconn.URLTestServer + "/api/v2/users?pageSize=2&recordStartIndex=4",
+				NextPage:   testconn.URLTestServer + "/api/v2/users?pageSize=2&pageStartIndex=4",
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -359,7 +362,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					{
 						If: mockcond.And{
 							mockcond.MethodGET(),
-							mockcond.QueryParam("recordStartIndex", "4"),
+							mockcond.QueryParam("pageStartIndex", "4"),
 						},
 						Then: mockserver.Response(http.StatusOK, usersLastPageResponse),
 					},
@@ -513,7 +516,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						If: mockcond.And{
 							mockcond.MethodGET(),
 							mockcond.Path("/api/v2/jobs"),
-							mockcond.QueryParam("recordStartIndex", "0"),
+							mockcond.QueryParam("pageStartIndex", "0"),
 						},
 						Then: mockserver.Response(http.StatusOK, jobsListResponse),
 					},
@@ -1166,4 +1169,174 @@ func constructTestReadConnector(serverURL string) (*Connector, error) {
 	connector.SetUnitTestBaseURL(serverURL)
 
 	return connector, nil
+}
+
+// buildPaginationServer returns a server that answers every request with the
+// given envelope plus numItems dummy records, so each test case shows the
+// connector input, the envelope, and the expected pagination output in one
+// place. Omit "count" from the envelope to simulate a response with no total.
+func buildPaginationServer(t *testing.T, envelope map[string]int, numItems int) *httptest.Server {
+	t.Helper()
+
+	items := make([]map[string]any, numItems)
+	for i := range items {
+		items[i] = map[string]any{"id": "j" + strconv.Itoa(i), "jobNumber": strconv.Itoa(i)}
+	}
+
+	body := make(map[string]any, len(envelope)+1)
+	for key, value := range envelope {
+		body[key] = value
+	}
+
+	body["items"] = items
+
+	payload, err := json.Marshal(body)
+	if err != nil {
+		t.Fatalf("marshal pagination response: %v", err)
+	}
+
+	return mockserver.Fixed{
+		Setup:  mockserver.ContentJSON(),
+		Always: mockserver.Response(http.StatusOK, payload),
+	}.Server()
+}
+
+// TestReadPaginationTermination covers the exit conditions that keep Read from
+// looping when AccuLynx misreports paging (CON-3512). Before the fix the
+// connector's only exit was "a short page is the last page", so a server that
+// answered every offset with a full first page paginated forever.
+func TestReadPaginationTermination(t *testing.T) {
+	t.Parallel()
+
+	tests := []testconn.TestCaseRead{
+		{
+			// The regression guard: the server ignores pageStartIndex entirely,
+			// answering every offset with a full page and a count it never
+			// reaches. Read must still stop.
+			Name: "Runaway server that ignores the offset terminates",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=25",
+			},
+			Server:     buildPaginationServer(t, map[string]int{"count": 163, "pageSize": 25, "pageStartIndex": 0}, 25),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     25,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			// Offset honoured: the first page must hand back a cursor.
+			Name: "Count-based exit continues while records remain",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+			},
+			Server:     buildPaginationServer(t, map[string]int{"count": 50, "pageSize": 25, "pageStartIndex": 0}, 25),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 25,
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?includes=initialAppointment&pageSize=25&pageStartIndex=25",
+				Done: false,
+			},
+		},
+		{
+			// Final page lands exactly on count with a full page of records, so
+			// the short-page heuristic cannot fire — only the count check can.
+			Name: "Count-based exit stops exactly at count on a full page",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=25",
+			},
+			Server:     buildPaginationServer(t, map[string]int{"count": 50, "pageSize": 25, "pageStartIndex": 25}, 25),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     25,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			// We asked for offset 25; the envelope echoes 0. The server is
+			// serving a page we have already seen, so stop rather than re-emit.
+			Name: "Non-advancing echoed offset terminates",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=25",
+			},
+			Server:     buildPaginationServer(t, map[string]int{"count": 163, "pageSize": 25, "pageStartIndex": 0}, 25),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     25,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			// A count-reporting account is bounded no matter how deep the sweep
+			// goes, so an arbitrarily large offset must keep paging normally.
+			Name: "Deep offset keeps paging when count is reported",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=10000",
+			},
+			Server:     buildPaginationServer(t, map[string]int{"count": 50000, "pageSize": 25, "pageStartIndex": 10000}, 25),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     25,
+				NextPage: testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=10025",
+				Done:     false,
+			},
+		},
+		{
+			// Full page, offset honoured, no count: nothing can bound the sweep,
+			// so the read must error immediately and name the object.
+			Name: "Missing count on a full page errors immediately",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+			},
+			Server:       buildPaginationServer(t, map[string]int{"pageSize": 25, "pageStartIndex": 0}, 25),
+			ExpectedErrs: []error{errMissingCount},
+		},
+		{
+			// No count, but the page is short — that is an unambiguous last page,
+			// so the read completes rather than erroring.
+			Name: "Missing count on a short page still terminates cleanly",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+			},
+			Server:     buildPaginationServer(t, map[string]int{"pageSize": 25, "pageStartIndex": 0}, 10),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     10,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (testconn.TestableReader, error) {
+				return constructTestReadConnector(tt.Server.URL)
+			})
+		})
+	}
 }
