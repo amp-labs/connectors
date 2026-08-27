@@ -80,7 +80,9 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
-func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
+func (c *Connector) buildReadRequest( // nolint:cyclop
+	ctx context.Context, params common.ReadParams,
+) (*http.Request, error) {
 	info, err := mappings.GetReadListInfo(c.Provider(), params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -98,21 +100,59 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	pageSize := readhelper.PageSizeWithDefaultStr(params, "200")
 
 	if info.Method == http.MethodPost {
-		body := map[string]any{"limit": pageSize}
-		if params.NextPage != "" {
-			body["cursor"] = params.NextPage.String()
-		}
-
-		return jsonPostRequest(ctx, url.String(), body)
+		return c.buildReadViaPostRequest(ctx, params, pageSize, info, url)
 	}
 
+	return c.buildReadViaGetRequest(ctx, params, url, pageSize, info)
+}
+
+func (c *Connector) buildReadViaGetRequest(ctx context.Context,
+	params common.ReadParams,
+	url *urlbuilder.URL,
+	pageSize string,
+	info mappings.ReadListInfo,
+) (*http.Request, error) {
 	url.WithQueryParam("limit", pageSize)
 
 	if params.NextPage != "" {
 		url.WithQueryParam("cursor", params.NextPage.String())
 	}
 
+	if !params.Since.IsZero() && info.SinceQP != "" {
+		value := readhelper.TimeFormat(params.Since, info.RangeTimestampFormat)
+		url.WithQueryParam(info.SinceQP, value)
+	}
+
+	if !params.Until.IsZero() && info.UntilQP != "" {
+		value := readhelper.TimeFormat(params.Until, info.RangeTimestampFormat)
+		url.WithQueryParam(info.UntilQP, value)
+	}
+
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+func (c *Connector) buildReadViaPostRequest(ctx context.Context,
+	params common.ReadParams,
+	pageSize string,
+	info mappings.ReadListInfo,
+	url *urlbuilder.URL,
+) (*http.Request, error) {
+	body := map[string]any{"limit": pageSize}
+	if params.NextPage != "" {
+		body["cursor"] = params.NextPage.String()
+	}
+
+	if !params.Since.IsZero() && info.SinceQP != "" {
+		value := readhelper.TimeFormat(params.Since, info.RangeTimestampFormat)
+		body[info.SinceQP] = value
+	}
+
+	if !params.Until.IsZero() && info.UntilQP != "" {
+		value := readhelper.TimeFormat(params.Until, info.RangeTimestampFormat)
+		body[info.UntilQP] = value
+	}
+
+	return jsonPostRequest(ctx, url.String(), body)
 }
 
 func (c *Connector) parseReadResponse( //nolint:unparam
@@ -126,13 +166,15 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 		return nil, err
 	}
 
+	idField := info.GetIdFieldQuery()
+
 	if info.TimeFilterField != "" {
 		return common.ParseResultFiltered(
 			params,
 			response,
 			nodeRecords(info.ResponseField),
 			makeTimeFilter(info),
-			readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id")),
+			readhelper.MakeMarshaledDataFuncWithId(nil, idField),
 			params.Fields,
 		)
 	}
@@ -141,7 +183,7 @@ func (c *Connector) parseReadResponse( //nolint:unparam
 		response,
 		recordsFunc(info.ResponseField),
 		nextRecordsURL(),
-		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id")),
+		readhelper.MakeGetMarshaledDataWithId(idField),
 		params.Fields,
 	)
 }
@@ -155,7 +197,7 @@ func makeTimeFilter(info mappings.ReadListInfo) common.RecordsFilterFunc {
 		readhelper.Unordered,
 		readhelper.NewTimeBoundary(),
 		info.TimeFilterField,
-		readhelper.TimestampFormatUnixSec,
+		info.FilterTimestampFormat,
 		nextRecordsURL(),
 	)
 }

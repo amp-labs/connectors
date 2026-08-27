@@ -24,7 +24,7 @@ type ErrorHandler struct {
 	Custom map[Mime]FaultyResponseHandler
 
 	// Fallback handles responses no handler above claimed: missing or
-	// unparseable Content-Type, or a media type with none registered.
+	// unparsable Content-Type, or a media type with none registered.
 	// Nil defers to common.InterpretError. A Fallback that recognizes only
 	// certain responses should return common.InterpretError(res, body) for
 	// the rest, leaving them unchanged.
