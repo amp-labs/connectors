@@ -14,7 +14,6 @@ import (
 )
 
 const (
-	apiVersion      = "v3"
 	defaultPageSize = "100"
 
 	pageKey    = "page"

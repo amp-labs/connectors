@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "id": "9012",
+      "name": "Amp Integration List",
+      "href": "https://api.surveymonkey.com/v3/contact_lists/9012"
+    }
+  ],
+  "page": 1,
+  "per_page": 50,
+  "total": 1,
+  "links": {
+    "self": "https://api.surveymonkey.com/v3/contact_lists?page=1&per_page=50"
+  }
+}

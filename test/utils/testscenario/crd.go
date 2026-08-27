@@ -35,8 +35,8 @@ func ValidateCreateDelete[CP any](ctx context.Context, conn ConnectorCRUD, objec
 	createPayload CP, suite CRDTestSuite,
 ) {
 	fmt.Println("> TEST Create/Delete", objectName)
-	fmt.Println("Creating", objectName)
-	_, objectID, err := createAndFindRecord(ctx, conn, objectName, createPayload, suite)
+
+	objectID, err := createAndVerifyRecord(ctx, conn, objectName, createPayload, suite)
 	failOnError(err)
 
 	fmt.Println("Object record identifier is", objectID)
@@ -45,6 +45,36 @@ func ValidateCreateDelete[CP any](ctx context.Context, conn ConnectorCRUD, objec
 	err = removeObject(ctx, conn, objectName, objectID)
 	failOnError(err)
 	fmt.Println("> Successful test completion")
+}
+
+// ValidateCreate is a test scenario for objects that support create only.
+//
+// Flow:
+// 1. Create an object using the "CP" payload.
+// 2. Read and locate the object using test-defined criteria.
+func ValidateCreate[CP any](ctx context.Context, conn ConnectorReadWrite, objectName string,
+	createPayload CP, suite CRDTestSuite,
+) {
+	fmt.Println("> TEST Create", objectName)
+
+	objectID, err := createAndVerifyRecord(ctx, conn, objectName, createPayload, suite)
+	failOnError(err)
+
+	fmt.Println("Object record identifier is", objectID)
+	fmt.Println("> Successful test completion")
+}
+
+func createAndVerifyRecord[CP any](
+	ctx context.Context, conn ConnectorReadWrite, objectName string, createPayload CP, suite CRDTestSuite,
+) (string, error) {
+	fmt.Println("Creating", objectName)
+
+	_, objectID, err := createAndFindRecord(ctx, conn, objectName, createPayload, suite)
+	if err != nil {
+		return "", err
+	}
+
+	return objectID, nil
 }
 
 type RecordCreationRecipe CRDTestSuite
@@ -92,7 +122,7 @@ func SetupRecord[CP any](ctx context.Context, conn ConnectorCRUD, objectName str
 }
 
 func createAndFindRecord[CP any](
-	ctx context.Context, conn ConnectorCRUD, objectName string, createPayload CP, suite CRDTestSuite,
+	ctx context.Context, conn ConnectorReadWrite, objectName string, createPayload CP, suite CRDTestSuite,
 ) (*objectRecord, string, error) {
 	_, err := createObject(ctx, conn, objectName, &createPayload)
 	if err != nil {
