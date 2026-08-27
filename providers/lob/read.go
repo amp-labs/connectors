@@ -33,21 +33,24 @@ var incrementalReadByProvider = map[string]string{ // nolint:gochecknoglobals
 // Note: Some objects could be filtered using provider API via `date_created`
 // but this field is much more restrictive compared to the `date_modified`.
 // Therefore, in order to surface up-to-date changes connector side filtering is favored.
-var incrementalReadByConnector = datautils.NewSetFromList([]string{ // nolint:gochecknoglobals
-	"addresses",
-	"bank_accounts",
-	"booklets",
-	"buckslips",
-	"campaigns",
-	"cards",
-	"checks",
-	"informed_delivery_campaigns",
-	"letters",
-	"postcards",
-	"self_mailers",
-	"snap_packs",
-	"templates",
-})
+var incrementalReadByConnector = map[string]string{ // nolint:gochecknoglobals
+	"addresses":                   "date_modified",
+	"bank_accounts":               "date_modified",
+	"booklets":                    "date_modified",
+	"buckslips":                   "date_modified",
+	"campaigns":                   "date_modified",
+	"cards":                       "date_modified",
+	"checks":                      "date_modified",
+	"domains":                     "updated_at", // https://docs.lob.com/#tag/URL-Shortener/operation/domain_list
+	"informed_delivery_campaigns": "date_modified",
+	"letters":                     "date_modified",
+	"links":                       "updated_at", // https://docs.lob.com/#tag/URL-Shortener/operation/links_list
+	"postcards":                   "date_modified",
+	"self_mailers":                "date_modified",
+	"snap_packs":                  "date_modified",
+	"templates":                   "date_modified",
+	"uploads":                     "dateModified", // https://docs.lob.com/#tag/Uploads/operation/uploads_list
+}
 
 var readResponseArrayField = datautils.NewDefaultMap(map[string]string{ // nolint:gochecknoglobals
 	"update": "", // root level is an array.
@@ -150,11 +153,11 @@ func makeGetRecords(responseFieldName string) common.NodeRecordsFunc {
 func makeFilterFunc(params common.ReadParams) common.RecordsFilterFunc {
 	nextPageFunc := makeNextRecordsURL()
 
-	if incrementalReadByConnector.Has(params.ObjectName) {
+	if timestampKey, ok := incrementalReadByConnector[params.ObjectName]; ok {
 		return readhelper.MakeTimeFilterFunc(
 			readhelper.ReverseOrder,
 			readhelper.NewTimeBoundary(),
-			"date_modified",
+			timestampKey,
 			time.RFC3339,
 			nextPageFunc,
 		)
