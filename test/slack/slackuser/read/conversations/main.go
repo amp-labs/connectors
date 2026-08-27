@@ -17,10 +17,10 @@ func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()
 
-	conn := slackshared.NewConnector(ctx, providers.Slack)
+	conn := slackshared.NewConnector(ctx, providers.SlackUserScope)
 
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
-		ObjectName: "users",
-		Fields:     connectors.Fields("id", "name", "real_name", "is_bot"),
+		ObjectName: "conversations",
+		Fields:     connectors.Fields("id", "name", "is_private", "is_archived", "num_members"),
 	})
 }

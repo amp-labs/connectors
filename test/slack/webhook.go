@@ -1,4 +1,4 @@
-package subscription
+package slackshared
 
 import (
 	"encoding/json"
@@ -25,8 +25,8 @@ var subscriptionConfirmation = testscenario.WebhookInterceptorFunc(
 			return false
 		}
 
-		writer.WriteHeader(http.StatusOK)
 		writer.Header().Set("Content-Type", "text/plain")
+		writer.WriteHeader(http.StatusOK)
 
 		// Bypassing HTML escaping is ok for this being used for local testing.
 		_, _ = writer.Write([]byte(body.Challenge)) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter

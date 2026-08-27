@@ -45,6 +45,10 @@ func NewBotConnector(params common.ConnectorParams) (*Connector, error) {
 	return components.Init(providers.Slack, params, constructor)
 }
 
+func NewUserConnector(params common.ConnectorParams) (*Connector, error) {
+	return components.Init(providers.SlackUserScope, params, constructor)
+}
+
 func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	authMetadata := NewAuthMetadataVars(params.Metadata)
 	// Signing Secret is used by the event message verifier.
