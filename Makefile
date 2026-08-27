@@ -90,17 +90,23 @@ fix/sort:
 .PHONY: format
 format: fix
 
+GOTESTSUM_VERSION := v1.13.0
 .PHONY: test
 test:
-	go test -v ./...
+	go run gotest.tools/gotestsum@$(GOTESTSUM_VERSION) \
+		--format-hide-empty-pkg \
+		--hide-summary=skipped \
+		./...
 
 .PHONY: test-parallel
 test-parallel:
-	go test -v ./... -parallel=8 -count=3
-
-.PHONY: test-pretty
-test-pretty:
-	go run gotest.tools/gotestsum@latest
+	go run gotest.tools/gotestsum@$(GOTESTSUM_VERSION) \
+		--format-hide-empty-pkg \
+		--hide-summary=skipped \
+		-- \
+		-parallel=8 \
+		-count=3 \
+		./...
 
 # Creates PR URLs for each template
 # Click on one of them or manually add ?template=<file.md> to the URL if you are creating a PR via the Github website
