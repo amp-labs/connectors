@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	connTest "github.com/amp-labs/connectors/test/surveymonkey"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 	"github.com/brianvoe/gofakeit/v6"
 )
 
@@ -21,15 +21,17 @@ func main() {
 
 	conn := connTest.GetSurveyMonkeyConnector(ctx)
 
-	result, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "survey_folders",
-		RecordData: map[string]any{
-			"title": fmt.Sprintf("Amp Integration Folder %s", gofakeit.UUID()),
-		},
-	})
-	if err != nil {
-		panic(err)
-	}
+	title := fmt.Sprintf("Amp Integration Folder %s", gofakeit.UUID())
 
-	utils.DumpJSON(result, os.Stdout)
+	testscenario.ValidateCreate(ctx, conn, "survey_folders",
+		map[string]any{"title": title},
+		testscenario.CRDTestSuite{
+			ReadFields:          datautils.NewSet("id", "title"),
+			RecordIdentifierKey: "id",
+			SearchBy: testscenario.Property{
+				Key:   "title",
+				Value: title,
+			},
+		},
+	)
 }

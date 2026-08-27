@@ -11,6 +11,7 @@ This package defines common test scenarios for connectors that make real API cal
 | Method                             | Testing Target                                          | Primary Focus & Scenario                                        |
 |------------------------------------|---------------------------------------------------------|-----------------------------------------------------------------|
 | ValidateCreateDelete               | ReadConnector, WriteConnector (Create), DeleteConnector | Create a record, verify it can be found, then delete it         |
+| ValidateCreate                     | ReadConnector, WriteConnector (Create)                  | Create a record and verify it can be found                      |
 | ValidateCreateUpdateDelete         | ReadConnector, WriteConnector, DeleteConnector          | Full CRUD: create, update, verify update, and delete            |
 | ValidateUpdate                     | ReadConnector, WriteConnector (Update)                  | Update an existing record, verify the change, optionally restore |
 | ValidateMetadataExactlyMatchesRead | ObjectMetadataConnector, ReadConnector                  | Validate that metadata **exactly** matches Read output          |
@@ -20,7 +21,7 @@ This package defines common test scenarios for connectors that make real API cal
 
 ## CRUD
 
-**`ValidateCreateDelete`**, **`ValidateCreateUpdateDelete`**, and **`ValidateUpdate`** use `CRDTestSuite`, `CRUDTestSuite`, and `UpdateTestSuite` respectively to control scenario configuration.
+**`ValidateCreateDelete`**, **`ValidateCreate`**, **`ValidateCreateUpdateDelete`**, and **`ValidateUpdate`** use `CRDTestSuite`, `CRUDTestSuite`, and `UpdateTestSuite` respectively to control scenario configuration.
 
 **Key parameters:**
 - `ReadFields` — required. Fields that must be verified in Read/Update.
