@@ -15,7 +15,7 @@ import (
 // SurveyMonkey delete API references:
 // - DELETE /contacts/{contact_id}
 // - DELETE /contact_lists/{contact_list_id}
-// - DELETE /surveys/{survey_id}
+// - DELETE /surveys/{survey_id}.
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
 	if err := params.ValidateParams(); err != nil {
 		return nil, err

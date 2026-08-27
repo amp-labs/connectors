@@ -57,8 +57,8 @@ func TestExtractRecordReferenceAssociations(t *testing.T) {
 			"name": []any{
 				map[string]any{
 					"attribute_type": "text",
-					"value":            "Example deal",
-					"active_until":     nil,
+					"value":          "Example deal",
+					"active_until":   nil,
 				},
 			},
 		},
