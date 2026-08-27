@@ -2,93 +2,37 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"log/slog"
 	"os"
 
-	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/slack"
 	slackshared "github.com/amp-labs/connectors/test/slack"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func main() {
-	if err := run(); err != nil {
-		slog.Error(err.Error())
-	}
-}
-
-func run() error {
 	ctx := context.Background()
 
 	conn := slackshared.NewConnector(ctx, providers.Slack)
 
-	callId, err := testCreatingCalls(ctx, conn)
-	if err != nil {
-		return err
-	}
-
-	err = testUpdatingCalls(ctx, conn, callId)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func testCreatingCalls(ctx context.Context, conn *slack.Connector) (string, error) {
-	params := common.WriteParams{
-		ObjectName: "calls",
-		RecordData: map[string]any{
+	externalId := fmt.Sprintf("ext-id-%d", os.Getpid())
+	testscenario.ValidateCreateUpdateDelete(ctx, conn,
+		"calls",
+		map[string]any{
 			"join_url":           "https://example.com/join",
-			"external_unique_id": fmt.Sprintf("ext-id-%d", os.Getpid()),
+			"external_unique_id": externalId,
 		},
-	}
-
-	slog.Info("Creating calls...")
-
-	res, err := conn.Write(ctx, params)
-	if err != nil {
-		return "", err
-	}
-
-	// Print the results
-	jsonStr, err := json.MarshalIndent(res, "", "  ")
-	if err != nil {
-		return "", fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
-
-	return res.Data["id"].(string), nil
-}
-
-func testUpdatingCalls(ctx context.Context, conn *slack.Connector, callId string) error {
-	params := common.WriteParams{
-		ObjectName: "calls",
-		RecordId:   callId,
-		RecordData: map[string]any{
+		map[string]any{
 			"title": "Updated Call Name",
 		},
-	}
-
-	slog.Info("Updating calls...")
-
-	res, err := conn.Write(ctx, params)
-	if err != nil {
-		return err
-	}
-
-	// Print the results
-	jsonStr, err := json.MarshalIndent(res, "", "  ")
-	if err != nil {
-		return fmt.Errorf("error marshalling JSON: %w", err)
-	}
-
-	_, _ = os.Stdout.Write(jsonStr)
-	_, _ = os.Stdout.WriteString("\n")
-
-	return nil
+		testscenario.CRUDTestSuite{
+			ReadFields:          datautils.NewSet("join_url", "external_unique_id", "title"),
+			RecordIdentifierKey: "id",
+			UpdatedFields: map[string]string{
+				"join_url":           "https://example.com/join",
+				"external_unique_id": externalId,
+				"title":              "Updated Call Name",
+			},
+		})
 }

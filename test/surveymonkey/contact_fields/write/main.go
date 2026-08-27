@@ -28,8 +28,8 @@ func main() {
 
 	testscenario.ValidateUpdate(ctx, conn, "contact_fields", updatePayload,
 		testscenario.UpdateTestSuite{
-			ReadFields:          datautils.NewSet("id", "label"),
-			RecordIdentifierKey: "id",
+			ReadFields:            datautils.NewSet("id", "label"),
+			RecordIdentifierKey:   "id",
 			RestoreOriginalFields: true,
 			PreprocessUpdatePayload: func(record *common.ReadResultRow) any {
 				expectedLabel = fmt.Sprintf("Amp Integration %s", record.Id)

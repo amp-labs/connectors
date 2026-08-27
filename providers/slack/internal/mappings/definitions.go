@@ -60,7 +60,6 @@ type WriteUpdateInfo struct {
 
 type DeleteInfo struct {
 	Href           string
-	Method         string
 	RequestIdField string
 }
 

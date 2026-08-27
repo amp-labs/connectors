@@ -44,6 +44,11 @@ func TestReadMappingsForBot(t *testing.T) {
 	}
 
 	readRequestMap := map[string]mockcond.Condition{
+		"admin.apps.activities": mockcond.And{
+			mockcond.MethodPOST(),
+			mockcond.Path("/api/admin.apps.activities.list"),
+			mockcond.Body(`{"limit":"200","min_date_created":"1050","max_date_created":"2050"}`),
+		},
 		"auth.teams": mockcond.And{
 			mockcond.MethodPOST(),
 			mockcond.Path("/api/auth.teams.list"),
