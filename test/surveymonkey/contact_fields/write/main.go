@@ -3,15 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	connTest "github.com/amp-labs/connectors/test/surveymonkey"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func main() {
@@ -22,30 +22,25 @@ func main() {
 
 	conn := connTest.GetSurveyMonkeyConnector(ctx)
 
-	readResult, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "contact_fields",
-		Fields:     connectors.Fields("id", "label"),
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+	var expectedLabel string
 
-	if len(readResult.Data) == 0 {
-		log.Fatal("no contact fields found to update")
-	}
+	updatePayload := map[string]any{}
 
-	fieldID := readResult.Data[0].Id
+	testscenario.ValidateUpdate(ctx, conn, "contact_fields", updatePayload,
+		testscenario.UpdateTestSuite{
+			ReadFields:          datautils.NewSet("id", "label"),
+			RecordIdentifierKey: "id",
+			RestoreOriginalFields: true,
+			PreprocessUpdatePayload: func(record *common.ReadResultRow) any {
+				expectedLabel = fmt.Sprintf("Amp Integration %s", record.Id)
 
-	result, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "contact_fields",
-		RecordId:   fieldID,
-		RecordData: map[string]any{
-			"label": fmt.Sprintf("Amp Integration %s", fieldID),
+				return map[string]any{"label": expectedLabel}
+			},
+			ValidateUpdatedFields: func(record map[string]any) {
+				if !mockutils.DoesObjectCorrespondToString(record["label"], expectedLabel) {
+					utils.Fail("error updated properties do not match", "label", expectedLabel, record["label"])
+				}
+			},
 		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	utils.DumpJSON(result, os.Stdout)
+	)
 }
