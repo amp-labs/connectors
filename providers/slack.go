@@ -82,10 +82,10 @@ func init() { // nolint:funlen
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy:     false,
-			Read:      false,
+			Proxy:     true,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 		SubscribeRequirements: &SubscribeRequirements{
 			SubscribeByAPI: new(false),
