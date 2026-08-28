@@ -962,13 +962,25 @@ func prepareQuotaOptimizationObjectFieldsForUpdate(
 	newQuotaFields = make(map[common.ObjectName]string)
 
 	for objectName, fieldName := range req.QuotaOptimizationObjectFields {
-		if _, existed := prevState.QuotaOptimizationObjectFields[objectName]; !existed {
+		provisioned := false
+
+		for priorName := range prevState.QuotaOptimizationObjectFields {
+			if !naming.PluralityAndCaseIgnoreEqual(string(priorName), string(objectName)) {
+				continue
+			}
+
+			// Kept object: drop it from prevState under the key it was stored with, so the
+			// teardown pass sees only the objects actually being removed.
+			delete(prevState.QuotaOptimizationObjectFields, priorName)
+
+			provisioned = true
+
+			break
+		}
+
+		if !provisioned {
 			newQuotaFields[objectName] = fieldName
 		}
-	}
-
-	for objectName := range req.QuotaOptimizationObjectFields {
-		delete(prevState.QuotaOptimizationObjectFields, objectName)
 	}
 
 	return newQuotaFields
