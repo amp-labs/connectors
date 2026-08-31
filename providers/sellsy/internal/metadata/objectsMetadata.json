@@ -1,0 +1,4807 @@
+{
+  "accounting-codes": {
+    "path": "/accounting-codes/search",
+    "displayName": "Accounting Codes",
+    "fields": {
+      "code": {
+        "displayName": "code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "views": {
+        "displayName": "views",
+        "valueType": "other",
+        "providerType": "array"
+      }
+    }
+  },
+  "activities": {
+    "path": "/activities/search",
+    "displayName": "Activities",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "author": {
+        "displayName": "author",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "due_date": {
+        "displayName": "due_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "event": {
+        "displayName": "event",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "event_date": {
+        "displayName": "event_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "event_details": {
+        "displayName": "event_details",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "event_more": {
+        "displayName": "event_more",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "object": {
+        "displayName": "object",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      }
+    }
+  },
+  "addresses": {
+    "path": "/addresses",
+    "displayName": "Addresses",
+    "fields": {
+      "address_line_1": {
+        "displayName": "address_line_1",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "address_line_2": {
+        "displayName": "address_line_2",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "address_line_3": {
+        "displayName": "address_line_3",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "address_line_4": {
+        "displayName": "address_line_4",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "city": {
+        "displayName": "city",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "country": {
+        "displayName": "country",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "country_code": {
+        "displayName": "country_code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "geocode": {
+        "displayName": "geocode",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_delivery_address": {
+        "displayName": "is_delivery_address",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_invoicing_address": {
+        "displayName": "is_invoicing_address",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "postal_code": {
+        "displayName": "postal_code",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "assigned-staff-labels": {
+    "path": "/assigned-staff-labels",
+    "displayName": "Assigned Staff Labels",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "rank": {
+        "displayName": "rank",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "bank-accounts": {
+    "path": "/bank-accounts",
+    "displayName": "Bank Accounts",
+    "fields": {
+      "account_name": {
+        "displayName": "account_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "bank_name": {
+        "displayName": "bank_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "barcodes": {
+    "path": "/items/barcodes/search",
+    "displayName": "Barcodes",
+    "fields": {
+      "code": {
+        "displayName": "code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "calendar-events": {
+    "path": "/calendar-events/search",
+    "displayName": "Calendar Events",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "all_day": {
+        "displayName": "all_day",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "company_id": {
+        "displayName": "company_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "contact_id": {
+        "displayName": "contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "datetime_end": {
+        "displayName": "datetime_end",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "datetime_start": {
+        "displayName": "datetime_start",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "description": {
+        "displayName": "description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "individual_id": {
+        "displayName": "individual_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_private": {
+        "displayName": "is_private",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other"
+      },
+      "participants": {
+        "displayName": "participants",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "priority": {
+        "displayName": "priority",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "provider_calendar": {
+        "displayName": "provider_calendar",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "title": {
+        "displayName": "title",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "updated": {
+        "displayName": "updated",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "calendar-events/labels": {
+    "path": "/calendar-events/labels",
+    "displayName": "Calendar Events Labels",
+    "fields": {
+      "color": {
+        "displayName": "color",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_active": {
+        "displayName": "is_active",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "rank": {
+        "displayName": "rank",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "categories": {
+    "path": "/opportunities/categories",
+    "displayName": "Categories",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "color": {
+        "displayName": "color",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "icon": {
+        "displayName": "icon",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_default": {
+        "displayName": "is_default",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "check-labels": {
+    "path": "/check-labels",
+    "displayName": "Check Labels",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "rank": {
+        "displayName": "rank",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "clients": {
+    "path": "/clients",
+    "displayName": "Clients",
+    "fields": {
+      "delegated": {
+        "displayName": "delegated",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "redirect_uri": {
+        "displayName": "redirect_uri",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "scopes": {
+        "displayName": "scopes",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "single_login": {
+        "displayName": "single_login",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "public",
+            "displayValue": "public"
+          },
+          {
+            "value": "private",
+            "displayValue": "private"
+          },
+          {
+            "value": "personal",
+            "displayValue": "personal"
+          },
+          {
+            "value": "personal_access_token",
+            "displayValue": "personal_access_token"
+          }
+        ]
+      },
+      "user": {
+        "displayName": "user",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "validated_at": {
+        "displayName": "validated_at",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "comments": {
+    "path": "/comments/search",
+    "displayName": "Comments",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "company_id": {
+        "displayName": "company_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "contact_id": {
+        "displayName": "contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "description": {
+        "displayName": "description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "individual_id": {
+        "displayName": "individual_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "parent_id": {
+        "displayName": "parent_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "timetracking": {
+        "displayName": "timetracking",
+        "valueType": "other"
+      },
+      "updated": {
+        "displayName": "updated",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "companies": {
+    "path": "/companies/search",
+    "displayName": "Companies",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "accounting_code_id": {
+        "displayName": "accounting_code_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "accounting_purchase_code_id": {
+        "displayName": "accounting_purchase_code_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "auxiliary_code": {
+        "displayName": "auxiliary_code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "business_segment": {
+        "displayName": "business_segment",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "capital": {
+        "displayName": "capital",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "delivery_address_id": {
+        "displayName": "delivery_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "dunning_contact_id": {
+        "displayName": "dunning_contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "email": {
+        "displayName": "email",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "fax_number": {
+        "displayName": "fax_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoicing_address_id": {
+        "displayName": "invoicing_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoicing_contact_id": {
+        "displayName": "invoicing_contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_archived": {
+        "displayName": "is_archived",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "legal_france": {
+        "displayName": "legal_france",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "main_contact_id": {
+        "displayName": "main_contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "marketing_campaigns_subscriptions": {
+        "displayName": "marketing_campaigns_subscriptions",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "mobile_number": {
+        "displayName": "mobile_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "note": {
+        "displayName": "note",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "number_of_employees": {
+        "displayName": "number_of_employees",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "phone_number": {
+        "displayName": "phone_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "rate_category_id": {
+        "displayName": "rate_category_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "reference": {
+        "displayName": "reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "social": {
+        "displayName": "social",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "prospect",
+            "displayValue": "prospect"
+          },
+          {
+            "value": "client",
+            "displayValue": "client"
+          },
+          {
+            "value": "supplier",
+            "displayValue": "supplier"
+          }
+        ]
+      },
+      "updated_at": {
+        "displayName": "updated_at",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "website": {
+        "displayName": "website",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "companies/favourite-filters": {
+    "path": "/companies/favourite-filters",
+    "displayName": "Companies Favourite Filters",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "contacts": {
+    "path": "/contacts/search",
+    "displayName": "Contacts",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "avatar": {
+        "displayName": "avatar",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "birth_date": {
+        "displayName": "birth_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "civility": {
+        "displayName": "civility",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "mr",
+            "displayValue": "mr"
+          },
+          {
+            "value": "mrs",
+            "displayValue": "mrs"
+          },
+          {
+            "value": "ms",
+            "displayValue": "ms"
+          }
+        ]
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "delivery_address_id": {
+        "displayName": "delivery_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "email": {
+        "displayName": "email",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "fax_number": {
+        "displayName": "fax_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "first_name": {
+        "displayName": "first_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoicing_address_id": {
+        "displayName": "invoicing_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_archived": {
+        "displayName": "is_archived",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "last_name": {
+        "displayName": "last_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "marketing_campaigns_subscriptions": {
+        "displayName": "marketing_campaigns_subscriptions",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "mobile_number": {
+        "displayName": "mobile_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "note": {
+        "displayName": "note",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other"
+      },
+      "phone_number": {
+        "displayName": "phone_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "position": {
+        "displayName": "position",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "social": {
+        "displayName": "social",
+        "valueType": "other"
+      },
+      "sync": {
+        "displayName": "sync",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "updated": {
+        "displayName": "updated",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "website": {
+        "displayName": "website",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "contacts/favourite-filters": {
+    "path": "/contacts/favourite-filters",
+    "displayName": "Contacts Favourite Filters",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "countries": {
+    "path": "/countries",
+    "displayName": "Countries",
+    "fields": {
+      "code": {
+        "displayName": "code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "iso-alpha-2": {
+        "displayName": "iso-alpha-2",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "iso-alpha-3": {
+        "displayName": "iso-alpha-3",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "credit-notes": {
+    "path": "/credit-notes/search",
+    "displayName": "Credit Notes",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "amounts": {
+        "displayName": "amounts",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "analytic_code": {
+        "displayName": "analytic_code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "assigned_staff_id": {
+        "displayName": "assigned_staff_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "company_name": {
+        "displayName": "company_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "company_reference": {
+        "displayName": "company_reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "contact_id": {
+        "displayName": "contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "currency": {
+        "displayName": "currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "date": {
+        "displayName": "date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "decimal_number": {
+        "displayName": "decimal_number",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "delivery_address_id": {
+        "displayName": "delivery_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "discount": {
+        "displayName": "discount",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "fiscal_year_id": {
+        "displayName": "fiscal_year_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoicing_address_id": {
+        "displayName": "invoicing_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_deposit": {
+        "displayName": "is_deposit",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_sent_to_accounting": {
+        "displayName": "is_sent_to_accounting",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "issuer_address_id": {
+        "displayName": "issuer_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "note": {
+        "displayName": "note",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "number": {
+        "displayName": "number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "pdf_link": {
+        "displayName": "pdf_link",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "public_link": {
+        "displayName": "public_link",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "rate_category_id": {
+        "displayName": "rate_category_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "service_dates": {
+        "displayName": "service_dates",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "shipping_weight": {
+        "displayName": "shipping_weight",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "draft",
+            "displayValue": "draft"
+          },
+          {
+            "value": "stored",
+            "displayValue": "stored"
+          },
+          {
+            "value": "partialspend",
+            "displayValue": "partialspend"
+          },
+          {
+            "value": "spent",
+            "displayValue": "spent"
+          },
+          {
+            "value": "cancelled",
+            "displayValue": "cancelled"
+          }
+        ]
+      },
+      "subject": {
+        "displayName": "subject",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "taxes": {
+        "displayName": "taxes",
+        "valueType": "other",
+        "providerType": "array"
+      }
+    }
+  },
+  "credit-notes/favourite-filters": {
+    "path": "/credit-notes/favourite-filters",
+    "displayName": "Credit Notes Favourite Filters",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "crm": {
+    "path": "/activities/crm/search",
+    "displayName": "Crm",
+    "fields": {
+      "author": {
+        "displayName": "author",
+        "valueType": "other"
+      },
+      "companies": {
+        "displayName": "companies",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "date": {
+        "displayName": "date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "due_date": {
+        "displayName": "due_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "event": {
+        "displayName": "event",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "email.sent",
+            "displayValue": "email.sent"
+          },
+          {
+            "value": "email.link.sent",
+            "displayValue": "email.link.sent"
+          },
+          {
+            "value": "task.completed",
+            "displayValue": "task.completed"
+          },
+          {
+            "value": "phonecall.created",
+            "displayValue": "phonecall.created"
+          },
+          {
+            "value": "calendar_event.created",
+            "displayValue": "calendar_event.created"
+          },
+          {
+            "value": "email.scheduled.sent",
+            "displayValue": "email.scheduled.sent"
+          }
+        ]
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "more": {
+        "displayName": "more",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "object": {
+        "displayName": "object",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "people": {
+        "displayName": "people",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "object"
+      }
+    }
+  },
+  "currencies": {
+    "path": "/currencies",
+    "displayName": "Currencies",
+    "fields": {
+      "code": {
+        "displayName": "code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_default": {
+        "displayName": "is_default",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "symbol": {
+        "displayName": "symbol",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "custom-activities": {
+    "path": "/custom-activities/search",
+    "displayName": "Custom Activities",
+    "fields": {
+      "action": {
+        "displayName": "action",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "author": {
+        "displayName": "author",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "date": {
+        "displayName": "date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "relation": {
+        "displayName": "relation",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "type_id": {
+        "displayName": "type_id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "updated": {
+        "displayName": "updated",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "custom-activity-types": {
+    "path": "/custom-activity-types",
+    "displayName": "Custom Activity Types",
+    "fields": {
+      "author": {
+        "displayName": "author",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "updated": {
+        "displayName": "updated",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "custom-fields": {
+    "path": "/custom-fields/search",
+    "displayName": "Custom Fields",
+    "fields": {
+      "code": {
+        "displayName": "code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "customfield_group": {
+        "displayName": "customfield_group",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "description": {
+        "displayName": "description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "mandatory": {
+        "displayName": "mandatory",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "parameters": {
+        "displayName": "parameters",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "rank": {
+        "displayName": "rank",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "related_object": {
+        "displayName": "related_object",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "show_on_pdf": {
+        "displayName": "show_on_pdf",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "item",
+            "displayValue": "item"
+          }
+        ]
+      }
+    }
+  },
+  "deposit-invoices": {
+    "path": "/deposit-invoices/search",
+    "displayName": "Deposit Invoices",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "amounts": {
+        "displayName": "amounts",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "analytic_code": {
+        "displayName": "analytic_code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "assigned_staff_id": {
+        "displayName": "assigned_staff_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "bank_account_id": {
+        "displayName": "bank_account_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "check_label_id": {
+        "displayName": "check_label_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "company_name": {
+        "displayName": "company_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "company_reference": {
+        "displayName": "company_reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "contact_id": {
+        "displayName": "contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "currency": {
+        "displayName": "currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "date": {
+        "displayName": "date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "decimal_number": {
+        "displayName": "decimal_number",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "delivery_address_id": {
+        "displayName": "delivery_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "discount": {
+        "displayName": "discount",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "due_date": {
+        "displayName": "due_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "eco_tax_id": {
+        "displayName": "eco_tax_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "fiscal_year_id": {
+        "displayName": "fiscal_year_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoicing_address_id": {
+        "displayName": "invoicing_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_deposit": {
+        "displayName": "is_deposit",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_progress_invoice": {
+        "displayName": "is_progress_invoice",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_sent_to_accounting": {
+        "displayName": "is_sent_to_accounting",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "issuer_address_id": {
+        "displayName": "issuer_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "lang_id": {
+        "displayName": "lang_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "layout_id": {
+        "displayName": "layout_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "note": {
+        "displayName": "note",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "number": {
+        "displayName": "number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "order_reference": {
+        "displayName": "order_reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other"
+      },
+      "parent": {
+        "displayName": "parent",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "payment_conditions_acceptance": {
+        "displayName": "payment_conditions_acceptance",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "payment_method_ids": {
+        "displayName": "payment_method_ids",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "pdf_link": {
+        "displayName": "pdf_link",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "public_link": {
+        "displayName": "public_link",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "rate_category_id": {
+        "displayName": "rate_category_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "service_dates": {
+        "displayName": "service_dates",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "shipping_date": {
+        "displayName": "shipping_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "shipping_volume": {
+        "displayName": "shipping_volume",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "shipping_weight": {
+        "displayName": "shipping_weight",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "draft",
+            "displayValue": "draft"
+          },
+          {
+            "value": "due",
+            "displayValue": "due"
+          },
+          {
+            "value": "payinprogress",
+            "displayValue": "payinprogress"
+          },
+          {
+            "value": "paid",
+            "displayValue": "paid"
+          },
+          {
+            "value": "late",
+            "displayValue": "late"
+          },
+          {
+            "value": "cancelled",
+            "displayValue": "cancelled"
+          }
+        ]
+      },
+      "subject": {
+        "displayName": "subject",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "subscription_id": {
+        "displayName": "subscription_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "taxes": {
+        "displayName": "taxes",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "vat_mention": {
+        "displayName": "vat_mention",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "vat_mode": {
+        "displayName": "vat_mode",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "debit",
+            "displayValue": "debit"
+          },
+          {
+            "value": "collection",
+            "displayValue": "collection"
+          }
+        ]
+      }
+    }
+  },
+  "discount-incl-taxes": {
+    "path": "/discount-incl-taxes",
+    "displayName": "Discount Incl Taxes",
+    "fields": {
+      "accounting_code_id": {
+        "displayName": "accounting_code_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "amount": {
+        "displayName": "amount",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "description": {
+        "displayName": "description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "reference": {
+        "displayName": "reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "unit_id": {
+        "displayName": "unit_id",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "document-layouts": {
+    "path": "/document-layouts",
+    "displayName": "Document Layouts",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_default": {
+        "displayName": "is_default",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "lang_id": {
+        "displayName": "lang_id",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "documents": {
+    "path": "/accounts/documents",
+    "displayName": "Documents",
+    "fields": {
+      "amount": {
+        "displayName": "amount",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "date": {
+        "displayName": "date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "number": {
+        "displayName": "number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "pdf_link": {
+        "displayName": "pdf_link",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "public_link": {
+        "displayName": "public_link",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "due",
+            "displayValue": "due"
+          },
+          {
+            "value": "payinprogress",
+            "displayValue": "payinprogress"
+          },
+          {
+            "value": "paid",
+            "displayValue": "paid"
+          },
+          {
+            "value": "late",
+            "displayValue": "late"
+          },
+          {
+            "value": "stored",
+            "displayValue": "stored"
+          },
+          {
+            "value": "partialspend",
+            "displayValue": "partialspend"
+          },
+          {
+            "value": "spent",
+            "displayValue": "spent"
+          },
+          {
+            "value": "cancelled",
+            "displayValue": "cancelled"
+          }
+        ]
+      }
+    }
+  },
+  "documents/models": {
+    "path": "/documents/models/search",
+    "displayName": "Documents Models",
+    "fields": {
+      "amounts": {
+        "displayName": "amounts",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "assigned_staff_id": {
+        "displayName": "assigned_staff_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "currency": {
+        "displayName": "currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "decimal_number": {
+        "displayName": "decimal_number",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "discount": {
+        "displayName": "discount",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "number": {
+        "displayName": "number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other"
+      },
+      "payment_conditions_acceptance": {
+        "displayName": "payment_conditions_acceptance",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "pdf_link": {
+        "displayName": "pdf_link",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "rate_category_id": {
+        "displayName": "rate_category_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "subject": {
+        "displayName": "subject",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "taxes": {
+        "displayName": "taxes",
+        "valueType": "other",
+        "providerType": "array"
+      }
+    }
+  },
+  "email/tags": {
+    "path": "/settings/email/tags",
+    "displayName": "Email Tags",
+    "fields": {
+      "description": {
+        "displayName": "description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "key": {
+        "displayName": "key",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "estimates": {
+    "path": "/estimates",
+    "displayName": "Estimates",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "amounts": {
+        "displayName": "amounts",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "analytic_code": {
+        "displayName": "analytic_code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "assigned_staff_id": {
+        "displayName": "assigned_staff_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "bank_account_id": {
+        "displayName": "bank_account_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "check_label_id": {
+        "displayName": "check_label_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "company_name": {
+        "displayName": "company_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "company_reference": {
+        "displayName": "company_reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "contact_id": {
+        "displayName": "contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "currency": {
+        "displayName": "currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "date": {
+        "displayName": "date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "decimal_number": {
+        "displayName": "decimal_number",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "delivery_address_id": {
+        "displayName": "delivery_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "discount": {
+        "displayName": "discount",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "eco_tax_id": {
+        "displayName": "eco_tax_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "expiry_date": {
+        "displayName": "expiry_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "fiscal_year_id": {
+        "displayName": "fiscal_year_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoicing_address_id": {
+        "displayName": "invoicing_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "issuer_address_id": {
+        "displayName": "issuer_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "note": {
+        "displayName": "note",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "number": {
+        "displayName": "number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "payment_conditions_acceptance": {
+        "displayName": "payment_conditions_acceptance",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "payment_method_ids": {
+        "displayName": "payment_method_ids",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "pdf_link": {
+        "displayName": "pdf_link",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "public_link": {
+        "displayName": "public_link",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "public_link_enabled": {
+        "displayName": "public_link_enabled",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "rate_category_id": {
+        "displayName": "rate_category_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "service_dates": {
+        "displayName": "service_dates",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "shipping_date": {
+        "displayName": "shipping_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "shipping_volume": {
+        "displayName": "shipping_volume",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "shipping_weight": {
+        "displayName": "shipping_weight",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "draft",
+            "displayValue": "draft"
+          },
+          {
+            "value": "sent",
+            "displayValue": "sent"
+          },
+          {
+            "value": "read",
+            "displayValue": "read"
+          },
+          {
+            "value": "accepted",
+            "displayValue": "accepted"
+          },
+          {
+            "value": "refused",
+            "displayValue": "refused"
+          },
+          {
+            "value": "expired",
+            "displayValue": "expired"
+          },
+          {
+            "value": "advanced",
+            "displayValue": "advanced"
+          },
+          {
+            "value": "partialinvoiced",
+            "displayValue": "partialinvoiced"
+          },
+          {
+            "value": "invoiced",
+            "displayValue": "invoiced"
+          },
+          {
+            "value": "cancelled",
+            "displayValue": "cancelled"
+          }
+        ]
+      },
+      "subject": {
+        "displayName": "subject",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "taxes": {
+        "displayName": "taxes",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "vat_mention": {
+        "displayName": "vat_mention",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "vat_mode": {
+        "displayName": "vat_mode",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "debit",
+            "displayValue": "debit"
+          },
+          {
+            "value": "collection",
+            "displayValue": "collection"
+          }
+        ]
+      }
+    }
+  },
+  "estimates/favourite-filters": {
+    "path": "/estimates/favourite-filters",
+    "displayName": "Estimates Favourite Filters",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "events": {
+    "path": "/webhooks/events",
+    "displayName": "Events",
+    "fields": {
+      "description": {
+        "displayName": "description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "events": {
+        "displayName": "events",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "parent": {
+        "displayName": "parent",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "fiscal-years": {
+    "path": "/fiscal-years",
+    "displayName": "Fiscal Years",
+    "fields": {
+      "end_at": {
+        "displayName": "end_at",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "start_at": {
+        "displayName": "start_at",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "individuals": {
+    "path": "/individuals/search",
+    "displayName": "Individuals",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "accounting_code_id": {
+        "displayName": "accounting_code_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "accounting_purchase_code_id": {
+        "displayName": "accounting_purchase_code_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "auxiliary_code": {
+        "displayName": "auxiliary_code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "civility": {
+        "displayName": "civility",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "mr",
+            "displayValue": "mr"
+          },
+          {
+            "value": "mrs",
+            "displayValue": "mrs"
+          },
+          {
+            "value": "ms",
+            "displayValue": "ms"
+          }
+        ]
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "delivery_address_id": {
+        "displayName": "delivery_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "dunning_contact_id": {
+        "displayName": "dunning_contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "email": {
+        "displayName": "email",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "fax_number": {
+        "displayName": "fax_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "first_name": {
+        "displayName": "first_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoicing_address_id": {
+        "displayName": "invoicing_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoicing_contact_id": {
+        "displayName": "invoicing_contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_archived": {
+        "displayName": "is_archived",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "last_name": {
+        "displayName": "last_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "main_contact_id": {
+        "displayName": "main_contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "marketing_campaigns_subscriptions": {
+        "displayName": "marketing_campaigns_subscriptions",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "mobile_number": {
+        "displayName": "mobile_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "note": {
+        "displayName": "note",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "phone_number": {
+        "displayName": "phone_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "rate_category_id": {
+        "displayName": "rate_category_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "reference": {
+        "displayName": "reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "social": {
+        "displayName": "social",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "sync": {
+        "displayName": "sync",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "prospect",
+            "displayValue": "prospect"
+          },
+          {
+            "value": "client",
+            "displayValue": "client"
+          },
+          {
+            "value": "supplier",
+            "displayValue": "supplier"
+          }
+        ]
+      },
+      "updated_at": {
+        "displayName": "updated_at",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "website": {
+        "displayName": "website",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "individuals/favourite-filters": {
+    "path": "/individuals/favourite-filters",
+    "displayName": "Individuals Favourite Filters",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "invoices": {
+    "path": "/invoices/search",
+    "displayName": "Invoices",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "amounts": {
+        "displayName": "amounts",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "analytic_code": {
+        "displayName": "analytic_code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "assigned_staff_id": {
+        "displayName": "assigned_staff_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "bank_account_id": {
+        "displayName": "bank_account_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "check_label_id": {
+        "displayName": "check_label_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "company_name": {
+        "displayName": "company_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "company_reference": {
+        "displayName": "company_reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "contact_id": {
+        "displayName": "contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "currency": {
+        "displayName": "currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "date": {
+        "displayName": "date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "decimal_number": {
+        "displayName": "decimal_number",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "delivery_address_id": {
+        "displayName": "delivery_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "discount": {
+        "displayName": "discount",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "due_date": {
+        "displayName": "due_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "eco_tax_id": {
+        "displayName": "eco_tax_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "fiscal_year_id": {
+        "displayName": "fiscal_year_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoicing_address_id": {
+        "displayName": "invoicing_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_deposit": {
+        "displayName": "is_deposit",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_progress_invoice": {
+        "displayName": "is_progress_invoice",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_sent_to_accounting": {
+        "displayName": "is_sent_to_accounting",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "issuer_address_id": {
+        "displayName": "issuer_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "lang_id": {
+        "displayName": "lang_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "layout_id": {
+        "displayName": "layout_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "note": {
+        "displayName": "note",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "number": {
+        "displayName": "number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "order_reference": {
+        "displayName": "order_reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other"
+      },
+      "parent": {
+        "displayName": "parent",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "payment_conditions_acceptance": {
+        "displayName": "payment_conditions_acceptance",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "payment_method_ids": {
+        "displayName": "payment_method_ids",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "pdf_link": {
+        "displayName": "pdf_link",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "public_link": {
+        "displayName": "public_link",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "rate_category_id": {
+        "displayName": "rate_category_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "service_dates": {
+        "displayName": "service_dates",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "shipping_date": {
+        "displayName": "shipping_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "shipping_volume": {
+        "displayName": "shipping_volume",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "shipping_weight": {
+        "displayName": "shipping_weight",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "draft",
+            "displayValue": "draft"
+          },
+          {
+            "value": "due",
+            "displayValue": "due"
+          },
+          {
+            "value": "payinprogress",
+            "displayValue": "payinprogress"
+          },
+          {
+            "value": "paid",
+            "displayValue": "paid"
+          },
+          {
+            "value": "late",
+            "displayValue": "late"
+          },
+          {
+            "value": "cancelled",
+            "displayValue": "cancelled"
+          }
+        ]
+      },
+      "subject": {
+        "displayName": "subject",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "subscription_id": {
+        "displayName": "subscription_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "taxes": {
+        "displayName": "taxes",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "vat_mention": {
+        "displayName": "vat_mention",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "vat_mode": {
+        "displayName": "vat_mode",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "debit",
+            "displayValue": "debit"
+          },
+          {
+            "value": "collection",
+            "displayValue": "collection"
+          }
+        ]
+      }
+    }
+  },
+  "invoices/favourite-filters": {
+    "path": "/invoices/favourite-filters",
+    "displayName": "Invoices Favourite Filters",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "items": {
+    "path": "/items/search",
+    "displayName": "Items",
+    "fields": {
+      "accounting_code_id": {
+        "displayName": "accounting_code_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "accounting_purchase_code_id": {
+        "displayName": "accounting_purchase_code_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "category_id": {
+        "displayName": "category_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "currency": {
+        "displayName": "currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "description": {
+        "displayName": "description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_archived": {
+        "displayName": "is_archived",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_declined": {
+        "displayName": "is_declined",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_name_included_in_description": {
+        "displayName": "is_name_included_in_description",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_reference_price_taxes_free": {
+        "displayName": "is_reference_price_taxes_free",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "price_excl_tax": {
+        "displayName": "price_excl_tax",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "purchase_amount": {
+        "displayName": "purchase_amount",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "reference": {
+        "displayName": "reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "reference_price": {
+        "displayName": "reference_price",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "reference_price_taxes_exc": {
+        "displayName": "reference_price_taxes_exc",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "reference_price_taxes_inc": {
+        "displayName": "reference_price_taxes_inc",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "standard_quantity": {
+        "displayName": "standard_quantity",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "tax_id": {
+        "displayName": "tax_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "product",
+            "displayValue": "product"
+          },
+          {
+            "value": "service",
+            "displayValue": "service"
+          },
+          {
+            "value": "shipping",
+            "displayValue": "shipping"
+          },
+          {
+            "value": "packaging",
+            "displayValue": "packaging"
+          }
+        ]
+      },
+      "unit_id": {
+        "displayName": "unit_id",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "items/favourite-filters": {
+    "path": "/items/favourite-filters",
+    "displayName": "Items Favourite Filters",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "languages": {
+    "path": "/languages",
+    "displayName": "Languages",
+    "fields": {
+      "flag": {
+        "displayName": "flag",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "lang": {
+        "displayName": "lang",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "mandates": {
+    "path": "/mandates/search",
+    "displayName": "Mandates",
+    "fields": {
+      "bank_account_last_2_digits": {
+        "displayName": "bank_account_last_2_digits",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "identifier": {
+        "displayName": "identifier",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "is_default": {
+        "displayName": "is_default",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "next_possible_charge_date": {
+        "displayName": "next_possible_charge_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "reference": {
+        "displayName": "reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "methods": {
+    "path": "/payments/methods/search",
+    "displayName": "Methods",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "models/tags": {
+    "path": "/documents/models/tags",
+    "displayName": "Models Tags",
+    "fields": {
+      "description": {
+        "displayName": "description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "key": {
+        "displayName": "key",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "meta": {
+        "displayName": "meta",
+        "valueType": "other",
+        "providerType": "object"
+      }
+    }
+  },
+  "notifications": {
+    "path": "/notifications/search",
+    "displayName": "Notifications",
+    "fields": {
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "event": {
+        "displayName": "event",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "event_details": {
+        "displayName": "event_details",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "read": {
+        "displayName": "read",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "recipient": {
+        "displayName": "recipient",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "sender": {
+        "displayName": "sender",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "ongoing",
+            "displayValue": "ongoing"
+          },
+          {
+            "value": "sent",
+            "displayValue": "sent"
+          },
+          {
+            "value": "failed",
+            "displayValue": "failed"
+          },
+          {
+            "value": "retry",
+            "displayValue": "retry"
+          }
+        ]
+      },
+      "status_updated": {
+        "displayName": "status_updated",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "targeted_staff": {
+        "displayName": "targeted_staff",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "transport": {
+        "displayName": "transport",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "inapp",
+            "displayValue": "inapp"
+          },
+          {
+            "value": "push",
+            "displayValue": "push"
+          },
+          {
+            "value": "mail",
+            "displayValue": "mail"
+          },
+          {
+            "value": "webhook",
+            "displayValue": "webhook"
+          }
+        ]
+      }
+    }
+  },
+  "opportunities": {
+    "path": "/opportunities/search",
+    "displayName": "Opportunities",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "amount": {
+        "displayName": "amount",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "assigned_staff_ids": {
+        "displayName": "assigned_staff_ids",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "company_id": {
+        "displayName": "company_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "contact_ids": {
+        "displayName": "contact_ids",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "due_date": {
+        "displayName": "due_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "individual_id": {
+        "displayName": "individual_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "main_doc_id": {
+        "displayName": "main_doc_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "note": {
+        "displayName": "note",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "number": {
+        "displayName": "number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "pipeline": {
+        "displayName": "pipeline",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "probability": {
+        "displayName": "probability",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "source": {
+        "displayName": "source",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "open",
+            "displayValue": "open"
+          },
+          {
+            "value": "won",
+            "displayValue": "won"
+          },
+          {
+            "value": "lost",
+            "displayValue": "lost"
+          },
+          {
+            "value": "cancelled",
+            "displayValue": "cancelled"
+          },
+          {
+            "value": "closed",
+            "displayValue": "closed"
+          },
+          {
+            "value": "late",
+            "displayValue": "late"
+          }
+        ]
+      },
+      "step": {
+        "displayName": "step",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "updated_status": {
+        "displayName": "updated_status",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "opportunities/favourite-filters": {
+    "path": "/opportunities/favourite-filters",
+    "displayName": "Opportunities Favourite Filters",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "orders": {
+    "path": "/orders/search",
+    "displayName": "Orders",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "amounts": {
+        "displayName": "amounts",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "assigned_staff_id": {
+        "displayName": "assigned_staff_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "bank_account_id": {
+        "displayName": "bank_account_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "check_label_id": {
+        "displayName": "check_label_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "company_name": {
+        "displayName": "company_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "company_reference": {
+        "displayName": "company_reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "contact_id": {
+        "displayName": "contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "currency": {
+        "displayName": "currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "date": {
+        "displayName": "date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "decimal_number": {
+        "displayName": "decimal_number",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "delivery_address_id": {
+        "displayName": "delivery_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "discount": {
+        "displayName": "discount",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "due_date": {
+        "displayName": "due_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "eco_tax_id": {
+        "displayName": "eco_tax_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "fiscal_year_id": {
+        "displayName": "fiscal_year_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoicing_address_id": {
+        "displayName": "invoicing_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "issuer_address_id": {
+        "displayName": "issuer_address_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "note": {
+        "displayName": "note",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "number": {
+        "displayName": "number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "order_status": {
+        "displayName": "order_status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "none",
+            "displayValue": "none"
+          },
+          {
+            "value": "wait",
+            "displayValue": "wait"
+          },
+          {
+            "value": "picking",
+            "displayValue": "picking"
+          },
+          {
+            "value": "sent",
+            "displayValue": "sent"
+          },
+          {
+            "value": "partialsent",
+            "displayValue": "partialsent"
+          }
+        ]
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other"
+      },
+      "payment_conditions_acceptance": {
+        "displayName": "payment_conditions_acceptance",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "pdf_link": {
+        "displayName": "pdf_link",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "public_link": {
+        "displayName": "public_link",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "rate_category_id": {
+        "displayName": "rate_category_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "service_dates": {
+        "displayName": "service_dates",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "shipping_date": {
+        "displayName": "shipping_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "shipping_volume": {
+        "displayName": "shipping_volume",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "shipping_weight": {
+        "displayName": "shipping_weight",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "draft",
+            "displayValue": "draft"
+          },
+          {
+            "value": "sent",
+            "displayValue": "sent"
+          },
+          {
+            "value": "read",
+            "displayValue": "read"
+          },
+          {
+            "value": "accepted",
+            "displayValue": "accepted"
+          },
+          {
+            "value": "expired",
+            "displayValue": "expired"
+          },
+          {
+            "value": "advanced",
+            "displayValue": "advanced"
+          },
+          {
+            "value": "invoiced",
+            "displayValue": "invoiced"
+          },
+          {
+            "value": "partialinvoiced",
+            "displayValue": "partialinvoiced"
+          },
+          {
+            "value": "cancelled",
+            "displayValue": "cancelled"
+          }
+        ]
+      },
+      "subject": {
+        "displayName": "subject",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "taxes": {
+        "displayName": "taxes",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "vat_mention": {
+        "displayName": "vat_mention",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "vat_mode": {
+        "displayName": "vat_mode",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "debit",
+            "displayValue": "debit"
+          },
+          {
+            "value": "collection",
+            "displayValue": "collection"
+          }
+        ]
+      }
+    }
+  },
+  "orders/favourite-filters": {
+    "path": "/orders/favourite-filters",
+    "displayName": "Orders Favourite Filters",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "payment-installments": {
+    "path": "/subscriptions/payment-installments/search",
+    "displayName": "Payment Installments",
+    "fields": {
+      "date": {
+        "displayName": "date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "document": {
+        "displayName": "document",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "model": {
+        "displayName": "model",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "sending": {
+        "displayName": "sending",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "generated",
+            "displayValue": "generated"
+          },
+          {
+            "value": "scheduled",
+            "displayValue": "scheduled"
+          },
+          {
+            "value": "in_progress",
+            "displayValue": "in_progress"
+          },
+          {
+            "value": "failed",
+            "displayValue": "failed"
+          }
+        ]
+      },
+      "subscription_id": {
+        "displayName": "subscription_id",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "payment-terms": {
+    "path": "/payment-terms",
+    "displayName": "Payment Terms",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "code": {
+        "displayName": "code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "end_of_month": {
+        "displayName": "end_of_month",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "override_date": {
+        "displayName": "override_date",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "rank": {
+        "displayName": "rank",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "x_days": {
+        "displayName": "x_days",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "payments": {
+    "path": "/payments/search",
+    "displayName": "Payments",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "amounts": {
+        "displayName": "amounts",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "bank_deposit": {
+        "displayName": "bank_deposit",
+        "valueType": "other"
+      },
+      "currency": {
+        "displayName": "currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "note": {
+        "displayName": "note",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "number": {
+        "displayName": "number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "paid_at": {
+        "displayName": "paid_at",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "payment_method_id": {
+        "displayName": "payment_method_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "related_objects": {
+        "displayName": "related_objects",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "pending",
+            "displayValue": "pending"
+          },
+          {
+            "value": "confirmed",
+            "displayValue": "confirmed"
+          },
+          {
+            "value": "rejected",
+            "displayValue": "rejected"
+          },
+          {
+            "value": "failed",
+            "displayValue": "failed"
+          },
+          {
+            "value": "refund",
+            "displayValue": "refund"
+          }
+        ]
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "credit",
+            "displayValue": "credit"
+          },
+          {
+            "value": "debit",
+            "displayValue": "debit"
+          }
+        ]
+      }
+    }
+  },
+  "personal-access-tokens": {
+    "path": "/personal-access-tokens",
+    "displayName": "Personal Access Tokens",
+    "fields": {
+      "client_id": {
+        "displayName": "client_id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "expiration": {
+        "displayName": "expiration",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "scopes": {
+        "displayName": "scopes",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "user": {
+        "displayName": "user",
+        "valueType": "other",
+        "providerType": "object"
+      }
+    }
+  },
+  "phone-calls": {
+    "path": "/phone-calls/search",
+    "displayName": "Phone Calls",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "company_id": {
+        "displayName": "company_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "contact_id": {
+        "displayName": "contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "date": {
+        "displayName": "date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "description": {
+        "displayName": "description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "duration": {
+        "displayName": "duration",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "individual_id": {
+        "displayName": "individual_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "priority": {
+        "displayName": "priority",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "reminders": {
+        "displayName": "reminders",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "result": {
+        "displayName": "result",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "source": {
+        "displayName": "source",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "incoming",
+            "displayValue": "incoming"
+          },
+          {
+            "value": "outcoming",
+            "displayValue": "outcoming"
+          }
+        ]
+      },
+      "topic": {
+        "displayName": "topic",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "updated": {
+        "displayName": "updated",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "pipelines": {
+    "path": "/opportunities/pipelines/search",
+    "displayName": "Pipelines",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_default": {
+        "displayName": "is_default",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "rank": {
+        "displayName": "rank",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "step": {
+        "displayName": "step",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "primes": {
+    "path": "/primes",
+    "displayName": "Primes",
+    "fields": {
+      "accounting_code_id": {
+        "displayName": "accounting_code_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "amount": {
+        "displayName": "amount",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "description": {
+        "displayName": "description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "reference": {
+        "displayName": "reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "unit_id": {
+        "displayName": "unit_id",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "profiles": {
+    "path": "/profiles",
+    "displayName": "Profiles",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_administrator": {
+        "displayName": "is_administrator",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "proposals/models": {
+    "path": "/proposals/models/search",
+    "displayName": "Proposals Models",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_archived": {
+        "displayName": "is_archived",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      }
+    }
+  },
+  "pur-invoice": {
+    "path": "/ocr/pur-invoice/search",
+    "displayName": "Pur Invoice",
+    "fields": {
+      "completed_at": {
+        "displayName": "completed_at",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "created_at": {
+        "displayName": "created_at",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "error_code": {
+        "displayName": "error_code",
+        "valueType": "int",
+        "providerType": "integer",
+        "values": [
+          {
+            "value": "1",
+            "displayValue": "1"
+          },
+          {
+            "value": "2",
+            "displayValue": "2"
+          },
+          {
+            "value": "3",
+            "displayValue": "3"
+          },
+          {
+            "value": "null",
+            "displayValue": "null"
+          }
+        ]
+      },
+      "file_name": {
+        "displayName": "file_name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "linked_id": {
+        "displayName": "linked_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "linked_type": {
+        "displayName": "linked_type",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "purInvoice",
+            "displayValue": "purInvoice"
+          }
+        ]
+      },
+      "staff_id": {
+        "displayName": "staff_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "state": {
+        "displayName": "state",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "pending",
+            "displayValue": "pending"
+          },
+          {
+            "value": "processing",
+            "displayValue": "processing"
+          },
+          {
+            "value": "completed",
+            "displayValue": "completed"
+          },
+          {
+            "value": "error",
+            "displayValue": "error"
+          }
+        ]
+      }
+    }
+  },
+  "rate-categories": {
+    "path": "/rate-categories",
+    "displayName": "Rate Categories",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "accounting": {
+        "displayName": "accounting",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "currency": {
+        "displayName": "currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "default_layouts": {
+        "displayName": "default_layouts",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "includes_taxes": {
+        "displayName": "includes_taxes",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_default": {
+        "displayName": "is_default",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "price": {
+        "displayName": "price",
+        "valueType": "other"
+      },
+      "tax_id": {
+        "displayName": "tax_id",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "settings": {
+    "path": "/notifications/settings",
+    "displayName": "Settings",
+    "fields": {
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "transports": {
+        "displayName": "transports",
+        "valueType": "other",
+        "providerType": "array"
+      }
+    }
+  },
+  "sources": {
+    "path": "/opportunities/sources/search",
+    "displayName": "Sources",
+    "fields": {
+      "category_id": {
+        "displayName": "category_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_default": {
+        "displayName": "is_default",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_hidden": {
+        "displayName": "is_hidden",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "rank": {
+        "displayName": "rank",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "staffs": {
+    "path": "/staffs/search",
+    "displayName": "Staffs",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "avatar": {
+        "displayName": "avatar",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "civility": {
+        "displayName": "civility",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "mr",
+            "displayValue": "mr"
+          },
+          {
+            "value": "mrs",
+            "displayValue": "mrs"
+          },
+          {
+            "value": "ms",
+            "displayValue": "ms"
+          }
+        ]
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "email": {
+        "displayName": "email",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "fax_number": {
+        "displayName": "fax_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "firstname": {
+        "displayName": "firstname",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "groups": {
+        "displayName": "groups",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "job": {
+        "displayName": "job",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "language": {
+        "displayName": "language",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "lastname": {
+        "displayName": "lastname",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "mobile_number": {
+        "displayName": "mobile_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "phone_number": {
+        "displayName": "phone_number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "position": {
+        "displayName": "position",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "profile": {
+        "displayName": "profile",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "ok",
+            "displayValue": "ok"
+          },
+          {
+            "value": "blocked",
+            "displayValue": "blocked"
+          },
+          {
+            "value": "deleted",
+            "displayValue": "deleted"
+          }
+        ]
+      },
+      "team": {
+        "displayName": "team",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "timezone": {
+        "displayName": "timezone",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "steps": {
+    "path": "/opportunities/steps/search",
+    "displayName": "Steps",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "probability": {
+        "displayName": "probability",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "rank": {
+        "displayName": "rank",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "subscription": {
+    "path": "/settings/subscription",
+    "displayName": "Subscription",
+    "fields": {
+      "available": {
+        "displayName": "available",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "code": {
+        "displayName": "code",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "pack_prospecting_sale",
+            "displayValue": "pack_prospecting_sale"
+          },
+          {
+            "value": "pack_invoicing_management",
+            "displayValue": "pack_invoicing_management"
+          },
+          {
+            "value": "pack_all_included",
+            "displayValue": "pack_all_included"
+          }
+        ]
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "total": {
+        "displayName": "total",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "subscriptions": {
+    "path": "/subscriptions/search",
+    "displayName": "Subscriptions",
+    "fields": {
+      "amounts": {
+        "displayName": "amounts",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "billing_address": {
+        "displayName": "billing_address",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "conditions": {
+        "displayName": "conditions",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "currency": {
+        "displayName": "currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "first_payment_installment_date": {
+        "displayName": "first_payment_installment_date",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "has_catalog_promotions": {
+        "displayName": "has_catalog_promotions",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "has_display_of_next_deadline": {
+        "displayName": "has_display_of_next_deadline",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "has_impact_on_stock": {
+        "displayName": "has_impact_on_stock",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "has_service_dates": {
+        "displayName": "has_service_dates",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "has_updated_catalog_prices": {
+        "displayName": "has_updated_catalog_prices",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoices_generated_count": {
+        "displayName": "invoices_generated_count",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoices_remaining_count": {
+        "displayName": "invoices_remaining_count",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "invoices_total_count": {
+        "displayName": "invoices_total_count",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "model": {
+        "displayName": "model",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "next_payment_installment_date": {
+        "displayName": "next_payment_installment_date",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "order_reference": {
+        "displayName": "order_reference",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "payment_settings": {
+        "displayName": "payment_settings",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "preferences_source": {
+        "displayName": "preferences_source",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "model",
+            "displayValue": "model"
+          },
+          {
+            "value": "related",
+            "displayValue": "related"
+          }
+        ]
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "sending": {
+        "displayName": "sending",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "service_dates": {
+        "displayName": "service_dates",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "shipping_address": {
+        "displayName": "shipping_address",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "warehouse_id": {
+        "displayName": "warehouse_id",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "tasks": {
+    "path": "/tasks/search",
+    "displayName": "Tasks",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "assigned_staff_ids": {
+        "displayName": "assigned_staff_ids",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "company_id": {
+        "displayName": "company_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "contact_id": {
+        "displayName": "contact_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "description": {
+        "displayName": "description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "due_date": {
+        "displayName": "due_date",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "individual_id": {
+        "displayName": "individual_id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_private": {
+        "displayName": "is_private",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "owner": {
+        "displayName": "owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "priority": {
+        "displayName": "priority",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "related": {
+        "displayName": "related",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "reminders": {
+        "displayName": "reminders",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "status": {
+        "displayName": "status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "todo",
+            "displayValue": "todo"
+          },
+          {
+            "value": "done",
+            "displayValue": "done"
+          }
+        ]
+      },
+      "title": {
+        "displayName": "title",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "updated": {
+        "displayName": "updated",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "tasks/labels": {
+    "path": "/tasks/labels",
+    "displayName": "Tasks Labels",
+    "fields": {
+      "color": {
+        "displayName": "color",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_active": {
+        "displayName": "is_active",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "rank": {
+        "displayName": "rank",
+        "valueType": "int",
+        "providerType": "integer"
+      }
+    }
+  },
+  "taxes": {
+    "path": "/taxes/search",
+    "displayName": "Taxes",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_active": {
+        "displayName": "is_active",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_ecotax": {
+        "displayName": "is_ecotax",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "rate": {
+        "displayName": "rate",
+        "valueType": "other",
+        "providerType": "number"
+      }
+    }
+  },
+  "taxes/accounting-codes": {
+    "path": "/taxes/accounting-codes",
+    "displayName": "Taxes Accounting Codes",
+    "fields": {
+      "collection_vat": {
+        "displayName": "collection_vat",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "debit_vat": {
+        "displayName": "debit_vat",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "rate": {
+        "displayName": "rate",
+        "valueType": "other",
+        "providerType": "number"
+      }
+    }
+  },
+  "teams": {
+    "path": "/teams",
+    "displayName": "Teams",
+    "fields": {
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "jobs": {
+        "displayName": "jobs",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "name": {
+        "displayName": "name",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "units": {
+    "path": "/units",
+    "displayName": "Units",
+    "fields": {
+      "_embed": {
+        "displayName": "_embed",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "label": {
+        "displayName": "label",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "parameters": {
+        "displayName": "parameters",
+        "valueType": "other",
+        "providerType": "object"
+      }
+    }
+  },
+  "webhooks": {
+    "path": "/webhooks/search",
+    "displayName": "Webhooks",
+    "fields": {
+      "configuration": {
+        "displayName": "configuration",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "created": {
+        "displayName": "created",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "default_channel": {
+        "displayName": "default_channel",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "endpoint": {
+        "displayName": "endpoint",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "is_enabled": {
+        "displayName": "is_enabled",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "json_content_type": {
+        "displayName": "json_content_type",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "last_failed": {
+        "displayName": "last_failed",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "last_succeeded": {
+        "displayName": "last_succeeded",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "nb_failures": {
+        "displayName": "nb_failures",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "object_in_payload": {
+        "displayName": "object_in_payload",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "sign_key": {
+        "displayName": "sign_key",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "type": {
+        "displayName": "type",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "http",
+            "displayValue": "http"
+          },
+          {
+            "value": "slack",
+            "displayValue": "slack"
+          }
+        ]
+      },
+      "updated": {
+        "displayName": "updated",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  }
+}
