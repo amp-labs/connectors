@@ -2,6 +2,7 @@ package reader
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -40,13 +41,15 @@ func (s *Strategy) readTreasuryForMainAccount(ctx context.Context,
 	return executeReadTasksTreasury(ctx, tasks, financialAccounts)
 }
 
-// readTreasuryForConnectedAccounts creates parallel read tasks for financial accounts
-// belonging to connected accounts.
+// readTreasuryForConnectedAccounts reads a Treasury-scoped object across
+// Financial Accounts owned by connected accounts.
 //
-// Each request includes:
-//   - the financial_account query parameter to identify the target Treasury account.
-//   - the Stripe-Account header to execute the request in the context of the
-//     connected account that owns the financial account.
+// financialAccounts must not contain main-account Financial Accounts: an empty
+// ConnectedAccountId denotes main-account ownership and is invalid for this
+// method.
+//
+// For each Financial Account, the request includes its ID in the
+// financial_account query parameter and sends the Stripe-Account header for its owning connected account.
 func (s *Strategy) readTreasuryForConnectedAccounts(
 	ctx context.Context,
 	params common.ReadParams,
@@ -56,14 +59,24 @@ func (s *Strategy) readTreasuryForConnectedAccounts(
 	tasks := make([]parallelfetch.Task[string, common.ReadResult], len(financialAccounts))
 
 	index := 0
+
 	for _, financialAccount := range financialAccounts {
+		finAccId := financialAccount.Id
+
+		connAccId := financialAccount.ConnectedAccountId
+		if connAccId == "" {
+			return nil, fmt.Errorf("%w: connected-account Treasury read "+
+				"received main-account financial account %q", common.ErrInvalidImplementation, finAccId)
+		}
+
 		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
 			taskUrl := urlTemplate.Clone()
-			taskUrl.WithQueryParam("financial_account", financialAccount.Id)
-			header := makeConnectedAccountHeader(financialAccount.ConnectedAccountId)
+			taskUrl.WithQueryParam("financial_account", finAccId)
+
+			header := makeConnectedAccountHeader(connAccId)
 			result, err := s.readRecords(ctx, params.ObjectName, params.Fields, taskUrl, header)
 
-			return financialAccount.Id, result, err
+			return finAccId, result, err
 		}
 		index += 1
 	}
