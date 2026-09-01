@@ -58,7 +58,7 @@ func init() { // nolint:funlen
 		ProviderAppMetadata: &ProviderAppMetadata{
 			ProviderParams: []MetadataItemInput{
 				{
-					Name:        "signingSecret",
+					Name:        "webhookSigningSecret",
 					DisplayName: "Signing Secret",
 					Prompt: "If you are using Slack subscribe actions, " +
 						"grab your Slack 'Signing Secret', available in the app admin panel under Basic Info.",
@@ -122,7 +122,7 @@ func init() { // nolint:funlen
 		ProviderAppMetadata: &ProviderAppMetadata{
 			ProviderParams: []MetadataItemInput{
 				{
-					Name:        "signingSecret",
+					Name:        "webhookSigningSecret",
 					DisplayName: "Signing Secret",
 					Prompt: "If you are using Slack subscribe actions, " +
 						"grab your Slack 'Signing Secret', available in the app admin panel under Basic Info.",

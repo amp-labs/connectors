@@ -17,7 +17,13 @@ import (
 type (
 	SubscriptionEvent          = webhook.Event
 	CollapsedSubscriptionEvent = webhook.CollapsedSubscriptionEvent
+	VerificationParams         = webhook.VerificationParams
 )
+
+// ProviderParamWebhookSigningSecret is the well-known ProviderApp.metadata.providerParams key
+// carrying the Slack app's signing secret, used to verify inbound webhooks. Declared in the
+// catalog's ProviderAppMetadata for Slack (the dashboard collects it from the builder).
+const ProviderParamWebhookSigningSecret = "webhookSigningSecret"
 
 var (
 	_ connectors.ReadConnector              = (*Connector)(nil)

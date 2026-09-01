@@ -123,6 +123,110 @@ func TestVerifyWebhookMessage(t *testing.T) {
 	}
 }
 
+// TestVerifyWebhookMessageParamsSecret exercises the params-provided signing secret path used by
+// the subscribe flow, where the verifier connector is a zero value and the secret arrives
+// per-request via VerificationParams.
+func TestVerifyWebhookMessageParamsSecret(t *testing.T) {
+	t.Parallel()
+
+	eventMessage := testutils.DataFromFile(t, "event-for-verification.json")
+
+	validTimestamp := strconv.FormatInt(time.Now().Unix(), 10)
+	validSlackSignature := computeSlackSignature(testSigningKey, validTimestamp, string(eventMessage))
+
+	validRequest := &common.WebhookRequest{
+		Headers: http.Header{
+			"X-Slack-Signature":         []string{validSlackSignature},
+			"X-Slack-Request-Timestamp": []string{validTimestamp},
+		},
+		Body: eventMessage,
+	}
+
+	tests := []testconn.TestCaseVerifyWebhookMessage{
+		{
+			Name: "Valid signature with params-provided secret on secretless verifier",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: validRequest,
+				Params: &common.VerificationParams{
+					Param: &VerificationParams{SigningSecret: testSigningKey},
+				},
+			},
+			Server:   mockserver.Dummy(),
+			Expected: true,
+		},
+		{
+			Name: "Missing secret everywhere is rejected",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: validRequest,
+				Params:  &common.VerificationParams{},
+			},
+			Server:   mockserver.Dummy(),
+			Expected: false,
+			ExpectedErrs: []error{
+				ErrSigningSecretIsNotSet,
+			},
+		},
+		{
+			Name: "Wrong params type is rejected",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: validRequest,
+				Params: &common.VerificationParams{
+					Param: "not-a-verification-params-struct",
+				},
+			},
+			Server:   mockserver.Dummy(),
+			Expected: false,
+			ExpectedErrs: []error{
+				testutils.StringError("invalid verification params"),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (testconn.TestableWebhookMessageVerifier, error) {
+				return NewVerifier(""), nil
+			})
+		})
+	}
+}
+
+// TestVerifyWebhookMessageParamsOverrideConstructor asserts the params secret wins over the
+// constructor secret.
+func TestVerifyWebhookMessageParamsOverrideConstructor(t *testing.T) {
+	t.Parallel()
+
+	eventMessage := testutils.DataFromFile(t, "event-for-verification.json")
+
+	validTimestamp := strconv.FormatInt(time.Now().Unix(), 10)
+	paramsSigningKey := "params-signing-key"
+	signatureFromParamsKey := computeSlackSignature(paramsSigningKey, validTimestamp, string(eventMessage))
+
+	tt := testconn.TestCaseVerifyWebhookMessage{
+		Name: "Params secret overrides constructor secret",
+		Input: testconn.WebhookMessageVerificationParams{
+			Request: &common.WebhookRequest{
+				Headers: http.Header{
+					"X-Slack-Signature":         []string{signatureFromParamsKey},
+					"X-Slack-Request-Timestamp": []string{validTimestamp},
+				},
+				Body: eventMessage,
+			},
+			Params: &common.VerificationParams{
+				Param: &VerificationParams{SigningSecret: paramsSigningKey},
+			},
+		},
+		Server:   mockserver.Dummy(),
+		Expected: true,
+	}
+
+	tt.Run(t, func() (testconn.TestableWebhookMessageVerifier, error) {
+		return constructTestVerifier()
+	})
+}
+
 func constructTestVerifier() (*Verifier, error) {
 	verifier := NewVerifier(testSigningKey)
 

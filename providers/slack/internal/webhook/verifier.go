@@ -16,6 +16,14 @@ import (
 
 var ErrSigningSecretIsNotSet = errors.New("signing secret is not set")
 
+// VerificationParams carries the caller-resolved inputs for Slack webhook verification.
+// SigningSecret is the Slack app's signing secret (Basic Information > App Credentials in the
+// Slack app dashboard); in the Ampersand subscribe flow it is collected from the builder by the
+// dashboard and stored in ProviderApp.metadata.providerParams.
+type VerificationParams struct {
+	SigningSecret string
+}
+
 type Verifier struct {
 	signingSecret string
 }
@@ -44,11 +52,17 @@ func NewVerifier(signingSecret string) *Verifier {
 //	signature = "v0=" + HMAC-SHA256(signing_secret, sig_basestring).hex()
 //
 // The request is rejected if the timestamp is more than 5 minutes old (replay attack protection).
-func (v Verifier) VerifyWebhookMessage(
+//
+// The signing secret is resolved from params (VerificationParams.SigningSecret) when provided,
+// falling back to the secret the Verifier was constructed with. The params path is what the
+// subscribe flow uses: its verifier connector is a zero value (no construction metadata), so the
+// secret must arrive per-request — hence the pointer receiver and nil-safety.
+func (v *Verifier) VerifyWebhookMessage(
 	ctx context.Context, request *common.WebhookRequest, params *common.VerificationParams,
 ) (bool, error) {
-	if v.signingSecret == "" {
-		return false, ErrSigningSecretIsNotSet
+	secret, err := v.resolveSigningSecret(params)
+	if err != nil {
+		return false, err
 	}
 
 	slackSignature, err := httpkit.ExtractRequiredHeader(request.Headers, "X-Slack-Signature")
@@ -76,12 +90,35 @@ func (v Verifier) VerifyWebhookMessage(
 	sigBasestring := fmt.Sprintf("v0:%s:%s", timestampStr, requestBody)
 
 	// Compute HMAC-SHA256 signature
-	h := hmac.New(sha256.New, []byte(v.signingSecret))
+	h := hmac.New(sha256.New, []byte(secret))
 	h.Write([]byte(sigBasestring))
 	computedSignature := "v0=" + hex.EncodeToString(h.Sum(nil))
 
 	// Compare signatures using secure comparison
 	return hmac.Equal([]byte(computedSignature), []byte(slackSignature)), nil
+}
+
+// resolveSigningSecret picks the signing secret for a verification call: a non-empty secret in
+// params wins, then the constructor-provided secret. Nil-safe on the receiver so the zero-value
+// slack.Connector used by the subscribe seam (whose embedded *Verifier is nil) still verifies
+// with params-provided secrets.
+func (v *Verifier) resolveSigningSecret(params *common.VerificationParams) (string, error) {
+	if params != nil && params.Param != nil {
+		verificationParams, err := common.AssertType[*VerificationParams](params.Param)
+		if err != nil {
+			return "", fmt.Errorf("invalid verification params: %w", err)
+		}
+
+		if verificationParams.SigningSecret != "" {
+			return verificationParams.SigningSecret, nil
+		}
+	}
+
+	if v != nil && v.signingSecret != "" {
+		return v.signingSecret, nil
+	}
+
+	return "", ErrSigningSecretIsNotSet
 }
 
 // abs returns the absolute value of an integer.
