@@ -55,7 +55,7 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 	authMetadata := NewAuthMetadataVars(params.Metadata)
 	// Signing Secret is used by the event message verifier.
 	// If the value is empty then all messages will be marked as invalid.
-	signingSecret := params.Metadata["signingSecret"]
+	signingSecret := params.Metadata["webhookSigningSecret"]
 	verifier := webhook.NewVerifier(signingSecret)
 
 	connector := &Connector{
