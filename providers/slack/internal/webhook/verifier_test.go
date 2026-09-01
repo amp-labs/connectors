@@ -16,8 +16,6 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-const testSigningKey = "3e81ee19b766670a1e6058fa895148ce"
-
 func TestVerifyWebhookMessage(t *testing.T) {
 	t.Parallel()
 
@@ -27,6 +25,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 	validTimestamp := strconv.FormatInt(time.Now().Unix(), 10)
 	invalidTimestamp := strconv.FormatInt(time.Now().Add(-1*time.Hour).Unix(), 10)
 
+	const testSigningKey = "3e81ee19b766670a1e6058fa895148ce"
 	validSlackSignature := computeSlackSignature(testSigningKey, validTimestamp, string(eventMessage))
 	invalidSlackSignature := "mismatching-signature-from-provider"
 
@@ -40,6 +39,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 					},
 					Body: eventMessage,
 				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: testSigningKey}},
 			},
 			Server:   mockserver.Dummy(),
 			Expected: false,
@@ -57,6 +57,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 					},
 					Body: eventMessage,
 				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: testSigningKey}},
 			},
 			Server:   mockserver.Dummy(),
 			Expected: false,
@@ -75,6 +76,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 					},
 					Body: eventMessage,
 				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: testSigningKey}},
 			},
 			Server:   mockserver.Dummy(),
 			Expected: false,
@@ -89,6 +91,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 					},
 					Body: eventMessage,
 				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: testSigningKey}},
 			},
 			Server:   mockserver.Dummy(),
 			Expected: false,
@@ -106,9 +109,29 @@ func TestVerifyWebhookMessage(t *testing.T) {
 					},
 					Body: eventMessage,
 				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: testSigningKey}},
 			},
 			Server:   mockserver.Dummy(),
 			Expected: true,
+		},
+		{
+			Name: "Verification param without the signing key",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"X-Slack-Signature":         []string{validSlackSignature},
+						"X-Slack-Request-Timestamp": []string{validTimestamp},
+					},
+					Body: eventMessage,
+				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: ""}},
+			},
+			Server:   mockserver.Dummy(),
+			Expected: false,
+			ExpectedErrs: []error{
+				common.ErrMissingProviderParam,
+				testutils.StringError("SigningSecret is empty"),
+			},
 		},
 	}
 
@@ -124,7 +147,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 }
 
 func constructTestVerifier() (*Verifier, error) {
-	verifier := NewVerifier(testSigningKey)
+	verifier := NewVerifier()
 
 	return verifier, nil
 }

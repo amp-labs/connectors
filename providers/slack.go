@@ -3,6 +3,9 @@ package providers
 const (
 	Slack          Provider = "slack"
 	SlackUserScope Provider = "slackUserScope"
+
+	// ProviderParamSlackSigningSecret is provider-app metadata carrying signing secret used to validate incoming messages.
+	ProviderParamSlackSigningSecret = "webhookSigningSecret"
 )
 
 func init() { // nolint:funlen
@@ -58,7 +61,7 @@ func init() { // nolint:funlen
 		ProviderAppMetadata: &ProviderAppMetadata{
 			ProviderParams: []MetadataItemInput{
 				{
-					Name:        "webhookSigningSecret",
+					Name:        ProviderParamSlackSigningSecret,
 					DisplayName: "Webhook Signing Secret",
 					Prompt: "If you are using Slack subscribe actions, " +
 						"copy and paste your Slack App's 'Signing Secret', " +
@@ -123,7 +126,7 @@ func init() { // nolint:funlen
 		ProviderAppMetadata: &ProviderAppMetadata{
 			ProviderParams: []MetadataItemInput{
 				{
-					Name:        "webhookSigningSecret",
+					Name:        ProviderParamSlackSigningSecret,
 					DisplayName: "Webhook Signing Secret",
 					Prompt: "If you are using Slack subscribe actions, " +
 						"copy and paste your Slack App's 'Signing Secret', " +

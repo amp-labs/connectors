@@ -14,19 +14,17 @@ import (
 	"github.com/amp-labs/connectors/internal/httpkit"
 )
 
-var ErrSigningSecretIsNotSet = errors.New("signing secret is not set")
-
-type Verifier struct {
-	signingSecret string
+type VerificationParams struct {
+	SigningSecret string
 }
+
+type Verifier struct{}
 
 // NewVerifier constructs an event message verifier.
 // The empty signingSecret won't trigger a failure to preserve backward compatibility.
 // However, no event message will be accepted.
-func NewVerifier(signingSecret string) *Verifier {
-	return &Verifier{
-		signingSecret: signingSecret,
-	}
+func NewVerifier() *Verifier {
+	return &Verifier{}
 }
 
 // VerifyWebhookMessage validates that the webhook request came from Slack by verifying
@@ -47,8 +45,9 @@ func NewVerifier(signingSecret string) *Verifier {
 func (v Verifier) VerifyWebhookMessage(
 	ctx context.Context, request *common.WebhookRequest, params *common.VerificationParams,
 ) (bool, error) {
-	if v.signingSecret == "" {
-		return false, ErrSigningSecretIsNotSet
+	signingSecret, err := v.resolveSigningSecret(params)
+	if err != nil {
+		return false, err
 	}
 
 	slackSignature, err := httpkit.ExtractRequiredHeader(request.Headers, "X-Slack-Signature")
@@ -76,12 +75,29 @@ func (v Verifier) VerifyWebhookMessage(
 	sigBasestring := fmt.Sprintf("v0:%s:%s", timestampStr, requestBody)
 
 	// Compute HMAC-SHA256 signature
-	h := hmac.New(sha256.New, []byte(v.signingSecret))
+	h := hmac.New(sha256.New, []byte(signingSecret))
 	h.Write([]byte(sigBasestring))
 	computedSignature := "v0=" + hex.EncodeToString(h.Sum(nil))
 
 	// Compare signatures using secure comparison
 	return hmac.Equal([]byte(computedSignature), []byte(slackSignature)), nil
+}
+
+func (v Verifier) resolveSigningSecret(params *common.VerificationParams) (string, error) {
+	if params == nil || params.Param == nil {
+		return "", common.ErrMissingVerificationParams
+	}
+
+	verificationParams, err := common.AssertType[*VerificationParams](params.Param)
+	if err != nil {
+		return "", fmt.Errorf("%w: %w", common.ErrInvalidVerificationParams, err)
+	}
+
+	if verificationParams.SigningSecret == "" {
+		return "", fmt.Errorf("%w: SigningSecret is empty", common.ErrMissingProviderParam)
+	}
+
+	return verificationParams.SigningSecret, nil
 }
 
 // abs returns the absolute value of an integer.
