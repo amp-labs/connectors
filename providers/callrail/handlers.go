@@ -4,16 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/spyzhov/ajson"
 )
 
 const (
@@ -152,30 +149,6 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
-func retrieveRecordId(body *ajson.Node) (string, error) {
-	var idVal string
-
-	// 1. we try string
-	recordId, err := jsonquery.New(body).StrWithDefault("id", "")
-	if err != nil {
-		return "nil", err
-	}
-
-	idVal = recordId
-
-	// 2. we try integer
-	if idVal == "" {
-		recordID, err := jsonquery.New(body).IntegerWithDefault("id", 0)
-		if !errors.Is(err, jsonquery.ErrNotNumeric) {
-			return "", err
-		}
-
-		idVal = strconv.Itoa(int(recordID))
-	}
-
-	return idVal, nil
-}
-
 func (c *Connector) parseWriteResponse(
 	ctx context.Context,
 	params common.WriteParams,
@@ -194,7 +167,9 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
-	recordID, err := retrieveRecordId(body)
+	// Record identifiers are strings for most objects ("COM...", "TRK...") but
+	// integers for others, tags among them. TextWithDefault accepts either.
+	recordID, err := jsonquery.New(body).TextWithDefault("id", params.RecordId)
 	if err != nil {
 		return nil, err
 	}
