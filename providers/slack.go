@@ -3,6 +3,9 @@ package providers
 const (
 	Slack          Provider = "slack"
 	SlackUserScope Provider = "slackUserScope"
+
+	// ProviderParamSlackSigningSecret is provider-app metadata carrying signing secret used to validate incoming messages.
+	ProviderParamSlackSigningSecret = "webhookSigningSecret"
 )
 
 func init() { // nolint:funlen
@@ -52,6 +55,18 @@ func init() { // nolint:funlen
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "teamId",
+				},
+			},
+		},
+		ProviderAppMetadata: &ProviderAppMetadata{
+			ProviderParams: []MetadataItemInput{
+				{
+					Name:        ProviderParamSlackSigningSecret,
+					DisplayName: "Webhook Signing Secret",
+					Prompt: "If you are using Slack subscribe actions, " +
+						"copy and paste your Slack App's 'Signing Secret', " +
+						"available in the app admin panel under Basic Info.",
+					DocsURL: "https://docs.slack.dev/authentication/verifying-requests-from-slack/#validating-a-request", // nolint:lll
 				},
 			},
 		},
@@ -105,6 +120,18 @@ func init() { // nolint:funlen
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "teamId",
+				},
+			},
+		},
+		ProviderAppMetadata: &ProviderAppMetadata{
+			ProviderParams: []MetadataItemInput{
+				{
+					Name:        ProviderParamSlackSigningSecret,
+					DisplayName: "Webhook Signing Secret",
+					Prompt: "If you are using Slack subscribe actions, " +
+						"copy and paste your Slack App's 'Signing Secret', " +
+						"available in the app admin panel under Basic Info.",
+					DocsURL: "https://docs.slack.dev/authentication/verifying-requests-from-slack/#validating-a-request", // nolint:lll
 				},
 			},
 		},

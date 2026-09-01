@@ -17,6 +17,7 @@ import (
 type (
 	SubscriptionEvent          = webhook.Event
 	CollapsedSubscriptionEvent = webhook.CollapsedSubscriptionEvent
+	VerificationParams         = webhook.VerificationParams
 )
 
 var (
@@ -53,10 +54,7 @@ func NewUserConnector(params common.ConnectorParams) (*Connector, error) {
 
 func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	authMetadata := NewAuthMetadataVars(params.Metadata)
-	// Signing Secret is used by the event message verifier.
-	// If the value is empty then all messages will be marked as invalid.
-	signingSecret := params.Metadata["signingSecret"]
-	verifier := webhook.NewVerifier(signingSecret)
+	verifier := webhook.NewVerifier()
 
 	connector := &Connector{
 		Connector: base,
