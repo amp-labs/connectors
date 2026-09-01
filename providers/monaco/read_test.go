@@ -139,7 +139,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						"page_size": 100,
 						"filters": [
 							{"field":"updated_at","condition":"greater_than","value":"2025-06-01T00:00:00Z"},
-							{"field":"updated_at","condition":"less_than","value":"2025-07-01T00:00:00Z"}
+							{"field":"updated_at","condition":"less_than_or_equals","value":"2025-07-01T00:00:00Z"}
 						]
 					}`),
 				},
@@ -187,7 +187,10 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Tags is a GET on the slash-terminated route and never paginates",
+			// Tags pages through object types rather than page numbers: each GET
+			// returns every tag of one type, and the next-page token names the
+			// type to fetch next.
+			Name: "Tags first page is a GET for contacts tags and points at accounts",
 			Input: common.ReadParams{
 				ObjectName: objectTags,
 				Fields:     connectors.Fields("id", "name"),
@@ -198,6 +201,9 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					mockcond.MethodGET(),
 					// The trailing slash is load-bearing: /v1/tags answers 307.
 					mockcond.Path("/v1/tags/"),
+					// `object` is a required query param; an empty NextPage
+					// token starts the walk at contacts.
+					mockcond.QueryParam("object", "contacts"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseTags),
 			}.Server(),
@@ -213,10 +219,103 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					Raw:    map[string]any{"color": "#3b82f6"},
 					Id:     "tag_002",
 				}},
-				// No pagination block in the response.
+				NextPage: "accounts",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Tags token names the object type to fetch and advances to the next",
+			Input: common.ReadParams{
+				ObjectName: objectTags,
+				Fields:     connectors.Fields("id"),
+				NextPage:   "accounts",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v1/tags/"),
+					mockcond.QueryParam("object", "accounts"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseTags),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"id": "tag_001"},
+					Raw:    map[string]any{"name": "Interested"},
+					Id:     "tag_001",
+				}, {
+					Fields: map[string]any{"id": "tag_002"},
+					Raw:    map[string]any{"name": "Decision Maker"},
+					Id:     "tag_002",
+				}},
+				NextPage: "opportunities",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Tags last object type finishes the read",
+			Input: common.ReadParams{
+				ObjectName: objectTags,
+				Fields:     connectors.Fields("id"),
+				NextPage:   "opportunities",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v1/tags/"),
+					mockcond.QueryParam("object", "opportunities"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseTags),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"id": "tag_001"},
+					Raw:    map[string]any{"name": "Interested"},
+					Id:     "tag_001",
+				}, {
+					Fields: map[string]any{"id": "tag_002"},
+					Raw:    map[string]any{"name": "Decision Maker"},
+					Id:     "tag_002",
+				}},
 				NextPage: "",
 				Done:     true,
 			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Tags rejects a token that is not an object type",
+			Input: common.ReadParams{
+				ObjectName: objectTags,
+				Fields:     connectors.Fields("id"),
+				NextPage:   "2",
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{ErrInvalidNextPage},
+		},
+		{
+			Name: "Users is a GET without the tags object param and never paginates",
+			Input: common.ReadParams{
+				ObjectName: objectUsers,
+				Fields:     connectors.Fields("id"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v1/users/"),
+					mockcond.QueryParamsMissing("object"),
+				},
+				Then: mockserver.Response(http.StatusOK, []byte(`{"data":[]}`)),
+			}.Server(),
+			Expected:     &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
 			ExpectedErrs: nil,
 		},
 		{

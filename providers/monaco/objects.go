@@ -17,10 +17,12 @@ const (
 	objectUsers             = "users"
 )
 
-// getListObjects are served over GET and return the whole collection in a
-// single response: the body carries `data` but no `pagination` object, so there
-// is never a next page. Everything else is listed over POST <path> with a JSON
-// body and responds with `{data, pagination, meta}`.
+// getListObjects are served over GET: the body carries `data` but no
+// `pagination` object. Users and sequence templates arrive whole in a single
+// response; tags additionally require an `object` query param and are walked
+// one object type per page (see tagObjectTypes). Everything else is listed
+// over POST <path> with a JSON body and responds with `{data, pagination,
+// meta}`.
 //
 //nolint:gochecknoglobals
 var getListObjects = datautils.NewStringSet(
@@ -28,6 +30,19 @@ var getListObjects = datautils.NewStringSet(
 	objectTags,
 	objectUsers,
 )
+
+// tagObjectTypes are the values of the required `object` query param of
+// GET /v1/tags/ (the TagObject enum), in the fixed order Read pages through
+// them: the first read (empty token) fetches contacts and each next-page token
+// names the type to fetch next, so one full read returns the tags of every
+// type. The enum values happen to coincide with our object name constants.
+//
+//nolint:gochecknoglobals
+var tagObjectTypes = []string{
+	objectContacts,
+	objectAccounts,
+	objectOpportunities,
+}
 
 // incrementalObjects are the objects where Since/Until are pushed to the server
 // as `updated_at` filter rules.

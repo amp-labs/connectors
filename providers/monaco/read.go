@@ -33,8 +33,14 @@ const (
 	// incrementalField is the record timestamp Since/Until are applied to.
 	incrementalField = "updated_at"
 
-	conditionGreaterThan = "greater_than"
-	conditionLessThan    = "less_than"
+	// Since is documented as strictly-after while Until is up-to-and-including,
+	// hence the asymmetric pair of operators.
+	conditionGreaterThan      = "greater_than"
+	conditionLessThanOrEquals = "less_than_or_equals"
+
+	// tagObjectKey is the required query param of GET /v1/tags/ naming which
+	// object type's tags to list.
+	tagObjectKey = "object"
 
 	paginationKey = "pagination"
 	pageField     = "page"
@@ -54,10 +60,55 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if getListObjects.Has(params.ObjectName) {
+		if params.ObjectName == objectTags {
+			endpointURL, err = withTagObjectParam(endpointURL, params.NextPage)
+			if err != nil {
+				return nil, err
+			}
+		}
+
 		return newGetRequest(ctx, endpointURL)
 	}
 
 	return newListRequest(ctx, endpointURL, params)
+}
+
+// withTagObjectParam appends the required `object` query param to the tags
+// URL. Tags are read one object type per page: an empty token starts at the
+// first type, and each response's next-page token names the type to fetch
+// next, so a full read walks all of tagObjectTypes without Read holding state.
+func withTagObjectParam(endpointURL string, token common.NextPageToken) (string, error) {
+	objType, err := resolveTagObject(token)
+	if err != nil {
+		return "", err
+	}
+
+	// The types are a fixed lowercase enum, so plain concatenation is safe.
+	return endpointURL + "?" + tagObjectKey + "=" + objType, nil
+}
+
+// resolveTagObject maps a next-page token onto the tag object type to fetch.
+func resolveTagObject(token common.NextPageToken) (string, error) {
+	if token == "" {
+		return tagObjectTypes[0], nil
+	}
+
+	objType := token.String()
+	if tagObjectIndex(objType) == -1 {
+		return "", fmt.Errorf("%w: expected one of %v, got %q", ErrInvalidNextPage, tagObjectTypes, token)
+	}
+
+	return objType, nil
+}
+
+func tagObjectIndex(objType string) int {
+	for index, candidate := range tagObjectTypes {
+		if candidate == objType {
+			return index
+		}
+	}
+
+	return -1
 }
 
 func (c *Connector) buildReadURL(objectName string) (string, error) {
@@ -151,7 +202,7 @@ func buildTimeFilters(params common.ReadParams) []map[string]any {
 	}
 
 	if !params.Until.IsZero() {
-		filters = append(filters, filterRule(incrementalField, conditionLessThan, params.Until))
+		filters = append(filters, filterRule(incrementalField, conditionLessThanOrEquals, params.Until))
 	}
 
 	return filters
@@ -200,7 +251,7 @@ func clampPageSize(size int) int {
 func (c *Connector) parseReadResponse(
 	_ context.Context,
 	params common.ReadParams,
-	_ *http.Request,
+	req *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	recordsKey := metadata.Schemas.LookupArrayFieldName(c.ProviderContext.Module(), params.ObjectName)
@@ -213,20 +264,37 @@ func (c *Connector) parseReadResponse(
 		// report "zero records, read complete" and let a sync end early and
 		// silently; an error is louder and safer.
 		common.MakeRecordsFunc(recordsKey),
-		makeNextPageFunc(params.ObjectName),
+		makeNextPageFunc(params.ObjectName, req),
 		readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id")),
 		params.Fields,
 	)
 }
 
-func makeNextPageFunc(objectName string) common.NextPageFunc {
-	if getListObjects.Has(objectName) {
+func makeNextPageFunc(objectName string, req *http.Request) common.NextPageFunc {
+	switch {
+	case objectName == objectTags:
+		return makeTagsNextPage(req)
+	case getListObjects.Has(objectName):
 		// The whole collection arrives in one response; there is no pagination
 		// object to advance.
 		return noNextPage
+	default:
+		return nextPageFromPagination
 	}
+}
 
-	return nextPageFromPagination
+// makeTagsNextPage advances through tagObjectTypes. The tags response carries
+// no pagination block, so the page just fetched is identified by the request's
+// own `object` query param and the token returned is simply the next type.
+func makeTagsNextPage(req *http.Request) common.NextPageFunc {
+	return func(*ajson.Node) (string, error) {
+		index := tagObjectIndex(req.URL.Query().Get(tagObjectKey))
+		if index == -1 || index+1 == len(tagObjectTypes) {
+			return "", nil
+		}
+
+		return tagObjectTypes[index+1], nil
+	}
 }
 
 func noNextPage(*ajson.Node) (string, error) {
