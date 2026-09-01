@@ -55,6 +55,17 @@ func init() { // nolint:funlen
 				},
 			},
 		},
+		ProviderAppMetadata: &ProviderAppMetadata{
+			ProviderParams: []MetadataItemInput{
+				{
+					Name:        "signingSecret",
+					DisplayName: "Signing Secret",
+					Prompt: "If you are using Slack subscribe actions, " +
+						"grab your Slack 'Signing Secret', available in the app admin panel under Basic Info.",
+					DocsURL: "https://docs.slack.dev/authentication/verifying-requests-from-slack/#validating-a-request", // nolint:lll
+				},
+			},
+		},
 	})
 
 	SetInfo(SlackUserScope, ProviderInfo{
@@ -105,6 +116,17 @@ func init() { // nolint:funlen
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "teamId",
+				},
+			},
+		},
+		ProviderAppMetadata: &ProviderAppMetadata{
+			ProviderParams: []MetadataItemInput{
+				{
+					Name:        "signingSecret",
+					DisplayName: "Signing Secret",
+					Prompt: "If you are using Slack subscribe actions, " +
+						"grab your Slack 'Signing Secret', available in the app admin panel under Basic Info.",
+					DocsURL: "https://docs.slack.dev/authentication/verifying-requests-from-slack/#validating-a-request", // nolint:lll
 				},
 			},
 		},
