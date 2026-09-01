@@ -181,6 +181,28 @@ func init() { // nolint:funlen
 						"found in Business Unit Setup within Salesforce Setup or Marketing Setup.",
 				},
 			},
+			// PostAuthentication metadata is fetched from Salesforce right after a
+			// connection is created (via Connector.GetPostAuthInfo) and stored on the
+			// connection's provider metadata. The username powers the flow-based
+			// Subscribe path: it becomes the outbound message's integration user
+			// without another identity lookup at subscribe time. The lookup is
+			// best-effort — tokens minted without an identity scope (id/openid/
+			// profile/full) cannot call the userinfo endpoint, and GetPostAuthInfo
+			// degrades to an empty result rather than failing the connection.
+			//
+			// The username comes from the UserInfo endpoint's preferred_username
+			// response parameter ("Username of the queried user"):
+			// https://help.salesforce.com/s/articleView?id=sf.remoteaccess_using_userinfo_endpoint.htm
+			// Scope requirements ("id — Allows access to the identity URL service"):
+			// https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_tokens_scopes.htm
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "username",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleSalesforceCRM: {},
+					},
+				},
+			},
 		},
 		ProviderAppMetadata: &ProviderAppMetadata{
 			ProviderParams: []MetadataItemInput{
