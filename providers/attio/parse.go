@@ -108,7 +108,7 @@ func handlePagination(previousStart int, obj string) (int, int) {
 
 type MarshalledData func([]map[string]any, []string) ([]common.ReadResultRow, error)
 
-func DataMarshall(resp *common.JSONHTTPResponse) MarshalledData {
+func DataMarshaller(resp *common.JSONHTTPResponse, associatedObjects []string) MarshalledData {
 	return func(records []map[string]any, fields []string) ([]common.ReadResultRow, error) {
 		node, ok := resp.Body()
 		if !ok {
@@ -125,7 +125,18 @@ func DataMarshall(resp *common.JSONHTTPResponse) MarshalledData {
 			return nil, err
 		}
 
-		return getRecords(flattenrecords, records, fields)
+		rows, err := getRecords(flattenrecords, records, fields)
+		if err != nil {
+			return nil, err
+		}
+
+		for i := range rows {
+			if assocs := extractRecordReferenceAssociations(rows[i].Raw, associatedObjects); len(assocs) > 0 {
+				rows[i].Associations = assocs
+			}
+		}
+
+		return rows, nil
 	}
 }
 

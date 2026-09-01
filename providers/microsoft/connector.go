@@ -79,8 +79,10 @@ func constructor(base *components.Connector) (*Connector, error) {
 	// handleErrorResponse needs WWW-Authenticate to detect CAE / step-up
 	// claim challenges on 401s; see providers/microsoft/errors.go for the
 	// classification logic and known limitations.
+	// Fallback catches Graph's bodyless 500s, which arrive with no Content-Type.
 	errorHandler := interpreter.ErrorHandler{
-		JSON: interpreter.DirectFaultyResponder{Callback: handleErrorResponse},
+		JSON:     interpreter.DirectFaultyResponder{Callback: handleErrorResponse},
+		Fallback: interpreter.DirectFaultyResponder{Callback: handleNonJSONErrorResponse},
 	}.Handle
 
 	connector.Reader = reader.NewHTTPReader(

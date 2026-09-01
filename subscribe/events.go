@@ -17,6 +17,7 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/slack"
+	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/zoho"
 )
 
@@ -39,7 +40,7 @@ func GetObjectTypeSubscribeEventsList(
 	var collapsedEvents common.CollapsedSubscriptionEvent
 
 	switch provider {
-	case providers.Salesforce, providers.SalesforceJWT:
+	case providers.Salesforce, providers.SalesforceJWT, providers.MockSalesforce:
 		unwrapped, err := unwrapSalesforceEvent(rawEvent)
 		if err != nil {
 			return nil, fmt.Errorf("failed to unwrap salesforce event: %w", err)
@@ -50,7 +51,7 @@ func GetObjectTypeSubscribeEventsList(
 		collapsedEvents = zoho.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Outreach:
 		collapsedEvents = outreach.CollapsedSubscriptionEvent(rawEvent)
-	case providers.Salesloft:
+	case providers.Salesloft, providers.MockSalesloft:
 		collapsedEvents = salesloft.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Gong:
 		collapsedEvents = gong.CollapsedSubscriptionEvent(rawEvent)
@@ -58,7 +59,7 @@ func GetObjectTypeSubscribeEventsList(
 		collapsedEvents = housecallpro.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Jobber:
 		collapsedEvents = jobber.CollapsedSubscriptionEvent(rawEvent)
-	case providers.ConnectWise:
+	case providers.ConnectWise, providers.MockConnectWise:
 		collapsedEvents = connectwise.CollapsedSubscriptionEvent(rawEvent)
 	case providers.AccuLynx:
 		collapsedEvents = acculynx.CollapsedSubscriptionEvent(rawEvent)
@@ -66,8 +67,10 @@ func GetObjectTypeSubscribeEventsList(
 		collapsedEvents = slack.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Microsoft:
 		collapsedEvents = microsoft.CollapsedSubscriptionEvent(rawEvent)
-	case providers.Attio:
+	case providers.Attio, providers.MockAttio:
 		collapsedEvents = attio.CollapsedSubscriptionEvent(rawEvent)
+	case providers.Stripe:
+		collapsedEvents = stripe.CollapsedSubscriptionEvent(rawEvent)
 	default:
 		return nil, fmt.Errorf("%w with non-array object webhook message: %s", errUnsupportedProvider, provider)
 	}

@@ -21,7 +21,10 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-var errChildPagesExceeded = errors.New("acculynx: nested fetch exceeded page cap")
+var (
+	errChildPagesExceeded = errors.New("acculynx: nested fetch exceeded page cap")
+	errMissingCount       = errors.New("acculynx: list response omitted count, cannot determine when pagination ends")
+)
 
 const (
 	// AccuLynx OpenAPI does not document maximum pageSize, but its API enforces
@@ -31,10 +34,12 @@ const (
 	defaultPageSize = "25"
 	maxPageSize     = 25
 
-	pageSizeParam    = "pageSize"
-	recordStartParam = "recordStartIndex"
-	pageStartParam   = "pageStartIndex"
-	pageNumberParam  = "pageNumber"
+	pageSizeParam  = "pageSize"
+	pageStartParam = "pageStartIndex"
+
+	// countKey is the envelope field holding the total number of unfiltered
+	// items for the object; used to terminate pagination exactly.
+	countKey = "count"
 
 	// AccuLynx 10 req/sec per API key gives plenty of headroom; 4 is a
 	// conservative cap for the per-parent fan-out.
@@ -61,16 +66,39 @@ const (
 	objectUsers       = "users"
 )
 
+// ReadParamsOpts is the connector-specific shape of common.ReadParams.Opts,
+// set by the server per customer (gong's ReadParamsOpts is the precedent).
+type ReadParamsOpts struct {
+	// HydrateEstimates enriches each /estimates row from its detail endpoint
+	// at the cost of one extra API call per record (up to pageSize per page).
+	// Off by default: plain estimates reads return the list stubs unchanged.
+	HydrateEstimates bool
+}
+
+// shouldHydrateEstimates reports whether the caller opted into estimate
+// hydration. False when Opts is unset or carries a different type.
+func shouldHydrateEstimates(params common.ReadParams) bool {
+	opts, ok := params.Opts.(ReadParamsOpts)
+
+	return ok && opts.HydrateEstimates
+}
+
 // includesByObject lists the AccuLynx ?includes= expansions applied
 // unconditionally on every read of the object. Contacts return phone/email as
 // reference-only stubs unless expanded, so we always request them — downstream
-// field filtering still drops fields the caller did not select. Object-scoped
-// (not org-scoped): the connector has no org context. Association-driven
-// includes (e.g. jobs -> contacts) are handled separately in applyIncludes.
+// field filtering still drops fields the caller did not select. Jobs omit
+// initialAppointment from the payload entirely unless expanded; with
+// ?includes=initialAppointment it arrives in full (startDate/endDate/notes).
+// Note the OpenAPI spec types job.initialAppointment as a _link-only stub and
+// documents contacts as the sole expandable property — both are spec bugs; the
+// live API expands initialAppointment. Object-scoped (not org-scoped): the
+// connector has no org context. Association-driven includes (e.g. jobs ->
+// contacts) are handled separately in applyIncludes.
 //
 //nolint:gochecknoglobals
-var includesByObject = map[string]string{
-	objectContacts: "emailAddress,phoneNumber",
+var includesByObject = map[string][]string{
+	objectContacts: {"emailAddress", "phoneNumber"},
+	objectJobs:     {"initialAppointment"},
 }
 
 type nestedSpec struct {
@@ -151,14 +179,23 @@ func (c *Connector) buildInitialURL(params common.ReadParams) (*urlbuilder.URL, 
 // defaults come from includesByObject (always applied). Additionally, jobs
 // request the embedded contacts array only when the Job<->Contact association is
 // requested, so plain jobs reads are not bloated for orgs that did not opt in.
+//
+// AccuLynx takes every expansion as one comma-separated ?includes= value, and
+// urlbuilder's WithQueryParam replaces rather than appends — so the values are
+// collected and written in a single call. Setting the param twice would silently
+// drop the first expansion.
 func applyIncludes(url *urlbuilder.URL, objectName string, params common.ReadParams) {
-	if includes, ok := includesByObject[objectName]; ok {
-		url.WithQueryParam("includes", includes)
-	}
+	includes := slices.Clone(includesByObject[objectName])
 
 	if objectName == objectJobs && slices.Contains(params.AssociatedObjects, jobContactsAssociation) {
-		url.WithQueryParam("includes", jobContactsAssociation)
+		includes = append(includes, jobContactsAssociation)
 	}
+
+	if len(includes) == 0 {
+		return
+	}
+
+	url.WithQueryParam("includes", strings.Join(includes, ","))
 }
 
 func applyPagination(url *urlbuilder.URL, objectName string, params common.ReadParams) {
@@ -169,16 +206,7 @@ func applyPagination(url *urlbuilder.URL, objectName string, params common.ReadP
 
 	url.WithQueryParam(pageSizeParam, pageSizeWithCap(params))
 
-	switch spec.pagination {
-	case paginationOffsetRecord:
-		url.WithQueryParam(recordStartParam, "0")
-	case paginationOffsetPage:
-		url.WithQueryParam(pageStartParam, "0")
-	case paginationPageNumber:
-		url.WithQueryParam(pageNumberParam, "1")
-	case paginationNone:
-		// No-op — handled above.
-	}
+	url.WithQueryParam(pageStartParam, "0")
 }
 
 // pageSizeWithCap returns params.PageSize when within bounds, otherwise
@@ -216,11 +244,36 @@ func (c *Connector) parseReadResponse(
 		}
 	}
 
+	return common.ParseResultFiltered(
+		params,
+		resp,
+		c.recordsFunc(params.ObjectName),
+		c.makeFilterFunc(params, reqURL),
+		c.readMarshaller(ctx, params, transformer),
+		params.Fields,
+	)
+}
+
+// readMarshaller wraps the base marshaller with row post-processors:
+//
+//   - estimates hydration (opt-in, one detail call per row — see
+//     estimates.go), chained first so the association extractors below see
+//     the final rows;
+//   - jobs -> contacts association: embedded contacts arrive via
+//     ?includes=contacts, pure reshape;
+//   - estimates -> jobs association: the job stub ({id, _link}) and
+//     isPrimary are on every estimate row, pure reshape.
+func (c *Connector) readMarshaller(
+	ctx context.Context,
+	params common.ReadParams,
+	transformer common.RecordTransformer,
+) common.MarshalFromNodeFunc {
 	marshaller := common.MakeMarshaledDataFunc(transformer)
 
-	// Attach the job's embedded contacts as associations when requested. The
-	// contacts ride inline on the job payload (?includes=contacts), so this is a
-	// pure post-process of the parsed rows — no extra API call.
+	if params.ObjectName == objectEstimates && shouldHydrateEstimates(params) {
+		marshaller = readhelper.ChainedMarshaller(marshaller, c.hydrateEstimateRows(ctx, params))
+	}
+
 	if params.ObjectName == objectJobs &&
 		slices.Contains(params.AssociatedObjects, jobContactsAssociation) {
 		marshaller = readhelper.ChainedMarshaller(marshaller, func(rows []common.ReadResultRow) error {
@@ -230,14 +283,16 @@ func (c *Connector) parseReadResponse(
 		})
 	}
 
-	return common.ParseResultFiltered(
-		params,
-		resp,
-		c.recordsFunc(params.ObjectName),
-		c.makeFilterFunc(params, reqURL),
-		marshaller,
-		params.Fields,
-	)
+	if params.ObjectName == objectEstimates &&
+		slices.Contains(params.AssociatedObjects, estimateJobAssociation) {
+		marshaller = readhelper.ChainedMarshaller(marshaller, func(rows []common.ReadResultRow) error {
+			extractEstimateJobs(rows)
+
+			return nil
+		})
+	}
+
+	return marshaller
 }
 
 // buildCustomFieldsTransformer fetches custom-field definitions and per-record
@@ -444,7 +499,7 @@ func (c *Connector) fetchChildPages(
 			return nil, err
 		}
 
-		attachAppointmentAssociations(params, parentID, result.Data)
+		attachNestedAssociations(params, parentID, result.Data)
 		allRows = append(allRows, result.Data...)
 
 		if result.NextPage == "" {
@@ -490,8 +545,26 @@ func applyAppointmentsDateWindow(url *urlbuilder.URL, params common.ReadParams) 
 }
 
 // makeNextPage returns a NextPageFunc tailored to the object's paginationStyle.
-// Pagination terminates when the records array is shorter than pageSize (the
-// universal "partial page = last page" signal used elsewhere in the repo).
+//
+// Pagination stops on any of three signals, in order of reliability:
+//
+//  1. The server ignored our offset — the echoed pageStartIndex does not match
+//     what we asked for. Continuing would re-request the same page forever,
+//     since a server replaying page one always returns a full page and so
+//     never trips the partial-page check below.
+//  2. Every record has been consumed — the echoed offset plus this page's
+//     record count has reached the envelope's total count.
+//  3. Partial page — fewer records than pageSize.
+//
+// Signals 1 and 2 read the shared AccuLynx list envelope:
+//
+//	{ "count": 163, "pageSize": 25, "pageStartIndex": 0, "items": [...] }
+//
+// A full page carrying no count means the total is unknown, so no signal can
+// prove the read ever ends: that errors rather than paging on, surfacing the
+// provider change immediately instead of after an arbitrary page budget.
+// Objects whose responses carry no envelope are all paginationNone and return
+// early, so their absence is never a problem.
 func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) common.NextPageFunc {
 	spec := objectReadSpecs.Get(objectName)
 	recordsKey := c.arrayFieldName(objectName)
@@ -506,9 +579,19 @@ func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) comm
 			return "", err
 		}
 
+		requested := queryParamIntOrDefault(reqURL, pageStartParam, 0)
 		per := queryParamIntOrDefault(reqURL, pageSizeParam, maxPageSize)
-		if records < per {
+
+		if envelopeExhausted(root, records, requested, per) {
 			return "", nil
+		}
+
+		// Reaching here means the page was full and the offset was honoured, so
+		// the sweep would continue. Without count there is no signal that can
+		// bound it, so fail loudly now rather than page on and hope a short
+		// page eventually arrives.
+		if _, reported := envelopeInt(root, countKey); !reported {
+			return "", fmt.Errorf("%w: %s", errMissingCount, objectName)
 		}
 
 		next, err := cloneURL(reqURL)
@@ -516,23 +599,59 @@ func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) comm
 			return "", err
 		}
 
-		advancePagination(next, spec.pagination, records)
+		advanceOffset(next, pageStartParam, records)
 
 		return next.String(), nil
 	}
 }
 
-func advancePagination(u *urlbuilder.URL, style paginationStyle, records int) {
-	switch style {
-	case paginationOffsetRecord:
-		advanceOffset(u, recordStartParam, records)
-	case paginationOffsetPage:
-		advanceOffset(u, pageStartParam, records)
-	case paginationPageNumber:
-		advancePageNumber(u)
-	case paginationNone:
-		// No-op.
+// paginationExhausted reports whether a paged sweep should stop, given the page
+// just received. It encodes the same three data-driven signals makeNextPage
+// applies, for the hand-rolled loops in custom.go:
+//
+//   - the server echoed an offset other than the one requested, meaning it
+//     ignored our paging and re-served an earlier page;
+//   - the echoed offset plus this page's records reached the envelope total;
+//   - the page came back short.
+//
+// A zero count is treated as "no total reported" rather than "no records",
+// since an empty page already terminates via the short-page check.
+func paginationExhausted(records, requested, echoedOffset, total, per int) bool {
+	if echoedOffset != requested {
+		return true
 	}
+
+	if total > 0 && requested+records >= total {
+		return true
+	}
+
+	return records < per
+}
+
+// envelopeExhausted applies paginationExhausted to a raw list response. A
+// missing echoed offset is read as "the server agreed with us" and a missing
+// count as "no total reported", so endpoints that omit either field fall back
+// to the short-page signal alone.
+func envelopeExhausted(root *ajson.Node, records, requested, per int) bool {
+	echoed, ok := envelopeInt(root, pageStartParam)
+	if !ok {
+		echoed = requested
+	}
+
+	total, _ := envelopeInt(root, countKey)
+
+	return paginationExhausted(records, requested, echoed, total, per)
+}
+
+// envelopeInt reads a top-level integer from the AccuLynx list envelope,
+// reporting whether the field was present and numeric.
+func envelopeInt(root *ajson.Node, key string) (int, bool) {
+	value, err := jsonquery.New(root).IntegerOptional(key)
+	if err != nil || value == nil {
+		return 0, false
+	}
+
+	return int(*value), true
 }
 
 func arrayLength(root *ajson.Node, recordsKey string) (int, error) {
@@ -548,17 +667,6 @@ func advanceOffset(u *urlbuilder.URL, paramName string, increment int) {
 	current, _ := u.GetFirstQueryParam(paramName)
 	currentInt, _ := strconv.Atoi(current)
 	u.WithQueryParam(paramName, strconv.Itoa(currentInt+increment))
-}
-
-func advancePageNumber(u *urlbuilder.URL) {
-	current, _ := u.GetFirstQueryParam(pageNumberParam)
-
-	currentInt, err := strconv.Atoi(current)
-	if err != nil || currentInt < 1 {
-		currentInt = 1
-	}
-
-	u.WithQueryParam(pageNumberParam, strconv.Itoa(currentInt+1))
 }
 
 func queryParamIntOrDefault(u *urlbuilder.URL, key string, defaultValue int) int {

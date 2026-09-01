@@ -105,7 +105,8 @@ var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
 	},
 	providers.Zoho: {
 		Modules: map[common.ModuleID]*ProviderConfig{
-			providers.ModuleZohoCRM: &zohoConfig,
+			providers.ModuleZohoCRM:  &zohoConfig,
+			providers.ModuleZohoMail: &zohoMailConfig,
 		},
 	},
 	providers.Outreach:  {DefaultModuleConfig: &outreachConfig},
@@ -125,6 +126,16 @@ var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
 	providers.Slack:        {DefaultModuleConfig: &slackConfig},
 	providers.Microsoft:    {DefaultModuleConfig: &microsoftConfig},
 	providers.Attio:        {DefaultModuleConfig: &attioConfig},
+	providers.Stripe:       {DefaultModuleConfig: &stripeConfig},
+
+	// Subscribe-testing mock providers (see the mocksub package). Inert unless the mock
+	// provider is explicitly set up via providers.SetupMock*Provider() in a test.
+	providers.MockSalesloft:   {DefaultModuleConfig: &mockSalesloftConfig},
+	providers.MockHubspot:     {DefaultModuleConfig: &mockHubspotConfig},
+	providers.MockAttio:       {DefaultModuleConfig: &mockAttioConfig},
+	providers.MockSalesforce:  {DefaultModuleConfig: &mockSalesforceConfig},
+	providers.MockConnectWise: {DefaultModuleConfig: &mockConnectWiseConfig},
+	providers.MockGmail:       {DefaultModuleConfig: &mockGmailConfig},
 }
 
 // ErrProviderConfigNotFound is returned by GetProviderConfig when no entry exists in

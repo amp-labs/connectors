@@ -1,4 +1,4 @@
-package slack
+package slackshared
 
 import (
 	"context"
@@ -17,16 +17,31 @@ var signingSecretField = credscanning.Field{
 	SuffixENV: "SIGNING_SECRET",
 }
 
-func NewConnector(ctx context.Context) *slack.Connector {
-	filePath := credscanning.LoadPath(providers.Slack)
+func NewConnector(ctx context.Context, provider providers.Provider) *slack.Connector {
+	filePath := credscanning.LoadPath(provider)
 	reader := utils.MustCreateProvCredJSON(filePath, true, signingSecretField)
 
-	conn, err := slack.NewConnector(common.ConnectorParams{
-		AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
+	params := common.ConnectorParams{
+		AuthenticatedClient: utils.NewOauth2Client(ctx, reader, makeConfig(provider)),
 		Metadata: map[string]string{
 			"signingSecret": reader.Get(signingSecretField),
 		},
-	})
+	}
+
+	var (
+		conn *slack.Connector
+		err  error
+	)
+
+	switch provider {
+	case providers.Slack:
+		conn, err = slack.NewBotConnector(params)
+	case providers.SlackUserScope:
+		conn, err = slack.NewUserConnector(params)
+	default:
+		utils.Fail("unknown provider for slack connector", "provider", provider)
+	}
+
 	if err != nil {
 		utils.Fail("create slack connector", "error: ", err)
 	}
@@ -34,17 +49,28 @@ func NewConnector(ctx context.Context) *slack.Connector {
 	return conn
 }
 
-func getConfig(reader *credscanning.ProviderCredentials) *oauth2.Config {
-	cfg := &oauth2.Config{
-		ClientID:     reader.Get(credscanning.Fields.ClientId),
-		ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
-		RedirectURL:  "https://dev-api.withampersand.com/callbacks/v1/oauth",
-		Endpoint: oauth2.Endpoint{
-			AuthURL:   "https://slack.com/oauth/v2/authorize",
-			TokenURL:  "https://slack.com/api/oauth.v2.access",
-			AuthStyle: oauth2.AuthStyleAutoDetect,
-		},
+func makeConfig(provider providers.Provider) func(*credscanning.ProviderCredentials) *oauth2.Config {
+	tokenUrl := ""
+	switch provider {
+	case providers.Slack:
+		tokenUrl = "https://slack.com/api/oauth.v2.access"
+	case providers.SlackUserScope:
+		tokenUrl = "https://slack.com/api/oauth.v2.user.access"
 	}
 
-	return cfg
+	return func(reader *credscanning.ProviderCredentials) *oauth2.Config {
+
+		cfg := &oauth2.Config{
+			ClientID:     reader.Get(credscanning.Fields.ClientId),
+			ClientSecret: reader.Get(credscanning.Fields.ClientSecret),
+			RedirectURL:  "https://dev-api.withampersand.com/callbacks/v1/oauth",
+			Endpoint: oauth2.Endpoint{
+				AuthURL:   "https://slack.com/oauth/v2/authorize",
+				TokenURL:  tokenUrl,
+				AuthStyle: oauth2.AuthStyleAutoDetect,
+			},
+		}
+
+		return cfg
+	}
 }

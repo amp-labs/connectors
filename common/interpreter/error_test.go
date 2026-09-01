@@ -18,9 +18,10 @@ func TestErrorHandler(t *testing.T) { //nolint:funlen
 	var (
 		// These errors imitate what each error handler would return after response is parsed.
 		// NOTE: we are not interested in parsing itself, rather that the right branches are visited.
-		ErrCustomJSON = errors.New("custom JSON error response")
-		ErrCustomXML  = errors.New("custom XML error response")
-		ErrCustomHTML = errors.New("custom HTML error response")
+		ErrCustomJSON     = errors.New("custom JSON error response")
+		ErrCustomXML      = errors.New("custom XML error response")
+		ErrCustomHTML     = errors.New("custom HTML error response")
+		ErrCustomFallback = errors.New("custom fallback error response")
 	)
 
 	tests := []struct {
@@ -107,6 +108,48 @@ func TestErrorHandler(t *testing.T) { //nolint:funlen
 				},
 			},
 			expectedErr: []error{ErrCustomJSON},
+		},
+		{
+			// A provider that returns errors without Content-Type would
+			// otherwise never get to classify its own failures.
+			name:   "Missing media type is handled using Fallback handler",
+			server: mockserver.Dummy(), // no media
+			handler: ErrorHandler{
+				JSON:     handlerReturningError(ErrCustomJSON),
+				Fallback: handlerReturningError(ErrCustomFallback),
+			},
+			expectedErr: []error{ErrCustomFallback},
+		},
+		{
+			name: "Unregistered media type is handled using Fallback handler",
+			server: mockserver.Fixed{
+				Setup:  mockserver.ContentMIME("application/special-media"),
+				Always: mockserver.Response(http.StatusNotFound),
+			}.Server(),
+			handler: ErrorHandler{
+				Fallback: handlerReturningError(ErrCustomFallback),
+			},
+			expectedErr: []error{ErrCustomFallback},
+		},
+		{
+			// Fallback must not shadow a matching media-type handler.
+			name: "JSON handler takes precedence over Fallback",
+			server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusNotFound),
+			}.Server(),
+			handler: ErrorHandler{
+				JSON:     handlerReturningError(ErrCustomJSON),
+				Fallback: handlerReturningError(ErrCustomFallback),
+			},
+			expectedErr: []error{ErrCustomJSON},
+		},
+		{
+			// Nil Fallback keeps the historical behaviour.
+			name:        "Missing media type with no Fallback still uses default",
+			server:      mockserver.Dummy(),
+			handler:     ErrorHandler{JSON: handlerReturningError(ErrCustomJSON)},
+			expectedErr: []error{common.ErrCaller},
 		},
 	}
 

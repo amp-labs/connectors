@@ -83,7 +83,7 @@ func TestReadForTreasury(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 						Then: mockserver.Response(http.StatusOK, responseAcc1FinAccounts2),
 					},
 					// ========
-					// Financial accounts (for Connected Account 1)
+					// Financial accounts (for Connected Account 2)
 					// ========
 					{
 						If: mockcond.And{
@@ -264,6 +264,69 @@ func TestReadForTreasury(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintid
 						"finAccId": "finAcc_00b_a9981a9bdebe"
 					},
 					"value": "` + testconn.URLTestServer + `/v1/treasury/transaction_entries?financial_account=finAcc_00b_a9981a9bdebe&limit=100&starting_after=2"
+				}]`,
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read Treasury transactions for selected connected accounts",
+			Input: common.ReadParams{
+				ObjectName: "treasury/transaction_entries",
+				Fields:     connectors.Fields("id"),
+				Opts: ReadParamsOpts{
+					ReadForConnectedAccounts: []string{"acct_1Nv0FGQ9RKHgCVdK"},
+				},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{
+					// ========
+					// Financial accounts
+					// ========
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/treasury/financial_accounts"),
+							mockcond.QueryParamsMissing("starting_after"), // first page
+							mockcond.Header(map[string][]string{
+								"Stripe-Account": {"acct_1Nv0FGQ9RKHgCVdK"}, // Account #1
+							}),
+						},
+						Then: mockserver.Response(http.StatusOK, responseAcc1FinAccounts2),
+					},
+					// ========
+					// Transactions for Connected Account
+					// ========
+					{
+						If: mockcond.And{
+							mockcond.Path("/v1/treasury/transaction_entries"),
+							mockcond.QueryParam("financial_account", "finAcc_00b_a9981a9bdebe"), // Fin #B
+							mockcond.Header(map[string][]string{
+								"Stripe-Account": {"acct_1Nv0FGQ9RKHgCVdK"}, // Account #1
+							}),
+						},
+						Then: mockserver.Response(http.StatusOK, responseAcc1Fin00bTransactions),
+					},
+				},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetReadSorted,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"AMPERSAND-connectedAccountId": "acct_1Nv0FGQ9RKHgCVdK",
+						"id":                           "transaction_0b0_76f1bb782252",
+					},
+					Raw: map[string]any{"object": "treasury.transaction_entry"},
+					Id:  "transaction_0b0_76f1bb782252",
+				}},
+				// We are not done reading
+				NextPage: `[{
+					"context": {
+						"conAccId": "acct_1Nv0FGQ9RKHgCVdK",
+						"finAccId": "finAcc_00b_a9981a9bdebe"
+					},
+					"value": "` + testconn.URLTestServer + `/v1/treasury/transaction_entries?financial_account=finAcc_00b_a9981a9bdebe&limit=100&starting_after=transaction_0b0_76f1bb782252"
 				}]`,
 				Done: false,
 			},

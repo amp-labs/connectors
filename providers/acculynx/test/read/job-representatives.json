@@ -1,0 +1,25 @@
+{
+  "count": 2,
+  "pageSize": 25,
+  "pageStartIndex": 0,
+  "items": [
+    {
+      "id": "rep-1",
+      "type": "SalesOwner",
+      "user": {
+        "id": "user-10",
+        "_link": "https://api.acculynx.com/api/v2/users/user-10"
+      },
+      "_link": "https://api.acculynx.com/api/v2/jobs/job-001/representatives/sales-owner"
+    },
+    {
+      "id": "rep-2",
+      "type": "ArOwner",
+      "user": {
+        "id": "user-20",
+        "_link": "https://api.acculynx.com/api/v2/users/user-20"
+      },
+      "_link": "https://api.acculynx.com/api/v2/jobs/job-001/representatives/ar-owner"
+    }
+  ]
+}

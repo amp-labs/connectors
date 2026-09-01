@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"slices"
 	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
@@ -72,7 +73,7 @@ func (p PathItem[C]) RetrieveSchemaOperation(
 		displayName = displayProcessor(displayName)
 	}
 
-	fields, responseKey, err := extractObjectFields(
+	fields, responseKey, itemSchemaName, err := extractObjectFields(
 		p.urlPath, p.objectName,
 		schema, locator, propertyFlattener, autoSelectArrayItem,
 	)
@@ -81,13 +82,14 @@ func (p PathItem[C]) RetrieveSchemaOperation(
 	}
 
 	return &metadatadef.ExtendedSchema[C]{
-		ObjectName:  p.objectName,
-		DisplayName: displayName,
-		Fields:      fields,
-		QueryParams: getQueryParameters(operation),
-		URLPath:     p.urlPath,
-		ResponseKey: responseKey,
-		Problem:     err,
+		ObjectName:     p.objectName,
+		DisplayName:    displayName,
+		Fields:         fields,
+		QueryParams:    getQueryParameters(operation),
+		URLPath:        p.urlPath,
+		ResponseKey:    responseKey,
+		Problem:        err,
+		ItemSchemaName: itemSchemaName,
 	}, true, nil
 }
 
@@ -114,7 +116,7 @@ func extractObjectFields(
 	objectName string, schema *openapi3.Schema, locator ObjectArrayLocator,
 	propertyFlattener PropertyFlattener,
 	autoSelectArrayItem bool,
-) (fields metadatadef.Fields, location string, err error) {
+) (fields metadatadef.Fields, location string, itemSchemaName string, err error) {
 	switch getSchemaType(objectName, schema) {
 	case schemaTypeObject:
 		return extractFieldsFromArrayHolder(urlPath, objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
@@ -126,7 +128,7 @@ func extractObjectFields(
 		// It seems that some OpenAPI files are not that strict about such things. Ex: Pipedrive, Zendesk.
 		return extractFieldsFromArrayHolder(urlPath, objectName, schema, locator, propertyFlattener, autoSelectArrayItem)
 	default:
-		return nil, "", createUnprocessableObjectError(objectName)
+		return nil, "", "", createUnprocessableObjectError(objectName)
 	}
 }
 
@@ -161,7 +163,7 @@ func extractFieldsFromArrayHolder(
 	objectName string, schema *openapi3.Schema, locator ObjectArrayLocator,
 	propertyFlattener PropertyFlattener,
 	autoSelectArrayItem bool,
-) (fields metadatadef.Fields, location string, err error) {
+) (fields metadatadef.Fields, location string, itemSchemaName string, err error) {
 	arrayOptions := extractPropertiesArrayType(urlPath, schema)
 
 	if len(arrayOptions) == 0 {
@@ -184,20 +186,20 @@ func extractFieldsFromArrayHolder(
 		if approved || locatorWrapper(urlPath, objectName, arrayOptions, locator, option) {
 			fields, err = extractFields(objectName, propertyFlattener, option.Item.Value)
 			if err != nil {
-				return nil, "", err
+				return nil, "", "", err
 			}
 
-			return fields, option.Name, nil
+			return fields, option.Name, schemaRefComponentName(option.Item.Ref), nil
 		}
 	}
 
 	if isBooleanTruthful(schema.AdditionalProperties.Has) {
 		// this schema is dynamic.
 		// the fields cannot be known.
-		return make(metadatadef.Fields), "", nil
+		return make(metadatadef.Fields), "", "", nil
 	}
 
-	return nil, "", createUnprocessableObjectError(objectName)
+	return nil, "", "", createUnprocessableObjectError(objectName)
 }
 
 func locatorWrapper(urlPath string, objectName string, options []Array, locator ObjectArrayLocator, option Array) bool {
@@ -231,17 +233,23 @@ func flattenSchema(schema *openapi3.Schema) *openapi3.Schema {
 	// Merge all composite schemas.
 	compositeRefs := datautils.MergeSlices(schema.AllOf, schema.OneOf, schema.AnyOf)
 	for _, ref := range compositeRefs {
-		if ref != nil && ref.Value != nil {
-			flattenedRef := flattenSchema(ref.Value)
+		if ref == nil || ref.Value == nil {
+			continue
+		}
 
-			if flat.Type != nil && flattenedRef.Type != nil &&
-				!slices.Equal(flat.Type.Slice(), flattenedRef.Type.Slice()) {
-				slog.Warn("type of flattened schema does not match the parent")
-			} else {
-				flat.Type = flattenedRef.Type
-			}
+		flattenedRef := flattenSchema(ref.Value)
 
-			maps.Copy(flat.Properties, flattenedRef.Properties)
+		if flat.Type == nil {
+			flat.Type = flattenedRef.Type
+		} else if flattenedRef.Type != nil &&
+			!slices.Equal(flat.Type.Slice(), flattenedRef.Type.Slice()) {
+			slog.Warn("type of flattened schema does not match the parent")
+		}
+
+		maps.Copy(flat.Properties, flattenedRef.Properties)
+
+		if flat.Items == nil {
+			flat.Items = flattenedRef.Items
 		}
 	}
 
@@ -271,16 +279,16 @@ func extractPropertiesArrayType(urlPath string, schema *openapi3.Schema) []Array
 func extractFieldsFromArray(
 	urlPath, objectName string, schema *openapi3.Schema,
 	propertyFlattener PropertyFlattener,
-) (fields metadatadef.Fields, location string, err error) {
+) (fields metadatadef.Fields, location string, itemSchemaName string, err error) {
 	items, isArray := getItems(urlPath, schema.NewRef())
 	if !isArray {
-		return nil, "", createUnprocessableObjectError(objectName)
+		return nil, "", "", createUnprocessableObjectError(objectName)
 	}
 
 	fields, err = extractFields(objectName, propertyFlattener, items.Value)
 	statsObjectsWithAutoSelectedArrays.Add("", urlPath)
 
-	return fields, "", err
+	return fields, "", schemaRefComponentName(items.Ref), err
 }
 
 func getItems(urlPath string, schema *openapi3.SchemaRef) (itemsSchemaRef *openapi3.SchemaRef, isArray bool) {
@@ -405,14 +413,77 @@ func extractFields(
 			propertyType := extractPropertyType(propertySchema)
 			enumOptions := extractEnumOptions(objectName, propertySchema)
 			combinedFields[property] = metadatadef.Field{
-				Name:         property,
-				Type:         propertyType,
-				ValueOptions: enumOptions,
+				Name:          property,
+				Type:          propertyType,
+				ValueOptions:  enumOptions,
+				SchemaRefName: extractPropertySchemaRefName(propertySchema),
 			}
 		}
 	}
 
 	return combinedFields, nil
+}
+
+// extractPropertySchemaRefName resolves the OpenAPI component name the property schema referenced.
+// For object properties it is the property's own $ref, for array properties the $ref of its items,
+// even when the array is declared through a named wrapper schema.
+// Empty string when the schema is inlined.
+func extractPropertySchemaRefName(propertySchema *openapi3.SchemaRef) string {
+	if propertySchema == nil {
+		return ""
+	}
+
+	if propertySchema.Value != nil && propertySchema.Value.Items != nil {
+		return schemaRefNameWithComposites(propertySchema.Value.Items)
+	}
+
+	return schemaRefNameWithComposites(propertySchema)
+}
+
+// schemaRefNameWithComposites resolves the component name of the schema itself, falling back
+// to a lone $ref within allOf/oneOf/anyOf composition, a common idiom to attach extra keywords
+// to a reference, ex: {"allOf": [{"$ref": "#/components/schemas/CompanyReference"}], "nullable": true}.
+// Multiple distinct referenced components make the type ambiguous, resulting in an empty string.
+func schemaRefNameWithComposites(schema *openapi3.SchemaRef) string {
+	if schema == nil {
+		return ""
+	}
+
+	if name := schemaRefComponentName(schema.Ref); name != "" {
+		return name
+	}
+
+	if schema.Value == nil {
+		return ""
+	}
+
+	var result string
+
+	for _, composite := range datautils.MergeSlices(schema.Value.AllOf, schema.Value.OneOf, schema.Value.AnyOf) {
+		if composite == nil {
+			continue
+		}
+
+		if name := schemaRefComponentName(composite.Ref); name != "" {
+			if result != "" && result != name {
+				return ""
+			}
+
+			result = name
+		}
+	}
+
+	return result
+}
+
+// schemaRefComponentName converts a $ref URI to the component name.
+// Ex: "#/components/schemas/CompanyReference" -> "CompanyReference".
+func schemaRefComponentName(ref string) string {
+	if ref == "" {
+		return ""
+	}
+
+	return ref[strings.LastIndex(ref, "/")+1:]
 }
 
 func extractPropertyType(propertySchema *openapi3.SchemaRef) string {

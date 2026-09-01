@@ -41,8 +41,15 @@ var (
 	// ErrCaller represents non-retryable errors caused by bad input from the caller.
 	ErrCaller error = newClassedErr("caller error", ErrorClassBadRequest)
 
-	// ErrServer represents non-retryable errors caused by something on the server.
+	// ErrServer represents errors caused by something on the provider's side
+	// (any 5xx). Retryable: most 5xx responses are transient.
 	ErrServer error = newClassedErr("server error", ErrorClassProvider5xx)
+
+	// ErrServerNonRetryable represents a 5xx response that a connector has
+	// positively identified as permanent for this request, so retrying it
+	// cannot succeed.
+	ErrServerNonRetryable error = newClassedErr(
+		"non-retryable server error", ErrorClassProvider5xxPermanent)
 
 	// ErrUnknown represents an unknown status code response.
 	ErrUnknown error = newClassedErr("unknown error", ErrorClassUnknown)
@@ -117,6 +124,10 @@ var (
 
 	// ErrOperationNotSupportedForObject is returned when operation is not supported for this object.
 	ErrOperationNotSupportedForObject = errors.New("operation is not supported for this object in this module")
+
+	// ErrSubscribeEventNotSupportedForObject is returned when subscribe event type is not supported for this object.
+	ErrSubscribeEventNotSupportedForObject = errors.New("subscribe event type " +
+		"is not supported for this object in this module")
 
 	// ErrObjectNotSupported is returned when operation is not supported for this object.
 	ErrObjectNotSupported = errors.New("operation is not supported for this object")

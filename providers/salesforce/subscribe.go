@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/go-playground/validator"
@@ -245,15 +246,8 @@ func (c *Connector) executeSubscribe(
 		if err != nil {
 			return sfRes, progress, err
 		}
-	} else {
-		deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
-
-		progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
-		sfRes.ApexTriggers = toApexTriggers(deployOut)
-
-		if err != nil {
-			return sfRes, progress, err
-		}
+	} else if err := c.deployTriggersToleratingTimeouts(ctx, params, req, sfRes, progress); err != nil {
+		return sfRes, progress, err
 	}
 
 	if err := c.createEventChannelMembers(ctx, params, registrationParams, req, sfRes); err != nil {
@@ -261,6 +255,45 @@ func (c *Connector) executeSubscribe(
 	}
 
 	return sfRes, progress, nil
+}
+
+// deployTriggersToleratingTimeouts deploys the CDC apex triggers and records the
+// outcome on sfRes/progress. A poll timeout is not treated as failure: when
+// EVERY deploy error is ErrDeployPollTimeout, the deploys are still
+// queued/running org-side (metadata deploys serialize per org, so queue wait can
+// exceed any reasonable poll window) and will land on their own, so Subscribe
+// proceeds instead of rolling back — CREATE/DELETE events flow as soon as the
+// channel members exist; UPDATE events for the affected objects are dropped by
+// the member filter until the trigger lands and starts flipping the indicator
+// field. If a deploy ultimately fails org-side, UPDATE events keep being
+// dropped — check Setup > Deployment Status for the verdict. Any real deploy
+// failure is returned and fails Subscribe as before.
+func (c *Connector) deployTriggersToleratingTimeouts(
+	ctx context.Context,
+	params common.SubscribeParams,
+	req *SubscriptionRequest,
+	sfRes *SubscribeResult,
+	progress *subscribeProgress,
+) error {
+	deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
+
+	progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
+	sfRes.ApexTriggers = toApexTriggers(deployOut)
+
+	if err == nil {
+		return nil
+	}
+
+	if !onlyDeployPollTimeouts(deployOut) {
+		return err
+	}
+
+	logging.Logger(ctx).WarnContext(ctx,
+		"apex trigger deploy(s) still running after poll timeout; proceeding without waiting — "+
+			"UPDATE events are dropped until the trigger lands",
+		"objects", timedOutTriggerObjects(deployOut))
+
+	return nil
 }
 
 // createEventChannelMembers creates CDC event channel members for each subscribed object,
@@ -594,7 +627,7 @@ func (c *Connector) executeUpdateSubscription(
 
 	// Try updating existing subscriptions with filter expressions and enriched fields.
 	// If this fails, we simply return so minimal state change is done.
-	if err := c.updateExistingSubscriptions(ctx, req, diff); err != nil {
+	if err := c.updateExistingSubscriptions(ctx, req, prevState, diff); err != nil {
 		return buildPartialUpdateResult(prevState, &diff, nil, req, common.SubscriptionStatusFailed),
 			progress, err
 	}
@@ -1072,40 +1105,27 @@ func isObjectSubscribed(
 	return false
 }
 
-// updateExistingSubscriptions reconciles the per-object Salesforce configuration
-// for objects that remain subscribed across an UpdateSubscription call (i.e. the
-// overlap of prevState and the new request — neither newly added nor being
-// removed). Even though the subscription itself isn't being added or removed,
-// the new request can change how that subscription is configured, and those
-// changes need to be pushed to Salesforce:
+// updateExistingSubscriptions reconciles WatchFields and QuotaOptimizationObjectFields
+// for objects that remain subscribed. Quota fields may be added, removed, or renamed.
+// For a removal: delete the object's Apex trigger and clear its CDC filter expression
+// and enriched fields (see redeployExistingApexTriggers, updateExistingChannelMembers).
 //
-//   - WatchFields may differ from the previous request, which changes which
-//     record-field updates fire the apex trigger. The trigger code is generated
-//     from WatchFields, so a change here requires redeploying the trigger.
-//   - QuotaOptimizationObjectFields[obj] may be added, removed, or renamed.
-//     Adding requires deploying a trigger and setting the channel member's
-//     filter expression / enriched fields. Removing requires destructively
-//     deleting the trigger (handled by the orphan branch in
-//     redeployExistingApexTriggers) and clearing the filter / enriched fields.
-//     Renaming requires both: point trigger and filter at the new field name.
-//
-// We don't diff old vs new configuration before acting — both Metadata API
-// deploy (used for triggers) and Tooling API PATCH (used for channel members)
-// are idempotent on Salesforce, so unconditional reconciliation converges to
-// the desired state at the cost of one round trip per existing object when
-// nothing has changed. Diffing per-object config would be more complex than
-// that round trip is expensive.
-//
-// Order: triggers first, then channel members. Both reference the quota
-// custom field; the order between them is free, but doing triggers first
-// keeps the indicator field maintained while the new channel-member filter
-// goes live.
+// Does not compare old vs new config first: Salesforce Metadata deploy and Tooling
+// PATCH are idempotent, so rewriting the desired state every time is simpler than
+// detecting what changed. Triggers first, then channel members, so the indicator
+// field stays maintained while the new filter goes live.
 func (c *Connector) updateExistingSubscriptions(
 	ctx context.Context,
 	req *SubscriptionRequest,
+	prevState *SubscribeResult,
 	diff subscriptionDiff,
 ) error {
 	if req == nil {
+		return nil
+	}
+
+	// Skip Salesforce round trips when neither side has quota-optimization work.
+	if shouldSkipQuotaReconcile(req, prevState, diff) {
 		return nil
 	}
 
@@ -1114,6 +1134,47 @@ func (c *Connector) updateExistingSubscriptions(
 	}
 
 	return c.updateExistingChannelMembers(ctx, req, diff)
+}
+
+// shouldSkipQuotaReconcile is true when updateExistingSubscriptions would only rewrite
+// empty filters over empty filters and delete no triggers. Any of the checks below means
+// there is real work (or unknown prior state), so reconcile must run.
+func shouldSkipQuotaReconcile(
+	req *SubscriptionRequest,
+	prevState *SubscribeResult,
+	diff subscriptionDiff,
+) bool {
+	if prevState == nil {
+		return false // unknown prior state — reconcile to be safe
+	}
+
+	// Request still wants quota fields on some objects: install, keep, or update them.
+	if len(req.QuotaOptimizationObjectFields) > 0 {
+		return false
+	}
+
+	// Prior fields left on prevState after prepare: tear them down (full or partial disable).
+	if len(prevState.QuotaOptimizationObjectFields) > 0 {
+		return false
+	}
+
+	// Kept-object triggers with no matching request field: delete as orphans.
+	if len(diff.apexTriggersExisting) > 0 {
+		return false
+	}
+
+	// Kept members still carrying a filter (e.g. from a failed teardown)
+	for _, member := range diff.channelMembersExisting {
+		if member == nil || member.Metadata == nil {
+			continue
+		}
+
+		if member.Metadata.FilterExpression != "" || len(member.Metadata.EnrichedFields) > 0 {
+			return false
+		}
+	}
+
+	return true
 }
 
 // updateExistingChannelMembers updates filter expressions and enriched fields on

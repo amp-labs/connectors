@@ -758,7 +758,7 @@ func customRefreshHandler(
 		req *http.Request,
 		rsp *http.Response,
 	) (*http.Response, error) {
-		for attempt := 0; attempt < maxCustomRefreshRetries; attempt++ {
+		for attempt := range maxCustomRefreshRetries {
 			vals, err := cfg.Refresh(req.Context())
 			if err != nil {
 				// Don't mask the original 401 if we can't refresh.

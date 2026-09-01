@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "id": "1",
+      "type": "Contact",
+      "attributes": {
+        "firstName": "Ada",
+        "lastName": "Lovelace",
+        "jobTitle": "Engineer"
+      }
+    },
+    {
+      "id": "2",
+      "type": "Contact",
+      "attributes": {
+        "firstName": "Alan",
+        "lastName": "Turing",
+        "jobTitle": "Scientist"
+      }
+    }
+  ],
+  "meta": {
+    "totalResults": 2,
+    "page": {
+      "number": 1,
+      "total": 2
+    }
+  },
+  "links": {
+    "first": "uri=/data/v1/contacts/search?page[number]=1&page[size]=2",
+    "last": "uri=/data/v1/contacts/search?page[number]=1&page[size]=2"
+  }
+}

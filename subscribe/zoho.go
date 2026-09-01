@@ -74,3 +74,20 @@ func getZohoRequest(
 		Duration:        &dur,
 	}, nil
 }
+
+// zohoMailConfig is the per-module subscribe-config bundle for the Zoho Mail module. Zoho Mail
+// has no API to create/manage webhook subscriptions (SubscribeByAPI: false in the catalog) — the
+// outgoing webhook is configured by hand in the Zoho Mail console, so there are no
+// registration, subscription, or maintenance declarations; the platform only persists
+// subscription lookups and processes delivered events. Signature verification is bypassed for
+// now: the HMAC signing secret (x-hook-secret) is delivered only on the first webhook request
+// and its plumbing into connection metadata is not yet in place. The verifier connector is
+// declared so the wiring is ready once verification is enabled; note a zero-value
+// zoho.Connector routes VerifyWebhookMessage down the CRM echo-token path, so lifting the
+// bypass requires a mail-module-bound verifier.
+var zohoMailConfig = ProviderConfig{
+	Verification: VerificationConfig{
+		verifierConnector: &zoho.Connector{},
+		bypassed:          true,
+	},
+}

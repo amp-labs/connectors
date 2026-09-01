@@ -8,6 +8,7 @@ scripts/openapi/gitlab/openapi_v2.yaml filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/google/internal/files/calendar.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/google/internal/files/mail.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/google/internal/files/people.json filter=lfs diff=lfs merge=lfs -text
+scripts/openapi/lob/internal/files/openapi.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/marketo/metadata/asset.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/marketo/metadata/mapi.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/microsoft/internal/files/default_clean.yaml filter=lfs diff=lfs merge=lfs -text

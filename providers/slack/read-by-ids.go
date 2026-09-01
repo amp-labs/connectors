@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/internal/parallelfetch"
+	"github.com/amp-labs/connectors/providers/slack/internal/mappings"
 )
 
 var _ connectors.BatchRecordReaderConnector = (*Connector)(nil)
@@ -30,12 +31,17 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 	// Ensure identifiers are non-repeating.
 	identifiers := datautils.NewSetFromList(recordIds).List()
 
-	batchResult, err := c.batchRead(ctx, objectName, identifiers)
+	info, err := mappings.GetReadItemInfo(c.Provider(), objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	marshaler := readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id"))
+	batchResult, err := c.batchRead(ctx, info, identifiers)
+	if err != nil {
+		return nil, err
+	}
+
+	marshaler := readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField(info.ResponseIdField))
 	uniqueFields := datautils.NewSetFromList(fields).List()
 
 	return marshaler(batchResult, uniqueFields)
@@ -48,13 +54,12 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 // and only one identifier can be sent per URL—there are no batch endpoints.
 //
 // This method makes multiple parallel requests to fetch each record individually.
-func (c *Connector) batchRead(ctx context.Context, objectName string, identifiers []string) ([]map[string]any, error) {
-	resourceName := objectName + ".info"
-
-	queryPramName, ok := readSingleRecordResourceNameToQueryParam[resourceName]
-	if !ok {
-		return nil, fmt.Errorf("%w: object name [%v]", common.ErrOperationNotSupportedForObject, objectName)
-	}
+func (c *Connector) batchRead(ctx context.Context,
+	info mappings.ReadItemInfo,
+	identifiers []string,
+) ([]map[string]any, error) {
+	resourceName := info.Href
+	queryPramName := info.RequestIdField
 
 	tasks := make([]parallelfetch.Task[string, map[string]any], len(identifiers))
 	for index, identifier := range identifiers {
@@ -84,7 +89,7 @@ func (c *Connector) batchRead(ctx context.Context, objectName string, identifier
 				return identifier, nil, common.ErrEmptyJSONHTTPResponse
 			}
 
-			node, err := getResponseSingleRecord(body, resourceName)
+			node, err := getResponseSingleRecord(body, info.ResponseField)
 			if err != nil {
 				return identifier, nil, err
 			}

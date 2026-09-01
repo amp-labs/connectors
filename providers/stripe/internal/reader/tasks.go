@@ -45,7 +45,10 @@ func inferReadTarget(params common.ReadParams) readTarget {
 
 	if len(opts.ReadForConnectedAccounts) > 0 {
 		if scopedObjectsForFinancialAccount.Has(params.ObjectName) {
-			return readTarget{Scope: ReadScopeSelectedConnectedAccountsTreasury}
+			return readTarget{
+				Scope:      ReadScopeSelectedConnectedAccountsTreasury,
+				AccountIDs: opts.ReadForConnectedAccounts,
+			}
 		}
 
 		return readTarget{

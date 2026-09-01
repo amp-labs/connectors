@@ -135,6 +135,21 @@ func (j *JSONHTTPClient) Delete(ctx context.Context, url string, headers ...Head
 	return ParseJSONResponse(ctx, res, body)
 }
 
+// isTruncatedJSON reports whether parsing failed because the document ended early,
+// rather than because it contained something invalid.
+//
+// The error type alone is not enough to tell those apart. ajson reports a cut at a
+// structural boundary as UnexpectedEOF, but a cut inside a string or an object key
+// surfaces as WrongSymbol — and since most bytes of a JSON payload sit inside string
+// values, that is the likelier place for a truncated stream to stop. What both cases
+// share is that no byte was available at the failure position, which ajson signals
+// with Char == 0. A body that is malformed but complete always reports the offending
+// character instead, so it stays unclassified.
+func isTruncatedJSON(err ajson.Error) bool {
+	return err.Type == ajson.UnexpectedEOF ||
+		(err.Type == ajson.WrongSymbol && err.Char == 0)
+}
+
 // ParseJSONResponse parses the given HTTP response and returns a JSONHTTPResponse.
 func ParseJSONResponse(ctx context.Context, res *http.Response, body []byte) (*JSONHTTPResponse, error) {
 	// empty response body should not be parsed as JSON since it will cause ajson to err
@@ -170,9 +185,18 @@ func ParseJSONResponse(ctx context.Context, res *http.Response, body []byte) (*J
 	jsonBody, err := ajson.Unmarshal(body)
 	if err != nil {
 		headers := GetResponseHeaders(res)
+		wrapped := fmt.Errorf("failed to unmarshall response body into JSON: %w", err)
 
-		return nil, NewHTTPError(res.StatusCode, body, headers,
-			fmt.Errorf("failed to unmarshall response body into JSON: %w", err))
+		// A truncated body means the response stream was cut short, so the same
+		// request will usually succeed on retry. A body that is malformed but
+		// complete (an HTML error page, a mislabelled content type) is not
+		// transient and is deliberately left unclassified.
+		var ajsonErr ajson.Error
+		if errors.As(err, &ajsonErr) && isTruncatedJSON(ajsonErr) {
+			wrapped = fmt.Errorf("%w: %w", ErrRetryable, wrapped)
+		}
+
+		return nil, NewHTTPError(res.StatusCode, body, headers, wrapped)
 	}
 
 	return &JSONHTTPResponse{

@@ -1,4 +1,7 @@
 {
+  "count": 3,
+  "pageSize": 2,
+  "pageStartIndex": 2,
   "items": [
     {
       "id": "inv-003",

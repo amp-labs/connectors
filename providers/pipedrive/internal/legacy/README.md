@@ -26,6 +26,7 @@ Pipedrive API version : v1
 | Lead Labels | leadLabels | Read,Write |
 | Lead Sources | leadSources | Read |
 | Legacy Teams | legacyTeams | Read,Write |
+| Mail Threads | mailThreads | Read |
 | Notes | notes | Read,Write |
 | Note Fields | noteFields | Read |
 | Organizations | organizations | Read,Write |

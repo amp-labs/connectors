@@ -73,40 +73,29 @@ func getSalesforceVerificationParams(
 	return nil, nil //nolint:nilnil
 }
 
-// getSalesforceRequest builds the CDC quota-optimization subscribe payload for installations
-// whose (project, group) opted in. Returns (nil, nil) — no custom payload — when no CDC
-// optimization is configured (including when no deps.Dependencies.CDCOptimization resolver was
-// supplied).
+// getSalesforceRequest builds the CDC quota-optimization SubscriptionRequest. Nil config → (nil, nil)
+// (no change). Non-nil with nothing enabled → empty QuotaOptimizationObjectFields (teardown).
 //
 //nolint:unparam
 func getSalesforceRequest(
 	ctx context.Context,
 	deps deps.Dependencies,
 	inst *openapi.Installation,
-	_ *openapi.Revision,
+	rev *openapi.Revision,
 	_ *common.RegistrationResult,
 	_ *openapi.Connection,
 	_ string,
 ) (any, error) {
-	// GroupRef lives under Group on the wire type.
-	groupRef := ""
-	if inst.Group != nil {
-		groupRef = inst.Group.GroupRef
-	}
-
-	// Resolve the CDC optimization config for this installation's (project, group).
-	// Falls back to the project default when the group has no specific entry.
 	if deps.CDCOptimization == nil {
 		return nil, nil //nolint:nilnil // documented contract: no CDC opt-in → no custom payload.
 	}
 
-	optInConfig := deps.CDCOptimization.GetCDCOptimizationConfig(ctx, inst.ProjectId, groupRef)
-	if optInConfig == nil {
-		return nil, nil //nolint:nilnil // documented contract: no CDC opt-in → no custom payload.
+	optInConfig, err := deps.CDCOptimization.GetCDCOptimizationConfig(ctx, inst, rev)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve CDC optimization config: %w", err)
 	}
 
-	optInObjects := optInConfig.ObjectEnabled
-	if len(optInObjects) == 0 {
+	if optInConfig == nil {
 		return nil, nil //nolint:nilnil // documented contract: no CDC opt-in → no custom payload.
 	}
 
@@ -119,8 +108,8 @@ func getSalesforceRequest(
 		return nil, fmt.Errorf("failed to get project app name: %w", err)
 	}
 
-	// Build CDC event flag fields for the opted-in objects in this project's group.
-	cdcEventFlagFields, err := buildCDCEventFlagFields(appName, optInObjects)
+	// Build CDC event flag fields for the objects this installation opted in.
+	cdcEventFlagFields, err := buildCDCEventFlagFields(appName, optInConfig.EnabledObjects)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build CDC event flag fields: %w", err)
 	}
@@ -140,9 +129,12 @@ var ErrAppNameInvalid = errors.New("app name is invalid")
 
 // buildCDCEventFlagFields maps each opted-in object name to a CDC event flag custom field name,
 // using the sanitized app name as a prefix (e.g. "myapp_cdc_event_flag__c").
+//
+// No objects yields an empty (non-nil) map, which is the teardown instruction — see
+// getSalesforceRequest.
 func buildCDCEventFlagFields(
 	appName string,
-	objectNames map[common.ObjectName]bool,
+	enabledObjects []common.ObjectName,
 ) (map[common.ObjectName]string, error) {
 	if appName == "" {
 		return nil, ErrAppNameRequired
@@ -154,9 +146,9 @@ func buildCDCEventFlagFields(
 	}
 
 	fieldName := sanitizedAppName + "_cdc_event_flag__c"
-	result := make(map[common.ObjectName]string, len(objectNames))
+	result := make(map[common.ObjectName]string, len(enabledObjects))
 
-	for objectName := range objectNames {
+	for _, objectName := range enabledObjects {
 		result[objectName] = fieldName
 	}
 

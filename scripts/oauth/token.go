@@ -363,7 +363,6 @@ func setup() *OAuthApp {
 				ClientID:     clientId,
 				ClientSecret: clientSecret,
 				RedirectURL:  redirect,
-				Scopes:       oauthScopes,
 			},
 			AuthOptions:     make([]oauth2.AuthCodeOption, 0),
 			ExchangeOptions: make([]oauth2.AuthCodeOption, 0),
@@ -378,6 +377,16 @@ func setup() *OAuthApp {
 			AuthURL:   providerInfo.Oauth2Opts.AuthURL,
 			TokenURL:  providerInfo.Oauth2Opts.TokenURL,
 			AuthStyle: oauth2.AuthStyleAutoDetect,
+		}
+
+		if len(oauthScopes) != 0 {
+			if customQueryName := providerInfo.Oauth2Opts.ScopeQueryParam; customQueryName == "" {
+				// Default query param is "scope".
+				app.Config.Scopes = oauthScopes
+			} else {
+				queryValue := strings.Join(oauthScopes, ",")
+				app.AuthOptions = append(app.AuthOptions, oauth2.SetAuthURLParam(customQueryName, queryValue))
+			}
 		}
 
 		for key, value := range providerInfo.Oauth2Opts.AuthURLParams {

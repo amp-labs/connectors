@@ -17,11 +17,12 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	objectName string,
 	ids []string,
 	fields []string,
-	_ []string,
+	associations []string,
 ) ([]common.ReadResultRow, error) {
 	config := common.ReadParams{
-		ObjectName: objectName,
-		Fields:     datautils.NewSetFromList(fields),
+		ObjectName:        objectName,
+		Fields:            datautils.NewSetFromList(fields),
+		AssociatedObjects: associations,
 	}
 
 	if err := config.ValidateParams(true); err != nil {
@@ -51,7 +52,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	parsed, err := common.ParseResult(res,
 		common.ExtractRecordsFromPath("data"),
 		makeNextRecordsURL(url, config.ObjectName),
-		DataMarshall(res),
+		DataMarshaller(res, associations),
 		config.Fields,
 	)
 	if err != nil {

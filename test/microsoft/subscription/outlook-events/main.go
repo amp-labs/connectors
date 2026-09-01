@@ -68,8 +68,7 @@ func main() {
 					},
 				},
 			},
-			WebhookRouter:          subscription.NewWebhookRouter(),
-			VerificationParams:     nil,
+			WebhookProcessor:       subscription.NewWebhookProcessor(),
 			AutoRemoveSubscription: true,
 		},
 	)

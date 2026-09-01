@@ -2,7 +2,10 @@ package acculynx
 
 import (
 	_ "embed"
+	"encoding/json"
 	"net/http"
+	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 
@@ -73,6 +76,21 @@ var jobsWithContactsResponse []byte
 //go:embed test/read/contacts-includes.json
 var contactsIncludesResponse []byte
 
+//go:embed test/read/jobs-with-initial-appointment.json
+var jobsWithInitialAppointmentResponse []byte
+
+//go:embed test/read/job-representatives.json
+var jobRepresentativesResponse []byte
+
+//go:embed test/read/estimates-list.json
+var estimatesListResponse []byte
+
+//go:embed test/read/estimate-detail-est-1.json
+var estimateDetailEst1Response []byte
+
+//go:embed test/read/estimate-detail-est-2.json
+var estimateDetailEst2Response []byte
+
 func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	t.Parallel()
 
@@ -134,7 +152,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						If: mockcond.And{
 							mockcond.MethodGET(),
 							mockcond.Path("/api/v2/jobs"),
-							mockcond.QueryParam("includes", "contacts"),
+							mockcond.QueryParam("includes", "initialAppointment,contacts"),
 						},
 						Then: mockserver.Response(http.StatusOK, jobsWithContactsResponse),
 					},
@@ -179,7 +197,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			Name: "Read jobs without association omits includes and attaches no associations",
+			Name: "Read jobs without association still requests initialAppointment and attaches no associations",
 			Input: common.ReadParams{
 				ObjectName: "jobs",
 				Fields:     connectors.Fields("id"),
@@ -191,7 +209,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						If: mockcond.And{
 							mockcond.MethodGET(),
 							mockcond.Path("/api/v2/jobs"),
-							mockcond.QueryParamsMissing("includes"),
+							mockcond.QueryParam("includes", "initialAppointment"),
 						},
 						Then: mockserver.Response(http.StatusOK, jobsWithContactsResponse),
 					},
@@ -212,6 +230,64 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					{Fields: map[string]any{"id": "job-001"}, Raw: map[string]any{"id": "job-001"}},
 					{Fields: map[string]any{"id": "job-002"}, Raw: map[string]any{"id": "job-002"}},
 				},
+				Done: true,
+			},
+		},
+		{
+			// The initialAppointment expansion is what makes startDate/endDate/notes
+			// present at all — without ?includes=initialAppointment AccuLynx omits the
+			// property from the job payload entirely.
+			Name: "Read jobs surfaces the expanded initialAppointment object",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id", "initialAppointment"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+							mockcond.QueryParam("includes", "initialAppointment"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsWithInitialAppointmentResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/company-settings/custom-fields"),
+						},
+						Then: mockserver.Response(http.StatusOK, customFieldDefinitionsEmptyResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id": "875b28e8-4f10-44e2-9af1-aff90527291e",
+						"initialappointment": map[string]any{
+							"startDate": "2025-03-20T16:30:00Z",
+							"endDate":   "2025-03-20T17:00:00Z",
+							"notes":     "Customer contact information:\nFoobar - McHealy, David\n",
+							"_link": "https://api.acculynx.com/api/v2/jobs/" +
+								"875b28e8-4f10-44e2-9af1-aff90527291e/initial-appointment",
+						},
+					},
+					Raw: map[string]any{
+						"id": "875b28e8-4f10-44e2-9af1-aff90527291e",
+						"initialAppointment": map[string]any{
+							"startDate": "2025-03-20T16:30:00Z",
+							"endDate":   "2025-03-20T17:00:00Z",
+							"notes":     "Customer contact information:\nFoobar - McHealy, David\n",
+							"_link": "https://api.acculynx.com/api/v2/jobs/" +
+								"875b28e8-4f10-44e2-9af1-aff90527291e/initial-appointment",
+						},
+					},
+				}},
 				Done: true,
 			},
 		},
@@ -239,7 +315,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 							mockcond.MethodGET(),
 							mockcond.Path("/api/v2/users"),
 							mockcond.QueryParam("pageSize", "2"),
-							mockcond.QueryParam("recordStartIndex", "0"),
+							mockcond.QueryParam("pageStartIndex", "0"),
 						},
 						Then: mockserver.Response(http.StatusOK, usersFirstPageResponse),
 					},
@@ -268,7 +344,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						"status":      "Active",
 					},
 				}},
-				NextPage: testconn.URLTestServer + "/api/v2/users?pageSize=2&recordStartIndex=2",
+				NextPage: testconn.URLTestServer + "/api/v2/users?pageSize=2&pageStartIndex=2",
 				Done:     false,
 			},
 		},
@@ -278,7 +354,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				ObjectName: "users",
 				Fields:     connectors.Fields("id"),
 				PageSize:   2,
-				NextPage:   testconn.URLTestServer + "/api/v2/users?pageSize=2&recordStartIndex=4",
+				NextPage:   testconn.URLTestServer + "/api/v2/users?pageSize=2&pageStartIndex=4",
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -286,7 +362,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					{
 						If: mockcond.And{
 							mockcond.MethodGET(),
-							mockcond.QueryParam("recordStartIndex", "4"),
+							mockcond.QueryParam("pageStartIndex", "4"),
 						},
 						Then: mockserver.Response(http.StatusOK, usersLastPageResponse),
 					},
@@ -440,7 +516,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						If: mockcond.And{
 							mockcond.MethodGET(),
 							mockcond.Path("/api/v2/jobs"),
-							mockcond.QueryParam("recordStartIndex", "0"),
+							mockcond.QueryParam("pageStartIndex", "0"),
 						},
 						Then: mockserver.Response(http.StatusOK, jobsListResponse),
 					},
@@ -670,6 +746,380 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
+			Name: "Read jobs/representatives attaches the parent job association",
+			Input: common.ReadParams{
+				ObjectName:        "jobs/representatives",
+				Fields:            connectors.Fields("id", "type"),
+				AssociatedObjects: []string{"jobs"},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsListSingleResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs/job-001/representatives"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobRepresentativesResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						// The representative body carries no jobId — the edge comes
+						// from the fan-out parent (job-001), like appointment->user.
+						Fields: map[string]any{"id": "rep-1", "type": "SalesOwner"},
+						Raw:    map[string]any{"id": "rep-1", "type": "SalesOwner"},
+						Associations: map[string][]common.Association{
+							"jobs": {{ObjectId: "job-001"}},
+						},
+					},
+					{
+						Fields: map[string]any{"id": "rep-2", "type": "ArOwner"},
+						Raw:    map[string]any{"id": "rep-2", "type": "ArOwner"},
+						Associations: map[string][]common.Association{
+							"jobs": {{ObjectId: "job-001"}},
+						},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			Name: "Read jobs/representatives without association request attaches nothing",
+			Input: common.ReadParams{
+				ObjectName: "jobs/representatives",
+				Fields:     connectors.Fields("id", "type"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsListSingleResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs/job-001/representatives"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobRepresentativesResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{Fields: map[string]any{"id": "rep-1"}, Raw: map[string]any{"id": "rep-1"}},
+					{Fields: map[string]any{"id": "rep-2"}, Raw: map[string]any{"id": "rep-2"}},
+				},
+				Done: true,
+			},
+		},
+		{
+			// The /estimates list returns stubs only (id, isPrimary, job) and
+			// ignores ?includes=; the substantive fields must come from one
+			// GET /estimates/{id} per record. Hydration requires the
+			// server-set opt-in.
+			Name: "Read estimates with opts hydrates each row from the detail endpoint",
+			Input: common.ReadParams{
+				ObjectName: "estimates",
+				Fields:     connectors.Fields("id", "estimateNumber", "createdDate", "financials"),
+				Opts:       ReadParamsOpts{HydrateEstimates: true},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimatesListResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates/est-1"),
+							mockcond.QueryParam("includes", "createdBy,modifiedBy,sections"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimateDetailEst1Response),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates/est-2"),
+							mockcond.QueryParam("includes", "createdBy,modifiedBy,sections"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimateDetailEst2Response),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						// The detail is provider data, so it lands in Raw as
+						// well as Fields — raw stays "the object as AccuLynx
+						// gave it", assembled from the list and detail calls.
+						Fields: map[string]any{
+							"id":             "est-1",
+							"estimatenumber": "1042",
+							"createddate":    "2026-05-10T17:56:54Z",
+							"financials": map[string]any{
+								"taxRate":       0.0,
+								"taxTotal":      0.0,
+								"overheadRate":  0.0,
+								"overheadTotal": 0.0,
+								"profitRate":    0.0,
+								"profitTotal":   0.0,
+								"totalCost":     100.0,
+								"totalPrice":    142.86,
+							},
+						},
+						Raw: map[string]any{
+							"id":             "est-1",
+							"isPrimary":      true,
+							"estimateNumber": "1042",
+							"createdDate":    "2026-05-10T17:56:54Z",
+							"title":          "Roof replacement",
+						},
+					},
+					{
+						Fields: map[string]any{
+							"id":             "est-2",
+							"estimatenumber": "1043",
+							"createddate":    "2026-06-01T08:15:00Z",
+						},
+						Raw: map[string]any{
+							"id":             "est-2",
+							"isPrimary":      false,
+							"estimateNumber": "1043",
+							"title":          "Gutter repair",
+						},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			// No Opts set: the association is a pure reshape of the list
+			// payload. The mock serves only the list — any hydration call
+			// would hit the 500 default and fail the read.
+			Name: "Read estimates with jobs association attaches the job edge without hydration calls",
+			Input: common.ReadParams{
+				ObjectName:        "estimates",
+				Fields:            connectors.Fields("id"),
+				AssociatedObjects: []string{"jobs"},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimatesListResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": "est-1"},
+						Raw:    map[string]any{"id": "est-1"},
+						Associations: map[string][]common.Association{
+							"jobs": {{
+								ObjectId:                    "job-777",
+								ProviderAssociationMetadata: map[string]any{"isPrimary": true},
+							}},
+						},
+					},
+					{
+						Fields: map[string]any{"id": "est-2"},
+						Raw:    map[string]any{"id": "est-2"},
+						Associations: map[string][]common.Association{
+							"jobs": {{
+								ObjectId:                    "job-888",
+								ProviderAssociationMetadata: map[string]any{"isPrimary": false},
+							}},
+						},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			// An estimate deleted between the list and detail calls must not sink
+			// the read — the row keeps its thin list shape.
+			Name: "Read estimates keeps the thin row when its detail returns 404",
+			Input: common.ReadParams{
+				ObjectName: "estimates",
+				Fields:     connectors.Fields("id", "estimateNumber"),
+				Opts:       ReadParamsOpts{HydrateEstimates: true},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimatesListResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates/est-1"),
+							mockcond.QueryParam("includes", "createdBy,modifiedBy,sections"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimateDetailEst1Response),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates/est-2"),
+							mockcond.QueryParam("includes", "createdBy,modifiedBy,sections"),
+						},
+						Then: mockserver.ResponseString(http.StatusNotFound, `{"message":"Not Found"}`),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": "est-1", "estimatenumber": "1042"},
+						Raw:    map[string]any{"id": "est-1", "estimateNumber": "1042"},
+					},
+					{
+						// Skipped detail: the row keeps the thin list stub.
+						Fields: map[string]any{"id": "est-2"},
+						Raw:    map[string]any{"id": "est-2", "isPrimary": false},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			// A transient failure (429/5xx) on one estimate's detail must not
+			// sink the page — that row keeps its thin shape, the rest hydrate.
+			Name: "Read estimates keeps the thin row when its detail returns 500",
+			Input: common.ReadParams{
+				ObjectName: "estimates",
+				Fields:     connectors.Fields("id", "estimateNumber"),
+				Opts:       ReadParamsOpts{HydrateEstimates: true},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimatesListResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates/est-1"),
+							mockcond.QueryParam("includes", "createdBy,modifiedBy,sections"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimateDetailEst1Response),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates/est-2"),
+							mockcond.QueryParam("includes", "createdBy,modifiedBy,sections"),
+						},
+						Then: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"boom"}`),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": "est-1", "estimatenumber": "1042"},
+						Raw:    map[string]any{"id": "est-1", "estimateNumber": "1042"},
+					},
+					{
+						// Skipped detail: the row keeps the thin list stub.
+						Fields: map[string]any{"id": "est-2"},
+						Raw:    map[string]any{"id": "est-2", "isPrimary": false},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			// Default (no Opts): rows pass through as list stubs and no
+			// detail endpoint is called — the mock serves only the list, so
+			// a stray hydration call would hit the 500 default and fail.
+			Name: "Read estimates without opts returns stubs and skips hydration",
+			Input: common.ReadParams{
+				ObjectName: "estimates",
+				Fields:     connectors.Fields("id", "isPrimary"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/estimates"),
+						},
+						Then: mockserver.Response(http.StatusOK, estimatesListResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": "est-1", "isprimary": true},
+						Raw:    map[string]any{"id": "est-1", "isPrimary": true},
+					},
+					{
+						Fields: map[string]any{"id": "est-2", "isprimary": false},
+						Raw:    map[string]any{"id": "est-2", "isPrimary": false},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
 			Name: "Read acculynx/units-of-measure honours custom responseKey",
 			Input: common.ReadParams{
 				ObjectName: "acculynx/units-of-measure",
@@ -719,4 +1169,174 @@ func constructTestReadConnector(serverURL string) (*Connector, error) {
 	connector.SetUnitTestBaseURL(serverURL)
 
 	return connector, nil
+}
+
+// buildPaginationServer returns a server that answers every request with the
+// given envelope plus numItems dummy records, so each test case shows the
+// connector input, the envelope, and the expected pagination output in one
+// place. Omit "count" from the envelope to simulate a response with no total.
+func buildPaginationServer(t *testing.T, envelope map[string]int, numItems int) *httptest.Server {
+	t.Helper()
+
+	items := make([]map[string]any, numItems)
+	for i := range items {
+		items[i] = map[string]any{"id": "j" + strconv.Itoa(i), "jobNumber": strconv.Itoa(i)}
+	}
+
+	body := make(map[string]any, len(envelope)+1)
+	for key, value := range envelope {
+		body[key] = value
+	}
+
+	body["items"] = items
+
+	payload, err := json.Marshal(body)
+	if err != nil {
+		t.Fatalf("marshal pagination response: %v", err)
+	}
+
+	return mockserver.Fixed{
+		Setup:  mockserver.ContentJSON(),
+		Always: mockserver.Response(http.StatusOK, payload),
+	}.Server()
+}
+
+// TestReadPaginationTermination covers the exit conditions that keep Read from
+// looping when AccuLynx misreports paging (CON-3512). Before the fix the
+// connector's only exit was "a short page is the last page", so a server that
+// answered every offset with a full first page paginated forever.
+func TestReadPaginationTermination(t *testing.T) {
+	t.Parallel()
+
+	tests := []testconn.TestCaseRead{
+		{
+			// The regression guard: the server ignores pageStartIndex entirely,
+			// answering every offset with a full page and a count it never
+			// reaches. Read must still stop.
+			Name: "Runaway server that ignores the offset terminates",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=25",
+			},
+			Server:     buildPaginationServer(t, map[string]int{"count": 163, "pageSize": 25, "pageStartIndex": 0}, 25),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     25,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			// Offset honoured: the first page must hand back a cursor.
+			Name: "Count-based exit continues while records remain",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+			},
+			Server:     buildPaginationServer(t, map[string]int{"count": 50, "pageSize": 25, "pageStartIndex": 0}, 25),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 25,
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?includes=initialAppointment&pageSize=25&pageStartIndex=25",
+				Done: false,
+			},
+		},
+		{
+			// Final page lands exactly on count with a full page of records, so
+			// the short-page heuristic cannot fire — only the count check can.
+			Name: "Count-based exit stops exactly at count on a full page",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=25",
+			},
+			Server:     buildPaginationServer(t, map[string]int{"count": 50, "pageSize": 25, "pageStartIndex": 25}, 25),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     25,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			// We asked for offset 25; the envelope echoes 0. The server is
+			// serving a page we have already seen, so stop rather than re-emit.
+			Name: "Non-advancing echoed offset terminates",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=25",
+			},
+			Server:     buildPaginationServer(t, map[string]int{"count": 163, "pageSize": 25, "pageStartIndex": 0}, 25),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     25,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			// A count-reporting account is bounded no matter how deep the sweep
+			// goes, so an arbitrarily large offset must keep paging normally.
+			Name: "Deep offset keeps paging when count is reported",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+				NextPage:   testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=10000",
+			},
+			Server:     buildPaginationServer(t, map[string]int{"count": 50000, "pageSize": 25, "pageStartIndex": 10000}, 25),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     25,
+				NextPage: testconn.URLTestServer + "/api/v2/jobs?pageSize=25&pageStartIndex=10025",
+				Done:     false,
+			},
+		},
+		{
+			// Full page, offset honoured, no count: nothing can bound the sweep,
+			// so the read must error immediately and name the object.
+			Name: "Missing count on a full page errors immediately",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+			},
+			Server:       buildPaginationServer(t, map[string]int{"pageSize": 25, "pageStartIndex": 0}, 25),
+			ExpectedErrs: []error{errMissingCount},
+		},
+		{
+			// No count, but the page is short — that is an unambiguous last page,
+			// so the read completes rather than erroring.
+			Name: "Missing count on a short page still terminates cleanly",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				PageSize:   25,
+			},
+			Server:     buildPaginationServer(t, map[string]int{"pageSize": 25, "pageStartIndex": 0}, 10),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     10,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (testconn.TestableReader, error) {
+				return constructTestReadConnector(tt.Server.URL)
+			})
+		})
+	}
 }

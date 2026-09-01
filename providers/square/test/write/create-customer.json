@@ -1,0 +1,11 @@
+{
+  "customer": {
+    "id": "JDKYHBWT1D4F8MFH63DBMEN8Y4",
+    "created_at": "2026-07-27T10:00:00Z",
+    "updated_at": "2026-07-27T10:00:00Z",
+    "given_name": "Amelia",
+    "family_name": "Earhart",
+    "email_address": "amelia.earhart@example.com",
+    "version": 0
+  }
+}

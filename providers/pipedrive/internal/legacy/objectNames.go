@@ -20,3 +20,32 @@ var metadataDiscoveryEndpoints = datautils.Map[string, string]{ // nolint: goche
 	"organizations": "organizationFields",
 	"notes":         "noteFields",
 }
+
+// objectNameAliases maps alternative spellings onto the name an object is stored under in
+// the static schema file. Read and ListObjectMetadata both resolve the schema and URL path
+// through this, so callers may use any listed spelling. The name the caller supplied is
+// never rewritten: it is what comes back keyed in the metadata result.
+var objectNameAliases = datautils.Map[string, string]{ // nolint: gochecknoglobals
+	// Mail threads sit under the /mailbox resource, so the path-style spelling is
+	// accepted alongside the canonical name.
+	"mailbox/mailThreads": objectNameMailThreads,
+}
+
+// canonicalObjectName resolves an object name to the name used in the static schema file.
+// Names that are not aliases are returned unchanged.
+func canonicalObjectName(objectName string) string {
+	if canonical, ok := objectNameAliases[objectName]; ok {
+		return canonical
+	}
+
+	return objectName
+}
+
+const (
+	objectNameMailThreads = "mailThreads"
+
+	// mailboxFolderInbox is the folder read for mail threads. The API accepts inbox,
+	// drafts, sent or archive and already defaults to inbox; we only read the inbox.
+	// https://developers.pipedrive.com/docs/api/v1/Mailbox
+	mailboxFolderInbox = "inbox"
+)

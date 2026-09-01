@@ -40,7 +40,7 @@ func (a *Adapter) constructMetadataURL(obj string) (*urlbuilder.URL, error) {
 }
 
 func (a *Adapter) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(providers.ModulePipedriveLegacy, objectName)
+	path, err := metadata.Schemas.LookupURLPath(providers.ModulePipedriveLegacy, canonicalObjectName(objectName))
 	if err != nil {
 		return nil, err
 	}

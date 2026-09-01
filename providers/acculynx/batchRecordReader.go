@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"maps"
 	"net/http"
+	"slices"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -16,6 +17,10 @@ import (
 
 // AccuLynx has no batch read endpoint; GetRecordsByIds fans out per id
 // (capped by maxConcurrentChildFetch) and preserves input order.
+//
+// Associations are served from the single-record payload itself: AccuLynx
+// expands them inline via ?includes= rather than exposing a separate endpoint,
+// so no extra request is needed to satisfy the associations argument.
 
 var errBatchReadEmptyResponse = errors.New("acculynx: empty response body for record fetch")
 
@@ -34,7 +39,7 @@ func (c *Connector) GetRecordsByIds(
 	objectName string,
 	recordIds []string,
 	fields []string,
-	_ []string, // associations: AccuLynx single-record endpoints have no association support
+	associations []string,
 ) ([]common.ReadResultRow, error) {
 	objectName = strings.ToLower(objectName)
 
@@ -57,7 +62,7 @@ func (c *Connector) GetRecordsByIds(
 		idx, currentID := i, recordID
 
 		jobs[idx] = func(ctx context.Context) error {
-			row, err := c.fetchSingleRecord(ctx, objectName, currentID, fieldSet)
+			row, err := c.fetchSingleRecord(ctx, objectName, currentID, fieldSet, associations)
 			if err != nil {
 				// A record that no longer exists — or, for the appointment->user
 				// edge, a calendar id that is not a user — must not sink the whole
@@ -82,7 +87,16 @@ func (c *Connector) GetRecordsByIds(
 		return nil, err
 	}
 
-	return compactFound(rows, found), nil
+	out := compactFound(rows, found)
+
+	// The embedded payload requested above still has to be lifted into
+	// Associations; without this the caller receives a full record and an empty
+	// associations map. Mirrors what the read path does via parseReadResponse.
+	if objectName == objectJobs && slices.Contains(associations, jobContactsAssociation) {
+		extractJobContacts(out)
+	}
+
+	return out, nil
 }
 
 // isNotFound reports whether err represents a 404 from AccuLynx. The base JSON
@@ -118,13 +132,20 @@ func (c *Connector) fetchSingleRecord(
 	ctx context.Context,
 	objectName, recordID string,
 	fieldSet datautils.StringSet,
+	associations []string,
 ) (common.ReadResultRow, error) {
-	u, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.modulePath(), objectName, recordID)
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.modulePath(), objectName, recordID)
 	if err != nil {
 		return common.ReadResultRow{}, err
 	}
 
-	resp, err := c.JSONHTTPClient().Get(ctx, u.String())
+	// Single-record endpoints accept the same ?includes= expansions as their
+	// list counterparts, so the enriched record carries the object's default
+	// expansions plus any requested association — keeping an enriched webhook
+	// payload identical in shape to the same record read from a list.
+	applyIncludes(url, objectName, common.ReadParams{AssociatedObjects: associations})
+
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return common.ReadResultRow{}, err
 	}
