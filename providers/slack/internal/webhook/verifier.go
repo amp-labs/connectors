@@ -27,8 +27,8 @@ var errVerifierNotInitialized = errors.New("slack webhook verifier is not initia
 // NewVerifier constructs an event message verifier.
 // The empty signingSecret won't trigger a failure to preserve backward compatibility.
 // However, no event message will be accepted.
-func NewVerifier() *Verifier {
-	return &Verifier{}
+func NewVerifier() Verifier {
+	return Verifier{}
 }
 
 // VerifyWebhookMessage validates that the webhook request came from Slack by verifying

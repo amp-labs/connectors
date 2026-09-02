@@ -39,7 +39,7 @@ type Connector struct {
 	components.Reader
 	components.Writer
 	components.Deleter
-	*webhook.Verifier
+	webhook.Verifier
 
 	teamId string
 }

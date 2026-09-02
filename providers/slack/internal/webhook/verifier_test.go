@@ -151,7 +151,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 func constructTestVerifier() (*Verifier, error) {
 	verifier := NewVerifier()
 
-	return verifier, nil
+	return &verifier, nil
 }
 
 // TestVerifyWebhookMessageNilVerifier pins the backstop for an unconstructed verifier: a nil
