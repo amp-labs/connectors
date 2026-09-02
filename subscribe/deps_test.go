@@ -79,6 +79,33 @@ func TestSlackVerificationParamsIntegrationScoped(t *testing.T) {
 	}
 }
 
+// TestSlackVerifierConnectorZeroValueNoPanic pins the 2026-09-02 production panic: the registry's
+// Slack verifierConnector is a zero-value slack.Connector whose embedded *webhook.Verifier is nil,
+// and the promoted VerifyWebhookMessage call dereferenced it. The verifier must be callable through
+// the zero-value connector — bad input yields an error, never a panic.
+func TestSlackVerifierConnectorZeroValueNoPanic(t *testing.T) {
+	t.Parallel()
+
+	cfg, err := GetProviderConfig("", makeProviderInfo(providers.Slack, ""), deps.Dependencies{})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	conn, err := cfg.Verification.Connector(context.Background())
+	if err != nil {
+		t.Fatalf("Connector() error = %v, want nil", err)
+	}
+
+	ok, err := conn.VerifyWebhookMessage(context.Background(), &common.WebhookRequest{}, nil)
+	if ok {
+		t.Error("VerifyWebhookMessage() = true, want false for request without verification params")
+	}
+
+	if !errors.Is(err, common.ErrMissingVerificationParams) {
+		t.Errorf("VerifyWebhookMessage() error = %v, want ErrMissingVerificationParams", err)
+	}
+}
+
 // TestVerificationParamsInstallationDerived verifies providers whose verification secret derives
 // from the installation ID (Outreach) read it off deps.VerificationRequest.Installation.
 func TestVerificationParamsInstallationDerived(t *testing.T) {
