@@ -1,0 +1,9 @@
+{
+  "data": [
+    { "id": "tag_001", "name": "Interested", "color": "#22c55e" },
+    { "id": "tag_002", "name": "Decision Maker", "color": "#3b82f6" }
+  ],
+  "meta": {
+    "timestamp": "2026-08-06T00:00:00Z"
+  }
+}
