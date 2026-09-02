@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/providers/attio"
 	"github.com/amp-labs/connectors/providers/hubspot"
 	"github.com/amp-labs/connectors/providers/salesforce"
+	"github.com/amp-labs/connectors/providers/slack"
 	"github.com/amp-labs/connectors/subscribe/deps"
 )
 
@@ -40,6 +41,41 @@ func TestVerificationParamsClientSecret(t *testing.T) {
 
 	if hubspotParams.ClientSecret != "shh-secret" {
 		t.Errorf("ClientSecret = %q, want shh-secret", hubspotParams.ClientSecret)
+	}
+}
+
+// TestSlackVerificationParamsIntegrationScoped verifies the Slack verification-params builder
+// needs no installation: Slack webhooks are integration-scoped (the Events API request URL is
+// configured once per Slack app), so at verification time deps.VerificationRequest.Installation
+// is nil. The signing secret comes from the provider app's metadata.providerParams alone.
+func TestSlackVerificationParamsIntegrationScoped(t *testing.T) {
+	t.Parallel()
+
+	cfg, err := GetProviderConfig("", makeProviderInfo(providers.Slack, ""), deps.Dependencies{})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	params, err := cfg.Verification.Params(context.Background(), &deps.VerificationRequest{
+		ProviderApp: &openapi.ProviderApp{
+			Metadata: &openapi.ProviderAppMetadata{
+				ProviderParams: &map[string]string{
+					providers.ProviderParamSlackSigningSecret: "slack-signing-secret",
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Params() without installation error = %v, want nil", err)
+	}
+
+	slackParams, ok := params.Param.(*slack.VerificationParams)
+	if !ok {
+		t.Fatalf("Params().Param = %T, want *slack.VerificationParams", params.Param)
+	}
+
+	if slackParams.SigningSecret != "slack-signing-secret" {
+		t.Errorf("SigningSecret = %q, want slack-signing-secret", slackParams.SigningSecret)
 	}
 }
 

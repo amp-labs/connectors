@@ -51,3 +51,9 @@ import "errors"
 // errInstallationNotFound is a shared sentinel returned by per-provider request builders when an
 // installation cannot be found while constructing subscribe params.
 var errInstallationNotFound = errors.New("installation not found")
+
+// errNilVerificationRequest is a shared sentinel returned by per-provider verification-params
+// builders handed a nil deps.VerificationRequest. Distinct from errInstallationNotFound so
+// providers that don't need an installation (integration-scoped webhooks) don't report a
+// misleading installation lookup failure.
+var errNilVerificationRequest = errors.New("verification request is nil")
