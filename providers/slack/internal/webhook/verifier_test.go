@@ -1,9 +1,11 @@
 package webhook
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -150,6 +152,24 @@ func constructTestVerifier() (*Verifier, error) {
 	verifier := NewVerifier()
 
 	return verifier, nil
+}
+
+// TestVerifyWebhookMessageNilVerifier pins the backstop for an unconstructed verifier: a nil
+// *Verifier (e.g. the nil embed of a zero-value slack.Connector) must return a clear error from
+// the promoted call, never panic in the method-promotion wrapper.
+func TestVerifyWebhookMessageNilVerifier(t *testing.T) {
+	t.Parallel()
+
+	var v *Verifier
+
+	ok, err := v.VerifyWebhookMessage(context.Background(), &common.WebhookRequest{}, nil)
+	if ok {
+		t.Error("VerifyWebhookMessage() = true, want false on nil verifier")
+	}
+
+	if !errors.Is(err, errVerifierNotInitialized) {
+		t.Errorf("VerifyWebhookMessage() error = %v, want errVerifierNotInitialized", err)
+	}
 }
 
 func computeSlackSignature(signingKey, timestamp, body string) string {

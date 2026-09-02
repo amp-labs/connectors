@@ -15,7 +15,7 @@ import (
 var slackConfig = ProviderConfig{
 	Verification: VerificationConfig{
 		paramsFn:          getSlackVerificationParams,
-		verifierConnector: &slack.Connector{},
+		verifierConnector: slack.NewWebhookVerifierConnector(),
 	},
 }
 
