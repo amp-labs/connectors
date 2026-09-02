@@ -24,6 +24,36 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "last_activity_at": {
+              "displayName": "last_activity_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_activity_type": {
+              "displayName": "last_activity_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_contacted_at": {
+              "displayName": "last_contacted_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_contacted_type": {
+              "displayName": "last_contacted_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_inbound_at": {
+              "displayName": "last_inbound_at",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_inbound_type": {
+              "displayName": "last_inbound_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "name": {
               "displayName": "name",
               "valueType": "string",
