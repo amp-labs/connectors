@@ -36,6 +36,16 @@ type SubscribeResult struct {
 	// ManualApexTriggerManagement mirrors SubscriptionRequest.ManualApexTriggerManagement.
 	// See SubscriptionRequest's "Manual-mode contract" for the full semantics.
 	ManualApexTriggerManagement bool
+
+	// UseFlow mirrors SubscriptionRequest.UseFlow. When true, this result was
+	// produced by the flow-based path: Flows is populated and the CDC fields
+	// above (EventChannelMembers, ApexTriggers, quota fields) are empty.
+	// DeleteSubscription branches on this to pick the teardown path.
+	UseFlow bool `json:"useFlow,omitempty"`
+
+	// Flows maps object names to the record-triggered flow + outbound message
+	// pair deployed for them. Only populated when UseFlow is true.
+	Flows map[common.ObjectName]*FlowSubscription `json:"flows,omitempty"`
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -96,6 +106,19 @@ type SubscriptionRequest struct {
 
 	// ManualApexTriggerManagement: see "Manual-mode contract" above.
 	ManualApexTriggerManagement bool
+
+	// UseFlow selects the flow-based subscription path: instead of CDC channel
+	// members + apex triggers, a record-triggered flow and a workflow outbound
+	// message are deployed per object (see subscribe_flow.go for semantics and
+	// trade-offs, including the lack of delete-event support). When false (the
+	// default), the existing CDC path runs unchanged — existing installations
+	// are unaffected.
+	UseFlow bool `json:"useFlow,omitempty"`
+
+	// Flow carries the flow-path configuration. Required when UseFlow is true;
+	// ignored otherwise. The CDC-path fields above (quota optimization, manual
+	// management flags) have no effect on the flow path.
+	Flow *FlowSubscriptionConfig `json:"flow,omitempty"`
 }
 
 // subscribeProgress tracks which reversible operations completed during executeSubscribe,
@@ -131,6 +154,27 @@ func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
+	var req *SubscriptionRequest
+
+	if params.Request != nil {
+		var requestOk bool
+
+		req, requestOk = params.Request.(*SubscriptionRequest)
+		if !requestOk {
+			return nil, fmt.Errorf(
+				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
+				req, params.Request,
+			)
+		}
+	}
+
+	// The flow-based path diverts before the registration checks below: it
+	// deploys record-triggered flows + outbound messages and needs no event
+	// channel, named credential, or event relay. The CDC path is untouched.
+	if req != nil && req.UseFlow {
+		return c.subscribeWithFlow(ctx, params, req)
+	}
+
 	if params.RegistrationResult == nil {
 		return nil, fmt.Errorf("%w: missing RegistrationResult", errMissingParams)
 	}
@@ -151,20 +195,6 @@ func (c *Connector) Subscribe(
 			registrationParams,
 			params.RegistrationResult.Result,
 		)
-	}
-
-	var req *SubscriptionRequest
-
-	if params.Request != nil {
-		var requestOk bool
-
-		req, requestOk = params.Request.(*SubscriptionRequest)
-		if !requestOk {
-			return nil, fmt.Errorf(
-				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
-				req, params.Request,
-			)
-		}
 	}
 
 	sfRes, progress, execErr := c.executeSubscribe(ctx, params, registrationParams, req)
@@ -373,6 +403,14 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 		)
 	}
 
+	// Flow-based subscriptions have entirely different components (flows +
+	// outbound messages, no CDC pieces); branch to their teardown. The
+	// len(Flows) check additionally catches results whose UseFlow flag was
+	// lost in serialization but that still advertise flow components.
+	if sfRes.UseFlow || len(sfRes.Flows) > 0 {
+		return c.deleteFlowSubscriptions(ctx, sfRes)
+	}
+
 	// Migrate old CheckboxField to IndicatorField for backwards compatibility.
 	migrateApexTriggers(sfRes.ApexTriggers)
 
@@ -512,23 +550,6 @@ func (c *Connector) UpdateSubscription(
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	// Validate params up-front (mirrors Subscribe) so a malformed input is
-	// rejected before any Salesforce-side mutation happens. Without this, a
-	// missing or invalid params would only be caught later by the inner
-	// Subscribe call — after upsertQuotaOptimizationFields, updateExistingSubscriptions,
-	// and DeleteSubscription have already run.
-	if params.RegistrationResult == nil {
-		return nil, fmt.Errorf("%w: missing RegistrationResult", errMissingParams)
-	}
-
-	if params.RegistrationResult.Result == nil {
-		return nil, fmt.Errorf("%w: missing RegistrationResult.Result", errMissingParams)
-	}
-
-	if err := validator.New().Struct(params); err != nil {
-		return nil, fmt.Errorf("invalid params: %w", err)
-	}
-
 	// validate the previous result
 	if previousResult.Result == nil {
 		return nil, fmt.Errorf("%w: missing previousResult.Result", errMissingParams)
@@ -559,6 +580,34 @@ func (c *Connector) UpdateSubscription(
 				req, params.Request,
 			)
 		}
+	}
+
+	// Whenever the flow path is involved on either side — the previous state
+	// used flows, the new request asks for them, or the mode is transitioning
+	// (CDC↔flow) — reconcile by delete-then-recreate instead of the CDC
+	// incremental logic below, which only understands CDC components. This runs
+	// before the registration checks because flow subscriptions need no
+	// registration; the inner Subscribe re-validates registration whenever the
+	// new request targets the CDC path.
+	if prevState.UseFlow || len(prevState.Flows) > 0 || (req != nil && req.UseFlow) {
+		return c.updateSubscriptionWithFlow(ctx, params, previousResult, prevState)
+	}
+
+	// Validate params up-front (mirrors Subscribe) so a malformed input is
+	// rejected before any Salesforce-side mutation happens. Without this, a
+	// missing or invalid params would only be caught later by the inner
+	// Subscribe call — after upsertQuotaOptimizationFields, updateExistingSubscriptions,
+	// and DeleteSubscription have already run.
+	if params.RegistrationResult == nil {
+		return nil, fmt.Errorf("%w: missing RegistrationResult", errMissingParams)
+	}
+
+	if params.RegistrationResult.Result == nil {
+		return nil, fmt.Errorf("%w: missing RegistrationResult.Result", errMissingParams)
+	}
+
+	if err := validator.New().Struct(params); err != nil {
+		return nil, fmt.Errorf("invalid params: %w", err)
 	}
 
 	// nolint:lll
