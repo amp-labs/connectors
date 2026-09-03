@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -557,6 +558,8 @@ func assertModuleSubscribeEnabled(providerName string, moduleName string) *testu
 // catalog without implementing the corresponding switch case.
 //
 // Providers that intentionally don't define event formats are added to skipProviders.
+// Mock providers (prefixed with "mock") are excluded because they may be added to
+// the catalog dynamically by other tests, and test execution order is not guaranteed.
 func TestGetObjectTypeSubscribeEventsListCompleteness(t *testing.T) {
 	// Providers excluded from this check. Add a provider here only if there's
 	// a documented reason why Subscribe is enabled but event formats are undefined.
@@ -580,7 +583,7 @@ func TestGetObjectTypeSubscribeEventsListCompleteness(t *testing.T) {
 	// Collect all providers with Subscribe enabled (at provider or module level).
 	var tests []testCase
 	for providerName, providerInfo := range providerCatalog.Catalog {
-		if skipProviders.Has(providerName) {
+		if skipProviders.Has(providerName) || strings.HasPrefix(providerName, "mock") {
 			continue
 		}
 
