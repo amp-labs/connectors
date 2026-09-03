@@ -24,14 +24,31 @@ Pagination format:
     }
   }
 }
+
+The two extractors below produce next-page tokens of different styles, and the
+values are NOT interchangeable:
+
+  - GET read responses carry both fields: "after" is the record ID of the next
+    record (e.g. "22222625904") and "link" is a ready-made URL embedding it.
+    The GET read path stores the "link" URL as the token (GetNextRecordsURL).
+  - Search responses carry only "after", an integer position into the result
+    set capped at 10,000 (e.g. "200"). The search path stores it as the token
+    (GetNextRecordsAfter) and sends it back in the "after" request body field.
+
+A URL token resumed into the search path is rejected by the provider with a
+400 VALIDATION_ERROR; searchCRMObjectsAPI detects that case (isFullURL) and
+continues the GET pagination instead.
 */
 
 // GetNextRecordsAfter returns the "after" value for the next page of results.
+// Used by the search path, where "after" is an integer offset (see above).
 func GetNextRecordsAfter(node *ajson.Node) (string, error) {
 	return jsonquery.New(node, "paging", "next").StrWithDefault("after", "")
 }
 
 // GetNextRecordsURL returns the URL for the next page of results.
+// Used by the plain GET read path, which paginates with the full
+// "link" URL (see above).
 func GetNextRecordsURL(node *ajson.Node) (string, error) {
 	return jsonquery.New(node, "paging", "next").StrWithDefault("link", "")
 }
