@@ -402,10 +402,15 @@ func TestVerificationCastEvents(t *testing.T) {
 	}
 }
 
-// TestProviderConfigRegistryCompleteness ensures that any provider/module with
-// Subscribe enabled in the Catalog has a corresponding config entry in this package.
-// A module's config may be declared either in Modules[moduleID] (module-specific)
-// or in DefaultModuleConfig (module-agnostic).
+// TestProviderConfigRegistryCompleteness is a guardrail test that prevents
+// enabling Subscribe support in the provider catalog without providing the
+// corresponding configuration in this package. It ensures that every provider
+// or module with Subscribe enabled has either:
+//   - A module-specific config in Modules[moduleID], or
+//   - A fallback DefaultModuleConfig for module-agnostic providers (e.g., HubSpot).
+//
+// The test dynamically builds its assertions from the catalog, so adding a new
+// provider or enabling Subscribe automatically adds a corresponding check here.
 func TestProviderConfigRegistryCompleteness(t *testing.T) {
 	providerCatalog, err := providers.ReadCatalog()
 	if err != nil {
@@ -417,16 +422,21 @@ func TestProviderConfigRegistryCompleteness(t *testing.T) {
 		assertion *testutils.CompareResult
 	}
 
-	// Dynamically create unit tests based on the composition of the provider catalog.
+	// Pre-allocate the maximum possible number of test cases (one per provider).
+	// The actual number may be lower if some providers have no Subscribe-enabled modules.
 	tests := make([]testCase, len(providerCatalog.Catalog))
-	index := -1
+	idx := -1
+
 	for providerName, providerInfo := range providerCatalog.Catalog {
-		index += 1 // increment first, it is much simpler then doing it at the end due to multiple `continue` statements.
+		idx++
+
+		// Build assertions for provider-level Subscribe (module-agnostic case).
 		providerAssertion := testutils.NewCompareResult()
 		if providerInfo.Support.Subscribe {
 			providerAssertion.Merge(assertProviderSubscribeEnabled(providerName))
 		}
 
+		// Build assertions for each module with Subscribe enabled.
 		moduleAssertion := testutils.NewCompareResult()
 		hasSubscribeModules := false
 		if providerInfo.Modules != nil {
@@ -438,12 +448,12 @@ func TestProviderConfigRegistryCompleteness(t *testing.T) {
 			}
 		}
 
+		// Both assertions failed, it is worth reporting everything.
 		if !providerAssertion.OK && !moduleAssertion.OK {
-			// Nothing is defined.
 			assertion := testutils.NewCompareResult()
 			assertion.Merge(providerAssertion)
 			assertion.Merge(moduleAssertion)
-			tests[index] = testCase{
+			tests[idx] = testCase{
 				name:      "ProviderConfig should match against Catalog",
 				assertion: assertion,
 			}
@@ -451,32 +461,34 @@ func TestProviderConfigRegistryCompleteness(t *testing.T) {
 		}
 
 		if hasSubscribeModules {
-			// Can disregard the general Subscribe flag that exists on providerInfo.Support.
-			// The DefaultModuleConfig is not required.
-			tests[index] = testCase{
+			// Module-specific configs take precedence.
+			// DefaultModuleConfig is optional and can act as fallback.
+			tests[idx] = testCase{
 				name:      "ProviderConfigRegistry.Modules should match against Catalog",
 				assertion: moduleAssertion,
 			}
 			continue
 		}
 
-		// Provider doesn't have modules.
-		// If subscribe is enabled then DefaultModuleConfig must be non-empty.
-		tests[index] = testCase{
+		// Provider has no modules. Subscribe support requires at least DefaultModuleConfig.
+		tests[idx] = testCase{
 			name:      "ProviderConfigRegistry.DefaultModuleConfig should match against Catalog",
 			assertion: providerAssertion,
 		}
 	}
 
+	// Execute all assertions as parallel subtests to surface all failures at once.
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-
 			tt.assertion.Validate(t, tt.name)
 		})
 	}
 }
 
+// assertProviderSubscribeEnabled validates that a provider with module-agnostic
+// Subscribe support has a non-nil DefaultModuleConfig. This applies to providers
+// that do not declare module-specific configs.
 func assertProviderSubscribeEnabled(providerName string) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
 
@@ -492,6 +504,13 @@ func assertProviderSubscribeEnabled(providerName string) *testutils.CompareResul
 	return result
 }
 
+// assertModuleSubscribeEnabled validates that a module with Subscribe enabled
+// has a corresponding config entry. The config may be:
+//   - A module-specific entry in Modules[moduleName], or
+//   - A fallback DefaultModuleConfig if the provider uses it as a fallback.
+//
+// This allows providers like HubSpot to enable Subscribe at the module level
+// in the catalog while using a shared DefaultModuleConfig.
 func assertModuleSubscribeEnabled(providerName string, moduleName string) *testutils.CompareResult {
 	result := testutils.NewCompareResult()
 
@@ -501,8 +520,8 @@ func assertModuleSubscribeEnabled(providerName string, moduleName string) *testu
 	}
 
 	if configRegistry.Modules == nil {
+		// No module-specific configs declared. Fall back to DefaultModuleConfig.
 		if configRegistry.DefaultModuleConfig != nil {
-			// Fallback to default is allowed. Since it is defined, return success.
 			return result
 		}
 
@@ -511,17 +530,16 @@ func assertModuleSubscribeEnabled(providerName string, moduleName string) *testu
 
 	moduleConfig, ok := configRegistry.Modules[moduleName]
 	if !ok {
+		// Module-specific entry missing. Fall back to DefaultModuleConfig.
 		if configRegistry.DefaultModuleConfig != nil {
-			// Fallback to default is allowed. Since it is defined, return success.
 			return result
 		}
 
-		return result.AddDiff("providerConfigs[%v].Modules[%v] is missing, "+
-			"but subscription to module is enabled", providerName, moduleName)
+		return result.AddDiff("providerConfigs[%v].Modules[%v] is missing, but subscription to module is enabled", providerName, moduleName)
 	}
 	if moduleConfig == nil {
+		// Module-specific entry is nil. Fall back to DefaultModuleConfig.
 		if configRegistry.DefaultModuleConfig != nil {
-			// Fallback to default is allowed. Since it is defined, return success.
 			return result
 		}
 
