@@ -6,6 +6,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
+	"github.com/amp-labs/connectors/common/substitutions/catalogreplacer"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
@@ -116,7 +117,7 @@ func oldConstructor(params *parameters) (*Connector, error) {
 
 	var err error
 
-	conn.providerInfo, err = providers.ReadInfo(conn.Provider(), &params.Workspace)
+	conn.providerInfo, err = providers.ReadInfo(conn.Provider(), catalogVariables(params)...)
 	if err != nil {
 		return nil, err
 	}
@@ -130,6 +131,22 @@ func oldConstructor(params *parameters) (*Connector, error) {
 	conn.Client.HTTPClient.ErrorHandler = crmcore.NewErrorHandler().Handle
 
 	return conn, nil
+}
+
+// catalogVariables returns the substitution variables used to resolve this
+// connector's ProviderInfo. Connection metadata is included alongside the
+// workspace so that catalog entries may reference any metadata key, matching
+// what components.NewProviderContext supplies to the module adapters. Workspace
+// is appended last so it wins over a metadata entry of the same name.
+func catalogVariables(params *parameters) []catalogreplacer.CatalogVariable {
+	metadataVars := params.Metadata.GetCatalogVars()
+	vars := make([]catalogreplacer.CatalogVariable, 0, len(metadataVars)+1)
+
+	for _, variable := range metadataVars {
+		vars = append(vars, variable)
+	}
+
+	return append(vars, &params.Workspace)
 }
 
 // Provider returns the connector provider. For twin providers such as

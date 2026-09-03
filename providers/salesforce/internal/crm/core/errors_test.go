@@ -3,6 +3,7 @@ package core
 import (
 	"errors"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -127,5 +128,73 @@ func TestInterpretXMLError_WrapsHTTPErrorWithBody(t *testing.T) {
 
 	if !errors.Is(err, common.ErrAccessToken) {
 		t.Errorf("expected error to wrap ErrAccessToken via errors.Is")
+	}
+}
+
+func TestInterpretJSONError_AcceptsSingleObjectBody(t *testing.T) {
+	t.Parallel()
+
+	// A lone JSON object rather than Salesforce's usual array. Bodies shaped this
+	// way come from an intermediary sitting in front of Salesforce.
+	body := []byte(`{"message":"daily api request limit exceeded","errorCode":"REQUEST_LIMIT_EXCEEDED"}`)
+	res := &http.Response{StatusCode: http.StatusForbidden, Header: http.Header{}}
+
+	err := interpretJSONError(res, body)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+
+	if !errors.Is(err, common.ErrLimitExceeded) {
+		t.Errorf("expected error to wrap ErrLimitExceeded via errors.Is, got: %v", err)
+	}
+
+	var httpErr *common.HTTPError
+	if !errors.As(err, &httpErr) {
+		t.Fatalf("expected error chain to contain *common.HTTPError, got %T: %v", err, err)
+	}
+
+	if string(httpErr.Body) != string(body) {
+		t.Errorf("expected body to be preserved\n  want: %s\n  got:  %s", body, httpErr.Body)
+	}
+}
+
+func TestInterpretJSONError_FallsBackOnUnrecognizedBody(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		body []byte
+	}{
+		{name: "not JSON at all", body: []byte(`<html>502 Bad Gateway</html>`)},
+		{name: "JSON object without a message", body: []byte(`{"detail":"something went wrong"}`)},
+		{name: "empty body", body: []byte(``)},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := &http.Response{StatusCode: http.StatusForbidden, Header: http.Header{}}
+
+			err := interpretJSONError(res, tt.body)
+			if err == nil {
+				t.Fatal("expected error, got nil")
+			}
+
+			// An unrecognized body falls through to status-based handling rather
+			// than surfacing the JSON decode failure as the error itself.
+			if strings.Contains(err.Error(), "json.Unmarshal failed") {
+				t.Errorf("expected fallback to status-based handling, got decode error: %v", err)
+			}
+
+			var httpErr *common.HTTPError
+			if !errors.As(err, &httpErr) {
+				t.Fatalf("expected error chain to contain *common.HTTPError, got %T: %v", err, err)
+			}
+
+			if httpErr.Status != http.StatusForbidden {
+				t.Errorf("expected status %d, got %d", http.StatusForbidden, httpErr.Status)
+			}
+		})
 	}
 }
