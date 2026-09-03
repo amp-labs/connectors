@@ -40,6 +40,10 @@ func main() {
 	if err := testReadTrackers(ctx, conn); err != nil {
 		slog.Info(err.Error())
 	}
+
+	if err := testReadSmsThreads(ctx, conn); err != nil {
+		slog.Info(err.Error())
+	}
 }
 
 func testReadCompanies(ctx context.Context, conn *cl.Connector) error {
@@ -94,6 +98,30 @@ func testReadTrackers(ctx context.Context, conn *cl.Connector) error {
 	params := common.ReadParams{
 		ObjectName: "trackers",
 		Fields:     connectors.Fields("name", "status", "type"),
+		NextPage:   "",
+	}
+
+	res, err := conn.Read(ctx, params)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshalling JSON: %w", err)
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+func testReadSmsThreads(ctx context.Context, conn *cl.Connector) error {
+	params := common.ReadParams{
+		ObjectName: "sms-threads",
+		Fields:     connectors.Fields("id", "customer_name", "state", "company_id"),
 		NextPage:   "",
 	}
 
