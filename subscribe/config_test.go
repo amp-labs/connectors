@@ -402,15 +402,26 @@ func TestVerificationCastEvents(t *testing.T) {
 	}
 }
 
-// This test acts as a reminder to add Provider configurations to this package
-// when the ProviderInfo in main Catalog has subscribed support enabled.
-func TestProviderConfig(t *testing.T) {
+// TestProviderConfigRegistryCompleteness ensures that any provider/module with
+// Subscribe enabled in the Catalog has a corresponding config entry in this package.
+// A module's config may be declared either in Modules[moduleID] (module-specific)
+// or in DefaultModuleConfig (module-agnostic).
+func TestProviderConfigRegistryCompleteness(t *testing.T) {
 	providerCatalog, err := providers.ReadCatalog()
 	if err != nil {
 		t.Fatalf("cannot read provider catalog: %v", err)
 	}
 
+	type testCase struct {
+		name      string
+		assertion *testutils.CompareResult
+	}
+
+	// Dynamically create unit tests based on the composition of the provider catalog.
+	tests := make([]testCase, len(providerCatalog.Catalog))
+	index := -1
 	for providerName, providerInfo := range providerCatalog.Catalog {
+		index += 1 // increment first, it is much simpler then doing it at the end due to multiple `continue` statements.
 		providerAssertion := testutils.NewCompareResult()
 		if providerInfo.Support.Subscribe {
 			providerAssertion.Merge(assertProviderSubscribeEnabled(providerName))
@@ -429,23 +440,40 @@ func TestProviderConfig(t *testing.T) {
 
 		if !providerAssertion.OK && !moduleAssertion.OK {
 			// Nothing is defined.
-			result := testutils.NewCompareResult()
-			result.Merge(providerAssertion)
-			result.Merge(moduleAssertion)
-			result.Validate(t, "ProviderConfig should match against Catalog")
+			assertion := testutils.NewCompareResult()
+			assertion.Merge(providerAssertion)
+			assertion.Merge(moduleAssertion)
+			tests[index] = testCase{
+				name:      "ProviderConfig should match against Catalog",
+				assertion: assertion,
+			}
 			continue
 		}
 
 		if hasSubscribeModules {
 			// Can disregard the general Subscribe flag that exists on providerInfo.Support.
 			// The DefaultModuleConfig is not required.
-			moduleAssertion.Validate(t, "ProviderConfigRegistry.Modules should match against Catalog")
+			tests[index] = testCase{
+				name:      "ProviderConfigRegistry.Modules should match against Catalog",
+				assertion: moduleAssertion,
+			}
 			continue
 		}
 
 		// Provider doesn't have modules.
 		// If subscribe is enabled then DefaultModuleConfig must be non-empty.
-		providerAssertion.Validate(t, "ProviderConfigRegistry.DefaultModuleConfig should match against Catalog")
+		tests[index] = testCase{
+			name:      "ProviderConfigRegistry.DefaultModuleConfig should match against Catalog",
+			assertion: providerAssertion,
+		}
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.assertion.Validate(t, tt.name)
+		})
 	}
 }
 
@@ -473,15 +501,30 @@ func assertModuleSubscribeEnabled(providerName string, moduleName string) *testu
 	}
 
 	if configRegistry.Modules == nil {
+		if configRegistry.DefaultModuleConfig != nil {
+			// Fallback to default is allowed. Since it is defined, return success.
+			return result
+		}
+
 		return result.AddDiff("providerConfigs[%v].Modules is nil", providerName)
 	}
 
 	moduleConfig, ok := configRegistry.Modules[moduleName]
 	if !ok {
+		if configRegistry.DefaultModuleConfig != nil {
+			// Fallback to default is allowed. Since it is defined, return success.
+			return result
+		}
+
 		return result.AddDiff("providerConfigs[%v].Modules[%v] is missing, "+
 			"but subscription to module is enabled", providerName, moduleName)
 	}
 	if moduleConfig == nil {
+		if configRegistry.DefaultModuleConfig != nil {
+			// Fallback to default is allowed. Since it is defined, return success.
+			return result
+		}
+
 		return result.AddDiff("providerConfigs[%v].Modules[%v] is nil", providerName, moduleName)
 	}
 
