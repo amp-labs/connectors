@@ -139,7 +139,11 @@ func (c *Connector) readCRMObjectsNextPage(ctx context.Context, params SearchPar
 // GET read path paginates with paging.next.link (a URL, embedding the next
 // record ID as the "after" query param), while the search path paginates with
 // paging.next.after (an integer position into the result set, capped at 10,000).
-// The two cursors are not interchangeable values.
+// The two cursors are not interchangeable values:
+//
+//	GET read:  "https://api.hubapi.com/crm/v3/objects/deals?limit=100&after=22222625904&properties=closedate"
+//	Search:    "200"
+//
 // GET paging: https://developers.hubspot.com/docs/api-reference/crm-objects-v3/objects/get-crm-v3-objects-objecttype
 // Search paging: https://developers.hubspot.com/docs/api/crm/search
 func isFullURL(token common.NextPageToken) bool {
