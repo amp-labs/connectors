@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -86,6 +87,15 @@ func (c *Connector) ReadUsingSearchAPI( // nolint:cyclop
 }
 
 func (c *Connector) searchCRMObjectsAPI(ctx context.Context, params SearchParams) (*common.ReadResult, error) {
+	if isFullURL(params.NextPage) {
+		// The token was produced by the plain GET read path (paging.next.link).
+		// This happens when a read that started without filters is resumed with
+		// Since/Until set: the search endpoint paginates with a numeric "after"
+		// cursor and rejects a URL with a 400 VALIDATION_ERROR. Honor the token
+		// by continuing the GET pagination it belongs to.
+		return c.readCRMObjectsNextPage(ctx, params)
+	}
+
 	url, err := c.getCRMObjectsSearchURL(params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -104,6 +114,34 @@ func (c *Connector) searchCRMObjectsAPI(ctx context.Context, params SearchParams
 			ctx, c.associationsFiller, params.ObjectName, params.AssociatedObjects),
 		params.Fields,
 	)
+}
+
+// readCRMObjectsNextPage fetches the next page of a plain GET read whose token
+// reached the search path. The response has the same shape for both endpoints,
+// so the regular GET parsing applies.
+func (c *Connector) readCRMObjectsNextPage(ctx context.Context, params SearchParams) (*common.ReadResult, error) {
+	rsp, err := c.JSONHTTPClient().Get(ctx, params.NextPage.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(
+		rsp,
+		core.GetRecords,
+		core.GetNextRecordsURL,
+		associations.CreateDataMarshallerWithAssociations(
+			ctx, c.associationsFiller, params.ObjectName, params.AssociatedObjects),
+		params.Fields,
+	)
+}
+
+// isFullURL reports whether the next-page token is a complete URL. The plain
+// GET read path paginates with paging.next.link (a URL), while the search path
+// paginates with paging.next.after (a numeric cursor).
+func isFullURL(token common.NextPageToken) bool {
+	value := token.String()
+
+	return strings.HasPrefix(value, "https://") || strings.HasPrefix(value, "http://")
 }
 
 // searchCRM is intended for objects outside HubSpot's ObjectAPI.
