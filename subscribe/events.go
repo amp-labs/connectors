@@ -111,5 +111,5 @@ func unwrapSalesforceEvent(event map[string]any) (salesforce.CollapsedSubscripti
 		return nil, fmt.Errorf("%w: payload field is not a map, received %T", errSalesforceUnwrap, payload)
 	}
 
-	return salesforce.CollapsedSubscriptionEvent(payloadMap), nil
+	return payloadMap, nil
 }

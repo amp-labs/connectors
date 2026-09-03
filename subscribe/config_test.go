@@ -3,10 +3,12 @@ package subscribe
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/subscribe/deps"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -547,4 +549,72 @@ func assertModuleSubscribeEnabled(providerName string, moduleName string) *testu
 	}
 
 	return result
+}
+
+// TestGetObjectTypeSubscribeEventsListCompleteness is a guardrail test that
+// ensures every provider with Subscribe support has an event-format definition
+// in GetObjectTypeSubscribeEventsList. It prevents enabling Subscribe in the
+// catalog without implementing the corresponding switch case.
+//
+// Providers that intentionally don't define event formats are added to skipProviders.
+func TestGetObjectTypeSubscribeEventsListCompleteness(t *testing.T) {
+	// Providers excluded from this check. Add a provider here only if there's
+	// a documented reason why Subscribe is enabled but event formats are undefined.
+	skipProviders := datautils.NewSet(
+		// TODO: Google event formats are not yet defined (why?)
+		providers.Google,
+		// TODO: HubSpot event formats are not yet defined (why?)
+		providers.Hubspot,
+	)
+
+	providerCatalog, err := providers.ReadCatalog()
+	if err != nil {
+		t.Fatalf("cannot read provider catalog: %v", err)
+	}
+
+	type testCase struct {
+		name     string
+		provider providers.Provider
+	}
+
+	// Collect all providers with Subscribe enabled (at provider or module level).
+	var tests []testCase
+	for providerName, providerInfo := range providerCatalog.Catalog {
+		if skipProviders.Has(providerName) {
+			continue
+		}
+
+		hasSubscribe := false
+		if providerInfo.Support.Subscribe {
+			hasSubscribe = true
+		}
+
+		if providerInfo.Modules != nil {
+			for _, moduleInfo := range *providerInfo.Modules {
+				if moduleInfo.Support.Subscribe {
+					hasSubscribe = true
+					break
+				}
+			}
+		}
+
+		if hasSubscribe {
+			tests = append(tests, testCase{
+				name:     fmt.Sprintf("GetObjectTypeSubscribeEventsList must define event for %v", providerName),
+				provider: providerName,
+			})
+		}
+	}
+
+	// Execute all assertions as parallel subtests to surface all failures at once.
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			_, err = GetObjectTypeSubscribeEventsList(tt.provider, nil)
+			if errors.Is(err, errUnsupportedProvider) {
+				t.Fatalf("provider '%v' is not supported: subscribe event-format is not defined", tt.provider)
+			}
+		})
+	}
 }
