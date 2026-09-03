@@ -9,11 +9,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/subscribe/deps"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
-
-func boolPtr(v bool) *bool {
-	return &v
-}
 
 // makeProviderInfo loads the provider's real ProviderInfo from the providers catalog so the
 // ProviderInfo-derived subscribe methods (IsSupportedViaAPI, SubscribeManually, ShouldPerform, …)
@@ -47,15 +44,15 @@ func TestResolveModuleSubscribeDataModuleSelection(t *testing.T) {
 		providers.ModuleSalesforceCRM: providers.ModuleInfo{
 			Support: providers.Support{Subscribe: true},
 			SubscribeRequirements: &providers.SubscribeRequirements{
-				Registration:   boolPtr(true),
-				SubscribeByAPI: boolPtr(true),
+				Registration:   new(true),
+				SubscribeByAPI: new(true),
 			},
 		},
 	}
 
 	topLevelReqs := &providers.SubscribeRequirements{
-		Registration:   boolPtr(false),
-		SubscribeByAPI: boolPtr(false),
+		Registration:   new(false),
+		SubscribeByAPI: new(false),
 	}
 
 	provInfo := &providers.ProviderInfo{
@@ -124,11 +121,11 @@ func TestResolveModuleSubscribeDataNoMatch(t *testing.T) {
 	modules := providers.Modules{
 		"only-this-one": providers.ModuleInfo{
 			Support:               providers.Support{Subscribe: true},
-			SubscribeRequirements: &providers.SubscribeRequirements{SubscribeByAPI: boolPtr(true)},
+			SubscribeRequirements: &providers.SubscribeRequirements{SubscribeByAPI: new(true)},
 		},
 	}
 
-	topLevelReqs := &providers.SubscribeRequirements{SubscribeByAPI: boolPtr(false)}
+	topLevelReqs := &providers.SubscribeRequirements{SubscribeByAPI: new(false)}
 	provInfo := &providers.ProviderInfo{
 		Name:                  providers.Hubspot,
 		Support:               providers.Support{Subscribe: false},
@@ -152,7 +149,7 @@ func TestResolveModuleSubscribeDataNoMatch(t *testing.T) {
 func TestResolveModuleSubscribeDataNilModules(t *testing.T) {
 	t.Parallel()
 
-	topLevelReqs := &providers.SubscribeRequirements{Registration: boolPtr(true)}
+	topLevelReqs := &providers.SubscribeRequirements{Registration: new(true)}
 	provInfo := &providers.ProviderInfo{
 		Name:                  providers.Outreach,
 		Support:               providers.Support{Subscribe: true},
@@ -184,7 +181,7 @@ func TestResolveModuleSubscribeDataModuleNilRequirements(t *testing.T) {
 		},
 	}
 
-	topLevelReqs := &providers.SubscribeRequirements{Registration: boolPtr(true)}
+	topLevelReqs := &providers.SubscribeRequirements{Registration: new(true)}
 	provInfo := &providers.ProviderInfo{
 		Support:               providers.Support{Subscribe: false},
 		Modules:               &modules,
@@ -403,4 +400,90 @@ func TestVerificationCastEvents(t *testing.T) {
 	if !errors.Is(err, errSubscriptionEventCasterNotDeclared) {
 		t.Errorf("CastEvents() error = %v, want errSubscriptionEventCasterNotDeclared", err)
 	}
+}
+
+// This test acts as a reminder to add Provider configurations to this package
+// when the ProviderInfo in main Catalog has subscribed support enabled.
+func TestProviderConfig(t *testing.T) {
+	providerCatalog, err := providers.ReadCatalog()
+	if err != nil {
+		t.Fatalf("cannot read provider catalog: %v", err)
+	}
+
+	for providerName, providerInfo := range providerCatalog.Catalog {
+		providerAssertion := testutils.NewCompareResult()
+		if providerInfo.Support.Subscribe {
+			providerAssertion.Merge(assertProviderSubscribeEnabled(providerName))
+		}
+
+		moduleAssertion := testutils.NewCompareResult()
+		hasSubscribeModules := false
+		if providerInfo.Modules != nil {
+			for moduleName, moduleInfo := range *providerInfo.Modules {
+				if moduleInfo.Support.Subscribe {
+					moduleAssertion.Merge(assertModuleSubscribeEnabled(providerName, moduleName))
+					hasSubscribeModules = true
+				}
+			}
+		}
+
+		if !providerAssertion.OK && !moduleAssertion.OK {
+			// Nothing is defined.
+			result := testutils.NewCompareResult()
+			result.Merge(providerAssertion)
+			result.Merge(moduleAssertion)
+			result.Validate(t, "ProviderConfig should match against Catalog")
+			continue
+		}
+
+		if hasSubscribeModules {
+			// Can disregard the general Subscribe flag that exists on providerInfo.Support.
+			// The DefaultModuleConfig is not required.
+			moduleAssertion.Validate(t, "ProviderConfigRegistry.Modules should match against Catalog")
+			continue
+		}
+
+		// Provider doesn't have modules.
+		// If subscribe is enabled then DefaultModuleConfig must be non-empty.
+		providerAssertion.Validate(t, "ProviderConfigRegistry.DefaultModuleConfig should match against Catalog")
+	}
+}
+
+func assertProviderSubscribeEnabled(providerName string) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+
+	configRegistry, ok := providerConfigs[providerName]
+	if !ok {
+		return result.AddDiff("providerConfigs[%v] is missing, "+
+			"but subscription to provider is enabled", providerName)
+	}
+	if configRegistry.DefaultModuleConfig == nil {
+		return result.AddDiff("providerConfigs[%v].DefaultModuleConfig is nil", providerName)
+	}
+
+	return result
+}
+
+func assertModuleSubscribeEnabled(providerName string, moduleName string) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+
+	configRegistry, ok := providerConfigs[providerName]
+	if !ok {
+		return result.AddDiff("providerConfigs[%v] is missing", providerName)
+	}
+
+	if configRegistry.Modules == nil {
+		return result.AddDiff("providerConfigs[%v].Modules is nil", providerName)
+	}
+
+	moduleConfig, ok := configRegistry.Modules[moduleName]
+	if !ok {
+		return result.AddDiff("providerConfigs[%v].Modules[%v] is missing, "+
+			"but subscription to module is enabled", providerName, moduleName)
+	}
+	if moduleConfig == nil {
+		return result.AddDiff("providerConfigs[%v].Modules[%v] is nil", providerName, moduleName)
+	}
+
+	return result
 }

@@ -65,6 +65,8 @@ func GetObjectTypeSubscribeEventsList(
 		collapsedEvents = acculynx.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Slack:
 		collapsedEvents = slack.CollapsedSubscriptionEvent(rawEvent)
+	case providers.SlackUserScope:
+		collapsedEvents = slack.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Microsoft:
 		collapsedEvents = microsoft.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Attio, providers.MockAttio:
