@@ -99,7 +99,7 @@ func init() { // nolint:funlen
 			},
 			Proxy:     true,
 			Read:      true,
-			Subscribe: false,
+			Subscribe: true,
 			Write:     true,
 		},
 		SubscribeRequirements: &SubscribeRequirements{
