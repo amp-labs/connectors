@@ -14,19 +14,21 @@ import (
 	"github.com/amp-labs/connectors/internal/httpkit"
 )
 
-var ErrSigningSecretIsNotSet = errors.New("signing secret is not set")
-
-type Verifier struct {
-	signingSecret string
+type VerificationParams struct {
+	SigningSecret string
 }
+
+type Verifier struct{}
+
+// errVerifierNotInitialized is returned when VerifyWebhookMessage is called through a Connector
+// whose embedded *Verifier was never constructed.
+var errVerifierNotInitialized = errors.New("slack webhook verifier is not initialized")
 
 // NewVerifier constructs an event message verifier.
 // The empty signingSecret won't trigger a failure to preserve backward compatibility.
 // However, no event message will be accepted.
-func NewVerifier(signingSecret string) *Verifier {
-	return &Verifier{
-		signingSecret: signingSecret,
-	}
+func NewVerifier() *Verifier {
+	return &Verifier{}
 }
 
 // VerifyWebhookMessage validates that the webhook request came from Slack by verifying
@@ -44,11 +46,21 @@ func NewVerifier(signingSecret string) *Verifier {
 //	signature = "v0=" + HMAC-SHA256(signing_secret, sig_basestring).hex()
 //
 // The request is rejected if the timestamp is more than 5 minutes old (replay attack protection).
-func (v Verifier) VerifyWebhookMessage(
+//
+// Pointer receiver with an explicit nil guard: a slack.Connector whose embedded *Verifier was
+// never initialized (e.g. a zero-value literal) must fail verification with a clear error, never
+// panic in the method-promotion wrapper. The subscribe registry constructs the Verifier via
+// slack.NewWebhookVerifierConnector, so the guard is a backstop, not the expected path.
+func (v *Verifier) VerifyWebhookMessage(
 	ctx context.Context, request *common.WebhookRequest, params *common.VerificationParams,
 ) (bool, error) {
-	if v.signingSecret == "" {
-		return false, ErrSigningSecretIsNotSet
+	if v == nil {
+		return false, errVerifierNotInitialized
+	}
+
+	signingSecret, err := v.resolveSigningSecret(params)
+	if err != nil {
+		return false, err
 	}
 
 	slackSignature, err := httpkit.ExtractRequiredHeader(request.Headers, "X-Slack-Signature")
@@ -76,12 +88,29 @@ func (v Verifier) VerifyWebhookMessage(
 	sigBasestring := fmt.Sprintf("v0:%s:%s", timestampStr, requestBody)
 
 	// Compute HMAC-SHA256 signature
-	h := hmac.New(sha256.New, []byte(v.signingSecret))
+	h := hmac.New(sha256.New, []byte(signingSecret))
 	h.Write([]byte(sigBasestring))
 	computedSignature := "v0=" + hex.EncodeToString(h.Sum(nil))
 
 	// Compare signatures using secure comparison
 	return hmac.Equal([]byte(computedSignature), []byte(slackSignature)), nil
+}
+
+func (v *Verifier) resolveSigningSecret(params *common.VerificationParams) (string, error) {
+	if params == nil || params.Param == nil {
+		return "", common.ErrMissingVerificationParams
+	}
+
+	verificationParams, err := common.AssertType[*VerificationParams](params.Param)
+	if err != nil {
+		return "", fmt.Errorf("%w: %w", common.ErrInvalidVerificationParams, err)
+	}
+
+	if verificationParams.SigningSecret == "" {
+		return "", fmt.Errorf("%w: SigningSecret is empty", common.ErrMissingProviderParam)
+	}
+
+	return verificationParams.SigningSecret, nil
 }
 
 // abs returns the absolute value of an integer.

@@ -1,0 +1,12 @@
+{
+  "data": [],
+  "pagination": {
+    "page": 1,
+    "page_size": 100,
+    "total_count": 0,
+    "total_pages": 0
+  },
+  "meta": {
+    "timestamp": "2026-08-06T00:00:00Z"
+  }
+}

@@ -17,6 +17,7 @@ import (
 type (
 	SubscriptionEvent          = webhook.Event
 	CollapsedSubscriptionEvent = webhook.CollapsedSubscriptionEvent
+	VerificationParams         = webhook.VerificationParams
 )
 
 var (
@@ -47,16 +48,23 @@ func NewBotConnector(params common.ConnectorParams) (*Connector, error) {
 	return components.Init(providers.Slack, params, constructor)
 }
 
+// NewWebhookVerifierConnector returns a minimal Connector for webhook signature verification
+// only. It carries a constructed webhook Verifier and nothing else — no auth client, no base
+// connector — so it must not be used for API calls. The subscribe registry uses it as the
+// shared verifierConnector: verification is stateless HMAC math, and a zero-value Connector's
+// nil *Verifier embed would otherwise fail every verification (and, before the verifier's nil
+// guard existed, panicked in the method-promotion wrapper).
+func NewWebhookVerifierConnector() *Connector {
+	return &Connector{Verifier: webhook.NewVerifier()}
+}
+
 func NewUserConnector(params common.ConnectorParams) (*Connector, error) {
 	return components.Init(providers.SlackUserScope, params, constructor)
 }
 
 func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	authMetadata := NewAuthMetadataVars(params.Metadata)
-	// Signing Secret is used by the event message verifier.
-	// If the value is empty then all messages will be marked as invalid.
-	signingSecret := params.Metadata["signingSecret"]
-	verifier := webhook.NewVerifier(signingSecret)
+	verifier := webhook.NewVerifier()
 
 	connector := &Connector{
 		Connector: base,

@@ -185,6 +185,15 @@ var (
 
 	// ErrInvalidVirtualField is returned when Write cannot happen due to invalid virtual field.
 	ErrInvalidVirtualField = errors.New("virtual field is invalid")
+
+	// ErrMissingVerificationParams is returned when verification params are nil.
+	ErrMissingVerificationParams = errors.New("missing verification params")
+
+	// ErrInvalidVerificationParams is returned when VerificationParams is of unexpected type.
+	ErrInvalidVerificationParams = errors.New("invalid verification params")
+
+	// ErrMissingProviderParam is returned when connector expects non-empty value for a param inside VerificationParams.
+	ErrMissingProviderParam = errors.New("missing required provider parameter")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
