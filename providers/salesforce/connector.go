@@ -136,17 +136,19 @@ func oldConstructor(params *parameters) (*Connector, error) {
 // catalogVariables returns the substitution variables used to resolve this
 // connector's ProviderInfo. Connection metadata is included alongside the
 // workspace so that catalog entries may reference any metadata key, matching
-// what components.NewProviderContext supplies to the module adapters. Workspace
-// is appended last so it wins over a metadata entry of the same name.
+// what components.NewProviderContext supplies to the module adapters.
+//
+// The metadata map is copied because the workspace entry is written into it,
+// and callers should not observe that.
 func catalogVariables(params *parameters) []catalogreplacer.CatalogVariable {
-	metadataVars := params.Metadata.GetCatalogVars()
-	vars := make([]catalogreplacer.CatalogVariable, 0, len(metadataVars)+1)
-
-	for _, variable := range metadataVars {
-		vars = append(vars, variable)
+	metadata := maps.Clone(params.Metadata.Map)
+	if metadata == nil {
+		metadata = make(map[string]string)
 	}
 
-	return append(vars, &params.Workspace)
+	metadata[catalogreplacer.VariableWorkspace] = params.Workspace.Name
+
+	return paramsbuilder.NewCatalogVariables(metadata)
 }
 
 // Provider returns the connector provider. For twin providers such as
