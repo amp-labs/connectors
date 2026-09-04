@@ -87,7 +87,7 @@ func FilterSortedRecords(data *ajson.Node, recordsKey string, since time.Time, /
 		}
 
 		// Check if this record is newer than our reference time
-		if since.Before(*recordTimestamp) {
+		if since.Before(recordTimestamp) {
 			updatedNodeRecords = append(updatedNodeRecords, nodeRecord)
 
 			// If this is the last record and it's new, we might have more pages
@@ -200,7 +200,7 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 				return nil, "", err
 			}
 
-			if boundary.Contains(params, *recordTimestamp) {
+			if boundary.Contains(params, recordTimestamp) {
 				filtered = append(filtered, nodeRecord)
 
 				continue
@@ -212,7 +212,7 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 				// -------------[.......]---------- * --------------->
 				//           (since   UNTIL)     (record)
 				// If record is after the until, then anything further is too new.
-				if boundary.After(params, *recordTimestamp) {
+				if boundary.After(params, recordTimestamp) {
 					stopPaging = true
 				}
 			case ReverseOrder:
@@ -220,7 +220,7 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 				// <-------------[.......]---------- * ---------------
 				//           (until   SINCE)     (record)
 				// If record is before the since, then anything further is even older.
-				if boundary.Before(params, *recordTimestamp) {
+				if boundary.Before(params, recordTimestamp) {
 					stopPaging = true
 				}
 			case Unordered:
@@ -245,7 +245,7 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 }
 
 func extractTimestamp(node *ajson.Node, timestampKey string, timestampFormat string, zoom ...string,
-) (*time.Time, error) {
+) (time.Time, error) {
 	switch timestampFormat {
 	case TimestampFormatUnixSec:
 		return convertIntToTime(node, zoom, timestampKey, func(value int64) time.Time {
@@ -264,19 +264,19 @@ func convertIntToTime(
 	zoom []string,
 	timestampKey string,
 	timeFormat func(int64) time.Time,
-) (*time.Time, error) {
+) (time.Time, error) {
 	val, err := jsonquery.New(node, zoom...).IntegerOptional(timestampKey)
 	if err != nil {
-		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
+		return time.Time{}, fmt.Errorf("error: bad since timestamp key: %w", err)
 	}
 
 	if val == nil {
-		return nil, fmt.Errorf("%w: %q", ErrTimestampKeyNotFound, timestampKey)
+		return time.Time{}, fmt.Errorf("%w: %q", ErrTimestampKeyNotFound, timestampKey)
 	}
 
 	timestamp := timeFormat(*val)
 
-	return &timestamp, nil
+	return timestamp, nil
 }
 
 // convertIntToTime reads a string field and converts it to a time.Time using timestampFormat.
@@ -284,17 +284,17 @@ func convertStrToTime(nodeRecord *ajson.Node,
 	zoom []string,
 	timestampKey string,
 	timestampFormat string,
-) (*time.Time, error) {
+) (time.Time, error) {
 	// Extract the timestamp value from the record as a formatted string.
 	timestamp, err := jsonquery.New(nodeRecord, zoom...).StringRequired(timestampKey)
 	if err != nil {
-		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
+		return time.Time{}, fmt.Errorf("error: bad since timestamp key: %w", err)
 	}
 
 	recordTimestamp, err := time.Parse(timestampFormat, timestamp)
 	if err != nil {
-		return nil, fmt.Errorf("error: cannot parse timestamp for key %q: %w", timestampKey, err)
+		return time.Time{}, fmt.Errorf("error: cannot parse timestamp for key %q: %w", timestampKey, err)
 	}
 
-	return &recordTimestamp, nil
+	return recordTimestamp, nil
 }
