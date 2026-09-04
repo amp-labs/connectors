@@ -13,8 +13,14 @@ import (
 // {{.workspace}}.my.salesforce.com. Some orgs cannot be reached that way — an
 // enterprise egress policy may require API traffic to traverse a gateway, and
 // some builders need OAuth to run against login.salesforce.com so that SSO
-// users can authenticate. This entry parameterizes both hosts independently so
-// each can be pointed wherever a given connection requires.
+// users can authenticate.
+//
+// Here the workspace is the API host itself, including any path prefix, and the
+// OAuth host is a separate authDomain. Using the workspace for the API host
+// keeps this consistent with every other provider: the substitution map always
+// carries a workspace, so resolving ProviderInfo without a connection — as the
+// provider-metadata endpoint does — degrades to an empty host rather than
+// failing on a missing key.
 const SalesforceCustomDomain Provider = "salesforceCustomDomain"
 
 // nolint:funlen
@@ -22,7 +28,7 @@ func init() {
 	SetInfo(SalesforceCustomDomain, ProviderInfo{
 		DisplayName: "Salesforce (Custom Domain)",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.apiDomain}}",
+		BaseURL:     "https://{{.workspace}}",
 		AuthHealthCheck: &AuthHealthCheck{
 			Method:             http.MethodGet,
 			SuccessStatusCodes: []int{http.StatusOK},
@@ -34,22 +40,22 @@ func init() {
 			AuthURLParams:          map[string]string{"prompt": "login"},
 			TokenURL:               "https://{{.authDomain}}/services/oauth2/token",
 			ExplicitScopesRequired: false,
-			// The API host is supplied as metadata rather than derived from the
-			// org, so it must be collected before the OAuth flow begins.
+			// The workspace carries the API host rather than a subdomain, so it
+			// must be collected before the OAuth flow begins.
 			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
 				ConsumerRefField: "id",
 				ScopesField:      "scope",
 				// WorkspaceRefField is deliberately unset. Salesforce returns
 				// instance_url pointing at the org's own domain, which is not
-				// where this connection sends requests, so adopting it as the
-				// workspace ref would contradict apiDomain.
+				// necessarily where this connection sends requests, so adopting
+				// it would overwrite the API host the builder supplied.
 			},
 		},
 		DefaultModule: ModuleSalesforceCRM,
 		Modules: &Modules{
 			ModuleSalesforceCRM: {
-				BaseURL:     "https://{{.apiDomain}}",
+				BaseURL:     "https://{{.workspace}}",
 				DisplayName: "Salesforce (Custom Domain)",
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
@@ -119,7 +125,7 @@ func init() {
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
 				{
-					Name:        "apiDomain",
+					Name:        "workspace",
 					DisplayName: "API domain",
 					Prompt: "Host that serves the Salesforce REST, Bulk and Tooling APIs for this org, " +
 						"including any path prefix (e.g. `acme.my.salesforce.com`, or " +

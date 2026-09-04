@@ -26,7 +26,7 @@ func TestSalesforceCustomDomainSeparatesHosts(t *testing.T) {
 	t.Parallel()
 
 	info, err := ReadInfo(SalesforceCustomDomain, customDomainVars(map[string]string{
-		"apiDomain":  "gateway.example.com/salesforce",
+		"workspace":  "gateway.example.com/salesforce",
 		"authDomain": "login.salesforce.com",
 	})...)
 	if err != nil {
@@ -61,7 +61,7 @@ func TestSalesforceCustomDomainAuthDomainDefaults(t *testing.T) {
 	t.Parallel()
 
 	info, err := ReadInfo(SalesforceCustomDomain, customDomainVars(map[string]string{
-		"apiDomain": "acme.my.salesforce.com",
+		"workspace": "acme.my.salesforce.com",
 	})...)
 	if err != nil {
 		t.Fatalf("ReadInfo failed: %v", err)
@@ -73,17 +73,41 @@ func TestSalesforceCustomDomainAuthDomainDefaults(t *testing.T) {
 	}
 }
 
-// TestSalesforceCustomDomainRequiresAPIDomain checks that apiDomain has no
-// default, so a connection that omits it fails loudly at resolution rather than
-// silently addressing the wrong host.
-func TestSalesforceCustomDomainRequiresAPIDomain(t *testing.T) {
+// TestSalesforceCustomDomainRequiresWorkspace checks that the workspace, which
+// carries the API host, has no default — so a connection that omits it fails
+// loudly at resolution rather than silently addressing the wrong host.
+func TestSalesforceCustomDomainRequiresWorkspace(t *testing.T) {
 	t.Parallel()
 
 	_, err := ReadInfo(SalesforceCustomDomain, customDomainVars(map[string]string{
 		"authDomain": "login.salesforce.com",
 	})...)
 	if err == nil {
-		t.Error("expected ReadInfo to fail when apiDomain is not supplied")
+		t.Error("expected ReadInfo to fail when workspace is not supplied")
+	}
+}
+
+// TestSalesforceCustomDomainResolvesWithEmptyWorkspace covers reading
+// ProviderInfo without a connection, as the provider-metadata endpoint does.
+// The substitution map always carries a workspace, so an empty one must resolve
+// to an empty host rather than failing on a missing key.
+func TestSalesforceCustomDomainResolvesWithEmptyWorkspace(t *testing.T) {
+	t.Parallel()
+
+	info, err := ReadInfo(SalesforceCustomDomain, customDomainVars(map[string]string{
+		"workspace": "",
+	})...)
+	if err != nil {
+		t.Fatalf("ReadInfo failed for an empty workspace: %v", err)
+	}
+
+	if info.BaseURL != "https://" {
+		t.Errorf("BaseURL: want %q, got %q", "https://", info.BaseURL)
+	}
+
+	wantAuth := "https://login.salesforce.com/services/oauth2/authorize"
+	if info.Oauth2Opts.AuthURL != wantAuth {
+		t.Errorf("AuthURL: want %q, got %q", wantAuth, info.Oauth2Opts.AuthURL)
 	}
 }
 
@@ -93,7 +117,7 @@ func TestSalesforceCustomDomainMirrorsSalesforceSupport(t *testing.T) {
 	t.Parallel()
 
 	twin, err := ReadInfo(SalesforceCustomDomain, customDomainVars(map[string]string{
-		"apiDomain":  "acme.my.salesforce.com",
+		"workspace":  "acme.my.salesforce.com",
 		"authDomain": "login.salesforce.com",
 	})...)
 	if err != nil {
