@@ -19,6 +19,7 @@ func main() {
 		"catalog",
 		"merchants",
 		"catalogItems",
+		"teamMembers",
 	})
 	if err != nil {
 		utils.Fail(err.Error())
