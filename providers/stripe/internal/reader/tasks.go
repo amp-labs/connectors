@@ -100,7 +100,7 @@ func executeReadTasksAccounts(ctx context.Context,
 			// Enhance fields to indicate what account this row is associated with.
 			row.Fields[fieldConnectedAccountId] = accountId
 		},
-	), nil
+	)
 }
 
 // executeReadTasksTreasury executes multiple read tasks in parallel and aggregates their results.
@@ -141,5 +141,5 @@ func executeReadTasksTreasury(ctx context.Context,
 			row.Fields[fieldConnectedAccountId] = financialAccounts[financialAccountId].ConnectedAccountId
 			row.Fields[fieldFinancialAccountId] = financialAccountId
 		},
-	), nil
+	)
 }
