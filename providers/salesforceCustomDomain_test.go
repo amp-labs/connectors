@@ -19,21 +19,22 @@ func customDomainVars(vars map[string]string) []catalogreplacer.CatalogVariable 
 	return result
 }
 
-// TestSalesforceCustomDomainSeparatesHosts checks that the API host and the OAuth
-// host resolve independently, which is the whole point of this provider: data
-// traffic may be routed through a gateway while OAuth stays on Salesforce.
-func TestSalesforceCustomDomainSeparatesHosts(t *testing.T) {
+// TestSalesforceCustomDomainRoutesEverythingThroughWorkspace checks that the API
+// base and the token endpoint both derive from the workspace, including its path
+// prefix. A gateway fronting Salesforce serves both under the same prefix.
+func TestSalesforceCustomDomainRoutesEverythingThroughWorkspace(t *testing.T) {
 	t.Parallel()
 
+	const gateway = "gateway.example.com/process_salesforce_request"
+
 	info, err := ReadInfo(SalesforceCustomDomain, customDomainVars(map[string]string{
-		"workspace":  "gateway.example.com/salesforce",
-		"authDomain": "login.salesforce.com",
+		"workspace": gateway,
 	})...)
 	if err != nil {
 		t.Fatalf("ReadInfo failed: %v", err)
 	}
 
-	wantBase := "https://gateway.example.com/salesforce"
+	wantBase := "https://" + gateway
 	if info.BaseURL != wantBase {
 		t.Errorf("BaseURL: want %q, got %q", wantBase, info.BaseURL)
 	}
@@ -43,21 +44,37 @@ func TestSalesforceCustomDomainSeparatesHosts(t *testing.T) {
 		t.Errorf("module BaseURL: want %q, got %q", wantBase, moduleInfo.BaseURL)
 	}
 
-	wantAuth := "https://login.salesforce.com/services/oauth2/authorize"
-	if info.Oauth2Opts.AuthURL != wantAuth {
-		t.Errorf("AuthURL: want %q, got %q", wantAuth, info.Oauth2Opts.AuthURL)
-	}
-
-	wantToken := "https://login.salesforce.com/services/oauth2/token"
+	wantToken := wantBase + "/services/oauth2/token"
 	if info.Oauth2Opts.TokenURL != wantToken {
 		t.Errorf("TokenURL: want %q, got %q", wantToken, info.Oauth2Opts.TokenURL)
 	}
 }
 
-// TestSalesforceCustomDomainAuthDomainDefaults checks that authDomain falls back
-// to login.salesforce.com. Without a default, an unsupplied value would fail the
-// catalog's missingkey=error substitution rather than resolving sensibly.
-func TestSalesforceCustomDomainAuthDomainDefaults(t *testing.T) {
+// TestSalesforceCustomDomainUsesClientCredentials guards the grant type. These
+// connections are server-to-server, and the gateway does not serve the
+// interactive authorize page, so an authorization code grant is not usable.
+func TestSalesforceCustomDomainUsesClientCredentials(t *testing.T) {
+	t.Parallel()
+
+	info, err := ReadInfo(SalesforceCustomDomain, customDomainVars(map[string]string{
+		"workspace": "gateway.example.com/process_salesforce_request",
+	})...)
+	if err != nil {
+		t.Fatalf("ReadInfo failed: %v", err)
+	}
+
+	if info.Oauth2Opts.GrantType != ClientCredentials {
+		t.Errorf("GrantType: want %q, got %q", ClientCredentials, info.Oauth2Opts.GrantType)
+	}
+
+	if info.Oauth2Opts.AuthURL != "" {
+		t.Errorf("AuthURL should be unset for a client credentials grant, got %q", info.Oauth2Opts.AuthURL)
+	}
+}
+
+// TestSalesforceCustomDomainDirectHost checks the non-gateway case: a workspace
+// with no path prefix still yields well-formed URLs.
+func TestSalesforceCustomDomainDirectHost(t *testing.T) {
 	t.Parallel()
 
 	info, err := ReadInfo(SalesforceCustomDomain, customDomainVars(map[string]string{
@@ -67,9 +84,9 @@ func TestSalesforceCustomDomainAuthDomainDefaults(t *testing.T) {
 		t.Fatalf("ReadInfo failed: %v", err)
 	}
 
-	wantAuth := "https://login.salesforce.com/services/oauth2/authorize"
-	if info.Oauth2Opts.AuthURL != wantAuth {
-		t.Errorf("AuthURL: want %q, got %q", wantAuth, info.Oauth2Opts.AuthURL)
+	wantToken := "https://acme.my.salesforce.com/services/oauth2/token"
+	if info.Oauth2Opts.TokenURL != wantToken {
+		t.Errorf("TokenURL: want %q, got %q", wantToken, info.Oauth2Opts.TokenURL)
 	}
 }
 
@@ -80,7 +97,7 @@ func TestSalesforceCustomDomainRequiresWorkspace(t *testing.T) {
 	t.Parallel()
 
 	_, err := ReadInfo(SalesforceCustomDomain, customDomainVars(map[string]string{
-		"authDomain": "login.salesforce.com",
+		"someOtherKey": "value",
 	})...)
 	if err == nil {
 		t.Error("expected ReadInfo to fail when workspace is not supplied")
@@ -105,9 +122,9 @@ func TestSalesforceCustomDomainResolvesWithEmptyWorkspace(t *testing.T) {
 		t.Errorf("BaseURL: want %q, got %q", "https://", info.BaseURL)
 	}
 
-	wantAuth := "https://login.salesforce.com/services/oauth2/authorize"
-	if info.Oauth2Opts.AuthURL != wantAuth {
-		t.Errorf("AuthURL: want %q, got %q", wantAuth, info.Oauth2Opts.AuthURL)
+	wantToken := "https:///services/oauth2/token"
+	if info.Oauth2Opts.TokenURL != wantToken {
+		t.Errorf("TokenURL: want %q, got %q", wantToken, info.Oauth2Opts.TokenURL)
 	}
 }
 
@@ -117,8 +134,7 @@ func TestSalesforceCustomDomainMirrorsSalesforceSupport(t *testing.T) {
 	t.Parallel()
 
 	twin, err := ReadInfo(SalesforceCustomDomain, customDomainVars(map[string]string{
-		"workspace":  "acme.my.salesforce.com",
-		"authDomain": "login.salesforce.com",
+		"workspace": "acme.my.salesforce.com",
 	})...)
 	if err != nil {
 		t.Fatalf("ReadInfo for twin failed: %v", err)

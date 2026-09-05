@@ -4,23 +4,27 @@ import (
 	"net/http"
 )
 
-// SalesforceCustomDomain is a twin of the Salesforce provider for orgs that are
-// not reached at their my.salesforce.com domain. It targets the same APIs and
-// modules, so the connector implementation in providers/salesforce is reused
-// under a different provider name (see WithProvider in that package).
+// SalesforceCustomDomain is a twin of the Salesforce provider for orgs whose
+// APIs are not reached at their my.salesforce.com domain. It targets the same
+// APIs and modules, so the connector implementation in providers/salesforce is
+// reused under a different provider name (see WithProvider in that package).
 //
-// Motivation: the Salesforce entry hardcodes the API and OAuth hosts as
-// {{.workspace}}.my.salesforce.com. Some orgs cannot be reached that way — an
-// enterprise egress policy may require API traffic to traverse a gateway, and
-// some builders need OAuth to run against login.salesforce.com so that SSO
-// users can authenticate.
+// Motivation: the Salesforce entry hardcodes every host as
+// {{.workspace}}.my.salesforce.com. An enterprise egress policy may instead
+// require all Salesforce traffic — data and token alike — to traverse a
+// customer-operated gateway, reachable at an arbitrary host and path prefix.
 //
-// Here the workspace is the API host itself, including any path prefix, and the
-// OAuth host is a separate authDomain. Using the workspace for the API host
-// keeps this consistent with every other provider: the substitution map always
-// carries a workspace, so resolving ProviderInfo without a connection — as the
-// provider-metadata endpoint does — degrades to an empty host rather than
+// The workspace therefore carries that whole prefix rather than a subdomain,
+// and both the token endpoint and the API base derive from it. Keeping it in
+// the workspace rather than a bespoke variable matters: the substitution map
+// always carries a workspace, so resolving ProviderInfo without a connection —
+// as the provider-metadata endpoint does — degrades to an empty host instead of
 // failing on a missing key.
+//
+// The grant is client credentials because such a gateway typically fronts the
+// token endpoint but not the interactive authorize page, and because these
+// connections are server-to-server with no consumer present to complete a
+// browser redirect.
 const SalesforceCustomDomain Provider = "salesforceCustomDomain"
 
 // nolint:funlen
@@ -32,13 +36,15 @@ func init() {
 		AuthHealthCheck: &AuthHealthCheck{
 			Method:             http.MethodGet,
 			SuccessStatusCodes: []int{http.StatusOK},
-			Url:                "https://{{.authDomain}}/services/oauth2/userinfo",
+			Url:                "https://{{.workspace}}/services/oauth2/userinfo",
 		},
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:              AuthorizationCodePKCE,
-			AuthURL:                "https://{{.authDomain}}/services/oauth2/authorize",
-			AuthURLParams:          map[string]string{"prompt": "login"},
-			TokenURL:               "https://{{.authDomain}}/services/oauth2/token",
+			// Client credentials rather than an authorization code grant: the
+			// gateway fronting Salesforce serves the token endpoint but not the
+			// interactive authorize page, and these connections are
+			// server-to-server with no consumer present to complete a redirect.
+			GrantType:              ClientCredentials,
+			TokenURL:               "https://{{.workspace}}/services/oauth2/token",
 			ExplicitScopesRequired: false,
 			// The workspace carries the API host rather than a subdomain, so it
 			// must be collected before the OAuth flow begins.
@@ -130,19 +136,6 @@ func init() {
 					Prompt: "Host that serves the Salesforce REST, Bulk and Tooling APIs for this org, " +
 						"including any path prefix (e.g. `acme.my.salesforce.com`, or " +
 						"`gateway.example.com/salesforce` when traffic is routed through a gateway).",
-					ModuleDependencies: &ModuleDependencies{
-						ModuleSalesforceCRM: {},
-					},
-				},
-				{
-					Name:        "authDomain",
-					DisplayName: "OAuth domain",
-					// Defaulting here also means an unset value never reaches the
-					// catalog templates, which are resolved with missingkey=error.
-					DefaultValue: "login.salesforce.com",
-					Prompt: "Host that serves the OAuth authorize and token endpoints. " +
-						"Defaults to login.salesforce.com, which works for most orgs including SSO users.",
-					DocsURL: "https://help.salesforce.com/s/articleView?id=000388956&type=1",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleSalesforceCRM: {},
 					},
