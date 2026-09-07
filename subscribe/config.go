@@ -98,6 +98,11 @@ var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
 			providers.ModuleSalesforceCRM: &salesforceConfig,
 		},
 	},
+	providers.SalesforceCustomDomain: {
+		Modules: map[common.ModuleID]*ProviderConfig{
+			providers.ModuleSalesforceCRM: &salesforceConfig,
+		},
+	},
 	providers.SalesforceJWT: {
 		Modules: map[common.ModuleID]*ProviderConfig{
 			providers.ModuleSalesforceCRM: &salesforceConfig,

@@ -292,6 +292,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Salesfinity:               wrapper(newSalesfinityConnector),
 	providers.Salesflare:                wrapper(newSalesflareConnector),
 	providers.Salesforce:                wrapper(newSalesforceConnector),
+	providers.SalesforceCustomDomain:    wrapper(newSalesforceCustomDomainConnector),
 	providers.SalesforceJWT:             wrapper(newSalesforceJWTConnector),
 	providers.Salesloft:                 wrapper(newSalesloftConnector),
 	providers.Seismic:                   wrapper(newSeismicConnector),
@@ -338,6 +339,27 @@ func newSalesflareConnector(params common.ConnectorParams) (*salesflare.Connecto
 
 func newSalesforceConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
 	opts := []salesforce.Option{
+		salesforce.WithAuthenticatedClient(params.AuthenticatedClient),
+		salesforce.WithWorkspace(params.Workspace),
+		salesforce.WithModule(params.Module),
+		salesforce.WithMetadata(params.Metadata),
+	}
+
+	if field, ok := params.Metadata["timestampColumn"]; ok && field != "" {
+		opts = append(opts, salesforce.WithTimestampColumn(field, extractAlternateTimestampUsingObjects(params.Metadata)))
+	}
+
+	return salesforce.NewConnector(opts...)
+}
+
+// newSalesforceCustomDomainConnector builds a Salesforce connector under the
+// SalesforceCustomDomain twin provider. It reuses the standard
+// salesforce.Connector implementation — the only difference is the provider
+// name, which determines which ProviderInfo is loaded and therefore which hosts
+// the connector addresses.
+func newSalesforceCustomDomainConnector(params common.ConnectorParams) (*salesforce.Connector, error) {
+	opts := []salesforce.Option{
+		salesforce.WithProvider(providers.SalesforceCustomDomain),
 		salesforce.WithAuthenticatedClient(params.AuthenticatedClient),
 		salesforce.WithWorkspace(params.Workspace),
 		salesforce.WithModule(params.Module),
