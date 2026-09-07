@@ -36,7 +36,7 @@ func init() {
 		AuthHealthCheck: &AuthHealthCheck{
 			Method:             http.MethodGet,
 			SuccessStatusCodes: []int{http.StatusOK},
-			Url:                "https://{{.workspace}}/services/oauth2/userinfo",
+			Url:                "https://{{.authURL}}/services/oauth2/userinfo",
 		},
 		Oauth2Opts: &Oauth2Opts{
 			// Client credentials rather than an authorization code grant: the
@@ -44,7 +44,7 @@ func init() {
 			// interactive authorize page, and these connections are
 			// server-to-server with no consumer present to complete a redirect.
 			GrantType:              ClientCredentials,
-			TokenURL:               "https://{{.workspace}}/services/oauth2/token",
+			TokenURL:               "https://{{.authURL}}/services/oauth2/token",
 			ExplicitScopesRequired: false,
 			// The workspace carries the API host rather than a subdomain, so it
 			// must be collected before the OAuth flow begins.
@@ -135,6 +135,27 @@ func init() {
 					DisplayName: "API domain",
 					Prompt: "Host that serves the Salesforce REST APIs for this org, " +
 						"for example, `my.gateway.com/handler`",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleSalesforceCRM: {},
+					},
+				},
+				{
+					Name:        "authURL",
+					DisplayName: "OAuth domain",
+					// Defaults to the API domain, so a connection that routes
+					// through a gateway authenticates through it too rather than
+					// silently reaching Salesforce directly and bypassing the
+					// customer's egress policy. Set it explicitly to separate the
+					// two — login.salesforce.com, for instance, when the org's
+					// users authenticate through SSO.
+					//
+					// The literal below only applies when ProviderInfo is resolved
+					// without a connection, as the provider-metadata endpoint does.
+					// It exists because catalog substitution runs with
+					// missingkey=error, so an undefaulted variable fails that call.
+					DefaultValue: "login.salesforce.com",
+					Prompt: "Host that serves the OAuth token endpoint. " +
+						"Defaults to the API domain.",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleSalesforceCRM: {},
 					},
