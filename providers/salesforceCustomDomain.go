@@ -133,9 +133,8 @@ func init() {
 				{
 					Name:        "workspace",
 					DisplayName: "API domain",
-					Prompt: "Host that serves the Salesforce REST, Bulk and Tooling APIs for this org, " +
-						"including any path prefix (e.g. `acme.my.salesforce.com`, or " +
-						"`gateway.example.com/salesforce` when traffic is routed through a gateway).",
+					Prompt: "Host that serves the Salesforce REST APIs for this org, " +
+						"for example, `my.gateway.com/handler`",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleSalesforceCRM: {},
 					},
