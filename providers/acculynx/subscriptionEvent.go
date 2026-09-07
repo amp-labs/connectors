@@ -79,6 +79,29 @@ var topicsWithoutParentRecordID = datautils.NewStringSet(
 	"job.custom-field.status_changed",
 )
 
+// topicObjectOverrides maps topics that belong to a nested subscribe object,
+// consulted before the topic-prefix fallback in ObjectName. The company
+// representative is a per-job singleton with its own get-by-id path, so its
+// topics resolve to jobs/representatives rather than jobs (the inverse of
+// housecallPro, which routes employee.* to "other" because no get-by-id
+// endpoint exists there).
+//
+//nolint:gochecknoglobals
+var topicObjectOverrides = map[string]string{
+	"job.representatives.company_assigned": objectJobsRepresentatives,
+	"job.representatives.company_changed":  objectJobsRepresentatives,
+}
+
+// topicEventTypeOverrides pins topics whose suffix misclassifies them.
+// company_assigned ends in _assigned (suffix heuristic: other), but it is an
+// update to the job's representative slot: the slot always exists, assignment
+// fills it. Consulted before the suffix switch in EventType.
+//
+//nolint:gochecknoglobals
+var topicEventTypeOverrides = map[string]common.SubscriptionEventType{
+	"job.representatives.company_assigned": common.SubscriptionEventTypeUpdate,
+}
+
 // PreLoadData is a no-op for AccuLynx — webhook payloads are self-contained.
 func (e SubscriptionEvent) PreLoadData(_ *common.SubscriptionEventPreLoadData) error {
 	return nil
@@ -113,12 +136,17 @@ func (e SubscriptionEvent) RawEventName() (string, error) {
 	return topic, nil
 }
 
-// EventType maps the topic suffix to Create / Update / Other. AccuLynx has
-// no delete topics.
+// EventType classifies the topic: exact overrides first (see
+// topicEventTypeOverrides), then the suffix heuristic. AccuLynx has no
+// delete topics.
 func (e SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 	topic, err := e.RawEventName()
 	if err != nil {
 		return common.SubscriptionEventTypeOther, err
+	}
+
+	if evtType, ok := topicEventTypeOverrides[topic]; ok {
+		return evtType, nil
 	}
 
 	switch {
@@ -133,12 +161,17 @@ func (e SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 	}
 }
 
-// ObjectName derives the target object from the topic prefix
+// ObjectName resolves the target object: exact topic overrides first (see
+// topicObjectOverrides, e.g. jobs/representatives), then the topic prefix
 // (contact* → contacts, job* → jobs).
 func (e SubscriptionEvent) ObjectName() (string, error) {
 	topic, err := e.RawEventName()
 	if err != nil {
 		return "", err
+	}
+
+	if obj, ok := topicObjectOverrides[topic]; ok {
+		return obj, nil
 	}
 
 	switch {
@@ -163,7 +196,10 @@ func (e SubscriptionEvent) Workspace() (string, error) {
 	return "", nil
 }
 
-// RecordId returns the affected contact/job id from event.<object>.id.
+// RecordId returns the affected record id from event.<wrapper>.id. For
+// contacts/jobs that is the record's own id; for jobs/representatives it is
+// the job id read from the same event.job wrapper — the slot's only stable
+// identity, since AccuLynx rotates the representative id on every assignment.
 // Returns errParentRecordIDUnavailable for topics where AccuLynx omits the
 // parent id (see topicsWithoutParentRecordID).
 func (e SubscriptionEvent) RecordId() (string, error) {
@@ -207,7 +243,10 @@ func (e SubscriptionEvent) EventTimeStampNano() (int64, error) {
 
 // topicToUpdatedFields maps each specific-change topic to its wire-format
 // field name under event.<object>. Generic and create topics resolve to an
-// empty slice in UpdatedFields.
+// empty slice in UpdatedFields. Representative topics are absent on purpose:
+// they are updates to the jobs/representatives object itself, where no single
+// field can express the change, so UpdatedFields stays empty and consumers
+// watch with watchFieldsAuto.
 //
 //nolint:gochecknoglobals
 var topicToUpdatedFields = map[string][]string{
@@ -218,8 +257,6 @@ var topicToUpdatedFields = map[string][]string{
 	"job.work-type_changed":                             {"workType"},
 	"job.trade-type_changed":                            {"tradeTypes"},
 	"job.contacts.primary_changed":                      {"contacts"},
-	"job.representatives.company_assigned":              {"companyRepresentative"},
-	"job.representatives.company_changed":               {"companyRepresentative"},
 	"job.appointments.initial_created":                  {"initialAppointment"},
 	"job.appointments.initial_updated":                  {"initialAppointment"},
 	"job.invoice_updated":                               {"invoice"},
@@ -271,7 +308,9 @@ func (e SubscriptionEvent) objectWrapper() (map[string]any, error) {
 	switch objName {
 	case objectContacts:
 		key = objectWrapperContact
-	case objectJobs:
+	case objectJobs, objectJobsRepresentatives:
+		// Representative topics are delivered inside the job wrapper
+		// (event.job.companyRepresentative); the record id is the job id.
 		key = objectWrapperJob
 	}
 

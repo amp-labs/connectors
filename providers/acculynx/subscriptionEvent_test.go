@@ -25,6 +25,8 @@ func TestSubscriptionEvent_ObjectName(t *testing.T) {
 		{"job_updated", objectJobs, nil},
 		{"job.milestone.current_changed", objectJobs, nil},
 		{"job.financials.approved-value_changed", objectJobs, nil},
+		{"job.representatives.company_assigned", objectJobsRepresentatives, nil},
+		{"job.representatives.company_changed", objectJobsRepresentatives, nil},
 		{"unsupported_topic", "", errUnsupportedTopicName},
 	}
 
@@ -61,6 +63,10 @@ func TestSubscriptionEvent_EventType(t *testing.T) {
 		{"job_updated", common.SubscriptionEventTypeUpdate},
 		{"job.milestone.current_changed", common.SubscriptionEventTypeUpdate},
 		{"job.invoice_voided", common.SubscriptionEventTypeUpdate},
+		// _assigned would suffix-classify as "other"; the override pins it to
+		// update — the representative slot always exists, assignment fills it.
+		{"job.representatives.company_assigned", common.SubscriptionEventTypeUpdate},
+		{"job.representatives.company_changed", common.SubscriptionEventTypeUpdate},
 		{"job.something_weird", common.SubscriptionEventTypeOther},
 	}
 
@@ -128,6 +134,25 @@ func TestSubscriptionEvent_RecordId_RoutesByObjectType(t *testing.T) {
 	contactID, err := contactEvt.RecordId()
 	assert.NilError(t, err)
 	assert.Equal(t, contactID, "contact-456")
+
+	// Representative topics deliver inside the job wrapper and the record id
+	// is the job id: AccuLynx rotates the representative's own id on every
+	// assignment, so the job id is the slot's only stable identity.
+	repEvt := SubscriptionEvent{
+		eventFieldTopicName: "job.representatives.company_assigned",
+		eventFieldEvent: map[string]any{
+			objectWrapperJob: map[string]any{
+				innerFieldID: "job-789",
+				"companyRepresentative": map[string]any{
+					innerFieldID: "rep-001",
+				},
+			},
+		},
+	}
+
+	repID, err := repEvt.RecordId()
+	assert.NilError(t, err)
+	assert.Equal(t, repID, "job-789")
 }
 
 func TestSubscriptionEvent_RecordId_MissingObjectWrapperReturnsError(t *testing.T) {
@@ -233,8 +258,10 @@ func TestSubscriptionEvent_UpdatedFields(t *testing.T) {
 		{"job.work-type_changed", []string{"workType"}},
 		{"job.trade-type_changed", []string{"tradeTypes"}},
 		{"job.contacts.primary_changed", []string{"contacts"}},
-		{"job.representatives.company_assigned", []string{"companyRepresentative"}},
-		{"job.representatives.company_changed", []string{"companyRepresentative"}},
+		// Representative topics are updates to jobs/representatives itself, so
+		// no single job field describes the change — empty, per watchFieldsAuto.
+		{"job.representatives.company_assigned", []string{}},
+		{"job.representatives.company_changed", []string{}},
 		{"job.appointments.initial_created", []string{"initialAppointment"}},
 		{"job.appointments.initial_updated", []string{"initialAppointment"}},
 		{"job.invoice_updated", []string{"invoice"}},
