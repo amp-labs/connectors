@@ -3,17 +3,17 @@ package subscribe
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/subscribe/deps"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
-
-func boolPtr(v bool) *bool {
-	return &v
-}
 
 // makeProviderInfo loads the provider's real ProviderInfo from the providers catalog so the
 // ProviderInfo-derived subscribe methods (IsSupportedViaAPI, SubscribeManually, ShouldPerform, …)
@@ -47,15 +47,15 @@ func TestResolveModuleSubscribeDataModuleSelection(t *testing.T) {
 		providers.ModuleSalesforceCRM: providers.ModuleInfo{
 			Support: providers.Support{Subscribe: true},
 			SubscribeRequirements: &providers.SubscribeRequirements{
-				Registration:   boolPtr(true),
-				SubscribeByAPI: boolPtr(true),
+				Registration:   new(true),
+				SubscribeByAPI: new(true),
 			},
 		},
 	}
 
 	topLevelReqs := &providers.SubscribeRequirements{
-		Registration:   boolPtr(false),
-		SubscribeByAPI: boolPtr(false),
+		Registration:   new(false),
+		SubscribeByAPI: new(false),
 	}
 
 	provInfo := &providers.ProviderInfo{
@@ -124,11 +124,11 @@ func TestResolveModuleSubscribeDataNoMatch(t *testing.T) {
 	modules := providers.Modules{
 		"only-this-one": providers.ModuleInfo{
 			Support:               providers.Support{Subscribe: true},
-			SubscribeRequirements: &providers.SubscribeRequirements{SubscribeByAPI: boolPtr(true)},
+			SubscribeRequirements: &providers.SubscribeRequirements{SubscribeByAPI: new(true)},
 		},
 	}
 
-	topLevelReqs := &providers.SubscribeRequirements{SubscribeByAPI: boolPtr(false)}
+	topLevelReqs := &providers.SubscribeRequirements{SubscribeByAPI: new(false)}
 	provInfo := &providers.ProviderInfo{
 		Name:                  providers.Hubspot,
 		Support:               providers.Support{Subscribe: false},
@@ -152,7 +152,7 @@ func TestResolveModuleSubscribeDataNoMatch(t *testing.T) {
 func TestResolveModuleSubscribeDataNilModules(t *testing.T) {
 	t.Parallel()
 
-	topLevelReqs := &providers.SubscribeRequirements{Registration: boolPtr(true)}
+	topLevelReqs := &providers.SubscribeRequirements{Registration: new(true)}
 	provInfo := &providers.ProviderInfo{
 		Name:                  providers.Outreach,
 		Support:               providers.Support{Subscribe: true},
@@ -184,7 +184,7 @@ func TestResolveModuleSubscribeDataModuleNilRequirements(t *testing.T) {
 		},
 	}
 
-	topLevelReqs := &providers.SubscribeRequirements{Registration: boolPtr(true)}
+	topLevelReqs := &providers.SubscribeRequirements{Registration: new(true)}
 	provInfo := &providers.ProviderInfo{
 		Support:               providers.Support{Subscribe: false},
 		Modules:               &modules,
@@ -402,5 +402,222 @@ func TestVerificationCastEvents(t *testing.T) {
 	_, err = sfCfg.Verification.CastEvents([]map[string]any{})
 	if !errors.Is(err, errSubscriptionEventCasterNotDeclared) {
 		t.Errorf("CastEvents() error = %v, want errSubscriptionEventCasterNotDeclared", err)
+	}
+}
+
+// TestProviderConfigRegistryCompleteness is a guardrail test that prevents
+// enabling Subscribe support in the provider catalog without providing the
+// corresponding configuration in this package. It ensures that every provider
+// or module with Subscribe enabled has either:
+//   - A module-specific config in Modules[moduleID], or
+//   - A fallback DefaultModuleConfig for module-agnostic providers (e.g., HubSpot).
+//
+// The test dynamically builds its assertions from the catalog, so adding a new
+// provider or enabling Subscribe automatically adds a corresponding check here.
+func TestProviderConfigRegistryCompleteness(t *testing.T) {
+	providerCatalog, err := providers.ReadCatalog()
+	if err != nil {
+		t.Fatalf("cannot read provider catalog: %v", err)
+	}
+
+	type testCase struct {
+		name      string
+		assertion *testutils.CompareResult
+	}
+
+	// Pre-allocate the maximum possible number of test cases (one per provider).
+	// The actual number may be lower if some providers have no Subscribe-enabled modules.
+	tests := make([]testCase, len(providerCatalog.Catalog))
+	idx := -1
+
+	for providerName, providerInfo := range providerCatalog.Catalog {
+		idx++
+
+		// Build assertions for provider-level Subscribe (module-agnostic case).
+		providerAssertion := testutils.NewCompareResult()
+		if providerInfo.Support.Subscribe {
+			providerAssertion.Merge(assertProviderSubscribeEnabled(providerName))
+		}
+
+		// Build assertions for each module with Subscribe enabled.
+		moduleAssertion := testutils.NewCompareResult()
+		hasSubscribeModules := false
+		if providerInfo.Modules != nil {
+			for moduleName, moduleInfo := range *providerInfo.Modules {
+				if moduleInfo.Support.Subscribe {
+					moduleAssertion.Merge(assertModuleSubscribeEnabled(providerName, moduleName))
+					hasSubscribeModules = true
+				}
+			}
+		}
+
+		// Both assertions failed, it is worth reporting everything.
+		if !providerAssertion.OK && !moduleAssertion.OK {
+			assertion := testutils.NewCompareResult()
+			assertion.Merge(providerAssertion)
+			assertion.Merge(moduleAssertion)
+			tests[idx] = testCase{
+				name:      "ProviderConfig should match against Catalog",
+				assertion: assertion,
+			}
+			continue
+		}
+
+		if hasSubscribeModules {
+			// Module-specific configs take precedence.
+			// DefaultModuleConfig is optional and can act as fallback.
+			tests[idx] = testCase{
+				name:      "ProviderConfigRegistry.Modules should match against Catalog",
+				assertion: moduleAssertion,
+			}
+			continue
+		}
+
+		// Provider has no modules. Subscribe support requires at least DefaultModuleConfig.
+		tests[idx] = testCase{
+			name:      "ProviderConfigRegistry.DefaultModuleConfig should match against Catalog",
+			assertion: providerAssertion,
+		}
+	}
+
+	// Execute all assertions as parallel subtests to surface all failures at once.
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			tt.assertion.Validate(t, tt.name)
+		})
+	}
+}
+
+// assertProviderSubscribeEnabled validates that a provider with module-agnostic
+// Subscribe support has a non-nil DefaultModuleConfig. This applies to providers
+// that do not declare module-specific configs.
+func assertProviderSubscribeEnabled(providerName string) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+
+	configRegistry, ok := providerConfigs[providerName]
+	if !ok {
+		return result.AddDiff("providerConfigs[%v] is missing, "+
+			"but subscription to provider is enabled", providerName)
+	}
+	if configRegistry.DefaultModuleConfig == nil {
+		return result.AddDiff("providerConfigs[%v].DefaultModuleConfig is nil", providerName)
+	}
+
+	return result
+}
+
+// assertModuleSubscribeEnabled validates that a module with Subscribe enabled
+// has a corresponding config entry. The config may be:
+//   - A module-specific entry in Modules[moduleName], or
+//   - A fallback DefaultModuleConfig if the provider uses it as a fallback.
+//
+// This allows providers like HubSpot to enable Subscribe at the module level
+// in the catalog while using a shared DefaultModuleConfig.
+func assertModuleSubscribeEnabled(providerName string, moduleName string) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+
+	configRegistry, ok := providerConfigs[providerName]
+	if !ok {
+		return result.AddDiff("providerConfigs[%v] is missing", providerName)
+	}
+
+	if configRegistry.Modules == nil {
+		// No module-specific configs declared. Fall back to DefaultModuleConfig.
+		if configRegistry.DefaultModuleConfig != nil {
+			return result
+		}
+
+		return result.AddDiff("providerConfigs[%v].Modules is nil", providerName)
+	}
+
+	moduleConfig, ok := configRegistry.Modules[moduleName]
+	if !ok {
+		// Module-specific entry missing. Fall back to DefaultModuleConfig.
+		if configRegistry.DefaultModuleConfig != nil {
+			return result
+		}
+
+		return result.AddDiff("providerConfigs[%v].Modules[%v] is missing, but subscription to module is enabled", providerName, moduleName)
+	}
+	if moduleConfig == nil {
+		// Module-specific entry is nil. Fall back to DefaultModuleConfig.
+		if configRegistry.DefaultModuleConfig != nil {
+			return result
+		}
+
+		return result.AddDiff("providerConfigs[%v].Modules[%v] is nil", providerName, moduleName)
+	}
+
+	return result
+}
+
+// TestGetObjectTypeSubscribeEventsListCompleteness is a guardrail test that
+// ensures every provider with Subscribe support has an event-format definition
+// in GetObjectTypeSubscribeEventsList. It prevents enabling Subscribe in the
+// catalog without implementing the corresponding switch case.
+//
+// Providers that intentionally don't define event formats are added to skipProviders.
+// Mock providers (prefixed with "mock") are excluded because they may be added to
+// the catalog dynamically by other tests, and test execution order is not guaranteed.
+func TestGetObjectTypeSubscribeEventsListCompleteness(t *testing.T) {
+	// Providers excluded from this check. Add a provider here only if there's
+	// a documented reason why Subscribe is enabled but event formats are undefined.
+	skipProviders := datautils.NewSet(
+		// TODO: Google event formats are not yet defined (why?)
+		providers.Google,
+		// TODO: HubSpot event formats are not yet defined (why?)
+		providers.Hubspot,
+	)
+
+	providerCatalog, err := providers.ReadCatalog()
+	if err != nil {
+		t.Fatalf("cannot read provider catalog: %v", err)
+	}
+
+	type testCase struct {
+		name     string
+		provider providers.Provider
+	}
+
+	// Collect all providers with Subscribe enabled (at provider or module level).
+	var tests []testCase
+	for providerName, providerInfo := range providerCatalog.Catalog {
+		if skipProviders.Has(providerName) || strings.HasPrefix(providerName, "mock") {
+			continue
+		}
+
+		hasSubscribe := false
+		if providerInfo.Support.Subscribe {
+			hasSubscribe = true
+		}
+
+		if providerInfo.Modules != nil {
+			for _, moduleInfo := range *providerInfo.Modules {
+				if moduleInfo.Support.Subscribe {
+					hasSubscribe = true
+					break
+				}
+			}
+		}
+
+		if hasSubscribe {
+			tests = append(tests, testCase{
+				name:     fmt.Sprintf("GetObjectTypeSubscribeEventsList must define event for %v", providerName),
+				provider: providerName,
+			})
+		}
+	}
+
+	// Execute all assertions as parallel subtests to surface all failures at once.
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			_, err = GetObjectTypeSubscribeEventsList(tt.provider, nil)
+			if errors.Is(err, errUnsupportedProvider) {
+				t.Fatalf("provider '%v' is not supported: subscribe event-format is not defined", tt.provider)
+			}
+		})
 	}
 }
