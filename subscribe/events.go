@@ -40,7 +40,7 @@ func GetObjectTypeSubscribeEventsList(
 	var collapsedEvents common.CollapsedSubscriptionEvent
 
 	switch provider {
-	case providers.Salesforce, providers.SalesforceJWT, providers.MockSalesforce:
+	case providers.Salesforce, providers.SalesforceJWT, providers.MockSalesforce, providers.SalesforceCustomClientCredentials:
 		unwrapped, err := unwrapSalesforceEvent(rawEvent)
 		if err != nil {
 			return nil, fmt.Errorf("failed to unwrap salesforce event: %w", err)
