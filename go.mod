@@ -35,7 +35,7 @@ require (
 	golang.org/x/net v0.58.0
 	golang.org/x/oauth2 v0.37.0
 	golang.org/x/text v0.41.0
-	google.golang.org/api v0.295.0
+	google.golang.org/api v0.296.0
 	google.golang.org/grpc v1.83.2
 )
 
