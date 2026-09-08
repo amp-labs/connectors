@@ -11,7 +11,7 @@ const Salesforce Provider = "salesforce"
 // IsSalesforce reports whether the provider is part of the Salesforce family:
 // the base provider and its twins, which reuse the same connector
 // implementation, APIs and modules, and differ only in authentication scheme
-// (salesforceJWT) or in which hosts they address (salesforceCustomDomain).
+// (salesforceJWT) or in which hosts they address (salesforceCustomClientCredentials).
 //
 // Prefer this over comparing against Salesforce directly, so that behavior
 // gated on "this is Salesforce" reaches every twin. Where a twin is
@@ -23,7 +23,7 @@ const Salesforce Provider = "salesforce"
 func IsSalesforce(provider Provider) bool {
 	return provider == Salesforce ||
 		provider == SalesforceJWT ||
-		provider == SalesforceCustomDomain
+		provider == SalesforceCustomClientCredentials
 }
 
 const (
