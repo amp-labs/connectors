@@ -15,11 +15,11 @@ import (
 // endpoint of a flow-based subscription (see subscribe_flow.go).
 //
 // Wire format: one SOAP 1.1 envelope whose body carries a <notifications>
-// element (namespace http://soap.sforce.com/2005/09/outbound) with envelope-
-// level metadata (OrganizationId, ActionId, EnterpriseUrl, PartnerUrl) and up
-// to 100 <Notification> children. Each Notification holds the message id and
-// an <sObject> whose xsi:type names the object (e.g. "sf:Account") and whose
-// children are the fields configured on the outbound message.
+// element (namespace http://soap.sforce.com/2005/09/outbound) and up to 100
+// <Notification> children. Envelope-level siblings (OrganizationId, ActionId,
+// EnterpriseUrl, PartnerUrl) are ignored. Each Notification holds the message
+// id and an <sObject> whose xsi:type names the object (e.g. "sf:Account") and
+// whose children are the fields configured on the outbound message.
 // https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_om_outboundmessaging_understanding.htm
 //
 // The receiver must respond with an Ack=true SOAP body (BuildOutboundMessageAck)
@@ -31,10 +31,10 @@ import (
 // that fired the flow created the record; a later LastModifiedDate means an
 // update. Deletes never produce outbound messages.
 //
-// Outbound messages are also unsigned — there is no HMAC. Verification options
-// are the unguessable per-subscription endpoint URL (current posture, matching
-// VerifyWebhookMessage's allow-all), validating Salesforce's client certificate
-// at the TLS layer, or checking OrganizationId against the connection.
+// Outbound messages are also unsigned — there is no HMAC. Verification is the
+// unguessable per-subscription endpoint URL (current posture, matching
+// VerifyWebhookMessage's allow-all), or Salesforce's client certificate at
+// the TLS layer.
 
 var (
 	errNotOutboundMessage = errors.New("body is not a Salesforce outbound message notification")
@@ -45,9 +45,6 @@ var (
 const (
 	omKeyObjectName     = "objectName"
 	omKeyNotificationID = "notificationId"
-	omKeyOrganizationID = "organizationId"
-	omKeyActionID       = "actionId"
-	omKeyEnterpriseURL  = "enterpriseUrl"
 	omKeySObject        = "sObject"
 
 	omFieldID               = "Id"
@@ -62,38 +59,35 @@ const (
 // soap/xml shapes for the inbound notification envelope. They mirror the
 // notifications element of the outbound messaging WSDL; official docs with an
 // example SOAP message and the required acknowledgment:
-// https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_om_outboundmessaging_understanding.htm
 // https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_om_outboundmessaging_wsdl.htm
 
+// omEnvelopeXML is the SOAP root. The path tag walks Envelope → Body →
+// notifications → Notification; envelope-level siblings (OrganizationId,
+// ActionId, EnterpriseUrl, PartnerUrl) are ignored.
 type omEnvelopeXML struct {
-	XMLName xml.Name `xml:"Envelope"`
-	Body    struct {
-		Notifications omNotificationsXML `xml:"notifications"`
-	} `xml:"Body"`
+	Notifications []omNotificationXML `xml:"Body>notifications>Notification"`
 }
 
-type omNotificationsXML struct {
-	OrganizationID string              `xml:"OrganizationId"`
-	ActionID       string              `xml:"ActionId"`
-	EnterpriseURL  string              `xml:"EnterpriseUrl"`
-	PartnerURL     string              `xml:"PartnerUrl"`
-	Notifications  []omNotificationXML `xml:"Notification"`
-}
-
+// omNotificationXML is one child of <notifications>. Salesforce may batch
+// up to 100 of these in a single POST.
 type omNotificationXML struct {
+	// ID is the outbound-message notification id (04l…), not the record Id.
 	ID      string       `xml:"Id"`
 	SObject omSObjectXML `xml:"sObject"`
 }
 
 type omSObjectXML struct {
-	// Type mirrors the xsi:type attribute, e.g. "sf:Account".
-	Type   string       `xml:"http://www.w3.org/2001/XMLSchema-instance type,attr"`
+	// ObjectType is the namespaced xsi:type attribute, e.g. "sf:Account".
+	ObjectType string `xml:"http://www.w3.org/2001/XMLSchema-instance type,attr"`
+	// Fields is every child element of <sObject>.
 	Fields []omFieldXML `xml:",any"`
 }
 
+// omFieldXML is one configured sObject field.
 type omFieldXML struct {
+	// XMLName must keep this name: encoding/xml writes the element
+	// name here. Local is the field API name (e.g. "Industry").
 	XMLName xml.Name
-	Nil     string `xml:"http://www.w3.org/2001/XMLSchema-instance nil,attr"`
 	Value   string `xml:",chardata"`
 }
 
@@ -102,42 +96,27 @@ type omFieldXML struct {
 func ParseOutboundMessage(body []byte) (*OutboundMessageEnvelope, error) {
 	var envelope omEnvelopeXML
 
-	// nolint:musttag // omFieldXML.XMLName is intentionally untagged: it captures
-	// each sObject child element's dynamic name (the configured field names).
+	// nolint:musttag
 	if err := xml.Unmarshal(body, &envelope); err != nil {
 		return nil, fmt.Errorf("%w: %w", errNotOutboundMessage, err)
 	}
 
-	notifications := envelope.Body.Notifications
-	if len(notifications.Notifications) == 0 {
+	if len(envelope.Notifications) == 0 {
 		return nil, fmt.Errorf("%w: no Notification elements", errNotOutboundMessage)
 	}
 
-	events := make([]OutboundMessageEvent, 0, len(notifications.Notifications))
+	events := make([]OutboundMessageEvent, 0, len(envelope.Notifications))
 
-	for _, notification := range notifications.Notifications {
-		if len(notification.SObject.Fields) == 0 && notification.SObject.Type == "" {
-			return nil, fmt.Errorf("%w: notification %s", errMissingSObject, notification.ID)
-		}
-
+	for _, notification := range envelope.Notifications {
 		fields := make(map[string]any, len(notification.SObject.Fields))
 
 		for _, field := range notification.SObject.Fields {
-			if field.Nil == "true" {
-				fields[field.XMLName.Local] = nil
-
-				continue
-			}
-
 			fields[field.XMLName.Local] = field.Value
 		}
 
 		events = append(events, OutboundMessageEvent{
 			omKeyNotificationID: notification.ID,
-			omKeyObjectName:     objectNameFromSObjectType(notification.SObject.Type),
-			omKeyOrganizationID: notifications.OrganizationID,
-			omKeyActionID:       notifications.ActionID,
-			omKeyEnterpriseURL:  notifications.EnterpriseURL,
+			omKeyObjectName:     objectNameFromSObjectType(notification.SObject.ObjectType),
 			omKeySObject:        fields,
 		})
 	}
@@ -184,7 +163,7 @@ func (e *OutboundMessageEnvelope) SubscriptionEventList() ([]common.Subscription
 var _ common.SubscriptionEvent = OutboundMessageEvent{}
 
 // OutboundMessageEvent is one Notification from an outbound message, flattened
-// into a map with envelope-level metadata attached.
+// into a map.
 type OutboundMessageEvent map[string]any
 
 func (e OutboundMessageEvent) PreLoadData(_ *common.SubscriptionEventPreLoadData) error {
@@ -195,11 +174,9 @@ func (e OutboundMessageEvent) RawMap() (map[string]any, error) {
 	return maps.Clone(e), nil
 }
 
-// EventType infers create vs update from the record's audit timestamps, which
-// the outbound message builder always includes: a record whose
+// EventType infers create vs update from the record's audit timestamps: a record whose
 // LastModifiedDate equals its CreatedDate was created by the save that fired
-// the flow. When either timestamp is missing (caller-managed outbound message
-// without audit fields), the type is Other rather than a guess.
+// the flow.
 func (e OutboundMessageEvent) EventType() (common.SubscriptionEventType, error) {
 	created, createdErr := e.fieldTime(omFieldCreatedDate)
 	modified, modifiedErr := e.fieldTime(omFieldLastModifiedDate)
