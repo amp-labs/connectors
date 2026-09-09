@@ -1,0 +1,12 @@
+{
+  "errors": [
+    {
+      "pointer": "/top",
+      "detail": "Value has an invalid type."
+    }
+  ],
+  "title": "Validation failed",
+  "status": 400,
+  "detail": "The request body contains validation errors.",
+  "extensions": {}
+}

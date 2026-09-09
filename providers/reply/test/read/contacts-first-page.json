@@ -1,0 +1,35 @@
+{
+  "items": [
+    {
+      "id": 761575310,
+      "email": "john.roe@example.com",
+      "domain": "example.com",
+      "firstName": "John",
+      "lastName": "Roe",
+      "phone": "",
+      "title": "",
+      "company": null,
+      "companySize": "Empty",
+      "industry": null,
+      "city": "",
+      "state": "",
+      "country": "",
+      "timeZoneId": null,
+      "linkedInUrl": null,
+      "linkedInSalesNavigatorUrl": null,
+      "linkedInRecruiterUrl": null,
+      "phoneStatus": "notValidated",
+      "notes": null,
+      "ownerUserId": 500176,
+      "accountId": null,
+      "isOptedOut": false,
+      "callStatus": "none",
+      "meetingStatus": "none",
+      "addingDate": "2026-09-08T12:08:22.58+00:00",
+      "createdAt": null,
+      "lastModifiedAt": null,
+      "customFields": []
+    }
+  ],
+  "hasMore": true
+}
