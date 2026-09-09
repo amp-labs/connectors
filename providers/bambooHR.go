@@ -31,12 +31,12 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
-				IconURL: "https://www.bamboohr.com/favicon.ico",
-				LogoURL: "https://www.bamboohr.com/favicon.ico",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1788955884/media/bamboohr.com_1788955882.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1788955924/media/bamboohr.com_1788955923.svg",
 			},
 			Regular: &MediaTypeRegular{
-				IconURL: "https://www.bamboohr.com/favicon.ico",
-				LogoURL: "https://www.bamboohr.com/favicon.ico",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1788955884/media/bamboohr.com_1788955882.png",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1788955924/media/bamboohr.com_1788955923.svg",
 			},
 		},
 		Metadata: &ProviderMetadata{
