@@ -4,10 +4,11 @@ import (
 	"net/http"
 )
 
-// SalesforceCustomDomain is a twin of the Salesforce provider for orgs whose
-// APIs are not reached at their my.salesforce.com domain. It targets the same
-// APIs and modules, so the connector implementation in providers/salesforce is
-// reused under a different provider name (see WithProvider in that package).
+// SalesforceCustomClientCredentials is a twin of the Salesforce provider for
+// orgs whose APIs are not reached at their my.salesforce.com domain. It targets
+// the same APIs and modules, so the connector implementation in
+// providers/salesforce is reused under a different provider name (see
+// WithProvider in that package).
 //
 // Motivation: the Salesforce entry hardcodes every host as
 // {{.workspace}}.my.salesforce.com. An enterprise egress policy may instead
@@ -25,11 +26,11 @@ import (
 // token endpoint but not the interactive authorize page, and because these
 // connections are server-to-server with no consumer present to complete a
 // browser redirect.
-const SalesforceCustomDomain Provider = "salesforceCustomDomain"
+const SalesforceCustomClientCredentials Provider = "salesforceCustomClientCredentials"
 
 // nolint:funlen
 func init() {
-	SetInfo(SalesforceCustomDomain, ProviderInfo{
+	SetInfo(SalesforceCustomClientCredentials, ProviderInfo{
 		DisplayName: "Salesforce (Custom Domain)",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}",
