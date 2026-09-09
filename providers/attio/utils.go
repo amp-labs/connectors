@@ -18,7 +18,8 @@ func getObjectEvents(objectName common.ObjectName) (objectEvents, bool) {
 
 // getAllSupportedEvents returns all provider events that this object supports.
 func (e objectEvents) getAllSupportedEvents() []providerEvent {
-	var events []providerEvent
+	events := make([]providerEvent, 0,
+		len(e.createEvents)+len(e.updateEvents)+len(e.deleteEvents))
 
 	events = append(events, e.createEvents...)
 	events = append(events, e.updateEvents...)

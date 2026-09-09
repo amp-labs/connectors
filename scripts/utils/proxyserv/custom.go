@@ -115,7 +115,7 @@ func forEachField(callback func(name string, f credscanning.Field)) {
 	for i := range v.NumField() {
 		name := t.Field(i).Name
 
-		f, ok := v.Field(i).Interface().(credscanning.Field)
+		f, ok := reflect.TypeAssert[credscanning.Field](v.Field(i))
 		if !ok {
 			// If the field is not of type credscanning.Field, skip it
 			continue

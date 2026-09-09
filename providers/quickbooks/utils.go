@@ -32,7 +32,9 @@ func buildQuery(params common.ReadParams) string {
 		untilQuery      string
 	)
 
-	query := "SELECT * FROM " + naming.CapitalizeFirstLetter(params.ObjectName)
+	// unqueryvet: ObjectName is an arbitrary QuickBooks entity, so the connector
+	// cannot name its columns ahead of time.
+	query := "SELECT * FROM " + naming.CapitalizeFirstLetter(params.ObjectName) //nolint:unqueryvet
 
 	if params.NextPage != "" {
 		paginationQuery = " STARTPOSITION " + params.NextPage.String() + " MAXRESULTS " + pageSize

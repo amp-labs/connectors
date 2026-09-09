@@ -20,7 +20,10 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
-	Query := "SELECT * FROM " + naming.CapitalizeFirstLetter(objectName) + " STARTPOSITION 0 MAXRESULTS 1"
+	// unqueryvet: this is metadata discovery - it fetches a single row precisely
+	// to learn which columns the object has, so the column list cannot be named.
+	Query := "SELECT * FROM " + naming.CapitalizeFirstLetter(objectName) + //nolint:unqueryvet
+		" STARTPOSITION 0 MAXRESULTS 1"
 
 	url.WithQueryParam("query", Query)
 

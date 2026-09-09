@@ -20,15 +20,26 @@ import (
 
 const truncationLength = 512 * 1024 // 512 KB
 
+// Field names of the structured detail map attached to HTTP log records.
+const (
+	fieldMethod        = "method"
+	fieldURL           = "url"
+	fieldCorrelationID = "correlationId"
+	fieldHeaders       = "headers"
+)
+
+// mimeTypeXML is the canonical XML media type.
+const mimeTypeXML = "application/xml"
+
 func logRequestWithBody(logger *slog.Logger, req *http.Request, method, id, fullURL string, body []byte) {
 	headers := redactSensitiveRequestHeaders(GetRequestHeaders(req))
 
 	logger = logger.With(
 		"details", map[string]any{
-			"method":        method,
-			"url":           fullURL,
-			"correlationId": id,
-			"headers":       headers,
+			fieldMethod:        method,
+			fieldURL:           fullURL,
+			fieldCorrelationID: id,
+			fieldHeaders:       headers,
 		},
 	)
 
@@ -77,11 +88,11 @@ func logResponseWithoutBody(logger *slog.Logger, res *http.Response, method, id,
 
 	logger = logger.With(
 		"details", map[string]any{
-			"method":        method,
-			"url":           fullURL,
-			"correlationId": id,
-			"headers":       headers,
-			"status":        res.StatusCode,
+			fieldMethod:        method,
+			fieldURL:           fullURL,
+			fieldCorrelationID: id,
+			fieldHeaders:       headers,
+			"status":           res.StatusCode,
 		},
 	)
 
@@ -104,11 +115,11 @@ func logResponseWithBody(logger *slog.Logger, res *http.Response, method, id, fu
 
 	logger = logger.With(
 		"details", map[string]any{
-			"method":        method,
-			"url":           fullURL,
-			"correlationId": id,
-			"headers":       headers,
-			"status":        res.StatusCode,
+			fieldMethod:        method,
+			fieldURL:           fullURL,
+			fieldCorrelationID: id,
+			fieldHeaders:       headers,
+			"status":           res.StatusCode,
 		},
 	)
 
@@ -443,7 +454,7 @@ func isPrintableMimeType(mimeType string) bool {
 		strings.HasSuffix(mimeType, "+json") ||
 		strings.HasSuffix(mimeType, "+xml") ||
 		mimeType == "application/json" ||
-		mimeType == "application/xml" ||
+		mimeType == mimeTypeXML ||
 		mimeType == "application/javascript" ||
 		mimeType == "application/x-www-form-urlencoded"
 }

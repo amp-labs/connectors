@@ -19,7 +19,9 @@ func (a *Adapter) buildObjectMetadataRequest(ctx context.Context, objectName str
 	}
 
 	body := suiteQLQueryBody{
-		Query: "SELECT * FROM " + objectName,
+		// unqueryvet: metadata discovery fetches one row (limit 1) to learn the
+		// record type's columns, so they cannot be listed explicitly.
+		Query: "SELECT * FROM " + objectName, //nolint:unqueryvet
 	}
 
 	url.WithQueryParam("limit", "1")

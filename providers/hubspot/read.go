@@ -41,11 +41,9 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		// Object is part of CRM namespace but outside ObjectAPI.
 		// For instance object "lists" is returned only via CRM Search endpoint.
 		return c.searchCRM(ctx, searchCRMParams{
-			SearchParams: SearchParams{
-				ObjectName: params.ObjectName,
-				NextPage:   params.NextPage,
-				Fields:     params.Fields,
-			},
+			ObjectName: params.ObjectName,
+			NextPage:   params.NextPage,
+			Fields:     params.Fields,
 		})
 	case core.MarketingObjects.Has(params.ObjectName):
 		// Object is part of Hubspot Marketing API.

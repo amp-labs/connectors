@@ -54,10 +54,8 @@ func NewSandboxConnector(params common.ConnectorParams) (*Connector, error) {
 
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
-		Connector: base,
-		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{metadataKeyCompany},
-		},
+		Connector:            base,
+		ExpectedMetadataKeys: []string{metadataKeyCompany},
 	}
 
 	// Set the metadata provider for the connector

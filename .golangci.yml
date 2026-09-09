@@ -10,6 +10,8 @@ linters:
     - depguard
     # Annoying and unhelpful. Assumes uninitialized (zero-valued) fields are always a bug, which is plain wrong.
     - exhaustruct
+    # Deprecated, replaced by exhaustruct_v5
+    - exhaustruct_v5
     # Disabled because we use inits all over the place
     - gochecknoinits
     # Marks [TODO, FIXME, BUG] comments as errors. We use these, so this is not helpful - unless we decide this is a good policy.
@@ -35,6 +37,8 @@ linters:
     - wrapcheck
     # Deprecated (since v2.2.0) due to: new major version. Replaced by wsl_v5.
     - wsl
+    # Deprecated, replaced by gomodguard_v2 (which is enabled via `default: all`)
+    - gomodguard
   settings:
     # https://golangci-lint.run/docs/linters/configuration/#revive
     revive:
@@ -109,6 +113,21 @@ linters:
       - linters:
           - gochecknoglobals
         path: ^subscribe/
+      # providers/ is a declarative catalog: each file describes one SaaS API.
+      # Two providers happening to share a literal (a header name, a content
+      # type) is a coincidence, not a shared concept, so hoisting constants
+      # would couple unrelated provider definitions. scripts/*/metadata is
+      # generated/scraped API metadata with the same property.
+      - linters:
+          - goconst
+        path: ^(providers|scripts)/
+      # providers/ declares the NAMES of auth headers and fields for each SaaS
+      # API, not secrets. G101 stays active everywhere else, where a real
+      # hardcoded credential could actually appear.
+      - linters:
+          - gosec
+        text: "G101"
+        path: ^providers/
     paths:
       - playground
       - test

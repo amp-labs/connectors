@@ -130,7 +130,7 @@ func canonicalizeQueryString(query map[string][]string) string {
 		encodedName := encodeRFC3986(paramName)
 
 		// URL-encode parameter values.
-		var encodedValues []string
+		encodedValues := make([]string, 0, len(paramValues))
 		for _, val := range paramValues {
 			encodedValues = append(encodedValues, encodeRFC3986(val))
 		}

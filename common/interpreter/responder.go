@@ -26,8 +26,8 @@ type FaultyResponder struct {
 //     This is an optional map that will precede any default status to error mapping.
 func NewFaultyResponder(errorSwitch *FormatSwitch, statusCodeMap map[int]error) *FaultyResponder {
 	return &FaultyResponder{
-		errorSwitch:      errorSwitch,
-		StatusCodeMapper: StatusCodeMapper{Registry: statusCodeMap},
+		errorSwitch: errorSwitch,
+		Registry:    statusCodeMap,
 	}
 }
 
@@ -89,8 +89,8 @@ type XMLFaultyResponder struct {
 //     This is an optional map that will precede any default status to error mapping.
 func NewXMLFaultyResponder(templates Templates, statusCodeMap map[int]error) *XMLFaultyResponder {
 	return &XMLFaultyResponder{
-		templates:        templates,
-		StatusCodeMapper: StatusCodeMapper{Registry: statusCodeMap},
+		templates: templates,
+		Registry:  statusCodeMap,
 	}
 }
 

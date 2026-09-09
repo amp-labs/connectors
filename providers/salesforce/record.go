@@ -19,11 +19,9 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 ) ([]common.ReadResultRow, error) {
 	// Sanitize method arguments.
 	config := recordsByIDsParams{
-		ReadParams: common.ReadParams{
-			ObjectName:        objectName,
-			Fields:            datautils.NewSetFromList(fields),
-			AssociatedObjects: associations,
-		},
+		ObjectName:        objectName,
+		Fields:            datautils.NewSetFromList(fields),
+		AssociatedObjects: associations,
 		RecordIdentifiers: datautils.NewSetFromList(ids),
 	}
 

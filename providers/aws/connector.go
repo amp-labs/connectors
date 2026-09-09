@@ -56,14 +56,10 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(base *components.Connector, expectedMetadataKeys []string) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
-		RequireModule: common.RequireModule{
-			ExpectedModules: []common.ModuleID{
-				providers.ModuleAWSIdentityCenter,
-			},
+		ExpectedModules: []common.ModuleID{
+			providers.ModuleAWSIdentityCenter,
 		},
-		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: expectedMetadataKeys,
-		},
+		ExpectedMetadataKeys: expectedMetadataKeys,
 	}
 
 	registry, err := components.NewEndpointRegistry(supportedOperations())

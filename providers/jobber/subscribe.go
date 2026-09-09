@@ -372,16 +372,18 @@ func (c *Connector) rollbackWebhookEndpoints(
 	}
 
 	if _, err := c.deleteWebhookEndpoints(ctx, ids); err != nil {
-		return &common.SubscriptionResult{
-				Status:       common.SubscriptionStatusFailedToRollback,
-				ObjectEvents: buildObjectEvents(endpoints),
-				Result: &SubscriptionResult{
-					Endpoints: endpoints,
-				},
-			}, errors.Join(
-				cause,
-				fmt.Errorf("failed to rollback webhook endpoints: %w", err),
-			)
+		result := &common.SubscriptionResult{
+			Status:       common.SubscriptionStatusFailedToRollback,
+			ObjectEvents: buildObjectEvents(endpoints),
+			Result: &SubscriptionResult{
+				Endpoints: endpoints,
+			},
+		}
+
+		return result, errors.Join(
+			cause,
+			fmt.Errorf("failed to rollback webhook endpoints: %w", err),
+		)
 	}
 
 	return &common.SubscriptionResult{Status: common.SubscriptionStatusFailed}, cause

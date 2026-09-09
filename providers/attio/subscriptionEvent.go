@@ -119,7 +119,7 @@ func (evt SubscriptionEvent) ObjectName() (string, error) {
 		return "", err
 	}
 
-	objectName := strings.Split(name, ".")[0]
+	objectName, _, _ := strings.Cut(name, ".")
 
 	return objectName, nil
 }
@@ -185,7 +185,7 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 
 	// event_type has the form "{object}.{action}"; the object portion determines
 	// which key inside the "id" object holds the record identifier.
-	eventObject := strings.Split(eventName, ".")[0]
+	eventObject, _, _ := strings.Cut(eventName, ".")
 
 	idKey, ok := recordIDKeyByEventObject[eventObject]
 	if !ok {

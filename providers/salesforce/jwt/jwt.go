@@ -345,6 +345,8 @@ func newUnauthorizedHandler(rts *retryingTokenSource) func(
 		retryReq := req.Clone(req.Context())
 		retryReq.Header.Set("Authorization", tok.TokenType+" "+tok.AccessToken)
 
-		return http.DefaultClient.Do(retryReq)
+		// G704: retryReq is a clone of a request this connector already sent;
+		// only the Authorization header changes, so the destination is unchanged.
+		return http.DefaultClient.Do(retryReq) //nolint:gosec
 	}
 }

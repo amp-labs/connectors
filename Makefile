@@ -3,7 +3,7 @@
 # ====================
 
 # Linter versions - keep in sync with .github/workflows/linter.yml
-GOLANGCI_LINT_VERSION=v2.7.1
+GOLANGCI_LINT_VERSION=v2.13.2
 
 # Install all linters required by make fix
 .PHONY: install/linters

@@ -54,11 +54,9 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	clientID := params.Metadata["clientId"]
 	connector := &Connector{
-		Connector: base,
-		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{"clientId"},
-		},
-		clientID: clientID,
+		Connector:            base,
+		ExpectedMetadataKeys: []string{"clientId"},
+		clientID:             clientID,
 	}
 
 	errorHandler := interpreter.ErrorHandler{

@@ -70,7 +70,7 @@ func (c customFieldResponse) BelongsToObject(objectName string) bool {
 }
 
 func (c customFieldResponse) getValues() []common.FieldValue {
-	fields := make([]common.FieldValue, 0)
+	fields := make([]common.FieldValue, 0, len(c.Options))
 
 	for _, option := range c.Options {
 		fields = append(fields, common.FieldValue{

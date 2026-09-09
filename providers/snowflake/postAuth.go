@@ -196,8 +196,10 @@ func (c *Connector) createStream(ctx context.Context, streamName, dynamicTableNa
 // validateQuery validates a SQL query by running EXPLAIN.
 // This checks syntax and permissions without executing the query.
 func (c *Connector) validateQuery(ctx context.Context, query string) error {
-	// query is the user's SQL definition - intentional raw SQL for Dynamic Table feature
-	explainQuery := "EXPLAIN " + query
+	// query is the user's SQL definition - intentional raw SQL for Dynamic Table feature.
+	// G202: a query body cannot be bound as a parameter, so prefixing EXPLAIN is
+	// the only way to validate it. Same rationale as the globally excluded G201.
+	explainQuery := "EXPLAIN " + query //nolint:gosec
 
 	rows, err := c.handle.db.QueryContext(ctx, explainQuery)
 	if err != nil {

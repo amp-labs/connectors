@@ -340,7 +340,7 @@ func getFromReader[T any](reader Reader) (T, error) {
 func get[T any](val any) (T, error) {
 	var of T
 
-	v, ok := (val).(T)
+	v, ok := val.(T)
 	if !ok {
 		return of, fmt.Errorf("%w. expected %T, got %T", ErrWrongType, of, val)
 	}
