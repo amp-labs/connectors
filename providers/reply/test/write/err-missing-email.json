@@ -1,0 +1,12 @@
+{
+  "errors": [
+    {
+      "pointer": "/firstName",
+      "detail": "FirstName is required."
+    }
+  ],
+  "title": "Validation failed",
+  "status": 400,
+  "detail": "The request body contains validation errors.",
+  "extensions": {}
+}
