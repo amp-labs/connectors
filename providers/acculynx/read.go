@@ -64,6 +64,10 @@ const (
 	objectSupplements = "supplements"
 	objectCalendars   = "calendars"
 	objectUsers       = "users"
+
+	// objectJobsRepresentatives is a nested read object that is also a
+	// subscribe object: AccuLynx emits job.representatives.* topics for it.
+	objectJobsRepresentatives = "jobs/representatives"
 )
 
 // ReadParamsOpts is the connector-specific shape of common.ReadParams.Opts,

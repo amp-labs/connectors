@@ -89,6 +89,18 @@ var objectEventTopics = map[common.ObjectName]map[common.SubscriptionEventType][
 		common.SubscriptionEventTypeCreate: {"job_created"},
 		common.SubscriptionEventTypeUpdate: {"job_updated"},
 	},
+	// The company representative is a per-job singleton with its own read
+	// object and get-by-id path (/jobs/{jobId}/representatives/company), so it
+	// is a real subscribe object rather than a pass-through topic on jobs —
+	// mirroring salesloft's nested "activities/emails" subscription object.
+	// Both topics are updates: company_assigned fills the slot, company_changed
+	// replaces it; AccuLynx emits no create or delete topic for the slot.
+	objectJobsRepresentatives: {
+		common.SubscriptionEventTypeUpdate: {
+			"job.representatives.company_assigned",
+			"job.representatives.company_changed",
+		},
+	},
 }
 
 // validAcculynxTopics is the complete set of topicNames AccuLynx accepts on

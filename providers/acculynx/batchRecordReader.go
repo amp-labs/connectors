@@ -29,9 +29,15 @@ var errBatchReadEmptyResponse = errors.New("acculynx: empty response body for re
 // an appointment's calendar id equals its user id, so the server hydrates the
 // user directly. Not every calendar is a user (company/crew calendars 404), so
 // GetRecordsByIds skips ids that are not found — see isNotFound below.
+// jobs/representatives hydrates the per-job company-representative singleton:
+// the record id is the job id (matching write/delete for representatives), and
+// the fetch routes to /jobs/{jobId}/representatives/company — see
+// singleRecordURL. AccuLynx rotates the representative's own id on every
+// assignment, so the job id is the only stable identity for the slot.
 //
 //nolint:gochecknoglobals
-var batchReadableObjects = datautils.NewStringSet(objectContacts, objectJobs, objectUsers)
+var batchReadableObjects = datautils.NewStringSet(
+	objectContacts, objectJobs, objectUsers, objectJobsRepresentatives)
 
 //nolint:revive
 func (c *Connector) GetRecordsByIds(
@@ -44,7 +50,7 @@ func (c *Connector) GetRecordsByIds(
 	objectName = strings.ToLower(objectName)
 
 	if !batchReadableObjects.Has(objectName) {
-		return nil, fmt.Errorf("%w: %s (only contacts, jobs and users supported)",
+		return nil, fmt.Errorf("%w: %s (only contacts, jobs, users and jobs/representatives supported)",
 			common.ErrGetRecordNotSupportedForObject, objectName)
 	}
 
@@ -128,13 +134,25 @@ func compactFound(rows []common.ReadResultRow, found []bool) []common.ReadResult
 	return out
 }
 
+// singleRecordURL builds the get-by-id URL for a batch-readable object. Most
+// objects follow /{object}/{id}; jobs/representatives is the exception — its
+// id is the job id and the record lives at the role-singleton path.
+func (c *Connector) singleRecordURL(objectName, recordID string) (*urlbuilder.URL, error) {
+	if objectName == objectJobsRepresentatives {
+		return urlbuilder.New(c.ProviderInfo().BaseURL, c.modulePath(),
+			"jobs", recordID, "representatives", "company")
+	}
+
+	return urlbuilder.New(c.ProviderInfo().BaseURL, c.modulePath(), objectName, recordID)
+}
+
 func (c *Connector) fetchSingleRecord(
 	ctx context.Context,
 	objectName, recordID string,
 	fieldSet datautils.StringSet,
 	associations []string,
 ) (common.ReadResultRow, error) {
-	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.modulePath(), objectName, recordID)
+	url, err := c.singleRecordURL(objectName, recordID)
 	if err != nil {
 		return common.ReadResultRow{}, err
 	}

@@ -33,6 +33,42 @@ func TestResolveTopics_StandardEvents(t *testing.T) {
 	assert.DeepEqual(t, got, expected)
 }
 
+func TestResolveTopics_JobsRepresentativesUpdateEvent(t *testing.T) {
+	t.Parallel()
+
+	// jobs/representatives as its own subscribe object with updateEvent —
+	// resolves both representative topics, no otherEvents involved.
+	events := map[common.ObjectName]common.ObjectEvents{
+		objectJobsRepresentatives: {Events: []common.SubscriptionEventType{
+			common.SubscriptionEventTypeUpdate,
+		}},
+	}
+
+	got, err := resolveTopics(events)
+	assert.NilError(t, err)
+
+	expected := []string{
+		"job.representatives.company_assigned",
+		"job.representatives.company_changed",
+	}
+	assert.DeepEqual(t, got, expected)
+}
+
+func TestResolveTopics_JobsRepresentativesRejectsCreateEvent(t *testing.T) {
+	t.Parallel()
+
+	// AccuLynx has no create topic for the representative slot — assignment is
+	// an update (the slot always exists), so createEvent must be rejected.
+	events := map[common.ObjectName]common.ObjectEvents{
+		objectJobsRepresentatives: {Events: []common.SubscriptionEventType{
+			common.SubscriptionEventTypeCreate,
+		}},
+	}
+
+	_, err := resolveTopics(events)
+	assert.Assert(t, errors.Is(err, errUnsupportedSubscribeEvent))
+}
+
 func TestResolveTopics_MergesPassThroughEvents(t *testing.T) {
 	t.Parallel()
 

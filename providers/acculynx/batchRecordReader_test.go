@@ -230,6 +230,49 @@ func TestGetRecordsByIds_HydratesUsers(t *testing.T) {
 	assert.Equal(t, rows[0].Fields["displayName"], "Diane Hatch")
 }
 
+func TestGetRecordsByIds_HydratesJobsRepresentativesViaCompanyRole(t *testing.T) {
+	t.Parallel()
+
+	// jobs/representatives hydrates by job id via the role-singleton path
+	// /jobs/{jobId}/representatives/company — not /{object}/{id}, which does
+	// not exist. Payload mirrors the live endpoint: the record carries the
+	// rotating representative id in Raw while the row keeps the stable job id.
+	srv := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/v2/jobs/job-1/representatives/company"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK,
+					`{"id":"rep-77","type":"CompanyRepresentative",`+
+						`"user":{"id":"user-9"},"_link":"https://example/link"}`),
+			},
+			{
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/v2/jobs/no-rep-job/representatives/company"),
+				},
+				Then: mockserver.ResponseString(http.StatusNotFound, `{"detail":"NotFound"}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+
+	conn, err := constructTestReadConnector(srv.URL)
+	assert.NilError(t, err)
+
+	rows, err := conn.GetRecordsByIds(context.Background(), "jobs/representatives",
+		[]string{"job-1", "no-rep-job"}, []string{"id", "type"}, nil)
+
+	assert.NilError(t, err)
+	assert.Equal(t, len(rows), 1)
+	assert.Equal(t, rows[0].Id, "job-1")
+	assert.Equal(t, rows[0].Fields["type"], "CompanyRepresentative")
+	assert.Equal(t, rows[0].Raw["id"], "rep-77")
+}
+
 func TestGetRecordsByIds_AttachesJobContactsAssociation(t *testing.T) {
 	t.Parallel()
 
