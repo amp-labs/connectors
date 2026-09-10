@@ -1,0 +1,11 @@
+{
+  "actions": [
+    "stop()"
+  ],
+  "created_at": "Wed, 05 Aug 2026 17:48:45 GMT",
+  "description": "updated inbound route",
+  "expression": "match_recipient('.*@example.com')",
+  "id": "4f3bad2335335426750048c6",
+  "message": "Route has been updated",
+  "priority": 5
+}
