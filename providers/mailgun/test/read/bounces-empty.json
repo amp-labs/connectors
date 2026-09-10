@@ -1,0 +1,9 @@
+{
+  "items": [],
+  "paging": {
+    "previous": "https://api.mailgun.net/v3/example.com/bounces?page=previous&limit=100",
+    "first": "https://api.mailgun.net/v3/example.com/bounces?limit=100",
+    "next": "https://api.mailgun.net/v3/example.com/bounces?page=next&limit=100",
+    "last": "https://api.mailgun.net/v3/example.com/bounces?page=last&limit=100"
+  }
+}

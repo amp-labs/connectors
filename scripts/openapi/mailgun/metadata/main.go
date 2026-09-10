@@ -12,6 +12,8 @@
 //     variants and sandbox-only endpoints are excluded.
 //   - The modern Logs API (POST /v1/analytics/logs) replaces the deprecated GET
 //     events endpoint and is read via POST.
+//   - The modern Tags API (POST /v1/analytics/tags, account-scoped) replaces the
+//     deprecated GET /v3/{domain}/tags endpoint and is likewise read via POST.
 //
 // Domain-scoped paths keep their placeholder ({domain_name}/{domain}/{name}/
 // {authority_name}); the read layer substitutes it from connector metadata.
@@ -42,7 +44,6 @@ var getEndpoints = map[string]string{
 	"/v3/{domain_name}/complaints":          "complaints",
 	"/v3/{domain_name}/unsubscribes":        "unsubscribes",
 	"/v3/{domain_name}/whitelists":          "whitelists",
-	"/v3/{domain}/tags":                     "tags",
 	"/v3/domains/{domain_name}/credentials": "domains/credentials",
 	"/v3/{domain_name}/templates":           "templates",
 	"/v4/domains/{authority_name}/keys":     "domains/keys",
@@ -76,6 +77,7 @@ var getEndpoints = map[string]string{
 //nolint:gochecknoglobals
 var postEndpoints = map[string]string{
 	"/v1/analytics/logs": "analytics/logs",
+	"/v1/analytics/tags": "analytics/tags",
 }
 
 //nolint:gochecknoglobals
@@ -89,6 +91,7 @@ var displayNameOverride = map[string]string{
 	"lists/members":                     "Mailing List Members",
 	"lists":                             "Mailing Lists",
 	"analytics/logs":                    "Logs",
+	"analytics/tags":                    "Tags",
 	"thresholds/limits":                 "Limits",
 	"thresholds/alerts/send":            "Send Alerts",
 	"account/templates":                 "Account Templates",

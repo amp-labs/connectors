@@ -19,7 +19,6 @@ func main() {
 		"complaints",
 		"unsubscribes",
 		"whitelists",
-		"tags",
 		"domains/credentials",
 		"templates",
 		"domains/keys",
@@ -46,6 +45,7 @@ func main() {
 
 		// POST-sourced.
 		"analytics/logs",
+		"analytics/tags",
 	}
 
 	m, err := connector.ListObjectMetadata(ctx, objectNames)
