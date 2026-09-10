@@ -1,0 +1,94 @@
+name: CI
+run-name: ${{ github.actor }} is running build / lint / test
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+        # git ls-remote https://github.com/actions/checkout.git refs/tags/v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Set up Go
+        # git ls-remote https://github.com/actions/setup-go.git refs/tags/v7
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: "1.26.5"
+          # Caching is handled explicitly below (with restore-keys), so that
+          # go.mod/go.sum-only bump PRs still restore a warm cache.
+          cache: false
+
+      # Restore Go module/build caches and the golangci-lint analysis cache.
+      # PRs restore (falling back to the latest main cache via restore-keys)
+      # but never save; only main pushes save, to avoid PR-branch cache churn.
+      - name: Restore Go caches
+        id: go-cache
+        # git ls-remote https://github.com/actions/cache.git refs/tags/v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/.cache/golangci-lint
+          key: v1-ci-go1.26.5-${{ hashFiles('go.sum') }}
+          restore-keys: |
+            v1-ci-go1.26.5-
+
+      # The custom golangci-lint binary (with the nogoroutine/modulelinter
+      # plugins) only changes when its config or plugin source changes, so
+      # cache it instead of rebuilding it from source every run.
+      - name: Cache custom-gcl binary
+        # git ls-remote https://github.com/actions/cache.git refs/tags/v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: custom-gcl
+          key: v1-custom-gcl-${{ hashFiles('.custom-gcl.yml', 'tools/linters/**') }}
+
+      # Pre-install the lint tools that make's check-linters would otherwise
+      # install the slow way (notably `cargo install typos-cli`, which compiles
+      # typos from source on every run).
+      - name: Install lint tools
+        run: |
+          # Keep in sync with GOLANGCI_LINT_VERSION in the Makefile.
+          LINTER_VERSION="v2.7.1"
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b "$(go env GOPATH)/bin" $LINTER_VERSION
+
+          go install github.com/daixiang0/gci@latest
+
+          TYPOS_VERSION="v1.48.0"
+          mkdir -p /tmp/typos-install
+          curl -sSfL "https://github.com/crate-ci/typos/releases/download/${TYPOS_VERSION}/typos-${TYPOS_VERSION}-x86_64-unknown-linux-musl.tar.gz" \
+            | tar -xz -C /tmp/typos-install
+          install /tmp/typos-install/typos "$(go env GOPATH)/bin/typos"
+
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Generate
+        run: go generate ./...
+
+      - name: Build
+        run: go build ./...
+
+      - name: Lint
+        run: make lint
+
+      - name: Test
+        # -count=1 on main pushes forces fresh test execution (no cached test
+        # results), so merges are always validated cold while PRs stay fast.
+        env:
+          GOFLAGS: ${{ github.ref == 'refs/heads/main' && '-count=1' || '' }}
+        run: make test
+
+      - name: Save Go caches
+        if: always() && github.ref == 'refs/heads/main'
+        # git ls-remote https://github.com/actions/cache.git refs/tags/v4
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/.cache/golangci-lint
+          key: ${{ steps.go-cache.outputs.cache-primary-key }}
