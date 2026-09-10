@@ -29,8 +29,8 @@ import (
 // The package deploys with rollbackOnError=true, so the subscription is
 // all-or-nothing: every component lands or none do. There is no subscribe-time
 // rollback path at all — a failed deploy leaves nothing behind — and on
-// success every component is recorded in SubscribeResult.Flows, which is what
-// teardown later reads to remove them.
+// success every component is recorded in SubscribeResult.Flows. DeleteSubscription
+// tears those components down dependents-first (flow, then outbound message).
 //
 // Trade-offs vs the CDC path:
 //   - No Apex is deployed, so there is no test-coverage gate and no
@@ -47,7 +47,8 @@ var (
 		"SubscriptionRequest.Flow.EndpointURL is required when UseFlow is true")
 	errFlowNoSupportedEvents = errors.New(
 		"flow-based subscriptions support only create/update events")
-	errFlowDeployFailed = errors.New("flow subscription deployment failed")
+	errFlowDeployFailed            = errors.New("flow subscription deployment failed")
+	errFlowTeardownDeployFailed = errors.New("flow subscription teardown deployment failed")
 )
 
 // FlowConfig carries the flow-path settings on SubscriptionRequest.
@@ -331,4 +332,247 @@ func flowCoveredEvents(sfRes *SubscribeResult) []common.SubscriptionEventType {
 	}
 
 	return union
+}
+
+// deleteAllFlowSubscriptions tears down every flow-based subscription in
+// sfRes.Flows. Salesforce rejects deletion of active flows, so each flow is deactivated
+// first (Tooling API FlowDefinition PATCH with activeVersionNumber = 0; if
+// that fails, fall back to redeploying the flow as Draft). Versions are then
+// deleted individually (unversioned Metadata delete fails once more than one
+// version exists). A flow that is already gone skips both. Then the outbound
+// message the flow referenced is removed.
+func (c *Connector) deleteAllFlowSubscriptions(ctx context.Context, sfRes *SubscribeResult) error {
+	for objName, flowSub := range sfRes.Flows {
+		if err := c.deleteFlowSubscription(ctx, objName, flowSub); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// deleteFlowSubscription removes one object's artifacts dependents-first: the
+// flow (deactivated, then every version) and then the outbound message it
+// referenced. Shared by full teardown and by reconcile, which uses it for the
+// objects that dropped out of a subscription.
+func (c *Connector) deleteFlowSubscription(
+	ctx context.Context, objName common.ObjectName, flowSub *FlowSubscription,
+) error {
+	abort := func(err error) error {
+		logging.Logger(ctx).WarnContext(ctx,
+			"flow subscription delete failed mid-teardown; aborting before remaining flows are touched",
+			"failedObject", objName,
+			"error", err,
+		)
+
+		return fmt.Errorf("failed to delete flow subscription for object '%s': %w", objName, err)
+	}
+
+	if err := c.deleteFlow(ctx, flowSub); err != nil {
+		return abort(err)
+	}
+
+	omZipData, err := metadata.ConstructDestructiveOutboundMessage(
+		string(flowSub.ObjectName), flowSub.OutboundMessage.Name,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to construct destructive outbound message zip for %s: %w",
+			flowSub.OutboundMessage.Name, err)
+	}
+
+	omEntity := "outbound message " + flowSub.OutboundMessage.Name
+
+	omDeploy, err := c.deployDestructiveApex(ctx, omZipData, metadata.TestLevelNoTestRun)
+	if err != nil {
+		return abort(fmt.Errorf("failed to deploy destructive change for %s: %w", omEntity, err))
+	}
+
+	if !omDeploy.Success {
+		return abort(fmt.Errorf("%w for %s: %s",
+			errFlowTeardownDeployFailed, omEntity, formatDeployFailureDetails(omDeploy)))
+	}
+
+	return nil
+}
+
+// deleteFlow deactivates and removes every version of the flow.
+//
+// An unversioned Metadata destructive member (AmpSubscribe_Account) fails
+// with "insufficient access rights on cross-reference id" when the definition
+// has more than one version — Salesforce known issue:
+// https://help.salesforce.com/s/issue?id=a028c00000gAwixAAC
+//
+// Teardown therefore deletes each Tooling Flow version by Id (the supported
+// path for inactive versions), then falls back to a version-suffixed
+// destructive deploy if any Tooling delete fails.
+func (c *Connector) deleteFlow(ctx context.Context, flowSub *FlowSubscription) error {
+	definitionID, err := c.deactivateFlow(ctx, flowSub)
+	if err != nil {
+		return err
+	}
+
+	if definitionID == "" { // flow is already gone
+		return nil
+	}
+
+	versions, err := c.listFlowVersions(ctx, definitionID)
+	if err != nil {
+		return err
+	}
+
+	var remaining []int
+
+	for _, version := range versions {
+		_, delErr := c.deleteToSFAPI(ctx,
+			"tooling/sobjects/Flow/"+version.ID,
+			fmt.Sprintf("flow %s version %d", flowSub.Flow.Name, version.VersionNumber),
+		)
+		if delErr != nil {
+			logging.Logger(ctx).WarnContext(ctx,
+				"tooling delete of flow version failed; will try versioned metadata delete",
+				"flow", flowSub.Flow.Name,
+				"version", version.VersionNumber,
+				"error", delErr,
+			)
+
+			remaining = append(remaining, version.VersionNumber)
+		}
+	}
+
+	if len(remaining) == 0 {
+		return nil
+	}
+
+	zipData, err := metadata.ConstructDestructiveFlow(flowSub.Flow.Name, remaining)
+	if err != nil {
+		return fmt.Errorf("failed to construct versioned destructive flow zip for %s: %w",
+			flowSub.Flow.Name, err)
+	}
+
+	entity := "flow versions of " + flowSub.Flow.Name
+
+	deployResult, err := c.deployDestructiveApex(ctx, zipData, metadata.TestLevelNoTestRun)
+	if err != nil {
+		return fmt.Errorf("failed to deploy destructive change for %s: %w", entity, err)
+	}
+
+	if !deployResult.Success {
+		return fmt.Errorf("%w for %s: %s",
+			errFlowTeardownDeployFailed, entity, formatDeployFailureDetails(deployResult))
+	}
+
+	return nil
+}
+
+// deactivateFlow makes the flow deletable. Returns the FlowDefinition Id, or
+// empty if the flow is already gone.
+//
+// Primary route: Tooling API PATCH on FlowDefinition setting
+// Metadata.activeVersionNumber to 0, which deactivates the flow (no version
+// is active). Salesforce documents that FlowDefinition.Metadata activates and
+// deactivates flows; 0 as the deactivate value is the established convention:
+// https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_flowdefinition.htm
+// https://salesforce.stackexchange.com/questions/396198/deactivating-a-salesforce-flow-via-the-metadata-api
+// Fallback: redeploy the flow as Draft via the Metadata API, regenerated from
+// the stored FlowSubscription components.
+func (c *Connector) deactivateFlow(ctx context.Context, flowSub *FlowSubscription) (string, error) {
+	definitionID, err := c.findToolingEntityIDByDeveloperName(ctx, "FlowDefinition", flowSub.Flow.Name)
+	if err != nil {
+		if errors.Is(err, errToolingEntityNotFound) {
+			logging.Logger(ctx).InfoContext(ctx, "flow already absent, skipping deactivation and deletion",
+				"flow", flowSub.Flow.Name,
+			)
+
+			return "", nil
+		}
+
+		return "", fmt.Errorf("failed to look up FlowDefinition for %s: %w", flowSub.Flow.Name, err)
+	}
+
+	body := map[string]any{
+		"Metadata": map[string]any{
+			"activeVersionNumber": 0,
+		},
+	}
+
+	_, patchErr := c.patchToSFAPI(
+		ctx, body, "tooling/sobjects/FlowDefinition/"+definitionID, "FlowDefinition",
+	)
+	if patchErr == nil {
+		return definitionID, nil
+	}
+
+	logging.Logger(ctx).WarnContext(ctx,
+		"tooling API flow deactivation failed; falling back to redeploying the flow as Draft",
+		"flow", flowSub.Flow.Name,
+		"error", patchErr,
+	)
+
+	// Fallback: redeploy the flow as Draft via the Metadata API
+	params := metadata.FlowParams{
+		ObjectName:          string(flowSub.ObjectName),
+		FlowName:            flowSub.Flow.Name,
+		RecordTriggerType:   metadata.RecordTriggerType(flowSub.Flow.RecordTriggerType),
+		WatchFields:         flowSub.Flow.WatchFields,
+		OutboundMessageName: flowSub.OutboundMessage.Name,
+	}
+
+	zipData, err := metadata.ConstructDraftFlow(params)
+	if err != nil {
+		return "", fmt.Errorf("failed to construct flow deactivation zip for %s: %w", flowSub.Flow.Name, err)
+	}
+
+	entity := "flow deactivation " + flowSub.Flow.Name
+
+	deployResult, err := c.deployDestructiveApex(ctx, zipData, metadata.TestLevelNoTestRun)
+	if err != nil {
+		return "", fmt.Errorf("failed to deploy destructive change for %s: %w", entity, err)
+	}
+
+	if !deployResult.Success {
+		return "", fmt.Errorf("%w for %s: %s",
+			errFlowTeardownDeployFailed, entity, formatDeployFailureDetails(deployResult))
+	}
+
+	return definitionID, nil
+}
+
+// flowVersion is one Tooling API Flow row (a single version of a definition).
+type flowVersion struct {
+	ID            string `json:"Id"`
+	Status        string `json:"Status"`
+	VersionNumber int    `json:"VersionNumber"`
+}
+
+// listFlowVersions returns every version of a FlowDefinition. Used so teardown
+// can delete AmpSubscribe_<Object>-N rather than the unversioned API name.
+func (c *Connector) listFlowVersions(ctx context.Context, definitionID string) ([]flowVersion, error) {
+	location, err := c.getRestApiURL("tooling/query")
+	if err != nil {
+		return nil, err
+	}
+
+	soql := fmt.Sprintf(
+		"SELECT Id, Status, VersionNumber FROM Flow WHERE DefinitionId = '%s'",
+		escapeSOQLString(definitionID),
+	)
+	location.WithQueryParam("q", soql)
+
+	resp, err := c.Client.Get(ctx, location.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to list flow versions for definition %s: %w", definitionID, err)
+	}
+
+	result, err := common.UnmarshalJSON[struct {
+		Records []flowVersion `json:"records"`
+	}](resp)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse flow version query for definition %s: %w", definitionID, err)
+	}
+
+	if result == nil {
+		return nil, nil
+	}
+
+	return result.Records, nil
 }
