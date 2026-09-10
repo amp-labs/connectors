@@ -36,6 +36,16 @@ type SubscribeResult struct {
 	// ManualApexTriggerManagement mirrors SubscriptionRequest.ManualApexTriggerManagement.
 	// See SubscriptionRequest's "Manual-mode contract" for the full semantics.
 	ManualApexTriggerManagement bool
+
+	// UseFlow mirrors SubscriptionRequest.UseFlow. When true, this result was
+	// produced by the flow-based path: Flows is populated and the CDC fields
+	// above (EventChannelMembers, ApexTriggers, quota fields) are empty.
+	// DeleteSubscription branches on this to pick the teardown path.
+	UseFlow bool `json:"useFlow,omitempty"`
+
+	// Flows maps object names to the record-triggered flow + outbound message
+	// pair deployed for them. Only populated when UseFlow is true.
+	Flows map[common.ObjectName]*FlowSubscription `json:"flows,omitempty"`
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -96,6 +106,16 @@ type SubscriptionRequest struct {
 
 	// ManualApexTriggerManagement: see "Manual-mode contract" above.
 	ManualApexTriggerManagement bool
+
+	// UseFlow selects the flow-based subscription path: instead of CDC channel
+	// members + apex triggers, a record-triggered flow and a workflow outbound
+	// message are deployed per object. When false (the default), the existing CDC
+	// path runs unchanged — existing installations are unaffected.
+	UseFlow bool `json:"useFlow,omitempty"`
+
+	// Flow carries the flow-path configuration. Required when UseFlow is true;
+	// ignored otherwise.
+	Flow *FlowConfig `json:"flow,omitempty"`
 }
 
 // subscribeProgress tracks which reversible operations completed during executeSubscribe,
@@ -107,8 +127,15 @@ type subscribeProgress struct {
 	deployedTriggers    map[common.ObjectName]*ApexTriggerResult
 }
 
-// Subscribe creates a Salesforce CDC subscription for the given objects, performing
-// up to three operations in order:
+// Subscribe creates event subscriptions for the given objects.
+//
+// When SubscriptionRequest.UseFlow is true, this delegates to
+// subscribeWithFlow: one Metadata API deploy of a record-triggered flow +
+// outbound message per object (no registration, no Apex, no CDC). See
+// subscribe_flow.go. RegistrationResult is not required on that path.
+//
+// Otherwise this is the existing CDC path, which performs up to three
+// operations in order:
 //
 //  1. Upsert quota optimization custom fields — only when the request configures
 //     them via SubscriptionRequest.QuotaOptimizationObjectFields. Skipped entirely
@@ -120,17 +147,39 @@ type subscribeProgress struct {
 //     The filter expression and enriched fields are populated only for objects
 //     with a quota field configured; otherwise the member is created without them.
 //
-// Any failure triggers a rollback that reverses completed steps in inverse order.
-// On success, returns a SubscriptionResult with Status = Success. On failure with
-// successful rollback, returns post-rollback state with Status = Failed. On failure
-// with failed rollback, returns the partial state with Status = FailedToRollback;
-// the caller should inspect Result to see what survived.
+// Any CDC-path failure triggers a rollback that reverses completed steps in
+// inverse order. On success, returns a SubscriptionResult with Status =
+// Success. On failure with successful rollback, returns post-rollback state
+// with Status = Failed. On failure with failed rollback, returns the partial
+// state with Status = FailedToRollback; the caller should inspect Result to
+// see what survived.
 //
-// Registration is required prior to subscribing.
+// Registration is required prior to subscribing on the CDC path.
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
+	var req *SubscriptionRequest
+
+	if params.Request != nil {
+		var requestOk bool
+
+		req, requestOk = params.Request.(*SubscriptionRequest)
+		if !requestOk {
+			return nil, fmt.Errorf(
+				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
+				req, params.Request,
+			)
+		}
+	}
+
+	// The flow-based path diverts before the registration checks below: it
+	// deploys record-triggered flows + outbound messages and needs no event
+	// channel, named credential, or event relay.
+	if req != nil && req.UseFlow {
+		return c.subscribeWithFlow(ctx, params, req)
+	}
+
 	if params.RegistrationResult == nil {
 		return nil, fmt.Errorf("%w: missing RegistrationResult", errMissingParams)
 	}
@@ -151,20 +200,6 @@ func (c *Connector) Subscribe(
 			registrationParams,
 			params.RegistrationResult.Result,
 		)
-	}
-
-	var req *SubscriptionRequest
-
-	if params.Request != nil {
-		var requestOk bool
-
-		req, requestOk = params.Request.(*SubscriptionRequest)
-		if !requestOk {
-			return nil, fmt.Errorf(
-				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
-				req, params.Request,
-			)
-		}
 	}
 
 	sfRes, progress, execErr := c.executeSubscribe(ctx, params, registrationParams, req)
