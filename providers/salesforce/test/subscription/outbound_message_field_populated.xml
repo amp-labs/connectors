@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <soapenv:Body>
+  <notifications xmlns="http://soap.sforce.com/2005/09/outbound">
+   <OrganizationId>00Dxx0000001gPFEAY</OrganizationId>
+   <ActionId>04kxx00000000blCAA</ActionId>
+   <SessionId xsi:nil="true"/>
+   <EnterpriseUrl>https://yourInstance.salesforce.com/services/Soap/c/60.0/00Dxx0000001gPF</EnterpriseUrl>
+   <PartnerUrl>https://yourInstance.salesforce.com/services/Soap/u/60.0/00Dxx0000001gPF</PartnerUrl>
+   <Notification>
+    <Id>04lxx000000CaSiAAK</Id>
+    <sObject xsi:type="sf:Account" xmlns:sf="urn:sobject.enterprise.soap.sforce.com">
+     <sf:Id>001xx000003DGb4AAG</sf:Id>
+     <sf:CreatedDate>2026-09-09T19:01:52.000Z</sf:CreatedDate>
+     <sf:Industry>Agriculture</sf:Industry>
+     <sf:LastModifiedDate>2026-09-09T19:10:58.000Z</sf:LastModifiedDate>
+    </sObject>
+   </Notification>
+  </notifications>
+ </soapenv:Body>
+</soapenv:Envelope>
