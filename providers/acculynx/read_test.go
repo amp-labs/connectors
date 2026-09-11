@@ -14,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
+	"gotest.tools/v3/assert"
 )
 
 //go:embed test/read/users-first-page.json
@@ -1120,7 +1121,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			Name: "Read acculynx/units-of-measure honours custom responseKey",
+			Name: "Read acculynx/units-of-measure parses a bare array response",
 			Input: common.ReadParams{
 				ObjectName: "acculynx/units-of-measure",
 				Fields:     connectors.Fields("id", "name"),
@@ -1154,6 +1155,34 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				return constructTestReadConnector(tt.Server.URL)
 			})
 		})
+	}
+}
+
+// TestBareArrayObjectsResolveToEmptyResponseKey guards the generator's
+// bareArrayObjects override. The AccuLynx spec declares a wrapper object for
+// these three, but the live API answers with a top-level array, so their
+// records key must be the empty bare-array convention. Without this, dropping
+// an entry from the override map would only surface as a runtime
+// "key not found" against the live API.
+func TestBareArrayObjectsResolveToEmptyResponseKey(t *testing.T) {
+	t.Parallel()
+
+	connector, err := constructTestReadConnector("http://localhost")
+	assert.NilError(t, err)
+
+	tests := []struct {
+		object string
+		want   string
+	}{
+		{"acculynx/units-of-measure", ""},
+		{"company-settings/job-file-settings/workflow-milestones", ""},
+		{"company-settings/location-settings/account-types", ""},
+		// Control: the spec describes countries the same way, but it genuinely wraps.
+		{"acculynx/countries", "items"},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, connector.arrayFieldName(tt.object), tt.want, tt.object)
 	}
 }
 
