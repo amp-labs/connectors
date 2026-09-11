@@ -92,7 +92,7 @@ require (
 	github.com/amp-labs/amp-common v0.0.0-20260908201524-747c72091278
 	github.com/antchfx/xmlquery v1.5.1
 	github.com/apache/arrow/go/v15 v15.0.2
-	github.com/aws/aws-sdk-go-v2 v1.45.1
+	github.com/aws/aws-sdk-go-v2 v1.46.0
 	github.com/aws/aws-sdk-go-v2/config v1.33.2
 	github.com/aws/aws-sdk-go-v2/credentials v1.20.2
 	github.com/brianvoe/gofakeit/v6 v6.28.0
