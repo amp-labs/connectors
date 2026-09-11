@@ -6,7 +6,6 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
@@ -34,7 +33,7 @@ type OutboundMessageParams struct {
 
 	// Name is the outbound message developer name WITHOUT the object prefix
 	// (e.g., "amp_Lead"). The Metadata API addresses the component as
-	// "<ObjectName>.<Name>". Use GenerateOutboundMessageNameForSubscription()
+	// "<ObjectName>.<Name>". Use GenerateSubscriptionArtifactName()
 	// to generate this.
 	Name string
 
@@ -53,33 +52,10 @@ type OutboundMessageParams struct {
 	Fields []string
 }
 
-// GenerateOutboundMessageNameForSubscription returns the outbound message
-// developer name for a given Salesforce object. Developer names must not
-// contain consecutive underscores, so custom-object suffixes like "__c" are collapsed
-// (e.g. "My_Object__c" → "amp_My_Object_c").
-func GenerateOutboundMessageNameForSubscription(objectName string) (string, error) {
-	if objectName == "" {
-		return "", errEmptyObjectName
-	}
-
-	return "amp_" + sanitizeDeveloperName(objectName), nil
-}
-
 // OutboundMessageFullName returns the Metadata API full name of the outbound
 // message component, which is prefixed by the object it belongs to.
 func OutboundMessageFullName(objectName, outboundMessageName string) string {
 	return objectName + "." + outboundMessageName
-}
-
-// sanitizeDeveloperName converts an object API name into a string that is
-// valid inside a developer name: consecutive underscores collapse to one and
-// trailing underscores are trimmed.
-func sanitizeDeveloperName(name string) string {
-	for strings.Contains(name, "__") {
-		name = strings.ReplaceAll(name, "__", "_")
-	}
-
-	return strings.Trim(name, "_")
 }
 
 // ValidateOutboundMessageParams checks that all required fields are present.
@@ -152,10 +128,9 @@ func generateWorkflowXML(params OutboundMessageParams) (string, error) {
 		Xmlns: metadataXmlns,
 		OutboundMessages: []workflowOutboundMessageXML{
 			{
-				FullName:   params.Name,
-				APIVersion: core.APIVersion,
-				Description: "THIS IS AN AUTOMATED OUTBOUND MESSAGE. DO NOT EDIT. " +
-					"It delivers subscription events for the object to Ampersand.",
+				FullName:         params.Name,
+				APIVersion:       core.APIVersion,
+				Description:      "THIS IS AN AUTOMATED OUTBOUND MESSAGE. DO NOT EDIT.",
 				EndpointURL:      params.EndpointURL,
 				Fields:           fields,
 				IncludeSessionID: false,

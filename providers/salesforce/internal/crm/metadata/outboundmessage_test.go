@@ -8,56 +8,6 @@ import (
 	"testing"
 )
 
-func TestGenerateOutboundMessageNameForSubscription(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name      string
-		object    string
-		expected  string
-		expectErr bool
-	}{
-		{
-			name:     "Standard object",
-			object:   "Account",
-			expected: "amp_Account",
-		},
-		{
-			name:     "Custom object collapses consecutive underscores",
-			object:   "My_Object__c",
-			expected: "amp_My_Object_c",
-		},
-		{
-			name:      "Empty object name returns error",
-			object:    "",
-			expectErr: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			got, err := GenerateOutboundMessageNameForSubscription(tt.object)
-			if tt.expectErr {
-				if err == nil {
-					t.Fatal("expected error, got nil")
-				}
-
-				return
-			}
-
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
-
-			if got != tt.expected {
-				t.Errorf("GenerateOutboundMessageNameForSubscription(%q) = %q, want %q", tt.object, got, tt.expected)
-			}
-		})
-	}
-}
-
 func validOutboundMessageParams() OutboundMessageParams {
 	return OutboundMessageParams{
 		ObjectName:          "Account",
