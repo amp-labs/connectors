@@ -11,7 +11,7 @@ install/linters:
 	@echo "Installing gci..."
 	go install github.com/daixiang0/gci@latest
 	@echo "Installing golangci-lint $(GOLANGCI_LINT_VERSION)..."
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $$(go env GOPATH)/bin $(GOLANGCI_LINT_VERSION)
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 	@echo "Installing typos..."
 	cargo install typos-cli
 	@echo "Linters installed successfully!"
