@@ -15,8 +15,16 @@ import (
 // POSTs a SOAP notification to a configured HTTPS endpoint whenever the
 // flow that references it fires.
 
-var errOutboundMessageRequiredParams = errors.New(
-	"objectName, name, endpointURL, and integrationUsername are required")
+var (
+	errOutboundMessageRequiredParams = errors.New(
+		"objectName, name, endpointURL, and integrationUsername are required")
+	errOutboundMessageTooManyFields = errors.New(
+		"outbound message supports at most 100 fields")
+)
+
+// Salesforce caps Workflow Outbound Message field lists at 100, including
+// the Id/CreatedDate/LastModifiedDate floor.
+const maxOutboundMessageFields = 100
 
 const metadataXmlns = "http://soap.sforce.com/2006/04/metadata"
 
@@ -123,6 +131,9 @@ func ensureOutboundMessageFields(fields []string) []string {
 // carrying the single outbound message component.
 func generateWorkflowXML(params OutboundMessageParams) (string, error) {
 	fields := ensureOutboundMessageFields(params.Fields)
+	if len(fields) > maxOutboundMessageFields {
+		return "", fmt.Errorf("%w: got %d", errOutboundMessageTooManyFields, len(fields))
+	}
 
 	workflow := workflowXML{
 		Xmlns: metadataXmlns,
