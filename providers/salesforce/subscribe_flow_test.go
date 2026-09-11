@@ -124,3 +124,96 @@ func TestSubscribeWithFlowRequiresFlowConfig(t *testing.T) {
 		})
 	}
 }
+
+// TestFlowObjectsToRemove covers the only decision reconcile makes on its own:
+// which of the previous subscription's objects are no longer covered and must be
+// torn down. Everything else is an upsert, which needs no diffing.
+func TestFlowObjectsToRemove(t *testing.T) {
+	t.Parallel()
+
+	recorded := func(names ...string) *SubscribeResult {
+		flows := make(map[common.ObjectName]*FlowSubscription, len(names))
+		for _, name := range names {
+			flows[common.ObjectName(name)] = &FlowSubscription{
+				ObjectName:      common.ObjectName(name),
+				Flow:            &FlowMetadata{Name: "AmpSubscribe_" + name},
+				OutboundMessage: &OutboundMessageMetadata{Name: "amp_" + name},
+			}
+		}
+
+		return &SubscribeResult{UseFlow: true, Flows: flows}
+	}
+
+	tests := []struct {
+		name string
+		prev *SubscribeResult
+		next *SubscribeResult
+		want []common.ObjectName
+	}{{
+		name: "Unchanged object set removes nothing",
+		prev: recorded("Account", "Contact"),
+		next: recorded("Account", "Contact"),
+		want: []common.ObjectName{},
+	}, {
+		name: "Dropped objects are removed",
+		prev: recorded("Account", "Contact", "Lead"),
+		next: recorded("Account"),
+		want: []common.ObjectName{"Contact", "Lead"},
+	}, {
+		name: "Added objects remove nothing",
+		prev: recorded("Account"),
+		next: recorded("Account", "Contact"),
+		want: []common.ObjectName{},
+	}, {
+		name: "No previous state removes nothing",
+		prev: nil,
+		next: recorded("Account"),
+		want: nil,
+	}, {
+		name: "Emptied subscription removes everything",
+		prev: recorded("Account", "Contact"),
+		next: &SubscribeResult{UseFlow: true},
+		want: []common.ObjectName{"Account", "Contact"},
+	}}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := flowObjectsToRemove(tt.prev, tt.next)
+			if len(got) != len(tt.want) {
+				t.Fatalf("flowObjectsToRemove() = %v, want %v", got, tt.want)
+			}
+
+			for i := range got {
+				if got[i] != tt.want[i] {
+					t.Errorf("flowObjectsToRemove()[%d] = %q, want %q", i, got[i], tt.want[i])
+				}
+			}
+		})
+	}
+}
+
+// A previous entry with no recorded artifacts has nothing to delete; reconcile
+// must skip it rather than dereference a nil Flow during teardown.
+func TestFlowObjectsToRemoveSkipsUnrecordedArtifacts(t *testing.T) {
+	t.Parallel()
+
+	prev := &SubscribeResult{
+		UseFlow: true,
+		Flows: map[common.ObjectName]*FlowSubscription{
+			"Account": nil,
+			"Contact": {ObjectName: "Contact"},
+			"Lead": {
+				ObjectName:      "Lead",
+				Flow:            &FlowMetadata{Name: "AmpSubscribe_Lead"},
+				OutboundMessage: &OutboundMessageMetadata{Name: "amp_Lead"},
+			},
+		},
+	}
+
+	got := flowObjectsToRemove(prev, &SubscribeResult{UseFlow: true})
+	if len(got) != 1 || got[0] != "Lead" {
+		t.Errorf("flowObjectsToRemove() = %v, want [Lead]", got)
+	}
+}

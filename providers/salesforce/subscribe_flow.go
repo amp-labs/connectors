@@ -47,7 +47,7 @@ var (
 		"SubscriptionRequest.Flow.EndpointURL is required when UseFlow is true")
 	errFlowNoSupportedEvents = errors.New(
 		"flow-based subscriptions support only create/update events")
-	errFlowDeployFailed            = errors.New("flow subscription deployment failed")
+	errFlowDeployFailed         = errors.New("flow subscription deployment failed")
 	errFlowTeardownDeployFailed = errors.New("flow subscription teardown deployment failed")
 )
 
@@ -144,6 +144,7 @@ func (c *Connector) subscribeWithFlow(
 	ctx context.Context,
 	params common.SubscribeParams,
 	req *SubscriptionRequest,
+	prevState *SubscribeResult,
 ) (*common.SubscriptionResult, error) {
 	if req.Flow == nil || req.Flow.EndpointURL == "" {
 		return nil, errFlowEndpointURLRequired
@@ -173,9 +174,23 @@ func (c *Connector) subscribeWithFlow(
 			return nil, fmt.Errorf("failed to build flow subscription for object %s: %w", objName, err)
 		}
 
-		artifactName, err := metadata.GenerateSubscriptionArtifactName(req.Flow.NamePrefix, string(objName))
-		if err != nil {
-			return nil, fmt.Errorf("failed to build flow subscription for object %s: %w", objName, err)
+		// Reuse the recorded name on update so a prefix change upserts the
+		// existing flow/OM instead of deploying a second pair beside them.
+		artifactName := ""
+		if prevState != nil {
+			if prev, ok := prevState.Flows[objName]; ok && prev != nil &&
+				prev.Flow != nil && prev.Flow.Name != "" {
+				artifactName = prev.Flow.Name
+			}
+		}
+
+		if artifactName == "" {
+			var genErr error
+
+			artifactName, genErr = metadata.GenerateSubscriptionArtifactName(req.Flow.NamePrefix, string(objName))
+			if genErr != nil {
+				return nil, fmt.Errorf("failed to build flow subscription for object %s: %w", objName, genErr)
+			}
 		}
 
 		components = append(components, metadata.FlowSubscriptionComponent{
@@ -332,6 +347,124 @@ func flowCoveredEvents(sfRes *SubscribeResult) []common.SubscriptionEventType {
 	}
 
 	return union
+}
+
+// reconcileFlowSubscription updates a flow-mode subscription in place.
+//
+// Salesforce replaces the outbound message in place, and for the flow it
+// activates a new version while deactivating the previous one as part of the
+// same deploy. Deactivated versions of the surviving flows are deleted after
+// the upsert to avoid hitting Salesforce's 50-versions-per-flow cap.
+//
+// Objects that dropped out of the subscription also have their artifacts removed
+// after the upsert.
+func (c *Connector) reconcileFlowSubscription(
+	ctx context.Context,
+	params common.SubscribeParams,
+	req *SubscriptionRequest,
+	prevState *SubscribeResult,
+) (*common.SubscriptionResult, error) {
+	// Upsert the new subscription.
+	result, err := c.subscribeWithFlow(ctx, params, req, prevState)
+	if err != nil {
+		return result, err
+	}
+
+	sfRes, ok := result.Result.(*SubscribeResult)
+	if !ok {
+		return result, fmt.Errorf("%w: expected *SubscribeResult from the reconcile deploy, got '%T'",
+			errInvalidRequestType, result.Result)
+	}
+
+	// Delete deactivated versions of flows that stayed subscribed (Active stays).
+	c.deleteDeactivatedFlows(ctx, sfRes)
+
+	// For objects that were removed from the subscription, delete the flow and outbound message.
+	for _, objName := range flowObjectsToRemove(prevState, sfRes) {
+		flowSub := prevState.Flows[objName]
+
+		if err := c.deleteFlowSubscription(ctx, objName, flowSub); err != nil {
+			return result, fmt.Errorf("reconcile deployed but could not remove dropped object: %w", err)
+		}
+	}
+
+	return result, nil
+}
+
+// flowObjectsToRemove diffs the previous and new subscription states and returns the objects
+// that have been removed from the subscription.
+func flowObjectsToRemove(prevState, newState *SubscribeResult) []common.ObjectName {
+	if prevState == nil {
+		return nil
+	}
+
+	removed := make([]common.ObjectName, 0, len(prevState.Flows))
+
+	for objName, flowSub := range prevState.Flows {
+		if flowSub == nil || flowSub.Flow == nil || flowSub.OutboundMessage == nil {
+			continue
+		}
+
+		if _, kept := newState.Flows[objName]; kept {
+			continue
+		}
+
+		removed = append(removed, objName)
+	}
+
+	return removed
+}
+
+const flowVersionStatusActive = "Active"
+
+// deleteDeactivatedFlows deletes inactive versions of every surviving flow
+// after a reconcile upsert. The Active version is left in place. Failures
+// are logged only: the new version is already active, so a missed delete
+// must not fail the update.
+func (c *Connector) deleteDeactivatedFlows(ctx context.Context, sfRes *SubscribeResult) {
+	for _, flowSub := range sfRes.Flows {
+		definitionID, err := c.findToolingEntityIDByDeveloperName(ctx, "FlowDefinition", flowSub.Flow.Name)
+		if err != nil {
+			logging.Logger(ctx).WarnContext(ctx,
+				"failed to delete deactivated flow versions during subscription update",
+				"flow", flowSub.Flow.Name,
+				"error", err,
+			)
+
+			continue
+		}
+
+		versions, err := c.listFlowVersions(ctx, definitionID)
+		if err != nil {
+			logging.Logger(ctx).WarnContext(ctx,
+				"failed to delete deactivated flow versions during subscription update",
+				"flow", flowSub.Flow.Name,
+				"error", err,
+			)
+
+			continue
+		}
+
+		for _, version := range versions {
+			if version.Status == flowVersionStatusActive {
+				continue
+			}
+
+			_, delErr := c.deleteToSFAPI(ctx,
+				"tooling/sobjects/Flow/"+version.ID,
+				fmt.Sprintf("flow %s version %d", flowSub.Flow.Name, version.VersionNumber),
+			)
+			if delErr != nil {
+				logging.Logger(ctx).WarnContext(ctx,
+					"tooling delete of deactivated flow version failed; leaving it in place",
+					"flow", flowSub.Flow.Name,
+					"version", version.VersionNumber,
+					"status", version.Status,
+					"error", delErr,
+				)
+			}
+		}
+	}
 }
 
 // deleteAllFlowSubscriptions tears down every flow-based subscription in

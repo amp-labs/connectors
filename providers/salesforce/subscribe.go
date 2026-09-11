@@ -177,7 +177,7 @@ func (c *Connector) Subscribe(
 	// deploys record-triggered flows + outbound messages and needs no event
 	// channel, named credential, or event relay.
 	if req != nil && req.UseFlow {
-		return c.subscribeWithFlow(ctx, params, req)
+		return c.subscribeWithFlow(ctx, params, req, nil)
 	}
 
 	if params.RegistrationResult == nil {
@@ -550,23 +550,6 @@ func (c *Connector) UpdateSubscription(
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	// Validate params up-front (mirrors Subscribe) so a malformed input is
-	// rejected before any Salesforce-side mutation happens. Without this, a
-	// missing or invalid params would only be caught later by the inner
-	// Subscribe call — after upsertQuotaOptimizationFields, updateExistingSubscriptions,
-	// and DeleteSubscription have already run.
-	if params.RegistrationResult == nil {
-		return nil, fmt.Errorf("%w: missing RegistrationResult", errMissingParams)
-	}
-
-	if params.RegistrationResult.Result == nil {
-		return nil, fmt.Errorf("%w: missing RegistrationResult.Result", errMissingParams)
-	}
-
-	if err := validator.New().Struct(params); err != nil {
-		return nil, fmt.Errorf("invalid params: %w", err)
-	}
-
 	// validate the previous result
 	if previousResult.Result == nil {
 		return nil, fmt.Errorf("%w: missing previousResult.Result", errMissingParams)
@@ -597,6 +580,40 @@ func (c *Connector) UpdateSubscription(
 				req, params.Request,
 			)
 		}
+	}
+
+	// If updating in flow mode, route to reconcileFlowSubscription to upsert artifacts in Salesforce.
+	if prevState.UseFlow && req != nil && req.UseFlow {
+		return c.reconcileFlowSubscription(ctx, params, req, prevState)
+	}
+
+	// If switching between subscribe modes (CDC↔flow), delete-and-create the subscription.
+	if prevState.UseFlow || (req != nil && req.UseFlow) {
+		if err := c.DeleteSubscription(ctx, *previousResult); err != nil {
+			return &common.SubscriptionResult{
+				Status: common.SubscriptionStatusFailed,
+				Result: prevState,
+			}, fmt.Errorf("failed to delete previous subscription before flow update: %w", err)
+		}
+
+		return c.Subscribe(ctx, params)
+	}
+
+	// Validate params up-front (mirrors Subscribe) so a malformed input is
+	// rejected before any Salesforce-side mutation happens. Without this, a
+	// missing or invalid params would only be caught later by the inner
+	// Subscribe call — after upsertQuotaOptimizationFields, updateExistingSubscriptions,
+	// and DeleteSubscription have already run.
+	if params.RegistrationResult == nil {
+		return nil, fmt.Errorf("%w: missing RegistrationResult", errMissingParams)
+	}
+
+	if params.RegistrationResult.Result == nil {
+		return nil, fmt.Errorf("%w: missing RegistrationResult.Result", errMissingParams)
+	}
+
+	if err := validator.New().Struct(params); err != nil {
+		return nil, fmt.Errorf("invalid params: %w", err)
 	}
 
 	// nolint:lll
