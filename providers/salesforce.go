@@ -181,6 +181,7 @@ func init() { // nolint:funlen
 					DocsURL:     "https://help.salesforce.com/s/articleView?language=en_US&id=sf.faq_domain_name_what.htm&type=5",
 					// ModuleDependencies specifies which modules REQUIRE this metadata item.
 					// Here, it means: "the CRM module depends on/requires the workspace metadata".
+					Prompt: "The part of the Salesforce URL that comes before .my.salesforce.com or .lightning.force.com.",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleSalesforceCRM:                   {},
 						ModuleSalesforceAccountEngagement:     {},
