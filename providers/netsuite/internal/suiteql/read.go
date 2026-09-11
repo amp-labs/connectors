@@ -77,7 +77,9 @@ func (a *Adapter) parseReadResponse(
 
 func makeSuiteQLBody(params common.ReadParams) suiteQLQueryBody {
 	body := suiteQLQueryBody{
-		Query: "SELECT * FROM " + params.ObjectName,
+		// unqueryvet: ObjectName is an arbitrary NetSuite record type, so the
+		// connector cannot know its columns ahead of time.
+		Query: "SELECT * FROM " + params.ObjectName, //nolint:unqueryvet
 	}
 
 	dateColumn := "lastModifiedDate"

@@ -47,10 +47,8 @@ func NewAdapter(params *common.ConnectorParams, provider providers.Provider) (*A
 
 func constructor(base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{
-		Connector: base,
-		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{MetadataKeyBusinessUnitID},
-		},
+		Connector:            base,
+		ExpectedMetadataKeys: []string{MetadataKeyBusinessUnitID},
 	}
 
 	errorHandler := errorHandlerFunc

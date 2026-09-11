@@ -334,7 +334,7 @@ func (c *Connector) getModuleMetadata(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (map[string]map[string]any, error) {
-	objectNames := make([]string, 0)
+	objectNames := make([]string, 0, len(params.SubscriptionEvents))
 	for obj := range params.SubscriptionEvents {
 		objectNames = append(objectNames, string(obj))
 	}

@@ -763,7 +763,9 @@ func customRefreshHandler(
 				return nil, err
 			}
 
-			resp, err := rawClient.Do(replay) //nolint:bodyclose // returned to caller, or closed below before retrying
+			// G704: replay re-renders a request this connector already sent, against
+			// the same URL; refreshing credentials does not change the destination.
+			resp, err := rawClient.Do(replay) //nolint:bodyclose,gosec // returned to caller, or closed below before retrying
 			if err != nil {
 				return nil, err
 			}

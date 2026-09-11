@@ -14,7 +14,7 @@ package common
 //		FilterBy("age", Gt, 18)
 func (s SearchFilter) FilterBy(fieldName string, operator FilterOperator, value any) SearchFilter {
 	// Copy the slice to avoid aliasing
-	newFilters := make([]FieldFilter, len(s.FieldFilters))
+	newFilters := make([]FieldFilter, len(s.FieldFilters), len(s.FieldFilters)+1)
 	copy(newFilters, s.FieldFilters)
 
 	newFilters = append(newFilters, FieldFilter{

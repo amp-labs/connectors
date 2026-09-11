@@ -66,6 +66,7 @@ var objectReadSpecs = datautils.NewDefaultMap(map[string]objectReadSpec{
 	"contacts/phone-numbers":    {pagination: paginationNone},
 	"jobs/contacts":             {pagination: paginationNone},
 	"jobs/milestone-history":    {pagination: paginationNone},
+
 	"company-settings/job-file-settings/workflow-milestones": {pagination: paginationNone},
 	"company-settings/location-settings/account-types":       {pagination: paginationNone},
 }, func(string) objectReadSpec {

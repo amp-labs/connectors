@@ -63,6 +63,13 @@ func (s PluralString) MarshalText() ([]byte, error) {
 	return []byte(s.text), nil
 }
 
+// UnmarshalText applies plural formatting to the raw text.
+//
+// It must not delegate to UnmarshalJSON: encoding/json uses TextUnmarshaler for
+// map keys and hands it the unquoted value, whereas UnmarshalJSON expects a
+// quoted JSON string. This mirrors MarshalText, which writes the raw text.
 func (s *PluralString) UnmarshalText(text []byte) error {
-	return s.UnmarshalJSON(text)
+	s.text = pluralizer.Plural(string(text))
+
+	return nil
 }

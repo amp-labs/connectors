@@ -52,10 +52,8 @@ func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
 // nolint:funlen
 func constructor(base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{
-		Connector: base,
-		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{"adAccountId"},
-		},
+		Connector:            base,
+		ExpectedMetadataKeys: []string{"adAccountId"},
 	}
 
 	// LinkedIn's OpenAPI files only cover the adAnalytics object.

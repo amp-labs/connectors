@@ -4,8 +4,10 @@ const apiVersion = "v2"
 
 // objectCatalogItems reads the catalog through the SearchCatalogItems endpoint,
 // which returns item objects only, unlike the mixed-type "catalog" list.
-const objectCatalogItems = "catalogItems"
-const objectTeamMembers = "teamMembers"
+const (
+	objectCatalogItems = "catalogItems"
+	objectTeamMembers  = "teamMembers"
+)
 
 // objectConfig is the single source of truth for a Square object: how to list
 // its records, and (when supported) how to create/update them. Write fields

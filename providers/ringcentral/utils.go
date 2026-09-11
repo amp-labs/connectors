@@ -40,7 +40,7 @@ func GetFieldByJSONTag(resp *Response, jsonTag string) ([]map[string]any, error)
 				return nil, fmt.Errorf("field with tag '%s' is not a slice", jsonTag) //nolint: err113
 			}
 
-			result, ok := fieldValue.Interface().([]map[string]any)
+			result, ok := reflect.TypeAssert[[]map[string]any](fieldValue)
 			if !ok {
 				return nil, fmt.Errorf("field with tag '%s' is not of type []map[string]any", jsonTag) //nolint: err113
 			}

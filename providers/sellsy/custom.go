@@ -146,7 +146,7 @@ func (d customFieldDefinition) getValueType() common.ValueType {
 }
 
 func (d customFieldDefinition) getValues() []common.FieldValue {
-	result := make([]common.FieldValue, 0)
+	result := make([]common.FieldValue, 0, len(d.Parameters.Items))
 
 	for _, item := range d.Parameters.Items {
 		result = append(result, common.FieldValue{

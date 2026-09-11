@@ -98,7 +98,8 @@ func (f ticketField) GetValueType() common.ValueType {
 }
 
 func (f ticketField) getValues() []common.FieldValue {
-	result := make([]common.FieldValue, 0)
+	result := make([]common.FieldValue, 0,
+		len(f.SystemFieldOptions)+len(f.CustomFieldOptions)+len(f.CustomStatuses))
 
 	for _, option := range f.SystemFieldOptions {
 		result = append(result, common.FieldValue{

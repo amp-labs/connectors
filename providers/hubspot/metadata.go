@@ -175,12 +175,10 @@ func (c *Connector) getObjectMetadataFromCRMSearch(
 	ctx context.Context, objectName string,
 ) (*common.ObjectMetadata, error) {
 	readResult, err := c.searchCRM(ctx, searchCRMParams{
-		SearchParams: SearchParams{
-			ObjectName: objectName,
-			Fields:     connectors.Fields(""), // passed to satisfy validation
-			NextPage:   "",
-		},
-		PageSize: 1,
+		ObjectName: objectName,
+		Fields:     connectors.Fields(""), // passed to satisfy validation
+		NextPage:   "",
+		PageSize:   1,
 	})
 	if err != nil {
 		// Ignore an error and fallback to static schema.

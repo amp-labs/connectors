@@ -118,7 +118,7 @@ type response[B any] struct {
 }
 
 func (b response[B]) getHeaders() common.Headers {
-	headers := make(common.Headers, 0)
+	headers := make(common.Headers, 0, len(b.Headers))
 	for key, value := range b.Headers {
 		headers = append(headers, common.Header{
 			Key:   key,

@@ -624,7 +624,8 @@ func allJsonPatchOperations(intent *communicationItemsIntent,
 	output = append(output, opPhone...)
 	output = append(output, opFax...)
 
-	var opRemove []patchOperationPayload
+	opRemove := make([]patchOperationPayload, 0,
+		len(removeEmail)+len(removePhone)+len(removeFax))
 
 	opRemove = append(opRemove, removeEmail...)
 	opRemove = append(opRemove, removePhone...)

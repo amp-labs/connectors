@@ -71,8 +71,15 @@ func (s SingularString) MarshalText() ([]byte, error) {
 	return []byte(s.text), nil
 }
 
+// UnmarshalText applies singular formatting to the raw text.
+//
+// It must not delegate to UnmarshalJSON: encoding/json uses TextUnmarshaler for
+// map keys and hands it the unquoted value, whereas UnmarshalJSON expects a
+// quoted JSON string. This mirrors MarshalText, which writes the raw text.
 func (s *SingularString) UnmarshalText(text []byte) error {
-	return s.UnmarshalJSON(text)
+	s.text = pluralizer.Singular(string(text))
+
+	return nil
 }
 
 func PluralityAndCaseIgnoreEqual(a, b string) bool {

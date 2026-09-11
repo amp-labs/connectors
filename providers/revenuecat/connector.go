@@ -42,10 +42,8 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
-		Connector: base,
-		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{"project_id"},
-		},
+		Connector:            base,
+		ExpectedMetadataKeys: []string{"project_id"},
 	}
 
 	connector.SchemaProvider = schema.NewCompositeSchemaProvider(

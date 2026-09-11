@@ -1,5 +1,5 @@
 # Ensure that the version matches linter version in CI pipeline step at ".github/workflows/linter.yml".
-version: v2.7.1
+version: v2.13.2
 plugins:
   - module: 'github.com/amp-labs/connectors/tools/linters/nogoroutine'
     path: './tools/linters/nogoroutine'

@@ -476,7 +476,8 @@ func (m eventMapping) toProviderEvents(commonEvent common.SubscriptionEventType)
 
 // getAllSupportedEvents returns all provider events that this mapping supports.
 func (m eventMapping) getAllSupportedEvents() []moduleEvent {
-	var events []moduleEvent
+	events := make([]moduleEvent, 0,
+		len(m.CreateEvents)+len(m.UpdateEvents)+len(m.DeleteEvents))
 
 	events = append(events, m.CreateEvents...)
 	events = append(events, m.UpdateEvents...)

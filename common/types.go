@@ -522,7 +522,7 @@ func (p BatchWriteParam) GetAllOrNone() bool {
 }
 
 func TransformWriteHeaders(headers []WriteHeader, mode HeaderMode) []Header {
-	transformedHeaders := []Header{}
+	transformedHeaders := make([]Header, 0, len(headers))
 	for _, header := range headers {
 		transformedHeaders = append(transformedHeaders, Header{
 			Key:   header.Key,

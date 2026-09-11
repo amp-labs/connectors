@@ -89,7 +89,7 @@ func parseXMLResponse(res *http.Response, body []byte) (*XMLHTTPResponse, error)
 			return nil, fmt.Errorf("failed to parse content type: %w", err)
 		}
 
-		if mimeType != "application/xml" && mimeType != "text/xml" {
+		if mimeType != mimeTypeXML && mimeType != "text/xml" {
 			return nil, fmt.Errorf("%w: expected content type to be application/xml, got %s", ErrNotXML, mimeType)
 		}
 	}
@@ -116,7 +116,7 @@ func addAcceptXMLHeader(headers []Header) []Header {
 		headers = make([]Header, 0)
 	}
 
-	return append(headers, Header{Key: "Accept", Value: "application/xml"})
+	return append(headers, Header{Key: "Accept", Value: mimeTypeXML})
 }
 
 type XMLSchema interface {
