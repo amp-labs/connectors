@@ -27,7 +27,7 @@ type EndpointRegistry struct {
 type EndpointRegistryInput map[common.ModuleID][]struct {
 	Endpoint string
 	Support  providers.Support
-	glob     glob.Glob // Compiled pattern for matching
+	glob     *glob.Pattern // Compiled pattern for matching
 }
 
 func NewEndpointRegistry(es EndpointRegistryInput) (*EndpointRegistry, error) {
