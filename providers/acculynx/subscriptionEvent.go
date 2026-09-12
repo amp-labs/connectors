@@ -314,12 +314,43 @@ func (e SubscriptionEvent) objectWrapper() (map[string]any, error) {
 		key = objectWrapperJob
 	}
 
-	wrapper, ok := inner[key].(map[string]any)
+	wrapper, ok := lookupObjectWrapper(inner, key)
 	if !ok {
 		return nil, fmt.Errorf("%w: expected event.%s", errMissingObjectWrapper, key)
 	}
 
 	return wrapper, nil
+}
+
+// lookupObjectWrapper reads the object wrapper out of the inner event,
+// tolerating the key casing AccuLynx actually sends.
+//
+// Their schema and examples document lowercase ("event.job", "event.contact")
+// and every topic serialises it that way except job.contacts.primary_changed,
+// which sends "event.Job" — confirmed across repeated live deliveries against
+// a payload otherwise identical to their documented example. An exact-match
+// lookup drops the wrapper for that topic, so RecordId fails and the event
+// cannot be resolved to a record.
+//
+// Falling back to a case-insensitive match keeps that topic working and covers
+// the topics that can only be triggered from the AccuLynx UI, where the same
+// defect would otherwise surface as an unexplained webhook failure.
+func lookupObjectWrapper(inner map[string]any, key string) (map[string]any, bool) {
+	if wrapper, ok := inner[key].(map[string]any); ok {
+		return wrapper, true
+	}
+
+	for name, value := range inner {
+		if !strings.EqualFold(name, key) {
+			continue
+		}
+
+		wrapper, ok := value.(map[string]any)
+
+		return wrapper, ok
+	}
+
+	return nil, false
 }
 
 // VerifyWebhookMessage always returns true. AccuLynx's docs reference a

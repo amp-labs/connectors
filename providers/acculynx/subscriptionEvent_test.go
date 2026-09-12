@@ -471,3 +471,66 @@ func TestSubscriptionEvent_RecordId_CustomFieldStatusChanged_NoParentID(t *testi
 		})
 	}
 }
+
+// Real production payload captured live for job.contacts.primary_changed.
+//
+// AccuLynx serialises this topic's wrapper as "Job" — capitalised — while its
+// schema, its documented example and every other topic use lowercase "job".
+// Captured across repeated live deliveries; the payload is otherwise identical
+// to the documented example, so only the key casing differs. Before the
+// case-insensitive wrapper lookup this returned errMissingObjectWrapper and the
+// event could not be resolved to a record.
+func TestSubscriptionEvent_RealPayload_JobContactsPrimaryChanged_CapitalisedWrapper(t *testing.T) {
+	t.Parallel()
+
+	evt := SubscriptionEvent{
+		"topicName":      "job.contacts.primary_changed",
+		"eventDateTime":  "2026-09-01T09:24:08.4639561Z",
+		"eventId":        "cd9ac00c-fe90-4dbb-9902-64b2137a20d2",
+		"subscriptionId": "b76074e4-e7b1-4f40-8f22-dc4506ce0b7c",
+		"event": map[string]any{
+			"Job": map[string]any{
+				"id": "0a7a5afa-e0d6-4cd8-9e1f-0f443726fa49",
+				"jobContact": map[string]any{
+					"id":        "ad941b32-d24e-42b1-98ba-df27be30e329",
+					"isPrimary": true,
+					"contact": map[string]any{
+						"id": "62546ee3-6915-40d4-90f5-a5658388d416",
+					},
+				},
+				"_link": "https://api.acculynx.com/api/v2/jobs/0a7a5afa-e0d6-4cd8-9e1f-0f443726fa49",
+			},
+		},
+	}
+
+	obj, err := evt.ObjectName()
+	assert.NilError(t, err)
+	assert.Equal(t, obj, objectJobs)
+
+	rid, err := evt.RecordId()
+	assert.NilError(t, err)
+	assert.Equal(t, rid, "0a7a5afa-e0d6-4cd8-9e1f-0f443726fa49")
+
+	fields, err := evt.UpdatedFields()
+	assert.NilError(t, err)
+	assert.DeepEqual(t, fields, []string{"contacts"})
+}
+
+// The documented lowercase spelling must keep working — the case-insensitive
+// lookup is a fallback, not a replacement.
+func TestSubscriptionEvent_LowercaseWrapperStillResolves(t *testing.T) {
+	t.Parallel()
+
+	evt := SubscriptionEvent{
+		"topicName": "job.contacts.primary_changed",
+		"event": map[string]any{
+			"job": map[string]any{
+				"id": "5ac46861-75ae-45fe-b512-ff8d85ce8ab3",
+			},
+		},
+	}
+
+	rid, err := evt.RecordId()
+	assert.NilError(t, err)
+	assert.Equal(t, rid, "5ac46861-75ae-45fe-b512-ff8d85ce8ab3")
+}
