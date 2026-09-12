@@ -107,6 +107,143 @@ var displayNameOverride = map[string]string{
 	"company-settings/location-settings/account-types":       "Account Types",
 }
 
+// bareArrayObjects lists objects whose list response is a bare JSON array. The
+// OpenAPI spec declares a wrapper object for each of them ("unitsOfMeasure" for
+// units-of-measure, "items" for the other two), but the live API returns the
+// array at the top level, so the generated responseKey names a key that is not
+// in the payload and the read fails with "key not found".
+//
+// Verified live (HTTP 200): /acculynx/units-of-measure, workflow-milestones and
+// account-types all return a top-level array, while /acculynx/countries — which
+// the spec describes identically — genuinely wraps in "items".
+//
+// An empty responseKey is the repo-wide bare-array convention: jsonquery's
+// ArrayRequired("") resolves to the current node.
+//
+//nolint:gochecknoglobals
+var bareArrayObjects = datautils.NewStringSet(
+	"acculynx/units-of-measure",
+	"company-settings/job-file-settings/workflow-milestones",
+	"company-settings/location-settings/account-types",
+)
+
+// responseKeyFor returns the object's records-array key, overriding the value
+// the spec produced for objects that actually answer with a bare array.
+func responseKeyFor(objectName, specResponseKey string) string {
+	if bareArrayObjects.Has(objectName) {
+		return ""
+	}
+
+	return specResponseKey
+}
+
+// fieldFixes reconciles an object's spec-declared properties with what the live
+// API actually returns.
+//
+//   - rename: the spec names a property differently from the payload. The
+//     field's type is unchanged, only its key, so the mapping is lossless.
+//   - drop:   declared by the spec but never present in a response.
+//   - add:    returned by every response but absent from the spec.
+type fieldFixes struct {
+	rename map[string]string
+	drop   datautils.StringSet
+	add    []metadatadef.Field
+}
+
+// fieldFixesByObject corrects field metadata for objects whose spec properties
+// disagree with the live API. Without these, ListObjectMetadata advertises
+// fields that do not exist and omits fields that do — and because
+// `optionalFieldsAuto: all` populates the field picker from that metadata, the
+// wrong names reach the builder's UI.
+//
+// Every entry was verified against live responses; the renames preserve the
+// spec's declared type because only the property name differs.
+//
+//nolint:gochecknoglobals
+var fieldFixesByObject = map[string]fieldFixes{
+	// The spec calls these "id"/"name"; the payload uses "tagId"/"tagName".
+	"company-settings/job-file-settings/photo-video-tags": {
+		rename: map[string]string{"id": "tagId", "name": "tagName"},
+	},
+	// The milestone's label ships as "milestone"; "statuses" is never returned.
+	"company-settings/job-file-settings/workflow-milestones": {
+		rename: map[string]string{"name": "milestone"},
+		drop:   datautils.NewStringSet("statuses"),
+	},
+	// The identifier ships as "id", not "tradeId".
+	"company-settings/job-file-settings/trade-types": {
+		rename: map[string]string{"tradeId": "id"},
+	},
+	// Capitalisation differs: the payload uses "companyID".
+	"company-settings/job-file-settings/document-folders": {
+		rename: map[string]string{"companyId": "companyID"},
+	},
+	// Capitalisation differs: the payload uses "isActive".
+	"company-settings/location-settings/account-types": {
+		rename: map[string]string{"IsActive": "isActive"},
+	},
+	// Job categories carry a "categoryId" alongside "id"; the spec omits it.
+	"company-settings/job-file-settings/job-categories": {
+		add: []metadatadef.Field{{Name: "categoryId", Type: "integer"}},
+	},
+	// Email addresses carry a "type" the read schema omits. It is added as a
+	// plain string rather than a select: the spec's only "type" enum lives on
+	// contactEmailAddress (the create shape) and lists Personal/Work/Other,
+	// but reads also return "Unspecified", so advertising that enum would
+	// declare a value set the API contradicts.
+	"contacts/email-addresses": {
+		add: []metadatadef.Field{{Name: "type", Type: "string"}},
+	},
+	// Custom-field values return "formattedValues" — the display-ready values —
+	// while the spec instead declares a "customFieldDefinition" object that the
+	// values endpoints never return.
+	"contacts/custom-fields": customFieldValueFixes(),
+	"jobs/custom-fields":     customFieldValueFixes(),
+	// History entries expose action/date/createdBy only; "type" is not returned.
+	"jobs/history": {
+		drop: datautils.NewStringSet("type"),
+	},
+}
+
+// customFieldValueFixes is shared by the contact and job custom-field value
+// objects, which return an identical record shape.
+func customFieldValueFixes() fieldFixes {
+	return fieldFixes{
+		drop: datautils.NewStringSet("customFieldDefinition"),
+		add:  []metadatadef.Field{{Name: "formattedValues", Type: "array"}},
+	}
+}
+
+// applyFieldFixes returns the object's fields with fieldFixesByObject applied.
+// Objects without an entry pass through untouched.
+func applyFieldFixes(objectName string, fields metadatadef.Fields) metadatadef.Fields {
+	fixes, ok := fieldFixesByObject[objectName]
+	if !ok {
+		return fields
+	}
+
+	fixed := make(metadatadef.Fields, len(fields))
+
+	for name, field := range fields {
+		if fixes.drop.Has(name) {
+			continue
+		}
+
+		if liveName, renamed := fixes.rename[name]; renamed {
+			field.Name = liveName
+			name = liveName
+		}
+
+		fixed[name] = field
+	}
+
+	for _, field := range fixes.add {
+		fixed[field.Name] = field
+	}
+
+	return fixed
+}
+
 //nolint:gochecknoglobals
 var allowedPaths = func() []string {
 	paths := make([]string, 0, len(objectEndpoints))
@@ -132,9 +269,9 @@ func main() {
 			continue
 		}
 
-		for _, field := range object.Fields {
+		for _, field := range applyFieldFixes(object.ObjectName, object.Fields) {
 			schemas.Add(common.ModuleRoot, object.ObjectName, object.DisplayName,
-				"/api/v2"+object.URLPath, object.ResponseKey,
+				"/api/v2"+object.URLPath, responseKeyFor(object.ObjectName, object.ResponseKey),
 				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 

@@ -34,7 +34,7 @@
         "acculynx/units-of-measure": {
           "displayName": "AccuLynx Units of Measure",
           "path": "/acculynx/units-of-measure",
-          "responseKey": "unitsOfMeasure",
+          "responseKey": "",
           "fields": {
             "friendlyName": {
               "displayName": "friendlyName",
@@ -240,8 +240,8 @@
           "path": "/company-settings/job-file-settings/document-folders",
           "responseKey": "items",
           "fields": {
-            "companyId": {
-              "displayName": "companyId",
+            "companyID": {
+              "displayName": "companyID",
               "valueType": "string",
               "providerType": "string"
             },
@@ -289,6 +289,11 @@
           "path": "/company-settings/job-file-settings/job-categories",
           "responseKey": "items",
           "fields": {
+            "categoryId": {
+              "displayName": "categoryId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
             "id": {
               "displayName": "id",
               "valueType": "int",
@@ -306,13 +311,13 @@
           "path": "/company-settings/job-file-settings/photo-video-tags",
           "responseKey": "items",
           "fields": {
-            "id": {
-              "displayName": "id",
+            "tagId": {
+              "displayName": "tagId",
               "valueType": "string",
               "providerType": "string"
             },
-            "name": {
-              "displayName": "name",
+            "tagName": {
+              "displayName": "tagName",
               "valueType": "string",
               "providerType": "string"
             }
@@ -323,13 +328,13 @@
           "path": "/company-settings/job-file-settings/trade-types",
           "responseKey": "items",
           "fields": {
-            "name": {
-              "displayName": "name",
+            "id": {
+              "displayName": "id",
               "valueType": "string",
               "providerType": "string"
             },
-            "tradeId": {
-              "displayName": "tradeId",
+            "name": {
+              "displayName": "name",
               "valueType": "string",
               "providerType": "string"
             }
@@ -365,15 +370,15 @@
         "company-settings/job-file-settings/workflow-milestones": {
           "displayName": "Workflow Milestones",
           "path": "/company-settings/job-file-settings/workflow-milestones",
-          "responseKey": "items",
+          "responseKey": "",
           "fields": {
             "id": {
               "displayName": "id",
               "valueType": "int",
               "providerType": "integer"
             },
-            "name": {
-              "displayName": "name",
+            "milestone": {
+              "displayName": "milestone",
               "valueType": "singleSelect",
               "providerType": "string",
               "values": [
@@ -410,11 +415,6 @@
                   "displayValue": "Deleted"
                 }
               ]
-            },
-            "statuses": {
-              "displayName": "statuses",
-              "valueType": "other",
-              "providerType": "array"
             }
           }
         },
@@ -448,13 +448,8 @@
         "company-settings/location-settings/account-types": {
           "displayName": "Account Types",
           "path": "/company-settings/location-settings/account-types",
-          "responseKey": "items",
+          "responseKey": "",
           "fields": {
-            "IsActive": {
-              "displayName": "IsActive",
-              "valueType": "boolean",
-              "providerType": "boolean"
-            },
             "_link": {
               "displayName": "_link",
               "valueType": "string",
@@ -464,6 +459,11 @@
               "displayName": "id",
               "valueType": "string",
               "providerType": "string"
+            },
+            "isActive": {
+              "displayName": "isActive",
+              "valueType": "boolean",
+              "providerType": "boolean"
             },
             "name": {
               "displayName": "name",
@@ -566,11 +566,6 @@
               "valueType": "string",
               "providerType": "string"
             },
-            "customFieldDefinition": {
-              "displayName": "customFieldDefinition",
-              "valueType": "other",
-              "providerType": "object"
-            },
             "fieldType": {
               "displayName": "fieldType",
               "valueType": "singleSelect",
@@ -593,6 +588,11 @@
                   "displayValue": "Boolean"
                 }
               ]
+            },
+            "formattedValues": {
+              "displayName": "formattedValues",
+              "valueType": "other",
+              "providerType": "array"
             },
             "id": {
               "displayName": "id",
@@ -645,6 +645,11 @@
               "displayName": "primary",
               "valueType": "boolean",
               "providerType": "boolean"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         },
@@ -1038,11 +1043,6 @@
               "valueType": "string",
               "providerType": "string"
             },
-            "customFieldDefinition": {
-              "displayName": "customFieldDefinition",
-              "valueType": "other",
-              "providerType": "object"
-            },
             "fieldType": {
               "displayName": "fieldType",
               "valueType": "singleSelect",
@@ -1065,6 +1065,11 @@
                   "displayValue": "Boolean"
                 }
               ]
+            },
+            "formattedValues": {
+              "displayName": "formattedValues",
+              "valueType": "other",
+              "providerType": "array"
             },
             "id": {
               "displayName": "id",
@@ -1139,157 +1144,6 @@
               "displayName": "date",
               "valueType": "string",
               "providerType": "string"
-            },
-            "type": {
-              "displayName": "type",
-              "valueType": "singleSelect",
-              "providerType": "string",
-              "values": [
-                {
-                  "value": "Customer",
-                  "displayValue": "Customer"
-                },
-                {
-                  "value": "Job",
-                  "displayValue": "Job"
-                },
-                {
-                  "value": "Lead",
-                  "displayValue": "Lead"
-                },
-                {
-                  "value": "Measurement",
-                  "displayValue": "Measurement"
-                },
-                {
-                  "value": "Estimate",
-                  "displayValue": "Estimate"
-                },
-                {
-                  "value": "Order",
-                  "displayValue": "Order"
-                },
-                {
-                  "value": "Permit",
-                  "displayValue": "Permit"
-                },
-                {
-                  "value": "Payments",
-                  "displayValue": "Payments"
-                },
-                {
-                  "value": "Commission",
-                  "displayValue": "Commission"
-                },
-                {
-                  "value": "Precommission",
-                  "displayValue": "Precommission"
-                },
-                {
-                  "value": "ContractWorksheet",
-                  "displayValue": "ContractWorksheet"
-                },
-                {
-                  "value": "Supplement",
-                  "displayValue": "Supplement"
-                },
-                {
-                  "value": "File",
-                  "displayValue": "File"
-                },
-                {
-                  "value": "Unspecified",
-                  "displayValue": "Unspecified"
-                },
-                {
-                  "value": "CommunicationHistory",
-                  "displayValue": "CommunicationHistory"
-                },
-                {
-                  "value": "ContactNote",
-                  "displayValue": "ContactNote"
-                },
-                {
-                  "value": "JobContact",
-                  "displayValue": "JobContact"
-                },
-                {
-                  "value": "Contact",
-                  "displayValue": "Contact"
-                },
-                {
-                  "value": "JobMessage",
-                  "displayValue": "JobMessage"
-                },
-                {
-                  "value": "ContractWorksheetStatus",
-                  "displayValue": "ContractWorksheetStatus"
-                },
-                {
-                  "value": "MortgageCheck",
-                  "displayValue": "MortgageCheck"
-                },
-                {
-                  "value": "Measurements",
-                  "displayValue": "Measurements"
-                },
-                {
-                  "value": "Appointment",
-                  "displayValue": "Appointment"
-                },
-                {
-                  "value": "JobEmail",
-                  "displayValue": "JobEmail"
-                },
-                {
-                  "value": "JobPacket",
-                  "displayValue": "JobPacket"
-                },
-                {
-                  "value": "Account",
-                  "displayValue": "Account"
-                },
-                {
-                  "value": "Company",
-                  "displayValue": "Company"
-                },
-                {
-                  "value": "User",
-                  "displayValue": "User"
-                },
-                {
-                  "value": "FeatureManager",
-                  "displayValue": "FeatureManager"
-                },
-                {
-                  "value": "PermissionSettings",
-                  "displayValue": "PermissionSettings"
-                },
-                {
-                  "value": "LaborContact",
-                  "displayValue": "LaborContact"
-                },
-                {
-                  "value": "LaborOrder",
-                  "displayValue": "LaborOrder"
-                },
-                {
-                  "value": "Financing",
-                  "displayValue": "Financing"
-                },
-                {
-                  "value": "JobSignatureEmail",
-                  "displayValue": "JobSignatureEmail"
-                },
-                {
-                  "value": "JobPaymentRequest",
-                  "displayValue": "JobPaymentRequest"
-                },
-                {
-                  "value": "TextMessage",
-                  "displayValue": "TextMessage"
-                }
-              ]
             }
           }
         },
