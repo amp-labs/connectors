@@ -1,0 +1,21 @@
+{
+  "id": "job-001",
+  "jobId": "job-001",
+  "approvedJobValue": 0.00,
+  "balanceDue": -2400.00,
+  "worksheetSectionTotals": {
+    "worksheetTotal": 0.00,
+    "changeOrderTotal": 0.00,
+    "insuranceClaimTotal": 0.00,
+    "upgradeTotal": 0.00,
+    "discountTotal": 0.00,
+    "supplementTotal": 0.00,
+    "workNotDoingTotal": 0.00
+  },
+  "amendments": [],
+  "worksheet": {
+    "id": "job-001",
+    "_link": "https://api.acculynx.com/api/v2/financial/job-001/worksheet"
+  },
+  "_link": "https://api.acculynx.com/api/v2/financials/job-001"
+}

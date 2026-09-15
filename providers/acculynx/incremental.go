@@ -32,10 +32,13 @@ type objectReadSpec struct {
 var objectReadSpecs = datautils.NewDefaultMap(map[string]objectReadSpec{
 	// jobs is the only endpoint with a provider-side ModifiedDate filter; we
 	// still apply connector-side filtering on top to enforce time bounds precisely.
-	"jobs":                           {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
-	"jobs/custom-fields":             {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
-	"contacts/custom-fields":         {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
-	"estimates/sections":             {pagination: paginationNone, timeFilterField: "modifiedDate"},
+	"jobs":                   {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
+	"jobs/custom-fields":     {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
+	"contacts/custom-fields": {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
+	"estimates/sections":     {pagination: paginationNone, timeFilterField: "modifiedDate"},
+	// jobs/financials is a one-object leaf with no list envelope and no
+	// usable timestamp.
+	"jobs/financials":                {pagination: paginationNone},
 	"company-settings/custom-fields": {pagination: paginationOffsetPage, timeFilterField: "modifiedDate"},
 
 	"calendars":             {pagination: paginationOffsetPage},
