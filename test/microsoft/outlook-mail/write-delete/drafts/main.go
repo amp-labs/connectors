@@ -55,7 +55,7 @@ func main() {
 
 	// https://learn.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
 	testscenario.ValidateCreateUpdateDelete(ctx, conn,
-		"me/messages",
+		"AMPERSAND-drafts",
 		payload{
 			Subject: subject,
 			Body: body{

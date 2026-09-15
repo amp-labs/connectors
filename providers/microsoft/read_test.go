@@ -21,6 +21,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	responseUsersLast := testutils.DataFromFile(t, "read/users/2-second-page.json")
 	responseCalendarEvents := testutils.DataFromFile(t, "read/events/list.json")
 	responseMessagesEvents := testutils.DataFromFile(t, "read/messages/list.json")
+	responseDrafts := testutils.DataFromFile(t, "read/messages/drafts.json")
+	responseSentMessages := testutils.DataFromFile(t, "read/messages/sent-messages.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -173,6 +175,52 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					Id: "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4ImAAA=",
 				}},
 				NextPage: "https://graph.microsoft.com/v1.0/me/messages?%24top=10&%24skip=10",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read virtual object Drafts",
+			Input: common.ReadParams{
+				ObjectName: "AMPERSAND-drafts",
+				Fields:     connectors.Fields("subject"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1.0/me/messages"),
+					mockcond.QueryParam("$filter", "isDraft eq true"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseDrafts),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "https://graph.microsoft.com/v1.0/me/messages?%24filter=lastModifiedDateTime+ge+2024-09-19T12%3a30%3a45.000Z+and+isDraft+eq+true&%24top=1&%24skip=1",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental read of virtual object sentMessages",
+			Input: common.ReadParams{
+				ObjectName: "AMPERSAND-sentMessages",
+				Fields:     connectors.Fields("subject"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1.0/me/messages"),
+					mockcond.QueryParam("$filter", "lastModifiedDateTime ge 2024-09-19T12:30:45.000Z and isDraft eq false"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseSentMessages),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "https://graph.microsoft.com/v1.0/me/messages?%24filter=lastModifiedDateTime+ge+2024-09-19T12%3A30%3A45.000Z+and+isDraft+eq+false&%24skip=1&%24top=1",
 				Done:     false,
 			},
 			ExpectedErrs: nil,
