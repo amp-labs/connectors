@@ -370,9 +370,13 @@ func (c *Connector) createEventChannelMembers(
 	return nil
 }
 
-// DeleteSubscription tears down a Salesforce CDC subscription by removing the
-// artifacts created by Subscribe / UpdateSubscription, in the inverse of creation
-// order:
+// DeleteSubscription tears down artifacts created by Subscribe /
+// UpdateSubscription.
+//
+// When the result is flow-based, this delegates to deleteAllFlowSubscriptions:
+// deactivate and delete each flow, then delete its outbound message.
+//
+// Otherwise this is the CDC path, inverse of creation:
 //
 //  1. Delete event channel members. The first failure aborts and returns an error;
 //     remaining triggers and fields are not touched.
@@ -383,14 +387,9 @@ func (c *Connector) createEventChannelMembers(
 //     field is still referenced by other metadata (e.g. PlatformEventChannelMembers
 //     on channels we don't manage).
 //
-// As each artifact is successfully removed, the corresponding entry is deleted
-// from params.Result so the surviving entries faithfully describe what is still
-// in Salesforce. Callers can inspect params.Result after the call (success or
-// failure) to see what remains.
-//
-// The dependency-removal rule is reflected in the order: filter expressions and
-// triggers (which reference the custom fields) are removed before the fields
-// they reference, so field deletion is not blocked by stale references.
+// Filter expressions and triggers (which reference the custom fields) are
+// removed before the fields they reference, so field deletion is not blocked
+// by stale references.
 //
 //nolint:cyclop,funlen
 func (c *Connector) DeleteSubscription(ctx context.Context, params common.SubscriptionResult) error {
@@ -406,6 +405,10 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 			sfRes,
 			params.Result,
 		)
+	}
+
+	if sfRes.UseFlow {
+		return c.deleteAllFlowSubscriptions(ctx, sfRes)
 	}
 
 	// Migrate old CheckboxField to IndicatorField for backwards compatibility.
