@@ -11,10 +11,53 @@ import (
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/metadata"
 	"github.com/spyzhov/ajson"
 )
 
-const DefaultPageSize = "100"
+const (
+	DefaultPageSize = "100"
+
+	// https://learn.microsoft.com/en-us/graph/api/user-list-messages
+	objectNameMessages        = "me/messages"
+	virtualObjectDrafts       = "AMPERSAND-drafts"       // based on "/me/messages"
+	virtualObjectSentMessages = "AMPERSAND-sentMessages" // based on "/me/messages"
+)
+
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context,
+	objects []string,
+) (*common.ListObjectMetadataResult, error) {
+	result := &common.ListObjectMetadataResult{
+		Result: make(map[string]common.ObjectMetadata),
+		Errors: make(map[string]error),
+	}
+
+	// Metadata is defined in schemas.json.
+	// Virtual message objects reuse the metadata of the messages object and override its display name.
+	for _, name := range objects {
+		nativeObjectName := name
+		if name == virtualObjectDrafts || name == virtualObjectSentMessages {
+			nativeObjectName = objectNameMessages
+		}
+
+		objectMetadata, err := metadata.Schemas.SelectOne(c.ProviderContext.Module(), nativeObjectName)
+		if err == nil {
+			switch name {
+			case virtualObjectDrafts:
+				objectMetadata.DisplayName = "Drafts"
+			case virtualObjectSentMessages:
+				objectMetadata.DisplayName = "Sent Messages"
+			}
+
+			result.Result[name] = *objectMetadata
+		} else {
+			result.Errors[name] = err
+		}
+	}
+
+	return result, nil
+}
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	url, err := c.buildReadURL(params)
@@ -43,18 +86,32 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	url, err := c.getURL(params.ObjectName)
+	name := params.ObjectName
+	if params.ObjectName == virtualObjectDrafts || params.ObjectName == virtualObjectSentMessages {
+		name = objectNameMessages
+	}
+
+	url, err := c.getReadUrl(name)
 	if err != nil {
 		return nil, err
 	}
 
 	filter := filterQuery{}.
-		Since(params.ObjectName, params.Since).
-		Until(params.ObjectName, params.Until).String()
-	if filter != "" {
-		url.WithQueryParam("$filter", filter)
+		Since(name, params.Since).
+		Until(name, params.Until)
 
-		if needsAdvancedQuery(params.ObjectName) {
+	switch params.ObjectName {
+	case virtualObjectDrafts:
+		filter = filter.Select("isDraft eq true")
+	case virtualObjectSentMessages:
+		filter = filter.Select("isDraft eq false")
+	}
+
+	filterParam := filter.String()
+	if filterParam != "" {
+		url.WithQueryParam("$filter", filterParam)
+
+		if needsAdvancedQuery(name) {
 			// $count=true is required alongside ConsistencyLevel: eventual to filter
 			// directory objects on createdDateTime.
 			url.WithQueryParam("$count", "true")
@@ -86,7 +143,7 @@ func getNextRecordsURL(node *ajson.Node) (string, error) {
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	url, err := c.getURL(params.ObjectName)
+	url, err := c.getWriteUrl(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -94,6 +151,11 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	method := http.MethodPost
 	if params.IsUpdate() {
 		method = http.MethodPatch
+
+		if params.ObjectName == virtualObjectSentMessages {
+			// Cannot update sent message. This feature only makes sense for drafts.
+			return nil, common.ErrOperationNotSupportedForObject
+		}
 
 		url.AddPath(params.RecordId)
 	}
@@ -141,7 +203,7 @@ func (c *Connector) parseWriteResponse(ctx context.Context, params common.WriteP
 }
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := c.getURL(params.ObjectName)
+	url, err := c.getDeleteUrl(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
-	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/batch"
@@ -38,7 +37,6 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 
 	// Supported operations
-	components.SchemaProvider
 	components.Reader
 	components.Writer
 	components.Deleter
@@ -71,8 +69,6 @@ func constructor(base *components.Connector) (*Connector, error) {
 		Connector:     base,
 		batchStrategy: batch.NewStrategy(base.JSONHTTPClient(), base.ProviderInfo()),
 	}
-
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
 	// DirectFaultyResponder (vs. the default FaultyResponder) gives the
 	// callback access to the raw *http.Response, including headers.
@@ -126,11 +122,42 @@ func constructor(base *components.Connector) (*Connector, error) {
 	return connector, nil
 }
 
-func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
+func (c *Connector) getReadUrl(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, objectName)
 	if err != nil {
 		return nil, err
 	}
 
 	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+}
+
+func (c *Connector) getWriteUrl(objectName string) (*urlbuilder.URL, error) {
+	switch objectName {
+	case virtualObjectDrafts:
+		// https://learn.microsoft.com/en-us/graph/api/user-list-messages
+		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/messages")
+	case virtualObjectSentMessages:
+		// https://learn.microsoft.com/en-us/graph/api/user-sendmail
+		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/sendMail")
+	case objectNameMessages:
+		// Writing directly to messages is hidden.
+		// Customers must use virtual objects: drafts and sentMessages.
+		return nil, common.ErrObjectNotSupported
+	}
+
+	return c.getReadUrl(objectName)
+}
+
+func (c *Connector) getDeleteUrl(objectName string) (*urlbuilder.URL, error) {
+	switch objectName {
+	case virtualObjectDrafts:
+		// https://learn.microsoft.com/en-us/graph/api/user-list-messages
+		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/messages")
+	case virtualObjectSentMessages:
+		return nil, common.ErrObjectNotSupported
+	case objectNameMessages:
+		return nil, common.ErrObjectNotSupported
+	}
+
+	return c.getReadUrl(objectName)
 }

@@ -1,0 +1,54 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/messages",
+  "value": [
+    {
+      "@odata.etag": "W/\"CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAGF7aaH\"",
+      "id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAACsvo1TAAB8hj1Rtd60SKTngNs3if9RAAGGBUvXAAA=",
+      "createdDateTime": "2026-09-12T00:39:17Z",
+      "lastModifiedDateTime": "2026-09-12T00:39:17Z",
+      "categories": [],
+      "receivedDateTime": "2026-09-12T00:39:17Z",
+      "sentDateTime": "2026-09-12T00:39:17Z",
+      "hasAttachments": false,
+      "subject": "hello",
+      "bodyPreview": "main content goes here",
+      "importance": "normal",
+      "isDeliveryReceiptRequested": false,
+      "isReadReceiptRequested": false,
+      "isRead": true,
+      "isDraft": true,
+      "inferenceClassification": "focused",
+      "body": {
+        "contentType": "text",
+        "content": "main content goes here"
+      },
+      "sender": {
+        "emailAddress": {
+          "name": "person A",
+          "address": "a@test.com"
+        }
+      },
+      "from": {
+        "emailAddress": {
+          "name": "person A",
+          "address": "a@test.com"
+        }
+      },
+      "toRecipients": [
+        {
+          "emailAddress": {
+            "name": "person B",
+            "address": "b@test.com"
+          }
+        }
+      ],
+      "ccRecipients": [],
+      "bccRecipients": [],
+      "replyTo": [],
+      "flag": {
+        "flagStatus": "notFlagged"
+      }
+    }
+  ],
+  "@odata.nextLink": "https://graph.microsoft.com/v1.0/me/messages?%24filter=lastModifiedDateTime+ge+2024-09-19T12%3a30%3a45.000Z+and+isDraft+eq+true&%24top=1&%24skip=1"
+}
