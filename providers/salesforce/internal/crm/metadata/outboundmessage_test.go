@@ -3,7 +3,9 @@ package metadata
 import (
 	"archive/zip"
 	"bytes"
+	"errors"
 	"io"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -168,6 +170,21 @@ func TestConstructDestructiveOutboundMessage(t *testing.T) {
 
 	if strings.Contains(pkg, "<types>") || strings.Contains(pkg, "<members>") {
 		t.Errorf("package.xml must list no components to deploy:\n%s", pkg)
+	}
+}
+
+func TestConstructOutboundMessageRejectsTooManyFields(t *testing.T) {
+	t.Parallel()
+
+	params := validOutboundMessageParams()
+	params.Fields = make([]string, maxOutboundMessageFields)
+
+	for i := range params.Fields {
+		params.Fields[i] = "F" + strconv.Itoa(i)
+	}
+
+	if _, err := ConstructOutboundMessage(params); !errors.Is(err, errOutboundMessageTooManyFields) {
+		t.Fatalf("expected errOutboundMessageTooManyFields, got %v", err)
 	}
 }
 
