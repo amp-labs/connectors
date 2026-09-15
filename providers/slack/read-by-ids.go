@@ -33,6 +33,13 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 
 	info, err := mappings.GetReadItemInfo(c.Provider(), objectName)
 	if err != nil {
+		// Objects with no singular fetch endpoint (e.g. "messages" — Slack cannot look
+		// up a message by id) are reported with the sentinel callers use to skip the
+		// fetch and fall back to the record shipped inline in the webhook payload.
+		if errors.Is(err, common.ErrObjectNotSupported) || errors.Is(err, common.ErrOperationNotSupportedForObject) {
+			return nil, fmt.Errorf("%w: %s", common.ErrGetRecordNotSupportedForObject, objectName)
+		}
+
 		return nil, err
 	}
 
