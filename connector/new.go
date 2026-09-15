@@ -23,6 +23,7 @@ import (
 	"github.com/amp-labs/connectors/providers/bentley"
 	"github.com/amp-labs/connectors/providers/bigquery"
 	"github.com/amp-labs/connectors/providers/bitbucket"
+	bamboohr "github.com/amp-labs/connectors/providers/bambooHR"
 	"github.com/amp-labs/connectors/providers/blackbaud"
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/braintree"
@@ -180,6 +181,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Bentley:                           wrapper(newBentleyConnector),
 	providers.BigQuery:                          wrapper(newBigQueryConnector),
 	providers.Bitbucket:                         wrapper(newBitBucketConnector),
+	providers.BambooHR:                          wrapper(newBambooHRConnector),
 	providers.Blackbaud:                         wrapper(newBlackbaudConnector),
 	providers.Blueshift:                         wrapper(newBlueshiftConnector),
 	providers.Braintree:                         wrapper(newBraintreeConnector),
@@ -1122,6 +1124,12 @@ func newPylonConnector(
 	params common.ConnectorParams,
 ) (*pylon.Connector, error) {
 	return pylon.NewConnector(params)
+}
+
+func newBambooHRConnector(
+	params common.ConnectorParams,
+) (*bamboohr.Connector, error) {
+	return bamboohr.NewConnector(params)
 }
 
 func newBlackbaudConnector(
