@@ -336,21 +336,14 @@ func (e SubscriptionEvent) objectWrapper() (map[string]any, error) {
 // the topics that can only be triggered from the AccuLynx UI, where the same
 // defect would otherwise surface as an unexplained webhook failure.
 func lookupObjectWrapper(inner map[string]any, key string) (map[string]any, bool) {
-	if wrapper, ok := inner[key].(map[string]any); ok {
-		return wrapper, true
+	value, ok := common.ToStringMap(inner).GetCaseInsensitive(key)
+	if !ok {
+		return nil, false
 	}
 
-	for name, value := range inner {
-		if !strings.EqualFold(name, key) {
-			continue
-		}
+	wrapper, ok := value.(map[string]any)
 
-		wrapper, ok := value.(map[string]any)
-
-		return wrapper, ok
-	}
-
-	return nil, false
+	return wrapper, ok
 }
 
 // VerifyWebhookMessage always returns true. AccuLynx's docs reference a
