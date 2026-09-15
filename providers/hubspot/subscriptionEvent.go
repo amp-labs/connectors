@@ -37,6 +37,7 @@ type SubscriptionEvent map[string]any
 var (
 	_ common.SubscriptionEvent       = SubscriptionEvent{}
 	_ common.SubscriptionUpdateEvent = SubscriptionEvent{}
+	_ common.SubscriptionMergeEvent  = SubscriptionEvent{}
 )
 
 type HubspotVerificationParams struct {
@@ -74,7 +75,10 @@ func (c *Connector) VerifyWebhookMessage(
 	return hmac.Equal(decodedSignature, expectedMAC), nil
 }
 
-var errUnexpectedSubscriptionEventType = errors.New("unexpected subscription event type")
+var (
+	errUnexpectedSubscriptionEventType = errors.New("unexpected subscription event type")
+	errUnexpectedMergePayload          = errors.New("unexpected merge event payload")
+)
 
 const minParts = 2
 
@@ -102,6 +106,8 @@ func (evt SubscriptionEvent) EventType() (common.SubscriptionEventType, error) {
 		return common.SubscriptionEventTypeDelete, nil
 	case "associationChange":
 		return common.SubscriptionEventTypeAssociationUpdate, nil
+	case "merge":
+		return common.SubscriptionEventTypeMerge, nil
 	default:
 		return common.SubscriptionEventTypeOther, nil
 	}
@@ -154,14 +160,63 @@ func (evt SubscriptionEvent) Workspace() (string, error) {
 }
 
 func (evt SubscriptionEvent) RecordId() (string, error) {
-	m := evt.asMap()
-
-	objId, err := m.AsInt("objectId")
-	if err != nil {
-		return "", err
+	// A merge can mint a brand-new record id for the survivor (newObjectId), in which
+	// case objectId no longer points at a fetchable record. Resolve merge events to
+	// the surviving record so downstream record fetches succeed.
+	if evtType, err := evt.EventType(); err == nil && evtType == common.SubscriptionEventTypeMerge {
+		return evt.PrimaryRecordId()
 	}
 
-	return strconv.Itoa(int(objId)), nil
+	return evt.intFieldAsString("objectId")
+}
+
+// PrimaryRecordId returns the id of the record that survives a merge event:
+// newObjectId when HubSpot created a new record as the merge result, otherwise
+// primaryObjectId, otherwise objectId.
+func (evt SubscriptionEvent) PrimaryRecordId() (string, error) {
+	var lastErr error
+
+	for _, key := range []string{"newObjectId", "primaryObjectId", "objectId"} {
+		id, err := evt.intFieldAsString(key)
+		if err == nil {
+			return id, nil
+		}
+
+		lastErr = err
+	}
+
+	return "", lastErr
+}
+
+// MergedRecordIds returns the ids of the secondary records consolidated into the
+// surviving record by a merge event. These records no longer exist in HubSpot.
+func (evt SubscriptionEvent) MergedRecordIds() ([]string, error) {
+	m := evt.asMap()
+
+	raw, err := m.Get("mergedObjectIds")
+	if err != nil {
+		return nil, fmt.Errorf("error getting merged object ids: %w", err)
+	}
+
+	list, ok := raw.([]any)
+	if !ok {
+		return nil, fmt.Errorf("%w: mergedObjectIds is not a list", errUnexpectedMergePayload)
+	}
+
+	ids := make([]string, 0, len(list))
+
+	for _, item := range list {
+		switch id := item.(type) {
+		case float64:
+			ids = append(ids, strconv.FormatInt(int64(id), 10))
+		case string:
+			ids = append(ids, id)
+		default:
+			return nil, fmt.Errorf("%w: unexpected merged object id type %T", errUnexpectedMergePayload, item)
+		}
+	}
+
+	return ids, nil
 }
 
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
@@ -177,6 +232,17 @@ func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
 
 func (evt SubscriptionEvent) asMap() common.StringMap { // nolint:funcorder
 	return common.StringMap(evt)
+}
+
+func (evt SubscriptionEvent) intFieldAsString(key string) (string, error) { // nolint:funcorder
+	m := evt.asMap()
+
+	id, err := m.AsInt(key)
+	if err != nil {
+		return "", err
+	}
+
+	return strconv.FormatInt(id, 10), nil
 }
 
 func (evt SubscriptionEvent) RawMap() (map[string]any, error) {
@@ -232,5 +298,25 @@ func (evt SubscriptionEvent) UpdatedFields() ([]string, error) {
 		"changeSource": "CRM",
 		"propertyName": "message",
 		"propertyValue": "sample-value"
+	}
+
+	Merge event. A merge consolidates secondary contacts (mergedObjectIds) into the
+	primary contact, and may create a brand-new record (newObjectId) as the result.
+	HubSpot also fires contact.deletion for each secondary, but does NOT fire
+	contact.propertyChange for fields changed by the merge.
+
+	{
+		"appId": 4210286,
+		"eventId": 100,
+		"subscriptionId": 2881778,
+		"portalId": 44237313,
+		"occurredAt": 1731612159499,
+		"subscriptionType": "contact.merge",
+		"attemptNumber": 0,
+		"objectId": 123,
+		"primaryObjectId": 123,
+		"mergedObjectIds": [456, 789],
+		"newObjectId": 999,
+		"numberOfPropertiesMoved": 15
 	}
 */
