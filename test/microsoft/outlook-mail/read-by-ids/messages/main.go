@@ -38,7 +38,7 @@ func run() error {
 		bodyData := gofakeit.Name()
 		from := gofakeit.Username()
 		to := gofakeit.Username()
-		message, cleanup, err := testscenario.SetupRecord(ctx, conn, "me/messages",
+		message, cleanup, err := testscenario.SetupRecord(ctx, conn, "AMPERSAND-drafts",
 			payload{
 				Subject: subject,
 				Body:    body{Content: bodyData, ContentType: TextContentType},

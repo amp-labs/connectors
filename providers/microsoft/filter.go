@@ -2,6 +2,7 @@ package microsoft
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -286,8 +287,9 @@ var incrementalObjects = map[string]string{
 
 // https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
 type filterQuery struct {
-	since string
-	until string
+	selects []string
+	since   string
+	until   string
 }
 
 func (q filterQuery) Since(objectName string, timestamp time.Time) filterQuery {
@@ -303,6 +305,12 @@ func (q filterQuery) Since(objectName string, timestamp time.Time) filterQuery {
 
 	value := datautils.Time.FormatRFC3339inUTCWithMilliseconds(timestamp)
 	q.since = fmt.Sprintf("%v ge %v", fieldName, value)
+
+	return q
+}
+
+func (q filterQuery) Select(selectText string) filterQuery {
+	q.selects = append(q.selects, selectText)
 
 	return q
 }
@@ -325,19 +333,21 @@ func (q filterQuery) Until(objectName string, timestamp time.Time) filterQuery {
 }
 
 func (q filterQuery) String() string {
-	if q.since == "" && q.until == "" {
-		return ""
-	}
-
-	if q.since != "" && q.until != "" {
-		return fmt.Sprintf("%v and %v", q.since, q.until)
-	}
+	conditions := make([]string, 0, len(q.selects)+2) // nolint:mnd
 
 	if q.since != "" {
-		return q.since
+		conditions = append(conditions, q.since)
 	}
 
-	return q.until
+	if q.until != "" {
+		conditions = append(conditions, q.until)
+	}
+
+	if len(q.selects) != 0 {
+		conditions = append(conditions, q.selects...)
+	}
+
+	return strings.Join(conditions, " and ")
 }
 
 // advancedQueryObjects are the Microsoft Entra directory-object collections that
