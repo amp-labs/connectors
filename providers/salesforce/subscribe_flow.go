@@ -47,7 +47,7 @@ var (
 		"SubscriptionRequest.Flow.EndpointURL is required when UseFlow is true")
 	errFlowNoSupportedEvents = errors.New(
 		"flow-based subscriptions support only create/update events")
-	errFlowDeployFailed            = errors.New("flow subscription deployment failed")
+	errFlowDeployFailed         = errors.New("flow subscription deployment failed")
 	errFlowTeardownDeployFailed = errors.New("flow subscription teardown deployment failed")
 )
 

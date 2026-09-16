@@ -192,13 +192,17 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Send message",
-			Input: common.WriteParams{ObjectName: "AMPERSAND-sentMessages", RecordData: "dummy"},
+			Name: "Send message",
+			Input: common.WriteParams{
+				ObjectName: "AMPERSAND-sentMessages",
+				RecordData: map[string]string{"subject": "Greetings!"},
+			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/v1.0/me/sendMail"),
+					mockcond.Body(`{"message": {"subject": "Greetings!"}}`),
 				},
 				Then: mockserver.Response(http.StatusAccepted),
 			}.Server(),

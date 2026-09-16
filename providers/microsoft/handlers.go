@@ -160,7 +160,22 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		url.AddPath(params.RecordId)
 	}
 
-	jsonData, err := json.Marshal(params.RecordData)
+	payload := params.RecordData
+	if params.ObjectName == virtualObjectSentMessages {
+		record, err := params.GetRecord()
+		if err != nil {
+			return nil, err
+		}
+
+		// https://learn.microsoft.com/en-us/graph/api/user-sendmail?view=graph-rest-1.0&tabs=http#request-body
+		if _, ok := record["message"]; ok {
+			payload = record
+		} else {
+			payload = map[string]any{"message": record} // Automatically wrap.
+		}
+	}
+
+	jsonData, err := json.Marshal(payload)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal record data: %w", err)
 	}
