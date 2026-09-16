@@ -126,6 +126,9 @@ type nestedSpec struct {
 	leafSuffix   string
 }
 
+//nestedObjects is a map of objects which require a fan-out of parent objects to child objects.
+//for example, for the object "jobs/contacts", the parent object is "jobs" and the leaf suffix is "contacts".
+//we first need to list all jobs, and then for each job, we need to list all their contacts.
 //nolint:gochecknoglobals
 var nestedObjects = datautils.Map[string, nestedSpec]{
 	"jobs/contacts":          {parentObject: objectJobs, leafSuffix: "contacts"},
