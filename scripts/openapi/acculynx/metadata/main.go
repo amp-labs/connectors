@@ -293,6 +293,18 @@ func main() {
 			utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, nil)
 	}
 
+	// GET /jobs/{jobId}/financials answers with a single financials object
+	// rather than a list, so the explorer cannot extract it (there is no
+	// records array to find). Its fields come from the spec's "financials"
+	// component; the read layer fans out over jobs and wraps each response
+	// as a one-row result. The empty response key marks the record at the
+	// response root.
+	for _, field := range componentSchemaFields("financials") {
+		schemas.Add(common.ModuleRoot, "jobs/financials", "Job Financials",
+			"/api/v2/jobs/{jobId}/financials", "",
+			utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, nil)
+	}
+
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
@@ -333,12 +345,20 @@ func Objects() []metadatadef.Schema {
 // (sections) and return section fields instead of the estimate's own. So the
 // properties are read directly from the spec.
 func estimateDetailFields() []metadatadef.Field {
+	return componentSchemaFields("estimate")
+}
+
+// componentSchemaFields extracts the flattened field list of a named component
+// schema from the spec. Used for objects whose shape cannot be derived from a
+// list endpoint: the estimate detail hydration and the object-shaped
+// jobs/financials leaf.
+func componentSchemaFields(componentName string) []metadatadef.Field {
 	doc, err := openapi3.NewLoader().LoadFromData(openapi.FileBytes())
 	goutils.MustBeNil(err)
 
-	schema, ok := doc.Components.Schemas["estimate"]
+	schema, ok := doc.Components.Schemas[componentName]
 	if !ok || schema.Value == nil {
-		panic("estimate component schema missing from AccuLynx OpenAPI spec")
+		panic(componentName + " component schema missing from AccuLynx OpenAPI spec")
 	}
 
 	props := flattenedProperties(schema.Value)

@@ -88,6 +88,27 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 			Comparator: testconn.ComparatorSubsetMetadata,
 		},
 		{
+			// Manually sourced from the spec's "financials" component — the
+			// endpoint answers with one object, which the explorer cannot
+			// extract from a list schema.
+			Name:   "Object-shaped jobs/financials is described",
+			Input:  []string{"jobs/financials"},
+			Server: mockserver.Dummy(),
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"jobs/financials": {
+						DisplayName: "Job Financials",
+						FieldsMap: map[string]string{
+							"jobId":      "jobId",
+							"balanceDue": "balanceDue",
+							"worksheet":  "worksheet",
+						},
+					},
+				},
+			},
+			Comparator: testconn.ComparatorSubsetMetadata,
+		},
+		{
 			Name:  "Contacts metadata enriched with custom field definitions",
 			Input: []string{"contacts"},
 			Server: mockserver.Switch{

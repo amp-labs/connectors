@@ -32,6 +32,12 @@ var jobContacts001Response []byte
 //go:embed test/read/job-contacts-002.json
 var jobContacts002Response []byte
 
+//go:embed test/read/job-financials-001.json
+var jobFinancials001Response []byte
+
+//go:embed test/read/job-financials-002.json
+var jobFinancials002Response []byte
+
 //go:embed test/read/calendar-appointments.json
 var calendarAppointmentsResponse []byte
 
@@ -194,7 +200,9 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						},
 					},
 				},
-				Done: true,
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment%2Ccontacts&pageSize=25&pageStartIndex=0",
+				Done: false,
 			},
 		},
 		{
@@ -231,7 +239,11 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					{Fields: map[string]any{"id": "job-001"}, Raw: map[string]any{"id": "job-001"}},
 					{Fields: map[string]any{"id": "job-002"}, Raw: map[string]any{"id": "job-002"}},
 				},
-				Done: true,
+				// The assigned sweep is exhausted; the read continues into the
+				// unassigned population before it is Done.
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+				Done: false,
 			},
 		},
 		{
@@ -289,7 +301,11 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						},
 					},
 				}},
-				Done: true,
+				// The assigned sweep is exhausted; the read continues into the
+				// unassigned population before it is Done.
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+				Done: false,
 			},
 		},
 		{
@@ -411,7 +427,11 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 2,
-				Done: true,
+				// The assigned sweep is exhausted; the read continues into the
+				// unassigned population before it is Done.
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&dateFilterType=ModifiedDate&endDate=2026-04-30&includes=initialAppointment&pageSize=25&pageStartIndex=0&startDate=2026-04-01",
+				Done: false,
 			},
 		},
 		{
@@ -505,6 +525,143 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
+			// The financials endpoint answers with one object per job, not a
+			// list; each response becomes exactly one row. The leaf request
+			// must ask for the worksheet and amendments expansions.
+			Name: "Read jobs/financials wraps each job's object as one row",
+			Input: common.ReadParams{
+				ObjectName: "jobs/financials",
+				Fields:     connectors.Fields("jobId", "balanceDue"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+							mockcond.QueryParam("pageStartIndex", "0"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsListResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs/job-001/financials"),
+							mockcond.QueryParam("includes", "worksheet,amendments"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobFinancials001Response),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs/job-002/financials"),
+							mockcond.QueryParam("includes", "worksheet,amendments"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobFinancials002Response),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"jobid": "job-001", "balancedue": -2400.00},
+						Raw:    map[string]any{"jobId": "job-001", "balanceDue": -2400.00},
+					},
+					{
+						Fields: map[string]any{"jobid": "job-002", "balancedue": 150.75},
+						Raw:    map[string]any{"jobId": "job-002", "balanceDue": 150.75},
+					},
+				},
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+				Done: false,
+			},
+		},
+		{
+			// Second half of the two-population jobs sweep: a short page of the
+			// unassigned listing ends the read with no further hand-over.
+			Name: "Jobs unassigned sweep ends the read",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+							mockcond.QueryParam("assignment", "unassigned"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsListResponse),
+					},
+					{
+						If:   mockcond.Path("/api/v2/company-settings/custom-fields"),
+						Then: mockserver.Response(http.StatusOK, customFieldDefinitionsEmptyResponse),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     2,
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			// An unassigned job has no representatives and its leaf answers
+			// 404; the fan-out must treat that parent as having no child
+			// records rather than failing the read.
+			Name: "Fan-out skips a parent whose leaf answers 404",
+			Input: common.ReadParams{
+				ObjectName: "jobs/representatives",
+				Fields:     connectors.Fields("id"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+							mockcond.QueryParam("pageStartIndex", "0"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsListResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs/job-001/representatives"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobRepresentativesResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs/job-002/representatives"),
+						},
+						Then: mockserver.ResponseString(http.StatusNotFound, `{"title":"Not Found","status":404}`),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+				Done: false,
+			},
+		},
+		{
 			Name: "Read jobs/contacts fans out per job and flattens results",
 			Input: common.ReadParams{
 				ObjectName: "jobs/contacts",
@@ -541,7 +698,11 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 3,
-				Done: true,
+				// The assigned sweep is exhausted; the read continues into the
+				// unassigned population before it is Done.
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+				Done: false,
 			},
 		},
 		{
@@ -583,7 +744,11 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 3,
-				Done: true,
+				// The assigned sweep is exhausted; the read continues into the
+				// unassigned population before it is Done.
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=2&pageStartIndex=0",
+				Done: false,
 			},
 		},
 		{
@@ -619,7 +784,11 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 2,
-				Done: true,
+				// The assigned sweep is exhausted; the read continues into the
+				// unassigned population before it is Done.
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+				Done: false,
 			},
 		},
 		{
@@ -794,7 +963,9 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						},
 					},
 				},
-				Done: true,
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+				Done: false,
 			},
 		},
 		{
@@ -830,7 +1001,11 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					{Fields: map[string]any{"id": "rep-1"}, Raw: map[string]any{"id": "rep-1"}},
 					{Fields: map[string]any{"id": "rep-2"}, Raw: map[string]any{"id": "rep-2"}},
 				},
-				Done: true,
+				// The assigned sweep is exhausted; the read continues into the
+				// unassigned population before it is Done.
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+				Done: false,
 			},
 		},
 		{
@@ -1252,9 +1427,12 @@ func TestReadPaginationTermination(t *testing.T) {
 			Server:     buildPaginationServer(t, map[string]int{"count": 163, "pageSize": 25, "pageStartIndex": 0}, 25),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows:     25,
-				NextPage: "",
-				Done:     true,
+				Rows: 25,
+				// The assigned sweep stops, and the read hands over to the
+				// unassigned population exactly once.
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&pageSize=25&pageStartIndex=0",
+				Done: false,
 			},
 		},
 		{
@@ -1287,9 +1465,10 @@ func TestReadPaginationTermination(t *testing.T) {
 			Server:     buildPaginationServer(t, map[string]int{"count": 50, "pageSize": 25, "pageStartIndex": 25}, 25),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows:     25,
-				NextPage: "",
-				Done:     true,
+				Rows: 25,
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&pageSize=25&pageStartIndex=0",
+				Done: false,
 			},
 		},
 		{
@@ -1305,9 +1484,10 @@ func TestReadPaginationTermination(t *testing.T) {
 			Server:     buildPaginationServer(t, map[string]int{"count": 163, "pageSize": 25, "pageStartIndex": 0}, 25),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows:     25,
-				NextPage: "",
-				Done:     true,
+				Rows: 25,
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&pageSize=25&pageStartIndex=0",
+				Done: false,
 			},
 		},
 		{
@@ -1352,9 +1532,10 @@ func TestReadPaginationTermination(t *testing.T) {
 			Server:     buildPaginationServer(t, map[string]int{"pageSize": 25, "pageStartIndex": 0}, 10),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows:     10,
-				NextPage: "",
-				Done:     true,
+				Rows: 10,
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+				Done: false,
 			},
 		},
 	}

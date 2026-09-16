@@ -1125,6 +1125,52 @@
             }
           }
         },
+        "jobs/financials": {
+          "displayName": "Job Financials",
+          "path": "/jobs/{jobId}/financials",
+          "responseKey": "",
+          "fields": {
+            "_link": {
+              "displayName": "_link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "amendments": {
+              "displayName": "amendments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "approvedJobValue": {
+              "displayName": "approvedJobValue",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "balanceDue": {
+              "displayName": "balanceDue",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "jobId": {
+              "displayName": "jobId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "worksheet": {
+              "displayName": "worksheet",
+              "valueType": "other"
+            },
+            "worksheetSectionTotals": {
+              "displayName": "worksheetSectionTotals",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
         "jobs/history": {
           "displayName": "Job History",
           "path": "/jobs/{jobId}/history",
