@@ -9,7 +9,7 @@ import (
 var (
 	// Static file containing openapi spec.
 	//
-	//go:embed openapi.json
+	//go:embed openapi.yaml
 	apiFile []byte
 
 	FileManager = api3.NewOpenapiFileManager[any](apiFile) // nolint:gochecknoglobals
