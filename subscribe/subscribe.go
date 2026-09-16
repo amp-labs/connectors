@@ -35,7 +35,8 @@
 //   - config.go:             ProviderConfig + ProviderConfigRegistry + providerConfigs registry +
 //     GetProviderConfig + the ProviderInfo derivation helpers.
 //   - deps/ (package):       the resolver seam — types.go (Dependencies, VerificationRequest)
-//     plus one file per resolver interface (project.go, cdcoptimization.go, subscriptions.go).
+//     plus one file per resolver interface (project.go, cdcoptimization.go, salesforceflow.go,
+//     subscriptions.go).
 //   - events.go:             object-type subscribe-event unwrapping (provider-specific shapes).
 //   - maintenance.go:        MaintenanceConfig + maintenancePeriods + GetMaintenancePeriod.
 //   - postprocess.go:        PostProcessConfig (derived ShouldPerform only).
