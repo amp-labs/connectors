@@ -543,6 +543,8 @@ func (c *Connector) fetchChildPages(
 			// (verified live; the API reference documents only a generic
 			// 404). A missing leaf means "no child records", not a failed
 			// read — the same way non-user calendars 404 in GetRecordsByIds.
+			// This ends only this parent's page walk; the other parents each
+			// run their own fetchChildPages call.
 			if isNotFound(err) {
 				return allRows, nil
 			}
