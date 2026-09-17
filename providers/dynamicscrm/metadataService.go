@@ -106,7 +106,16 @@ func combineAttributesMetadata(
 			ValueType:    valueType,
 			ProviderType: item.AttributeTypeName.Value,
 			ReadOnly:     new(!modifiable),
-			Values:       values,
+			// Dynamics reports create and update separately and ReadOnly ORs them
+			// together, so a field that can be set once but never changed reads as
+			// freely writable. Readable is true by construction: the attribute query
+			// filters on IsValidForRead.
+			Permissions: &common.FieldPermissions{
+				Readable:   new(true),
+				Createable: new(item.IsValidForCreate), // nolint:staticcheck
+				Updateable: new(item.IsValidForUpdate), // nolint:staticcheck
+			},
+			Values: values,
 		}
 	}
 
