@@ -1,4 +1,4 @@
-package bambooHR
+package bamboohr
 
 import (
 	"testing"

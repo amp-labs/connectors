@@ -1,11 +1,11 @@
-package bambooHR
+package bamboohr
 
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/bambooHR/metadata"
+	"github.com/amp-labs/connectors/providers/bamboohr/metadata"
 )
 
 type Connector struct {

@@ -23,7 +23,7 @@ import (
 	"github.com/amp-labs/connectors/providers/bentley"
 	"github.com/amp-labs/connectors/providers/bigquery"
 	"github.com/amp-labs/connectors/providers/bitbucket"
-	bamboohr "github.com/amp-labs/connectors/providers/bambooHR"
+	"github.com/amp-labs/connectors/providers/bamboohr"
 	"github.com/amp-labs/connectors/providers/blackbaud"
 	"github.com/amp-labs/connectors/providers/blueshift"
 	"github.com/amp-labs/connectors/providers/braintree"

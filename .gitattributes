@@ -26,7 +26,7 @@ scripts/openapi/teamwork/internal/files/projects-api-v3.oas2.yml filter=lfs diff
 # NOTE: they should be moved under scripts/openapi repo.
 providers/acculynx/metadata/openapi/openapi.json filter=lfs diff=lfs merge=lfs -text
 providers/avoma/metadata/openapi/api.avoma.yaml filter=lfs diff=lfs merge=lfs -text
-providers/bambooHR/metadata/openapi/openapi.yaml filter=lfs diff=lfs merge=lfs -text
+providers/bamboohr/metadata/openapi/openapi.yaml filter=lfs diff=lfs merge=lfs -text
 providers/bentley/openapi/cesium-curated-content.json filter=lfs diff=lfs merge=lfs -text
 providers/bentley/openapi/contextcapture.json filter=lfs diff=lfs merge=lfs -text
 providers/bentley/openapi/edfs.json filter=lfs diff=lfs merge=lfs -text

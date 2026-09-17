@@ -1,4 +1,4 @@
-package bambooHR
+package bamboohr
 
 import (
 	"context"
@@ -6,16 +6,16 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
-	bamboohr "github.com/amp-labs/connectors/providers/bambooHR"
+	connector "github.com/amp-labs/connectors/providers/bamboohr"
 	"github.com/amp-labs/connectors/test/utils"
 	"golang.org/x/oauth2"
 )
 
-func GetBambooHRConnector(ctx context.Context) *bamboohr.Connector {
+func GetBambooHRConnector(ctx context.Context) *connector.Connector {
 	filePath := credscanning.LoadPath(providers.BambooHR)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
-	conn, err := bamboohr.NewConnector(
+	conn, err := connector.NewConnector(
 		common.ConnectorParams{
 			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
 			Workspace:           reader.Get(credscanning.Fields.Workspace),

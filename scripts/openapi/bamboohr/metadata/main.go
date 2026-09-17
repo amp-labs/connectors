@@ -1,4 +1,4 @@
-// Extracts list endpoint schemas from the BambooHR OpenAPI spec and writes providers/bambooHR/metadata/schemas.json.
+// Extracts list endpoint schemas from the BambooHR OpenAPI spec and writes providers/bamboohr/metadata/schemas.json.
 package main
 
 import (
@@ -10,8 +10,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/bambooHR/metadata"
-	"github.com/amp-labs/connectors/providers/bambooHR/metadata/openapi"
+	"github.com/amp-labs/connectors/providers/bamboohr/metadata"
+	"github.com/amp-labs/connectors/providers/bamboohr/metadata/openapi"
 	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"

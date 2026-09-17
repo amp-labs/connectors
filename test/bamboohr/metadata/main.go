@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/amp-labs/connectors/test/bambooHR"
+	"github.com/amp-labs/connectors/test/bamboohr"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -13,7 +13,7 @@ func main() {
 	ctx := context.Background()
 	utils.SetupLogging()
 
-	conn := bambooHR.GetBambooHRConnector(ctx)
+	conn := bamboohr.GetBambooHRConnector(ctx)
 
 	objects := []string{
 		"employees_directory",
