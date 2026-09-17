@@ -1,6 +1,10 @@
 package webhook
 
-import "github.com/amp-labs/connectors/common"
+import (
+	"strings"
+
+	"github.com/amp-labs/connectors/common"
+)
 
 const (
 	typeCreate = common.SubscriptionEventTypeCreate
@@ -14,6 +18,14 @@ const (
 // ts pair) and no by-id fetch endpoint, so they get special handling in RecordId and
 // carry their record inline via MessageEvent.
 const objectNameMessages = "messages"
+
+// ObjectRecordsInline reports whether subscription events for the object carry the full
+// record inline in the webhook payload, which is the only source for it. This is true
+// for messages alone: Slack exposes no singular lookup for a message, so GetRecordsByIds
+// cannot serve one, while every message event ships the message itself.
+func ObjectRecordsInline(objectName string) bool {
+	return strings.EqualFold(objectName, objectNameMessages)
+}
 
 // Message events all arrive with event type "message" and are differentiated by an
 // optional "subtype" field: https://docs.slack.dev/reference/events/message#subtypes
