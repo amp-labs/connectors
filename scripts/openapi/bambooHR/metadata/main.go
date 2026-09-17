@@ -109,6 +109,7 @@ func main() {
 			func(displayName string) string {
 				return strings.ReplaceAll(displayName, "_", " ")
 			},
+			api3.SlashesToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
 			api3.Pluralize,
 		),
