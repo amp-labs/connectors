@@ -2,10 +2,11 @@
 package main
 
 import (
+	_ "embed"
+	"encoding/json"
 	"log/slog"
 	"strings"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
@@ -15,6 +16,20 @@ import (
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
+
+//nolint:gochecknoglobals
+var (
+	//go:embed manual-objects.json
+	manualObjectsJSON string
+)
+
+type manualObject struct {
+	ObjectName  string                           `json:"objectName"`
+	DisplayName string                           `json:"displayName"`
+	Path        string                           `json:"path"`
+	ResponseKey string                           `json:"responseKey"`
+	Fields      staticschema.FieldMetadataMapV2 `json:"fields"`
+}
 
 // Supported GET collection endpoints for the deep connector (expand over time).
 //
@@ -159,121 +174,13 @@ func main() {
 }
 
 func addManualObjects(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any]) {
-	addMetaUsers(schemas)
-	addEmployeesDirectory(schemas)
-	addCompanyInformation(schemas)
-}
+	var objects []manualObject
 
-func addMetaUsers(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any]) {
-	str := func(name, display string) staticschema.FieldMetadata {
-		return staticschema.FieldMetadata{
-			DisplayName: display, ValueType: common.ValueTypeString, ProviderType: "string",
-		}
-	}
+	err := json.Unmarshal([]byte(manualObjectsJSON), &objects)
+	goutils.MustBeNil(err)
 
-	intField := func(name, display string) staticschema.FieldMetadata {
-		return staticschema.FieldMetadata{
-			DisplayName: display, ValueType: common.ValueTypeInt, ProviderType: "integer",
-		}
-	}
-
-	fields := map[string]staticschema.FieldMetadata{
-		"id":         intField("id", "Id"),
-		"employeeId": intField("employeeId", "Employee Id"),
-		"firstName":  str("firstName", "First Name"),
-		"lastName":   str("lastName", "Last Name"),
-		"email":      str("email", "Email"),
-		"status": {
-			DisplayName:  "Status",
-			ValueType:    common.ValueTypeSingleSelect,
-			ProviderType: "string",
-			Values: staticschema.FieldValues{
-				{Value: "enabled", DisplayValue: "enabled"},
-				{Value: "disabled", DisplayValue: "disabled"},
-			},
-		},
-		"lastLogin": {
-			DisplayName: "Last Login", ValueType: common.ValueTypeString, ProviderType: "date-time",
-		},
-	}
-
-	for fieldName, fieldMeta := range fields {
-		schemas.Add("", "meta_users", "Users", "/meta/users", "",
-			staticschema.FieldMetadataMapV2{fieldName: fieldMeta}, nil, nil)
-	}
-}
-
-func addEmployeesDirectory(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any]) {
-	fields := map[string]staticschema.FieldMetadata{
-		"id": {
-			DisplayName: "Id", ValueType: common.ValueTypeString, ProviderType: "string",
-		},
-		"canUploadPhoto": {
-			DisplayName: "Can Upload Photo", ValueType: common.ValueTypeInt, ProviderType: "integer",
-		},
-		"displayName": {
-			DisplayName: "Display Name", ValueType: common.ValueTypeString, ProviderType: "string",
-		},
-		"firstName": {
-			DisplayName: "First Name", ValueType: common.ValueTypeString, ProviderType: "string",
-		},
-		"lastName": {
-			DisplayName: "Last Name", ValueType: common.ValueTypeString, ProviderType: "string",
-		},
-		"jobTitle": {
-			DisplayName: "Job Title", ValueType: common.ValueTypeString, ProviderType: "string",
-		},
-		"department": {
-			DisplayName: "Department", ValueType: common.ValueTypeString, ProviderType: "string",
-		},
-		"division": {
-			DisplayName: "Division", ValueType: common.ValueTypeString, ProviderType: "string",
-		},
-		"location": {
-			DisplayName: "Location", ValueType: common.ValueTypeString, ProviderType: "string",
-		},
-		"supervisor": {
-			DisplayName: "Supervisor", ValueType: common.ValueTypeString, ProviderType: "string",
-		},
-		"workEmail": {
-			DisplayName: "Work Email", ValueType: common.ValueTypeString, ProviderType: "email",
-		},
-		"workPhone": {
-			DisplayName: "Work Phone", ValueType: common.ValueTypeString, ProviderType: "string",
-		},
-		"mobilePhone": {
-			DisplayName: "Mobile Phone", ValueType: common.ValueTypeString, ProviderType: "string",
-		},
-	}
-
-	for fieldName, fieldMeta := range fields {
-		schemas.Add("", "employees_directory", "Employees Directory", "/employees/directory", "employees",
-			staticschema.FieldMetadataMapV2{fieldName: fieldMeta}, nil, nil)
-	}
-}
-
-func addCompanyInformation(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any]) {
-	str := func(name, display string) staticschema.FieldMetadata {
-		return staticschema.FieldMetadata{
-			DisplayName: display, ValueType: common.ValueTypeString, ProviderType: "string",
-		}
-	}
-
-	fields := map[string]staticschema.FieldMetadata{
-		"legalName":        str("legalName", "Legal Name"),
-		"displayName":      str("displayName", "Display Name"),
-		"addressLine1":     str("addressLine1", "Address Line 1"),
-		"addressLine2":     str("addressLine2", "Address Line 2"),
-		"city":             str("city", "City"),
-		"state":            str("state", "State"),
-		"zipCode":          str("zipCode", "Zip Code"),
-		"country":          str("country", "Country"),
-		"phone":            str("phone", "Phone"),
-		"employerIdNumber": str("employerIdNumber", "Employer Id Number"),
-	}
-
-	for fieldName, fieldMeta := range fields {
-		schemas.Add("", "company_information", "Company Information", "/company_information", "",
-			staticschema.FieldMetadataMapV2{fieldName: fieldMeta}, nil, nil)
+	for _, object := range objects {
+		schemas.Add("", object.ObjectName, object.DisplayName, object.Path, object.ResponseKey,
+			object.Fields, nil, nil)
 	}
 }
