@@ -8,4 +8,4 @@ Regenerate after updating `openapi/openapi.yaml`:
 go run ./scripts/openapi/bambooHR/metadata
 ```
 
-Object paths in `schemas.json` are relative to the connector base URL (`https://{workspace}.bamboohr.com/api`), so OpenAPI `/api/v1/...` routes are stored as `/v1/...`.
+The catalog base URL is `https://{workspace}.bamboohr.com/api/v1`. Each object `path` in `schemas.json` is the remainder after that prefix (for example OpenAPI `/api/v1/employees/directory` → object path `/employees/directory`). The API version is not repeated on individual objects.

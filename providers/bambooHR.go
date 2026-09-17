@@ -6,7 +6,7 @@ func init() {
 	SetInfo(BambooHR, ProviderInfo{
 		DisplayName: "BambooHR",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.workspace}}.bamboohr.com/api",
+		BaseURL:     "https://{{.workspace}}.bamboohr.com/api/v1",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://{{.workspace}}.bamboohr.com/authorize.php?request=authorize",

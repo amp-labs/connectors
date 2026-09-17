@@ -82,9 +82,17 @@ var objectNameToResponseField = datautils.NewDefaultMap(map[string]string{
 )
 
 func pathToConnectorPath(path string) string {
-	trimmed, ok := strings.CutPrefix(path, "/api")
+	trimmed, ok := strings.CutPrefix(path, "/api/v1")
 	if !ok {
 		return path
+	}
+
+	if trimmed == "" {
+		return "/"
+	}
+
+	if !strings.HasPrefix(trimmed, "/") {
+		trimmed = "/" + trimmed
 	}
 
 	return trimmed
@@ -143,7 +151,7 @@ func main() {
 
 	addManualObjects(schemas)
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
+	goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.", "objects", len(supportedObjects))
@@ -189,7 +197,7 @@ func addMetaUsers(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2
 	}
 
 	for fieldName, fieldMeta := range fields {
-		schemas.Add("", "meta_users", "Users", "/v1/meta/users", "",
+		schemas.Add("", "meta_users", "Users", "/meta/users", "",
 			staticschema.FieldMetadataMapV2{fieldName: fieldMeta}, nil, nil)
 	}
 }
@@ -238,7 +246,7 @@ func addEmployeesDirectory(schemas *staticschema.Metadata[staticschema.FieldMeta
 	}
 
 	for fieldName, fieldMeta := range fields {
-		schemas.Add("", "employees_directory", "Employees Directory", "/v1/employees/directory", "employees",
+		schemas.Add("", "employees_directory", "Employees Directory", "/employees/directory", "employees",
 			staticschema.FieldMetadataMapV2{fieldName: fieldMeta}, nil, nil)
 	}
 }
@@ -264,7 +272,7 @@ func addCompanyInformation(schemas *staticschema.Metadata[staticschema.FieldMeta
 	}
 
 	for fieldName, fieldMeta := range fields {
-		schemas.Add("", "company_information", "Company Information", "/v1/company_information", "",
+		schemas.Add("", "company_information", "Company Information", "/company_information", "",
 			staticschema.FieldMetadataMapV2{fieldName: fieldMeta}, nil, nil)
 	}
 }

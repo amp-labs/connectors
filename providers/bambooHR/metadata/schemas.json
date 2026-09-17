@@ -2,7 +2,7 @@
   "modules": {
     "root": {
       "id": "root",
-      "path": "/v1",
+      "path": "",
       "objects": {
         "applicant_tracking_applications": {
           "displayName": "Applications",
