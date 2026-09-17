@@ -150,3 +150,8 @@ test/salesforce/apex/apex
 ./subscribe
 ./subscriber
 test/salesforce/subscribe/subscribe
+/flow-create
+# Raw outbound messages captured by test/salesforce/subscribe/flow-create.
+# They carry the real org id and instance host; scrub before committing any
+# as a fixture (see providers/salesforce/test/subscription).
+payloads/
