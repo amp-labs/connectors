@@ -131,9 +131,129 @@ func TestSubscriptionEvent(t *testing.T) {
 				},
 			}},
 		},
+		{
+			Name: "Contact merge event resolves the surviving record id",
+			Input: SubscriptionEvent{
+				"subscriptionType": "contact.merge",
+				"objectId":         123,
+				"primaryObjectId":  123,
+				"mergedObjectIds":  []any{float64(456), float64(789)},
+				"newObjectId":      999,
+				"portalId":         101,
+				"occurredAt":       1625097600000,
+			},
+			Expected: []testconn.SubscriptionEventExpected{{
+				Data: testconn.SubscriptionEventExpectedData{
+					EventType:          "merge",
+					RawEventName:       "contact.merge",
+					ObjectName:         "contact",
+					Workspace:          "101",
+					RecordId:           "999",
+					EventTimeStampNano: 1625097600000000000,
+				},
+			}},
+		},
 	} {
 		t.Run(tt.Name, func(t *testing.T) {
 			tt.Run(t)
 		})
 	}
+}
+
+func TestSubscriptionEventMerge(t *testing.T) {
+	t.Parallel()
+
+	t.Run("PrimaryRecordId prefers newObjectId over primaryObjectId", func(t *testing.T) {
+		t.Parallel()
+
+		evt := SubscriptionEvent{
+			"subscriptionType": "contact.merge",
+			"objectId":         123,
+			"primaryObjectId":  123,
+			"newObjectId":      999,
+		}
+
+		id, err := evt.PrimaryRecordId()
+		if err != nil {
+			t.Fatalf("PrimaryRecordId returned error: %v", err)
+		}
+
+		if id != "999" {
+			t.Errorf("PrimaryRecordId = %q, want %q", id, "999")
+		}
+	})
+
+	t.Run("PrimaryRecordId falls back to primaryObjectId when no new record is created", func(t *testing.T) {
+		t.Parallel()
+
+		evt := SubscriptionEvent{
+			"subscriptionType": "contact.merge",
+			"objectId":         123,
+			"primaryObjectId":  123,
+		}
+
+		id, err := evt.PrimaryRecordId()
+		if err != nil {
+			t.Fatalf("PrimaryRecordId returned error: %v", err)
+		}
+
+		if id != "123" {
+			t.Errorf("PrimaryRecordId = %q, want %q", id, "123")
+		}
+	})
+
+	t.Run("PrimaryRecordId falls back to objectId as a last resort", func(t *testing.T) {
+		t.Parallel()
+
+		evt := SubscriptionEvent{
+			"subscriptionType": "contact.merge",
+			"objectId":         123,
+		}
+
+		id, err := evt.PrimaryRecordId()
+		if err != nil {
+			t.Fatalf("PrimaryRecordId returned error: %v", err)
+		}
+
+		if id != "123" {
+			t.Errorf("PrimaryRecordId = %q, want %q", id, "123")
+		}
+	})
+
+	t.Run("MergedRecordIds returns the consolidated record ids", func(t *testing.T) {
+		t.Parallel()
+
+		evt := SubscriptionEvent{
+			"subscriptionType": "contact.merge",
+			"mergedObjectIds":  []any{float64(456), float64(789)},
+		}
+
+		ids, err := evt.MergedRecordIds()
+		if err != nil {
+			t.Fatalf("MergedRecordIds returned error: %v", err)
+		}
+
+		want := []string{"456", "789"}
+		if len(ids) != len(want) {
+			t.Fatalf("MergedRecordIds = %v, want %v", ids, want)
+		}
+
+		for i := range want {
+			if ids[i] != want[i] {
+				t.Errorf("MergedRecordIds[%d] = %q, want %q", i, ids[i], want[i])
+			}
+		}
+	})
+
+	t.Run("MergedRecordIds errors when the field is missing", func(t *testing.T) {
+		t.Parallel()
+
+		evt := SubscriptionEvent{
+			"subscriptionType": "contact.merge",
+		}
+
+		if _, err := evt.MergedRecordIds(); err == nil {
+			t.Error("MergedRecordIds expected an error for a payload without mergedObjectIds")
+		}
+	})
 }
