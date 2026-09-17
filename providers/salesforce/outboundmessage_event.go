@@ -242,6 +242,46 @@ func (e OutboundMessageEvent) EventTimeStampNano() (int64, error) {
 	return created.UnixNano(), nil
 }
 
+var _ common.SubscriptionEventWithCompleteRecord = OutboundMessageEvent{}
+
+// InlineRecordIsComplete reports that Record needs no additional provider fetch, because the
+// outbound message is already configured to carry selectedFields/selectedFieldMappings.
+func (e OutboundMessageEvent) InlineRecordIsComplete() bool {
+	return true
+}
+
+// Record returns the notification's sObject as a ReadResultRow: Raw is the record exactly as
+// delivered, Fields is the requested subset lowercased. Requested fields absent from the
+// sObject are present in Fields as nil.
+func (e OutboundMessageEvent) Record(fields []string) (common.ReadResultRow, error) {
+	sObject, err := e.sObjectFields()
+	if err != nil {
+		return common.ReadResultRow{}, err
+	}
+
+	recordId, err := e.RecordId()
+	if err != nil {
+		return common.ReadResultRow{}, err
+	}
+
+	lowercased := make(map[string]any, len(sObject))
+	for key, value := range sObject {
+		lowercased[strings.ToLower(key)] = value
+	}
+
+	selected := make(map[string]any, len(fields))
+
+	for _, field := range fields {
+		selected[strings.ToLower(field)] = lowercased[strings.ToLower(field)]
+	}
+
+	return common.ReadResultRow{
+		Fields: selected,
+		Raw:    sObject,
+		Id:     recordId,
+	}, nil
+}
+
 func (e OutboundMessageEvent) sObjectFields() (common.StringMap, error) {
 	fieldsAny, ok := e[omKeySObject]
 	if !ok {
