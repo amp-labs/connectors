@@ -116,3 +116,32 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 
 	return connector, nil
 }
+
+// Provider returns the provider this connector talks to.
+//
+// It is declared here rather than inherited from the embedded *components.Connector because
+// NewWebhookVerifierConnector builds a Connector with no base. The base's Provider has a value
+// receiver, so the promoted call dereferences that nil pointer and panics — which is what the
+// server hit when it wrapped the verifier connector for metrics, before any verification ran.
+//
+// This delegates rather than returning a constant: a Slack connector is built under two different
+// providers — NewBotConnector under Slack and NewUserConnector under SlackUserScope — so only the
+// base knows which one this is. Slack is the right answer for the baseless verifier connector,
+// which the registry shares between both.
+func (c *Connector) Provider() providers.Provider {
+	if c == nil || c.Connector == nil {
+		return providers.Slack
+	}
+
+	return c.Connector.Provider()
+}
+
+// String returns a human-readable identifier for this connector. Declared for the same reason as
+// Provider: the verifier connector has no base to delegate to.
+func (c *Connector) String() string {
+	if c == nil || c.Connector == nil {
+		return c.Provider() + ".Connector"
+	}
+
+	return c.Connector.String()
+}
