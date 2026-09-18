@@ -122,6 +122,33 @@ func constructor(base *components.Connector) (*Connector, error) {
 	return connector, nil
 }
 
+// Provider returns the provider this connector talks to.
+//
+// It is declared here rather than inherited from the embedded *components.Connector because the
+// subscribe registry uses a zero-value Connector as its webhook verifier, which has no base. The
+// base's Provider has a value receiver, so the promoted call would dereference that nil pointer
+// and panic before any verification ran.
+//
+// This delegates rather than returning a constant: NewConnectorForProvider builds this connector
+// under twin providers too (MicrosoftAdminConsent), so only the base knows which one this is.
+func (c *Connector) Provider() providers.Provider {
+	if c == nil || c.Connector == nil {
+		return providers.Microsoft
+	}
+
+	return c.Connector.Provider()
+}
+
+// String returns a human-readable identifier for this connector. Declared for the same reason as
+// Provider: the zero-value verifier connector has no base to delegate to.
+func (c *Connector) String() string {
+	if c == nil || c.Connector == nil {
+		return c.Provider() + ".Connector"
+	}
+
+	return c.Connector.String()
+}
+
 func (c *Connector) getReadUrl(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, objectName)
 	if err != nil {
