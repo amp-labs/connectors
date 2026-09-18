@@ -37,9 +37,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
-			Proxy: true,
-			// Read and Write stay false until the post-merge integration-testing
-			// enablement PR flips them (with screenshots), per the standard flow.
+			Proxy:     true,
 			Read:      false,
 			Subscribe: false,
 			Write:     false,
