@@ -19,9 +19,10 @@ var fieldRegion = credscanning.Field{ //nolint:gochecknoglobals
 }
 
 // GetWorkspace returns the Mailgun sending domain from the credentials file.
+// Only the workspace is needed here, so region is not requested.
 func GetWorkspace() string {
 	filePath := credscanning.LoadPath(providers.Mailgun)
-	reader := utils.MustCreateProvCredJSON(filePath, false, fieldRegion)
+	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	return reader.Get(credscanning.Fields.Workspace)
 }

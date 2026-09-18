@@ -7,9 +7,10 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// objectDeleteScopes lists the objects with an item-level DELETE endpoint,
+// deleteObjects is the set of objects with an item-level DELETE endpoint,
 // reached as <collection>/<RecordId> (collection per collectionPath). RecordId
 // is the object's natural key: address (suppressions, lists), value
 // (whitelists), name (templates), id (routes, forwards, alerts) or webhook_id.
@@ -20,30 +21,28 @@ import (
 // API reference: https://documentation.mailgun.com/docs/mailgun/api-reference/intro/
 //
 //nolint:gochecknoglobals
-var objectDeleteScopes = map[string]objectScope{
+var deleteObjects = datautils.NewSet(
 	// Domain-scoped.
-	"bounces":      scopeDomain,
-	"complaints":   scopeDomain,
-	"unsubscribes": scopeDomain,
-	"whitelists":   scopeDomain,
-	"templates":    scopeDomain,
-
+	"bounces",
+	"complaints",
+	"unsubscribes",
+	"whitelists",
+	"templates",
 	// Account-scoped.
-	"account/templates": scopeAccount,
-	"lists":             scopeAccount,
-	"routes":            scopeAccount,
-	"forwards":          scopeAccount,
-	"webhooks":          scopeAccount,
-	"alerts/settings":   scopeAccount,
-}
+	"account/templates",
+	"lists",
+	"routes",
+	"forwards",
+	"webhooks",
+	"alerts/settings",
+)
 
 func (c *Connector) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
 	if err := params.ValidateParams(); err != nil {
 		return nil, err
 	}
 
-	scope, ok := objectDeleteScopes[params.ObjectName]
-	if !ok {
+	if !deleteObjects.Has(params.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -52,11 +51,9 @@ func (c *Connector) buildDeleteRequest(ctx context.Context, params common.Delete
 		return nil, err
 	}
 
-	if scope == scopeDomain {
-		path, err = c.substituteDomain(path)
-		if err != nil {
-			return nil, err
-		}
+	path, err = c.substituteDomain(path)
+	if err != nil {
+		return nil, err
 	}
 
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
