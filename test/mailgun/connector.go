@@ -22,9 +22,8 @@ func GetMailgunConnector(ctx context.Context) *mailgun.Connector {
 	filePath := credscanning.LoadPath(providers.Mailgun)
 	reader := utils.MustCreateProvCredJSON(filePath, false, fieldRegion)
 
-	metadata := make(map[string]string)
-	if region := reader.Get(fieldRegion); region != "" {
-		metadata["region"] = region
+	metadata := map[string]string{
+		"region": reader.Get(fieldRegion),
 	}
 
 	// Mailgun uses HTTP Basic Auth ("api" as username, API key as password).

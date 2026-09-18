@@ -14,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/providers/mailgun"
 	testMailgun "github.com/amp-labs/connectors/test/mailgun"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 // liveTestObjects covers every supported read object so a single run exercises
@@ -97,12 +98,14 @@ func main() {
 		}
 	}
 
-	// Pagination — domains is offset paginated and typically populated.
+	// Pagination — domains is offset paginated and typically populated. Walk
+	// every page (PageSize 1) to exercise the offset cursor end to end.
 	slog.Info("Testing pagination for domains")
-
-	if err := testPagination(ctx, conn, "domains"); err != nil {
-		slog.Error(err.Error())
-	}
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "domains",
+		Fields:     connectors.Fields("id", "name"),
+		PageSize:   1,
+	})
 
 	// Incremental read — Mailgun list endpoints take no time parameters, so
 	// Since/Until sieve records connector-side by their timestamp field. keys
@@ -158,40 +161,6 @@ func testRead(ctx context.Context, conn *mailgun.Connector, objectName string) e
 
 	slog.Info("Read result", "object", objectName, "rows", res.Rows, "nextPage", res.NextPage, "done", res.Done)
 	utils.DumpJSON(res, os.Stdout)
-
-	return nil
-}
-
-func testPagination(ctx context.Context, conn *mailgun.Connector, objectName string) error {
-	params := common.ReadParams{
-		ObjectName: objectName,
-		Fields:     connectors.Fields("id", "name"),
-		PageSize:   1,
-	}
-
-	res, err := conn.Read(ctx, params)
-	if err != nil {
-		return fmt.Errorf("error reading %s page 1: %w", objectName, err)
-	}
-
-	slog.Info("Page 1", "object", objectName, "rows", res.Rows, "nextPage", res.NextPage)
-	utils.DumpJSON(res, os.Stdout)
-
-	if res.NextPage == "" {
-		slog.Warn("No next page found — pagination test may be incomplete", "object", objectName)
-
-		return nil
-	}
-
-	params.NextPage = res.NextPage
-
-	res2, err := conn.Read(ctx, params)
-	if err != nil {
-		return fmt.Errorf("error reading %s page 2: %w", objectName, err)
-	}
-
-	slog.Info("Page 2", "object", objectName, "rows", res2.Rows, "done", res2.Done)
-	utils.DumpJSON(res2, os.Stdout)
 
 	return nil
 }
