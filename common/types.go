@@ -41,6 +41,12 @@ var (
 	// ErrCaller represents non-retryable errors caused by bad input from the caller.
 	ErrCaller error = newClassedErr("caller error", ErrorClassBadRequest)
 
+	// ErrRegionMismatch means the request reached the provider's wrong regional
+	// data center: the credential points at one region while the customer's data
+	// lives in another. Non-retryable — the same request against the same host
+	// keeps failing until the connection is re-pointed at the correct region.
+	ErrRegionMismatch error = newClassedErr("provider region mismatch", ErrorClassRegionMismatch)
+
 	// ErrServer represents errors caused by something on the provider's side
 	// (any 5xx). Retryable: most 5xx responses are transient.
 	ErrServer error = newClassedErr("server error", ErrorClassProvider5xx)

@@ -55,6 +55,12 @@ const (
 	// Usually self-heals within hours.
 	ErrorClassProviderMigration ErrorClass = "provider_migration"
 
+	// ErrorClassRegionMismatch — the request reached the provider's wrong
+	// regional data center. The credential names one region and the customer's
+	// data lives in another, so no retry against the same host can succeed;
+	// the connection has to be re-pointed at the correct region.
+	ErrorClassRegionMismatch ErrorClass = "region_mismatch"
+
 	// ErrorClassProvider5xx — 5xx server error on the provider side. Retryable.
 	ErrorClassProvider5xx ErrorClass = "provider_5xx"
 
@@ -122,7 +128,7 @@ func ClassOf(err error) ErrorClass {
 // classOfMessage is the string-content fallback. Patterns derived from
 // production workflow-error samples. Each entry is a class that we can't
 // reliably derive from the typed chain today.
-func classOfMessage(raw string) ErrorClass {
+func classOfMessage(raw string) ErrorClass { //nolint:cyclop
 	msg := strings.ToLower(raw)
 
 	switch {
@@ -134,6 +140,8 @@ func classOfMessage(raw string) ErrorClass {
 		return ErrorClassSchemaDriftObject
 	case strings.Contains(msg, "currently being migrated"):
 		return ErrorClassProviderMigration
+	case strings.Contains(msg, "unknown to this hublet"):
+		return ErrorClassRegionMismatch
 	case strings.Contains(msg, "access token invalid"),
 		strings.Contains(msg, "credentials have been marked as invalid"),
 		strings.Contains(msg, "this user is locked"):
@@ -166,6 +174,10 @@ func classOfMessage(raw string) ErrorClass {
 // returns when a hub is being migrated between data hosting locations.
 const hubspotMigrationStatus = 477
 
+// hubspotHubletMismatchStatus is the non-standard HTTP 488 status code HubSpot
+// returns when a request reaches the wrong regional data center ("hublet").
+const hubspotHubletMismatchStatus = 488
+
 func classOfHTTPStatus(status int) (ErrorClass, bool) {
 	switch status {
 	case http.StatusUnauthorized:
@@ -176,6 +188,8 @@ func classOfHTTPStatus(status int) (ErrorClass, bool) {
 		return ErrorClassRateLimited, true
 	case hubspotMigrationStatus:
 		return ErrorClassProviderMigration, true
+	case hubspotHubletMismatchStatus:
+		return ErrorClassRegionMismatch, true
 	}
 
 	if status >= 500 && status < 600 {

@@ -14,6 +14,15 @@ import (
 // Migrations resolve in hours, so it is a retryable error.
 const hubspotMigrationStatusCode = 477
 
+// HubSpot shards portals across regional data centers it calls hublets (na1, eu1, ...)
+// and routes api.hubapi.com traffic using routing information baked into the access
+// token. A token minted before HubSpot embedded that routing defaults to na1, so a
+// portal that lives in — or has since moved to — another hublet is answered with 488,
+// naming the portal's real hublet in correctHublet. Retrying the same host cannot
+// succeed: the connection has to address the hublet HubSpot names.
+// See https://product.hubspot.com/blog/routing-api-traffic.
+const hubspotHubletMismatchStatusCode = 488
+
 // invalidPaginationCursorMessageSubstring is the message HubSpot returns when its
 // search/list APIs reject the supplied pagination cursor as unparsable.
 // This is caused by the pagination cursor being not the appropriate type
@@ -22,7 +31,7 @@ const invalidPaginationCursorMessageSubstring = "Cannot deserialize value of typ
 
 // InterpretJSONError interprets the error response from Hubspot
 // as per https://developers.hubspot.com/docs/api/error-handling.
-func InterpretJSONError(res *http.Response, body []byte) error {
+func InterpretJSONError(res *http.Response, body []byte) error { //nolint:cyclop
 	headers := common.GetResponseHeaders(res)
 
 	apiError := &HubspotError{}
@@ -48,6 +57,9 @@ func InterpretJSONError(res *http.Response, body []byte) error {
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrApiDisabled, apiError))
 	case hubspotMigrationStatusCode:
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrRetryable, apiError))
+	case hubspotHubletMismatchStatusCode:
+		return common.NewHTTPError(res.StatusCode, body, headers,
+			createError(common.ErrRegionMismatch, apiError))
 	default:
 		return common.InterpretError(res, body)
 	}
@@ -62,15 +74,18 @@ func createError(baseErr error, hubspotError *HubspotError) error {
 }
 
 type HubspotError struct {
-	HTTPStatusCode int         `json:"httpStatusCode"`
-	Status         string      `json:"status,omitempty"`
-	Message        string      `json:"message,omitempty"`
-	CorrelationID  string      `json:"correlationId,omitempty"`
-	Context        ErrContext  `json:"context"`
-	Category       string      `json:"category,omitempty"`
-	SubCategory    string      `json:"subCategory,omitempty"`
-	Links          ErrLinks    `json:"links"`
-	Details        []ErrDetail `json:"details,omitempty"`
+	HTTPStatusCode int    `json:"httpStatusCode"`
+	Status         string `json:"status,omitempty"`
+	Message        string `json:"message,omitempty"`
+	CorrelationID  string `json:"correlationId,omitempty"`
+	// CorrectHublet is only set on a 488: it names the regional data center that
+	// actually holds this portal (e.g. "eu1").
+	CorrectHublet string      `json:"correctHublet,omitempty"`
+	Context       ErrContext  `json:"context"`
+	Category      string      `json:"category,omitempty"`
+	SubCategory   string      `json:"subCategory,omitempty"`
+	Links         ErrLinks    `json:"links"`
+	Details       []ErrDetail `json:"details,omitempty"`
 }
 
 type ErrDetail struct {
