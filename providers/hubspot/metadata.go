@@ -15,6 +15,7 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/simultaneously"
+	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/metadata"
 )
@@ -211,8 +212,16 @@ func (c *Connector) GetPostAuthInfo(
 		return nil, fmt.Errorf("error fetching HubSpot account info: %w", err)
 	}
 
+	// The portal's hublet decides which host serves it, and every later request
+	// is built from this variable, so it has to be captured here — the only point
+	// where we hold the account details.
+	catalogVars := map[string]string{
+		providers.HubspotApiDomainVar: APIDomainForHublet(accInfo.DataHostingLocation),
+	}
+
 	return &common.PostAuthInfo{
 		ProviderWorkspaceRef: strconv.Itoa(accInfo.PortalId),
+		CatalogVars:          &catalogVars,
 		RawResponse:          resp,
 	}, nil
 }
