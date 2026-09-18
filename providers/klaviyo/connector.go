@@ -6,12 +6,14 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/klaviyo/metadata"
 )
 
 // headerVersion2024Oct15 is the latest stable version of API as of the date of writing.
 // https://developers.klaviyo.com/en/reference/api_overview
-const headerVersion2024Oct15 = "2024-10-15"
+const (
+	headerVersion2024Oct15 = "2024-10-15"
+	apiUriPart             = "api"
+)
 
 type Connector struct {
 	BaseURL string
@@ -57,12 +59,7 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(common.ModuleRoot, objectName)
-	if err != nil {
-		return nil, err
-	}
-
-	return urlbuilder.New(c.BaseURL, path)
+	return urlbuilder.New(c.BaseURL, apiUriPart, objectName)
 }
 
 func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
@@ -72,7 +69,7 @@ func (c *Connector) getWriteURL(objectName string) (*urlbuilder.URL, error) {
 }
 
 func (c *Connector) getDeleteURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, "api", objectName)
+	return urlbuilder.New(c.BaseURL, apiUriPart, objectName)
 }
 
 func (c *Connector) revisionHeader() common.Header {
