@@ -13,16 +13,31 @@ const (
 	ModuleHubspotCRM common.ModuleID = "crm"
 )
 
+const (
+	// HubspotApiDomainVar is the catalog variable holding the API host that serves a
+	// connection's portal. HubSpot shards portals across regional data centers it
+	// calls hublets: api.hubapi.com serves na1 and api-eu1.hubapi.com serves eu1.
+	// It is derived after authentication from the portal's dataHostingLocation
+	// (see GetPostAuthInfo in providers/hubspot).
+	HubspotApiDomainVar = "hubspot_api_domain"
+
+	// DefaultHubspotApiDomain is the host HubSpot routes by token. It resolves to
+	// na1 for tokens that carry no hublet routing of their own, which is what every
+	// connection made before the variable existed relies on — so callers building
+	// catalog variables must fall back to this rather than leaving the value empty.
+	DefaultHubspotApiDomain = "api.hubapi.com"
+)
+
 func init() { //nolint:funlen
 	// Hubspot configuration
 	SetInfo(Hubspot, ProviderInfo{
 		DisplayName: "HubSpot",
 		AuthType:    Oauth2,
-		BaseURL:     "https://api.hubapi.com",
+		BaseURL:     "https://{{.hubspot_api_domain}}",
 		AuthHealthCheck: &AuthHealthCheck{
 			Method:             http.MethodGet,
 			SuccessStatusCodes: []int{http.StatusOK},
-			Url:                "https://api.hubapi.com/integrations/v1/me",
+			Url:                "https://{{.hubspot_api_domain}}/integrations/v1/me",
 		},
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
@@ -52,7 +67,7 @@ func init() { //nolint:funlen
 		DefaultModule: ModuleHubspotCRM,
 		Modules: &Modules{
 			ModuleHubspotCRM: {
-				BaseURL:     "https://api.hubapi.com/crm",
+				BaseURL:     "https://{{.hubspot_api_domain}}/crm",
 				DisplayName: "HubSpot CRM",
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
@@ -100,6 +115,15 @@ func init() { //nolint:funlen
 			PostAuthentication: []MetadataItemPostAuthentication{
 				{
 					Name: "ownerId",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleHubspotCRM: ModuleDependency{},
+					},
+				},
+				{
+					// Derived, not collected: the connector reads the portal's
+					// dataHostingLocation after authentication, so this is never
+					// shown to whoever is connecting.
+					Name: HubspotApiDomainVar,
 					ModuleDependencies: &ModuleDependencies{
 						ModuleHubspotCRM: ModuleDependency{},
 					},

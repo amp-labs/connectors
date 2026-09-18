@@ -241,7 +241,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: common.ModuleRoot,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com",
+				BaseURL:     "https://{{.hubspot_api_domain}}",
 				DisplayName: "HubSpot",
 				Support: Support{
 					Delete:    true,
@@ -349,7 +349,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: "random-module-name",
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com/crm",
+				BaseURL:     "https://{{.hubspot_api_domain}}/crm",
 				DisplayName: "HubSpot CRM",
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
@@ -383,7 +383,7 @@ func TestReadModuleInfo(t *testing.T) { // nolint:funlen,maintidx
 				moduleID: ModuleHubspotCRM,
 			},
 			expected: &ModuleInfo{
-				BaseURL:     "https://api.hubapi.com/crm",
+				BaseURL:     "https://{{.hubspot_api_domain}}/crm",
 				DisplayName: "HubSpot CRM",
 				Support: Support{
 					BatchWrite: &BatchWriteSupport{
