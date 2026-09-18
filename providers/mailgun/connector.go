@@ -34,71 +34,66 @@ type Connector struct {
 	components.Writer
 	components.Deleter
 
-	// workspace is the Mailgun sending domain (ConnectorParams.Workspace).
-	// It is substituted into domain-scoped object paths for read, write and
-	// delete, and is only required for those objects (see substituteDomain).
+	// workspace is the Mailgun sending domain (ConnectorParams.Workspace),
+	// substituted into domain-scoped object paths for read, write and delete,
+	// and required only for those objects (enforced in substituteDomain).
 	workspace string
 }
 
 // NewConnector creates a new Mailgun connector.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.Mailgun, params, constructor(params))
+	return components.Init(providers.Mailgun, params, constructor)
 }
 
-func constructor(params common.ConnectorParams) func(*components.Connector) (*Connector, error) {
-	return func(base *components.Connector) (*Connector, error) {
-		connector := &Connector{
-			Connector: base,
-			workspace: params.Workspace,
-		}
-
-		// Resolve the regional base URL. US (api.mailgun.net) is the catalog
-		// default; EU is api.eu.mailgun.net. The US/EU host asymmetry prevents a
-		// clean {{.region}} template, so the base URL is set here from metadata.
-		// The region value is free text, so compare case-insensitively and
-		// trimmed ("EU", " eu" must not silently fall back to the US host).
-		if strings.EqualFold(strings.TrimSpace(params.Metadata["region"]), regionEU) {
-			base.SetBaseURL(euBaseURL)
-		}
-
-		connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
-			connector.ProviderContext.Module(),
-			metadata.Schemas,
-		)
-
-		connector.Reader = reader.NewHTTPReader(
-			connector.HTTPClient().Client,
-			components.NewEmptyEndpointRegistry(),
-			connector.ProviderContext.Module(),
-			operations.ReadHandlers{
-				BuildRequest:  connector.buildReadRequest,
-				ParseResponse: connector.parseReadResponse,
-				ErrorHandler:  common.InterpretError,
-			},
-		)
-
-		connector.Writer = writer.NewHTTPWriter(
-			connector.HTTPClient().Client,
-			components.NewEmptyEndpointRegistry(),
-			connector.ProviderContext.Module(),
-			operations.WriteHandlers{
-				BuildRequest:  connector.buildWriteRequest,
-				ParseResponse: connector.parseWriteResponse,
-				ErrorHandler:  common.InterpretError,
-			},
-		)
-
-		connector.Deleter = deleter.NewHTTPDeleter(
-			connector.HTTPClient().Client,
-			components.NewEmptyEndpointRegistry(),
-			connector.ProviderContext.Module(),
-			operations.DeleteHandlers{
-				BuildRequest:  connector.buildDeleteRequest,
-				ParseResponse: connector.parseDeleteResponse,
-				ErrorHandler:  common.InterpretError,
-			},
-		)
-
-		return connector, nil
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	connector := &Connector{
+		Connector: base,
+		workspace: params.Workspace,
 	}
+
+	// US (api.mailgun.net) is the catalog default base URL; only EU needs an
+	// override. Region is free-text metadata, so match it case-insensitively.
+	if strings.EqualFold(strings.TrimSpace(params.Metadata["region"]), regionEU) {
+		base.SetBaseURL(euBaseURL)
+	}
+
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
+		connector.ProviderContext.Module(),
+		metadata.Schemas,
+	)
+
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	return connector, nil
 }
