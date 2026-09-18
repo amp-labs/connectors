@@ -27,6 +27,9 @@ type Dependencies struct {
 	// Used by the Salesforce subscribe-request builder.
 	CDCOptimization CDCOptimizationResolver
 
+	// SalesforceFlow resolves the selected read fields for record-triggered-flow subscribe.
+	SalesforceFlow SalesforceFlowResolver
+
 	// Subscriptions lists the stored subscription results for an installation. Used by the
 	// Attio verification-params builder to recover the webhook signing secret Attio generated
 	// at webhook-creation time.
