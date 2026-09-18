@@ -179,6 +179,7 @@ func (c *Connector) subscribeWithFlow(
 		// Reuse the recorded name on update so a prefix change upserts the
 		// existing flow/OM instead of deploying a second pair beside them.
 		artifactName := ""
+
 		if prevState != nil {
 			if prev, ok := prevState.Flows[objName]; ok && prev != nil &&
 				prev.Flow != nil && prev.Flow.Name != "" {

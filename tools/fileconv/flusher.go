@@ -13,5 +13,7 @@ func (Flusher) ToFile(filename string, object any) error {
 		return err
 	}
 
+	data = append(data, '\n')
+
 	return os.WriteFile(filename, data, os.ModePerm) //nolint:gosec
 }
