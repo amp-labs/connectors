@@ -1,0 +1,180 @@
+[
+  {
+    "objectName": "meta_users",
+    "displayName": "Users",
+    "path": "/meta/users",
+    "responseKey": "",
+    "fields": {
+      "id": {
+        "displayName": "Id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "employeeId": {
+        "displayName": "Employee Id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "firstName": {
+        "displayName": "First Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "lastName": {
+        "displayName": "Last Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "email": {
+        "displayName": "Email",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "status": {
+        "displayName": "Status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {"value": "enabled", "displayValue": "enabled"},
+          {"value": "disabled", "displayValue": "disabled"}
+        ]
+      },
+      "lastLogin": {
+        "displayName": "Last Login",
+        "valueType": "string",
+        "providerType": "date-time"
+      }
+    }
+  },
+  {
+    "objectName": "employees_directory",
+    "displayName": "Employees Directory",
+    "path": "/employees/directory",
+    "responseKey": "employees",
+    "fields": {
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "canUploadPhoto": {
+        "displayName": "Can Upload Photo",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "displayName": {
+        "displayName": "Display Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "firstName": {
+        "displayName": "First Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "lastName": {
+        "displayName": "Last Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "jobTitle": {
+        "displayName": "Job Title",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "department": {
+        "displayName": "Department",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "division": {
+        "displayName": "Division",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "location": {
+        "displayName": "Location",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "supervisor": {
+        "displayName": "Supervisor",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "workEmail": {
+        "displayName": "Work Email",
+        "valueType": "string",
+        "providerType": "email"
+      },
+      "workPhone": {
+        "displayName": "Work Phone",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "mobilePhone": {
+        "displayName": "Mobile Phone",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  {
+    "objectName": "company_information",
+    "displayName": "Company Information",
+    "path": "/company_information",
+    "responseKey": "",
+    "fields": {
+      "legalName": {
+        "displayName": "Legal Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "displayName": {
+        "displayName": "Display Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "addressLine1": {
+        "displayName": "Address Line 1",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "addressLine2": {
+        "displayName": "Address Line 2",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "city": {
+        "displayName": "City",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "state": {
+        "displayName": "State",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "zipCode": {
+        "displayName": "Zip Code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "country": {
+        "displayName": "Country",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "phone": {
+        "displayName": "Phone",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "employerIdNumber": {
+        "displayName": "Employer Id Number",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  }
+]
