@@ -11,22 +11,22 @@ import (
 
 // sinceParamMap maps each object name to the query parameter used for incremental reads.
 var sinceParamMap = map[string]string{ //nolint:gochecknoglobals
-	"transactions":     "from_date",
-	"reimbursements":   "updated_after",
-	"vendors":          "from_updated_at",
-	"bills":            "from_created_at",
-	"bills_drafts":     "from_created_at",
-	"receipts":         "created_after",
-	"limits":           "created_after",
-	"cashbacks":        "from_date",
-	"transfers":        "from_date",
-	"statements":       "from_date",
-	"purchase_orders":  "from_created_at",
-	"repayments":       "from_repaid_at",
-	"memos":            "from_date",
-	"audit_logs":       "from_date",
-	"trips":            "from_date",
-	"unified_requests": "from_created_at",
+	"transactions":      "from_date",
+	"reimbursements":    "updated_after",
+	"vendors":           "from_updated_at",
+	"bills":             "from_created_at",
+	"bills/drafts":      "from_created_at",
+	"receipts":          "created_after",
+	"limits":            "created_after",
+	"cashbacks":         "from_date",
+	"transfers":         "from_date",
+	"statements":        "from_date",
+	"purchase-orders":   "from_created_at",
+	"repayments":        "from_repaid_at",
+	"memos":             "from_date",
+	"audit-logs/events": "from_date",
+	"trips":             "from_date",
+	"unified-requests":  "from_created_at",
 }
 
 // writeObjects lists the objects that support create and/or update operations.
@@ -35,11 +35,11 @@ var writeObjects = []string{ //nolint:gochecknoglobals
 	"locations",
 	"vendors",
 	"bills",
-	"purchase_orders",
+	"purchase-orders",
 	"users",
 	"cards",
-	"spend_programs",
-	"item_receipts",
+	"spend-programs",
+	"item-receipts",
 	"receipts",
 }
 

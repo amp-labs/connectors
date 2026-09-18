@@ -67,5 +67,42 @@ func main() {
 
 	utils.DumpJSON(locResult, os.Stdout)
 
+	// Object names follow the Ramp API paths, so this one is hyphenated
+	// ("spend-programs", not "spend_programs"). The OAuth scope keeps the
+	// underscore form (spend_programs:write) -- the two are unrelated.
+	slog.Info("> TEST Create spend program")
+
+	programResult, err := conn.Write(ctx, common.WriteParams{
+		ObjectName: "spend-programs",
+		RecordData: map[string]any{
+			"display_name":                  "Test Spend Program (connector test)",
+			"description":                   "Created by the ramp connector write test",
+			"icon":                          "SoftwareTrialIcon",
+			"is_shareable":                  false,
+			"issue_physical_card_if_needed": false,
+			"permitted_spend_types": map[string]any{
+				"primary_card_enabled":   true,
+				"reimbursements_enabled": false,
+			},
+			// Amounts are in the smallest currency unit, so this is $500.00.
+			"spending_restrictions": map[string]any{
+				"interval": "MONTHLY",
+				"limit": map[string]any{
+					"amount":        50000,
+					"currency_code": "USD",
+				},
+			},
+		},
+	})
+	if err != nil {
+		utils.Fail("error creating spend program", "error", err)
+	}
+
+	utils.DumpJSON(programResult, os.Stdout)
+
+	if programResult.RecordId == "" {
+		utils.Fail("expected a record ID after creating spend program")
+	}
+
 	slog.Info("Done")
 }
