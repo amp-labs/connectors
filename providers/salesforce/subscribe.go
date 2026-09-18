@@ -550,6 +550,42 @@ func (c *Connector) UpdateSubscription(
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
+	// validate the previous result
+	if previousResult.Result == nil {
+		return nil, fmt.Errorf("%w: missing previousResult.Result", errMissingParams)
+	}
+
+	prevState, ok := previousResult.Result.(*SubscribeResult)
+	if !ok {
+		return nil, fmt.Errorf(
+			"%w: expected previousResult.Result to be type '%T', but got '%T'",
+			errInvalidRequestType,
+			prevState,
+			previousResult.Result,
+		)
+	}
+
+	var req *SubscriptionRequest
+
+	if params.Request != nil {
+		var requestOk bool
+
+		req, requestOk = params.Request.(*SubscriptionRequest)
+		if !requestOk {
+			return nil, fmt.Errorf(
+				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
+				req, params.Request,
+			)
+		}
+	}
+
+	// The flow-based path diverts before the registration checks below, exactly as Subscribe
+	// does: flow subscriptions have no registration, so requiring one here would reject every
+	// flow update. This covers both a flow-to-flow edit and a switch between modes.
+	if prevState.UseFlow || (req != nil && req.UseFlow) {
+		return c.replaceSubscription(ctx, params, previousResult)
+	}
+
 	// Validate params up-front (mirrors Subscribe) so a malformed input is
 	// rejected before any Salesforce-side mutation happens. Without this, a
 	// missing or invalid params would only be caught later by the inner
@@ -567,37 +603,8 @@ func (c *Connector) UpdateSubscription(
 		return nil, fmt.Errorf("invalid params: %w", err)
 	}
 
-	// validate the previous result
-	if previousResult.Result == nil {
-		return nil, fmt.Errorf("%w: missing previousResult.Result", errMissingParams)
-	}
-
-	prevState, ok := previousResult.Result.(*SubscribeResult)
-	if !ok {
-		return nil, fmt.Errorf(
-			"%w: expected previousResult.Result to be type '%T', but got '%T'",
-			errInvalidRequestType,
-			prevState,
-			previousResult.Result,
-		)
-	}
-
 	// Migrate old CheckboxField to IndicatorField for backwards compatibility.
 	migrateApexTriggers(prevState.ApexTriggers)
-
-	var req *SubscriptionRequest
-
-	if params.Request != nil {
-		var ok bool
-
-		req, ok = params.Request.(*SubscriptionRequest)
-		if !ok {
-			return nil, fmt.Errorf(
-				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
-				req, params.Request,
-			)
-		}
-	}
 
 	// nolint:lll
 	result, progress, execErr := c.executeUpdateSubscription(ctx, params, previousResult, prevState, req) // nosemgrep:trailofbits.go.invalid-usage-of-modified-variable.invalid-usage-of-modified-variable
@@ -623,6 +630,38 @@ func (c *Connector) UpdateSubscription(
 		}
 
 		return result, errors.Join(execErr, rollbackErr)
+	}
+
+	return result, nil
+}
+
+// replaceSubscription tears the subscription's current artifacts down and provisions the ones the
+// request now asks for. Used whenever flow mode is on either side of an update.
+//
+// Flow has no in-place edit path: the flow and its outbound message deploy as a single atomic
+// package keyed by object, so changing the fields an outbound message carries means redeploying it.
+// A switch between modes replaces every artifact anyway, and both directions are already handled by
+// DeleteSubscription and Subscribe, which each branch on the mode they are given.
+//
+// Teardown runs first. Provisioning both stacks at once would deliver duplicate events for every
+// record change in the window, and the existing dedupe would not collapse them because CDC and
+// outbound messages carry different event shapes and identifiers.
+//
+// There is no cross-mode transaction. A failure after teardown leaves the subscription with no
+// artifacts, which is recoverable by retrying the update: the teardown half then finds nothing to
+// remove and the create half provisions from scratch.
+func (c *Connector) replaceSubscription(
+	ctx context.Context,
+	params common.SubscribeParams,
+	previousResult *common.SubscriptionResult,
+) (*common.SubscriptionResult, error) {
+	if err := c.DeleteSubscription(ctx, *previousResult); err != nil {
+		return nil, fmt.Errorf("removing the previous subscription's artifacts: %w", err)
+	}
+
+	result, err := c.Subscribe(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("provisioning the updated subscription: %w", err)
 	}
 
 	return result, nil

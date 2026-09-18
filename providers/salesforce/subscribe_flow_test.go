@@ -3,6 +3,7 @@ package salesforce
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -122,5 +123,52 @@ func TestSubscribeWithFlowRequiresFlowConfig(t *testing.T) {
 				t.Fatalf("expected %v, got: %v", tt.wantErr, err)
 			}
 		})
+	}
+}
+
+// TestUpdateSubscriptionFlowSkipsRegistrationChecks pins that a flow update is not rejected for
+// having no RegistrationResult. Flow subscriptions never register, so the CDC validation that
+// UpdateSubscription runs up front must sit behind the flow branch, as it does in Subscribe.
+func TestUpdateSubscriptionFlowSkipsRegistrationChecks(t *testing.T) {
+	t.Parallel()
+
+	conn := &Connector{}
+
+	previous := &common.SubscriptionResult{
+		Result: &SubscribeResult{UseFlow: true},
+	}
+
+	params := common.SubscribeParams{
+		Request: &SubscriptionRequest{UseFlow: true, Flow: &FlowConfig{}},
+		// RegistrationResult deliberately nil: a flow subscription has none.
+	}
+
+	_, err := conn.UpdateSubscription(t.Context(), params, previous)
+
+	// The call cannot succeed without a live org, but it must fail past the registration checks
+	// rather than on them.
+	if err != nil && strings.Contains(err.Error(), "missing RegistrationResult") {
+		t.Fatalf("flow update rejected for a missing registration: %v", err)
+	}
+}
+
+// TestUpdateSubscriptionCDCStillRequiresRegistration pins the other side: a CDC update with no
+// registration is still rejected up front, before any Salesforce-side mutation.
+func TestUpdateSubscriptionCDCStillRequiresRegistration(t *testing.T) {
+	t.Parallel()
+
+	conn := &Connector{}
+
+	previous := &common.SubscriptionResult{
+		Result: &SubscribeResult{},
+	}
+
+	params := common.SubscribeParams{
+		Request: &SubscriptionRequest{},
+	}
+
+	_, err := conn.UpdateSubscription(t.Context(), params, previous)
+	if err == nil || !strings.Contains(err.Error(), "missing RegistrationResult") {
+		t.Fatalf("CDC update error = %v, want it rejected for a missing registration", err)
 	}
 }
