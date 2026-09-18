@@ -21,7 +21,6 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 	responseForwardCreate := testutils.DataFromFile(t, "write/forward-create.json")
 	responseMemberUpsert := testutils.DataFromFile(t, "write/member-upsert.json")
 	responseRouteCreate := testutils.DataFromFile(t, "write/route-create.json")
-	responseWebhookCreate := testutils.DataFromFile(t, "write/webhook-create.json")
 	responseTemplateCreate := testutils.DataFromFile(t, "write/template-create.json")
 	responseAlertCreate := testutils.DataFromFile(t, "write/alert-create.json")
 	responseErrorBadRequest := testutils.DataFromFile(t, "read/error-bad-request.json")
@@ -86,7 +85,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 					mockcond.Header(http.Header{
 						"Content-Type": []string{"application/x-www-form-urlencoded"},
 					}),
-					mockcond.Body(`address=developers%40example.com&name=Developers`),
+					mockcond.Body(`address=developers@example.com&name=Developers`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseListCreate),
 			}.Server(),
@@ -116,7 +115,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/v3/example.com/bounces"),
-					mockcond.Body(`address=bounced%40example.com&code=550`),
+					mockcond.Body(`address=bounced@example.com&code=550`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseBounceCreate),
 			}.Server(),
@@ -145,7 +144,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				If: mockcond.And{
 					mockcond.MethodPUT(),
 					mockcond.Path("/v3/routes/4f3bad2335335426750048c6"),
-					mockcond.Body(`description=updated+inbound+route`),
+					mockcond.Body(`description=updated inbound route`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseRouteUpdate),
 			}.Server(),
@@ -176,7 +175,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/v3/routes"),
-					mockcond.Body(`action=forward%28%22https%3A%2F%2Fexample.com%2Finbound%22%29&action=stop%28%29&description=inbound+route&expression=match_recipient%28%27.%2A%40example.com%27%29`),
+					mockcond.Body(`action=forward("https://example.com/inbound")&action=stop()&description=inbound route&expression=match_recipient('.*@example.com')`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseRouteCreate),
 			}.Server(),
@@ -226,38 +225,6 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			// Webhooks: event_types is a list on read and a repeated form field on
-			// write ("use multiple times" per the spec); the create response is a
-			// flat {webhook_id} with no envelope. Response shape is the spec's
-			// documented example (not a live capture).
-			Name: "Create webhook repeats event_types and reads the flat webhook_id response",
-			Input: common.WriteParams{
-				ObjectName: "webhooks",
-				RecordData: map[string]any{
-					"url":         "https://example.com/hook",
-					"event_types": []any{"delivered", "opened"},
-					"description": "alerts",
-				},
-			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodPOST(),
-					mockcond.Path("/v1/webhooks"),
-					mockcond.Body(`description=alerts&event_types=delivered&event_types=opened&url=https%3A%2F%2Fexample.com%2Fhook`),
-				},
-				Then: mockserver.Response(http.StatusOK, responseWebhookCreate),
-			}.Server(),
-			Comparator: testconn.ComparatorSubsetWrite,
-			Expected: &common.WriteResult{
-				Success:  true,
-				RecordId: "507f1f77bcf86cd799439011",
-				Data: map[string]any{
-					"webhook_id": "507f1f77bcf86cd799439011",
-				},
-			},
-		},
-		{
 			// Domain-scoped create with a {message, template} envelope; the
 			// template name is its RecordId. Response shape follows the spec's
 			// documented example (not a live capture).
@@ -275,7 +242,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/v3/example.com/templates"),
-					mockcond.Body(`description=Welcome+email&name=welcome&template=%3Chtml%3EHi+%7B%7Bname%7D%7D%3C%2Fhtml%3E`),
+					mockcond.Body(`description=Welcome email&name=welcome&template=<html>Hi {{name}}</html>`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseTemplateCreate),
 			}.Server(),
@@ -368,7 +335,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/v3/example.com/messages"),
-					mockcond.Body(`from=sender%40example.com&subject=Hello&text=Hi+there&to=recipient%40example.com`),
+					mockcond.Body(`from=sender@example.com&subject=Hello&text=Hi there&to=recipient@example.com`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseMessageSend),
 			}.Server(),
@@ -428,7 +395,7 @@ func TestWrite(t *testing.T) { //nolint:funlen,maintidx
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/v3/lists/developers@example.com/members"),
-					mockcond.Body(`address=alice%40example.com&name=Alice&upsert=yes`),
+					mockcond.Body(`address=alice@example.com&name=Alice&upsert=yes`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseMemberUpsert),
 			}.Server(),

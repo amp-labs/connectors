@@ -55,7 +55,6 @@ const (
 )
 
 type writeSpec struct {
-	scope objectScope
 	style writeStyle
 	// canUpdate marks objects with an item-level update endpoint (or, for
 	// lists/members, POST upsert semantics). Suppression objects are
@@ -84,21 +83,21 @@ type writeSpec struct {
 //nolint:gochecknoglobals
 var objectWriteSpecs = map[string]writeSpec{
 	// Domain-scoped. Suppressions are create-only (no update endpoint exists).
-	"messages":     {scopeDomain, writeForm, false, "", "id"},
-	"bounces":      {scopeDomain, writeForm, false, "", "address"},
-	"complaints":   {scopeDomain, writeForm, false, "", "address"},
-	"unsubscribes": {scopeDomain, writeForm, false, "", "address"},
-	"whitelists":   {scopeDomain, writeForm, false, "", "value"},
-	"templates":    {scopeDomain, writeForm, true, "template", "name"},
+	"messages":     {writeForm, false, "", "id"},
+	"bounces":      {writeForm, false, "", "address"},
+	"complaints":   {writeForm, false, "", "address"},
+	"unsubscribes": {writeForm, false, "", "address"},
+	"whitelists":   {writeForm, false, "", "value"},
+	"templates":    {writeForm, true, "template", "name"},
 
 	// Account-scoped.
-	"account/templates": {scopeAccount, writeForm, true, "template", "name"},
-	"lists":             {scopeAccount, writeForm, true, "list", "address"},
-	"lists/members":     {scopeAccount, writeForm, true, "member", "address"},
-	"routes":            {scopeAccount, writeForm, true, "route", "id"},
-	"forwards":          {scopeAccount, writeQuery, true, "", "id"},
-	"webhooks":          {scopeAccount, writeForm, true, "", "webhook_id"},
-	"alerts/settings":   {scopeAccount, writeJSON, true, "", "id"},
+	"account/templates": {writeForm, true, "template", "name"},
+	"lists":             {writeForm, true, "list", "address"},
+	"lists/members":     {writeForm, true, "member", "address"},
+	"routes":            {writeForm, true, "route", "id"},
+	"forwards":          {writeQuery, true, "", "id"},
+	"webhooks":          {writeForm, true, "", "webhook_id"},
+	"alerts/settings":   {writeJSON, true, "", "id"},
 }
 
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
@@ -125,7 +124,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	// is already a map, and the reshaping below renames and removes keys.
 	record = adaptWriteRecord(params.ObjectName, maps.Clone(record))
 
-	url, method, err := c.buildWriteURL(params, spec, record)
+	url, method, err := c.buildWriteURL(params, record)
 	if err != nil {
 		return nil, err
 	}
@@ -254,18 +253,16 @@ func newWriteHTTPRequest(
 // identifier, which the connector API does not support, so updates reuse POST
 // with Mailgun's upsert flag (see buildMembersRecord).
 func (c *Connector) buildWriteURL(
-	params common.WriteParams, spec writeSpec, record common.Record,
+	params common.WriteParams, record common.Record,
 ) (*urlbuilder.URL, string, error) {
 	path, err := c.collectionPath(params.ObjectName)
 	if err != nil {
 		return nil, "", err
 	}
 
-	if spec.scope == scopeDomain {
-		path, err = c.substituteDomain(path)
-		if err != nil {
-			return nil, "", err
-		}
+	path, err = c.substituteDomain(path)
+	if err != nil {
+		return nil, "", err
 	}
 
 	if params.ObjectName == "lists/members" {
