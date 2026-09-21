@@ -875,10 +875,8 @@ type SubscriptionUpdateEvent interface {
 	UpdatedFields() ([]string, error)
 }
 
-// SubscriptionEventWithRecord is an optional interface implemented by providers
-// whose webhook payload already carries the full provider record inline (e.g.
-// ConnectWise ships it as the "Entity" field). When implemented, the record can
-// be field-mapped downstream without a separate GetRecordsByIds fetch.
+// SubscriptionEventWithRecord is implemented by events that carry a record inline.
+// The inline record may be incomplete, so callers may still prefer a provider fetch.
 type SubscriptionEventWithRecord interface {
 	SubscriptionEvent
 
@@ -888,6 +886,16 @@ type SubscriptionEventWithRecord interface {
 	// from the given fields. This lets callers map the inline record exactly like a
 	// fetched read, without a GetRecordsByIds call.
 	Record(fields []string) (ReadResultRow, error)
+}
+
+// SubscriptionEventWithCompleteRecord is implemented when the inline record is
+// authoritative and callers can skip the provider fetch.
+type SubscriptionEventWithCompleteRecord interface {
+	SubscriptionEventWithRecord
+
+	// InlineRecordIsComplete reports whether Record returns everything a fetch would, letting the
+	// caller skip GetRecordsByIds.
+	InlineRecordIsComplete() bool
 }
 
 // CollapsedSubscriptionEvent some providers send multiple events in a single webhook payload.

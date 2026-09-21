@@ -180,3 +180,101 @@ func TestOutboundMessageOmitsNullFields(t *testing.T) {
 		}
 	}
 }
+
+// TestOutboundMessageRecordNullFieldOmitted is the pair this feature exists for: the same Account
+// before and after Industry was set. Salesforce omits the element entirely when the value is null,
+// so Record has to report the requested field as nil rather than drop it — otherwise a consumer
+// sees the key disappear and reappear as the value changes.
+func TestOutboundMessageRecordNullFieldOmitted(t *testing.T) {
+	t.Parallel()
+
+	requested := []string{"Id", "Industry", "Name"}
+
+	omitted := parseFixtureEvents(t, fixtureNullFieldOmitted)
+	populated := parseFixtureEvents(t, fixtureFieldPopulated)
+
+	omittedRow := recordFor(t, omitted[0], requested)
+	populatedRow := recordFor(t, populated[0], requested)
+
+	industry, present := omittedRow.Fields["industry"]
+	if !present {
+		t.Fatal("industry missing from Fields; a null field must be reported, not dropped")
+	}
+
+	if industry != nil {
+		t.Errorf("industry = %v, want nil when the outbound message omits it", industry)
+	}
+
+	if got := populatedRow.Fields["industry"]; got != "Agriculture" {
+		t.Errorf("industry = %v, want %q once set", got, "Agriculture")
+	}
+
+	// Same key set either way, which is the property consumers depend on.
+	if len(omittedRow.Fields) != len(populatedRow.Fields) {
+		t.Errorf("field count differs: omitted=%d populated=%d", len(omittedRow.Fields), len(populatedRow.Fields))
+	}
+}
+
+// TestOutboundMessageRecordRawUnmodified pins that Raw is the record exactly as delivered. Null
+// fields stay absent from Raw, which is what lets a consumer tell a genuinely empty field from one
+// the outbound message never carried.
+func TestOutboundMessageRecordRawUnmodified(t *testing.T) {
+	t.Parallel()
+
+	events := parseFixtureEvents(t, fixtureNullFieldOmitted)
+	row := recordFor(t, events[0], []string{"Id", "Industry"})
+
+	if _, present := row.Raw["Industry"]; present {
+		t.Error("Industry present in Raw; Raw must stay exactly as Salesforce delivered it")
+	}
+
+	if _, present := row.Raw["attributes"]; present {
+		t.Error("attributes present in Raw; nothing may be synthesized into Raw")
+	}
+
+	for _, key := range []string{"Id", "CreatedDate", "LastModifiedDate"} {
+		if _, present := row.Raw[key]; !present {
+			t.Errorf("%s missing from Raw", key)
+		}
+	}
+}
+
+// TestOutboundMessageRecordShape covers the remaining ReadResultRow contract: Id populated and
+// Fields keyed lowercase, so the record maps downstream exactly like a fetched read.
+func TestOutboundMessageRecordShape(t *testing.T) {
+	t.Parallel()
+
+	events := parseFixtureEvents(t, fixtureCreateAccount)
+	row := recordFor(t, events[0], []string{"Id", "CreatedDate"})
+
+	if row.Id != "001xx000003DGb2AAG" {
+		t.Errorf("Id = %q, want the sObject's Id", row.Id)
+	}
+
+	for _, key := range []string{"id", "createddate"} {
+		if _, present := row.Fields[key]; !present {
+			t.Errorf("Fields missing lowercase key %q; got %v", key, row.Fields)
+		}
+	}
+}
+
+// recordFor asserts the event carries a complete inline record and returns it.
+func recordFor(t *testing.T, event common.SubscriptionEvent, fields []string) common.ReadResultRow {
+	t.Helper()
+
+	withRecord, ok := event.(common.SubscriptionEventWithCompleteRecord)
+	if !ok {
+		t.Fatalf("%T does not implement SubscriptionEventWithCompleteRecord", event)
+	}
+
+	if !withRecord.InlineRecordIsComplete() {
+		t.Fatal("InlineRecordIsComplete() = false, want true: outbound messages need no fetch")
+	}
+
+	row, err := withRecord.Record(fields)
+	if err != nil {
+		t.Fatalf("Record() error = %v", err)
+	}
+
+	return row
+}
