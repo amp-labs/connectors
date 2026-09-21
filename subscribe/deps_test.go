@@ -204,6 +204,18 @@ func (s stubCDCOptimizationResolver) GetCDCOptimizationConfig(
 	return s.cfg, s.err
 }
 
+// stubSalesforceFlowResolver returns canned selected fields, or a canned resolution failure.
+type stubSalesforceFlowResolver struct {
+	selectedFields map[common.ObjectName][]string
+	err            error
+}
+
+func (s stubSalesforceFlowResolver) GetSalesforceFlowConfig(
+	_ context.Context, _ *openapi.Installation, _ *openapi.Revision,
+) (deps.SalesforceFlowConfig, error) {
+	return deps.SalesforceFlowConfig{SelectedFields: s.selectedFields}, s.err
+}
+
 // TestGetSalesforceRequestWithCDCOptIn verifies the full resolver-seam happy path: the Salesforce
 // builder reads the CDC opt-in config and project app name through Dependencies and produces the
 // quota-optimization payload.
