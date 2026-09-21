@@ -149,7 +149,14 @@ func (c *Connector) String() string {
 	return c.Connector.String()
 }
 
-func (c *Connector) getReadUrl(objectName string) (*urlbuilder.URL, error) {
+// getCoreObjectReadUrl returns the Microsoft Graph URL used to read a core object.
+//
+// Core objects are resolved through the metadata schema registry. The object name
+// must correspond to a schema registered under common.ModuleRoot.
+//
+// Unlike virtual objects, core objects use their metadata-defined URL path for
+// read operations.
+func (c *Connector) getCoreObjectReadUrl(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Schemas.FindURLPath(common.ModuleRoot, objectName)
 	if err != nil {
 		return nil, err
@@ -158,33 +165,84 @@ func (c *Connector) getReadUrl(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 }
 
+// getReadUrl returns the Microsoft Graph URL used to read the specified object.
+//
+// Core objects are resolved through the metadata schema registry. Virtual mail
+// objects are mapped to the corresponding mail-folder messages endpoint because
+// they represent filtered views of the core message resource:
+//
+//   - virtualObjectDrafts maps to the Drafts folder.
+//   - virtualObjectSentMessages maps to the Sent Items folder.
+//   - virtualObjectInboxMessages maps to the Inbox folder.
+//
+// The core messages object itself is resolved through getCoreObjectReadUrl.
+// Microsoft Graph documents listing messages in a mail folder at:
+//
+// https://learn.microsoft.com/en-us/graph/api/mailfolder-list-messages
+func (c *Connector) getReadUrl(objectName string) (*urlbuilder.URL, error) {
+	switch objectName {
+	case virtualObjectDrafts:
+		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/mailFolders/drafts/messages")
+	case virtualObjectSentMessages:
+		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/mailFolders/sentitems/messages")
+	case virtualObjectInboxMessages:
+		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/mailFolders/inbox/messages")
+	case objectNameMessages:
+		// https://learn.microsoft.com/en-us/graph/api/user-list-messages
+		fallthrough
+	default:
+		return c.getCoreObjectReadUrl(objectName)
+	}
+}
+
+// getWriteUrl returns the Microsoft Graph URL used to write the specified object.
+//
+// Virtual objects do not necessarily have a one-to-one correspondence with a
+// writable Microsoft Graph resource:
+//
+//   - Drafts are created through /me/messages.
+//   - Inbox messages cannot be written to; sending a message uses /me/sendMail.
+//   - Sent messages are read-only through this connector.
+//   - The core messages object is intentionally not writable. Callers must use
+//     the appropriate virtual object instead.
+//
+// For all other core objects, the read and write paths are identical and the
+// path is resolved through the metadata schema registry.
 func (c *Connector) getWriteUrl(objectName string) (*urlbuilder.URL, error) {
 	switch objectName {
 	case virtualObjectDrafts:
-		// https://learn.microsoft.com/en-us/graph/api/user-list-messages
-		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/messages")
+		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/mailFolders/drafts/messages")
 	case virtualObjectSentMessages:
+		return nil, common.ErrOperationNotSupportedForObject
+	case virtualObjectInboxMessages:
 		// https://learn.microsoft.com/en-us/graph/api/user-sendmail
 		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/sendMail")
 	case objectNameMessages:
-		// Writing directly to messages is hidden.
-		// Customers must use virtual objects: drafts and sentMessages.
-		return nil, common.ErrObjectNotSupported
+		return nil, common.ErrOperationNotSupportedForObject
+	default:
+		return c.getCoreObjectReadUrl(objectName)
 	}
-
-	return c.getReadUrl(objectName)
 }
 
+// getDeleteUrl returns the Microsoft Graph URL used to delete the specified object.
+//
+// Drafts are deleted through the general messages' endpoint.
+// Sent messages, inbox messages, and the core messages object are not deletable through this
+// connector and return common.ErrObjectNotSupported.
+//
+// For all other core objects, the read and delete paths are identical and the
+// path is resolved through the metadata schema registry.
 func (c *Connector) getDeleteUrl(objectName string) (*urlbuilder.URL, error) {
 	switch objectName {
 	case virtualObjectDrafts:
-		// https://learn.microsoft.com/en-us/graph/api/user-list-messages
 		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/messages")
 	case virtualObjectSentMessages:
-		return nil, common.ErrObjectNotSupported
+		return nil, common.ErrOperationNotSupportedForObject
+	case virtualObjectInboxMessages:
+		return nil, common.ErrOperationNotSupportedForObject
 	case objectNameMessages:
-		return nil, common.ErrObjectNotSupported
+		return nil, common.ErrOperationNotSupportedForObject
+	default:
+		return c.getCoreObjectReadUrl(objectName)
 	}
-
-	return c.getReadUrl(objectName)
 }

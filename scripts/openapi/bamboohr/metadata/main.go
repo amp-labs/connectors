@@ -24,10 +24,10 @@ var (
 )
 
 type manualObject struct {
-	ObjectName  string                           `json:"objectName"`
-	DisplayName string                           `json:"displayName"`
-	Path        string                           `json:"path"`
-	ResponseKey string                           `json:"responseKey"`
+	ObjectName  string                          `json:"objectName"`
+	DisplayName string                          `json:"displayName"`
+	Path        string                          `json:"path"`
+	ResponseKey string                          `json:"responseKey"`
 	Fields      staticschema.FieldMetadataMapV2 `json:"fields"`
 }
 

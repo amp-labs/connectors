@@ -155,7 +155,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			// The write operation is supported by drafts and sentMessages virtual fields.
 			Input:        common.WriteParams{ObjectName: "me/messages", RecordData: "dummy"},
 			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrObjectNotSupported},
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
 			Name:  "Create drafts via POST",
@@ -164,7 +164,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/v1.0/me/messages"),
+					mockcond.Path("/v1.0/me/mailFolders/drafts/messages"),
 				},
 				Then: mockserver.ResponseString(http.StatusOK, `{"subject": "hello", "id": "753"}`),
 			}.Server(),
@@ -181,7 +181,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPATCH(),
-					mockcond.Path("/v1.0/me/messages/723"),
+					mockcond.Path("/v1.0/me/mailFolders/drafts/messages/723"),
 				},
 				Then: mockserver.ResponseString(http.StatusOK, `{"subject": "hello", "id": "753"}`),
 			}.Server(),
@@ -194,7 +194,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		{
 			Name: "Send message",
 			Input: common.WriteParams{
-				ObjectName: "AMPERSAND-sentMessages",
+				ObjectName: "AMPERSAND-messages",
 				RecordData: map[string]string{"subject": "Greetings!"},
 			},
 			Server: mockserver.Conditional{
@@ -211,8 +211,8 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name:         "Updating sent message is not valid",
-			Input:        common.WriteParams{ObjectName: "AMPERSAND-sentMessages", RecordData: "dummy", RecordId: "723"},
+			Name:         "Updating virtual messages is not valid",
+			Input:        common.WriteParams{ObjectName: "AMPERSAND-messages", RecordData: "dummy", RecordId: "723"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},

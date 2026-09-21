@@ -1,26 +1,32 @@
 {
-  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/messages",
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/mailFolders('drafts')/messages",
   "value": [
     {
-      "@odata.etag": "W/\"CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAGF7aaH\"",
-      "id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAACsvo1TAAB8hj1Rtd60SKTngNs3if9RAAGGBUvXAAA=",
-      "createdDateTime": "2026-09-12T00:39:17Z",
-      "lastModifiedDateTime": "2026-09-12T00:39:17Z",
+      "@odata.etag": "W/\"CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAGMMnc2\"",
+      "id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAACsvo1TAAB8hj1Rtd60SKTngNs3if9RAAGMTIWnAAA=",
+      "createdDateTime": "2026-09-21T19:43:15Z",
+      "lastModifiedDateTime": "2026-09-21T19:43:15Z",
+      "changeKey": "CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAGMMnc2",
       "categories": [],
-      "receivedDateTime": "2026-09-12T00:39:17Z",
-      "sentDateTime": "2026-09-12T00:39:17Z",
+      "receivedDateTime": "2026-09-21T19:43:15Z",
+      "sentDateTime": "2026-09-21T19:43:15Z",
       "hasAttachments": false,
+      "internetMessageId": "<DM6PR11MB44597FE015E5821F315B6973D5842@DM6PR11MB4459.namprd11.prod.outlook.com>",
       "subject": "hello",
-      "bodyPreview": "main content goes here",
+      "bodyPreview": "main content goes here (via mailfolder)",
       "importance": "normal",
+      "parentFolderId": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQAuAAAAAABeMJSlO8qLToz2i2IQ1wsqAQB8hj1Rtd60SKTngNs3if9RAACsvo1TAAA=",
+      "conversationId": "AAQkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQAQAOGG0LpYweNDjDfFWZPpz5U=",
+      "conversationIndex": "AQHdSgFx4YbQuljB40OMN8VZk+nPlQ==",
       "isDeliveryReceiptRequested": false,
       "isReadReceiptRequested": false,
       "isRead": true,
       "isDraft": true,
+      "webLink": "https://outlook.office365.com/owa/?ItemID=AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAACsvo1TAAB8hj1Rtd60SKTngNs3if9RAAGMTIWnAAA%3D&exvsurl=1&viewmodel=ReadMessageItem",
       "inferenceClassification": "focused",
       "body": {
         "contentType": "text",
-        "content": "main content goes here"
+        "content": "main content goes here (via mailfolder)"
       },
       "sender": {
         "emailAddress": {
@@ -50,5 +56,5 @@
       }
     }
   ],
-  "@odata.nextLink": "https://graph.microsoft.com/v1.0/me/messages?%24filter=lastModifiedDateTime+ge+2024-09-19T12%3a30%3a45.000Z+and+isDraft+eq+true&%24top=1&%24skip=1"
+  "@odata.nextLink": "https://graph.microsoft.com/v1.0/me/mailFolders('drafts')/messages?%24filter=lastModifiedDateTime+gt+2026-09-21T19%3a00%3a00Z&%24top=1&%24skip=1"
 }

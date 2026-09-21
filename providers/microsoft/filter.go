@@ -153,7 +153,6 @@ var incrementalObjects = map[string]string{
 	"me/joinedTeams/microsoft.graph.getAllMessages()":   "lastModifiedDateTime",
 	"me/managedAppRegistrations":                        "createdDateTime",
 	"me/memberOf/microsoft.graph.group":                 "createdDateTime",
-	"me/messages":                                       "lastModifiedDateTime",
 	"me/messages/microsoft.graph.delta()":               "lastModifiedDateTime",
 	"me/onenote/operations":                             "createdDateTime",
 	"me/onlineMeetings":                                 "creationDateTime",
@@ -283,6 +282,12 @@ var incrementalObjects = map[string]string{
 	"windowsHelloForBusinessMethods":                         "createdDateTime",
 	"windowsInformationProtectionPolicies":                   "lastModifiedDateTime",
 	"workforceIntegrations":                                  "lastModifiedDateTime",
+
+	// Objects of Messages domain (core+virtual):
+	objectNameMessages:         "lastModifiedDateTime",
+	virtualObjectDrafts:        "lastModifiedDateTime",
+	virtualObjectSentMessages:  "lastModifiedDateTime",
+	virtualObjectInboxMessages: "lastModifiedDateTime",
 }
 
 // https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
