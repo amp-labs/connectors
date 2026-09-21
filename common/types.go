@@ -828,6 +828,7 @@ const (
 	SubscriptionEventTypeUpdate            SubscriptionEventType = "update"
 	SubscriptionEventTypeDelete            SubscriptionEventType = "delete"
 	SubscriptionEventTypeAssociationUpdate SubscriptionEventType = "associationUpdate"
+	SubscriptionEventTypeMerge             SubscriptionEventType = "merge"
 	SubscriptionEventTypeOther             SubscriptionEventType = "other"
 )
 
@@ -842,6 +843,7 @@ type SubscriptionEventPreLoadData struct {
 // and should be considered during implementation:
 //   - SubscriptionEvent: core interface for all subscription-related events
 //   - SubscriptionUpdateEvent: specialization for update/change events
+//   - SubscriptionMergeEvent: specialization for record-merge events
 //   - CollapsedSubscriptionEvent: for payloads containing multiple events
 //
 // A concrete provider event type may implement one or more of these
@@ -873,6 +875,24 @@ type SubscriptionUpdateEvent interface {
 
 	// UpdatedFields returns the fields that were updated in the event.
 	UpdatedFields() ([]string, error)
+}
+
+// SubscriptionMergeEvent is an optional interface implemented by providers whose
+// webhook payloads describe a record merge (e.g. HubSpot's contact.merge). A merge
+// consolidates one or more secondary records into a surviving record; some providers
+// (HubSpot) may even mint a brand-new record id for the survivor. RecordId() on a
+// merge event must return the surviving record's id so downstream record fetches
+// target the record that still exists.
+type SubscriptionMergeEvent interface {
+	SubscriptionEvent
+
+	// PrimaryRecordId returns the id of the record that survives the merge. When the
+	// provider creates a new record as the merge result, this is the new record's id.
+	PrimaryRecordId() (string, error)
+
+	// MergedRecordIds returns the ids of the secondary records that were consolidated
+	// into the surviving record and no longer exist on the provider.
+	MergedRecordIds() ([]string, error)
 }
 
 // SubscriptionEventWithRecord is an optional interface implemented by providers
