@@ -151,7 +151,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		{
 			// thresholds/hits is single-shot; Since sieves on created_at
 			// connector-side like the other timestamped objects.
-			Name: "Threshold hits filters by created_at connector-side",
+			Name: "Threshold hits filters by updated_at connector-side",
 			Input: common.ReadParams{
 				ObjectName: "thresholds/hits",
 				Fields:     connectors.Fields("name"),
@@ -167,9 +167,12 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 1,
+				// h0 was created before Since but re-triggered after it, so an
+				// updated_at cursor must return it; a created_at cursor would not.
+				Rows: 2,
 				Data: []common.ReadResultRow{
 					{Id: "h1", Fields: map[string]any{"name": "bounce-rate"}, Raw: map[string]any{"metric": "hard_bounce_rate"}},
+					{Id: "h0", Fields: map[string]any{"name": "complaint-rate"}, Raw: map[string]any{"metric": "complaint_rate"}},
 				},
 				NextPage: "",
 				Done:     true,

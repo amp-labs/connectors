@@ -127,7 +127,7 @@ var objectReadSpecs = map[string]objectSpec{
 	"ip_whitelist":                      {paginationNone, scopeAccount, ""},
 	"thresholds/limits":                 {paginationNone, scopeAccount, "updated_at"},
 	"thresholds/alerts/send":            {paginationNone, scopeAccount, "updated_at"},
-	"thresholds/hits":                   {paginationNone, scopeAccount, "created_at"},
+	"thresholds/hits":                   {paginationNone, scopeAccount, "updated_at"},
 	// Alert settings records sit under "events" beside the webhook/slack channel
 	// config in the same envelope; responseKey selects the array.
 	"alerts/settings": {paginationNone, scopeAccount, ""},
