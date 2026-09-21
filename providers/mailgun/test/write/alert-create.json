@@ -1,0 +1,11 @@
+{
+  "id": "a1",
+  "event_type": "ip_listed",
+  "channel": "email",
+  "settings": {
+    "emails": [
+      "ops@example.com"
+    ]
+  },
+  "disabled_at": null
+}
