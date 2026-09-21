@@ -18,6 +18,6 @@ func someFunction() {
 
 func goodExample() {
 	// These would be the correct approaches (not tested here as they require imports)
-	// future.Go(func() (int, error) { return 42, nil })
-	// simultaneously.Do(1, func(ctx context.Context) error { return nil })
+	// future.GoContext(ctx, func(ctx context.Context) (int, error) { return 42, nil })
+	// simultaneously.DoCtx(ctx, 1, func(ctx context.Context) error { return nil })
 }

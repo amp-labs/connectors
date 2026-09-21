@@ -4,8 +4,8 @@ import (
 	"context"
 	"sync"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
 /*

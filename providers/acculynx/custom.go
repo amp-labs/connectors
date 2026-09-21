@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/spyzhov/ajson"
 )
 

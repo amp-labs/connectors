@@ -7,10 +7,10 @@ import (
 	"maps"
 	"strings"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/graphql"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
 // Jobber webhook payloads carry only record IDs, so subscription processing

@@ -13,8 +13,7 @@ func TestNoGoroutine(t *testing.T) {
 	// Create the linter
 	linter, err := nogoroutine.New(nogoroutine.Settings{
 		ExcludePaths: []string{
-			"internal/future",
-			"internal/simultaneously",
+			"internal/excluded",
 		},
 	})
 	if err != nil {

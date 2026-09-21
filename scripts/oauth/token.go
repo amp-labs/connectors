@@ -18,10 +18,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amp-labs/amp-common/future"
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/scanning"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
-	"github.com/amp-labs/connectors/internal/future"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/scripts/utils/credutils"
 	"golang.org/x/oauth2"

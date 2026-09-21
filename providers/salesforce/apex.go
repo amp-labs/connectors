@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
 

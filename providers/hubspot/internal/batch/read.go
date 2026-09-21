@@ -6,8 +6,8 @@ import (
 	"slices"
 	"time"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
 // ReadParams describes a batch read request.
