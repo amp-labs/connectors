@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "domain": "pooled.example.com",
+      "pool": "high-volume"
+    }
+  ],
+  "total_items": 2,
+  "paging": {
+    "Next": "https://api.mailgun.net/v1/dynamic_pools/domains?page=abc",
+    "Previous": "",
+    "First": "https://api.mailgun.net/v1/dynamic_pools/domains",
+    "Last": ""
+  }
+}

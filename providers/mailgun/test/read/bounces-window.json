@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "address": "old@bar.com",
+      "code": "550",
+      "error": "No such mailbox",
+      "created_at": "Thu, 11 Dec 2025 01:49:40 UTC"
+    },
+    {
+      "address": "new@bar.com",
+      "code": "550",
+      "error": "No such mailbox",
+      "created_at": "Mon, 03 Aug 2026 10:00:00 +0000"
+    }
+  ],
+  "paging": {
+    "previous": "https://api.mailgun.net/v3/example.com/bounces?page=previous&limit=100",
+    "first": "https://api.mailgun.net/v3/example.com/bounces?limit=100",
+    "next": "https://api.mailgun.net/v3/example.com/bounces?page=next&address=new%40bar.com&limit=100",
+    "last": "https://api.mailgun.net/v3/example.com/bounces?page=last&limit=100"
+  }
+}
