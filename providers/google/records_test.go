@@ -236,10 +236,7 @@ func TestCalendarGetRecordsByIds(t *testing.T) { //nolint:funlen
 	eventsPage1 := testutils.DataFromFile(t, "calendar/records-by-ids/events-page-1.json")
 	eventsPage2 := testutils.DataFromFile(t, "calendar/records-by-ids/events-page-2.json")
 
-	const (
-		eventsPath = "/calendar/v3/calendars/primary/events"
-		updatedMin = "2026-06-17T00:00:00.000Z"
-	)
+	const updatedMin = "2026-06-17T00:00:00.000Z"
 
 	tests := []struct {
 		name          string
