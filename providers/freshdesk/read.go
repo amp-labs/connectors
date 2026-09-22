@@ -21,13 +21,10 @@ func (conn *Connector) Read(ctx context.Context, config common.ReadParams) (*com
 		return nil, err
 	}
 
-	// we're using the link response header to construct the next page url.
-	linkHeader := resp.Headers.Get("link")
-
 	return common.ParseResult(
 		resp,
-		common.ExtractRecordsFromPath(""), // we're reading the current node.
-		nextRecordsURL(linkHeader),
+		extractRecords,
+		nextRecordsURL(resp),
 		common.GetMarshaledData,
 		config.Fields,
 	)

@@ -1,0 +1,50 @@
+[
+  {
+    "id": 101,
+    "name": "subject",
+    "label": "Subject",
+    "type": "default_subject",
+    "default": true,
+    "required_for_agents": true,
+    "choices": null
+  },
+  {
+    "id": 102,
+    "name": "status",
+    "label": "Status",
+    "type": "default_status",
+    "default": true,
+    "required_for_agents": true,
+    "choices": {
+      "2": ["Open", "Open"],
+      "3": ["Pending", "Awaiting your Reply"]
+    }
+  },
+  {
+    "id": 103,
+    "name": "priority",
+    "label": "Priority",
+    "type": "default_priority",
+    "default": true,
+    "required_for_agents": false,
+    "choices": { "Low": 1, "High": 3 }
+  },
+  {
+    "id": 104,
+    "name": "ticket_type",
+    "label": "Type",
+    "type": "default_ticket_type",
+    "default": true,
+    "required_for_agents": false,
+    "choices": ["Question", "Incident"]
+  },
+  {
+    "id": 105,
+    "name": "cf_reference_number",
+    "label": "Reference number",
+    "type": "custom_number",
+    "default": false,
+    "required_for_agents": false,
+    "choices": null
+  }
+]
