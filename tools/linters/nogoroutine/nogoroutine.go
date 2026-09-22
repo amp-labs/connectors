@@ -14,7 +14,7 @@ func init() {
 
 // Settings for the nogoroutine linter.
 type Settings struct {
-	// ExcludePaths are file path patterns to exclude from checking (e.g., "internal/future", "internal/simultaneously")
+	// ExcludePaths are file path patterns to exclude from checking (e.g., "internal/somepkg")
 	ExcludePaths []string `json:"exclude-paths"`
 }
 
@@ -38,7 +38,7 @@ func (n *NoGoroutine) BuildAnalyzers() ([]*analysis.Analyzer, error) {
 	return []*analysis.Analyzer{
 		{
 			Name: "nogoroutine",
-			Doc:  "detects bare 'go' keyword usage - use future.Go() or simultaneously.Do() instead",
+			Doc:  "detects bare 'go' keyword usage - use future.GoContext() or simultaneously.DoCtx() instead",
 			Run:  n.run,
 		},
 	}, nil
@@ -64,7 +64,7 @@ func (n *NoGoroutine) run(pass *analysis.Pass) (any, error) {
 				pass.Report(analysis.Diagnostic{
 					Pos:     goStmt.Pos(),
 					End:     goStmt.End(),
-					Message: "Direct use of 'go' keyword is forbidden. Use future.Go() or simultaneously.Do() instead to ensure panic recovery and prevent unbounded goroutine spawning.",
+					Message: "Direct use of 'go' keyword is forbidden. Use future.GoContext() or simultaneously.DoCtx() from github.com/amp-labs/amp-common instead to ensure panic recovery and prevent unbounded goroutine spawning.",
 				})
 			}
 			return true

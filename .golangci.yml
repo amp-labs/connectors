@@ -85,11 +85,11 @@ linters:
         settings: {}
       nogoroutine:
         type: module
-        description: Detects bare 'go' keyword usage - use future.Go() or simultaneously.Do() instead
-        settings:
-          exclude-paths:
-            - internal/future
-            - internal/simultaneously
+        description: Detects bare 'go' keyword usage - use future.GoContext() or simultaneously.DoCtx() instead
+        # The concurrency primitives now live in github.com/amp-labs/amp-common, so there is
+        # nothing in this repo that needs to spawn a bare goroutine. If that changes, add the
+        # path here under `exclude-paths`.
+        settings: {}
   exclusions:
     generated: lax
     presets:

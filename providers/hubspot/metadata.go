@@ -9,12 +9,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/core"
 	"github.com/amp-labs/connectors/providers/hubspot/internal/metadata"
 )
