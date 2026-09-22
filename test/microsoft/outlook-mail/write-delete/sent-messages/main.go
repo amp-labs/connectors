@@ -84,7 +84,7 @@ func main() {
 	conn := connTest.GetMicrosoftGraphConnector(ctx)
 
 	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "AMPERSAND-sentMessages",
+		ObjectName: "AMPERSAND-messages",
 		RecordData: payload,
 	})
 	if err != nil {

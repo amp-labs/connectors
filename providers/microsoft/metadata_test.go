@@ -17,7 +17,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Name: "Successful metadata for multiple objects",
 			Input: []string{
 				"users", "groups", "me/events", "me/messages",
-				"AMPERSAND-sentMessages", "AMPERSAND-drafts",
+				"AMPERSAND-sentMessages", "AMPERSAND-drafts", "AMPERSAND-messages",
 			},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
@@ -101,6 +101,19 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 					"AMPERSAND-sentMessages": {
 						DisplayName: "Sent Messages",
+						Fields: map[string]common.FieldMetadata{
+							"from": {
+								DisplayName: "from",
+								ValueType:   "other",
+							},
+							"body": {
+								DisplayName: "body",
+								ValueType:   "other",
+							},
+						},
+					},
+					"AMPERSAND-messages": {
+						DisplayName: "Messages",
 						Fields: map[string]common.FieldMetadata{
 							"from": {
 								DisplayName: "from",

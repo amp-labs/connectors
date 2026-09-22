@@ -19,9 +19,10 @@ const (
 	DefaultPageSize = "100"
 
 	// https://learn.microsoft.com/en-us/graph/api/user-list-messages
-	objectNameMessages        = "me/messages"
-	virtualObjectDrafts       = "AMPERSAND-drafts"       // based on "/me/messages"
-	virtualObjectSentMessages = "AMPERSAND-sentMessages" // based on "/me/messages"
+	objectNameMessages         = "me/messages"
+	virtualObjectDrafts        = "AMPERSAND-drafts"       // based on "/me/messages"
+	virtualObjectSentMessages  = "AMPERSAND-sentMessages" // based on "/me/messages"
+	virtualObjectInboxMessages = "AMPERSAND-messages"     // based on "/me/messages"
 )
 
 func (c *Connector) ListObjectMetadata(
@@ -37,7 +38,7 @@ func (c *Connector) ListObjectMetadata(
 	// Virtual message objects reuse the metadata of the messages object and override its display name.
 	for _, name := range objects {
 		nativeObjectName := name
-		if name == virtualObjectDrafts || name == virtualObjectSentMessages {
+		if name == virtualObjectDrafts || name == virtualObjectSentMessages || name == virtualObjectInboxMessages {
 			nativeObjectName = objectNameMessages
 		}
 
@@ -48,6 +49,8 @@ func (c *Connector) ListObjectMetadata(
 				objectMetadata.DisplayName = "Drafts"
 			case virtualObjectSentMessages:
 				objectMetadata.DisplayName = "Sent Messages"
+			case virtualObjectInboxMessages:
+				objectMetadata.DisplayName = "Messages"
 			}
 
 			result.Result[name] = *objectMetadata
@@ -86,32 +89,20 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	name := params.ObjectName
-	if params.ObjectName == virtualObjectDrafts || params.ObjectName == virtualObjectSentMessages {
-		name = objectNameMessages
-	}
-
-	url, err := c.getReadUrl(name)
+	url, err := c.getReadUrl(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
-	filter := filterQuery{}.
-		Since(name, params.Since).
-		Until(name, params.Until)
+	filterParam := filterQuery{}.
+		Since(params.ObjectName, params.Since).
+		Until(params.ObjectName, params.Until).
+		String()
 
-	switch params.ObjectName {
-	case virtualObjectDrafts:
-		filter = filter.Select("isDraft eq true")
-	case virtualObjectSentMessages:
-		filter = filter.Select("isDraft eq false")
-	}
-
-	filterParam := filter.String()
 	if filterParam != "" {
 		url.WithQueryParam("$filter", filterParam)
 
-		if needsAdvancedQuery(name) {
+		if needsAdvancedQuery(params.ObjectName) {
 			// $count=true is required alongside ConsistencyLevel: eventual to filter
 			// directory objects on createdDateTime.
 			url.WithQueryParam("$count", "true")
@@ -152,7 +143,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	if params.IsUpdate() {
 		method = http.MethodPatch
 
-		if params.ObjectName == virtualObjectSentMessages {
+		if params.ObjectName == virtualObjectInboxMessages {
 			// Cannot update sent message. This feature only makes sense for drafts.
 			return nil, common.ErrOperationNotSupportedForObject
 		}
@@ -161,7 +152,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	payload := params.RecordData
-	if params.ObjectName == virtualObjectSentMessages {
+	if params.ObjectName == virtualObjectInboxMessages {
 		record, err := params.GetRecord()
 		if err != nil {
 			return nil, err

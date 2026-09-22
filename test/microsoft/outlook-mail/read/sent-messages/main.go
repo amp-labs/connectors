@@ -26,12 +26,12 @@ func main() {
 	// https://learn.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "AMPERSAND-sentMessages",
-		Fields:     connectors.Fields("subject", "from", "toRecipients", "body"),
+		Fields:     connectors.Fields("subject", "from"),
 	})
 	if err != nil {
 		utils.Fail("error reading from connector", "error", err)
 	}
 
 	fmt.Println("Reading...")
-	utils.DumpJSON(res, os.Stdout)
+	utils.PrintReadResultWithoutRaw(res, os.Stdout)
 }
