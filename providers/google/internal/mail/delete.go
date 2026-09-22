@@ -9,7 +9,7 @@ import (
 )
 
 func (a *Adapter) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	url, err := a.getWriteURL(params.ObjectName)
+	url, err := a.getDeleteUrl(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

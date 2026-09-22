@@ -1,4 +1,4 @@
-package google
+package mail
 
 import (
 	"net/http"
@@ -8,13 +8,10 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
-	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-func TestCalendarDelete(t *testing.T) { // nolint:funlen,cyclop
+func TestMailDelete(t *testing.T) { // nolint:funlen,cyclop
 	t.Parallel()
-
-	errorNotFound := testutils.DataFromFile(t, "calendar/delete/calendarList/not-found.json")
 
 	tests := []testconn.TestCaseDelete{
 		{
@@ -24,42 +21,25 @@ func TestCalendarDelete(t *testing.T) { // nolint:funlen,cyclop
 		},
 		{
 			Name:         "Write object and its ID must be included",
-			Input:        common.DeleteParams{ObjectName: "calendarList"},
+			Input:        common.DeleteParams{ObjectName: "drafts"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
 		{
 			Name: "Successful delete",
 			Input: common.DeleteParams{
-				ObjectName: "calendarList",
-				RecordId:   "en.italian#holiday@group.v.calendar.google.com",
+				ObjectName: "drafts",
+				RecordId:   "r5151461288000502025",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodDELETE(),
-					mockcond.Path("/calendar/v3/users/me/calendarList/en.italian#holiday@group.v.calendar.google.com"), // nolint:lll
+					mockcond.Path("/gmail/v1/users/me/drafts/r5151461288000502025"),
 				},
 				Then: mockserver.Response(http.StatusNoContent),
 			}.Server(),
 			Expected: &common.DeleteResult{Success: true},
-		},
-		{
-			Name: "Error on deleting missing record",
-			Input: common.DeleteParams{
-				ObjectName: "calendarList",
-				RecordId:   "en.italian#holiday@group.v.calendar.google.com",
-			},
-			Server: mockserver.Fixed{
-				Setup:  mockserver.ContentJSON(),
-				Always: mockserver.Response(http.StatusNotFound, errorNotFound),
-			}.Server(),
-			ExpectedErrs: []error{
-				common.ErrBadRequest,
-				testutils.StringError(
-					"Not Found",
-				),
-			},
 		},
 	}
 
@@ -69,7 +49,7 @@ func TestCalendarDelete(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableDeleter, error) {
-				return constructTestCalendarConnector(tt.Server.URL)
+				return constructTestAdapter(tt.Server)
 			})
 		})
 	}
