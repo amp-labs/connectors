@@ -16,8 +16,14 @@
     "default": true,
     "required_for_agents": true,
     "choices": {
-      "2": ["Open", "Open"],
-      "3": ["Pending", "Awaiting your Reply"]
+      "2": [
+        "Open",
+        "Open"
+      ],
+      "3": [
+        "Pending",
+        "Awaiting your Reply"
+      ]
     }
   },
   {
@@ -27,7 +33,10 @@
     "type": "default_priority",
     "default": true,
     "required_for_agents": false,
-    "choices": { "Low": 1, "High": 3 }
+    "choices": {
+      "Low": 1,
+      "High": 3
+    }
   },
   {
     "id": 104,
@@ -36,7 +45,10 @@
     "type": "default_ticket_type",
     "default": true,
     "required_for_agents": false,
-    "choices": ["Question", "Incident"]
+    "choices": [
+      "Question",
+      "Incident"
+    ]
   },
   {
     "id": 105,
@@ -45,6 +57,15 @@
     "type": "custom_number",
     "default": false,
     "required_for_agents": false,
+    "choices": null
+  },
+  {
+    "id": 106,
+    "name": "description",
+    "label": "Description",
+    "type": "default_description",
+    "default": true,
+    "required_for_agents": true,
     "choices": null
   }
 ]

@@ -191,6 +191,15 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 									{Value: "1", DisplayValue: "Low"},
 								},
 							},
+							// Declared but absent from the listing payload, described all the same.
+							"description": {
+								DisplayName:  "Description",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "default_description",
+								IsCustom:     new(false),
+								IsRequired:   new(true),
+								FieldId:      new("106"),
+							},
 							// Declared as ticket_type, which is the name of the field it fills.
 							"type": {
 								DisplayName:  "Type",

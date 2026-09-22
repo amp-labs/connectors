@@ -59,11 +59,21 @@ var declaredFieldTypes = map[string]common.ValueType{ //nolint:gochecknoglobals
 }
 
 // declaredFieldAliases maps a declared field onto the field that records carry.
-// Nothing in a declaration says which field it fills, so each entry is a guess worth making only
-// when it adds a type: ticket_type fills "type" and declares its choices. Others, such as "agent"
-// filling "responder_id", would add nothing to the sampled value.
+// Freshdesk names several declarations after the concept rather than the field holding it, and
+// says nothing about which field that is. Since a declaration is what describes an object here,
+// an unmapped one would be reported under a name no record carries, hence this table.
 var declaredFieldAliases = map[string]string{ //nolint:gochecknoglobals
+	// Tickets.
+	"agent":       "responder_id",
+	"company":     "company_id",
+	"group":       "group_id",
+	"product":     "product_id",
+	"requester":   "requester_id",
 	"ticket_type": "type",
+	// Contacts.
+	"company_name": "company_id",
+	"list_ids":     "lists",
+	"tag_names":    "tags",
 }
 
 // fieldDefinition is a field as Freshdesk declares it.
@@ -80,10 +90,11 @@ type fieldDefinition struct {
 // overlayDeclaredFields applies what Freshdesk declares about an object to the given fields.
 // A declaration carries the type, label and choices that the sampled values cannot show.
 //
-// It is applied only where the declaration names a field the records carry, whether directly or
-// through declaredFieldAliases. A declaration naming no such field is left out, the sampled data
-// speaking for it instead. Custom fields are skipped as well: a record carries those inside
-// custom_fields, not at its top level.
+// Where Freshdesk declares an object, its declarations describe it and the sampled records cover
+// what they leave out, id and the timestamps among them. A declaration therefore contributes its
+// field whether or not a record carried it, under the name records use for it, and its type wins
+// over the one a value implied. Custom fields are the exception, skipped because a record carries
+// those inside custom_fields rather than at its top level.
 func (conn *Connector) overlayDeclaredFields(
 	ctx context.Context, object string, fields common.FieldsMetadata,
 ) error {
@@ -108,11 +119,17 @@ func (conn *Connector) overlayDeclaredFields(
 	}
 
 	for _, definition := range *definitions {
+		if !definition.Default {
+			continue
+		}
+
 		name := definition.payloadName()
 
 		field, sampled := fields[name]
-		if !sampled || !definition.Default {
-			continue
+		if !sampled {
+			// Declared, yet absent from the sampled page. Its type rests on the declaration
+			// alone, so one worded in a way we cannot read leaves the field untyped.
+			field = common.FieldMetadata{DisplayName: name, ValueType: common.ValueTypeOther}
 		}
 
 		fields[name] = definition.refine(field)
