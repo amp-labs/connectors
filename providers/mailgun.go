@@ -37,6 +37,7 @@ func init() {
 				Upsert: false,
 				Delete: false,
 			},
+			Delete:    true,
 			Proxy:     true,
 			Read:      true,
 			Subscribe: false,
