@@ -46,7 +46,7 @@ func (c *Connector) GetRecordsByIds(
 	recordIds []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	objectName = strings.ToLower(objectName)
 
 	if !batchReadableObjects.Has(objectName) {
@@ -55,7 +55,7 @@ func (c *Connector) GetRecordsByIds(
 	}
 
 	if len(recordIds) == 0 {
-		return []common.ReadResultRow{}, nil
+		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
 	fieldSet := datautils.NewSetFromList(fields)
@@ -102,7 +102,7 @@ func (c *Connector) GetRecordsByIds(
 		extractJobContacts(out)
 	}
 
-	return out, nil
+	return common.NewBatchReadResult(out), nil
 }
 
 // isNotFound reports whether err represents a 404 from AccuLynx. The base JSON

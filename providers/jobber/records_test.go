@@ -38,8 +38,10 @@ func TestGetRecordsByIds_EmptyIds(t *testing.T) {
 
 	conn := &Connector{}
 
-	rows, err := conn.GetRecordsByIds(context.Background(), "clients", nil, nil, nil)
+	batchRes, err := conn.GetRecordsByIds(context.Background(), "clients", nil, nil, nil)
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 0)
 }
 
@@ -70,9 +72,11 @@ func TestGetRecordsByIds_FetchesAndFiltersFields(t *testing.T) {
 
 	// The framework lower-cases requested field names; matching must be
 	// case-insensitive against Jobber's camelCase keys.
-	rows, err := conn.GetRecordsByIds(context.Background(),
+	batchRes, err := conn.GetRecordsByIds(context.Background(),
 		"clients", []string{"Z2lkOi8vSm9iYmVyL0NsaWVudC8x"}, []string{"firstname"}, nil)
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 
 	assert.Equal(t, rows[0].Id, "Z2lkOi8vSm9iYmVyL0NsaWVudC8x")

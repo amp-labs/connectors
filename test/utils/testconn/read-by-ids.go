@@ -32,5 +32,13 @@ func (r TestCaseGetRecordsByIds) Run(t *testing.T, builder ConnectorBuilder[Test
 		input.ObjectName, input.RecordIds,
 		input.Fields, input.Associations,
 	)
-	readByIdsType(r).Validate(t, err, output)
+
+	// Only the fetched rows are compared here. Per-id failures are asserted by
+	// the connectors that populate them, not by this shared happy-path runner.
+	var rows []common.ReadResultRow
+	if output != nil {
+		rows = output.Rows
+	}
+
+	readByIdsType(r).Validate(t, err, rows)
 }

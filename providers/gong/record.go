@@ -24,9 +24,9 @@ func (c *Connector) GetRecordsByIds( //nolint:revive,funlen
 	ids []string,
 	fields []string,
 	_ []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	if len(ids) == 0 {
-		return nil, nil
+		return common.NewBatchReadResult(nil), nil
 	}
 
 	var (
@@ -83,5 +83,5 @@ func (c *Connector) GetRecordsByIds( //nolint:revive,funlen
 		return nil, err
 	}
 
-	return readResult.Data, nil
+	return common.NewBatchReadResult(readResult.Data), nil
 }

@@ -39,7 +39,7 @@ func TestGetRecordsByIds_job_withCustomerAssociation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rows, err := conn.GetRecordsByIds(t.Context(), "jobs",
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "jobs",
 		[]string{"job_ac6f3efd11c14a5aa93e9fc0ab5354ab"},
 		[]string{"id", "work_status"},
 		[]string{"customers"},
@@ -47,6 +47,8 @@ func TestGetRecordsByIds_job_withCustomerAssociation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	rows := batchRes.Rows
 
 	if len(rows) != 1 {
 		t.Fatalf("expected 1 row, got %d", len(rows))
@@ -82,7 +84,7 @@ func TestGetRecordsByIds_job(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rows, err := conn.GetRecordsByIds(t.Context(), "jobs",
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "jobs",
 		[]string{"job_ac6f3efd11c14a5aa93e9fc0ab5354ab"},
 		[]string{"id", "work_status"},
 		nil,
@@ -90,6 +92,8 @@ func TestGetRecordsByIds_job(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	rows := batchRes.Rows
 
 	if len(rows) != 1 || rows[0].Id != "job_ac6f3efd11c14a5aa93e9fc0ab5354ab" {
 		t.Fatalf("unexpected row: %+v", rows)
@@ -120,7 +124,7 @@ func TestGetRecordsByIds_invoice_usesAPIPath(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rows, err := conn.GetRecordsByIds(t.Context(), "invoices",
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "invoices",
 		[]string{"invoice_5f3de0f1d9e1483f9a4e4be0c7a44f0b"},
 		[]string{"id", "status", "invoice_number"},
 		nil,
@@ -128,6 +132,8 @@ func TestGetRecordsByIds_invoice_usesAPIPath(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	rows := batchRes.Rows
 
 	if len(rows) != 1 || rows[0].Id != "invoice_5f3de0f1d9e1483f9a4e4be0c7a44f0b" {
 		t.Fatalf("unexpected row: %+v", rows)
