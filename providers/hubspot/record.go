@@ -90,7 +90,10 @@ func (c *Connector) GetRecordsByIds(
 		return nil, err
 	}
 
-	return common.NewBatchReadResult(rows), nil
+	result := common.NewBatchReadResult(rows)
+	result.ReportMissingIds(ids)
+
+	return result, nil
 }
 
 func (c *Connector) buildBatchRecordsURL(objectName string, associations []string) (string, error) {
