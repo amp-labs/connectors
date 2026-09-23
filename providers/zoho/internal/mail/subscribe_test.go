@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -402,4 +403,62 @@ func TestGetTaskRecordsByIds(t *testing.T) {
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, rows[0].Id, taskID)
 	assert.Equal(t, rows[0].Fields["title"], "Personal task")
+}
+
+// Fetches now run concurrently, so the order rows come back in must come from
+// the order the ids were requested, not from whichever response lands first.
+// The server answers the first id slowly to make an order-of-completion bug
+// deterministic rather than a flake.
+func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
+	t.Parallel()
+
+	const (
+		folderID   = "3881227000000013000"
+		firstMsgID = "1111111111111111111"
+		lastMsgID  = "2222222222222222222"
+	)
+
+	messagePath := func(messageID string) string {
+		return "/api/accounts/" + testAccountID + "/folders/" + folderID + "/messages/" + messageID + "/details"
+	}
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.Path(messagePath(firstMsgID)),
+				Then: func(w http.ResponseWriter, _ *http.Request) {
+					time.Sleep(50 * time.Millisecond)
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write([]byte(`{
+						"status": {"code": 200, "description": "success"},
+						"data": {"subject": "First"}
+					}`))
+				},
+			},
+			{
+				If: mockcond.Path(messagePath(lastMsgID)),
+				Then: mockserver.ResponseString(http.StatusOK, `{
+					"status": {"code": 200, "description": "success"},
+					"data": {"subject": "Last"}
+				}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	adapter := constructTestAdapter(t, server.URL, testAccountID)
+
+	batchRes, err := adapter.GetRecordsByIds(context.Background(), objectNameMessages,
+		[]string{folderID + "/" + firstMsgID, folderID + "/" + lastMsgID},
+		connectors.Fields("subject").List(), nil)
+	assert.NilError(t, err)
+
+	rows := batchRes.Rows
+	assert.Equal(t, len(rows), 2)
+	assert.Equal(t, rows[0].Id, folderID+"/"+firstMsgID)
+	assert.Equal(t, rows[0].Fields["subject"], "First")
+	assert.Equal(t, rows[1].Id, folderID+"/"+lastMsgID)
+	assert.Equal(t, rows[1].Fields["subject"], "Last")
 }

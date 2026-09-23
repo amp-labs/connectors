@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
@@ -250,4 +251,113 @@ func TestExtractAssociationsDotPath(t *testing.T) {
 	result.Assert("customer.missing association absent", false, found)
 
 	result.Validate(t, "extract associations by dot-separated path")
+}
+
+// Fetches now run concurrently, so the order rows come back in must come from
+// the order the ids were requested, not from whichever response lands first.
+// The server answers the first id slowly to make an order-of-completion bug
+// deterministic rather than a flake.
+func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/v1/payment_intents/pi_first"),
+				},
+				Then: func(w http.ResponseWriter, _ *http.Request) {
+					time.Sleep(50 * time.Millisecond)
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write([]byte(`{"id":"pi_first","amount":100}`))
+				},
+			},
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/v1/payment_intents/pi_second"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"id":"pi_second","amount":200}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "payment_intents",
+		[]string{"pi_first", "pi_second"}, []string{"id"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rows := batchRes.Rows
+	if len(rows) != 2 {
+		t.Fatalf("expected 2 rows, got %d", len(rows))
+	}
+
+	if rows[0].Id != "pi_first" || rows[1].Id != "pi_second" {
+		t.Fatalf("rows out of requested order: got %q, %q", rows[0].Id, rows[1].Id)
+	}
+}
+
+// A skipped not-found id must not leave a gap or shift the surviving rows.
+func TestGetRecordsByIds_NotFoundSkippedKeepsOrder(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/v1/payment_intents/pi_first"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"id":"pi_first","amount":100}`),
+			},
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/v1/payment_intents/pi_missing"),
+				},
+				Then: mockserver.ResponseString(http.StatusNotFound,
+					`{"error":{"type":"invalid_request_error","message":"No such payment_intent"}}`),
+			},
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/v1/payment_intents/pi_last"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"id":"pi_last","amount":300}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "payment_intents",
+		[]string{"pi_first", "pi_missing", "pi_last"}, []string{"id"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rows := batchRes.Rows
+	if len(rows) != 2 {
+		t.Fatalf("expected the missing id to be skipped, got %d rows", len(rows))
+	}
+
+	if rows[0].Id != "pi_first" || rows[1].Id != "pi_last" {
+		t.Fatalf("surviving rows out of order: got %q, %q", rows[0].Id, rows[1].Id)
+	}
 }

@@ -3,6 +3,7 @@ package housecallpro
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
@@ -153,5 +154,60 @@ func TestGetRecordsByIds_unknownObject(t *testing.T) {
 	_, err = conn.GetRecordsByIds(t.Context(), "not_a_connector_object", []string{"x"}, nil, nil)
 	if err == nil {
 		t.Fatal("expected error")
+	}
+}
+
+// Fetches now run concurrently, so the order rows come back in must come from
+// the order the ids were requested, not from whichever response lands first.
+// The server answers the second id slowly to make an order-of-completion bug
+// deterministic rather than a flake.
+func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/jobs/job_first"),
+				},
+				Then: func(w http.ResponseWriter, _ *http.Request) {
+					time.Sleep(50 * time.Millisecond)
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write([]byte(`{"id":"job_first","work_status":"scheduled"}`))
+				},
+			},
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/jobs/job_second"),
+				},
+				Then: mockserver.Response(http.StatusOK,
+					[]byte(`{"id":"job_second","work_status":"completed"}`)),
+			},
+		},
+		Default: mockserver.Response(http.StatusInternalServerError, []byte(`{"error":"unexpected"}`)),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "jobs",
+		[]string{"job_first", "job_second"}, []string{"id", "work_status"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rows := batchRes.Rows
+	if len(rows) != 2 {
+		t.Fatalf("expected 2 rows, got %d", len(rows))
+	}
+
+	if rows[0].Id != "job_first" || rows[1].Id != "job_second" {
+		t.Fatalf("rows out of requested order: got %q, %q", rows[0].Id, rows[1].Id)
 	}
 }
