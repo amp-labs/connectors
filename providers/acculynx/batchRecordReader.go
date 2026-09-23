@@ -9,10 +9,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 )
 
 // AccuLynx has no batch read endpoint; GetRecordsByIds fans out per id
@@ -60,40 +60,46 @@ func (c *Connector) GetRecordsByIds(
 
 	fieldSet := datautils.NewSetFromList(fields)
 
-	rows := make([]common.ReadResultRow, len(recordIds))
-	found := make([]bool, len(recordIds))
-	jobs := make([]simultaneously.Job, len(recordIds))
+	// Tasks are keyed by the id's position rather than the id itself, so the
+	// output order follows the requested order and a repeated id still gets its
+	// own slot.
+	tasks := make([]parallelfetch.Task[int, common.ReadResultRow], len(recordIds))
 
 	for i, recordID := range recordIds {
 		idx, currentID := i, recordID
 
-		jobs[idx] = func(ctx context.Context) error {
+		tasks[idx] = func(ctx context.Context) (int, *common.ReadResultRow, error) {
 			row, err := c.fetchSingleRecord(ctx, objectName, currentID, fieldSet, associations)
 			if err != nil {
-				// A record that no longer exists — or, for the appointment->user
-				// edge, a calendar id that is not a user — must not sink the whole
-				// batch. Skip the missing id and let the caller receive the ids
-				// that do resolve, matching the "missing ids simply don't come
-				// back" semantics of the bulk-by-id connectors.
-				if isNotFound(err) {
-					return nil
-				}
-
-				return fmt.Errorf("fetch %s/%s: %w", objectName, currentID, err)
+				return idx, nil, fmt.Errorf("fetch %s/%s: %w", objectName, currentID, err)
 			}
 
-			rows[idx] = row
-			found[idx] = true
-
-			return nil
+			return idx, &row, nil
 		}
 	}
 
-	if err := simultaneously.DoCtx(ctx, maxConcurrentChildFetch, jobs...); err != nil {
-		return nil, err
+	// parallelfetch attempts every id and collects each failure against its own
+	// task, so one bad id no longer cancels the fetches still in flight.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentChildFetch)
+
+	// A record that no longer exists — or, for the appointment->user edge, a
+	// calendar id that is not a user — must not sink the whole batch. Skip the
+	// missing id and let the caller receive the ids that do resolve, matching
+	// the "missing ids simply don't come back" semantics of the bulk-by-id
+	// connectors. Every other failure still fails the call as a whole.
+	realErrs := make([]error, 0, len(result.Errors))
+
+	for _, err := range result.Errors {
+		if !isNotFound(err) {
+			realErrs = append(realErrs, err)
+		}
 	}
 
-	out := compactFound(rows, found)
+	if len(realErrs) != 0 {
+		return nil, errors.Join(realErrs...)
+	}
+
+	out := compactFound(result.Records, len(recordIds))
 
 	// The embedded payload requested above still has to be lifted into
 	// Associations; without this the caller receives a full record and an empty
@@ -121,13 +127,14 @@ func isNotFound(err error) bool {
 	return false
 }
 
-// compactFound returns only the rows whose id resolved, preserving input order.
-func compactFound(rows []common.ReadResultRow, found []bool) []common.ReadResultRow {
-	out := make([]common.ReadResultRow, 0, len(rows))
+// compactFound flattens index-keyed records back into the order the ids were
+// requested in, skipping positions whose id did not resolve.
+func compactFound(records map[int]common.ReadResultRow, total int) []common.ReadResultRow {
+	out := make([]common.ReadResultRow, 0, total)
 
-	for i, ok := range found {
-		if ok {
-			out = append(out, rows[i])
+	for i := range total {
+		if row, ok := records[i]; ok {
+			out = append(out, row)
 		}
 	}
 
