@@ -19,7 +19,7 @@ var _ connectors.BatchRecordReaderConnector = (*Connector)(nil)
 func (c *Connector) GetRecordsByIds(ctx context.Context,
 	objectName string, recordIds []string,
 	fields []string, associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	if len(recordIds) == 0 {
 		return nil, common.ErrMissingObjects
 	}
@@ -37,7 +37,12 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 	marshaler := readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id"))
 	uniqueFields := datautils.NewSetFromList(fields).List()
 
-	return marshaler(batchResponse.GetInOrder(requestIdentifiers), uniqueFields)
+	rows, err := marshaler(batchResponse.GetInOrder(requestIdentifiers), uniqueFields)
+	if err != nil {
+		return nil, err
+	}
+
+	return common.NewBatchReadResult(rows), nil
 }
 
 func (c *Connector) paramsForBatchRead(

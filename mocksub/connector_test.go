@@ -51,7 +51,7 @@ func TestGetRecordsByIds(t *testing.T) {
 
 	conn := mocksub.NewConnector(providers.MockSalesloft, mocksub.WithStore(store))
 
-	rows, err := conn.GetRecordsByIds(
+	batchRes, err := conn.GetRecordsByIds(
 		context.Background(),
 		"people",
 		[]string{"436664215", "436664216", "999999999"}, // last id is not seeded
@@ -61,6 +61,8 @@ func TestGetRecordsByIds(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetRecordsByIds: %v", err)
 	}
+
+	rows := batchRes.Rows
 
 	if len(rows) != 2 {
 		t.Fatalf("expected 2 rows (missing id skipped), got %d", len(rows))
@@ -89,10 +91,12 @@ func TestGetRecordsByIdsEmptyStore(t *testing.T) {
 
 	conn := mocksub.NewConnector(providers.MockSalesloft, mocksub.WithStore(mocksub.NewStore()))
 
-	rows, err := conn.GetRecordsByIds(context.Background(), "people", []string{"1"}, nil, nil)
+	batchRes, err := conn.GetRecordsByIds(context.Background(), "people", []string{"1"}, nil, nil)
 	if err != nil {
 		t.Fatalf("GetRecordsByIds: %v", err)
 	}
+
+	rows := batchRes.Rows
 
 	if len(rows) != 0 {
 		t.Fatalf("expected no rows from empty store, got %d", len(rows))

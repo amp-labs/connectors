@@ -43,7 +43,7 @@ var (
 // https://www.zoho.com/mail/help/api/get-single-task.html
 func (a *Adapter) GetRecordsByIds(
 	ctx context.Context, objectName string, recordIds []string, fields []string, _ []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	if objectName != objectNameMessages && objectName != objectNameTasks {
 		return nil, fmt.Errorf("%w: %q", common.ErrGetRecordNotSupportedForObject, objectName)
 	}
@@ -73,7 +73,7 @@ func (a *Adapter) GetRecordsByIds(
 		rows = append(rows, row)
 	}
 
-	return rows, nil
+	return common.NewBatchReadResult(rows), nil
 }
 
 // getMessageByID fetches a single email's metadata. The folderId is mandatory,
