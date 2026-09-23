@@ -194,3 +194,83 @@ func TestBatchReadResult_SortFailuresByRequestOrderDegenerate(t *testing.T) {
 		t.Errorf("expected the single failure to survive, got %d", len(single.Failures))
 	}
 }
+
+func TestGetMarshaledDataForBatchRequest(t *testing.T) {
+	t.Parallel()
+
+	t.Run("absent ids are reported as not found", func(t *testing.T) {
+		t.Parallel()
+
+		records := []map[string]any{
+			{"id": "a", "name": "Anna"},
+			{"id": "c", "name": "Cleo"},
+		}
+
+		result, err := GetMarshaledDataForBatchRequest(records, []string{"a", "b", "c", "d"}, []string{"name"})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if len(result.Rows) != 2 {
+			t.Fatalf("expected 2 rows, got %d", len(result.Rows))
+		}
+
+		got := make([]string, 0, len(result.Failures))
+		for _, failure := range result.Failures {
+			if failure.Reason != FailureReasonNotFound {
+				t.Errorf("failure for %q: reason %q, want %q", failure.RecordId, failure.Reason, FailureReasonNotFound)
+			}
+
+			got = append(got, failure.RecordId)
+		}
+
+		if !slices.Equal(got, []string{"b", "d"}) {
+			t.Errorf("failures %v, want [b d] in requested order", got)
+		}
+	})
+
+	// Providers routinely return numeric ids for ids that were requested as
+	// strings; treating those as absent would report every record missing.
+	t.Run("numeric record ids match the requested strings", func(t *testing.T) {
+		t.Parallel()
+
+		records := []map[string]any{{"id": float64(1234), "name": "Numeric"}}
+
+		result, err := GetMarshaledDataForBatchRequest(records, []string{"1234"}, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if result.HasFailures() {
+			t.Fatalf("expected no failures, got %+v", result.Failures)
+		}
+	})
+
+	t.Run("a repeated missing id is reported once", func(t *testing.T) {
+		t.Parallel()
+
+		result, err := GetMarshaledDataForBatchRequest(nil, []string{"x", "x"}, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if len(result.Failures) != 1 {
+			t.Fatalf("expected 1 failure, got %d", len(result.Failures))
+		}
+	})
+
+	t.Run("everything returned means no failures", func(t *testing.T) {
+		t.Parallel()
+
+		records := []map[string]any{{"id": "a"}, {"id": "b"}}
+
+		result, err := GetMarshaledDataForBatchRequest(records, []string{"a", "b"}, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if result.HasFailures() {
+			t.Fatalf("expected no failures, got %+v", result.Failures)
+		}
+	})
+}
