@@ -279,6 +279,40 @@ func TestGetRecordsByIds(t *testing.T) {
 			}
 
 			tt.Validate(t, err, rows)
+
+			// Every requested id is in the response, so none may be reported missing.
+			if err == nil {
+				testconn.RequireNoFailures(t, result)
+			}
 		})
 	}
+}
+
+// Ids the batch response leaves out are reported as not-found failures, in requested order.
+func TestGetRecordsByIds_ReportsMissingIds(t *testing.T) {
+	t.Parallel()
+
+	response := testutils.DataFromFile(t, "read.json")
+
+	server := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If:    mockcond.Path("/v2/calls/extensive"),
+		Then:  mockserver.Response(http.StatusOK, response),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	// The response holds "52947912500572621", "137982752092261989"; the other ids are absent from it.
+	result, err := conn.GetRecordsByIds(t.Context(), "calls",
+		[]string{"11111111111111111", "52947912500572621", "22222222222222222", "137982752092261989"}, []string{"id"}, nil)
+	if err != nil {
+		t.Fatalf("a partial batch response must not fail the call: %v", err)
+	}
+
+	testconn.RequireRowIds(t, result, "52947912500572621", "137982752092261989")
+	testconn.RequireMissingIds(t, result, "11111111111111111", "22222222222222222")
 }

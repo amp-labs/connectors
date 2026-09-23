@@ -209,3 +209,86 @@ func TestBatchReadResult_ReportFetchErrorsNoError(t *testing.T) {
 		t.Errorf("expected one not-found failure, got %d", len(result.Failures))
 	}
 }
+
+func TestBatchReadResult_ReportMissingIds(t *testing.T) {
+	t.Parallel()
+
+	t.Run("absent ids are reported as not found", func(t *testing.T) {
+		t.Parallel()
+
+		records := []map[string]any{
+			{"id": "a", "name": "Anna"},
+			{"id": "c", "name": "Cleo"},
+		}
+
+		result := marshalForBatch(t, records, []string{"name"})
+		result.ReportMissingIds([]string{"a", "b", "c", "d"})
+
+		if len(result.Rows) != 2 {
+			t.Fatalf("expected 2 rows, got %d", len(result.Rows))
+		}
+
+		got := make([]string, 0, len(result.Failures))
+		for _, failure := range result.Failures {
+			if failure.Reason != FailureReasonNotFound {
+				t.Errorf("failure for %q: reason %q, want %q", failure.RecordId, failure.Reason, FailureReasonNotFound)
+			}
+
+			got = append(got, failure.RecordId)
+		}
+
+		if !slices.Equal(got, []string{"b", "d"}) {
+			t.Errorf("failures %v, want [b d] in requested order", got)
+		}
+	})
+
+	// A numeric id in the response matches the requested string id.
+	t.Run("numeric record ids match the requested strings", func(t *testing.T) {
+		t.Parallel()
+
+		records := []map[string]any{{"id": float64(1234), "name": "Numeric"}}
+
+		result := marshalForBatch(t, records, nil)
+		result.ReportMissingIds([]string{"1234"})
+
+		if result.HasFailures() {
+			t.Fatalf("expected no failures, got %+v", result.Failures)
+		}
+	})
+
+	t.Run("a repeated missing id is reported once", func(t *testing.T) {
+		t.Parallel()
+
+		result := marshalForBatch(t, nil, nil)
+		result.ReportMissingIds([]string{"x", "x"})
+
+		if len(result.Failures) != 1 {
+			t.Fatalf("expected 1 failure, got %d", len(result.Failures))
+		}
+	})
+
+	t.Run("everything returned means no failures", func(t *testing.T) {
+		t.Parallel()
+
+		records := []map[string]any{{"id": "a"}, {"id": "b"}}
+
+		result := marshalForBatch(t, records, nil)
+		result.ReportMissingIds([]string{"a", "b"})
+
+		if result.HasFailures() {
+			t.Fatalf("expected no failures, got %+v", result.Failures)
+		}
+	})
+}
+
+// marshalForBatch builds a BatchReadResult from raw records with GetMarshaledData.
+func marshalForBatch(t *testing.T, records []map[string]any, fields []string) *BatchReadResult {
+	t.Helper()
+
+	rows, err := GetMarshaledData(records, fields)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return NewBatchReadResult(rows)
+}

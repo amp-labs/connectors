@@ -277,6 +277,40 @@ func TestGetRecordByIds(t *testing.T) {
 			}
 
 			tt.Validate(t, err, rows)
+
+			// Every requested id is in the response, so none may be reported missing.
+			if err == nil {
+				testconn.RequireNoFailures(t, result)
+			}
 		})
 	}
+}
+
+// Ids the batch response leaves out are reported as not-found failures, in requested order.
+func TestGetRecordsByIds_ReportsMissingIds(t *testing.T) {
+	t.Parallel()
+
+	response := testutils.DataFromFile(t, "get_records_by_ids.json")
+
+	server := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If:    mockcond.Path("/v2/objects/companies/records/query"),
+		Then:  mockserver.Response(http.StatusOK, response),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	// The response holds "1bdb55e3-67f4-48d3-829b-45db3039a960", "3a95b53c-e7a1-4e53-a4e4-436f72283818"; the other ids are absent from it.
+	result, err := conn.GetRecordsByIds(t.Context(), "companies",
+		[]string{"9c0e1f6a-0000-4000-8000-000000000001", "1bdb55e3-67f4-48d3-829b-45db3039a960", "9c0e1f6a-0000-4000-8000-000000000002", "3a95b53c-e7a1-4e53-a4e4-436f72283818"}, []string{"name"}, nil)
+	if err != nil {
+		t.Fatalf("a partial batch response must not fail the call: %v", err)
+	}
+
+	testconn.RequireRowIds(t, result, "1bdb55e3-67f4-48d3-829b-45db3039a960", "3a95b53c-e7a1-4e53-a4e4-436f72283818")
+	testconn.RequireMissingIds(t, result, "9c0e1f6a-0000-4000-8000-000000000001", "9c0e1f6a-0000-4000-8000-000000000002")
 }
