@@ -1,8 +1,10 @@
 package common
 
 import (
+	"cmp"
 	"errors"
 	"net/http"
+	"slices"
 )
 
 // BatchReadResult is the outcome of a BatchRecordReaderConnector.GetRecordsByIds
@@ -153,4 +155,29 @@ func (r *BatchReadResult) AddFailure(recordId string, err error) {
 // HasFailures reports whether any requested id failed to fetch.
 func (r *BatchReadResult) HasFailures() bool {
 	return r != nil && len(r.Failures) > 0
+}
+
+// SortFailuresByRequestOrder orders Failures to match the order the ids were
+// requested in.
+//
+// Connectors that fan out per id collect their failures from a map keyed by
+// task, so without this the failures come back in Go's randomized map order and
+// two identical calls report them differently. Ids not present in recordIds
+// sort first; among equal positions the existing order is kept.
+func (r *BatchReadResult) SortFailuresByRequestOrder(recordIds []string) {
+	if r == nil || len(r.Failures) < 2 {
+		return
+	}
+
+	position := make(map[string]int, len(recordIds))
+
+	for i, id := range recordIds {
+		if _, seen := position[id]; !seen {
+			position[id] = i
+		}
+	}
+
+	slices.SortStableFunc(r.Failures, func(a, b RecordFailure) int {
+		return cmp.Compare(position[a.RecordId], position[b.RecordId])
+	})
 }

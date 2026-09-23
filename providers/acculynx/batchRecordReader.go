@@ -82,23 +82,6 @@ func (c *Connector) GetRecordsByIds(
 	// task, so one bad id no longer cancels the fetches still in flight.
 	result := parallelfetch.Execute(ctx, tasks, maxConcurrentChildFetch)
 
-	// A record that no longer exists — or, for the appointment->user edge, a
-	// calendar id that is not a user — must not sink the whole batch. Skip the
-	// missing id and let the caller receive the ids that do resolve, matching
-	// the "missing ids simply don't come back" semantics of the bulk-by-id
-	// connectors. Every other failure still fails the call as a whole.
-	realErrs := make([]error, 0, len(result.Errors))
-
-	for _, err := range result.Errors {
-		if !isNotFound(err) {
-			realErrs = append(realErrs, err)
-		}
-	}
-
-	if len(realErrs) != 0 {
-		return nil, errors.Join(realErrs...)
-	}
-
 	out := compactFound(result.Records, len(recordIds))
 
 	// The embedded payload requested above still has to be lifted into
@@ -108,7 +91,20 @@ func (c *Connector) GetRecordsByIds(
 		extractJobContacts(out)
 	}
 
-	return common.NewBatchReadResult(out), nil
+	batch := common.NewBatchReadResult(out)
+
+	// Each failure is reported against the id that produced it rather than
+	// collapsing the batch into one error. A missing record — including the
+	// appointment->user edge, where a calendar id that is not a user 404s — is
+	// no longer silently dropped: it comes back as a FailureReasonNotFound entry
+	// so the caller can tell a deleted record from one it never asked for.
+	for idx, err := range result.Errors {
+		batch.AddFailure(recordIds[idx], err)
+	}
+
+	batch.SortFailuresByRequestOrder(recordIds)
+
+	return batch, nil
 }
 
 // isNotFound reports whether err represents a 404 from AccuLynx. The base JSON

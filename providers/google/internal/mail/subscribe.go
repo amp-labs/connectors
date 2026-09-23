@@ -271,7 +271,7 @@ func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
-	messages, err := a.fetchMessagesByIDs(ctx, recordIds)
+	messages, failures, err := a.fetchMessagesByIDs(ctx, recordIds)
 	if err != nil {
 		return nil, fmt.Errorf("GetRecordsByIds: fetching messages: %w", err)
 	}
@@ -294,7 +294,19 @@ func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 		rows = append(rows, row)
 	}
 
-	return common.NewBatchReadResult(rows), nil
+	batch := common.NewBatchReadResult(rows)
+
+	// Each failure is reported against the id that produced it rather than
+	// collapsing the batch into one error. A message that no longer exists is no
+	// longer silently dropped: it comes back as a FailureReasonNotFound entry so
+	// the caller can tell a deleted message from one it never asked for.
+	for idx, ferr := range failures {
+		batch.AddFailure(recordIds[idx], ferr)
+	}
+
+	batch.SortFailuresByRequestOrder(recordIds)
+
+	return batch, nil
 }
 
 // UpdateSubscription re-issues the watch call with the updated params.

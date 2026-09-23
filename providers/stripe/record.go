@@ -2,7 +2,6 @@ package stripe
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"maps"
 	"strings"
@@ -73,21 +72,19 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	// task, so one bad id no longer cancels the fetches still in flight.
 	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
 
-	// A record that no longer exists is skipped rather than failing the batch,
-	// as it was before. Every other failure still fails the call as a whole.
-	realErrs := make([]error, 0, len(result.Errors))
+	batch := common.NewBatchReadResult(rowsInRequestedOrder(result.Records, len(ids)))
 
-	for _, err := range result.Errors {
-		if !errors.Is(err, common.ErrNotFound) {
-			realErrs = append(realErrs, err)
-		}
+	// Each failure is reported against the id that produced it, in requested
+	// order, rather than collapsing the batch into one error. A not-found is no
+	// longer silently dropped: it comes back as a FailureReasonNotFound entry so
+	// the caller can tell a deleted record from one it never asked for.
+	for idx, err := range result.Errors {
+		batch.AddFailure(ids[idx], err)
 	}
 
-	if len(realErrs) != 0 {
-		return nil, errors.Join(realErrs...)
-	}
+	batch.SortFailuresByRequestOrder(ids)
 
-	return common.NewBatchReadResult(rowsInRequestedOrder(result.Records, len(ids))), nil
+	return batch, nil
 }
 
 // rowsInRequestedOrder flattens index-keyed records back into the order the ids

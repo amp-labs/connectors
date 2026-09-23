@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"testing"
 )
 
@@ -149,5 +150,47 @@ func TestBatchReadResult_HasFailuresNil(t *testing.T) {
 
 	if result.HasFailures() {
 		t.Error("nil result must report no failures")
+	}
+}
+
+// Failures are collected from a map by the fan-out connectors, so without
+// explicit ordering two identical calls report them in different orders.
+func TestBatchReadResult_SortFailuresByRequestOrder(t *testing.T) {
+	t.Parallel()
+
+	ids := []string{"a", "b", "c", "d"}
+
+	result := NewBatchReadResult(nil)
+	result.AddFailure("d", ErrNotFound)
+	result.AddFailure("b", ErrLimitExceeded)
+	result.AddFailure("c", ErrNotFound)
+
+	result.SortFailuresByRequestOrder(ids)
+
+	got := make([]string, 0, len(result.Failures))
+	for _, failure := range result.Failures {
+		got = append(got, failure.RecordId)
+	}
+
+	want := []string{"b", "c", "d"}
+	if !slices.Equal(got, want) {
+		t.Errorf("failures ordered %v, want %v", got, want)
+	}
+}
+
+// A nil receiver and a single failure are both no-ops, and must not panic.
+func TestBatchReadResult_SortFailuresByRequestOrderDegenerate(t *testing.T) {
+	t.Parallel()
+
+	var nilResult *BatchReadResult
+
+	nilResult.SortFailuresByRequestOrder([]string{"a"})
+
+	single := NewBatchReadResult(nil)
+	single.AddFailure("a", ErrNotFound)
+	single.SortFailuresByRequestOrder([]string{"a"})
+
+	if len(single.Failures) != 1 {
+		t.Errorf("expected the single failure to survive, got %d", len(single.Failures))
 	}
 }
