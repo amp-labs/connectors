@@ -2,15 +2,19 @@ package providers
 
 const Workday Provider = "workday"
 
+//nolint:funlen
 func init() {
 	SetInfo(Workday, ProviderInfo{
 		DisplayName: "Workday",
 		AuthType:    Oauth2,
-		BaseURL:     "https://{{.workspace}}.workday.com",
+		// E.g. wd2-impl-services1.workday.com, wd3-services1.myworkday.com, etc.
+		BaseURL: "https://{{.workspace}}",
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
-			AuthURL:                   "https://{{.workspace}}.workday.com/ccx/oauth2/{{.tenantName}}/authorize",
-			TokenURL:                  "https://{{.workspace}}.workday.com/ccx/oauth2/{{.tenantName}}/token",
+			GrantType: AuthorizationCode,
+			// NB: The authorization endpoint lives on the tenant's UI host (e.g. impl.workday.com),
+			// not on the web services host, so it can't reuse the workspace like TokenURL does.
+			AuthURL:                   "https://{{.authHost}}/{{.tenantName}}/authorize",
+			TokenURL:                  "https://{{.workspace}}/ccx/oauth2/{{.tenantName}}/token",
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: true,
 			TokenMetadataFields: TokenMetadataFields{
@@ -43,13 +47,30 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Workday Host",
-					DocsURL:     "https://doc.workday.com/",
+					DisplayName: "Web Services Host",
+					Prompt: "Host of the Workday REST API Endpoint shown in View API Clients, " +
+						"e.g. `wd2-impl-services1.workday.com`.",
+					DocsURL: "https://doc.workday.com/",
 				},
 				{
 					Name:        "tenantName",
 					DisplayName: "Tenant Name",
-					DocsURL:     "https://doc.workday.com/",
+					Prompt: "Tenant name from the Token Endpoint shown in View API Clients. " +
+						"It appears right after `/oauth2/` and before `/token`.",
+					// The literal below only applies when ProviderInfo is resolved
+					// without a connection, as creating the provider app does.
+					// It exists because catalog substitution runs with
+					// missingkey=error, so an undefaulted variable fails that call.
+					DefaultValue: "tenant_name",
+					DocsURL:      "https://doc.workday.com/",
+				},
+				{
+					Name:        "authHost",
+					DisplayName: "Authorization Host",
+					Prompt: "Host of the Authorization Endpoint shown in View API Clients, " +
+						"e.g. `impl.workday.com` or `wd3.myworkday.com`.",
+					DefaultValue: "impl.workday.com",
+					DocsURL:      "https://doc.workday.com/",
 				},
 			},
 		},
