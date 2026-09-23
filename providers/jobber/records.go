@@ -21,7 +21,8 @@ import (
 const maxConcurrentRecordFetch = 4
 
 var (
-	errRecordFetchNotFound = errors.New("jobber: record not found")
+	// errRecordFetchNotFound marks a record that does not exist.
+	errRecordFetchNotFound = fmt.Errorf("jobber: record not found: %w", common.ErrNotFound)
 	errRecordFetchFailed   = errors.New("jobber: record fetch failed")
 )
 
@@ -78,9 +79,6 @@ func (c *Connector) GetRecordsByIds(
 
 	// Fetches every id, even when some fail.
 	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
-	if len(result.Errors) != 0 {
-		return nil, errors.Join(result.Errors.Values()...)
-	}
 
 	rows := make([]common.ReadResultRow, 0, len(recordIds))
 	for i := range recordIds {
@@ -89,7 +87,14 @@ func (c *Connector) GetRecordsByIds(
 		}
 	}
 
-	return common.NewBatchReadResult(rows), nil
+	batch := common.NewBatchReadResult(rows)
+
+	// Not-found ids become failures; any other error fails the call.
+	if err := batch.ReportFetchErrors(recordIds, result.Errors); err != nil {
+		return nil, err
+	}
+
+	return batch, nil
 }
 
 // fetchSingleRecord executes the singular getter query for one record id.
@@ -128,6 +133,8 @@ func (c *Connector) fetchSingleRecord(
 
 	// GraphQL reports failures with a 200 status; a missing record surfaces
 	// either as an "errors" array or as a null record node.
+	// TODO(ENG-4415): classify an "errors" entry that says the record does not exist as
+	// errRecordFetchNotFound instead of errRecordFetchFailed.
 	if errs, ok := body["errors"].([]any); ok && len(errs) > 0 {
 		return common.ReadResultRow{}, fmt.Errorf("%w: %s", errRecordFetchFailed, errorMessages(errs))
 	}

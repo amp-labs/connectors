@@ -3,6 +3,7 @@ package stripe
 import (
 	"net/http"
 	"reflect"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -377,18 +378,18 @@ func TestGetRecordsByIds_AttemptsEveryIdDespiteFailure(t *testing.T) {
 	}
 
 	// More ids than maxConcurrentRecordFetch, so some are queued behind the failure.
-	ids := []string{"pi_1", "pi_boom", "pi_2", "pi_3", "pi_4", "pi_5", "pi_6", "pi_7"}
+	ids := []string{"pi_1", "pi_gone", "pi_2", "pi_3", "pi_4", "pi_5", "pi_6", "pi_7"}
 
 	server := mockserver.Switch{
 		Setup: mockserver.ContentJSON(),
 		Cases: []mockserver.Case{
 			{
-				If: mockcond.Path("/v1/payment_intents/pi_boom"),
+				If: mockcond.Path("/v1/payment_intents/pi_gone"),
 				Then: func(w http.ResponseWriter, r *http.Request) {
 					record(r.URL.Path)
 					// Fails before the other ids finish.
-					w.WriteHeader(http.StatusInternalServerError)
-					_, _ = w.Write([]byte(`{"error":{"message":"boom"}}`))
+					w.WriteHeader(http.StatusNotFound)
+					_, _ = w.Write([]byte(`{"error":{"message":"No such payment_intent"}}`))
 				},
 			},
 		},
@@ -406,8 +407,14 @@ func TestGetRecordsByIds_AttemptsEveryIdDespiteFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, err := conn.GetRecordsByIds(t.Context(), "payment_intents", ids, []string{"id"}, nil); err == nil {
-		t.Fatal("expected the batch to fail")
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "payment_intents", ids, []string{"id"}, nil)
+	if err != nil {
+		t.Fatalf("a not-found id must not fail the call as a whole: %v", err)
+	}
+
+	if len(batchRes.Failures) != 1 || batchRes.Failures[0].RecordId != "pi_gone" ||
+		batchRes.Failures[0].Reason != common.FailureReasonNotFound {
+		t.Fatalf("expected pi_gone reported as the only not-found failure, got %+v", batchRes.Failures)
 	}
 
 	mu.Lock()
@@ -417,5 +424,37 @@ func TestGetRecordsByIds_AttemptsEveryIdDespiteFailure(t *testing.T) {
 		if !visited["/v1/payment_intents/"+id] {
 			t.Errorf("id %q was never requested — a failure still cancels its siblings", id)
 		}
+	}
+}
+
+// A non-not-found error for one id fails the call, so the server retries or nacks it.
+func TestGetRecordsByIds_ServerErrorFailsTheCall(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If:   mockcond.Path("/v1/payment_intents/pi_boom"),
+				Then: mockserver.ResponseString(http.StatusInternalServerError, `{"error":{"message":"boom"}}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusOK, `{"id":"pi_1","amount":100}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "payment_intents",
+		[]string{"pi_1", "pi_boom"}, []string{"id"}, nil)
+	if err == nil || !strings.Contains(err.Error(), "record pi_boom") {
+		t.Fatalf("expected the call to fail naming pi_boom, got %v", err)
+	}
+
+	if batchRes != nil {
+		t.Errorf("expected no result on error, got %+v", batchRes)
 	}
 }

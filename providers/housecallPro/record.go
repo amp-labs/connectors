@@ -2,7 +2,6 @@ package housecallpro
 
 import (
 	"context"
-	"errors"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
@@ -57,9 +56,6 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 
 	// Fetches every id, even when some fail.
 	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
-	if len(result.Errors) != 0 {
-		return nil, errors.Join(result.Errors.Values()...)
-	}
 
 	out := make([]common.ReadResultRow, 0, len(recordIDs))
 
@@ -71,7 +67,14 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 
 	extractAssociations(objectName, associations, out)
 
-	return common.NewBatchReadResult(out), nil
+	batch := common.NewBatchReadResult(out)
+
+	// Not-found ids become failures; any other error fails the call.
+	if err := batch.ReportFetchErrors(recordIDs, result.Errors); err != nil {
+		return nil, err
+	}
+
+	return batch, nil
 }
 
 // fetchSingleRecord fetches one record by id and marshals it into rows.

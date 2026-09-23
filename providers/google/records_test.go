@@ -33,13 +33,15 @@ func TestMailGetRecordsByIds(t *testing.T) { //nolint:funlen
 	)
 
 	tests := []struct {
-		name          string
-		object        string
-		ids           []string
-		server        func() *mockserver.Switch
-		expectErrs    []error
-		expectRowIds  []string // sorted
-		expectNoError bool
+		name         string
+		object       string
+		ids          []string
+		server       func() *mockserver.Switch
+		expectErrs   []error
+		expectRowIds []string // sorted
+		// expectFailures maps a requested id to its expected failure reason.
+		expectFailures map[string]common.FailureReason
+		expectNoError  bool
 	}{
 		{
 			name:   "Unsupported object returns ErrGetRecordNotSupportedForObject",
@@ -105,11 +107,12 @@ func TestMailGetRecordsByIds(t *testing.T) { //nolint:funlen
 					},
 				}
 			},
-			expectRowIds:  []string{idOK1, idOK3},
-			expectNoError: true,
+			expectRowIds:   []string{idOK1, idOK3},
+			expectFailures: map[string]common.FailureReason{idMissing: common.FailureReasonNotFound},
+			expectNoError:  true,
 		},
 		{
-			name:   "All ids 404 - empty result, no error (caller retries then acks)",
+			name:   "All ids 404 - no rows, every id reported not found",
 			object: "messages",
 			ids:    []string{idOK1, idMissing},
 			server: func() *mockserver.Switch {
@@ -118,11 +121,15 @@ func TestMailGetRecordsByIds(t *testing.T) { //nolint:funlen
 					Default: mockserver.Response(http.StatusNotFound, errorNotFound),
 				}
 			},
-			expectRowIds:  []string{},
+			expectRowIds: []string{},
+			expectFailures: map[string]common.FailureReason{
+				idOK1:     common.FailureReasonNotFound,
+				idMissing: common.FailureReasonNotFound,
+			},
 			expectNoError: true,
 		},
 		{
-			name:   "Non-404 error is still surfaced (500 fails the batch)",
+			name:   "500 on one id fails the call",
 			object: "messages",
 			ids:    []string{idOK1, idMissing},
 			server: func() *mockserver.Switch {
@@ -190,6 +197,23 @@ func TestMailGetRecordsByIds(t *testing.T) { //nolint:funlen
 					if gotIds[i] != want {
 						t.Fatalf("row %d: expected id %q, got %q (all: %v)",
 							i, want, gotIds[i], gotIds)
+					}
+				}
+
+				gotFailures := make(map[string]common.FailureReason)
+				for _, failure := range batchRes.Failures {
+					gotFailures[failure.RecordId] = failure.Reason
+				}
+
+				if len(gotFailures) != len(tt.expectFailures) {
+					t.Fatalf("expected %d failures, got %d (%v)",
+						len(tt.expectFailures), len(gotFailures), gotFailures)
+				}
+
+				for id, wantReason := range tt.expectFailures {
+					if gotFailures[id] != wantReason {
+						t.Errorf("failure for %q: expected reason %q, got %q",
+							id, wantReason, gotFailures[id])
 					}
 				}
 			}

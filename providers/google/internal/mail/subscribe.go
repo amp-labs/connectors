@@ -271,7 +271,7 @@ func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
-	messages, err := a.fetchMessagesByIDs(ctx, recordIds)
+	messages, failures, err := a.fetchMessagesByIDs(ctx, recordIds)
 	if err != nil {
 		return nil, fmt.Errorf("GetRecordsByIds: fetching messages: %w", err)
 	}
@@ -294,7 +294,14 @@ func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 		rows = append(rows, row)
 	}
 
-	return common.NewBatchReadResult(rows), nil
+	batch := common.NewBatchReadResult(rows)
+
+	// Not-found ids become failures; any other error fails the call.
+	if err := batch.ReportFetchErrors(recordIds, failures); err != nil {
+		return nil, err
+	}
+
+	return batch, nil
 }
 
 // UpdateSubscription re-issues the watch call with the updated params.
