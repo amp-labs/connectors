@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "employeeId": "123",
+      "firstName": "Ava",
+      "lastName": "Nguyen",
+      "jobTitleName": "Engineering Manager",
+      "status": "Active",
+      "_restrictedFields": []
+    }
+  ],
+  "meta": {
+    "total": 2,
+    "page": {
+      "limit": 1,
+      "nextCursor": "next-cursor",
+      "prevCursor": null
+    }
+  },
+  "_links": {
+    "self": {
+      "href": "https://example.bamboohr.com/api/v1/employees?page%5Blimit%5D=1"
+    },
+    "next": {
+      "href": "https://example.bamboohr.com/api/v1/employees?page%5Blimit%5D=1&page%5Bafter%5D=next-cursor"
+    }
+  }
+}

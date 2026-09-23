@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "id": 502,
+      "employeeId": 124,
+      "status": "requested",
+      "startDate": "2026-05-10",
+      "endDate": "2026-05-10"
+    }
+  ],
+  "meta": {
+    "page": 2,
+    "pageSize": 1,
+    "totalPages": 2,
+    "totalItems": 2
+  },
+  "_links": {
+    "next": null
+  }
+}
