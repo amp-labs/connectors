@@ -416,9 +416,13 @@ func TestGetRecordsByIds_AttemptsEveryIdDespiteFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// The call still fails as a whole; only the cancellation behavior changed.
-	if _, err := conn.GetRecordsByIds(t.Context(), "payment_intents", ids, []string{"id"}, nil); err == nil {
-		t.Fatal("expected the batch to fail")
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "payment_intents", ids, []string{"id"}, nil)
+	if err != nil {
+		t.Fatalf("a per-id failure must not fail the call as a whole: %v", err)
+	}
+
+	if len(batchRes.Failures) != 1 || batchRes.Failures[0].RecordId != "pi_boom" {
+		t.Fatalf("expected pi_boom reported as the only failure, got %+v", batchRes.Failures)
 	}
 
 	mu.Lock()

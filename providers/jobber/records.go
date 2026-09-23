@@ -21,7 +21,11 @@ import (
 const maxConcurrentRecordFetch = 4
 
 var (
-	errRecordFetchNotFound = errors.New("jobber: record not found")
+	// errRecordFetchNotFound wraps common.ErrNotFound so that when the failure is
+	// reported to the caller, common.FailureReasonOf classifies it as
+	// FailureReasonNotFound. Jobber signals a missing record with a null node
+	// rather than an HTTP status, so there is no 404 to classify from.
+	errRecordFetchNotFound = fmt.Errorf("jobber: record not found: %w", common.ErrNotFound)
 	errRecordFetchFailed   = errors.New("jobber: record fetch failed")
 )
 
@@ -81,9 +85,6 @@ func (c *Connector) GetRecordsByIds(
 	// parallelfetch attempts every id and collects each failure against its own
 	// task, so one bad id no longer cancels the fetches still in flight.
 	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
-	if len(result.Errors) != 0 {
-		return nil, errors.Join(result.Errors.Values()...)
-	}
 
 	rows := make([]common.ReadResultRow, 0, len(recordIds))
 	for i := range recordIds {
@@ -92,7 +93,19 @@ func (c *Connector) GetRecordsByIds(
 		}
 	}
 
-	return common.NewBatchReadResult(rows), nil
+	batch := common.NewBatchReadResult(rows)
+
+	// Each failure is reported against the id that produced it rather than
+	// collapsing the batch into one error. Jobber reports a missing record as a
+	// GraphQL error or a null node, both of which surface here as a failure for
+	// that id alone.
+	for idx, err := range result.Errors {
+		batch.AddFailure(recordIds[idx], err)
+	}
+
+	batch.SortFailuresByRequestOrder(recordIds)
+
+	return batch, nil
 }
 
 // fetchSingleRecord executes the singular getter query for one record id.
