@@ -80,11 +80,13 @@ func main() {
 	slog.Info("Created event", "id", eventID, "summary", summary)
 
 	// Step 2: fetch changes since the checkpoint — the new event must be present.
-	rows, err := conn.GetRecordsByIds(ctx, "events", []string{updatedMin},
+	batchRes, err := conn.GetRecordsByIds(ctx, "events", []string{updatedMin},
 		[]string{"id", "summary", "status"}, nil)
 	if err != nil {
 		utils.Fail("error fetching records by updatedMin", "error", err)
 	}
+
+	rows := batchRes.Rows
 
 	slog.Info("Fetched changed events", "count", len(rows))
 	utils.DumpJSON(rows, os.Stdout)
@@ -111,11 +113,13 @@ func main() {
 	slog.Info("Deleted event", "id", eventID)
 
 	// Step 4: fetch again — the deletion must come back as status:"cancelled".
-	rows, err = conn.GetRecordsByIds(ctx, "events", []string{updatedMin},
+	batchRes, err = conn.GetRecordsByIds(ctx, "events", []string{updatedMin},
 		[]string{"id", "summary", "status"}, nil)
 	if err != nil {
 		utils.Fail("error fetching records by updatedMin after delete", "error", err)
 	}
+
+	rows = batchRes.Rows
 
 	slog.Info("Fetched changed events after delete", "count", len(rows))
 	utils.DumpJSON(rows, os.Stdout)

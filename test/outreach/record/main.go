@@ -57,7 +57,7 @@ func main() {
 	// Step 2: Fetch the created records using GetRecordsByIds
 	fmt.Println("\nFetching accounts by IDs...")
 
-	res, err := conn.GetRecordsByIds(ctx,
+	batchRes, err := conn.GetRecordsByIds(ctx,
 		"accounts",
 		recordIDs,
 		[]string{"id", "name", "domain", "industry", "numberOfEmployees"},
@@ -65,6 +65,8 @@ func main() {
 	if err != nil {
 		utils.Fail("error getting records by ids", "error", err)
 	}
+
+	res := batchRes.Rows
 
 	fmt.Printf("\nSuccessfully fetched %d accounts:\n", len(res))
 	utils.DumpJSON(res, os.Stdout)
