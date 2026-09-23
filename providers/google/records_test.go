@@ -156,7 +156,12 @@ func TestMailGetRecordsByIds(t *testing.T) { //nolint:funlen
 				t.Fatalf("failed to construct test connector: %v", err)
 			}
 
-			rows, err := conn.GetRecordsByIds(t.Context(), tt.object, tt.ids, nil, nil)
+			batchRes, err := conn.GetRecordsByIds(t.Context(), tt.object, tt.ids, nil, nil)
+
+			var rows []common.ReadResultRow
+			if batchRes != nil {
+				rows = batchRes.Rows
+			}
 
 			if tt.expectNoError && err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -277,7 +282,12 @@ func TestCalendarGetRecordsByIds(t *testing.T) { //nolint:funlen
 				t.Fatalf("failed to construct test connector: %v", err)
 			}
 
-			rows, err := conn.GetRecordsByIds(t.Context(), tt.object, tt.ids, nil, nil)
+			batchRes, err := conn.GetRecordsByIds(t.Context(), tt.object, tt.ids, nil, nil)
+
+			var rows []common.ReadResultRow
+			if batchRes != nil {
+				rows = batchRes.Rows
+			}
 
 			if tt.expectErr {
 				if err == nil {

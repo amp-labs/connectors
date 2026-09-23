@@ -62,12 +62,14 @@ func run() error {
 		identifiers[index] = contact.Id
 	}
 
-	res, err := conn.GetRecordsByIds(ctx,
+	batchRes, err := conn.GetRecordsByIds(ctx,
 		objectName, identifiers,
 		[]string{"id", "name"}, nil)
 	if err != nil {
 		return err
 	}
+
+	res := batchRes.Rows
 
 	displayResults(res, identifiers)
 

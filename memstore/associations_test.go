@@ -709,8 +709,10 @@ func TestGetRecordsByIds_WithAssociations(t *testing.T) {
 	}
 
 	// Get records by IDs with association expansion
-	records, err := conn.GetRecordsByIds(ctx, "contact", contactIDs, []string{}, []string{"account_id"})
+	batchRes, err := conn.GetRecordsByIds(ctx, "contact", contactIDs, []string{}, []string{"account_id"})
 	require.NoError(t, err)
+
+	records := batchRes.Rows
 	require.Len(t, records, 2)
 
 	// Verify associations were expanded for all records

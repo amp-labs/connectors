@@ -48,13 +48,13 @@ func (c *Connector) GetRecordsByIds(
 	recordIds []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	if !batchReadableObjects.Has(objectName) {
 		return nil, fmt.Errorf("%w: %s", common.ErrGetRecordNotSupportedForObject, objectName)
 	}
 
 	if len(recordIds) == 0 {
-		return []common.ReadResultRow{}, nil
+		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
 	fieldSet := datautils.NewSetFromList(fields)
@@ -82,7 +82,7 @@ func (c *Connector) GetRecordsByIds(
 		return nil, err
 	}
 
-	return rows, nil
+	return common.NewBatchReadResult(rows), nil
 }
 
 // fetchSingleRecord executes the singular getter query for one record id.

@@ -200,13 +200,24 @@ type BatchRecordReaderConnector interface {
 	//   - Fetch only the specified recordIds
 	//   - Respect requested fields and associations when supported by the provider
 	//   - Return provider responses translated into ReadResultRow
+	//
+	// The returned error reports failure of the call as a whole: an unsupported
+	// object, a malformed request, or a provider response that yielded no
+	// per-id outcome at all. When it is nil, the *common.BatchReadResult carries
+	// the split outcome — records that were fetched in Rows, and ids that could
+	// not be fetched in Failures, each tagged with a common.FailureReason so the
+	// caller can decide what is worth retrying.
+	//
+	// Returning a whole-call error therefore means "nothing here is usable",
+	// and connectors should prefer per-id failures wherever the provider makes
+	// the distinction available.
 	GetRecordsByIds(
 		ctx context.Context,
 		objectName string,
 		recordIds []string,
 		fields []string,
 		associations []string,
-	) ([]common.ReadResultRow, error)
+	) (*common.BatchReadResult, error)
 }
 
 // WebhookVerifierConnector defines the interface for connectors that can
