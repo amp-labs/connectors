@@ -226,9 +226,15 @@ func TestGetRecordsByIds(t *testing.T) {
 	_, err = adapter.GetRecordsByIds(context.Background(), objectNameMessages, nil, nil, nil)
 	assert.ErrorIs(t, err, errNoRecordIDs)
 
-	// Malformed composite id (no folderId) is rejected for messages.
-	_, err = adapter.GetRecordsByIds(context.Background(), objectNameMessages, []string{"no-separator"}, nil, nil)
+	// A malformed id (no folderId) is reported as a permanent failure and returned as the error.
+	malformed, err := adapter.GetRecordsByIds(
+		context.Background(), objectNameMessages, []string{"no-separator"}, nil, nil)
 	assert.ErrorIs(t, err, errInvalidRecordID)
+	assert.ErrorContains(t, err, "record no-separator")
+	assert.Equal(t, len(malformed.Rows), 0)
+	assert.Equal(t, len(malformed.Failures), 1)
+	assert.Equal(t, malformed.Failures[0].RecordId, "no-separator")
+	assert.Equal(t, malformed.Failures[0].Reason, common.FailureReasonPermanent)
 }
 
 // taskWebhookBody is a Zoho Mail Task outgoing-webhook payload. entityId and

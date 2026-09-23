@@ -2,7 +2,6 @@ package stripe
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"maps"
 	"strings"
@@ -68,20 +67,10 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	// Fetches every id, even when some fail.
 	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
 
-	// Skips not-found records. Any other failure fails the call.
-	realErrs := make([]error, 0, len(result.Errors))
+	batch := common.NewBatchReadResult(rowsInRequestedOrder(result.Records, len(ids)))
 
-	for _, err := range result.Errors {
-		if !errors.Is(err, common.ErrNotFound) {
-			realErrs = append(realErrs, err)
-		}
-	}
-
-	if len(realErrs) != 0 {
-		return nil, errors.Join(realErrs...)
-	}
-
-	return common.NewBatchReadResult(rowsInRequestedOrder(result.Records, len(ids))), nil
+	// Every per-id error is a failure; the error joins the ones that are not not-found.
+	return batch, batch.ReportFetchErrors(ids, result.Errors)
 }
 
 // rowsInRequestedOrder returns the fetched records in requested order.

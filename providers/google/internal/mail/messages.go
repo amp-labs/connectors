@@ -39,7 +39,7 @@ import (
 const gmailMaxConcurrentFetches = 5
 
 // errMessageNotFound marks a message that returned 404.
-var errMessageNotFound = errors.New("gmail: message not found")
+var errMessageNotFound = fmt.Errorf("gmail: message not found: %w", common.ErrNotFound)
 
 // fetchMessages retrieves the full message payloads for all message IDs found
 // in the provided collection response.
@@ -96,9 +96,11 @@ func (a *Adapter) fetchMessages(
 // fetchMessagesByIDs fetches full message payloads for the given IDs concurrently.
 // This is the same fan-out/fan-in pattern as fetchMessages but accepts explicit IDs
 // instead of extracting them from a collection response.
-func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (MessageRecords, error) {
+func (a *Adapter) fetchMessagesByIDs(
+	ctx context.Context, messageIDs []string,
+) (MessageRecords, map[int]error, error) {
 	if len(messageIDs) == 0 {
-		return MessageRecords{}, nil
+		return MessageRecords{}, nil, nil
 	}
 
 	tasks := make([]parallelfetch.Task[int, MessageRecord], len(messageIDs))
@@ -112,11 +114,6 @@ func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (
 				return idx, nil, err
 			}
 
-			if message == nil {
-				// Not found.
-				return idx, nil, errMessageNotFound
-			}
-
 			return idx, message, nil
 		}
 	}
@@ -124,31 +121,19 @@ func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (
 	// Fetches every id, even when some fail.
 	result := parallelfetch.Execute(ctx, tasks, gmailMaxConcurrentFetches)
 
-	// Skips not-found messages. Any other failure fails the call.
-	realErrs := make([]error, 0, len(result.Errors))
-
-	for _, err := range result.Errors {
-		if !errors.Is(err, errMessageNotFound) {
-			realErrs = append(realErrs, err)
-		}
-	}
-
-	if len(realErrs) != 0 {
-		return nil, errors.Join(realErrs...)
-	}
-
 	messageRegistry := make(MessageRecords, len(messageIDs))
 
 	for _, message := range result.Records {
 		id, ok := message["id"].(string)
 		if !ok {
-			return nil, errors.New("missing field 'id' in response for object 'messages'") // nolint:err113
+			return nil, nil, errors.New("missing field 'id' in response for object 'messages'") // nolint:err113
 		}
 
 		messageRegistry[id] = message
 	}
 
-	return messageRegistry, nil
+	// Returns failures keyed by position.
+	return messageRegistry, result.Errors, nil
 }
 
 // fetchMessage returns a concurrently executable job that fetches a single message
@@ -163,11 +148,16 @@ func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId str
 	return func(ctx context.Context) error {
 		message, err := a.fetchMessageRecord(ctx, messageId)
 		if err != nil {
-			return err
-		}
+			if errors.Is(err, errMessageNotFound) {
+				logging.Logger(ctx).Debug(
+					"gmail: message not found, skipping",
+					"messageId", messageId,
+				)
 
-		if message == nil {
-			return nil
+				return nil
+			}
+
+			return err
 		}
 
 		select {
@@ -189,12 +179,7 @@ func (a *Adapter) fetchMessageRecord(ctx context.Context, messageId string) (*Me
 	resp, err := a.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		if httpErr, ok := errors.AsType[*common.HTTPError](err); ok && httpErr.Status == http.StatusNotFound {
-			logging.Logger(ctx).Debug(
-				"gmail: message not found, skipping",
-				"messageId", messageId,
-			)
-
-			return nil, nil //nolint:nilnil
+			return nil, fmt.Errorf("%w (id %s)", errMessageNotFound, messageId)
 		}
 
 		return nil, err

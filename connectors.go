@@ -201,8 +201,10 @@ type BatchRecordReaderConnector interface {
 	//   - Respect requested fields and associations when supported by the provider
 	//   - Return provider responses translated into ReadResultRow
 	//
-	// The returned error means the whole call failed. Per-id failures are
-	// reported in the result's Failures.
+	// Each id that could not be fetched is reported in the result's Failures
+	// with its reason. When any of those failures is not a not-found, the
+	// error joins them and the result is still returned with the fetched rows
+	// and every failure. A nil result with an error means the whole call failed.
 	GetRecordsByIds(
 		ctx context.Context,
 		objectName string,

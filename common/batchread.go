@@ -2,6 +2,7 @@ package common
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 )
 
@@ -119,4 +120,27 @@ func (r *BatchReadResult) AddFailure(recordId string, err error) {
 // HasFailures reports whether any requested id failed to fetch.
 func (r *BatchReadResult) HasFailures() bool {
 	return r != nil && len(r.Failures) > 0
+}
+
+// ReportFetchErrors records the per-id errors of a fetch that requests each id separately. errs is
+// keyed by the id's position in recordIds. Every error is added as a failure, in request order, with
+// its reason. The errors that are not not-found are also returned, joined, so the caller can return
+// them alongside the result.
+func (r *BatchReadResult) ReportFetchErrors(recordIds []string, errs map[int]error) error {
+	var other []error
+
+	for idx, recordId := range recordIds {
+		err, ok := errs[idx]
+		if !ok {
+			continue
+		}
+
+		r.AddFailure(recordId, err)
+
+		if !isNotFoundErr(err) {
+			other = append(other, fmt.Errorf("record %s: %w", recordId, err))
+		}
+	}
+
+	return errors.Join(other...)
 }
