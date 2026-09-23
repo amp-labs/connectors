@@ -7,13 +7,13 @@ import (
 	"maps"
 	"strings"
 
-	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 )
 
 var _ connectors.BatchRecordReaderConnector = &Connector{}
@@ -51,49 +51,53 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
-	rows := make([]common.ReadResultRow, len(ids))
-	found := make([]bool, len(ids))
-	jobs := make([]simultaneously.Job, len(ids))
+	// Tasks are keyed by the id's position rather than the id itself, so the
+	// output order follows the requested order and a repeated id still gets its
+	// own slot.
+	tasks := make([]parallelfetch.Task[int, common.ReadResultRow], len(ids))
 
 	for i, recordID := range ids {
 		idx, currentID := i, recordID
 
-		jobs[idx] = func(ctx context.Context) error {
+		tasks[idx] = func(ctx context.Context) (int, *common.ReadResultRow, error) {
 			row, err := c.fetchSingleRecord(ctx, objectName, currentID, fields, associations)
 			if err != nil {
-				// A record that no longer exists is skipped rather than failing the
-				// batch, as it was when these fetches ran sequentially. Returning nil
-				// here also keeps the sibling fetches alive, since DoCtx cancels the
-				// shared context as soon as any job returns an error.
-				if errors.Is(err, common.ErrNotFound) {
-					return nil
-				}
-
-				return err
+				return idx, nil, err
 			}
 
-			rows[idx] = *row
-			found[idx] = true
-
-			return nil
+			return idx, row, nil
 		}
 	}
 
-	if err := simultaneously.DoCtx(ctx, maxConcurrentRecordFetch, jobs...); err != nil {
-		return nil, err
+	// parallelfetch attempts every id and collects each failure against its own
+	// task, so one bad id no longer cancels the fetches still in flight.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+
+	// A record that no longer exists is skipped rather than failing the batch,
+	// as it was before. Every other failure still fails the call as a whole.
+	realErrs := make([]error, 0, len(result.Errors))
+
+	for _, err := range result.Errors {
+		if !errors.Is(err, common.ErrNotFound) {
+			realErrs = append(realErrs, err)
+		}
 	}
 
-	return common.NewBatchReadResult(compactFound(rows, found)), nil
+	if len(realErrs) != 0 {
+		return nil, errors.Join(realErrs...)
+	}
+
+	return common.NewBatchReadResult(rowsInRequestedOrder(result.Records, len(ids))), nil
 }
 
-// compactFound returns only the rows whose id resolved, preserving the order of
-// the ids as they were requested.
-func compactFound(rows []common.ReadResultRow, found []bool) []common.ReadResultRow {
-	out := make([]common.ReadResultRow, 0, len(rows))
+// rowsInRequestedOrder flattens index-keyed records back into the order the ids
+// were requested in, skipping positions that produced no record.
+func rowsInRequestedOrder(records map[int]common.ReadResultRow, total int) []common.ReadResultRow {
+	out := make([]common.ReadResultRow, 0, total)
 
-	for i, ok := range found {
-		if ok {
-			out = append(out, rows[i])
+	for i := range total {
+		if row, ok := records[i]; ok {
+			out = append(out, row)
 		}
 	}
 

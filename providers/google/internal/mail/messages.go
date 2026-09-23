@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/spyzhov/ajson"
 )
 
@@ -36,6 +37,10 @@ import (
 //   - Per-user/per-project quota units:
 //     https://developers.google.com/workspace/gmail/api/reference/quota
 const gmailMaxConcurrentFetches = 5
+
+// errMessageNotFound marks a message that came back 404 so the parallel fetch
+// can skip it without failing the batch. It never escapes fetchMessagesByIDs.
+var errMessageNotFound = errors.New("gmail: message not found")
 
 // fetchMessages retrieves the full message payloads for all message IDs found
 // in the provided collection response.
@@ -97,22 +102,48 @@ func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (
 		return MessageRecords{}, nil
 	}
 
-	messagesChannel := make(chan MessageRecord, len(messageIDs))
-	callbacks := make([]simultaneously.Job, 0, len(messageIDs))
+	tasks := make([]parallelfetch.Task[int, MessageRecord], len(messageIDs))
 
-	for _, messageID := range messageIDs {
-		callbacks = append(callbacks, a.fetchMessage(messagesChannel, messageID))
+	for i, messageID := range messageIDs {
+		idx, currentID := i, messageID
+
+		tasks[idx] = func(ctx context.Context) (int, *MessageRecord, error) {
+			message, err := a.fetchMessageRecord(ctx, currentID)
+			if err != nil {
+				return idx, nil, err
+			}
+
+			if message == nil {
+				// Skipped (404). Reported as a sentinel rather than a nil record
+				// because parallelfetch treats every non-error task as carrying one.
+				return idx, nil, errMessageNotFound
+			}
+
+			return idx, message, nil
+		}
 	}
 
-	if err := simultaneously.DoCtx(ctx, gmailMaxConcurrentFetches, callbacks...); err != nil {
-		return nil, err
+	// parallelfetch attempts every id and collects each failure against its own
+	// task, so one bad id no longer cancels the fetches still in flight.
+	result := parallelfetch.Execute(ctx, tasks, gmailMaxConcurrentFetches)
+
+	// A message that no longer exists is skipped rather than failing the batch,
+	// as it was before. Every other failure still fails the call as a whole.
+	realErrs := make([]error, 0, len(result.Errors))
+
+	for _, err := range result.Errors {
+		if !errors.Is(err, errMessageNotFound) {
+			realErrs = append(realErrs, err)
+		}
 	}
 
-	close(messagesChannel)
+	if len(realErrs) != 0 {
+		return nil, errors.Join(realErrs...)
+	}
 
 	messageRegistry := make(MessageRecords, len(messageIDs))
 
-	for message := range messagesChannel {
+	for _, message := range result.Records {
 		id, ok := message["id"].(string)
 		if !ok {
 			return nil, errors.New("missing field 'id' in response for object 'messages'") // nolint:err113
@@ -134,29 +165,13 @@ func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (
 func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId string,
 ) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
-		url, err := a.getMessageURL(messageId)
+		message, err := a.fetchMessageRecord(ctx, messageId)
 		if err != nil {
 			return err
 		}
 
-		resp, err := a.JSONHTTPClient().Get(ctx, url.String())
-		if err != nil {
-			var httpErr *common.HTTPError
-			if errors.As(err, &httpErr) && httpErr.Status == http.StatusNotFound {
-				logging.Logger(ctx).Debug(
-					"gmail: message not found, skipping",
-					"messageId", messageId,
-				)
-
-				return nil
-			}
-
-			return err
-		}
-
-		message, err := common.UnmarshalJSON[MessageRecord](resp)
-		if err != nil {
-			return err
+		if message == nil {
+			return nil
 		}
 
 		select {
@@ -166,6 +181,32 @@ func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId str
 			return ctx.Err()
 		}
 	}
+}
+
+// fetchMessageRecord fetches a single message by ID. A 404 yields (nil, nil):
+// the message is gone and callers skip it rather than failing the whole batch.
+func (a *Adapter) fetchMessageRecord(ctx context.Context, messageId string) (*MessageRecord, error) {
+	url, err := a.getMessageURL(messageId)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := a.JSONHTTPClient().Get(ctx, url.String())
+	if err != nil {
+		var httpErr *common.HTTPError
+		if errors.As(err, &httpErr) && httpErr.Status == http.StatusNotFound {
+			logging.Logger(ctx).Debug(
+				"gmail: message not found, skipping",
+				"messageId", messageId,
+			)
+
+			return nil, nil //nolint:nilnil
+		}
+
+		return nil, err
+	}
+
+	return common.UnmarshalJSON[MessageRecord](resp)
 }
 
 func messagesEmbedMessageRaw(messages MessageRecords) common.RecordTransformer {

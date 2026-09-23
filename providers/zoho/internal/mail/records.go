@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/spyzhov/ajson"
 )
 
@@ -61,13 +61,15 @@ func (a *Adapter) GetRecordsByIds(
 	// Zoho Mail has no batch endpoint, so each id is fetched on its own. Results
 	// are written to a per-id slot so the output order stays the order the ids
 	// were requested in, independent of which fetch finishes first.
-	rows := make([]common.ReadResultRow, len(recordIds))
-	jobs := make([]simultaneously.Job, len(recordIds))
+	// Tasks are keyed by the id's position rather than the id itself, so the
+	// output order follows the requested order and a repeated id still gets its
+	// own slot.
+	tasks := make([]parallelfetch.Task[int, common.ReadResultRow], len(recordIds))
 
 	for i, recordID := range recordIds {
 		idx, currentID := i, recordID
 
-		jobs[idx] = func(ctx context.Context) error {
+		tasks[idx] = func(ctx context.Context) (int, *common.ReadResultRow, error) {
 			var (
 				row common.ReadResultRow
 				err error
@@ -80,17 +82,25 @@ func (a *Adapter) GetRecordsByIds(
 			}
 
 			if err != nil {
-				return err
+				return idx, nil, err
 			}
 
-			rows[idx] = row
-
-			return nil
+			return idx, &row, nil
 		}
 	}
 
-	if err := simultaneously.DoCtx(ctx, maxConcurrentRecordFetch, jobs...); err != nil {
-		return nil, err
+	// parallelfetch attempts every id and collects each failure against its own
+	// task, so one bad id no longer cancels the fetches still in flight.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+	if len(result.Errors) != 0 {
+		return nil, errors.Join(result.Errors.Values()...)
+	}
+
+	rows := make([]common.ReadResultRow, 0, len(recordIds))
+	for i := range recordIds {
+		if row, ok := result.Records[i]; ok {
+			rows = append(rows, row)
+		}
 	}
 
 	return common.NewBatchReadResult(rows), nil

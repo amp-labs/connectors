@@ -7,10 +7,10 @@ import (
 	"maps"
 	"strings"
 
-	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/graphql"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 )
 
 // Jobber webhook payloads carry only record IDs, so subscription processing
@@ -60,26 +60,36 @@ func (c *Connector) GetRecordsByIds(
 	fieldSet := datautils.NewSetFromList(fields)
 	singular := getObjectName(objectName)
 
-	rows := make([]common.ReadResultRow, len(recordIds))
-	jobs := make([]simultaneously.Job, len(recordIds))
+	// Tasks are keyed by the id's position rather than the id itself, so the
+	// output order follows the requested order and a repeated id still gets its
+	// own slot.
+	tasks := make([]parallelfetch.Task[int, common.ReadResultRow], len(recordIds))
 
 	for i, recordID := range recordIds {
 		idx, id := i, recordID
 
-		jobs[idx] = func(ctx context.Context) error {
+		tasks[idx] = func(ctx context.Context) (int, *common.ReadResultRow, error) {
 			row, err := c.fetchSingleRecord(ctx, singular, id, fieldSet)
 			if err != nil {
-				return fmt.Errorf("fetch %s/%s: %w", objectName, id, err)
+				return idx, nil, fmt.Errorf("fetch %s/%s: %w", objectName, id, err)
 			}
 
-			rows[idx] = row
-
-			return nil
+			return idx, &row, nil
 		}
 	}
 
-	if err := simultaneously.DoCtx(ctx, maxConcurrentRecordFetch, jobs...); err != nil {
-		return nil, err
+	// parallelfetch attempts every id and collects each failure against its own
+	// task, so one bad id no longer cancels the fetches still in flight.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+	if len(result.Errors) != 0 {
+		return nil, errors.Join(result.Errors.Values()...)
+	}
+
+	rows := make([]common.ReadResultRow, 0, len(recordIds))
+	for i := range recordIds {
+		if row, ok := result.Records[i]; ok {
+			rows = append(rows, row)
+		}
 	}
 
 	return common.NewBatchReadResult(rows), nil
