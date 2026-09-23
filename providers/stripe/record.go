@@ -7,6 +7,7 @@ import (
 	"maps"
 	"strings"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
@@ -16,6 +17,11 @@ import (
 )
 
 var _ connectors.BatchRecordReaderConnector = &Connector{}
+
+// maxConcurrentRecordFetch bounds the per-id fan-out. Stripe publishes no
+// per-connector limit we track here, so this matches the cap the other
+// fan-out connectors settled on (acculynx, jobber).
+const maxConcurrentRecordFetch = 4
 
 // GetRecordsByIds fetches full records from Stripe for a specific set of IDs.
 // Since Stripe doesn't support batch fetching, this method makes individual
@@ -45,22 +51,53 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
-	results := make([]common.ReadResultRow, 0, len(ids))
+	rows := make([]common.ReadResultRow, len(ids))
+	found := make([]bool, len(ids))
+	jobs := make([]simultaneously.Job, len(ids))
 
-	for _, recordID := range ids {
-		row, err := c.fetchSingleRecord(ctx, objectName, recordID, fields, associations)
-		if err != nil {
-			if errors.Is(err, common.ErrNotFound) {
-				continue
+	for i, recordID := range ids {
+		idx, currentID := i, recordID
+
+		jobs[idx] = func(ctx context.Context) error {
+			row, err := c.fetchSingleRecord(ctx, objectName, currentID, fields, associations)
+			if err != nil {
+				// A record that no longer exists is skipped rather than failing the
+				// batch, as it was when these fetches ran sequentially. Returning nil
+				// here also keeps the sibling fetches alive, since DoCtx cancels the
+				// shared context as soon as any job returns an error.
+				if errors.Is(err, common.ErrNotFound) {
+					return nil
+				}
+
+				return err
 			}
 
-			return nil, err
-		}
+			rows[idx] = *row
+			found[idx] = true
 
-		results = append(results, *row)
+			return nil
+		}
 	}
 
-	return common.NewBatchReadResult(results), nil
+	if err := simultaneously.DoCtx(ctx, maxConcurrentRecordFetch, jobs...); err != nil {
+		return nil, err
+	}
+
+	return common.NewBatchReadResult(compactFound(rows, found)), nil
+}
+
+// compactFound returns only the rows whose id resolved, preserving the order of
+// the ids as they were requested.
+func compactFound(rows []common.ReadResultRow, found []bool) []common.ReadResultRow {
+	out := make([]common.ReadResultRow, 0, len(rows))
+
+	for i, ok := range found {
+		if ok {
+			out = append(out, rows[i])
+		}
+	}
+
+	return out
 }
 
 // fetchSingleRecord fetches and processes a single record by ID.
