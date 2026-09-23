@@ -65,12 +65,14 @@ func run() error {
 	}
 
 	// https://learn.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
-	res, err := conn.GetRecordsByIds(ctx,
+	batchRes, err := conn.GetRecordsByIds(ctx,
 		"me/messages", messageIdentifiers,
 		[]string{"subject", "from", "toRecipients", "body"}, nil)
 	if err != nil {
 		return err
 	}
+
+	res := batchRes.Rows
 
 	displayResults(res, messageIdentifiers)
 

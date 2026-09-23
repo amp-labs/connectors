@@ -29,7 +29,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	ids []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	// Sanitize method arguments.
 	config := common.ReadParams{
 		ObjectName:        objectName,
@@ -42,7 +42,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	}
 
 	if len(ids) == 0 {
-		return []common.ReadResultRow{}, nil
+		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
 	results := make([]common.ReadResultRow, 0, len(ids))
@@ -60,7 +60,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 		results = append(results, *row)
 	}
 
-	return results, nil
+	return common.NewBatchReadResult(results), nil
 }
 
 // fetchSingleRecord fetches and processes a single record by ID.

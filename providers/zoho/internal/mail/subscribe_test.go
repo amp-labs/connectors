@@ -207,9 +207,11 @@ func TestGetRecordsByIds(t *testing.T) {
 
 	adapter := constructTestAdapter(t, server.URL, testAccountID)
 
-	rows, err := adapter.GetRecordsByIds(context.Background(), objectNameMessages,
+	batchRes, err := adapter.GetRecordsByIds(context.Background(), objectNameMessages,
 		[]string{folderID + "/" + messageID}, connectors.Fields("subject").List(), nil)
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, rows[0].Id, folderID+"/"+messageID)
 	assert.Equal(t, rows[0].Fields["subject"], "Marketing - Product pitch")
@@ -382,17 +384,21 @@ func TestGetTaskRecordsByIds(t *testing.T) {
 	adapter := constructTestAdapter(t, server.URL, testAccountID)
 
 	// Group task: composite "<groupId>/<taskId>".
-	rows, err := adapter.GetRecordsByIds(context.Background(), objectNameTasks,
+	batchRes, err := adapter.GetRecordsByIds(context.Background(), objectNameTasks,
 		[]string{groupID + "/" + taskID}, connectors.Fields("title").List(), nil)
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, rows[0].Id, groupID+"/"+taskID)
 	assert.Equal(t, rows[0].Fields["title"], "Prepare pitch deck")
 
 	// Personal task: bare "<taskId>".
-	rows, err = adapter.GetRecordsByIds(context.Background(), objectNameTasks,
+	batchRes, err = adapter.GetRecordsByIds(context.Background(), objectNameTasks,
 		[]string{taskID}, connectors.Fields("title").List(), nil)
 	assert.NilError(t, err)
+
+	rows = batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, rows[0].Id, taskID)
 	assert.Equal(t, rows[0].Fields["title"], "Personal task")

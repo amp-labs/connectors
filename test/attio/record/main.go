@@ -55,7 +55,7 @@ func main() {
 
 	// Step 2: Fetch the created records using GetRecordsByIds
 	slog.Info("Fetching companies by IDs...")
-	res, err := conn.GetRecordsByIds(ctx,
+	batchRes, err := conn.GetRecordsByIds(ctx,
 		"companies",
 		recordIDs,
 		[]string{"id", "name", "web_url", "description", "created_at"},
@@ -63,6 +63,8 @@ func main() {
 	if err != nil {
 		utils.Fail("error getting records by ids", "error", err)
 	}
+
+	res := batchRes.Rows
 
 	utils.DumpJSON(res, os.Stdout)
 

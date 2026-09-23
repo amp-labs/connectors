@@ -250,7 +250,7 @@ func (c *Connector) GetRecordsByIds(ctx context.Context, // nolint: revive
 	recordIds []string, //nolint:revive
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	if c.Calendar != nil {
 		return c.Calendar.GetRecordsByIds(ctx, objectName, recordIds, fields, associations)
 	}
