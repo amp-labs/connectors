@@ -90,7 +90,13 @@ func (c *Connector) GetRecordsByIds(
 		return nil, err
 	}
 
-	return common.NewBatchReadResult(rows), nil
+	result := common.NewBatchReadResult(rows)
+
+	// TODO(ENG-4414): take failure reasons from the 207 response's errors array
+	// instead of reporting every missing id as not found.
+	result.ReportMissingIds(ids)
+
+	return result, nil
 }
 
 func (c *Connector) buildBatchRecordsURL(objectName string, associations []string) (string, error) {
