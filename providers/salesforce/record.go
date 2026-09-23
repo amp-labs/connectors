@@ -50,7 +50,10 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 		return nil, err
 	}
 
-	return common.NewBatchReadResult(readResult.Data), nil
+	result := common.NewBatchReadResult(readResult.Data)
+	result.ReportMissingIds(ids)
+
+	return result, nil
 }
 
 type recordsByIDsParams struct {
