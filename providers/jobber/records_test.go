@@ -98,8 +98,16 @@ func TestGetRecordsByIds_RecordNotFound(t *testing.T) {
 	conn, err := constructTestConnector(srv.URL)
 	assert.NilError(t, err)
 
-	_, err = conn.GetRecordsByIds(context.Background(), "clients", []string{"MQ=="}, nil, nil)
-	assert.Assert(t, errors.Is(err, errRecordFetchNotFound))
+	batchRes, err := conn.GetRecordsByIds(context.Background(), "clients", []string{"MQ=="}, nil, nil)
+
+	// A missing record is reported against its own id rather than failing the
+	// call, and classified not-found so the caller does not retry it.
+	assert.NilError(t, err)
+	assert.Equal(t, len(batchRes.Rows), 0)
+	assert.Equal(t, len(batchRes.Failures), 1)
+	assert.Equal(t, batchRes.Failures[0].RecordId, "MQ==")
+	assert.Equal(t, batchRes.Failures[0].Reason, common.FailureReasonNotFound)
+	assert.Assert(t, errors.Is(batchRes.Failures[0].Err, errRecordFetchNotFound))
 }
 
 func TestGetRecordsByIds_GraphQLErrorSurfaces(t *testing.T) {
@@ -116,6 +124,12 @@ func TestGetRecordsByIds_GraphQLErrorSurfaces(t *testing.T) {
 	conn, err := constructTestConnector(srv.URL)
 	assert.NilError(t, err)
 
-	_, err = conn.GetRecordsByIds(context.Background(), "visits", []string{"MQ=="}, nil, nil)
-	assert.Assert(t, errors.Is(err, errRecordFetchFailed))
+	batchRes, err := conn.GetRecordsByIds(context.Background(), "visits", []string{"MQ=="}, nil, nil)
+
+	// A GraphQL error is reported against its own id rather than failing the call.
+	assert.NilError(t, err)
+	assert.Equal(t, len(batchRes.Rows), 0)
+	assert.Equal(t, len(batchRes.Failures), 1)
+	assert.Equal(t, batchRes.Failures[0].RecordId, "MQ==")
+	assert.Assert(t, errors.Is(batchRes.Failures[0].Err, errRecordFetchFailed))
 }

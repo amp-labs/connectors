@@ -2,7 +2,6 @@ package housecallpro
 
 import (
 	"context"
-	"errors"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
@@ -64,9 +63,6 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	// parallelfetch attempts every id and collects each failure against its own
 	// task, so one bad id no longer cancels the fetches still in flight.
 	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
-	if len(result.Errors) != 0 {
-		return nil, errors.Join(result.Errors.Values()...)
-	}
 
 	out := make([]common.ReadResultRow, 0, len(recordIDs))
 
@@ -78,7 +74,17 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 
 	extractAssociations(objectName, associations, out)
 
-	return common.NewBatchReadResult(out), nil
+	batch := common.NewBatchReadResult(out)
+
+	// Each failure is reported against the id that produced it rather than
+	// collapsing the batch into one error.
+	for idx, err := range result.Errors {
+		batch.AddFailure(recordIDs[idx], err)
+	}
+
+	batch.SortFailuresByRequestOrder(recordIDs)
+
+	return batch, nil
 }
 
 // fetchSingleRecord fetches one record by id and marshals it into rows.

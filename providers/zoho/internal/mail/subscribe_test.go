@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -226,9 +227,17 @@ func TestGetRecordsByIds(t *testing.T) {
 	_, err = adapter.GetRecordsByIds(context.Background(), objectNameMessages, nil, nil, nil)
 	assert.ErrorIs(t, err, errNoRecordIDs)
 
-	// Malformed composite id (no folderId) is rejected for messages.
-	_, err = adapter.GetRecordsByIds(context.Background(), objectNameMessages, []string{"no-separator"}, nil, nil)
-	assert.ErrorIs(t, err, errInvalidRecordID)
+	// A malformed composite id (no folderId) now fails only its own entry, so
+	// one bad webhook payload no longer sinks the batch. It is classified
+	// permanent because a malformed id will never resolve on retry.
+	malformed, err := adapter.GetRecordsByIds(
+		context.Background(), objectNameMessages, []string{"no-separator"}, nil, nil)
+	assert.NilError(t, err)
+	assert.Equal(t, len(malformed.Rows), 0)
+	assert.Equal(t, len(malformed.Failures), 1)
+	assert.Equal(t, malformed.Failures[0].RecordId, "no-separator")
+	assert.Equal(t, malformed.Failures[0].Reason, common.FailureReasonPermanent)
+	assert.Assert(t, errors.Is(malformed.Failures[0].Err, errInvalidRecordID))
 }
 
 // taskWebhookBody is a Zoho Mail Task outgoing-webhook payload. entityId and
