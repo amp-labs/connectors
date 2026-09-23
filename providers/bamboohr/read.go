@@ -25,7 +25,8 @@ const (
 	cursorPageLimitKey = "page[limit]"
 	cursorPageAfterKey = "page[after]"
 
-	dateFormat = "2006-01-02"
+	dateFormat                    = "2006-01-02"
+	defaultWhosOutWindowDaysAhead = 14
 )
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -98,7 +99,7 @@ func addDefaultWhosOutDateRange(endpointURL *urlbuilder.URL) {
 	start := time.Now().UTC()
 
 	endpointURL.WithQueryParam("start", start.Format(dateFormat))
-	endpointURL.WithQueryParam("end", start.AddDate(0, 0, 14).Format(dateFormat))
+	endpointURL.WithQueryParam("end", start.AddDate(0, 0, defaultWhosOutWindowDaysAhead).Format(dateFormat))
 }
 
 func (c *Connector) parseReadResponse(
