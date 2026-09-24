@@ -36,11 +36,6 @@ func main() {
 			PageSize:   100,
 		},
 		{
-			ObjectName: "time_off_requests",
-			Fields:     connectors.Fields("id", "employeeId", "status", "startDate", "endDate"),
-			PageSize:   100,
-		},
-		{
 			ObjectName: "whos_out",
 			Fields:     connectors.Fields("id", "employeeId", "start", "end"),
 			PageSize:   100,
