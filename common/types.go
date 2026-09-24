@@ -773,7 +773,19 @@ type FieldMetadata struct {
 	ProviderType string
 
 	// ReadOnly would indicate if field can be modified or only read.
+	//
+	// This is the collapsed view: it cannot express a field that can be set on create but
+	// not changed afterwards, which is a shape every major CRM has. Permissions carries
+	// the distinction. ReadOnly is kept, and kept populated, because callers depend on it.
 	ReadOnly *bool
+
+	// Permissions describes what the connected credential can actually do with this
+	// field, as reported by the provider.
+	//
+	// Nil when the provider does not report it. A nil member within it means the same
+	// thing for that one operation -- deliberately distinct from false, which is a
+	// positive "no".
+	Permissions *FieldPermissions
 
 	// IsCustom indicates whether the field is user-defined or custom.
 	// True means the field was added by the user, false means it is native to the provider.
@@ -795,6 +807,38 @@ type FieldMetadata struct {
 	// ReferenceTo is the list of object types this field references.
 	// It is applicable only if the ProviderType is "reference" (i.e. a lookup field), otherwise nil.
 	ReferenceTo []string
+}
+
+// FieldPermissions describes what can be done with a field, separating the three
+// operations that ReadOnly collapses into one.
+//
+// The distinction is the onboarding question. "Can this customer write this field" has a
+// different answer for a field that is set once at creation (Createable, not Updateable)
+// than for one that is genuinely immutable, and both collapse to ReadOnly=false today --
+// as does a field that can be updated but not set on create. Salesforce and Dynamics both
+// report the two separately and we were discarding it.
+//
+// Each member is nil when the provider does not report that operation, which is a
+// different statement from false.
+type FieldPermissions struct {
+	// Readable indicates the field can be read.
+	Readable *bool
+
+	// Createable indicates the field can be set when creating a record.
+	Createable *bool
+
+	// Updateable indicates the field can be changed on an existing record.
+	Updateable *bool
+}
+
+// IsWritable reports whether the field can be written in either direction. It is the
+// closest equivalent to !ReadOnly, and returns false when nothing is known.
+func (p *FieldPermissions) IsWritable() bool {
+	if p == nil {
+		return false
+	}
+
+	return (p.Createable != nil && *p.Createable) || (p.Updateable != nil && *p.Updateable)
 }
 
 type FieldsMetadata map[string]FieldMetadata
