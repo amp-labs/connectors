@@ -2,7 +2,6 @@ package atlassian
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
@@ -27,15 +26,17 @@ func makeAtlassianConnector(ctx context.Context, module common.ModuleID) *atlass
 	reader := utils.MustCreateProvCredJSON(filePath, true, fieldCloudID)
 
 	conn, err := atlassian.NewConnector(
-		atlassian.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()),
-		atlassian.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
-		atlassian.WithModule(module),
-		atlassian.WithMetadata(map[string]string{
-			// This value can be obtained by following this API reference.
-			// https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
-			// Another simplest solution is to run `connectors/test/atlassian/auth-metadata/main.go` script.
-			"cloudId": reader.Get(fieldCloudID),
-		}),
+		common.ConnectorParams{
+			Module:              module,
+			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
+			Workspace:           reader.Get(credscanning.Fields.Workspace),
+			Metadata: map[string]string{
+				// This value can be obtained by following this API reference.
+				// https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/#3-1-get-the-cloudid-for-your-site
+				// Another simplest solution is to run `connectors/test/atlassian/auth-metadata/main.go` script.
+				"cloudId": reader.Get(fieldCloudID),
+			},
+		},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)

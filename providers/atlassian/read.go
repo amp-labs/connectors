@@ -60,7 +60,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		reqBody.NextPageToken = config.NextPage.String()
 	}
 
-	resp, err := c.Client.Post(ctx, url.String(), reqBody)
+	resp, err := c.JSONHTTPClient().Post(ctx, url.String(), reqBody)
 	if err != nil {
 		return nil, err
 	}
