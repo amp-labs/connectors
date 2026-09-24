@@ -1,9 +1,10 @@
-package google
+package mail
 
 import (
 	"testing"
 
 	"github.com/amp-labs/connectors"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
@@ -12,27 +13,15 @@ func TestProxy(t *testing.T) { // nolint:funlen,cyclop
 
 	tests := []testconn.Proxy{
 		{
-			Name: "Google Calendar Proxy",
+			Name: "Google Mail Proxy",
 			Builder: func() (connectors.ProxyConnector, error) {
-				return constructTestCalendarConnector("")
+				return constructTestAdapter(mockserver.Dummy())
 			},
 			ExpectedProxy: &connectors.ProxyConfig{
 				URL: "https://www.googleapis.com",
 			},
 			ExpectedModuleProxy: &connectors.ProxyConfig{
-				URL: "https://www.googleapis.com/calendar",
-			},
-		},
-		{
-			Name: "Google Contacts Proxy",
-			Builder: func() (connectors.ProxyConnector, error) {
-				return constructTestContactsConnector("")
-			},
-			ExpectedProxy: &connectors.ProxyConfig{
-				URL: "https://www.googleapis.com",
-			},
-			ExpectedModuleProxy: &connectors.ProxyConfig{
-				URL: "https://people.googleapis.com",
+				URL: "https://gmail.googleapis.com/gmail",
 			},
 		},
 	}

@@ -152,7 +152,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 		},
 		{
 			Name: "Creating messages is not supported",
-			// The write operation is supported by drafts and sentMessages virtual fields.
+			// The write operation is supported by drafts and AMPERSAND-messages virtual object.
 			Input:        common.WriteParams{ObjectName: "me/messages", RecordData: "dummy"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
@@ -190,6 +190,12 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Success: true, RecordId: "753", Data: map[string]any{"subject": "hello"},
 			},
 			ExpectedErrs: nil,
+		},
+		{
+			Name:         "Creating sent messages is not supported",
+			Input:        common.WriteParams{ObjectName: "AMPERSAND-sentMessages", RecordData: "dummy"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
 			Name: "Send message",
