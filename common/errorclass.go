@@ -4,6 +4,7 @@ package common
 import (
 	"errors"
 	"net/http"
+	"slices"
 	"strings"
 )
 
@@ -28,7 +29,15 @@ const (
 	ErrorClassAuthInvalidated ErrorClass = "auth_invalidated"
 
 	// ErrorClassForbidden — authenticated but not authorized for this resource.
+	// The remedy is provider-side: the connected user's roles, profile or permission
+	// sets need changing.
 	ErrorClassForbidden ErrorClass = "forbidden"
+
+	// ErrorClassInsufficientScope — the credential itself lacks a scope the request
+	// needs. A refinement of ErrorClassForbidden, and worth distinguishing because the
+	// remedy is the opposite one: the customer must reconnect granting more scopes, and
+	// no amount of provider-side permission fiddling will help.
+	ErrorClassInsufficientScope ErrorClass = "insufficient_scope"
 
 	// ErrorClassAPIDisabled — the provider-side feature/API is disabled for
 	// this customer's instance (e.g. NetSuite REST Web Services off).
@@ -97,6 +106,31 @@ func newClassedErr(msg string, class ErrorClass) *classedError {
 	return &classedError{err: errors.New(msg), class: class} //nolint:err113
 }
 
+// classedMultiError is a classedError that also presents itself as one or more other
+// sentinels. It exists so a new, more specific sentinel can be introduced without breaking
+// the errors.Is checks written against the broader one it refines.
+type classedMultiError struct {
+	err   error      // the actual error (errors.New)
+	also  []error    // sentinels this error also satisfies
+	class ErrorClass // classification metadata
+}
+
+func (e *classedMultiError) Error() string          { return e.err.Error() }
+func (e *classedMultiError) ErrorClass() ErrorClass { return e.class }
+
+// Unwrap returns the inner error alongside the sentinels this error also satisfies.
+// Classification still resolves to e.class because ClassOf takes the outermost Classifier,
+// which is this value.
+func (e *classedMultiError) Unwrap() []error {
+	return append([]error{e.err}, e.also...)
+}
+
+// newClassedErrAlso constructs a classified sentinel that additionally satisfies
+// errors.Is against each error in `also`.
+func newClassedErrAlso(msg string, class ErrorClass, also ...error) *classedMultiError {
+	return &classedMultiError{err: errors.New(msg), also: also, class: class} //nolint:err113
+}
+
 // ClassOf returns the ErrorClass for an error, walking the error chain.
 //
 // Resolution order:
@@ -119,40 +153,52 @@ func ClassOf(err error) ErrorClass {
 	return classOfMessage(err.Error())
 }
 
-// classOfMessage is the string-content fallback. Patterns derived from
-// production workflow-error samples. Each entry is a class that we can't
-// reliably derive from the typed chain today.
+// messageClassPatterns is the string-content fallback table. Patterns are derived from
+// production workflow-error samples and matched against a lowercased message; the first
+// entry with a matching pattern wins, so order is significant.
+//
+// A table rather than a switch so that adding a class is a data change: the switch this
+// replaced was already at the cyclomatic complexity ceiling, which made every new class a
+// refactor.
+var messageClassPatterns = []struct { //nolint:gochecknoglobals
+	patterns []string
+	class    ErrorClass
+}{
+	{[]string{"no such column", "didn't understand relationship"}, ErrorClassSchemaDriftField},
+	{[]string{"resource not found for the segment", "could not find a property named"}, ErrorClassSchemaDriftObject},
+	{[]string{"currently being migrated"}, ErrorClassProviderMigration},
+	{
+		[]string{"access token invalid", "credentials have been marked as invalid", "this user is locked"},
+		ErrorClassAuthInvalidated,
+	},
+	// "missing_scopes" is HubSpot's error category, "insufficient_scope" is the RFC 6750
+	// challenge, and "missing scopes" is our own sentinel's message surviving a flattened
+	// chain.
+	{[]string{"missing_scopes", "missing scopes", "insufficient_scope"}, ErrorClassInsufficientScope},
+	{[]string{"feature_disabled", "api has not been used in project"}, ErrorClassAPIDisabled},
+	{[]string{"cursor has expired"}, ErrorClassCursorGone},
+	{
+		[]string{"request header fields too large", "precondition check failed", "missing secret"},
+		ErrorClassBadRequest,
+	},
+	{[]string{"non-retryable server error"}, ErrorClassProvider5xxPermanent},
+	{
+		[]string{"http status 5", "internal server error", "unexpected server error"},
+		ErrorClassProvider5xx,
+	},
+}
+
+// classOfMessage is the string-content fallback, for cases where Temporal or another layer
+// has flattened the error chain into a raw string and lost the typed sentinel.
 func classOfMessage(raw string) ErrorClass {
 	msg := strings.ToLower(raw)
 
-	switch {
-	case strings.Contains(msg, "no such column"),
-		strings.Contains(msg, "didn't understand relationship"):
-		return ErrorClassSchemaDriftField
-	case strings.Contains(msg, "resource not found for the segment"),
-		strings.Contains(msg, "could not find a property named"):
-		return ErrorClassSchemaDriftObject
-	case strings.Contains(msg, "currently being migrated"):
-		return ErrorClassProviderMigration
-	case strings.Contains(msg, "access token invalid"),
-		strings.Contains(msg, "credentials have been marked as invalid"),
-		strings.Contains(msg, "this user is locked"):
-		return ErrorClassAuthInvalidated
-	case strings.Contains(msg, "feature_disabled"),
-		strings.Contains(msg, "api has not been used in project"):
-		return ErrorClassAPIDisabled
-	case strings.Contains(msg, "cursor has expired"):
-		return ErrorClassCursorGone
-	case strings.Contains(msg, "request header fields too large"),
-		strings.Contains(msg, "precondition check failed"),
-		strings.Contains(msg, "missing secret"):
-		return ErrorClassBadRequest
-	case strings.Contains(msg, "non-retryable server error"):
-		return ErrorClassProvider5xxPermanent
-	case strings.Contains(msg, "http status 5"),
-		strings.Contains(msg, "internal server error"),
-		strings.Contains(msg, "unexpected server error"):
-		return ErrorClassProvider5xx
+	for _, entry := range messageClassPatterns {
+		for _, pattern := range entry.patterns {
+			if strings.Contains(msg, pattern) {
+				return entry.class
+			}
+		}
 	}
 
 	return ErrorClassUnknown
@@ -183,4 +229,25 @@ func classOfHTTPStatus(status int) (ErrorClass, bool) {
 	}
 
 	return "", false
+}
+
+// statusClassRefinements records, per status-derived class, the classes a connector may
+// positively identify as a more specific case of it.
+//
+// The HTTP status is normally the better signal, which is why HTTPError.ErrorClass prefers
+// it. The exception is where the status is simply not capable of carrying the distinction:
+// a 403 tells you the provider said no, but not whether the remedy is "reconnect granting
+// more scopes" or "change the user's provider-side permissions". Those are opposite
+// remedies, so when a connector has read the body and knows which one it is, it wins.
+var statusClassRefinements = map[ErrorClass][]ErrorClass{ //nolint:gochecknoglobals
+	ErrorClassForbidden: {ErrorClassInsufficientScope},
+}
+
+// refinesClass reports whether candidate is a registered, more specific case of base.
+func refinesClass(base, candidate ErrorClass) bool {
+	if candidate == "" || candidate == base {
+		return false
+	}
+
+	return slices.Contains(statusClassRefinements[base], candidate)
 }

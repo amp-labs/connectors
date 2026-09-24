@@ -20,8 +20,18 @@ var (
 	// ErrApiDisabled means a customer didn't enable this API on their SaaS instance.
 	ErrApiDisabled error = newClassedErr("API disabled", ErrorClassAPIDisabled)
 
-	// ErrForbidden means the user doesn't have access to this resource.
+	// ErrForbidden means the user doesn't have access to this resource. The remedy is
+	// provider-side: the connected user's roles, profile or permission sets.
 	ErrForbidden error = newClassedErr("forbidden", ErrorClassForbidden)
+
+	// ErrMissingScopes means the credential itself lacks a scope the request needs, as
+	// opposed to the connected user lacking permission. The remedy is the opposite one:
+	// reconnect granting more scopes.
+	//
+	// It unwraps to ErrForbidden as well, so every existing errors.Is(err, ErrForbidden)
+	// check keeps holding. This refines the forbidden case; it does not replace it.
+	ErrMissingScopes error = newClassedErrAlso(
+		"missing scopes", ErrorClassInsufficientScope, ErrForbidden)
 
 	// ErrInvalidSessionId means the session ID is invalid.
 	ErrInvalidSessionId = errors.New("invalid session id")
@@ -651,18 +661,31 @@ func (r HTTPError) Unwrap() error {
 // the primary signal (e.g. 401 → auth_invalidated, 477 → provider_migration,
 // 5xx → provider_5xx); if the status doesn't map cleanly, we defer to the
 // wrapped error, which self-classifies via the Classifier interface.
+//
+// The one case where the wrapped error beats the status is a registered refinement (see
+// statusClassRefinements): a connector that read the body and positively identified a more
+// specific case than the status can express. Without that, a 403 would always flatten to
+// "forbidden" and insufficient_scope would be unreachable.
 func (r HTTPError) ErrorClass() ErrorClass {
+	var wrapped ErrorClass
+
+	if r.err != nil {
+		var c Classifier
+		if errors.As(r.err, &c) {
+			wrapped = c.ErrorClass()
+		}
+	}
+
 	if class, ok := classOfHTTPStatus(r.Status); ok {
+		if refinesClass(class, wrapped) {
+			return wrapped
+		}
+
 		return class
 	}
 
-	if r.err == nil {
-		return ErrorClassUnknown
-	}
-
-	var c Classifier
-	if errors.As(r.err, &c) {
-		return c.ErrorClass()
+	if wrapped != "" {
+		return wrapped
 	}
 
 	return ErrorClassUnknown
