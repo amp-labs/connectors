@@ -138,6 +138,10 @@ func (c *Connector) Provider() providers.Provider {
 
 // String returns a human-readable identifier for this connector. Declared for the same reason as
 // Provider: the verifier connector has no base to delegate to.
+//
+// It delegates for a second reason beyond Provider's: the base renders
+// "<provider>.Connector[<module>]", so returning a constant here would drop the module from
+// existing log output.
 func (c *Connector) String() string {
 	if c == nil || c.Connector == nil {
 		return c.Provider() + ".Connector"
