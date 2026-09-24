@@ -122,6 +122,7 @@ import (
 	"github.com/amp-labs/connectors/providers/quickbooks"
 	"github.com/amp-labs/connectors/providers/ramp"
 	"github.com/amp-labs/connectors/providers/recurly"
+	"github.com/amp-labs/connectors/providers/reply"
 	"github.com/amp-labs/connectors/providers/revenuecat"
 	"github.com/amp-labs/connectors/providers/ringcentral"
 	"github.com/amp-labs/connectors/providers/sageintacct"
@@ -293,6 +294,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Ramp:                              wrapper(newRampConnector),
 	providers.RampDemo:                          wrapper(newRampDemoConnector),
 	providers.Recurly:                           wrapper(newRecurlyConnector),
+	providers.Reply:                             wrapper(newReplyConnector),
 	providers.RevenueCat:                        wrapper(newRevenueCatConnector),
 	providers.RingCentral:                       wrapper(newRingCentral),
 	providers.SageIntacct:                       wrapper(newSageIntacctConnector),
@@ -906,6 +908,12 @@ func newSellsyConnector(
 	params common.ConnectorParams,
 ) (*sellsy.Connector, error) {
 	return sellsy.NewConnector(params)
+}
+
+func newReplyConnector(
+	params common.ConnectorParams,
+) (*reply.Connector, error) {
+	return reply.NewConnector(params)
 }
 
 func newServiceNowConnector(
