@@ -53,24 +53,26 @@ func init() {
 					DocsURL: "https://doc.workday.com/",
 				},
 				{
-					Name:        "tenantName",
-					DisplayName: "Tenant Name",
-					Prompt: "Tenant name from the Token Endpoint shown in View API Clients. " +
-						"It appears right after `/oauth2/` and before `/token`.",
-					// The literal below only applies when ProviderInfo is resolved
-					// without a connection, as creating the provider app does.
-					// It exists because catalog substitution runs with
-					// missingkey=error, so an undefaulted variable fails that call.
-					DefaultValue: "tenant_name",
-					DocsURL:      "https://doc.workday.com/",
-				},
-				{
 					Name:        "authHost",
 					DisplayName: "Authorization Host",
 					Prompt: "Host of the Authorization Endpoint shown in View API Clients, " +
 						"e.g. `impl.workday.com` or `wd3.myworkday.com`.",
 					DefaultValue: "impl.workday.com",
 					DocsURL:      "https://doc.workday.com/",
+				},
+			},
+		},
+		ProviderAppMetadata: &ProviderAppMetadata{
+			ProviderParams: []MetadataItemInput{
+				{
+					// The API client is registered inside the Workday tenant, so the
+					// tenant is fixed per provider app and is needed to build the
+					// OAuth URLs before any connection exists.
+					Name:        "tenantName",
+					DisplayName: "Tenant Name",
+					Prompt: "Tenant name from the Token Endpoint shown in View API Clients. " +
+						"It appears right after `/oauth2/` and before `/token`.",
+					DocsURL: "https://doc.workday.com/",
 				},
 			},
 		},

@@ -2,9 +2,9 @@ package providers
 
 import "testing"
 
-// The provider app is created before any connection exists, so the Workday
-// OAuth URLs must resolve from the workspace alone. The tenant and the
-// authorization host are only known once a connection supplies them.
+// The tenant is collected when the provider app is created, so the Workday
+// OAuth URLs must resolve from the workspace and tenant alone. The
+// authorization host falls back to its default until a connection supplies it.
 func TestWorkdayReadInfo(t *testing.T) {
 	t.Parallel()
 
@@ -16,14 +16,17 @@ func TestWorkdayReadInfo(t *testing.T) {
 		tokenURL string
 	}{
 		{
-			name:     "Resolves without a connection using input defaults",
-			vars:     []string{"workspace", "wd2-impl-services1.workday.com"},
+			name: "Resolves with provider app inputs using the default authorization host",
+			vars: []string{
+				"workspace", "wd2-impl-services1.workday.com",
+				"tenantName", "acme_pt1",
+			},
 			baseURL:  "https://wd2-impl-services1.workday.com",
-			authURL:  "https://impl.workday.com/tenant_name/authorize",
-			tokenURL: "https://wd2-impl-services1.workday.com/ccx/oauth2/tenant_name/token",
+			authURL:  "https://impl.workday.com/acme_pt1/authorize",
+			tokenURL: "https://wd2-impl-services1.workday.com/ccx/oauth2/acme_pt1/token",
 		},
 		{
-			name: "Connection inputs override the defaults",
+			name: "Connection inputs override the default authorization host",
 			vars: []string{
 				"workspace", "wd3-services1.myworkday.com",
 				"tenantName", "acme",
