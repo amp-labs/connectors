@@ -168,6 +168,27 @@ func TestPrepareQuotaOptimizationObjectFieldsForUpdate(t *testing.T) { //nolint:
 			expectedRemainingPrevState: map[common.ObjectName]string{},
 		},
 		{
+			// The migration case: an object provisioned under one spelling, requested under
+			// another. It is the same object, so it is neither new nor up for teardown.
+			name: "Object requested with different casing matches the provisioned entry",
+			req: &SubscriptionRequest{
+				QuotaOptimizationObjectFields: map[common.ObjectName]string{
+					"account": "field_a",
+				},
+			},
+			prevState: &SubscribeResult{
+				QuotaOptimizationObjectFields: map[common.ObjectName]string{
+					"Account": "field_a",
+					"Lead":    "field_c",
+				},
+			},
+			expectedNewFields: map[common.ObjectName]string{},
+			// Account removed under its stored key, Lead remains for teardown.
+			expectedRemainingPrevState: map[common.ObjectName]string{
+				"Lead": "field_c",
+			},
+		},
+		{
 			name: "Nil prevState QuotaOptimizationObjectFields - all req fields are new",
 			req: &SubscriptionRequest{
 				QuotaOptimizationObjectFields: map[common.ObjectName]string{
