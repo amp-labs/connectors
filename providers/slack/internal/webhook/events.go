@@ -1,12 +1,39 @@
 package webhook
 
-import "github.com/amp-labs/connectors/common"
+import (
+	"strings"
+
+	"github.com/amp-labs/connectors/common"
+)
 
 const (
 	typeCreate = common.SubscriptionEventTypeCreate
 	typeUpdate = common.SubscriptionEventTypeUpdate
 	typeDelete = common.SubscriptionEventTypeDelete
 	typeOther  = common.SubscriptionEventTypeOther
+)
+
+// objectNameMessages is the object name for Slack message events. Unlike the other
+// objects, messages have no standalone id (a message is identified by its channel and
+// ts pair) and no by-id fetch endpoint, so they get special handling in RecordId and
+// carry their record inline via MessageEvent.
+const objectNameMessages = "messages"
+
+// ObjectRecordsInline reports whether subscription events for the object carry the full
+// record inline in the webhook payload, which is the only source for it. This is true
+// for messages alone: Slack exposes no singular lookup for a message, so GetRecordsByIds
+// cannot serve one, while every message event ships the message itself.
+func ObjectRecordsInline(objectName string) bool {
+	return strings.EqualFold(objectName, objectNameMessages)
+}
+
+// Message events all arrive with event type "message" and are differentiated by an
+// optional "subtype" field: https://docs.slack.dev/reference/events/message#subtypes
+const (
+	rawEventMessage         = "message"
+	rawEventMessageChanged  = "message_changed"
+	rawEventMessageDeleted  = "message_deleted"
+	rawEventThreadBroadcast = "thread_broadcast"
 )
 
 type eventDescription struct {
@@ -16,32 +43,36 @@ type eventDescription struct {
 
 // nolint:lll,gochecknoglobals
 var eventNameToEventDescription = map[string]eventDescription{
-	"bot_added":               {ObjectName: "bots", Type: typeCreate},          // https://docs.slack.dev/reference/events/bot_added
-	"bot_changed":             {ObjectName: "bots", Type: typeUpdate},          // https://docs.slack.dev/reference/events/bot_changed
-	"call_rejected":           {ObjectName: "calls", Type: typeOther},          // https://docs.slack.dev/reference/events/call_rejected
-	"channel_archive":         {ObjectName: "conversations", Type: typeOther},  // https://docs.slack.dev/reference/events/channel_archive
-	"channel_created":         {ObjectName: "conversations", Type: typeCreate}, // https://docs.slack.dev/reference/events/channel_created
-	"channel_deleted":         {ObjectName: "conversations", Type: typeDelete}, // https://docs.slack.dev/reference/events/channel_deleted
-	"channel_history_changed": {ObjectName: "conversations", Type: typeUpdate}, // https://docs.slack.dev/reference/events/channel_history_changed
-	"channel_id_changed":      {ObjectName: "conversations", Type: typeUpdate}, // https://docs.slack.dev/reference/events/channel_id_changed
-	"channel_joined":          {ObjectName: "conversations", Type: typeUpdate}, // https://docs.slack.dev/reference/events/channel_joined
-	"channel_left":            {ObjectName: "conversations", Type: typeUpdate}, // https://docs.slack.dev/reference/events/channel_left
-	"channel_rename":          {ObjectName: "conversations", Type: typeUpdate}, // https://docs.slack.dev/reference/events/channel_rename
-	"channel_unarchive":       {ObjectName: "conversations", Type: typeOther},  // https://docs.slack.dev/reference/events/channel_unarchive
-	"file_change":             {ObjectName: "files", Type: typeUpdate},         // https://docs.slack.dev/reference/events/file_change
-	"file_created":            {ObjectName: "files", Type: typeCreate},         // https://docs.slack.dev/reference/events/file_created
-	"file_deleted":            {ObjectName: "files", Type: typeDelete},         // https://docs.slack.dev/reference/events/file_deleted
-	"group_archive":           {ObjectName: "conversations", Type: typeOther},  // https://docs.slack.dev/reference/events/group_archive
-	"group_deleted":           {ObjectName: "conversations", Type: typeDelete}, // https://docs.slack.dev/reference/events/group_deleted
-	"group_joined":            {ObjectName: "conversations", Type: typeUpdate}, // https://docs.slack.dev/reference/events/group_joined
-	"group_left":              {ObjectName: "conversations", Type: typeUpdate}, // https://docs.slack.dev/reference/events/group_left
-	"group_rename":            {ObjectName: "conversations", Type: typeUpdate}, // https://docs.slack.dev/reference/events/group_rename
-	"group_unarchive":         {ObjectName: "conversations", Type: typeOther},  // https://docs.slack.dev/reference/events/group_unarchive
-	"im_created":              {ObjectName: "conversations", Type: typeCreate}, // https://docs.slack.dev/reference/events/im_created
-	"im_history_changed":      {ObjectName: "conversations", Type: typeCreate}, // https://docs.slack.dev/reference/events/im_history_changed
-	"member_joined_channel":   {ObjectName: "conversations", Type: typeUpdate}, // https://docs.slack.dev/reference/events/member_joined_channel
-	"member_left_channel":     {ObjectName: "conversations", Type: typeUpdate}, // https://docs.slack.dev/reference/events/member_left_channel
-	"user_change":             {ObjectName: "users", Type: typeUpdate},         // https://docs.slack.dev/reference/events/user_change
-	"user_profile_changed":    {ObjectName: "users", Type: typeUpdate},         // https://docs.slack.dev/reference/events/user_profile_changed
-	"user_status_changed":     {ObjectName: "users", Type: typeUpdate},         // https://docs.slack.dev/reference/events/user_status_changed/
+	"bot_added":               {ObjectName: "bots", Type: typeCreate},             // https://docs.slack.dev/reference/events/bot_added
+	"bot_changed":             {ObjectName: "bots", Type: typeUpdate},             // https://docs.slack.dev/reference/events/bot_changed
+	"call_rejected":           {ObjectName: "calls", Type: typeOther},             // https://docs.slack.dev/reference/events/call_rejected
+	"channel_archive":         {ObjectName: "conversations", Type: typeOther},     // https://docs.slack.dev/reference/events/channel_archive
+	"channel_created":         {ObjectName: "conversations", Type: typeCreate},    // https://docs.slack.dev/reference/events/channel_created
+	"channel_deleted":         {ObjectName: "conversations", Type: typeDelete},    // https://docs.slack.dev/reference/events/channel_deleted
+	"channel_history_changed": {ObjectName: "conversations", Type: typeUpdate},    // https://docs.slack.dev/reference/events/channel_history_changed
+	"channel_id_changed":      {ObjectName: "conversations", Type: typeUpdate},    // https://docs.slack.dev/reference/events/channel_id_changed
+	"channel_joined":          {ObjectName: "conversations", Type: typeUpdate},    // https://docs.slack.dev/reference/events/channel_joined
+	"channel_left":            {ObjectName: "conversations", Type: typeUpdate},    // https://docs.slack.dev/reference/events/channel_left
+	"channel_rename":          {ObjectName: "conversations", Type: typeUpdate},    // https://docs.slack.dev/reference/events/channel_rename
+	"channel_unarchive":       {ObjectName: "conversations", Type: typeOther},     // https://docs.slack.dev/reference/events/channel_unarchive
+	"file_change":             {ObjectName: "files", Type: typeUpdate},            // https://docs.slack.dev/reference/events/file_change
+	"file_created":            {ObjectName: "files", Type: typeCreate},            // https://docs.slack.dev/reference/events/file_created
+	"file_deleted":            {ObjectName: "files", Type: typeDelete},            // https://docs.slack.dev/reference/events/file_deleted
+	"group_archive":           {ObjectName: "conversations", Type: typeOther},     // https://docs.slack.dev/reference/events/group_archive
+	"group_deleted":           {ObjectName: "conversations", Type: typeDelete},    // https://docs.slack.dev/reference/events/group_deleted
+	"group_joined":            {ObjectName: "conversations", Type: typeUpdate},    // https://docs.slack.dev/reference/events/group_joined
+	"group_left":              {ObjectName: "conversations", Type: typeUpdate},    // https://docs.slack.dev/reference/events/group_left
+	"group_rename":            {ObjectName: "conversations", Type: typeUpdate},    // https://docs.slack.dev/reference/events/group_rename
+	"group_unarchive":         {ObjectName: "conversations", Type: typeOther},     // https://docs.slack.dev/reference/events/group_unarchive
+	"im_created":              {ObjectName: "conversations", Type: typeCreate},    // https://docs.slack.dev/reference/events/im_created
+	"im_history_changed":      {ObjectName: "conversations", Type: typeCreate},    // https://docs.slack.dev/reference/events/im_history_changed
+	"member_joined_channel":   {ObjectName: "conversations", Type: typeUpdate},    // https://docs.slack.dev/reference/events/member_joined_channel
+	"member_left_channel":     {ObjectName: "conversations", Type: typeUpdate},    // https://docs.slack.dev/reference/events/member_left_channel
+	rawEventMessage:           {ObjectName: objectNameMessages, Type: typeCreate}, // https://docs.slack.dev/reference/events/message
+	rawEventMessageChanged:    {ObjectName: objectNameMessages, Type: typeUpdate}, // https://docs.slack.dev/reference/events/message/message_changed
+	rawEventMessageDeleted:    {ObjectName: objectNameMessages, Type: typeDelete}, // https://docs.slack.dev/reference/events/message/message_deleted
+	rawEventThreadBroadcast:   {ObjectName: objectNameMessages, Type: typeCreate}, // https://docs.slack.dev/reference/events/message/thread_broadcast
+	"user_change":             {ObjectName: "users", Type: typeUpdate},            // https://docs.slack.dev/reference/events/user_change
+	"user_profile_changed":    {ObjectName: "users", Type: typeUpdate},            // https://docs.slack.dev/reference/events/user_profile_changed
+	"user_status_changed":     {ObjectName: "users", Type: typeUpdate},            // https://docs.slack.dev/reference/events/user_status_changed/
 }
