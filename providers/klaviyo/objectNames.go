@@ -4,11 +4,11 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/providers/klaviyo/metadata"
+	"github.com/amp-labs/connectors/providers/klaviyo/internal/metadata"
 )
 
 // Supported object names can be found under schemas.json.
-var supportedObjectsByRead = metadata.Schemas.ObjectNames() //nolint:gochecknoglobals
+var supportedObjectsByRead = metadata.Catalog.Objects.KeySet() //nolint:gochecknoglobals
 
 var prioritySinceFieldsForRead = []string{ //nolint:gochecknoglobals
 	"updated_at", // most desired field for incremental readin
@@ -19,25 +19,21 @@ var prioritySinceFieldsForRead = []string{ //nolint:gochecknoglobals
 	"created", // least preferred field
 }
 
-var objectsNameToSinceFieldName = make(map[common.ModuleID]map[string]string) //nolint:gochecknoglobals
+var objectsNameToSinceFieldName = make(map[string]string) //nolint:gochecknoglobals
 
 func init() {
 	// Every object should be associated with a fieldName which will be used for iterative reading via Since parameter.
 	// Instead of recalculating this over and over on package start we can "find" fields of interest.
 	// There is a preferred choice when it comes to time filtering represented by `prioritySinceFieldsForRead`.
-	for moduleID, module := range metadata.Schemas.Modules {
-		objectsNameToSinceFieldName[moduleID] = make(map[string]string)
+	for objectName, object := range metadata.Catalog.Objects {
+	Search:
+		for _, preferredSinceField := range prioritySinceFieldsForRead {
+			for currentField := range object.Fields {
+				if preferredSinceField == currentField {
+					objectsNameToSinceFieldName[objectName] = preferredSinceField
 
-		for objectName, object := range module.Objects {
-		Search:
-			for _, preferredSinceField := range prioritySinceFieldsForRead {
-				for currentField := range object.Fields {
-					if preferredSinceField == currentField {
-						objectsNameToSinceFieldName[moduleID][objectName] = preferredSinceField
-
-						// break search for this object
-						break Search
-					}
+					// break search for this object
+					break Search
 				}
 			}
 		}
@@ -292,7 +288,7 @@ var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ //nolint:
 	objectNameClientBackInStockSubscriptions: "client/back-in-stock-subscriptions",
 },
 	func(objectName string) (jsonPath string) {
-		return "api/" + objectName
+		return apiUriPart + "/" + objectName
 	},
 )
 
