@@ -50,7 +50,7 @@ func init() {
 					DisplayName: "Web Services Host",
 					Prompt: "Host of the Workday REST API Endpoint shown in View API Clients, " +
 						"e.g. `wd2-impl-services1.workday.com`.",
-					DocsURL: "https://doc.workday.com/",
+					DocsURL: "https://doc.workday.com/peakon/en-us/workday-peakon-employee-voice/integrations/workday-integration/nfa1667304944189.html", //nolint:lll
 				},
 				{
 					Name:        "authHost",
@@ -58,7 +58,7 @@ func init() {
 					Prompt: "Host of the Authorization Endpoint shown in View API Clients, " +
 						"e.g. `impl.workday.com` or `wd3.myworkday.com`.",
 					DefaultValue: "impl.workday.com",
-					DocsURL:      "https://doc.workday.com/",
+					DocsURL:      "https://doc.workday.com/peakon/en-us/workday-peakon-employee-voice/integrations/workday-integration/nfa1667304944189.html", //nolint:lll
 				},
 			},
 		},
@@ -70,9 +70,10 @@ func init() {
 					// OAuth URLs before any connection exists.
 					Name:        "tenantName",
 					DisplayName: "Tenant Name",
-					Prompt: "Tenant name from the Token Endpoint shown in View API Clients. " +
-						"It appears right after `/oauth2/` and before `/token`.",
-					DocsURL: "https://doc.workday.com/",
+					Prompt: "Tenant name (e.g. `acme_dpt1`) from the Token Endpoint shown in View API Clients. " +
+						"It appears right after `/oauth2/` and before `/token`, " +
+						"as in `https://wd2-impl-services1.workday.com/ccx/oauth2/acme_dpt1/token`.",
+					DocsURL: "https://doc.workday.com/peakon/en-us/workday-peakon-employee-voice/integrations/workday-integration/nfa1667304944189.html", //nolint:lll
 				},
 			},
 		},
