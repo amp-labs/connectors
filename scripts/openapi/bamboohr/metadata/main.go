@@ -88,8 +88,8 @@ var displayNameOverrides = map[string]string{
 var objectNameToResponseField = datautils.NewDefaultMap(map[string]string{
 	"employees":           "data",
 	"employees_directory": "employees",
-	"time_off_requests":   "timeOffRequests",
-	"whos_out":            "employees",
+	"time_off_requests":   "data",
+	"whos_out":            "data",
 },
 	func(objectName string) string {
 		return ""

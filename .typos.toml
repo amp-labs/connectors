@@ -55,6 +55,7 @@ extend-ignore-identifiers-re = [
 [default.extend-words]
 # API endpoint names (external APIs)
 vists = "vists"
+whos = "whos"
 # SQL/filter operators (NOT IN)
 NIN = "NIN"
 

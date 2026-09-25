@@ -1,0 +1,30 @@
+{
+  "fields": [
+    {
+      "id": "firstName",
+      "name": "First Name",
+      "type": "text"
+    },
+    {
+      "id": "lastName",
+      "name": "Last Name",
+      "type": "text"
+    }
+  ],
+  "employees": [
+    {
+      "id": "123",
+      "firstName": "Ava",
+      "lastName": "Nguyen",
+      "jobTitle": "Engineering Manager",
+      "canUploadPhoto": 0
+    },
+    {
+      "id": "124",
+      "firstName": "Sam",
+      "lastName": "Park",
+      "jobTitle": "Product Designer",
+      "canUploadPhoto": 1
+    }
+  ]
+}
