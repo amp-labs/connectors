@@ -141,6 +141,29 @@ func TestConstructOutboundMessageAlwaysIncludesRequiredFields(t *testing.T) {
 	}
 }
 
+func TestConstructOutboundMessageDedupesFieldsCaseInsensitively(t *testing.T) {
+	t.Parallel()
+
+	// Salesforce field names are case-insensitive, so a lowercase "id" next to
+	// the required "Id" is a duplicate field and fails every delivery.
+	params := validOutboundMessageParams()
+	params.Fields = []string{"id", "createddate", "LASTMODIFIEDDATE", "Name"}
+
+	zipData, err := ConstructOutboundMessage(params)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	workflow := readZipEntries(t, zipData)["workflows/Account.workflow"]
+	lower := strings.ToLower(workflow)
+
+	for _, field := range []string{"id", "createddate", "lastmodifieddate", "name"} {
+		if got := strings.Count(lower, "<fields>"+field+"</fields>"); got != 1 {
+			t.Errorf("field %q appears %d times, want 1:\n%s", field, got, workflow)
+		}
+	}
+}
+
 func TestConstructDestructiveOutboundMessage(t *testing.T) {
 	t.Parallel()
 

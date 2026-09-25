@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
@@ -94,29 +95,26 @@ type workflowXML struct {
 	OutboundMessages []workflowOutboundMessageXML `xml:"outboundMessages"`
 }
 
-// ensureOutboundMessageFields returns the caller's field list with Id,
-// CreatedDate, and LastModifiedDate guaranteed present (prepended when
-// missing, original order otherwise preserved). Every standard and custom
-// object carries these audit fields; forcing them keeps the payload usable
-// downstream — Id for record fetch, the timestamps for create-vs-update
-// inference — regardless of what the caller configured.
+// ensureOutboundMessageFields prepends Id, CreatedDate, and LastModifiedDate to the caller's fields,
+// deduping case-insensitively.
 func ensureOutboundMessageFields(fields []string) []string {
 	required := []string{"Id", "CreatedDate", "LastModifiedDate"}
 
-	present := make(map[string]bool, len(fields))
-	for _, field := range fields {
-		present[field] = true
-	}
+	result := make([]string, 0, len(required)+len(fields))
+	seen := make(map[string]bool, len(required)+len(fields))
 
-	missing := make([]string, 0, len(required))
-
-	for _, field := range required {
-		if !present[field] {
-			missing = append(missing, field)
+	for _, field := range append(required, fields...) {
+		key := strings.ToLower(field)
+		if seen[key] {
+			continue
 		}
+
+		seen[key] = true
+
+		result = append(result, field)
 	}
 
-	return append(missing, fields...)
+	return result
 }
 
 // generateWorkflowXML returns the workflows/<Object>.workflow file content
