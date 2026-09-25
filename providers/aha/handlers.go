@@ -21,6 +21,7 @@ const (
 	pageSize    = "200"
 	pageKey     = "page"
 	sinceKey    = "created_since"
+	untilKey    = "created_before"
 	apiVersion  = "v1"
 )
 
@@ -105,8 +106,11 @@ func addQueryParams(url *urlbuilder.URL, params common.ReadParams, page int64) {
 	url.WithQueryParam(pageKey, strconv.FormatInt(page, 10))
 
 	if supportSince.Has(params.ObjectName) && !params.Since.IsZero() {
-		// https://www.aha.io/api/resources/ideas/list_ideas
 		url.WithQueryParam(sinceKey, datautils.Time.FormatRFC3339inUTC(params.Since))
+	}
+
+	if supportUntil.Has(params.ObjectName) && !params.Until.IsZero() {
+		url.WithQueryParam(untilKey, datautils.Time.FormatRFC3339inUTC(params.Until))
 	}
 }
 
