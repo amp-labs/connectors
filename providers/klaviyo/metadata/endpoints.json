@@ -1,0 +1,254 @@
+{
+  "accounts": {
+    "read": {
+      "url": "/accounts",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "campaigns": {
+    "read": {
+      "url": "/campaigns",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-categories": {
+    "read": {
+      "url": "/catalog-categories",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-category-bulk-create-jobs": {
+    "read": {
+      "url": "/catalog-category-bulk-create-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-category-bulk-delete-jobs": {
+    "read": {
+      "url": "/catalog-category-bulk-delete-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-category-bulk-update-jobs": {
+    "read": {
+      "url": "/catalog-category-bulk-update-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-item-bulk-create-jobs": {
+    "read": {
+      "url": "/catalog-item-bulk-create-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-item-bulk-delete-jobs": {
+    "read": {
+      "url": "/catalog-item-bulk-delete-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-item-bulk-update-jobs": {
+    "read": {
+      "url": "/catalog-item-bulk-update-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-items": {
+    "read": {
+      "url": "/catalog-items",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-variant-bulk-create-jobs": {
+    "read": {
+      "url": "/catalog-variant-bulk-create-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-variant-bulk-delete-jobs": {
+    "read": {
+      "url": "/catalog-variant-bulk-delete-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-variant-bulk-update-jobs": {
+    "read": {
+      "url": "/catalog-variant-bulk-update-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "catalog-variants": {
+    "read": {
+      "url": "/catalog-variants",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "coupon-code-bulk-create-jobs": {
+    "read": {
+      "url": "/coupon-code-bulk-create-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "coupon-codes": {
+    "read": {
+      "url": "/coupon-codes",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "coupons": {
+    "read": {
+      "url": "/coupons",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "events": {
+    "read": {
+      "url": "/events",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "flows": {
+    "read": {
+      "url": "/flows",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "forms": {
+    "read": {
+      "url": "/forms",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "images": {
+    "read": {
+      "url": "/images",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "lists": {
+    "read": {
+      "url": "/lists",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "metrics": {
+    "read": {
+      "url": "/metrics",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "profile-bulk-import-jobs": {
+    "read": {
+      "url": "/profile-bulk-import-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "profile-suppression-bulk-create-jobs": {
+    "read": {
+      "url": "/profile-suppression-bulk-create-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "profile-suppression-bulk-delete-jobs": {
+    "read": {
+      "url": "/profile-suppression-bulk-delete-jobs",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "profiles": {
+    "read": {
+      "url": "/profiles",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "reviews": {
+    "read": {
+      "url": "/reviews",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "segments": {
+    "read": {
+      "url": "/segments",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "tag-groups": {
+    "read": {
+      "url": "/tag-groups",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "tags": {
+    "read": {
+      "url": "/tags",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "template-universal-content": {
+    "read": {
+      "url": "/template-universal-content",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "templates": {
+    "read": {
+      "url": "/templates",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "tracking-settings": {
+    "read": {
+      "url": "/tracking-settings",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "webhook-topics": {
+    "read": {
+      "url": "/webhook-topics",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  },
+  "webhooks": {
+    "read": {
+      "url": "/webhooks",
+      "operation": "GET",
+      "responseKey": "data"
+    }
+  }
+}
