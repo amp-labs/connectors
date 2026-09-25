@@ -33,8 +33,8 @@ github.com/OneOfOne/xxhash v1.2.8/go.mod h1:eZbhyaAYD41SGSSsnmcpxVoRiQ/MPUTjUdII
 github.com/PuerkitoBio/goquery v1.13.0 h1:mqHbjD7Jmnul4DTR24LKTjo1uUmHUh072kteGV+xpFM=
 github.com/PuerkitoBio/goquery v1.13.0/go.mod h1:Hip5mdBL8K2wEGKJdr27sRaNwIdDajmCwB/ExUPwW+g=
 github.com/RaveNoX/go-jsoncommentstrip v1.0.0/go.mod h1:78ihd09MekBnJnxpICcwzCMzGrKSKYe4AqU6PDYYpjk=
-github.com/amp-labs/amp-common v0.0.0-20260924224237-fe41ccd00bb0 h1:BWkNG2VvdBXE6a4F3tnZLFqoaPOZB9vqNZriIP8UfK4=
-github.com/amp-labs/amp-common v0.0.0-20260924224237-fe41ccd00bb0/go.mod h1:ExlcN8LeeUAqZre8poymcamRhOjCJlO4E9h58ifqA50=
+github.com/amp-labs/amp-common v0.0.0-20260925210054-3b3cbdda831e h1:gVuESqfUcCzQDtiL1l/GdQ0+S8brXeeKluPlN02SwEc=
+github.com/amp-labs/amp-common v0.0.0-20260925210054-3b3cbdda831e/go.mod h1:ExlcN8LeeUAqZre8poymcamRhOjCJlO4E9h58ifqA50=
 github.com/andybalholm/cascadia v1.3.4 h1:vM2lgh0Vru9Vwyfm4cQqWP2HHMW0u0+2PAW7Q38Qufg=
 github.com/andybalholm/cascadia v1.3.4/go.mod h1:BLRmbRjpEtNKieZOCCvYj4RqN+KRA41GBe/5O+G93kM=
 github.com/antchfx/xmlquery v1.5.1 h1:T9I4Ns1EXiWHy0IqKupGhnfTQtJwlGrpXtauYOoNv78=
