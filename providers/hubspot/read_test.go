@@ -145,6 +145,37 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 		},
 		{
+			// Regression test for ENG-4220. A read that starts without filters
+			// paginates via GET with full-URL tokens (paging.next.link). When such
+			// a read is resumed with Since set, the search path receives the URL
+			// token and must continue the GET pagination instead of sending the
+			// URL as the numeric "after" cursor, which the provider rejects.
+			Name: "Since read with URL next page token continues GET pagination",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+				NextPage: common.NextPageToken(
+					testconn.URLTestServer + "/crm/v3/objects/contacts?limit=100&properties=email&after=394"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/crm/v3/objects/contacts"),
+					mockcond.QueryParam("after", "394"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContacts),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     3,
+				NextPage: "https://api.hubapi.com/crm/v3/objects/contacts?limit=100&properties=listId%2Cname&after=394", // nolint:lll
+				Done:     false,
+			},
+		},
+		{
 			Name: "Contacts records until time",
 			Input: common.ReadParams{
 				ObjectName: "contacts",

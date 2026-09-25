@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -86,6 +87,15 @@ func (c *Connector) ReadUsingSearchAPI( // nolint:cyclop
 }
 
 func (c *Connector) searchCRMObjectsAPI(ctx context.Context, params SearchParams) (*common.ReadResult, error) {
+	if isFullURL(params.NextPage) {
+		// The token was produced by the plain GET read path (paging.next.link).
+		// This happens when a read that started without filters is resumed with
+		// Since/Until set: the search endpoint paginates with a numeric "after"
+		// cursor and rejects a URL with a 400 VALIDATION_ERROR. Honor the token
+		// by continuing the GET pagination it belongs to.
+		return c.readCRMObjectsNextPage(ctx, params)
+	}
+
 	url, err := c.getCRMObjectsSearchURL(params.ObjectName)
 	if err != nil {
 		return nil, err
@@ -104,6 +114,58 @@ func (c *Connector) searchCRMObjectsAPI(ctx context.Context, params SearchParams
 			ctx, c.associationsFiller, params.ObjectName, params.AssociatedObjects),
 		params.Fields,
 	)
+}
+
+// readCRMObjectsNextPage fetches the next page of a plain GET read whose token
+// reached the search path. The response has the same shape for both endpoints,
+// so the regular GET parsing applies.
+func (c *Connector) readCRMObjectsNextPage(ctx context.Context, params SearchParams) (*common.ReadResult, error) {
+	rsp, err := c.JSONHTTPClient().Get(ctx, params.NextPage.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return common.ParseResult(
+		rsp,
+		core.GetRecords,
+		core.GetNextRecordsURL,
+		associations.CreateDataMarshallerWithAssociations(
+			ctx, c.associationsFiller, params.ObjectName, params.AssociatedObjects),
+		params.Fields,
+	)
+}
+
+// isFullURL reports whether the next-page token is a complete URL. The plain
+// GET read path paginates with paging.next.link (a URL, embedding the next
+// record ID as the "after" query param), while the search path paginates with
+// paging.next.after (an integer position into the result set, capped at 10,000).
+// The two cursors are not interchangeable values.
+//
+// A GET read response paginates with a record-ID cursor plus a ready-made URL,
+// and the connector stores the "link" as the next-page token:
+//
+//	"paging": {
+//	  "next": {
+//	    "after": "22222625904",
+//	    "link": "https://api.hubapi.com/crm/v3/objects/deals?limit=100&after=22222625904"
+//	  }
+//	}
+//
+// A search response paginates with an integer offset only, sent back in the
+// "after" field of the next request body:
+//
+//	"paging": {
+//	  "next": {
+//	    "after": "200"
+//	  }
+//	}
+//
+// GET paging: https://developers.hubspot.com/docs/api-reference/crm-objects-v3/objects/get-crm-v3-objects-objecttype
+// Search paging: https://developers.hubspot.com/docs/api/crm/search
+func isFullURL(token common.NextPageToken) bool {
+	value := token.String()
+
+	return strings.HasPrefix(value, "https://") || strings.HasPrefix(value, "http://")
 }
 
 // searchCRM is intended for objects outside HubSpot's ObjectAPI.
