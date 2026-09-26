@@ -20,12 +20,26 @@ const (
 	// same requested field list), captured before and after Industry was set.
 	fixtureNullFieldOmitted = "subscription/outbound_message_null_field_omitted.xml"
 	fixtureFieldPopulated   = "subscription/outbound_message_field_populated.xml"
+
+	// fixtureEndpointURL is the URL the fixtures were delivered to, shaped like the server's
+	// subscribe webhook endpoint. It has no event-type query parameter, so event types are inferred
+	// from the audit timestamps.
+	fixtureEndpointURL = "https://subscribe-webhook.withampersand.com" +
+		"/v1/projects/9b1a4bb6-6a3a-4b0e-9b0f-3a2a0a7e1c11" +
+		"/integrations/1f9f0c1e-2c9a-4a4d-9d59-3f7a2b6e8d20" +
+		"/installations/6d2b9d70-2b6f-4d3a-9d0a-58f9f9e4a7b3"
 )
 
 func parseFixtureEvents(t *testing.T, fixture string) []common.SubscriptionEvent {
 	t.Helper()
 
-	envelope, err := ParseOutboundMessage(testutils.DataFromFile(t, fixture))
+	return parseFixtureEventsFromURL(t, fixture, fixtureEndpointURL)
+}
+
+func parseFixtureEventsFromURL(t *testing.T, fixture, endpointURL string) []common.SubscriptionEvent {
+	t.Helper()
+
+	envelope, err := ParseOutboundMessage(testutils.DataFromFile(t, fixture), endpointURL)
 	if err != nil {
 		t.Fatalf("unexpected parse error: %v", err)
 	}
@@ -38,10 +52,12 @@ func parseFixtureEvents(t *testing.T, fixture string) []common.SubscriptionEvent
 	return events
 }
 
-// TestParseOutboundMessageCreate covers a real single-record notification. The
-// create/update distinction is inferred from the audit timestamps, since outbound
-// messages carry no event type: equal CreatedDate and LastModifiedDate means the
-// save that fired the flow created the record.
+// TestParseOutboundMessageCreate covers a real single-record notification delivered to
+// an old endpoint URL, one with no event-type query parameter. That is every outbound
+// message from a subscription deployed before per-event flows. The create/update
+// distinction is then inferred from the audit timestamps, since outbound messages carry
+// no event type: equal CreatedDate and LastModifiedDate means the save that fired the
+// flow created the record.
 func TestParseOutboundMessageCreate(t *testing.T) {
 	t.Parallel()
 
@@ -77,6 +93,63 @@ func TestParseOutboundMessageCreate(t *testing.T) {
 	nano, err := event.EventTimeStampNano()
 	if err != nil || nano != int64(1788910833000000000) {
 		t.Errorf("EventTimeStampNano() = %d, %v; want 1788910833000000000", nano, err)
+	}
+}
+
+// TestParseOutboundMessageEventTypeFromURL covers an endpoint URL with an event-type query
+// parameter, which each per-event flow's outbound message is deployed with. The URL's event type is
+// stored on every notification in the message, and EventType returns it.
+func TestParseOutboundMessageEventTypeFromURL(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		fixture  string
+		rawURL   string
+		wantType common.SubscriptionEventType
+		wantRaw  string
+	}{
+		{
+			name:     "create",
+			fixture:  fixtureCreateAccount,
+			rawURL:   fixtureEndpointURL + "?event-type=create",
+			wantType: common.SubscriptionEventTypeCreate,
+			wantRaw:  "CREATE",
+		},
+		{
+			name:     "update",
+			fixture:  fixtureBatchUpdateContacts,
+			rawURL:   fixtureEndpointURL + "?event-type=update",
+			wantType: common.SubscriptionEventTypeUpdate,
+			wantRaw:  "UPDATE",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			for index, event := range parseFixtureEventsFromURL(t, test.fixture, test.rawURL) {
+				raw, err := event.RawMap()
+				if err != nil {
+					t.Fatalf("RawMap(%d): %v", index, err)
+				}
+
+				if raw[omKeyEventType] != test.wantType {
+					t.Errorf("eventType(%d) = %v, want %q", index, raw[omKeyEventType], test.wantType)
+				}
+
+				eventType, err := event.EventType()
+				if err != nil || eventType != test.wantType {
+					t.Errorf("EventType(%d) = %q, %v; want %q", index, eventType, err, test.wantType)
+				}
+
+				rawName, err := event.RawEventName()
+				if err != nil || rawName != test.wantRaw {
+					t.Errorf("RawEventName(%d) = %q, %v; want %q", index, rawName, err, test.wantRaw)
+				}
+			}
+		})
 	}
 }
 
