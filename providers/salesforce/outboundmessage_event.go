@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"net/url"
 	"strings"
 	"time"
 
@@ -25,11 +26,6 @@ import (
 // The receiver must respond with an Ack=true SOAP body (BuildOutboundMessageAck)
 // or Salesforce keeps retrying delivery for up to 24 hours.
 //
-// Outbound messages carry NO event type. The parser infers it from the audit
-// fields the outbound message builder always includes (see
-// ensureOutboundMessageFields): CreatedDate == LastModifiedDate means the save
-// that fired the flow created the record; a later LastModifiedDate means an
-// update. Deletes never produce outbound messages.
 //
 // Outbound messages are also unsigned — there is no HMAC. Verification is the
 // unguessable per-subscription endpoint URL (current posture, matching
@@ -46,6 +42,7 @@ const (
 	omKeyObjectName     = "objectName"
 	omKeyNotificationID = "notificationId"
 	omKeySObject        = "sObject"
+	omKeyEventType      = "eventType"
 
 	omFieldID               = "Id"
 	omFieldCreatedDate      = "CreatedDate"
@@ -54,6 +51,8 @@ const (
 	rawEventNameCreate          = "CREATE"
 	rawEventNameUpdate          = "UPDATE"
 	rawEventNameOutboundMessage = "OUTBOUND_MESSAGE"
+
+	omQueryParamEventType = "event-type"
 )
 
 // soap/xml shapes for the inbound notification envelope. They mirror the
@@ -91,9 +90,25 @@ type omFieldXML struct {
 	Value   string `xml:",chardata"`
 }
 
+// eventTypeFromEndpointURL returns the event type named by the URL's event-type query parameter, or "".
+func eventTypeFromEndpointURL(rawURL string) common.SubscriptionEventType {
+	parsed, err := url.Parse(rawURL)
+	if err != nil {
+		return ""
+	}
+
+	// An OM can only carry create or update events.
+	switch eventType := common.SubscriptionEventType(parsed.Query().Get(omQueryParamEventType)); eventType { //nolint:exhaustive,lll
+	case common.SubscriptionEventTypeCreate, common.SubscriptionEventTypeUpdate:
+		return eventType
+	default:
+		return ""
+	}
+}
+
 // ParseOutboundMessage parses the SOAP body of one outbound message POST into
 // a collapsed event that expands to one SubscriptionEvent per Notification.
-func ParseOutboundMessage(body []byte) (*OutboundMessageEnvelope, error) {
+func ParseOutboundMessage(body []byte, endpointURL string) (*OutboundMessageEnvelope, error) {
 	var envelope omEnvelopeXML
 
 	// nolint:musttag
@@ -107,6 +122,8 @@ func ParseOutboundMessage(body []byte) (*OutboundMessageEnvelope, error) {
 
 	events := make([]OutboundMessageEvent, 0, len(envelope.Notifications))
 
+	eventType := eventTypeFromEndpointURL(endpointURL)
+
 	for _, notification := range envelope.Notifications {
 		fields := make(map[string]any, len(notification.SObject.Fields))
 
@@ -114,11 +131,19 @@ func ParseOutboundMessage(body []byte) (*OutboundMessageEnvelope, error) {
 			fields[field.XMLName.Local] = field.Value
 		}
 
-		events = append(events, OutboundMessageEvent{
+		event := OutboundMessageEvent{
 			omKeyNotificationID: notification.ID,
 			omKeyObjectName:     objectNameFromSObjectType(notification.SObject.ObjectType),
 			omKeySObject:        fields,
-		})
+		}
+
+		// Version 1 of Salesforce Flows did not carry eventType in the URL.
+		// Going forward, eventType will always be set on the URL.
+		if eventType != "" {
+			event[omKeyEventType] = eventType
+		}
+
+		events = append(events, event)
 	}
 
 	return &OutboundMessageEnvelope{events: events}, nil
@@ -174,10 +199,16 @@ func (e OutboundMessageEvent) RawMap() (map[string]any, error) {
 	return maps.Clone(e), nil
 }
 
-// EventType infers create vs update from the record's audit timestamps: a record whose
-// LastModifiedDate equals its CreatedDate was created by the save that fired
-// the flow.
+// EventType returns the event type named by the endpoint URL passed to
+// ParseOutboundMessage. Without one, it infers create vs update from
+// the record's audit timestamps: if LastModifiedDate is the same as
+// CreatedDate, it is labeled a created event. Otherwise, it is labeled an
+// updated event.
 func (e OutboundMessageEvent) EventType() (common.SubscriptionEventType, error) {
+	if eventType, ok := e[omKeyEventType].(common.SubscriptionEventType); ok {
+		return eventType, nil
+	}
+
 	created, createdErr := e.fieldTime(omFieldCreatedDate)
 	modified, modifiedErr := e.fieldTime(omFieldLastModifiedDate)
 
