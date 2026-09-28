@@ -2080,8 +2080,43 @@
           "path": "/profiles",
           "responseKey": "data",
           "fields": {
+            "created": {
+              "displayName": "created",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_id": {
+              "displayName": "external_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "id": {
               "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "image": {
+              "displayName": "image",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_event_date": {
+              "displayName": "last_event_date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
               "valueType": "string",
               "providerType": "string"
             },
@@ -2090,8 +2125,33 @@
               "valueType": "other",
               "providerType": "object"
             },
+            "locale": {
+              "displayName": "locale",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "organization": {
+              "displayName": "organization",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone_number": {
+              "displayName": "phone_number",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "predictive_analytics": {
               "displayName": "predictive_analytics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "properties": {
+              "displayName": "properties",
               "valueType": "other",
               "providerType": "object"
             },
@@ -2105,6 +2165,11 @@
               "valueType": "other",
               "providerType": "object"
             },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "type": {
               "displayName": "type",
               "valueType": "singleSelect",
@@ -2115,6 +2180,11 @@
                   "displayValue": "profile"
                 }
               ]
+            },
+            "updated": {
+              "displayName": "updated",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         },
