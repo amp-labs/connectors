@@ -9,6 +9,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/getresponse"
 	connTest "github.com/amp-labs/connectors/test/getresponse"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/testscenario"
@@ -35,8 +36,11 @@ func main() {
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "campaigns",
 		Fields:     connectors.Fields("campaignId", "name", "createdOn"),
-		RawFilter:  "query[isDefault]=true&sort[createdOn]=DESC",
-		PageSize:   1,
+		RawFilter: &common.RawFilter{
+			Type:   getresponse.RawFilterTypeQueryParams,
+			Filter: "query[isDefault]=true&sort[createdOn]=DESC",
+		},
+		PageSize: 1,
 	})
 
 	slog.Info("=== Incremental read with Since: campaigns (connector-side filtering) ===")

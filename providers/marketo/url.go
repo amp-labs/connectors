@@ -152,14 +152,15 @@ func (c *Connector) handleActivitiesAPI(ctx context.Context, url *urlbuilder.URL
 	// fetch a paging token to ensure pagination starts from the correct time.
 	// Then, append the token to the URL for subsequent pagination.
 	if params.ObjectName == activities {
-		filter, ok := params.RawFilter.(string)
-		if !ok && params.RawFilter != nil {
-			return fmt.Errorf("%w: expected a string, got %T", common.ErrInvalidRawFilter, params.RawFilter)
-		}
-
-		if filter == "" {
+		if params.RawFilter == nil {
 			return ErrFilterInvalid
 		}
+
+		if err := c.ValidateRawFilter(*params.RawFilter); err != nil {
+			return err
+		}
+
+		filter, _ := params.RawFilter.Filter.(string) // validated above
 
 		url.WithQueryParam(activityTypeIDs, filter)
 

@@ -116,8 +116,10 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		return nil, err
 	}
 
-	if _, ok := params.RawFilter.(string); !ok && params.RawFilter != nil {
-		return nil, fmt.Errorf("%w: expected a string, got %T", common.ErrInvalidRawFilter, params.RawFilter)
+	if params.RawFilter != nil {
+		if err := c.ValidateRawFilter(*params.RawFilter); err != nil {
+			return nil, err
+		}
 	}
 
 	pageSize := params.PageSize
@@ -375,9 +377,11 @@ func (c *Connector) buildRowRestriction(token *readSessionToken, params common.R
 		}
 	}
 
-	// Append any user-provided filter. Read has already rejected non-string values.
-	if filter, _ := params.RawFilter.(string); filter != "" {
-		conditions = append(conditions, filter)
+	// Append any user-provided filter. Read validates it first.
+	if params.RawFilter != nil {
+		if filter, _ := params.RawFilter.Filter.(string); filter != "" {
+			conditions = append(conditions, filter)
+		}
 	}
 
 	return strings.Join(conditions, " AND ")

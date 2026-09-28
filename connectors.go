@@ -466,7 +466,7 @@ type SearchConnector interface {
 type RawFilterConnector interface {
 	Connector
 
-	// ValidateRawFilter checks that the connector supports filterType and that
-	// filter is a valid value for it. Errors wrap common.ErrInvalidRawFilter.
-	ValidateRawFilter(filterType string, filter any) error
+	// ValidateRawFilter checks that the connector supports the filter's type and that
+	// its filter is a valid value for that type. Errors wrap common.ErrInvalidRawFilter.
+	ValidateRawFilter(filter common.RawFilter) error
 }

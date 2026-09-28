@@ -54,12 +54,12 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	applyReadPaginationQuery(url, params)
 	applyReadFieldsQuery(url, params)
 
-	filter, ok := params.RawFilter.(string)
-	if !ok && params.RawFilter != nil {
-		return nil, fmt.Errorf("%w: expected a string, got %T", common.ErrInvalidRawFilter, params.RawFilter)
-	}
+	if params.RawFilter != nil {
+		if err := c.ValidateRawFilter(*params.RawFilter); err != nil {
+			return nil, err
+		}
 
-	if filter != "" {
+		filter, _ := params.RawFilter.Filter.(string) // validated above
 		addGetResponseFilters(url, filter)
 	}
 

@@ -111,7 +111,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				ObjectName: "campaigns",
 				Fields:     connectors.Fields("name"),
 				Since:      time.Date(2024, 3, 4, 8, 22, 56, 0, time.UTC),
-				RawFilter:  "equals(messages.channel,'email')",
+				RawFilter:  &common.RawFilter{Type: RawFilterTypeJSONAPI, Filter: "equals(messages.channel,'email')"},
 			},
 			Comparator: testconn.ComparatorSubsetRead,
 			Server: mockserver.Conditional{

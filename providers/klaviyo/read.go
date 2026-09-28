@@ -48,9 +48,14 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	custom, ok := config.RawFilter.(string)
-	if !ok && config.RawFilter != nil {
-		return nil, fmt.Errorf("%w: expected a string, got %T", common.ErrInvalidRawFilter, config.RawFilter)
+	var custom string
+
+	if config.RawFilter != nil {
+		if err := c.ValidateRawFilter(*config.RawFilter); err != nil {
+			return nil, err
+		}
+
+		custom, _ = config.RawFilter.Filter.(string) // validated above
 	}
 
 	filter := filterBuilder{

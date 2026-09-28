@@ -25,6 +25,12 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return c.pardotAdapter.Read(ctx, config)
 	}
 
+	if config.RawFilter != nil {
+		if err := c.ValidateRawFilter(*config.RawFilter); err != nil {
+			return nil, err
+		}
+	}
+
 	url, err := c.buildReadURL(config)
 	if err != nil {
 		return nil, err
@@ -90,8 +96,10 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, timestamp
 		soql.Where("IsDeleted = true")
 	}
 
-	if filter, _ := config.RawFilter.(string); filter != "" {
-		soql.Where(filter)
+	if config.RawFilter != nil {
+		if filter, _ := config.RawFilter.Filter.(string); filter != "" {
+			soql.Where(filter)
+		}
 	}
 
 	if config.BuilderFilter != nil {
