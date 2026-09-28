@@ -36,20 +36,20 @@ type testWrapper struct {
 
 func (w testWrapper) Unwrap() Connector { return w.inner }
 
-func TestValidateRawFilter(t *testing.T) {
+func TestNewRawFilterValidator(t *testing.T) {
 	t.Parallel()
 
 	soql := common.RawFilter{Type: "soql", Filter: "IsDeleted = true"}
 
-	if err := ValidateRawFilter(testRawFilterConnector{}, soql); err != nil {
+	if err := NewRawFilterValidator(testRawFilterConnector{})(soql); err != nil {
 		t.Fatalf("supported filter: got %v", err)
 	}
 
-	if err := ValidateRawFilter(testWrapper{inner: testRawFilterConnector{}}, soql); err != nil {
+	if err := NewRawFilterValidator(testWrapper{inner: testRawFilterConnector{}})(soql); err != nil {
 		t.Fatalf("supported filter behind a wrapper: got %v", err)
 	}
 
-	err := ValidateRawFilter(testRawFilterConnector{}, common.RawFilter{Type: "sql", Filter: "x"})
+	err := NewRawFilterValidator(testRawFilterConnector{})(common.RawFilter{Type: "sql", Filter: "x"})
 	if !errors.Is(err, errTestRejected) {
 		t.Fatalf("filter the connector rejects: got %v, want the connector's error", err)
 	}
@@ -59,7 +59,7 @@ func TestValidateRawFilter(t *testing.T) {
 		"no support behind a wrapper": testWrapper{inner: testPlainConnector{}},
 		"nil connector":               nil,
 	} {
-		if err := ValidateRawFilter(conn, soql); !errors.Is(err, common.ErrInvalidRawFilter) {
+		if err := NewRawFilterValidator(conn)(soql); !errors.Is(err, common.ErrInvalidRawFilter) {
 			t.Fatalf("%s: got %v, want ErrInvalidRawFilter", name, err)
 		}
 	}
