@@ -459,11 +459,11 @@ type SearchConnector interface {
 	Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error)
 }
 
-// FilterableConnector is a connector that accepts a provider-native filter in
+// RawFilterConnector is a connector that accepts a provider-native filter in
 // ReadParams.RawFilter and SearchParams.RawFilter. Each connector declares which
 // filter types it supports; callers check a filter here before passing its value
 // to Read or Search.
-type FilterableConnector interface {
+type RawFilterConnector interface {
 	Connector
 
 	// ValidateRawFilter checks that the connector supports the filter's type and that

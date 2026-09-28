@@ -12,7 +12,7 @@ import (
 // a SOQL condition, as it would appear after WHERE.
 const RawFilterTypeSOQL = core.RawFilterTypeSOQL
 
-var _ connectors.FilterableConnector = (*Connector)(nil)
+var _ connectors.RawFilterConnector = (*Connector)(nil)
 
 // ValidateRawFilter accepts raw filters of type RawFilterTypeSOQL with a string condition.
 // Raw filters are only supported by the CRM module; Account Engagement (Pardot) rejects them.
