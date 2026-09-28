@@ -48,51 +48,14 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	var custom string
-
-	if config.RawFilter != nil {
-		if err := c.ValidateRawFilter(*config.RawFilter); err != nil {
-			return nil, err
-		}
-
-		custom, _ = config.RawFilter.Filter.(string) // validated above
-	}
-
-	filter := filterBuilder{
-		custom: custom,
-	}
-
 	if !config.Since.IsZero() {
 		if sinceField, found := objectsNameToSinceFieldName[common.ModuleRoot][config.ObjectName]; found {
 			// Documentation about filtering: https://developers.klaviyo.com/en/docs/filtering_
 			// Ex: ?filter=greater-than(datetime,2023-03-01T01:00:00Z)
 			sinceValue := datautils.Time.FormatRFC3339inUTC(config.Since)
-			filter.since = fmt.Sprintf("greater-than(%v,%v)", sinceField, sinceValue)
+			url.WithQueryParam("filter", fmt.Sprintf("greater-than(%v,%v)", sinceField, sinceValue))
 		}
 	}
 
-	if queryParam := filter.queryParameter(); len(queryParam) != 0 {
-		url.WithQueryParam("filter", queryParam)
-	}
-
 	return url, nil
-}
-
-type filterBuilder struct {
-	since  string
-	custom string
-}
-
-func (b filterBuilder) queryParameter() string {
-	if len(b.since) == 0 {
-		return b.custom
-	}
-
-	if len(b.custom) == 0 {
-		return b.since
-	}
-
-	// Both values are set. As per documentation these values can be comma separated.
-	// Reference: https://developers.klaviyo.com/en/docs/filtering_
-	return b.since + "," + b.custom
 }

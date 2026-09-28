@@ -226,24 +226,10 @@ type ReadParams struct {
 	// the filter types they support. The type and its meaning depend on the connector:
 	//	* Salesforce ("soql"): A SOQL string that comes after the WHERE clause which will be used to filter the records.
 	//		Reference: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm
-	//	* Klaviyo ("jsonApi"): Comma separated methods following JSON:API filtering syntax.
-	//		Note: timing is already handled by Since argument.
-	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
 	//	* Marketo ("activityTypeIds"): Comma-separated activityTypeIds for filtering lead activities.
 	//		Note: Only supported when reading Lead Activities (not other endpoints).
 	//		Example: "1,6,12" (for visitWebpage, fillOutForm, emailClicked)
 	//		Reference: https://developer.adobe.com/marketo-apis/api/mapi/#tag/Activities
-	//  * GetResponse ("queryParams"): An ampersand-style filter string that maps directly to GetResponse's
-	//      bracket-notation query parameters. Supports both `query[...]` and `sort[...]`.
-	//      Multiple filters can be separated by '&'.
-	//      Examples:
-	//          - "query[name]=campaign_name"
-	//          - "query[isDefault]=true"
-	//          - "sort[name]=ASC"
-	//          - "sort[createdOn]=DESC"
-	//          - "query[name]=test&sort[createdOn]=DESC"
-	//      Reference: https://apireference.getresponse.com/#operation/getCampaignList
-	//	* BigQuery ("sql"): A row restriction, joined with AND to the read's time window.
 	RawFilter *RawFilter // optional
 
 	// BuilderFilter is an optional Ampersand-style structured filter for read actions.

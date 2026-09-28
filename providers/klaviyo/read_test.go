@@ -18,7 +18,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	errorUnsupportedPagination := testutils.DataFromFile(t, "read-unsupported-pagination.json")
-	responseCampaigns := testutils.DataFromFile(t, "read-campaigns.json")
 	responseProfilesFirstPage := testutils.DataFromFile(t, "read-profiles-1-first-page.json")
 
 	header := http.Header{"revision": []string{"2024-10-15"}}
@@ -102,52 +101,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}},
 				NextPage: "https://a.klaviyo.com/api/profiles?page%5Bsize%5D=1&page%5Bcursor%5D=bmV4dDo6aWQ6OjAxSFNYV05XRjUySjVQSkc0NUJXMzgzUk1W", // nolint:lll
 				Done:     false,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name: "Incremental read of campaigns with required filter",
-			Input: common.ReadParams{
-				ObjectName: "campaigns",
-				Fields:     connectors.Fields("name"),
-				Since:      time.Date(2024, 3, 4, 8, 22, 56, 0, time.UTC),
-				RawFilter:  &common.RawFilter{Type: RawFilterTypeJSONAPI, Filter: "equals(messages.channel,'email')"},
-			},
-			Comparator: testconn.ComparatorSubsetRead,
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentMIME("application/vnd.api+json"),
-				If: mockcond.And{
-					mockcond.Path("/api/campaigns"),
-					mockcond.QueryParam("filter",
-						"greater-than(updated_at,2024-03-04T08:22:56Z),equals(messages.channel,'email')"),
-					mockcond.Header(header),
-				},
-				Then: mockserver.Response(http.StatusOK, responseCampaigns),
-			}.Server(),
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{{
-					Fields: map[string]any{
-						"name": "Email Campaign - Nov 15, 2024, 1:18 AM",
-					},
-					Raw: map[string]any{
-						"attributes": map[string]any{
-							"name":             "Email Campaign - Nov 15, 2024, 1:18 AM",
-							"status":           "Scheduled",
-							"archived":         false,
-							"audiences":        map[string]any{},
-							"send_options":     map[string]any{},
-							"tracking_options": map[string]any{},
-							"send_strategy":    map[string]any{},
-							"created_at":       "2024-11-14T23:18:34.827140+00:00",
-							"scheduled_at":     "2024-11-14T23:20:02.718919+00:00",
-							"updated_at":       "2024-11-14T23:20:32.232276+00:00",
-							"send_time":        "2024-11-30T18:15:00+00:00",
-						},
-					},
-				}},
-				NextPage: "",
-				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},

@@ -116,12 +116,6 @@ func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common
 		return nil, err
 	}
 
-	if params.RawFilter != nil {
-		if err := c.ValidateRawFilter(*params.RawFilter); err != nil {
-			return nil, err
-		}
-	}
-
 	pageSize := params.PageSize
 	if pageSize <= 0 {
 		pageSize = DefaultPageSize
@@ -374,13 +368,6 @@ func (c *Connector) buildRowRestriction(token *readSessionToken, params common.R
 		if !params.Until.IsZero() {
 			conditions = append(conditions,
 				fmt.Sprintf("%s < TIMESTAMP('%s')", c.timestampColumn, params.Until.UTC().Format(time.RFC3339)))
-		}
-	}
-
-	// Append any user-provided filter. Read validates it first.
-	if params.RawFilter != nil {
-		if filter, _ := params.RawFilter.Filter.(string); filter != "" {
-			conditions = append(conditions, filter)
 		}
 	}
 
