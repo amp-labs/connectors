@@ -100,7 +100,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 				},
 				Then: mockserver.Response(http.StatusOK, responseMetaUsers),
 			}.Server(),
-			Comparator: testconn.ComparatorSubsetRead,
+			Comparator: testconn.ComparatorSubsetReadSorted,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{

@@ -1,10 +1,8 @@
 package bamboohr
 
 import (
-	"cmp"
 	"context"
 	"net/http"
-	"slices"
 	"strconv"
 	"time"
 
@@ -150,17 +148,8 @@ func keyedObjectRecordNodes() common.NodeRecordsFunc {
 			records = append(records, record)
 		}
 
-		slices.SortFunc(records, compareNodesByTextID)
-
 		return records, nil
 	}
-}
-
-func compareNodesByTextID(left, right *ajson.Node) int {
-	leftID, _ := jsonquery.New(left).TextWithDefault("id", "")
-	rightID, _ := jsonquery.New(right).TextWithDefault("id", "")
-
-	return cmp.Compare(leftID, rightID)
 }
 
 func nextPageForObject(objectName string, reqURL *urlbuilder.URL) common.NextPageFunc {
