@@ -45,7 +45,7 @@ func TestRawFilterAsString(t *testing.T) {
 	}
 }
 
-func TestRawFilterConnectorValidators(t *testing.T) {
+func TestRawFilterStringValidators(t *testing.T) {
 	t.Parallel()
 
 	errNoOr := errors.New("OR is not allowed")

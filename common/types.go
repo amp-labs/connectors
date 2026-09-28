@@ -219,7 +219,7 @@ type ReadParams struct {
 	Deleted bool // optional, defaults to false
 
 	// RawFilter is a filter in the provider's native syntax. Nil means no filter.
-	// Connectors that accept one implement connectors.RawFilterConnector, which declares
+	// Connectors that accept one implement connectors.FilterableConnector, which declares
 	// the filter types they support. The type and its meaning depend on the connector:
 	//	* Salesforce ("soql"): A SOQL string that comes after the WHERE clause which will be used to filter the records.
 	//		Reference: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm

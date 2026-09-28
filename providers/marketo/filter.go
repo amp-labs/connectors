@@ -9,7 +9,7 @@ import (
 // activityTypeIds, required when reading lead activities (e.g. "1,6,12").
 const RawFilterTypeActivityTypeIDs = "activityTypeIds"
 
-var _ connectors.RawFilterConnector = (*Connector)(nil)
+var _ connectors.FilterableConnector = (*Connector)(nil)
 
 // ValidateRawFilter accepts raw filters of type RawFilterTypeActivityTypeIDs with a string filter.
 func (*Connector) ValidateRawFilter(filter common.RawFilter) error {

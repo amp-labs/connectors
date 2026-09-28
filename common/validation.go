@@ -28,7 +28,7 @@ var (
 	// ErrMissingFieldsMetadata is returned when the list of fields to create via UpsertMetadata is empty.
 	ErrMissingFieldsMetadata = errors.New("no fields metadata provided in UpsertMetadata")
 
-	// ErrMissingSearchFilters is returned when no field filters are provided for the Search operation.
+	// ErrMissingSearchFilters is returned when a Search has neither field filters nor a raw filter.
 	ErrMissingSearchFilters = errors.New("no filters provided for Search operation")
 
 	// ErrSearchFiltersCombined is returned when a Search sets both field filters and a raw filter.
