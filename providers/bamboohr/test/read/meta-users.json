@@ -1,0 +1,18 @@
+{
+  "1001": {
+    "id": 1001,
+    "employeeId": 123,
+    "firstName": "Ava",
+    "lastName": "Nguyen",
+    "email": "ava@example.com",
+    "status": "enabled"
+  },
+  "1002": {
+    "id": 1002,
+    "employeeId": 124,
+    "firstName": "Sam",
+    "lastName": "Park",
+    "email": "sam@example.com",
+    "status": "disabled"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "id": 501,
+      "employeeId": 123,
+      "status": "approved",
+      "startDate": "2026-04-01",
+      "endDate": "2026-04-03"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "pageSize": 1,
+    "totalPages": 2,
+    "totalItems": 2
+  },
+  "_links": {
+    "next": {
+      "href": "https://example.bamboohr.com/api/v1/time-off/requests?page=2&pageSize=1"
+    }
+  }
+}

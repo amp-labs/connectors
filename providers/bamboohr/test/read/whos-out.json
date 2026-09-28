@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "id": "7001",
+      "type": "timeOff",
+      "employeeId": 123,
+      "name": "Ava Nguyen",
+      "start": "2026-04-01",
+      "end": "2026-04-03"
+    },
+    {
+      "id": "8001",
+      "type": "holiday",
+      "name": "Company Holiday",
+      "start": "2026-04-05",
+      "end": "2026-04-05"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "pageSize": 100,
+    "totalPages": 1,
+    "totalItems": 2
+  },
+  "_links": {
+    "next": null
+  }
+}
