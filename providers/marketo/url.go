@@ -156,11 +156,10 @@ func (c *Connector) handleActivitiesAPI(ctx context.Context, url *urlbuilder.URL
 			return ErrFilterInvalid
 		}
 
-		if err := c.ValidateRawFilter(*params.RawFilter); err != nil {
+		filter, err := common.StringRawFilter(*params.RawFilter, RawFilterTypeActivityTypeIDs)
+		if err != nil {
 			return err
 		}
-
-		filter, _ := params.RawFilter.Filter.(string) // validated above
 
 		url.WithQueryParam(activityTypeIDs, filter)
 

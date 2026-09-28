@@ -162,22 +162,23 @@ func (p SubscribeParams) ValidateParams() error {
 	return nil
 }
 
-// ValidateStringRawFilter checks a raw filter whose syntax is a plain string:
-// its Type must be expectedType and its Filter a non-blank string.
-// Connectors with string filters use it to implement connectors.RawFilterConnector.
-func ValidateStringRawFilter(filter RawFilter, expectedType string) error {
+// StringRawFilter returns the expression of a raw filter whose syntax is a plain string,
+// after checking that its Type is expectedType and its Filter a non-blank string.
+// Connectors with string syntaxes use it both to implement connectors.RawFilterConnector
+// and to read the expression, so the check and the type assertion live in one place.
+func StringRawFilter(filter RawFilter, expectedType string) (string, error) {
 	if filter.Type != expectedType {
-		return fmt.Errorf("%w: unsupported type %q, expected %q", ErrInvalidRawFilter, filter.Type, expectedType)
+		return "", fmt.Errorf("%w: unsupported type %q, expected %q", ErrInvalidRawFilter, filter.Type, expectedType)
 	}
 
 	expression, ok := filter.Filter.(string)
 	if !ok {
-		return fmt.Errorf("%w: %s filter must be a string, got %T", ErrInvalidRawFilter, expectedType, filter.Filter)
+		return "", fmt.Errorf("%w: %s filter must be a string, got %T", ErrInvalidRawFilter, expectedType, filter.Filter)
 	}
 
 	if strings.TrimSpace(expression) == "" {
-		return fmt.Errorf("%w: %s filter is empty", ErrInvalidRawFilter, expectedType)
+		return "", fmt.Errorf("%w: %s filter is empty", ErrInvalidRawFilter, expectedType)
 	}
 
-	return nil
+	return expression, nil
 }

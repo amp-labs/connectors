@@ -8,7 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-func TestValidateStringRawFilter(t *testing.T) {
+func TestStringRawFilter(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -28,9 +28,13 @@ func TestValidateStringRawFilter(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := ValidateStringRawFilter(tt.filter, "soql")
+			got, err := StringRawFilter(tt.filter, "soql")
 			if tt.wantErr != (err != nil) {
-				t.Fatalf("ValidateStringRawFilter() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("StringRawFilter() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if err == nil && got != tt.filter.Filter {
+				t.Fatalf("StringRawFilter() = %q, want %q", got, tt.filter.Filter)
 			}
 
 			if err != nil && !errors.Is(err, ErrInvalidRawFilter) {

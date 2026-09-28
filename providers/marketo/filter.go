@@ -13,5 +13,7 @@ var _ connectors.RawFilterConnector = (*Connector)(nil)
 
 // ValidateRawFilter accepts raw filters of type RawFilterTypeActivityTypeIDs with a string filter.
 func (*Connector) ValidateRawFilter(filter common.RawFilter) error {
-	return common.ValidateStringRawFilter(filter, RawFilterTypeActivityTypeIDs)
+	_, err := common.StringRawFilter(filter, RawFilterTypeActivityTypeIDs)
+
+	return err
 }
