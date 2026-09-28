@@ -3,7 +3,6 @@ package klaviyo
 import (
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
