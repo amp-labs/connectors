@@ -9,19 +9,34 @@ import (
 )
 
 // makeSOQL returns the SOQL query for the desired search operation.
-func makeSOQL(params *common.SearchParams) *core.SOQLBuilder {
+// It fails if the params carry a raw filter that isn't a valid Salesforce raw filter.
+func makeSOQL(params *common.SearchParams) (*core.SOQLBuilder, error) {
 	fields := associations.FieldsForSelectQuerySearch(params)
 	soql := (&core.SOQLBuilder{}).
 		SelectFields(fields).
 		From(params.ObjectName)
 
-	addWhereClauses(soql, params)
+	if err := addWhereClauses(soql, params); err != nil {
+		return nil, err
+	}
 
-	return soql
+	return soql, nil
 }
 
 // addWhereClauses adds WHERE clauses to the SOQL query based on the params.
-func addWhereClauses(soql *core.SOQLBuilder, params *common.SearchParams) {
+// Search params carry either field filters or a raw filter, never both (SearchParams.ValidateParams).
+func addWhereClauses(soql *core.SOQLBuilder, params *common.SearchParams) error {
+	if params.RawFilter != nil {
+		filter, err := common.RawFilterAs[core.SOQLFilter](*params.RawFilter)
+		if err != nil {
+			return err
+		}
+
+		soql.WhereRawFilter(filter.Condition)
+
+		return nil
+	}
+
 	// nolint:lll
 	// https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_comparisonoperators.htm
 	for _, filter := range params.Filter.FieldFilters {
@@ -35,6 +50,8 @@ func addWhereClauses(soql *core.SOQLBuilder, params *common.SearchParams) {
 			}
 		}
 	}
+
+	return nil
 }
 
 func isNumeric(value any) bool {
