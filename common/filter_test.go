@@ -9,61 +9,71 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-func TestRawFilterAsString(t *testing.T) {
+// testFilter is a typed raw filter of syntax "test": a non-blank string without " OR ".
+type testFilter struct {
+	Expression string
+}
+
+var errTestNoOr = errors.New("must not contain OR")
+
+func (testFilter) RawFilterType() string { return "test" }
+
+func (testFilter) FromFilter(filter any) (testFilter, error) {
+	expression, err := StringFilterValue(filter)
+	if err != nil {
+		return testFilter{}, err
+	}
+
+	if strings.Contains(expression, " OR ") {
+		return testFilter{}, errTestNoOr
+	}
+
+	return testFilter{Expression: expression}, nil
+}
+
+func TestRawFilterAs(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name    string
-		filter  RawFilter
-		wantErr bool
+		name      string
+		filter    RawFilter
+		want      string
+		wantCause error
 	}{
-		{name: "expected type with a string", filter: RawFilter{Type: "soql", Filter: "IsDeleted = true"}},
-		{name: "other type", filter: RawFilter{Type: "sql", Filter: "IsDeleted = true"}, wantErr: true},
-		{name: "missing type", filter: RawFilter{Filter: "IsDeleted = true"}, wantErr: true},
-		{name: "non-string filter", filter: RawFilter{Type: "soql", Filter: 42}, wantErr: true},
-		{name: "type set without a filter", filter: RawFilter{Type: "soql"}, wantErr: true},
-		{name: "blank filter", filter: RawFilter{Type: "soql", Filter: "  "}, wantErr: true},
+		{name: "matching type with a string", filter: RawFilter{Type: "test", Filter: "A = 1"}, want: "A = 1"},
+		{name: "other type", filter: RawFilter{Type: "soql", Filter: "A = 1"}},
+		{name: "missing type", filter: RawFilter{Filter: "A = 1"}},
+		{name: "type set without a filter", filter: RawFilter{Type: "test"}},
+		{name: "non-string filter", filter: RawFilter{Type: "test", Filter: 42}, wantCause: errFilterNotString},
+		{name: "blank filter", filter: RawFilter{Type: "test", Filter: "  "}, wantCause: errFilterEmpty},
+		{
+			name:      "rejected by the typed filter",
+			filter:    RawFilter{Type: "test", Filter: "A = 1 OR B = 2"},
+			wantCause: errTestNoOr,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := tt.filter.AsString("soql")
-			if tt.wantErr != (err != nil) {
-				t.Fatalf("AsString() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := RawFilterAs[testFilter](tt.filter)
+			if tt.want != "" {
+				if err != nil || got.Expression != tt.want {
+					t.Fatalf("RawFilterAs() = %q, %v; want %q, nil", got.Expression, err, tt.want)
+				}
+
+				return
 			}
 
-			if err != nil && !errors.Is(err, ErrInvalidRawFilter) {
-				t.Fatalf("error %v does not wrap ErrInvalidRawFilter", err)
+			if !errors.Is(err, ErrInvalidRawFilter) {
+				t.Fatalf("RawFilterAs() error = %v, want ErrInvalidRawFilter", err)
 			}
 
-			if err == nil && got != tt.filter.Filter {
-				t.Fatalf("AsString() = %q, want %q", got, tt.filter.Filter)
+			if tt.wantCause != nil && !errors.Is(err, tt.wantCause) {
+				t.Fatalf("RawFilterAs() error = %v, want it to wrap %v", err, tt.wantCause)
 			}
 		})
-	}
-}
-
-func TestRawFilterStringValidators(t *testing.T) {
-	t.Parallel()
-
-	errNoOr := errors.New("OR is not allowed")
-	noOr := func(expression string) error {
-		if strings.Contains(expression, " OR ") {
-			return errNoOr
-		}
-
-		return nil
-	}
-
-	if err := (RawFilter{Type: "soql", Filter: "A = 1"}).ValidateString("soql", noOr); err != nil {
-		t.Fatalf("ValidateString() error = %v, want nil", err)
-	}
-
-	err := RawFilter{Type: "soql", Filter: "A = 1 OR B = 2"}.ValidateString("soql", noOr)
-	if !errors.Is(err, ErrInvalidRawFilter) || !errors.Is(err, errNoOr) {
-		t.Fatalf("ValidateString() error = %v, want ErrInvalidRawFilter wrapping the validator's error", err)
 	}
 }
 

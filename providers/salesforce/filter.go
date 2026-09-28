@@ -14,12 +14,14 @@ const RawFilterTypeSOQL = core.RawFilterTypeSOQL
 
 var _ connectors.RawFilterConnector = (*Connector)(nil)
 
-// ValidateRawFilter accepts raw filters of type RawFilterTypeSOQL with a string condition.
+// ValidateRawFilter accepts raw filters of type RawFilterTypeSOQL (see core.SOQLFilter).
 // Raw filters are only supported by the CRM module; Account Engagement (Pardot) rejects them.
 func (c *Connector) ValidateRawFilter(filter common.RawFilter) error {
 	if c.isPardotModule() {
 		return fmt.Errorf("%w: not supported by module %s", common.ErrInvalidRawFilter, c.moduleID)
 	}
 
-	return core.ValidateRawFilter(filter)
+	_, err := common.RawFilterAs[core.SOQLFilter](filter)
+
+	return err
 }
