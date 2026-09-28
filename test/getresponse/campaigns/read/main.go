@@ -35,7 +35,7 @@ func main() {
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "campaigns",
 		Fields:     connectors.Fields("campaignId", "name", "createdOn"),
-		Filter:     "query[isDefault]=true&sort[createdOn]=DESC",
+		RawFilter:  "query[isDefault]=true&sort[createdOn]=DESC",
 		PageSize:   1,
 	})
 

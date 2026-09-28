@@ -90,8 +90,8 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, timestamp
 		soql.Where("IsDeleted = true")
 	}
 
-	if config.Filter != "" {
-		soql.Where(config.Filter)
+	if filter, _ := config.RawFilter.(string); filter != "" {
+		soql.Where(filter)
 	}
 
 	if config.BuilderFilter != nil {

@@ -188,7 +188,7 @@ func testReadActivities(ctx context.Context) error {
 		ObjectName: "activities",
 		Since:      time.Now().Add(-1800 * time.Hour),
 		Fields:     connectors.Fields("id", "primaryAttributeValue", "activityDate"),
-		Filter:     "1,2,3,6,7,8,9,10,11,12",
+		RawFilter:  "1,2,3,6,7,8,9,10,11,12",
 		NextPage:   "7A4CXBXWDZ7ZTQBOQVIV2VTWDXUS7GKFQN3UZYGPNV4IA4C7GDCA====",
 	}
 
@@ -215,7 +215,7 @@ func testReadAllActivities(ctx context.Context) error {
 	params := common.ReadParams{
 		ObjectName: "activities",
 		Fields:     connectors.Fields("id", "primaryAttributeValue", "activityDate"),
-		Filter:     "1,2,3,6,7,8,9,10,11,12",
+		RawFilter:  "1,2,3,6,7,8,9,10,11,12",
 	}
 
 	res, err := conn.Read(ctx, params)

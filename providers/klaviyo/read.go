@@ -48,8 +48,13 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
+	custom, ok := config.RawFilter.(string)
+	if !ok && config.RawFilter != nil {
+		return nil, fmt.Errorf("%w: expected a string, got %T", common.ErrInvalidRawFilter, config.RawFilter)
+	}
+
 	filter := filterBuilder{
-		custom: config.Filter,
+		custom: custom,
 	}
 
 	if !config.Since.IsZero() {

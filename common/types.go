@@ -194,6 +194,9 @@ var (
 
 	// ErrMissingProviderParam is returned when connector expects non-empty value for a param inside VerificationParams.
 	ErrMissingProviderParam = errors.New("missing required provider parameter")
+
+	// ErrInvalidRawFilter is returned when ReadParams.RawFilter has a type or content the connector cannot accept.
+	ErrInvalidRawFilter = errors.New("invalid raw filter")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -218,9 +221,10 @@ type ReadParams struct {
 	// Deleted is true if we want to read deleted records instead of active records.
 	Deleted bool // optional, defaults to false
 
-	// Filter defines the filtering criteria for supported connectors.
-	// It is optional and behaves differently depending on the connector:
-	//	* Salesforce: It is a SOQL string that comes after the WHERE clause which will be used to filter the records.
+	// RawFilter is a provider-native filter. Nil means no filter.
+	// Connectors that validate raw filters implement connectors.RawFilterConnector.
+	// Its expected type and meaning depend on the connector:
+	//	* Salesforce: A SOQL string that comes after the WHERE clause which will be used to filter the records.
 	//		Reference: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm
 	//	* Klaviyo: Comma separated methods following JSON:API filtering syntax.
 	//		Note: timing is already handled by Since argument.
@@ -239,7 +243,8 @@ type ReadParams struct {
 	//          - "sort[createdOn]=DESC"
 	//          - "query[name]=test&sort[createdOn]=DESC"
 	//      Reference: https://apireference.getresponse.com/#operation/getCampaignList
-	Filter string // optional
+	// Klaviyo, Marketo, GetResponse and BigQuery expect a string.
+	RawFilter any // optional
 
 	// BuilderFilter is an optional Ampersand-style structured filter for read actions.
 	// Multiple field filters are joined by AND. Only the "eq" operator is supported.
@@ -1170,6 +1175,10 @@ type SearchParams struct {
 	Fields   datautils.StringSet `json:"fields"             validate:"required"`
 	Filter   SearchFilter        `json:"filter"             validate:"required"`
 	NextPage NextPageToken       `json:"nextPage,omitempty"`
+
+	// RawFilter is a provider-native filter, with the same meaning as ReadParams.RawFilter.
+	// A search needs Filter, RawFilter or both. Connectors that support it implement connectors.RawFilterConnector.
+	RawFilter any `json:"rawFilter,omitempty"`
 
 	// Page Limit for the search. If omitted, return provider's default limit.
 	Limit int64 `json:"limit,omitempty"`

@@ -458,3 +458,15 @@ type SearchConnector interface {
 	//   - error: any error that occurred while searching
 	Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error)
 }
+
+// RawFilterConnector is a connector that accepts a provider-native filter in
+// ReadParams.RawFilter and SearchParams.RawFilter. Each connector declares which
+// filter types it supports; callers check a filter here before passing its value
+// to Read or Search.
+type RawFilterConnector interface {
+	Connector
+
+	// ValidateRawFilter checks that the connector supports filterType and that
+	// filter is a valid value for it. Errors wrap common.ErrInvalidRawFilter.
+	ValidateRawFilter(filterType string, filter any) error
+}

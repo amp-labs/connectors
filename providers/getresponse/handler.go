@@ -54,8 +54,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	applyReadPaginationQuery(url, params)
 	applyReadFieldsQuery(url, params)
 
-	if params.Filter != "" {
-		addGetResponseFilters(url, params.Filter)
+	filter, ok := params.RawFilter.(string)
+	if !ok && params.RawFilter != nil {
+		return nil, fmt.Errorf("%w: expected a string, got %T", common.ErrInvalidRawFilter, params.RawFilter)
+	}
+
+	if filter != "" {
+		addGetResponseFilters(url, filter)
 	}
 
 	appendProviderSideCreatedOnFilters(url, params)

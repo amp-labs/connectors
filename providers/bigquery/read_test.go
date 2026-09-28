@@ -382,7 +382,7 @@ func TestBuildRowRestriction_WithFilter(t *testing.T) {
 	}
 
 	restriction := c.buildRowRestriction(token, common.ReadParams{
-		Filter: "country_code = 'US'",
+		RawFilter: "country_code = 'US'",
 	})
 
 	expected := "updated_at >= TIMESTAMP('2024-01-01T00:00:00Z') AND updated_at < TIMESTAMP('2024-01-31T00:00:00Z') AND country_code = 'US'"

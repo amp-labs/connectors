@@ -136,7 +136,7 @@ func (p SearchParams) ValidateParams(withRequiredFields bool) error {
 		return ErrMissingFields
 	}
 
-	if len(p.Filter.FieldFilters) == 0 {
+	if len(p.Filter.FieldFilters) == 0 && p.RawFilter == nil {
 		return ErrMissingSearchFilters
 	}
 
