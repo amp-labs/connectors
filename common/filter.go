@@ -38,22 +38,22 @@ type TypedRawFilter[T any] interface {
 // Type must be T's syntax, Filter must be set, and T's FromFilter must accept it.
 // Connectors call it wherever they use a raw filter, so validation and conversion happen together.
 // Errors wrap ErrInvalidRawFilter.
-func RawFilterAs[T TypedRawFilter[T]](rf RawFilter) (T, error) {
+func RawFilterAs[T TypedRawFilter[T]](rawFilter RawFilter) (T, error) {
 	var syntax T
 
-	if rf.Type != syntax.RawFilterType() {
+	if rawFilter.Type != syntax.RawFilterType() {
 		return syntax, fmt.Errorf("%w: unsupported type %q, expected %q",
-			ErrInvalidRawFilter, rf.Type, syntax.RawFilterType())
+			ErrInvalidRawFilter, rawFilter.Type, syntax.RawFilterType())
 	}
 
 	// A RawFilter can be set without a Filter.
-	if rf.Filter == nil {
-		return syntax, fmt.Errorf("%w: %s filter is missing", ErrInvalidRawFilter, rf.Type)
+	if rawFilter.Filter == nil {
+		return syntax, fmt.Errorf("%w: %s filter is missing", ErrInvalidRawFilter, rawFilter.Type)
 	}
 
-	typed, err := syntax.FromFilter(rf.Filter)
+	typed, err := syntax.FromFilter(rawFilter.Filter)
 	if err != nil {
-		return syntax, fmt.Errorf("%w: %s filter %w", ErrInvalidRawFilter, rf.Type, err)
+		return syntax, fmt.Errorf("%w: %s filter %w", ErrInvalidRawFilter, rawFilter.Type, err)
 	}
 
 	return typed, nil
