@@ -8,14 +8,12 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
-// RawFilterTypeSOQL is the raw filter type Salesforce supports:
-// a SOQL condition, as it would appear after WHERE.
-const RawFilterTypeSOQL = core.RawFilterTypeSOQL
-
 var _ connectors.RawFilterConnector = (*Connector)(nil)
 
-// ValidateRawFilter accepts raw filters of type RawFilterTypeSOQL (see core.SOQLFilter).
-// Raw filters are only supported by the CRM module; Account Engagement (Pardot) rejects them.
+// ValidateRawFilter accepts Salesforce's raw filter syntax, core.SOQLFilter (type "soql").
+// The syntax itself lives in core so the CRM search strategy can use it too; this method only adds
+// what depends on the connector: raw filters are supported by the CRM module, and Account Engagement
+// (Pardot) rejects them.
 func (c *Connector) ValidateRawFilter(filter common.RawFilter) error {
 	if c.isPardotModule() {
 		return fmt.Errorf("%w: not supported by module %s", common.ErrInvalidRawFilter, c.moduleID)
