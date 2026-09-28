@@ -168,9 +168,11 @@ func TestReadRawFilter(t *testing.T) { //nolint:funlen
 				Data: []common.ReadResultRow{{
 					Id:     "003A",
 					Fields: map[string]any{"lastname": "Gone", "isdeleted": true},
+					Raw:    map[string]any{"Id": "003A", "LastName": "Gone", "IsDeleted": true},
 				}, {
 					Id:     "003B",
 					Fields: map[string]any{"lastname": "Here", "isdeleted": false},
+					Raw:    map[string]any{"Id": "003B", "LastName": "Here", "IsDeleted": false},
 				}},
 				Done: true,
 			},
@@ -196,6 +198,7 @@ func TestReadRawFilter(t *testing.T) { //nolint:funlen
 				Data: []common.ReadResultRow{{
 					Id:     "003A",
 					Fields: map[string]any{"lastname": "Gone"},
+					Raw:    map[string]any{"Id": "003A", "LastName": "Gone"},
 				}},
 				Done: true,
 			},
@@ -219,6 +222,7 @@ func TestReadRawFilter(t *testing.T) { //nolint:funlen
 				Data: []common.ReadResultRow{{
 					Id:     "003C",
 					Fields: map[string]any{"lastname": "Late", "isdeleted": true},
+					Raw:    map[string]any{"Id": "003C", "LastName": "Late", "IsDeleted": true},
 				}},
 				Done: true,
 			},
@@ -311,9 +315,11 @@ func TestSearchRawFilter(t *testing.T) { //nolint:funlen
 				Data: []common.ReadResultRow{{
 					Id:     "003A",
 					Fields: map[string]any{"lastname": "Gone", "isdeleted": true},
+					Raw:    map[string]any{"Id": "003A", "LastName": "Gone", "IsDeleted": true},
 				}, {
 					Id:     "003B",
 					Fields: map[string]any{"lastname": "Here", "isdeleted": false},
+					Raw:    map[string]any{"Id": "003B", "LastName": "Here", "IsDeleted": false},
 				}},
 				Done: true,
 			},
