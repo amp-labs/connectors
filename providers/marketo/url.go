@@ -156,7 +156,7 @@ func (c *Connector) handleActivitiesAPI(ctx context.Context, url *urlbuilder.URL
 			return ErrFilterInvalid
 		}
 
-		filter, err := common.StringRawFilter(*params.RawFilter, RawFilterTypeActivityTypeIDs)
+		filter, err := params.RawFilter.AsString(RawFilterTypeActivityTypeIDs)
 		if err != nil {
 			return err
 		}

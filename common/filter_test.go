@@ -3,12 +3,13 @@ package common
 
 import (
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-func TestStringRawFilter(t *testing.T) {
+func TestRawFilterAsString(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -28,19 +29,41 @@ func TestStringRawFilter(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := StringRawFilter(tt.filter, "soql")
+			got, err := tt.filter.AsString("soql")
 			if tt.wantErr != (err != nil) {
-				t.Fatalf("StringRawFilter() error = %v, wantErr %v", err, tt.wantErr)
-			}
-
-			if err == nil && got != tt.filter.Filter {
-				t.Fatalf("StringRawFilter() = %q, want %q", got, tt.filter.Filter)
+				t.Fatalf("AsString() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
 			if err != nil && !errors.Is(err, ErrInvalidRawFilter) {
 				t.Fatalf("error %v does not wrap ErrInvalidRawFilter", err)
 			}
+
+			if err == nil && got != tt.filter.Filter {
+				t.Fatalf("AsString() = %q, want %q", got, tt.filter.Filter)
+			}
 		})
+	}
+}
+
+func TestRawFilterConnectorValidators(t *testing.T) {
+	t.Parallel()
+
+	errNoOr := errors.New("OR is not allowed")
+	noOr := func(expression string) error {
+		if strings.Contains(expression, " OR ") {
+			return errNoOr
+		}
+
+		return nil
+	}
+
+	if err := (RawFilter{Type: "soql", Filter: "A = 1"}).ValidateString("soql", noOr); err != nil {
+		t.Fatalf("ValidateString() error = %v, want nil", err)
+	}
+
+	err := RawFilter{Type: "soql", Filter: "A = 1 OR B = 2"}.ValidateString("soql", noOr)
+	if !errors.Is(err, ErrInvalidRawFilter) || !errors.Is(err, errNoOr) {
+		t.Fatalf("ValidateString() error = %v, want ErrInvalidRawFilter wrapping the validator's error", err)
 	}
 }
 

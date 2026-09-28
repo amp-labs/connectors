@@ -9,7 +9,5 @@ const RawFilterTypeSOQL = "soql"
 // ValidateRawFilter checks that a raw filter is of type RawFilterTypeSOQL with a string condition.
 // Salesforce checks the condition itself when the query runs.
 func ValidateRawFilter(filter common.RawFilter) error {
-	_, err := common.StringRawFilter(filter, RawFilterTypeSOQL)
-
-	return err
+	return filter.ValidateString(RawFilterTypeSOQL)
 }

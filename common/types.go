@@ -194,9 +194,6 @@ var (
 
 	// ErrMissingProviderParam is returned when connector expects non-empty value for a param inside VerificationParams.
 	ErrMissingProviderParam = errors.New("missing required provider parameter")
-
-	// ErrInvalidRawFilter is returned when a RawFilter has a type or filter the connector cannot accept.
-	ErrInvalidRawFilter = errors.New("invalid raw filter")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -1153,16 +1150,6 @@ type FilterOperator string
 const (
 	FilterOperatorEQ FilterOperator = "eq"
 )
-
-// RawFilter is a filter in a provider's native syntax.
-type RawFilter struct {
-	// Type names the filter syntax. Each connector declares the types it supports
-	// through connectors.RawFilterConnector, e.g. "soql" for Salesforce.
-	Type string `json:"type"`
-
-	// Filter is the filter expression in that syntax.
-	Filter any `json:"filter"`
-}
 
 type SearchParams struct {
 	ObjectName string `json:"objectName" validate:"required"`
