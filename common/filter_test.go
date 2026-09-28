@@ -20,7 +20,7 @@ func TestStringRawFilter(t *testing.T) {
 		{name: "other type", filter: RawFilter{Type: "sql", Filter: "IsDeleted = true"}, wantErr: true},
 		{name: "missing type", filter: RawFilter{Filter: "IsDeleted = true"}, wantErr: true},
 		{name: "non-string filter", filter: RawFilter{Type: "soql", Filter: 42}, wantErr: true},
-		{name: "nil filter", filter: RawFilter{Type: "soql"}, wantErr: true},
+		{name: "type set without a filter", filter: RawFilter{Type: "soql"}, wantErr: true},
 		{name: "blank filter", filter: RawFilter{Type: "soql", Filter: "  "}, wantErr: true},
 	}
 

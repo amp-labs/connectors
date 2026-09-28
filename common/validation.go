@@ -163,12 +163,17 @@ func (p SubscribeParams) ValidateParams() error {
 }
 
 // StringRawFilter returns the expression of a raw filter whose syntax is a plain string,
-// after checking that its Type is expectedType and its Filter a non-blank string.
+// after checking that its Type is expectedType and its Filter is set to a non-blank string.
+// A RawFilter can be set without a Filter; that is rejected like an empty one.
 // Connectors with string syntaxes use it both to implement connectors.RawFilterConnector
 // and to read the expression, so the check and the type assertion live in one place.
 func StringRawFilter(filter RawFilter, expectedType string) (string, error) {
 	if filter.Type != expectedType {
 		return "", fmt.Errorf("%w: unsupported type %q, expected %q", ErrInvalidRawFilter, filter.Type, expectedType)
+	}
+
+	if filter.Filter == nil {
+		return "", fmt.Errorf("%w: %s filter is missing", ErrInvalidRawFilter, expectedType)
 	}
 
 	expression, ok := filter.Filter.(string)
