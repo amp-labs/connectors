@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "name": "Example Webhook",
+  "url": "https://www.example.com/hook",
+  "format": "json",
+  "created": "2021-09-20 22:38:01",
+  "lastSent": null,
+  "privateKey": "secret-key"
+}
