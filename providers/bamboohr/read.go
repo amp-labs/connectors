@@ -15,6 +15,8 @@ import (
 )
 
 const (
+	apiVersion = "v1"
+
 	defaultPageSize = "100"
 
 	pageKey     = "page"
@@ -69,7 +71,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	endpointURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
+	endpointURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 	if err != nil {
 		return nil, err
 	}
