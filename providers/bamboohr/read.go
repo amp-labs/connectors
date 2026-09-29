@@ -10,13 +10,12 @@ import (
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/providers/bamboohr/metadata"
+	"github.com/amp-labs/connectors/providers/bamboohr/internal/core"
+	"github.com/amp-labs/connectors/providers/bamboohr/internal/metadata"
 	"github.com/spyzhov/ajson"
 )
 
 const (
-	apiVersion = "v1"
-
 	defaultPageSize = "100"
 
 	pageKey     = "page"
@@ -71,7 +70,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	endpointURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
+	endpointURL, err := core.ObjectURL(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
 	}
