@@ -156,6 +156,109 @@
             }
           }
         },
+        "chat.postMessage": {
+          "displayName": "Chat Postmessage",
+          "path": "",
+          "responseKey": "",
+          "docs": "https://docs.slack.dev/reference/methods/chat.postMessage",
+          "fields": {
+            "as_user": {
+              "displayName": "as_user",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "attachments": {
+              "displayName": "attachments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "blocks": {
+              "displayName": "blocks",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "channel": {
+              "displayName": "channel",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "current_draft_last_updated_ts": {
+              "displayName": "current_draft_last_updated_ts",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "icon_emoji": {
+              "displayName": "icon_emoji",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "icon_url": {
+              "displayName": "icon_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "link_names": {
+              "displayName": "link_names",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "markdown_text": {
+              "displayName": "markdown_text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "mrkdwn": {
+              "displayName": "mrkdwn",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "parse": {
+              "displayName": "parse",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reply_broadcast": {
+              "displayName": "reply_broadcast",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "text": {
+              "displayName": "text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "thread_ts": {
+              "displayName": "thread_ts",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "unfurl_app_links": {
+              "displayName": "unfurl_app_links",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "unfurl_links": {
+              "displayName": "unfurl_links",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "unfurl_media": {
+              "displayName": "unfurl_media",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "username": {
+              "displayName": "username",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "conversations.canvases": {
           "displayName": "Conversations Canvases",
           "path": "",
