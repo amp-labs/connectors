@@ -536,7 +536,7 @@ func constructTestStrategy(server *httptest.Server) (*Strategy, error) {
 		return nil, err
 	}
 
-	base.SetUnitTestMockServerBaseURL(server.URL)
+	base.SetUnitTestMockServerBaseUrl(server.URL)
 
 	return NewStrategy(base), nil
 }

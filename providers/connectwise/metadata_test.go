@@ -282,7 +282,7 @@ func constructTestConnector(server *httptest.Server) (*Connector, error) {
 	}
 
 	// for testing we want to redirect calls to our mock server
-	connector.SetUnitTestMockServerBaseURL(server.URL)
+	connector.SetUnitTestMockServerBaseUrl(server.URL)
 
 	return connector, nil
 }

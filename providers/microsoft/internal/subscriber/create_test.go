@@ -291,7 +291,7 @@ func constructTestStrategy(server *httptest.Server) (*Strategy, error) {
 		return nil, err
 	}
 
-	transport.SetUnitTestMockServerBaseURL(server.URL)
+	transport.SetUnitTestMockServerBaseUrl(server.URL)
 
 	client := transport.JSONHTTPClient()
 	info := transport.ProviderInfo()
