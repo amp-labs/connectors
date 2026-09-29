@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/slack/internal/webhook"
+	"github.com/amp-labs/connectors/providers/slack/metadata"
 )
 
 // Type Exports.
@@ -72,13 +73,19 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 		teamId:    authMetadata.TeamId,
 	}
 
-	connector.SchemaProvider = schema.NewObjectSchemaProvider(
+	fallbackSchema := schema.NewObjectSchemaProvider(
 		connector.HTTPClient().Client,
 		schema.FetchModeParallel,
 		operations.SingleObjectMetadataHandlers{
 			BuildRequest:  connector.buildSingleObjectMetadataRequest,
 			ParseResponse: connector.parseSingleObjectMetadataResponse,
 		},
+	)
+
+	// Objects without a list call have nothing to sample, so they are served from a static file.
+	connector.SchemaProvider = schema.NewCompositeSchemaProvider(
+		schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas),
+		fallbackSchema,
 	)
 
 	connector.Reader = reader.NewHTTPReader(
