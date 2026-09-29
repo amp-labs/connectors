@@ -156,8 +156,8 @@
             }
           }
         },
-        "chat.postMessage": {
-          "displayName": "Chat Postmessage",
+        "chat": {
+          "displayName": "Chat",
           "path": "",
           "responseKey": "",
           "docs": "https://docs.slack.dev/reference/methods/chat.postMessage",

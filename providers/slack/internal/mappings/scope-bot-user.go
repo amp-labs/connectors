@@ -93,7 +93,7 @@ func init() { // nolint:funlen,maintidx
 				RequestIdField: "canvas_id",
 			},
 		},
-		"chat.postMessage": {
+		"chat": {
 			// https://docs.slack.dev/reference/methods/chat.postMessage
 			writeCreateInfo: &WriteCreateInfo{
 				Href:            "chat.postMessage",

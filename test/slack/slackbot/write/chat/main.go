@@ -44,7 +44,7 @@ func main() {
 	}
 
 	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "chat.postMessage",
+		ObjectName: "chat",
 		RecordData: map[string]any{
 			"channel": channelID,
 			"text":    "Sent by the Slack connector write live test.",
