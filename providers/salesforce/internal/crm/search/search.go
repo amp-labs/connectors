@@ -42,12 +42,17 @@ func (s Strategy) buildSearchURL(params *common.SearchParams) (*urlbuilder.URL, 
 
 	// If NextPage is not set, then we're reading the first page of results.
 	// We need to construct the SOQL query and then make the request.
-	url, err := s.getQueryURL()
+	url, err := s.getQueryURL(core.QueryEndpoint(params.RawFilter != nil))
 	if err != nil {
 		return nil, err
 	}
 
-	url.WithQueryParam("q", makeSOQL(params).String())
+	soql, err := makeSOQL(params)
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("q", soql.String())
 
 	return url, nil
 }
