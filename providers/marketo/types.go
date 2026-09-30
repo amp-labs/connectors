@@ -37,7 +37,7 @@ var (
 	ErrFailedConvertFields = errors.New("failed to convert the response message to metadata fields")
 
 	// ErrFilterInvalid indicates missing activityTypeIds when reading Marketo lead activities.
-	ErrFilterInvalid = errors.New("reading lead activities require Filter parameter with comma-separated activityTypeIds")
+	ErrFilterInvalid = errors.New("reading lead activities requires a RawFilter of type activityTypeIds")
 
 	// ErrZeroRecords indicates missing records for the provided timestamp range, using the Since Field.
 	ErrZeroRecords = errors.New("returned zero records for the provided timestamp range")

@@ -371,11 +371,6 @@ func (c *Connector) buildRowRestriction(token *readSessionToken, params common.R
 		}
 	}
 
-	// Append any user-provided filter.
-	if params.Filter != "" {
-		conditions = append(conditions, params.Filter)
-	}
-
 	return strings.Join(conditions, " AND ")
 }
 

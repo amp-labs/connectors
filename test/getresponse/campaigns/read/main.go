@@ -31,14 +31,6 @@ func main() {
 		PageSize:   1,
 	})
 
-	slog.Info("=== Custom filter read: campaigns with isDefault=true sorted by createdOn DESC ===")
-	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
-		ObjectName: "campaigns",
-		Fields:     connectors.Fields("campaignId", "name", "createdOn"),
-		Filter:     "query[isDefault]=true&sort[createdOn]=DESC",
-		PageSize:   1,
-	})
-
 	slog.Info("=== Incremental read with Since: campaigns (connector-side filtering) ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "campaigns",

@@ -54,10 +54,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	applyReadPaginationQuery(url, params)
 	applyReadFieldsQuery(url, params)
 
-	if params.Filter != "" {
-		addGetResponseFilters(url, params.Filter)
-	}
-
 	appendProviderSideCreatedOnFilters(url, params)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -93,36 +89,6 @@ func appendProviderSideCreatedOnFilters(url *urlbuilder.URL, params common.ReadP
 
 	if !params.Until.IsZero() {
 		url.WithQueryParam(untilKey, params.Until.UTC().Format("2006-01-02T15:04:05+0000"))
-	}
-}
-
-// addGetResponseFilters parses GetResponse filter string and adds query/sort parameters.
-// Format examples:
-//   - "query[name]=campaign_name" -> adds query[name]=campaign_name
-//   - "query[isDefault]=true" -> adds query[isDefault]=true
-//   - "sort[name]=ASC" -> adds sort[name]=ASC
-//   - "sort[createdOn]=DESC" -> adds sort[createdOn]=DESC
-//
-// Multiple filters can be separated by &, e.g., "query[name]=test&sort[createdOn]=DESC".
-func addGetResponseFilters(url *urlbuilder.URL, filterStr string) {
-	// Simple parser for GetResponse filter format
-	// Split by & to get individual filter clauses
-	for filter := range strings.SplitSeq(filterStr, "&") {
-		filter = strings.TrimSpace(filter)
-		if filter == "" {
-			continue
-		}
-
-		// Parse key=value
-		parts := strings.SplitN(filter, "=", 2) // nolint:mnd
-		if len(parts) != 2 {                    // nolint:mnd
-			continue
-		}
-
-		key := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
-
-		url.WithQueryParam(key, value)
 	}
 }
 

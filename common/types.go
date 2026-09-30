@@ -218,28 +218,16 @@ type ReadParams struct {
 	// Deleted is true if we want to read deleted records instead of active records.
 	Deleted bool // optional, defaults to false
 
-	// Filter defines the filtering criteria for supported connectors.
-	// It is optional and behaves differently depending on the connector:
-	//	* Salesforce: It is a SOQL string that comes after the WHERE clause which will be used to filter the records.
+	// RawFilter is a filter in the provider's native syntax. Nil means no filter.
+	// Connectors that accept one implement connectors.RawFilterConnector, which declares
+	// the filter types they support. The type and its meaning depend on the connector:
+	//	* Salesforce ("soql"): A SOQL string that comes after the WHERE clause which will be used to filter the records.
 	//		Reference: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm
-	//	* Klaviyo: Comma separated methods following JSON:API filtering syntax.
-	//		Note: timing is already handled by Since argument.
-	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
-	//	* Marketo: Comma-separated activityTypeIds for filtering lead activities.
+	//	* Marketo ("activityTypeIds"): Comma-separated activityTypeIds for filtering lead activities.
 	//		Note: Only supported when reading Lead Activities (not other endpoints).
 	//		Example: "1,6,12" (for visitWebpage, fillOutForm, emailClicked)
 	//		Reference: https://developer.adobe.com/marketo-apis/api/mapi/#tag/Activities
-	//  * GetResponse: An ampersand-style filter string that maps directly to GetResponse's
-	//      bracket-notation query parameters. Supports both `query[...]` and `sort[...]`.
-	//      Multiple filters can be separated by '&'.
-	//      Examples:
-	//          - "query[name]=campaign_name"
-	//          - "query[isDefault]=true"
-	//          - "sort[name]=ASC"
-	//          - "sort[createdOn]=DESC"
-	//          - "query[name]=test&sort[createdOn]=DESC"
-	//      Reference: https://apireference.getresponse.com/#operation/getCampaignList
-	Filter string // optional
+	RawFilter *RawFilter // optional
 
 	// BuilderFilter is an optional Ampersand-style structured filter for read actions.
 	// Multiple field filters are joined by AND. Only the "eq" operator is supported.
@@ -1170,6 +1158,10 @@ type SearchParams struct {
 	Fields   datautils.StringSet `json:"fields"             validate:"required"`
 	Filter   SearchFilter        `json:"filter"             validate:"required"`
 	NextPage NextPageToken       `json:"nextPage,omitempty"`
+
+	// RawFilter is a filter in the provider's native syntax, as for ReadParams.RawFilter.
+	// A search needs exactly one of Filter or RawFilter.
+	RawFilter *RawFilter `json:"rawFilter,omitempty"`
 
 	// Page Limit for the search. If omitted, return provider's default limit.
 	Limit int64 `json:"limit,omitempty"`
