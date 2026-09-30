@@ -138,3 +138,51 @@ func (c Connector) Provider() providers.Provider {
 func (c Connector) String() string {
 	return c.Transport.ProviderContext.String()
 }
+
+var (
+	_ connectors.Connector      = (*BaseConnector)(nil)
+	_ connectors.ProxyConnector = (*BaseConnector)(nil)
+)
+
+// BaseConnector provides the common implementation shared by provider connectors.
+//
+// It is intended to be embedded in concrete connectors.
+// BaseConnector combines provider metadata, authenticated HTTP clients, and proxy
+// resolution to implement the core connectors.Connector and connectors.ProxyConnector interfaces.
+//
+// BaseConnector does not provide provider-specific operations.
+// Implementors can use ProviderInfo/ModuleInfo and HTTPClient for API requests.
+//
+// HTTP-level error handling is available via common.HTTPClient,
+// but callers should generally avoid setting error handlers there.
+// Use operations.HTTPHandlers for connector-local error handling instead.
+type BaseConnector struct {
+	ProviderContext
+	AuthClients
+	ProxyResolver
+}
+
+// NewBaseConnector creates a BaseConnector for provider using the supplied
+// connector parameters.
+func NewBaseConnector(
+	provider providers.Provider,
+	params common.ConnectorParams,
+) (*BaseConnector, error) {
+	providerContext, err := NewProviderContextFromParams(provider, params)
+	if err != nil {
+		return nil, err
+	}
+
+	clients, err := NewConnectorClients(params.AuthenticatedClient)
+	if err != nil {
+		return nil, err
+	}
+
+	proxyResolver := NewProxyResolver(*providerContext)
+
+	return &BaseConnector{
+		ProviderContext: *providerContext,
+		AuthClients:     *clients,
+		ProxyResolver:   *proxyResolver,
+	}, nil
+}
