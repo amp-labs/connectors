@@ -13,12 +13,13 @@ import (
 func TestSoqlBuilderWithIDs(t *testing.T) {
 	t.Parallel()
 
-	soql := makeSOQL(common.ReadParams{
+	soql, err := makeSOQL(common.ReadParams{
 		ObjectName: "Account",
 		// Note: fields doesn't preserve order of elements.
 		// To simplify test only one element is included.
 		Fields: datautils.NewSet("shippingstreet"),
 	}, defaultTimestampColumn)
+	assert.NilError(t, err)
 
 	{
 		// SOQL builder must produce query matching documentation.
@@ -49,11 +50,12 @@ func TestSoqlBuilderWithParentAssociation(t *testing.T) {
 	t.Parallel()
 
 	// Test that AccountId is added to SOQL when accounts is requested as association
-	soql := makeSOQL(common.ReadParams{
+	soql, err := makeSOQL(common.ReadParams{
 		ObjectName:        "opportunity",
 		Fields:            datautils.NewSet("Name", "Amount"),
 		AssociatedObjects: []string{"accounts"},
 	}, defaultTimestampColumn)
+	assert.NilError(t, err)
 
 	output := soql.String()
 	// AccountId should be included in the SELECT clause
@@ -70,11 +72,12 @@ func TestSoqlBuilderWithJunctionAssociation(t *testing.T) {
 
 	// Test that OpportunityContactRoles subquery is added to SOQL when contacts is requested
 	// as association for Opportunity
-	soql := makeSOQL(common.ReadParams{
+	soql, err := makeSOQL(common.ReadParams{
 		ObjectName:        "opportunity",
 		Fields:            datautils.NewSet("Name", "Amount"),
 		AssociatedObjects: []string{"contacts"},
 	}, defaultTimestampColumn)
+	assert.NilError(t, err)
 
 	output := soql.String()
 	// OpportunityContactRoles subquery should be included in the SELECT clause
@@ -91,12 +94,13 @@ func TestMakeSOQLDefaultTimestampColumn(t *testing.T) {
 	since := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
 	until := time.Date(2024, 6, 15, 0, 0, 0, 0, time.UTC)
 
-	soql := makeSOQL(common.ReadParams{
+	soql, err := makeSOQL(common.ReadParams{
 		ObjectName: "Account",
 		Fields:     datautils.NewSet("Name"),
 		Since:      since,
 		Until:      until,
 	}, defaultTimestampColumn)
+	assert.NilError(t, err)
 
 	output := soql.String()
 	assert.Assert(t, strings.Contains(output, "SystemModstamp > 2024-01-15T00:00:00Z"),
@@ -111,12 +115,13 @@ func TestMakeSOQLCustomTimestampColumn(t *testing.T) {
 	since := time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC)
 	until := time.Date(2024, 6, 15, 0, 0, 0, 0, time.UTC)
 
-	soql := makeSOQL(common.ReadParams{
+	soql, err := makeSOQL(common.ReadParams{
 		ObjectName: "Account",
 		Fields:     datautils.NewSet("Name"),
 		Since:      since,
 		Until:      until,
 	}, "LastModifiedDate")
+	assert.NilError(t, err)
 
 	output := soql.String()
 	assert.Assert(t, strings.Contains(output, "LastModifiedDate > 2024-01-15T00:00:00Z"),
@@ -130,10 +135,11 @@ func TestMakeSOQLCustomTimestampColumn(t *testing.T) {
 func TestMakeSOQLNoSinceUntilOmitsTimestampColumn(t *testing.T) {
 	t.Parallel()
 
-	soql := makeSOQL(common.ReadParams{
+	soql, err := makeSOQL(common.ReadParams{
 		ObjectName: "Account",
 		Fields:     datautils.NewSet("Name"),
 	}, "LastModifiedDate")
+	assert.NilError(t, err)
 
 	output := soql.String()
 	assert.Assert(t, !strings.Contains(output, "LastModifiedDate"),
