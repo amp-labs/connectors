@@ -20,7 +20,7 @@ func main() {
 
 	conn := slackshared.NewConnector(ctx, providers.SlackUserScope)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"conversations", "users", "auth.teams"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"admin.conversations", "conversations", "users", "auth.teams"})
 	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(-1)

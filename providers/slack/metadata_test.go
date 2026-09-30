@@ -20,10 +20,14 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop,main
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
-			Name:         "At least one object name must be queried",
-			Input:        nil,
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{common.ErrMissingObjects},
+			Name:   "Empty object list returns an empty result",
+			Input:  nil,
+			Server: mockserver.Dummy(),
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Successfully describe conversations object with metadata",
@@ -121,6 +125,42 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen,gocognit,cyclop,main
 						Fields: map[string]common.FieldMetadata{
 							"id":   {DisplayName: "id", ValueType: common.ValueTypeString},
 							"name": {DisplayName: "name", ValueType: common.ValueTypeString},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Object without a list call comes from the static file while others are sampled",
+			Input: []string{"users", "canvases"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/users.list"),
+				Then:  mockserver.Response(http.StatusOK, usersResponse),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"users": {
+						DisplayName: "Users",
+						Fields: map[string]common.FieldMetadata{
+							"id": {DisplayName: "id", ValueType: common.ValueTypeString},
+						},
+					},
+					"canvases": {
+						DisplayName: "Canvases",
+						Fields: map[string]common.FieldMetadata{
+							"title": {
+								DisplayName: "title", ValueType: common.ValueTypeString, ProviderType: "string",
+							},
+							"channel_id": {
+								DisplayName: "channel_id", ValueType: common.ValueTypeString, ProviderType: "string",
+							},
+							"document_content": {
+								DisplayName: "document_content", ValueType: common.ValueTypeOther, ProviderType: "object",
+							},
 						},
 					},
 				},
