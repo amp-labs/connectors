@@ -10,7 +10,7 @@ import (
 // a SOQL condition, as it would appear after WHERE.
 const RawFilterTypeSOQL = "soql"
 
-var errRawFilterUnbalanced = errors.New("has unbalanced parentheses")
+var errRawFilterUnbalanced = errors.New("the given soql query has unbalanced parentheses")
 
 // SOQLFilter is Salesforce's raw filter: a SOQL condition, as it would appear after WHERE.
 type SOQLFilter struct {
