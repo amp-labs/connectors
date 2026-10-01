@@ -1,4 +1,4 @@
-package jira
+package confluence
 
 import (
 	"net/http"
@@ -14,7 +14,7 @@ import (
 func TestDelete(t *testing.T) { // nolint:funlen,cyclop,dupl
 	t.Parallel()
 
-	responseErrorFormat := testutils.DataFromFile(t, "delete-issue-not-found.json")
+	responseErrorFormat := testutils.DataFromFile(t, "confluence/delete/blogposts/err-not-found.json")
 
 	tests := []testconn.TestCaseDelete{
 		{
@@ -23,33 +23,30 @@ func TestDelete(t *testing.T) { // nolint:funlen,cyclop,dupl
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:         "Delete issue must include ID",
-			Input:        common.DeleteParams{ObjectName: "issues"},
+			Name:         "Delete blogpost must include ID",
+			Input:        common.DeleteParams{ObjectName: "blogposts"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
 		{
 			Name:  "Not found returned on removing missing entry",
-			Input: common.DeleteParams{ObjectName: "issues", RecordId: "10010"},
+			Input: common.DeleteParams{ObjectName: "blogposts", RecordId: "1802301"},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusNotFound, responseErrorFormat),
 			}.Server(),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				testutils.StringError("Issue does not exist or you do not have permission to see it"),
+				testutils.StringError("Cannot find a blogpost with id [1802301]"), // nolint:goerr113
 			},
 		},
 		{
 			Name:  "Successful delete",
-			Input: common.DeleteParams{ObjectName: "issues", RecordId: "10010"},
+			Input: common.DeleteParams{ObjectName: "blogposts", RecordId: "1802301"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.MethodDELETE(),
-					mockcond.Path("/ex/jira/ebc887b2-7e61-4059-ab35-71f15cc16e12/rest/api/3/issue/10010"),
-				},
-				Then: mockserver.Response(http.StatusNoContent),
+				If:    mockcond.MethodDELETE(),
+				Then:  mockserver.Response(http.StatusNoContent),
 			}.Server(),
 			Expected:     &common.DeleteResult{Success: true},
 			ExpectedErrs: nil,
