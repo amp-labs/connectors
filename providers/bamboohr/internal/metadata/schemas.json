@@ -4,6 +4,137 @@
       "id": "root",
       "path": "",
       "objects": {
+        "alert_configurations": {
+          "displayName": "Alert Configurations",
+          "path": "/alert-configurations",
+          "responseKey": "",
+          "fields": {
+            "additionalRecipientEmails": {
+              "displayName": "additionalRecipientEmails",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "bambooAlertId": {
+              "displayName": "bambooAlertId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "customMessage": {
+              "displayName": "customMessage",
+              "valueType": "other"
+            },
+            "customSubject": {
+              "displayName": "customSubject",
+              "valueType": "other"
+            },
+            "dueInterval": {
+              "displayName": "dueInterval",
+              "valueType": "other"
+            },
+            "dueWithin": {
+              "displayName": "dueWithin",
+              "valueType": "other"
+            },
+            "editorUserId": {
+              "displayName": "editorUserId",
+              "valueType": "other"
+            },
+            "employeeIds": {
+              "displayName": "employeeIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "filterListValueIds": {
+              "displayName": "filterListValueIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "groupBy": {
+              "displayName": "groupBy",
+              "valueType": "other"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "includeLocation": {
+              "displayName": "includeLocation",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "includePosition": {
+              "displayName": "includePosition",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lastEdited": {
+              "displayName": "lastEdited",
+              "valueType": "other"
+            },
+            "limitTrainingToRequired": {
+              "displayName": "limitTrainingToRequired",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "listValueIds": {
+              "displayName": "listValueIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "runAtTime": {
+              "displayName": "runAtTime",
+              "valueType": "other"
+            },
+            "runAtTimeZone": {
+              "displayName": "runAtTimeZone",
+              "valueType": "other"
+            },
+            "schedule": {
+              "displayName": "schedule",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "daily",
+                  "displayValue": "daily"
+                },
+                {
+                  "value": "weekly",
+                  "displayValue": "weekly"
+                },
+                {
+                  "value": "monthly",
+                  "displayValue": "monthly"
+                },
+                {
+                  "value": "quarterly",
+                  "displayValue": "quarterly"
+                }
+              ]
+            },
+            "sendToAdmin": {
+              "displayName": "sendToAdmin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "sendToEmployee": {
+              "displayName": "sendToEmployee",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "sendToManager": {
+              "displayName": "sendToManager",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "userIds": {
+              "displayName": "userIds",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
         "applicant_tracking_applications": {
           "displayName": "Applications",
           "path": "/applicant_tracking/applications",
@@ -316,6 +447,23 @@
             },
             "zipCode": {
               "displayName": "Zip Code",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "compensation_planning_cycles": {
+          "displayName": "Compensation Planning Cycles",
+          "path": "/compensation/planning_cycles",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
               "valueType": "string",
               "providerType": "string"
             }
@@ -935,6 +1083,69 @@
             }
           }
         },
+        "holidays": {
+          "displayName": "Holidays",
+          "path": "/holidays",
+          "responseKey": "data",
+          "fields": {
+            "audience": {
+              "displayName": "audience",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "countryCodes": {
+              "displayName": "countryCodes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedAt": {
+              "displayName": "deletedAt",
+              "valueType": "other"
+            },
+            "endDate": {
+              "displayName": "endDate",
+              "valueType": "other"
+            },
+            "globalHolidayUuid": {
+              "displayName": "globalHolidayUuid",
+              "valueType": "other"
+            },
+            "holidayPay": {
+              "displayName": "holidayPay",
+              "valueType": "other"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "isPublic": {
+              "displayName": "isPublic",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "startDate": {
+              "displayName": "startDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
         "hris_custom_fields": {
           "displayName": "Custom Fields",
           "path": "/hris/custom-fields",
@@ -1490,6 +1701,204 @@
             }
           }
         },
+        "scheduling_schedules": {
+          "displayName": "Schedules",
+          "path": "/scheduling/schedules",
+          "responseKey": "data",
+          "fields": {
+            "autoPublishLeadTimeQuantity": {
+              "displayName": "autoPublishLeadTimeQuantity",
+              "valueType": "other"
+            },
+            "autoPublishLeadTimeUnit": {
+              "displayName": "autoPublishLeadTimeUnit",
+              "valueType": "other"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedAt": {
+              "displayName": "deletedAt",
+              "valueType": "other"
+            },
+            "earlyClockInThreshold": {
+              "displayName": "earlyClockInThreshold",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "earlyClockOutThreshold": {
+              "displayName": "earlyClockOutThreshold",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "employeeIds": {
+              "displayName": "employeeIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastAutoPublishAt": {
+              "displayName": "lastAutoPublishAt",
+              "valueType": "other"
+            },
+            "lateClockInThreshold": {
+              "displayName": "lateClockInThreshold",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "lateClockOutThreshold": {
+              "displayName": "lateClockOutThreshold",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "locationId": {
+              "displayName": "locationId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "managerUserIds": {
+              "displayName": "managerUserIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "nextAutoPublishAt": {
+              "displayName": "nextAutoPublishAt",
+              "valueType": "other"
+            },
+            "startOfWeek": {
+              "displayName": "startOfWeek",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timezone": {
+              "displayName": "timezone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "other"
+            }
+          }
+        },
+        "scheduling_shifts": {
+          "displayName": "Shifts",
+          "path": "/scheduling/shifts",
+          "responseKey": "data",
+          "fields": {
+            "capacity": {
+              "displayName": "capacity",
+              "valueType": "other"
+            },
+            "color": {
+              "displayName": "color",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedAt": {
+              "displayName": "deletedAt",
+              "valueType": "other"
+            },
+            "employeeIds": {
+              "displayName": "employeeIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "end": {
+              "displayName": "end",
+              "valueType": "other"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "other"
+            },
+            "recurrenceDtend": {
+              "displayName": "recurrenceDtend",
+              "valueType": "other"
+            },
+            "recurrenceDtstart": {
+              "displayName": "recurrenceDtstart",
+              "valueType": "other"
+            },
+            "recurrenceId": {
+              "displayName": "recurrenceId",
+              "valueType": "other"
+            },
+            "recurrenceRule": {
+              "displayName": "recurrenceRule",
+              "valueType": "other"
+            },
+            "recurrenceUntil": {
+              "displayName": "recurrenceUntil",
+              "valueType": "other"
+            },
+            "scheduleId": {
+              "displayName": "scheduleId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start": {
+              "displayName": "start",
+              "valueType": "other"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "other",
+              "values": [
+                {
+                  "value": "planned",
+                  "displayValue": "planned"
+                },
+                {
+                  "value": "published",
+                  "displayValue": "published"
+                },
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                },
+                {
+                  "value": "deleted",
+                  "displayValue": "deleted"
+                }
+              ]
+            },
+            "timezone": {
+              "displayName": "timezone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "unpublishedChanges": {
+              "displayName": "unpublishedChanges",
+              "valueType": "other"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "other"
+            }
+          }
+        },
         "time_off_requests": {
           "displayName": "Time Off Requests",
           "path": "/time-off/requests",
@@ -1596,6 +2005,367 @@
             }
           }
         },
+        "time_tracking_break_policies": {
+          "displayName": "Break Policies",
+          "path": "/time-tracking/break-policies",
+          "responseKey": "data",
+          "fields": {
+            "allEmployeesAssigned": {
+              "displayName": "allEmployeesAssigned",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deletedAt": {
+              "displayName": "deletedAt",
+              "valueType": "other"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "other"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "other"
+            }
+          }
+        },
+        "time_tracking_clock_entries": {
+          "displayName": "Clock Entries",
+          "path": "/time-tracking/clock-entries",
+          "responseKey": "data",
+          "fields": {
+            "clockInLocation": {
+              "displayName": "clockInLocation",
+              "valueType": "other"
+            },
+            "clockOutLocation": {
+              "displayName": "clockOutLocation",
+              "valueType": "other"
+            },
+            "clockedInBy": {
+              "displayName": "clockedInBy",
+              "valueType": "other"
+            },
+            "clockedOutBy": {
+              "displayName": "clockedOutBy",
+              "valueType": "other"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date": {
+              "displayName": "date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employeeId": {
+              "displayName": "employeeId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "end": {
+              "displayName": "end",
+              "valueType": "other"
+            },
+            "endSource": {
+              "displayName": "endSource",
+              "valueType": "other"
+            },
+            "hours": {
+              "displayName": "hours",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "note": {
+              "displayName": "note",
+              "valueType": "other"
+            },
+            "projectId": {
+              "displayName": "projectId",
+              "valueType": "other"
+            },
+            "schedulingShiftId": {
+              "displayName": "schedulingShiftId",
+              "valueType": "other"
+            },
+            "start": {
+              "displayName": "start",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "startSource": {
+              "displayName": "startSource",
+              "valueType": "other"
+            },
+            "taskId": {
+              "displayName": "taskId",
+              "valueType": "other"
+            },
+            "timesheetId": {
+              "displayName": "timesheetId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "timezone": {
+              "displayName": "timezone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "time_tracking_configurations": {
+          "displayName": "Time Tracking Configurations",
+          "path": "/time-tracking/configurations",
+          "responseKey": "data",
+          "fields": {
+            "approvalCutoff": {
+              "displayName": "approvalCutoff",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "approvalCutoffDays": {
+              "displayName": "approvalCutoffDays",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "approverType": {
+              "displayName": "approverType",
+              "valueType": "other"
+            },
+            "approverUserId": {
+              "displayName": "approverUserId",
+              "valueType": "other"
+            },
+            "clockInSchedulePolicy": {
+              "displayName": "clockInSchedulePolicy",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "ANYTIME",
+                  "displayValue": "ANYTIME"
+                },
+                {
+                  "value": "SHIFT_REQUIRED",
+                  "displayValue": "SHIFT_REQUIRED"
+                }
+              ]
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customOvertimeEnabled": {
+              "displayName": "customOvertimeEnabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "deletedAt": {
+              "displayName": "deletedAt",
+              "valueType": "other"
+            },
+            "employeeIds": {
+              "displayName": "employeeIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "geolocationEnabled": {
+              "displayName": "geolocationEnabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "mobileEnabled": {
+              "displayName": "mobileEnabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "overtimeDailyDoubleHours": {
+              "displayName": "overtimeDailyDoubleHours",
+              "valueType": "other"
+            },
+            "overtimeDailyHours": {
+              "displayName": "overtimeDailyHours",
+              "valueType": "other"
+            },
+            "overtimeWeeklyHours": {
+              "displayName": "overtimeWeeklyHours",
+              "valueType": "other"
+            },
+            "restrictWebClockActions": {
+              "displayName": "restrictWebClockActions",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "timesheetType": {
+              "displayName": "timesheetType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "CLOCK",
+                  "displayValue": "CLOCK"
+                },
+                {
+                  "value": "SINGLE",
+                  "displayValue": "SINGLE"
+                },
+                {
+                  "value": "MULTIPLE",
+                  "displayValue": "MULTIPLE"
+                },
+                {
+                  "value": "HOUR",
+                  "displayValue": "HOUR"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "GLOBAL",
+                  "displayValue": "GLOBAL"
+                },
+                {
+                  "value": "GROUP",
+                  "displayValue": "GROUP"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "other"
+            },
+            "workWeekStartsOn": {
+              "displayName": "workWeekStartsOn",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "SUNDAY",
+                  "displayValue": "SUNDAY"
+                },
+                {
+                  "value": "MONDAY",
+                  "displayValue": "MONDAY"
+                },
+                {
+                  "value": "TUESDAY",
+                  "displayValue": "TUESDAY"
+                },
+                {
+                  "value": "WEDNESDAY",
+                  "displayValue": "WEDNESDAY"
+                },
+                {
+                  "value": "THURSDAY",
+                  "displayValue": "THURSDAY"
+                },
+                {
+                  "value": "FRIDAY",
+                  "displayValue": "FRIDAY"
+                },
+                {
+                  "value": "SATURDAY",
+                  "displayValue": "SATURDAY"
+                }
+              ]
+            }
+          }
+        },
+        "time_tracking_hour_entries": {
+          "displayName": "Hour Entries",
+          "path": "/time-tracking/hour-entries",
+          "responseKey": "data",
+          "fields": {
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date": {
+              "displayName": "date",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "employeeId": {
+              "displayName": "employeeId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "hours": {
+              "displayName": "hours",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "note": {
+              "displayName": "note",
+              "valueType": "other"
+            },
+            "projectId": {
+              "displayName": "projectId",
+              "valueType": "other"
+            },
+            "taskId": {
+              "displayName": "taskId",
+              "valueType": "other"
+            },
+            "timesheetId": {
+              "displayName": "timesheetId",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "other"
+            }
+          }
+        },
         "time_tracking_projects": {
           "displayName": "Time Tracking Projects",
           "path": "/time-tracking/projects",
@@ -1652,6 +2422,118 @@
             "updatedAt": {
               "displayName": "updatedAt",
               "valueType": "other"
+            }
+          }
+        },
+        "time_tracking_shift_differentials": {
+          "displayName": "Shift Differentials",
+          "path": "/time-tracking/shift-differentials",
+          "responseKey": "data",
+          "fields": {
+            "allowAllEmployees": {
+              "displayName": "allowAllEmployees",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "archivedAt": {
+              "displayName": "archivedAt",
+              "valueType": "other"
+            },
+            "createdAt": {
+              "displayName": "createdAt",
+              "valueType": "other"
+            },
+            "deletedAt": {
+              "displayName": "deletedAt",
+              "valueType": "other"
+            },
+            "employeeIds": {
+              "displayName": "employeeIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "rate": {
+              "displayName": "rate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "rateType": {
+              "displayName": "rateType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "AMOUNT",
+                  "displayValue": "AMOUNT"
+                },
+                {
+                  "value": "PERCENT",
+                  "displayValue": "PERCENT"
+                }
+              ]
+            },
+            "times": {
+              "displayName": "times",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "other"
+            }
+          }
+        },
+        "training_category": {
+          "displayName": "Training Categories",
+          "path": "/training/category",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "training_type": {
+          "displayName": "Training Types",
+          "path": "/training/type",
+          "responseKey": "",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "renewable": {
+              "displayName": "Renewable",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "required": {
+              "displayName": "Required",
+              "valueType": "boolean",
+              "providerType": "boolean"
             }
           }
         },

@@ -176,5 +176,69 @@
         "providerType": "string"
       }
     }
+  },
+  {
+    "objectName": "training_category",
+    "displayName": "Training Categories",
+    "path": "/training/category",
+    "responseKey": "",
+    "fields": {
+      "id": {
+        "displayName": "Id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  {
+    "objectName": "training_type",
+    "displayName": "Training Types",
+    "path": "/training/type",
+    "responseKey": "",
+    "fields": {
+      "id": {
+        "displayName": "Id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "renewable": {
+        "displayName": "Renewable",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "required": {
+        "displayName": "Required",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      }
+    }
+  },
+  {
+    "objectName": "compensation_planning_cycles",
+    "displayName": "Compensation Planning Cycles",
+    "path": "/compensation/planning_cycles",
+    "responseKey": "",
+    "fields": {
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
   }
 ]
