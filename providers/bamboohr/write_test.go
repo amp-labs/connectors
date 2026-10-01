@@ -27,7 +27,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 		},
 		{
 			Name:         "Unsupported object is rejected",
-			Input:        common.WriteParams{ObjectName: objectEmployees, RecordData: map[string]any{"x": "y"}},
+			Input:        common.WriteParams{ObjectName: objectCalendarEvents, RecordData: map[string]any{"x": "y"}},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
@@ -170,6 +170,72 @@ func TestWrite(t *testing.T) { //nolint:funlen
 				Success:  true,
 				RecordId: "601",
 				Data:     map[string]any{"id": float64(601)},
+			},
+		},
+		{
+			Name: "Update org location",
+			Input: common.WriteParams{
+				ObjectName: objectHRISOrgLocations,
+				RecordId:   "9",
+				RecordData: map[string]any{"label": "HQ"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPUT(),
+					mockcond.Path("/api/v1/hris/org/locations/9"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseWebhookUpdate),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "4",
+				Data:     map[string]any{"id": "4", "name": "Updated Webhook"},
+			},
+		},
+		{
+			Name: "Update holiday",
+			Input: common.WriteParams{
+				ObjectName: objectHolidays,
+				RecordId:   "12",
+				RecordData: map[string]any{"name": "Company Day"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.Path("/api/v1/holidays/12"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseProjectCreate),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "42",
+				Data:     map[string]any{"id": float64(42), "name": "Client Work"},
+			},
+		},
+		{
+			Name: "Update employee uses POST",
+			Input: common.WriteParams{
+				ObjectName: objectEmployees,
+				RecordId:   "15",
+				RecordData: map[string]any{"firstName": "Ava"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/api/v1/employees/15"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseWebhookUpdate),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "4",
+				Data:     map[string]any{"id": "4", "name": "Updated Webhook"},
 			},
 		},
 	}
