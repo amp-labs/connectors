@@ -22,7 +22,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetAtlassianConnector(ctx)
+	conn := connTest.GetJiraConnector(ctx)
 
 	day := 24 * time.Hour
 

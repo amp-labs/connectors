@@ -18,7 +18,7 @@ func main() {
 	// Set up slog logging.
 	utils.SetupLogging()
 
-	conn := connTest.GetAtlassianConnector(ctx)
+	conn := connTest.GetJiraConnector(ctx)
 
 	info, err := conn.GetPostAuthInfo(ctx)
 	if err != nil || info.CatalogVars == nil {

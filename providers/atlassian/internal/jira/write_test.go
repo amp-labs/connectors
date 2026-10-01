@@ -1,4 +1,4 @@
-package atlassian
+package jira
 
 import (
 	"net/http"
@@ -101,7 +101,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableWriter, error) {
-				return constructTestConnector(tt.Server)
+				return constructTestAdapter(tt.Server)
 			})
 		})
 	}

@@ -1,42 +1,93 @@
 package atlassian
 
 import (
+	"context"
+
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/atlassian/internal/jira"
 )
 
-const apiVersion = "3"
+var (
+	_ connectors.AuthMetadataConnector   = (*Connector)(nil)
+	_ connectors.ProxyConnector          = (*Connector)(nil)
+	_ connectors.ObjectMetadataConnector = (*Connector)(nil)
+	_ connectors.ReadConnector           = (*Connector)(nil)
+	_ connectors.WriteConnector          = (*Connector)(nil)
+	_ connectors.DeleteConnector         = (*Connector)(nil)
+)
 
 type Connector struct {
-	// Basic connector.
-	*components.Connector
-
-	// Require params.
-	common.RequireAuthenticatedClient
-	common.RequireWorkspace
+	components.BaseConnector
 
 	workspace string
+	jira      *jira.Adapter
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Init(providers.Atlassian, params, constructor)
-}
-
-func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
-	connector := &Connector{
-		Connector: base,
-		workspace: params.Workspace,
+	if err := params.Validate(
+		common.RequireAuthenticatedClient{},
+		common.RequireWorkspace{},
+	); err != nil {
+		return nil, err
 	}
 
-	connector.SetErrorHandler(interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-		HTML: &interpreter.DirectFaultyResponder{Callback: connector.interpretHTMLError},
-	}.Handle)
+	base, err := components.NewBaseConnector(providers.Atlassian, params)
+	if err != nil {
+		return nil, err
+	}
+
+	connector := &Connector{
+		BaseConnector: *base,
+		workspace:     params.Workspace,
+	}
+
+	switch base.Module() { // nolint:gocritic
+	case providers.ModuleAtlassianJira:
+		connector.jira, err = jira.NewAdapter(base)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return connector, nil
+}
+
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context, objectNames []string,
+) (*connectors.ListObjectMetadataResult, error) {
+	if c.jira != nil {
+		return c.jira.ListObjectMetadata(ctx, objectNames)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
+	if c.jira != nil {
+		return c.jira.Read(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) Write(ctx context.Context, params connectors.WriteParams) (*connectors.WriteResult, error) {
+	if c.jira != nil {
+		return c.jira.Write(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
+}
+
+func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
+	if c.jira != nil {
+		return c.jira.Delete(ctx, params)
+	}
+
+	return nil, common.ErrNotImplemented
 }
 
 // URL allows to get list of sites associated with auth token.
@@ -48,12 +99,4 @@ func (c *Connector) getAccessibleSitesURL() (*urlbuilder.URL, error) {
 	}
 
 	return urlbuilder.New(url.Origin(), "oauth/token/accessible-resources")
-}
-
-// URL format for providers.ModuleAtlassianJira follows structure applicable to Oauth2 Atlassian apps:
-// https://developer.atlassian.com/cloud/jira/platform/rest/v2/intro/#other-integrations
-func (c *Connector) getModuleURL(path ...string) (*urlbuilder.URL, error) {
-	path = append([]string{apiVersion}, path...)
-
-	return urlbuilder.New(c.ModuleInfo().BaseURL, path...)
 }

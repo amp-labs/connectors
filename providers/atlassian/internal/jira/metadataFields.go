@@ -1,4 +1,4 @@
-package atlassian
+package jira
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ var (
 )
 
 // Converts API response into the fields' registry.
-func (c *Connector) parseFieldsJiraIssue(node *ajson.Node) (map[string]string, error) {
+func (a *Adapter) parseFieldsJiraIssue(node *ajson.Node) (map[string]string, error) {
 	arr, err := node.GetArray()
 	if err != nil {
 		return nil, err

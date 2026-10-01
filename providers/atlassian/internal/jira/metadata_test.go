@@ -1,4 +1,4 @@
-package atlassian
+package jira
 
 import (
 	"net/http"
@@ -98,7 +98,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
-				return constructTestConnector(tt.Server)
+				return constructTestAdapter(tt.Server)
 			})
 		})
 	}
