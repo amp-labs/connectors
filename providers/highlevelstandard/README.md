@@ -46,7 +46,7 @@ Below is an exhaustive list of objects & methods supported on the objects
 | marketplace/billing/charges     | marketplace/billing/charges     | read         |
 | calendars/events/appointments   | calendars/events/appointments   | write        |
 | calendars/events/block-slots    | calendars/events/block-slots    | write        |
-| contacts                        | contacts                        | write        |
+| contacts                        | contacts                        | read, write  |
 | objects                         | objects                         | read, write  |
 | associations                    | associations                    | write        |
 | associations/relations          | associations/relations          | write        |
