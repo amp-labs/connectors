@@ -26,8 +26,8 @@ type identifier struct {
 }
 
 const (
-	projectID   = "10001"
-	issueTypeID = "10007"
+	projectID   = "10000"
+	issueTypeID = "10005"
 )
 
 // For this script replace project id and issue types with your values.

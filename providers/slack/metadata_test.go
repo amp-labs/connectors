@@ -190,7 +190,7 @@ func constructTestConnector(server *httptest.Server) (*Connector, error) {
 	}
 
 	// Preserve the /api path from the Slack base URL when redirecting to the mock server.
-	connector.SetUnitTestMockServerBaseURL(server.URL)
+	connector.SetUnitTestMockServerBaseUrl(server.URL)
 
 	return connector, nil
 }
