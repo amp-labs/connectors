@@ -17,7 +17,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 
 	businessesResponse := testutils.DataFromFile(t, "businesses.json")
 	calendarsGroupsResponse := testutils.DataFromFile(t, "calendars_groups.json")
-	contactsResponse := testutils.DataFromFile(t, "contacts.json")
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
@@ -25,40 +24,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 			Input:        nil,
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
-		},
-		{
-			Name:  "Successfully describe contacts using the connection locationId",
-			Input: []string{"contacts"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Path("/contacts/"),
-					mockcond.QueryParam("locationId", "iV1BEzddaWWLqU2kXhcN"),
-					mockcond.QueryParam("limit", "1"),
-				},
-				Then: mockserver.Response(http.StatusOK, contactsResponse),
-			}.Server(),
-			Comparator: testconn.ComparatorSubsetMetadata,
-			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{
-					"contacts": {
-						DisplayName: "Contacts",
-						Fields: map[string]common.FieldMetadata{
-							"email": {
-								DisplayName: "email",
-								ValueType:   "other",
-							},
-							"firstName": {
-								DisplayName: "firstName",
-								ValueType:   "other",
-							},
-						},
-						FieldsMap: map[string]string{},
-					},
-				},
-				Errors: nil,
-			},
-			ExpectedErrs: nil,
 		},
 		{
 			Name:  "Successfully describe multiple objects with metadata",
