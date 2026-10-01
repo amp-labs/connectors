@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -40,31 +41,41 @@ func TestSanitizeNamePrefix(t *testing.T) {
 func TestGenerateSubscriptionArtifactName(t *testing.T) {
 	t.Parallel()
 
+	longPrefix := strings.Repeat("p", developerNameMaxLength)
+
 	tests := []struct {
 		name     string
 		prefix   string
 		object   string
+		suffix   string
 		expected string
 	}{
-		{"Standard object", "acme", "Lead", "acme_Lead"},
-		{"Custom object collapses consecutive underscores", "acme", "My_Object__c", "acme_My_Object_c"},
-		{"Prefix is sanitized, not rejected", "Acme Corp. (EU)", "Lead", "Acme_Corp_EU_Lead"},
-		{"Digit-leading project keeps its digits", "11x", "Lead", "proj_11x_Lead"},
-		{"Empty prefix falls back to default", "", "Account", "amp_Account"},
+		{"Create pair", "acme", "Account", ArtifactSuffixCreate, "acme_Account_Create"},
+		{"Update pair", "acme", "Account", ArtifactSuffixUpdate, "acme_Account_Update"},
+		{"Custom object collapses before the suffix", "acme", "My_Object__c", ArtifactSuffixCreate,
+			"acme_My_Object_c_Create"},
+		{"Digit-leading project keeps its digits", "11x", "Lead", "", "proj_11x_Lead"},
+		{"Empty prefix falls back to default", "", "Account", "", "amp_Account"},
+		{"Prefix truncates to leave room for the suffix", longPrefix, "Account", ArtifactSuffixUpdate,
+			longPrefix[:developerNameMaxLength-len("_Account_Update")] + "_Account_Update"},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := GenerateSubscriptionArtifactName(tt.prefix, tt.object)
+			got, err := GenerateSubscriptionArtifactName(tt.prefix, tt.object, tt.suffix)
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
 			if got != tt.expected {
-				t.Errorf("GenerateSubscriptionArtifactName(%q, %q) = %q, want %q",
-					tt.prefix, tt.object, got, tt.expected)
+				t.Errorf("GenerateSubscriptionArtifactName(%q, %q, %q) = %q, want %q",
+					tt.prefix, tt.object, tt.suffix, got, tt.expected)
+			}
+
+			if len(got) > developerNameMaxLength {
+				t.Errorf("len = %d, want at most %d", len(got), developerNameMaxLength)
 			}
 		})
 	}

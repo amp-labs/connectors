@@ -47,69 +47,21 @@ func readZipEntries(t *testing.T, zipData []byte) map[string]string {
 	return entries
 }
 
-func TestConstructOutboundMessage(t *testing.T) {
-	t.Parallel()
-
-	params := validOutboundMessageParams()
-	params.Fields = []string{"Id", "Name"}
-
-	zipData, err := ConstructOutboundMessage(params)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	entries := readZipEntries(t, zipData)
-
-	pkg, ok := entries["package.xml"]
-	if !ok {
-		t.Fatalf("package.xml missing; entries: %v", keysOf(entries))
-	}
-
-	for _, want := range []string{
-		"<name>WorkflowOutboundMessage</name>",
-		"<members>Account.amp_Account</members>",
-	} {
-		if !strings.Contains(pkg, want) {
-			t.Errorf("package.xml missing %q:\n%s", want, pkg)
-		}
-	}
-
-	workflow, ok := entries["workflows/Account.workflow"]
-	if !ok {
-		t.Fatalf("workflow file missing; entries: %v", keysOf(entries))
-	}
-
-	for _, want := range []string{
-		"<fullName>amp_Account</fullName>",
-		"<endpointUrl>https://example.com/webhook</endpointUrl>",
-		"<integrationUser>integration@example.com</integrationUser>",
-		"<fields>Id</fields>",
-		"<fields>Name</fields>",
-		"<includeSessionId>false</includeSessionId>",
-	} {
-		if !strings.Contains(workflow, want) {
-			t.Errorf("workflow XML missing %q:\n%s", want, workflow)
-		}
-	}
-}
-
-func TestConstructOutboundMessageAlwaysIncludesRequiredFields(t *testing.T) {
+func TestGenerateWorkflowXMLAlwaysIncludesRequiredFields(t *testing.T) {
 	t.Parallel()
 
 	// No fields configured: the required set alone makes up the payload.
-	zipData, err := ConstructOutboundMessage(validOutboundMessageParams())
+	workflow, err := generateWorkflowXML(validOutboundMessageParams())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-
-	entries := readZipEntries(t, zipData)
 
 	for _, want := range []string{
 		"<fields>Id</fields>",
 		"<fields>CreatedDate</fields>",
 		"<fields>LastModifiedDate</fields>",
 	} {
-		if !strings.Contains(entries["workflows/Account.workflow"], want) {
+		if !strings.Contains(workflow, want) {
 			t.Errorf("workflow XML missing required field %q", want)
 		}
 	}
@@ -119,12 +71,10 @@ func TestConstructOutboundMessageAlwaysIncludesRequiredFields(t *testing.T) {
 	params := validOutboundMessageParams()
 	params.Fields = []string{"Name", "CreatedDate"}
 
-	zipData, err = ConstructOutboundMessage(params)
+	workflow, err = generateWorkflowXML(params)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-
-	workflow := readZipEntries(t, zipData)["workflows/Account.workflow"]
 
 	for _, want := range []string{
 		"<fields>Id</fields>",
@@ -141,7 +91,7 @@ func TestConstructOutboundMessageAlwaysIncludesRequiredFields(t *testing.T) {
 	}
 }
 
-func TestConstructOutboundMessageDedupesFieldsCaseInsensitively(t *testing.T) {
+func TestGenerateWorkflowXMLDedupesFieldsCaseInsensitively(t *testing.T) {
 	t.Parallel()
 
 	// Salesforce field names are case-insensitive, so a lowercase "id" next to
@@ -149,12 +99,11 @@ func TestConstructOutboundMessageDedupesFieldsCaseInsensitively(t *testing.T) {
 	params := validOutboundMessageParams()
 	params.Fields = []string{"id", "createddate", "LASTMODIFIEDDATE", "Name"}
 
-	zipData, err := ConstructOutboundMessage(params)
+	workflow, err := generateWorkflowXML(params)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	workflow := readZipEntries(t, zipData)["workflows/Account.workflow"]
 	lower := strings.ToLower(workflow)
 
 	for _, field := range []string{"id", "createddate", "lastmodifieddate", "name"} {
