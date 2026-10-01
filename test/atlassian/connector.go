@@ -21,8 +21,12 @@ func GetJiraConnector(ctx context.Context) *atlassian.Connector {
 	return makeAtlassianConnector(ctx, providers.ModuleAtlassianJira)
 }
 
+func GetConfluenceConnector(ctx context.Context) *atlassian.Connector {
+	return makeAtlassianConnector(ctx, providers.ModuleAtlassianConfluence)
+}
+
 func makeAtlassianConnector(ctx context.Context, module common.ModuleID) *atlassian.Connector {
-	filePath := credscanning.LoadPath(providers.Atlassian)
+	filePath := credscanning.LoadPath(providers.Atlassian, module)
 	reader := utils.MustCreateProvCredJSON(filePath, true, fieldCloudID)
 
 	conn, err := atlassian.NewConnector(
