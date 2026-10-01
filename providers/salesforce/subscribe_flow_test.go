@@ -126,68 +126,120 @@ func TestSubscribeWithFlowRequiresFlowConfig(t *testing.T) {
 	}
 }
 
-// TestDroppedFlowObjects covers the only decision reconcile makes on its own:
-// which of the previous subscription's objects are no longer covered and must be
-// torn down. Everything else is an upsert, which needs no diffing.
-func TestDroppedFlowObjects(t *testing.T) {
+// legacyFlowSubscription records an object in the legacy shape: one CreateAndUpdate pair.
+func legacyFlowSubscription(name string) *FlowSubscription {
+	return &FlowSubscription{
+		ObjectName:      common.ObjectName(name),
+		Flow:            &FlowMetadata{Name: "amp_" + name},
+		OutboundMessage: &OutboundMessageMetadata{Name: "amp_" + name},
+	}
+}
+
+// perEventFlowSubscription records an object in the per-event shape: one pair per event type.
+func perEventFlowSubscription(name string, eventTypes ...common.SubscriptionEventType) *FlowSubscription {
+	pairs := make(map[common.SubscriptionEventType]*FlowPair, len(eventTypes))
+
+	for _, eventType := range eventTypes {
+		pairName := "amp_" + name + "_" + string(eventType)
+		pairs[eventType] = &FlowPair{
+			Flow:            &FlowMetadata{Name: pairName},
+			OutboundMessage: &OutboundMessageMetadata{Name: pairName},
+		}
+	}
+
+	return &FlowSubscription{ObjectName: common.ObjectName(name), Pairs: pairs}
+}
+
+func flowResult(subs ...*FlowSubscription) *SubscribeResult {
+	flows := make(map[common.ObjectName]*FlowSubscription, len(subs))
+	for _, sub := range subs {
+		flows[sub.ObjectName] = sub
+	}
+
+	return &SubscribeResult{UseFlow: true, Flows: flows}
+}
+
+// TestDroppedFlowPairs covers the only decision reconcile makes on its own: which previously
+// deployed pairs the new state no longer has and must be torn down. Dropped pairs are reported
+// by flow name.
+func TestDroppedFlowPairs(t *testing.T) {
 	t.Parallel()
 
-	recorded := func(names ...string) *SubscribeResult {
-		flows := make(map[common.ObjectName]*FlowSubscription, len(names))
-		for _, name := range names {
-			flows[common.ObjectName(name)] = &FlowSubscription{
-				ObjectName:      common.ObjectName(name),
-				Flow:            &FlowMetadata{Name: "AmpSubscribe_" + name},
-				OutboundMessage: &OutboundMessageMetadata{Name: "amp_" + name},
-			}
-		}
-
-		return &SubscribeResult{UseFlow: true, Flows: flows}
-	}
+	create, update := common.SubscriptionEventTypeCreate, common.SubscriptionEventTypeUpdate
 
 	tests := []struct {
 		name string
 		prev *SubscribeResult
 		next *SubscribeResult
-		want []common.ObjectName
+		want []string
 	}{{
 		name: "Unchanged object set removes nothing",
-		prev: recorded("Account", "Contact"),
-		next: recorded("Account", "Contact"),
-		want: []common.ObjectName{},
+		prev: flowResult(legacyFlowSubscription("Account"), legacyFlowSubscription("Contact")),
+		next: flowResult(legacyFlowSubscription("Account"), legacyFlowSubscription("Contact")),
+		want: nil,
 	}, {
 		name: "Dropped objects are removed",
-		prev: recorded("Account", "Contact", "Lead"),
-		next: recorded("Account"),
-		want: []common.ObjectName{"Contact", "Lead"},
+		prev: flowResult(legacyFlowSubscription("Account"), legacyFlowSubscription("Contact"),
+			legacyFlowSubscription("Lead")),
+		next: flowResult(legacyFlowSubscription("Account")),
+		want: []string{"amp_Contact", "amp_Lead"},
 	}, {
 		name: "Added objects remove nothing",
-		prev: recorded("Account"),
-		next: recorded("Account", "Contact"),
-		want: []common.ObjectName{},
+		prev: flowResult(legacyFlowSubscription("Account")),
+		next: flowResult(legacyFlowSubscription("Account"), legacyFlowSubscription("Contact")),
+		want: nil,
 	}, {
 		name: "No previous state removes nothing",
 		prev: nil,
-		next: recorded("Account"),
+		next: flowResult(legacyFlowSubscription("Account")),
 		want: nil,
 	}, {
 		name: "Emptied subscription removes everything",
-		prev: recorded("Account", "Contact"),
+		prev: flowResult(legacyFlowSubscription("Account"), legacyFlowSubscription("Contact")),
 		next: &SubscribeResult{UseFlow: true},
-		want: []common.ObjectName{"Account", "Contact"},
+		want: []string{"amp_Account", "amp_Contact"},
+	}, {
+		name: "Unchanged per-event pairs remove nothing",
+		prev: flowResult(perEventFlowSubscription("Account", create, update)),
+		next: flowResult(perEventFlowSubscription("Account", create, update)),
+		want: nil,
+	}, {
+		name: "An event dropped from a kept object removes only its pair",
+		prev: flowResult(perEventFlowSubscription("Account", create, update)),
+		next: flowResult(perEventFlowSubscription("Account", create)),
+		want: []string{"amp_Account_update"},
+	}, {
+		name: "A dropped per-event object removes all its pairs",
+		prev: flowResult(perEventFlowSubscription("Account", create, update)),
+		next: &SubscribeResult{UseFlow: true},
+		want: []string{"amp_Account_create", "amp_Account_update"},
+	}, {
+		name: "Moving to per-event pairs removes the legacy pair",
+		prev: flowResult(legacyFlowSubscription("Account")),
+		next: flowResult(perEventFlowSubscription("Account", create, update)),
+		want: []string{"amp_Account"},
 	}}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := droppedFlowObjects(tt.prev, tt.next)
-			want := slices.Clone(tt.want)
-			slices.Sort(got)
-			slices.Sort(want)
+			var got []string
 
-			if !slices.Equal(got, want) {
-				t.Fatalf("droppedFlowObjects() = %v, want %v", got, tt.want)
+			for objName, pairs := range droppedFlowPairs(tt.prev, tt.next) {
+				for _, pair := range pairs {
+					if !tt.prev.Flows[objName].hasFlow(pair.Flow.Name) {
+						t.Errorf("pair %s reported under %s, which never had it", pair.Flow.Name, objName)
+					}
+
+					got = append(got, pair.Flow.Name)
+				}
+			}
+
+			slices.Sort(got)
+
+			if !slices.Equal(got, tt.want) {
+				t.Fatalf("droppedFlowPairs() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -195,7 +247,7 @@ func TestDroppedFlowObjects(t *testing.T) {
 
 // A previous entry with no recorded artifacts has nothing to delete; reconcile
 // must skip it rather than dereference a nil Flow during teardown.
-func TestDroppedFlowObjectsSkipsUnrecordedArtifacts(t *testing.T) {
+func TestDroppedFlowPairsSkipsUnrecordedArtifacts(t *testing.T) {
 	t.Parallel()
 
 	prev := &SubscribeResult{
@@ -203,16 +255,63 @@ func TestDroppedFlowObjectsSkipsUnrecordedArtifacts(t *testing.T) {
 		Flows: map[common.ObjectName]*FlowSubscription{
 			"Account": nil,
 			"Contact": {ObjectName: "Contact"},
-			"Lead": {
-				ObjectName:      "Lead",
-				Flow:            &FlowMetadata{Name: "AmpSubscribe_Lead"},
-				OutboundMessage: &OutboundMessageMetadata{Name: "amp_Lead"},
+			"Opportunity": {
+				ObjectName: "Opportunity",
+				Pairs: map[common.SubscriptionEventType]*FlowPair{
+					common.SubscriptionEventTypeCreate: {Flow: &FlowMetadata{Name: "amp_Opportunity_create"}},
+					common.SubscriptionEventTypeUpdate: nil,
+				},
 			},
+			"Lead": legacyFlowSubscription("Lead"),
 		},
 	}
 
-	got := droppedFlowObjects(prev, &SubscribeResult{UseFlow: true})
-	if len(got) != 1 || got[0] != "Lead" {
-		t.Errorf("droppedFlowObjects() = %v, want [Lead]", got)
+	got := droppedFlowPairs(prev, &SubscribeResult{UseFlow: true})
+	if len(got) != 1 || len(got["Lead"]) != 1 {
+		t.Errorf("droppedFlowPairs() = %v, want only Lead's pair", got)
+	}
+}
+
+// hasFlow reports whether the record holds a pair with the given flow name.
+func (f *FlowSubscription) hasFlow(name string) bool {
+	for _, pair := range f.FlowPairs() {
+		if pair.Flow.Name == name {
+			return true
+		}
+	}
+
+	return false
+}
+
+// TestFlowPairs covers the one accessor every reader goes through: the legacy pair, or the per-event
+// pairs in create, update order, and nothing from a nil, empty or half-recorded record.
+func TestFlowPairs(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		sub  *FlowSubscription
+		want []string
+	}{
+		{"nil record", nil, nil},
+		{"legacy pair", legacyFlowSubscription("Account"), []string{"amp_Account"}},
+		{"per-event in create, update order", perEventFlowSubscription("Account",
+			common.SubscriptionEventTypeUpdate, common.SubscriptionEventTypeCreate),
+			[]string{"amp_Account_create", "amp_Account_update"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			var got []string
+			for _, pair := range tt.sub.FlowPairs() {
+				got = append(got, pair.Flow.Name)
+			}
+
+			if !slices.Equal(got, tt.want) {
+				t.Errorf("FlowPairs() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
