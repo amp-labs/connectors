@@ -33,7 +33,7 @@ type OutboundMessageParams struct {
 	ObjectName string
 
 	// Name is the outbound message developer name WITHOUT the object prefix
-	// (e.g., "amp_Lead"). The Metadata API addresses the component as
+	// (e.g., "amp_Lead_Create"). The Metadata API addresses the component as
 	// "<ObjectName>.<Name>". Use GenerateSubscriptionArtifactName()
 	// to generate this.
 	Name string
@@ -118,29 +118,32 @@ func ensureOutboundMessageFields(fields []string) []string {
 }
 
 // generateWorkflowXML returns the workflows/<Object>.workflow file content
-// carrying the single outbound message component.
-func generateWorkflowXML(params OutboundMessageParams) (string, error) {
-	fields := ensureOutboundMessageFields(params.Fields)
+// carrying the given outbound message components. If an object is subscribed to
+// both create and update, both OM workflows are added to the same file.
+func generateWorkflowXML(params ...OutboundMessageParams) (string, error) {
+	outboundMessages := make([]workflowOutboundMessageXML, 0, len(params))
+
+	for _, om := range params {
+		outboundMessages = append(outboundMessages, workflowOutboundMessageXML{
+			FullName:         om.Name,
+			APIVersion:       core.APIVersion,
+			Description:      "THIS IS AN AUTOMATED OUTBOUND MESSAGE. DO NOT EDIT.",
+			EndpointURL:      om.EndpointURL,
+			Fields:           ensureOutboundMessageFields(om.Fields),
+			IncludeSessionID: false,
+			IntegrationUser:  om.IntegrationUsername,
+			Name:             om.Name,
+			Protected:        false,
+			// Salesforce retries failed deliveries for up to 24 hours on
+			// its own; the dead letter queue is unnecessary for our
+			// at-least-once pipeline.
+			UseDeadLetterQueue: false,
+		})
+	}
 
 	workflow := workflowXML{
-		Xmlns: metadataXmlns,
-		OutboundMessages: []workflowOutboundMessageXML{
-			{
-				FullName:         params.Name,
-				APIVersion:       core.APIVersion,
-				Description:      "THIS IS AN AUTOMATED OUTBOUND MESSAGE. DO NOT EDIT.",
-				EndpointURL:      params.EndpointURL,
-				Fields:           fields,
-				IncludeSessionID: false,
-				IntegrationUser:  params.IntegrationUsername,
-				Name:             params.Name,
-				Protected:        false,
-				// Salesforce retries failed deliveries for up to 24 hours on
-				// its own; the dead letter queue is unnecessary for our
-				// at-least-once pipeline.
-				UseDeadLetterQueue: false,
-			},
-		},
+		Xmlns:            metadataXmlns,
+		OutboundMessages: outboundMessages,
 	}
 
 	out, err := xml.MarshalIndent(workflow, "", "    ")
@@ -149,42 +152,6 @@ func generateWorkflowXML(params OutboundMessageParams) (string, error) {
 	}
 
 	return xml.Header + string(out) + "\n", nil
-}
-
-// ConstructOutboundMessage builds a zip containing only the workflow outbound
-// message for one object. Subscribe combines this with flow metadata into one
-// Metadata API package; Salesforce resolves the flow→OM reference in that
-// single deploy.
-func ConstructOutboundMessage(params OutboundMessageParams) ([]byte, error) {
-	if err := ValidateOutboundMessageParams(params); err != nil {
-		return nil, err
-	}
-
-	workflowContent, err := generateWorkflowXML(params)
-	if err != nil {
-		return nil, err
-	}
-
-	pkg := triggerPackageXML{
-		Xmlns:   metadataXmlns,
-		Version: core.APIVersion,
-		Types: []triggerPackageType{
-			{
-				Members: []string{OutboundMessageFullName(params.ObjectName, params.Name)},
-				Name:    "WorkflowOutboundMessage",
-			},
-		},
-	}
-
-	pkgXML, err := xml.MarshalIndent(pkg, "", "    ")
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal package.xml: %w", err)
-	}
-
-	return buildZip(map[string][]byte{
-		"package.xml": []byte(xml.Header + string(pkgXML)),
-		"workflows/" + params.ObjectName + ".workflow": []byte(workflowContent),
-	})
 }
 
 // ConstructDestructiveOutboundMessage builds a zipped destructive changes

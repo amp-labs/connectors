@@ -229,11 +229,82 @@ func TestConstructFlowSubscriptionValidation(t *testing.T) {
 	if _, err := ConstructFlowSubscription([]FlowSubscriptionComponent{mismatchedObject}); err == nil {
 		t.Error("expected error for object name mismatch")
 	}
+}
 
-	if _, err := ConstructFlowSubscription([]FlowSubscriptionComponent{
-		subscriptionComponentFor("Account"),
-		subscriptionComponentFor("Account"),
-	}); err == nil {
-		t.Error("expected error for duplicate object")
+// eventComponentFor builds one event type's component for the given object, named like the
+// per-event pairs: "acme_<Object>_<suffix>" for both the flow and its outbound message.
+func eventComponentFor(objectName, suffix string, triggerType RecordTriggerType) FlowSubscriptionComponent {
+	name := "acme_" + objectName + "_" + suffix
+
+	return FlowSubscriptionComponent{
+		OutboundMessage: OutboundMessageParams{
+			ObjectName:          objectName,
+			Name:                name,
+			EndpointURL:         "https://example.com/webhook?event-type=" + strings.ToLower(suffix),
+			IntegrationUsername: "integration@example.com",
+		},
+		Flow: FlowParams{
+			ObjectName:          objectName,
+			FlowName:            name,
+			OutboundMessageName: name,
+			RecordTriggerType:   triggerType,
+		},
+	}
+}
+
+// TestConstructFlowSubscriptionPerEventPairs covers two pairs on one object. The Workflow metadata
+// type is one file per object, so both outbound messages must land in the same workflow file.
+func TestConstructFlowSubscriptionPerEventPairs(t *testing.T) {
+	t.Parallel()
+
+	zipData, err := ConstructFlowSubscription([]FlowSubscriptionComponent{
+		eventComponentFor("Account", "Create", RecordTriggerTypeCreate),
+		eventComponentFor("Account", "Update", RecordTriggerTypeUpdate),
+		eventComponentFor("Contact", "Create", RecordTriggerTypeCreate),
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	entries := readZipEntries(t, zipData)
+
+	accountWorkflow := entries["workflows/Account.workflow"]
+	for _, want := range []string{
+		"<fullName>acme_Account_Create</fullName>",
+		"<endpointUrl>https://example.com/webhook?event-type=create</endpointUrl>",
+		"<fullName>acme_Account_Update</fullName>",
+		"<endpointUrl>https://example.com/webhook?event-type=update</endpointUrl>",
+	} {
+		if !strings.Contains(accountWorkflow, want) {
+			t.Errorf("Account workflow missing %q:\n%s", want, accountWorkflow)
+		}
+	}
+
+	if strings.Contains(entries["workflows/Contact.workflow"], "acme_Account") {
+		t.Error("Contact workflow carries an Account outbound message")
+	}
+
+	for _, file := range []string{
+		"flows/acme_Account_Create.flow",
+		"flows/acme_Account_Update.flow",
+		"flows/acme_Contact_Create.flow",
+	} {
+		if _, ok := entries[file]; !ok {
+			t.Errorf("package missing %s; entries: %v", file, keysOf(entries))
+		}
+	}
+
+	pkg := entries["package.xml"]
+	for _, want := range []string{
+		"<members>Account.acme_Account_Create</members>",
+		"<members>Account.acme_Account_Update</members>",
+		"<members>Contact.acme_Contact_Create</members>",
+		"<members>acme_Account_Create</members>",
+		"<members>acme_Account_Update</members>",
+		"<members>acme_Contact_Create</members>",
+	} {
+		if !strings.Contains(pkg, want) {
+			t.Errorf("package.xml missing %q:\n%s", want, pkg)
+		}
 	}
 }
