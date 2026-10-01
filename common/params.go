@@ -69,6 +69,15 @@ func ValidateParameters(conn any, params ConnectorParams) error {
 	return nil
 }
 
+func (p ConnectorParams) Validate(validationItems ...any) error {
+	var err error
+	for _, item := range validationItems {
+		err = errors.Join(ValidateParameters(item, p))
+	}
+
+	return err
+}
+
 // customAuthenticatedClientValidator is an interface that requires a custom authenticated client
 // to be set in the parameters.
 
