@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
+	"slices"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
@@ -209,74 +211,12 @@ func (c *Connector) subscribeWithFlow(
 		req.Flow.IntegrationUsername = username
 	}
 
-	components := make([]metadata.FlowSubscriptionComponent, 0, len(params.SubscriptionEvents))
-	pending := make([]*FlowSubscription, 0, len(params.SubscriptionEvents))
-
-	for objName, objEvents := range params.SubscriptionEvents {
-		triggerType, err := flowRecordTriggerType(objEvents)
-		if err != nil {
-			return nil, fmt.Errorf("failed to build flow subscription for object %s: %w", objName, err)
-		}
-
-		// Reuse the recorded name on update so a prefix change upserts the
-		// existing flow/OM instead of deploying a second pair beside them.
-		artifactName := ""
-
-		if prevState != nil {
-			if prev, ok := prevState.Flows[objName]; ok && prev != nil &&
-				prev.Flow != nil && prev.Flow.Name != "" {
-				artifactName = prev.Flow.Name
-			}
-		}
-
-		if artifactName == "" {
-			var genErr error
-
-			artifactName, genErr = metadata.GenerateSubscriptionArtifactName(req.Flow.NamePrefix, string(objName))
-			if genErr != nil {
-				return nil, fmt.Errorf("failed to build flow subscription for object %s: %w", objName, genErr)
-			}
-		}
-
-		entryConditionFields := objEvents.WatchFields
-		if objEvents.WatchFieldsAll {
-			entryConditionFields = nil // no ISCHANGED formula, so any matching trigger fires
-		}
-
-		selectedFields := req.Flow.SelectedFields[objName]
-
-		components = append(components, metadata.FlowSubscriptionComponent{
-			OutboundMessage: metadata.OutboundMessageParams{
-				ObjectName:          string(objName),
-				Name:                artifactName,
-				EndpointURL:         req.Flow.EndpointURL,
-				IntegrationUsername: req.Flow.IntegrationUsername,
-				Fields:              selectedFields,
-			},
-			Flow: metadata.FlowParams{
-				ObjectName:          string(objName),
-				FlowName:            artifactName,
-				OutboundMessageName: artifactName,
-				RecordTriggerType:   triggerType,
-				WatchFields:         entryConditionFields,
-			},
-		})
-		pending = append(pending, &FlowSubscription{
-			ObjectName: objName,
-			Events:     objEvents.Events,
-			OutboundMessage: &OutboundMessageMetadata{
-				Name:   artifactName,
-				Fields: selectedFields,
-			},
-			Flow: &FlowMetadata{
-				Name:              artifactName,
-				RecordTriggerType: string(triggerType),
-				WatchFields:       entryConditionFields,
-			},
-		})
+	flowComponents, subscriptions, err := buildFlowSubscription(params, req, prevState)
+	if err != nil {
+		return nil, err
 	}
 
-	zipData, err := metadata.ConstructFlowSubscription(components)
+	zipData, err := metadata.ConstructFlowSubscription(flowComponents)
 	if err != nil {
 		return nil, fmt.Errorf("failed to construct flow subscription package: %w", err)
 	}
@@ -310,10 +250,14 @@ func (c *Connector) subscribeWithFlow(
 		)
 	}
 
-	for _, flowSub := range pending {
-		flowSub.OutboundMessage.DeployID = deployID
-		flowSub.Flow.DeployID = deployID
-		sfRes.Flows[flowSub.ObjectName] = flowSub
+	// Set the deploy ID on each flow and outbound message pairs.
+	for _, subscription := range subscriptions {
+		for _, pair := range subscription.Pairs {
+			pair.OutboundMessage.DeployID = deployID
+			pair.Flow.DeployID = deployID
+		}
+
+		sfRes.Flows[subscription.ObjectName] = subscription
 	}
 
 	return &common.SubscriptionResult{
@@ -349,34 +293,134 @@ func (c *Connector) deployFlowMetadataZip(
 	return deployID, nil
 }
 
-// flowRecordTriggerType maps normalized subscription events onto a flow
-// recordTriggerType. Delete is rejected (OM cannot fire on before-delete).
-func flowRecordTriggerType(
-	objEvents common.ObjectEvents,
-) (metadata.RecordTriggerType, error) {
-	var hasCreate, hasUpdate bool
+// buildFlowSubscription builds the flow and outbound-message pairs to deploy (one per event type)
+// and the subscription records to persist once that deploy succeeds for each object in params.SubscriptionEvents.
+//
+//nolint:cyclop,funlen,gocognit
+func buildFlowSubscription(
+	params common.SubscribeParams,
+	req *SubscriptionRequest,
+	prevState *SubscribeResult,
+) ([]metadata.FlowSubscriptionComponent, []*FlowSubscription, error) {
+	flowComponents := make([]metadata.FlowSubscriptionComponent, 0, 2*len(params.SubscriptionEvents)) //nolint:mnd
+	subscriptions := make([]*FlowSubscription, 0, len(params.SubscriptionEvents))
 
-	for _, event := range objEvents.Events {
-		switch event { //nolint:exhaustive
-		case common.SubscriptionEventTypeCreate:
-			hasCreate = true
-		case common.SubscriptionEventTypeUpdate:
-			hasUpdate = true
-		case common.SubscriptionEventTypeDelete: // rejected at API validation
-			return "", fmt.Errorf("%w: delete events are not supported", errFlowNoSupportedEvents)
+	for objName, objEvents := range params.SubscriptionEvents {
+		// Outbound messages cannot fire on delete. Each requested create or update gets one pair.
+		if slices.Contains(objEvents.Events, common.SubscriptionEventTypeDelete) {
+			return nil, nil, fmt.Errorf(
+				"failed to build flow subscription for object %s: %w: delete events are not supported",
+				objName, errFlowNoSupportedEvents)
 		}
+
+		var eventTypes []common.SubscriptionEventType
+
+		for _, eventType := range []common.SubscriptionEventType{
+			common.SubscriptionEventTypeCreate,
+			common.SubscriptionEventTypeUpdate,
+		} {
+			if slices.Contains(objEvents.Events, eventType) {
+				eventTypes = append(eventTypes, eventType)
+			}
+		}
+
+		if len(eventTypes) == 0 {
+			return nil, nil, fmt.Errorf(
+				"failed to build flow subscription for object %s: %w: requested %v",
+				objName, errFlowNoSupportedEvents, objEvents.Events)
+		}
+
+		selectedFields := req.Flow.SelectedFields[objName]
+		subscription := &FlowSubscription{
+			ObjectName: objName,
+			Events:     objEvents.Events,
+			Pairs:      make(map[common.SubscriptionEventType]*FlowPair, len(eventTypes)),
+		}
+
+		for _, eventType := range eventTypes {
+			triggerType, nameSuffix := metadata.RecordTriggerTypeUpdate, metadata.ArtifactSuffixUpdate
+			if eventType == common.SubscriptionEventTypeCreate {
+				triggerType, nameSuffix = metadata.RecordTriggerTypeCreate, metadata.ArtifactSuffixCreate
+			}
+
+			// A recorded name is reused so a prefix change upserts that flow and outbound message.
+			var artifactName string
+			if prevState != nil && prevState.Flows[objName] != nil {
+				if pair := prevState.Flows[objName].Pairs[eventType]; pair != nil && pair.Flow != nil {
+					artifactName = pair.Flow.Name
+				}
+			}
+
+			if artifactName == "" {
+				var err error
+				artifactName, err = metadata.GenerateSubscriptionArtifactName(
+					req.Flow.NamePrefix, string(objName), nameSuffix)
+				if err != nil {
+					return nil, nil, fmt.Errorf("failed to build flow subscription for object %s: %w", objName, err)
+				}
+			}
+
+			endpointURL, err := flowPairEndpointURL(req.Flow.EndpointURL, eventType)
+			if err != nil {
+				return nil, nil, fmt.Errorf("failed to build flow subscription for object %s: %w", objName, err)
+			}
+
+			// Watch fields only gate updates: a create has no prior values to compare.
+			// WatchFieldsAll means no ISCHANGED formula, so every update fires.
+			var watchFields []string
+			if eventType == common.SubscriptionEventTypeUpdate && !objEvents.WatchFieldsAll {
+				watchFields = objEvents.WatchFields
+			}
+
+			// Deploy zip and saved record for this same pair.
+			flowComponents = append(flowComponents, metadata.FlowSubscriptionComponent{
+				OutboundMessage: metadata.OutboundMessageParams{
+					ObjectName:          string(objName),
+					Name:                artifactName,
+					EndpointURL:         endpointURL,
+					IntegrationUsername: req.Flow.IntegrationUsername,
+					Fields:              selectedFields,
+				},
+				Flow: metadata.FlowParams{
+					ObjectName:          string(objName),
+					FlowName:            artifactName,
+					OutboundMessageName: artifactName,
+					RecordTriggerType:   triggerType,
+					WatchFields:         watchFields,
+				},
+			})
+
+			subscription.Pairs[eventType] = &FlowPair{
+				OutboundMessage: &OutboundMessageMetadata{
+					Name:   artifactName,
+					Fields: selectedFields,
+				},
+				Flow: &FlowMetadata{
+					Name:              artifactName,
+					RecordTriggerType: string(triggerType),
+					WatchFields:       watchFields,
+				},
+			}
+		}
+
+		subscriptions = append(subscriptions, subscription)
 	}
 
-	switch {
-	case hasCreate && hasUpdate:
-		return metadata.RecordTriggerTypeCreateAndUpdate, nil
-	case hasCreate:
-		return metadata.RecordTriggerTypeCreate, nil
-	case hasUpdate:
-		return metadata.RecordTriggerTypeUpdate, nil
-	default:
-		return "", fmt.Errorf("%w: requested %v", errFlowNoSupportedEvents, objEvents.Events)
+	return flowComponents, subscriptions, nil
+}
+
+// flowPairEndpointURL returns the endpoint URL for one event type's outbound message.
+func flowPairEndpointURL(endpointURL string, eventType common.SubscriptionEventType) (string, error) {
+	parsed, err := url.Parse(endpointURL)
+	if err != nil {
+		return "", fmt.Errorf("invalid flow endpoint URL: %w", err)
 	}
+
+	query := parsed.Query()
+	query.Set(omQueryParamEventType, string(eventType))
+	parsed.RawQuery = query.Encode()
+
+	return parsed.String(), nil
 }
 
 // flowCoveredEvents returns the union of event types covered across all

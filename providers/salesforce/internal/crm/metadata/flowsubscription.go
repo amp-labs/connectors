@@ -26,20 +26,19 @@ var (
 		"at least one flow subscription component is required")
 )
 
-// FlowSubscriptionComponent pairs the two artifacts deployed for one object
-// of a flow-based subscription: the workflow outbound message and the
-// record-triggered flow that invokes it.
+// FlowSubscriptionComponent pairs the two artifacts deployed for one event type
+// of one object in a flow-based subscription: the workflow outbound message and
+// the record-triggered flow that invokes it. An object can have several
+// components, one per event type.
 type FlowSubscriptionComponent struct {
 	OutboundMessage OutboundMessageParams
 	Flow            FlowParams
 }
 
 // validateFlowSubscriptionComponent checks one OM+flow pair before it is added
-// to the combined subscribe zip: both param sets are valid, they name the same
-// object and outbound message, and that object is not already in the package.
-func validateFlowSubscriptionComponent(
-	component FlowSubscriptionComponent, seenObjects map[string]bool,
-) error {
+// to the combined subscribe zip: both param sets are valid and they name the
+// same object and outbound message.
+func validateFlowSubscriptionComponent(component FlowSubscriptionComponent) error {
 	omParams, flowParams := component.OutboundMessage, component.Flow
 
 	if err := ValidateOutboundMessageParams(omParams); err != nil {
@@ -55,10 +54,6 @@ func validateFlowSubscriptionComponent(
 			errFlowRequiredParams,
 			omParams.ObjectName, omParams.Name,
 			flowParams.ObjectName, flowParams.OutboundMessageName)
-	}
-
-	if seenObjects[omParams.ObjectName] {
-		return fmt.Errorf("%w: duplicate object %s", errFlowRequiredParams, omParams.ObjectName)
 	}
 
 	return nil
@@ -332,42 +327,57 @@ func ConstructDestructiveFlow(flowName string, versions []int) ([]byte, error) {
 // to the outbound message is satisfied because the outbound message ships in the same
 // package. See "Deploying and Retrieving Metadata":
 // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy.htm
-func ConstructFlowSubscription(components []FlowSubscriptionComponent) ([]byte, error) {
-	if len(components) == 0 {
+//
+//nolint:funlen
+func ConstructFlowSubscription(omFlowPairs []FlowSubscriptionComponent) ([]byte, error) {
+	if len(omFlowPairs) == 0 {
 		return nil, errNoFlowComponents
 	}
 
-	entries := make(map[string][]byte, 2*len(components)+1) //nolint:mnd
-	omMembers := make([]string, 0, len(components))
-	flowMembers := make([]string, 0, len(components))
-	seenObjects := make(map[string]bool, len(components))
+	// Zip path → file contents (flows/*.flow, workflows/*.workflow, package.xml).
+	entries := make(map[string][]byte, 2*len(omFlowPairs)+1) //nolint:mnd
+	// package.xml members for WorkflowOutboundMessage (e.g. Account.acme_Account_Create).
+	omMembers := make([]string, 0, len(omFlowPairs))
+	// package.xml members for Flow (e.g. acme_Account_Create).
+	flowMembers := make([]string, 0, len(omFlowPairs))
+	// Groups outbound messages by object so each object gets one .workflow file.
+	outboundMessagesByObject := make(map[string][]OutboundMessageParams, len(omFlowPairs))
 
-	for _, component := range components {
-		omParams, flowParams := component.OutboundMessage, component.Flow
-
-		if err := validateFlowSubscriptionComponent(component, seenObjects); err != nil {
+	// Pass 1: emit one Active .flow per pair and bucket OMs by object.
+	// OM Workflow files wait until pass 2 — Salesforce allows only one
+	// workflows/<Object>.workflow per object, so a create+update OM for
+	// a single object must be added to the same file.
+	for _, omFlowPair := range omFlowPairs {
+		if err := validateFlowSubscriptionComponent(omFlowPair); err != nil {
 			return nil, err
 		}
 
-		seenObjects[omParams.ObjectName] = true
+		omParams, flowParams := omFlowPair.OutboundMessage, omFlowPair.Flow
 
-		workflowContent, err := generateWorkflowXML(omParams)
-		if err != nil {
-			return nil, err
-		}
+		outboundMessagesByObject[omParams.ObjectName] = append(outboundMessagesByObject[omParams.ObjectName], omParams)
 
 		flowContent, err := GenerateFlowXML(flowParams, "Active")
 		if err != nil {
 			return nil, err
 		}
 
-		entries["workflows/"+omParams.ObjectName+".workflow"] = []byte(workflowContent)
 		entries["flows/"+flowParams.FlowName+".flow"] = []byte(flowContent)
 
 		omMembers = append(omMembers, OutboundMessageFullName(omParams.ObjectName, omParams.Name))
 		flowMembers = append(flowMembers, flowParams.FlowName)
 	}
 
+	// Pass 2: one Workflow metadata file per object, carrying every OM for that object.
+	for objectName, oms := range outboundMessagesByObject {
+		workflowContent, err := generateWorkflowXML(oms...)
+		if err != nil {
+			return nil, err
+		}
+
+		entries["workflows/"+objectName+".workflow"] = []byte(workflowContent)
+	}
+
+	// Manifest listing every OM and flow member in this zip.
 	pkg := triggerPackageXML{
 		Xmlns:   metadataXmlns,
 		Version: core.APIVersion,

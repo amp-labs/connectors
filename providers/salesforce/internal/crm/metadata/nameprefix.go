@@ -57,11 +57,19 @@ func isASCIILetter(char rune) bool {
 	return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')
 }
 
-// GenerateSubscriptionArtifactName builds the developer name shared by an
-// object's flow and its outbound message: "<prefix>_<Object>" (e.g. "acme_Account",
-// or "acme_My_Object_c" — custom-object suffixes like "__c" collapse, since
-// developer names cannot contain consecutive underscores).
-func GenerateSubscriptionArtifactName(prefix, objectName string) (string, error) {
+// Suffixes for the per-event artifact names of an object's create and update flow pairs.
+const (
+	ArtifactSuffixCreate = "Create"
+	ArtifactSuffixUpdate = "Update"
+)
+
+// GenerateSubscriptionArtifactName builds the developer name shared by one
+// event type's flow and its outbound message: "<prefix>_<Object>_<suffix>"
+// (e.g. "acme_Account_Create", or "acme_My_Object_c_Update" — custom-object
+// suffixes like "__c" collapse, since developer names cannot contain consecutive
+// underscores). An empty suffix gives "<prefix>_<Object>". The prefix is
+// truncated to keep the whole name within developerNameMaxLength.
+func GenerateSubscriptionArtifactName(prefix, objectName, suffix string) (string, error) {
 	if objectName == "" {
 		return "", errEmptyObjectName
 	}
@@ -76,11 +84,16 @@ func GenerateSubscriptionArtifactName(prefix, objectName string) (string, error)
 		cleanObject = strings.ReplaceAll(cleanObject, "__", "_")
 	}
 
-	// One underscore joins the two halves.
-	available := developerNameMaxLength - len(cleanObject) - 1
+	tail := cleanObject
+	if suffix != "" {
+		tail += "_" + suffix
+	}
+
+	// One underscore joins the prefix to the rest.
+	available := developerNameMaxLength - len(tail) - 1
 	if len(cleanPrefix) > available {
 		cleanPrefix = strings.TrimRight(cleanPrefix[:available], "_")
 	}
 
-	return cleanPrefix + "_" + cleanObject, nil
+	return cleanPrefix + "_" + tail, nil
 }

@@ -10,63 +10,232 @@ import (
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/metadata"
 )
 
-func TestFlowRecordTriggerType(t *testing.T) {
+const testFlowEndpointURL = "https://subscribe-webhook.withampersand.com/v1/projects/p/integrations/i/installations/x"
+
+func testFlowRequest() *SubscriptionRequest {
+	return &SubscriptionRequest{
+		UseFlow: true,
+		Flow: &FlowConfig{
+			EndpointURL:         testFlowEndpointURL,
+			IntegrationUsername: "integration@example.com",
+			NamePrefix:          "acme",
+			SelectedFields:      map[common.ObjectName][]string{"Account": {"Name", "Industry"}},
+		},
+	}
+}
+
+func testSubscribeParams(events map[common.ObjectName]common.ObjectEvents) common.SubscribeParams {
+	return common.SubscribeParams{SubscriptionEvents: events}
+}
+
+// componentFor returns the built component whose flow has the given name.
+func componentFor(t *testing.T, components []metadata.FlowSubscriptionComponent, flowName string) metadata.FlowSubscriptionComponent {
+	t.Helper()
+
+	for _, component := range components {
+		if component.Flow.FlowName == flowName {
+			return component
+		}
+	}
+
+	t.Fatalf("no component for flow %s", flowName)
+
+	return metadata.FlowSubscriptionComponent{}
+}
+
+// TestBuildFlowSubscriptionPerEventPairs covers what gets deployed for an object with both events:
+// a Create pair and an Update pair, each outbound message marking its event type in the endpoint URL,
+// with watch fields gating only the update flow.
+func TestBuildFlowSubscriptionPerEventPairs(t *testing.T) {
 	t.Parallel()
 
+	deployPairs, subscriptions, err := buildFlowSubscription(testSubscribeParams(map[common.ObjectName]common.ObjectEvents{
+		"Account": {
+			Events:      common.SubscriptionEventTypes{common.SubscriptionEventTypeCreate, common.SubscriptionEventTypeUpdate},
+			WatchFields: []string{"Name"},
+		},
+	}), testFlowRequest(), nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(deployPairs) != 2 {
+		t.Fatalf("expected 2 deploy pairs, got %d", len(deployPairs))
+	}
+
 	tests := []struct {
-		name            string
-		events          common.SubscriptionEventTypes
-		expectedTrigger metadata.RecordTriggerType
-		expectErr       bool
+		flowName    string
+		trigger     metadata.RecordTriggerType
+		endpointURL string
+		watchFields []string
 	}{
-		{
-			name: "Create and update",
-			events: common.SubscriptionEventTypes{
-				common.SubscriptionEventTypeCreate,
-				common.SubscriptionEventTypeUpdate,
-			},
-			expectedTrigger: metadata.RecordTriggerTypeCreateAndUpdate,
+		{"acme_Account_Create", metadata.RecordTriggerTypeCreate, testFlowEndpointURL + "?event-type=create", nil},
+		{"acme_Account_Update", metadata.RecordTriggerTypeUpdate, testFlowEndpointURL + "?event-type=update", []string{"Name"}},
+	}
+
+	for _, tt := range tests {
+		component := componentFor(t, deployPairs, tt.flowName)
+
+		if component.Flow.RecordTriggerType != tt.trigger {
+			t.Errorf("%s trigger = %q, want %q", tt.flowName, component.Flow.RecordTriggerType, tt.trigger)
+		}
+
+		if component.OutboundMessage.EndpointURL != tt.endpointURL {
+			t.Errorf("%s endpoint = %q, want %q", tt.flowName, component.OutboundMessage.EndpointURL, tt.endpointURL)
+		}
+
+		if !slices.Equal(component.Flow.WatchFields, tt.watchFields) {
+			t.Errorf("%s watch fields = %v, want %v", tt.flowName, component.Flow.WatchFields, tt.watchFields)
+		}
+
+		// Each pair's flow invokes its own outbound message, which carries the selected fields.
+		if component.OutboundMessage.Name != tt.flowName || component.Flow.OutboundMessageName != tt.flowName {
+			t.Errorf("%s outbound message = %q / %q, want %q", tt.flowName,
+				component.OutboundMessage.Name, component.Flow.OutboundMessageName, tt.flowName)
+		}
+
+		if !slices.Equal(component.OutboundMessage.Fields, []string{"Name", "Industry"}) {
+			t.Errorf("%s fields = %v, want the selected fields", tt.flowName, component.OutboundMessage.Fields)
+		}
+	}
+
+	// The record is in the per-event shape only, with the same names as what is deployed.
+	if len(subscriptions) != 1 {
+		t.Fatalf("expected 1 subscription record, got %d", len(subscriptions))
+	}
+
+	record := subscriptions[0]
+	if record.Flow != nil || record.OutboundMessage != nil {
+		t.Error("record has legacy fields set; new deploys must be recorded in the per-event shape only")
+	}
+
+	var names []string
+	for _, pair := range record.FlowPairs() {
+		names = append(names, pair.Flow.Name)
+	}
+
+	if !slices.Equal(names, []string{"acme_Account_Create", "acme_Account_Update"}) {
+		t.Errorf("recorded pairs = %v, want the create and update pairs", names)
+	}
+}
+
+func TestBuildFlowSubscriptionWatchFieldsAll(t *testing.T) {
+	t.Parallel()
+
+	deployPairs, _, err := buildFlowSubscription(testSubscribeParams(map[common.ObjectName]common.ObjectEvents{
+		"Account": {
+			Events:         common.SubscriptionEventTypes{common.SubscriptionEventTypeUpdate},
+			WatchFields:    []string{"Name"},
+			WatchFieldsAll: true,
 		},
-		{
-			name:            "Create only",
-			events:          common.SubscriptionEventTypes{common.SubscriptionEventTypeCreate},
-			expectedTrigger: metadata.RecordTriggerTypeCreate,
-		},
-		{
-			name:            "Update only",
-			events:          common.SubscriptionEventTypes{common.SubscriptionEventTypeUpdate},
-			expectedTrigger: metadata.RecordTriggerTypeUpdate,
-		},
-		{
-			name: "Delete with create is an error",
-			events: common.SubscriptionEventTypes{
-				common.SubscriptionEventTypeCreate,
-				common.SubscriptionEventTypeDelete,
-			},
-			expectErr: true,
-		},
-		{
-			name:      "Delete only is an error",
-			events:    common.SubscriptionEventTypes{common.SubscriptionEventTypeDelete},
-			expectErr: true,
-		},
-		{
-			name:      "No events is an error",
-			events:    common.SubscriptionEventTypes{},
-			expectErr: true,
-		},
+	}), testFlowRequest(), nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(deployPairs) != 1 {
+		t.Fatalf("expected only the update pair, got %d deploy pairs", len(deployPairs))
+	}
+
+	if fields := componentFor(t, deployPairs, "acme_Account_Update").Flow.WatchFields; fields != nil {
+		t.Errorf("watch fields = %v, want none: watching all fields means no entry condition", fields)
+	}
+}
+
+// TestBuildFlowSubscriptionNames covers which names a redeploy uses. A recorded per-event pair keeps
+// its name, even after a prefix change, so the upsert replaces it in place. A legacy record's single
+// pair is not reused: the object moves to new per-event names, and reconcile deletes the legacy pair.
+func TestBuildFlowSubscriptionNames(t *testing.T) {
+	t.Parallel()
+
+	bothEvents := map[common.ObjectName]common.ObjectEvents{
+		"Account": {Events: common.SubscriptionEventTypes{common.SubscriptionEventTypeCreate, common.SubscriptionEventTypeUpdate}},
+	}
+
+	recorded := perEventFlowSubscription("Account", common.SubscriptionEventTypeCreate, common.SubscriptionEventTypeUpdate)
+
+	tests := []struct {
+		name      string
+		prevState *SubscribeResult
+		want      []string
+	}{
+		{"New subscription generates names", nil, []string{"acme_Account_Create", "acme_Account_Update"}},
+		{"Recorded per-event pairs keep their names", flowResult(recorded), []string{"amp_Account_create", "amp_Account_update"}},
+		{"Legacy record moves to per-event names", flowResult(legacyFlowSubscription("Account")),
+			[]string{"acme_Account_Create", "acme_Account_Update"}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			trigger, err := flowRecordTriggerType(common.ObjectEvents{Events: tt.events})
-			if tt.expectErr {
-				if err == nil {
-					t.Fatal("expected error, got nil")
-				}
+			_, subscriptions, err := buildFlowSubscription(testSubscribeParams(bothEvents), testFlowRequest(), tt.prevState)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
 
+			var got []string
+			for _, pair := range subscriptions[0].FlowPairs() {
+				got = append(got, pair.Flow.Name)
+			}
+
+			if !slices.Equal(got, tt.want) {
+				t.Errorf("names = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+// TestFlowSubscriptionMigrationDropsLegacyPair ties the builder to reconcile: redeploying a legacy
+// record builds per-event pairs, so its legacy pair is reported for deletion.
+func TestFlowSubscriptionMigrationDropsLegacyPair(t *testing.T) {
+	t.Parallel()
+
+	prevState := flowResult(legacyFlowSubscription("Account"))
+
+	_, subscriptions, err := buildFlowSubscription(testSubscribeParams(map[common.ObjectName]common.ObjectEvents{
+		"Account": {Events: common.SubscriptionEventTypes{common.SubscriptionEventTypeCreate, common.SubscriptionEventTypeUpdate}},
+	}), testFlowRequest(), prevState)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	dropped := droppedFlowPairs(prevState, flowResult(subscriptions...))
+	if len(dropped["Account"]) != 1 || dropped["Account"][0].Flow.Name != "amp_Account" {
+		t.Errorf("droppedFlowPairs() = %v, want the legacy amp_Account pair", dropped)
+	}
+}
+
+// TestBuildFlowSubscriptionEventPairs covers which pairs an object's events produce: create then
+// update, regardless of request order, and an error when the request has nothing a flow can fire on.
+func TestBuildFlowSubscriptionEventPairs(t *testing.T) {
+	t.Parallel()
+
+	create, update := common.SubscriptionEventTypeCreate, common.SubscriptionEventTypeUpdate
+
+	tests := []struct {
+		name    string
+		events  common.SubscriptionEventTypes
+		want    []string
+		wantErr bool
+	}{
+		{"Create and update, any input order", common.SubscriptionEventTypes{update, create},
+			[]string{"acme_Account_Create", "acme_Account_Update"}, false},
+		{"Create only", common.SubscriptionEventTypes{create}, []string{"acme_Account_Create"}, false},
+		{"Update only", common.SubscriptionEventTypes{update}, []string{"acme_Account_Update"}, false},
+		{"Delete with create is an error", common.SubscriptionEventTypes{create, common.SubscriptionEventTypeDelete}, nil, true},
+		{"Delete only is an error", common.SubscriptionEventTypes{common.SubscriptionEventTypeDelete}, nil, true},
+		{"No events is an error", common.SubscriptionEventTypes{}, nil, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			deployPairs, _, err := buildFlowSubscription(testSubscribeParams(map[common.ObjectName]common.ObjectEvents{
+				"Account": {Events: tt.events},
+			}), testFlowRequest(), nil)
+			if tt.wantErr {
 				if !errors.Is(err, errFlowNoSupportedEvents) {
 					t.Fatalf("expected errFlowNoSupportedEvents, got: %v", err)
 				}
@@ -78,8 +247,13 @@ func TestFlowRecordTriggerType(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
-			if trigger != tt.expectedTrigger {
-				t.Errorf("trigger = %q, want %q", trigger, tt.expectedTrigger)
+			var got []string
+			for _, pair := range deployPairs {
+				got = append(got, pair.Flow.FlowName)
+			}
+
+			if !slices.Equal(got, tt.want) {
+				t.Errorf("flows = %v, want %v", got, tt.want)
 			}
 		})
 	}
