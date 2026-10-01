@@ -15,6 +15,7 @@ func supportedOperations() components.EndpointRegistryInput {
 		"calendars",
 		"calendars/groups",
 		"campaigns",
+		"contacts",
 		"conversations/search",
 		"emails/schedule",
 		"forms/submissions",
