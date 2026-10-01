@@ -45,7 +45,7 @@ func NewTransport(
 }
 
 // SetBaseURL should be used for setting up unit tests.
-// To better indicate the intent use SetUnitTestMockServerBaseURL.
+// To better indicate the intent use SetUnitTestMockServerBaseUrl.
 // Deprecated.
 func (t *Transport) SetBaseURL(newURL string) {
 	t.ProviderContext.providerInfo.BaseURL = newURL
@@ -54,7 +54,7 @@ func (t *Transport) SetBaseURL(newURL string) {
 }
 
 // SetUnitTestBaseURL should be used for setting up unit tests.
-// To better handle diverse Module vs Provider BaseURLs use SetUnitTestMockServerBaseURL.
+// To better handle diverse Module vs Provider BaseURLs use SetUnitTestMockServerBaseUrl.
 // Deprecated.
 func (t *Transport) SetUnitTestBaseURL(newURL string) {
 	t.ProviderContext.providerInfo.BaseURL = newURL
@@ -62,9 +62,9 @@ func (t *Transport) SetUnitTestBaseURL(newURL string) {
 	t.json.HTTPClient.Base = newURL
 }
 
-// SetUnitTestMockServerBaseURL replaces the URL Origin with mock server URL Origin.
+// SetUnitTestMockServerBaseUrl replaces the URL Origin with mock server URL Origin.
 // This allows to reroute all requests to mock server used in unit tests and preserve all URI parts if any.
-func (t *Transport) SetUnitTestMockServerBaseURL(testServerURL string) {
+func (t *Transport) SetUnitTestMockServerBaseUrl(testServerURL string) {
 	providerURL := t.ProviderContext.providerInfo.BaseURL
 	t.ProviderContext.providerInfo.BaseURL = mockutils.ReplaceURLOrigin(providerURL, testServerURL)
 	moduleURL := t.ProviderContext.moduleInfo.BaseURL
