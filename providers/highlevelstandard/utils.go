@@ -1,12 +1,10 @@
 package highlevelstandard
 
 import (
-	"net/url"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
@@ -20,7 +18,6 @@ var objectsWithLocationIdInParam = datautils.NewSet( //nolint:gochecknoglobals
 	"calendars",
 	"calendars/groups",
 	"campaigns",
-	"contacts",
 	"conversations/search",
 	"emails/schedule",
 	"forms/submissions",
@@ -103,7 +100,6 @@ var objectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochec
 	"calendars":                    "calendars",
 	"calendars/groups":             "groups",
 	"campaigns":                    "campaigns",
-	"contacts":                     "contacts",
 	"conversations/search":         "conversations",
 	"emails/schedule":              "schedules",
 	"forms/submissions":            "submissions",
@@ -155,52 +151,6 @@ func makeNextRecord(offset int, objName string) common.NextPageFunc {
 
 		return strconv.Itoa(nextStart), nil
 	}
-}
-
-// Objects paginated with the startAfterId/startAfter cursor returned in the response "meta" object.
-// Ref https://highlevel.stoplight.io/docs/integrations/ab55933a57f6f-get-contacts.
-var cursorPaginationObjects = datautils.NewSet( //nolint:gochecknoglobals
-	"contacts",
-)
-
-const (
-	cursorParamStartAfterId = "startAfterId"
-	cursorParamStartAfter   = "startAfter"
-)
-
-// makeNextCursor builds the next page token from the response "meta" object.
-// The token is an encoded query string holding the startAfterId and startAfter values.
-// An empty token is returned when the response has no next page.
-func makeNextCursor(node *ajson.Node) (string, error) {
-	meta, err := jsonquery.New(node).ObjectOptional("meta")
-	if err != nil || meta == nil {
-		return "", err
-	}
-
-	nextPageURL, err := jsonquery.New(meta).StrWithDefault("nextPageUrl", "")
-	if err != nil {
-		return "", err
-	}
-
-	startAfterId, err := jsonquery.New(meta).StrWithDefault(cursorParamStartAfterId, "")
-	if err != nil {
-		return "", err
-	}
-
-	if nextPageURL == "" || startAfterId == "" {
-		return "", nil
-	}
-
-	startAfter, err := jsonquery.New(meta).IntegerWithDefault(cursorParamStartAfter, 0)
-	if err != nil {
-		return "", err
-	}
-
-	cursor := url.Values{}
-	cursor.Set(cursorParamStartAfterId, startAfterId)
-	cursor.Set(cursorParamStartAfter, strconv.FormatInt(startAfter, 10))
-
-	return cursor.Encode(), nil
 }
 
 var writeObjectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals
