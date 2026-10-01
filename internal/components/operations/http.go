@@ -24,7 +24,7 @@ type HTTPOperation[RequestType any, ResponseType any] struct {
 type HTTPHandlers[RequestType any, ResponseType any] struct {
 	BuildRequest  func(context.Context, RequestType) (*http.Request, error)
 	ParseResponse func(context.Context, RequestType, *http.Request, *common.JSONHTTPResponse) (ResponseType, error)
-	ErrorHandler  func(*http.Response, []byte) error
+	ErrorHandler  common.ErrorHandler
 }
 
 func NewHTTPOperation[RequestType any, ResponseType any](

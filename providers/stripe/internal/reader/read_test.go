@@ -144,13 +144,17 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input: common.ReadParams{
 				ObjectName: "customers",
 				Fields:     connectors.Fields("name"),
-				NextPage:   "/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD",
+				NextPage:   testconn.URLTestServer + "/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD",
 			},
 			Comparator: testconn.ComparatorSubsetRead,
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v1/customers?limit=100&starting_after=cus_Rd3NjdGWtynChD"),
-				Then:  mockserver.Response(http.StatusOK, responseCustomersLastPage),
+				If: mockcond.And{
+					mockcond.Path("/v1/customers"),
+					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("starting_after", "cus_Rd3NjdGWtynChD"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCustomersLastPage),
 			}.Server(),
 			Expected: &common.ReadResult{
 				Rows: 1,
