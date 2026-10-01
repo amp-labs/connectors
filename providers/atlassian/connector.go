@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/atlassian/internal/confluence"
 	"github.com/amp-labs/connectors/providers/atlassian/internal/jira"
 )
 
@@ -23,8 +24,9 @@ var (
 type Connector struct {
 	components.BaseConnector
 
-	workspace string
-	jira      *jira.Adapter
+	workspace  string
+	jira       *jira.Adapter
+	confluence *confluence.Adapter
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -51,6 +53,11 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 		if err != nil {
 			return nil, err
 		}
+	case providers.ModuleAtlassianConfluence:
+		connector.confluence, err = confluence.NewAdapter(base)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return connector, nil
@@ -63,12 +70,20 @@ func (c *Connector) ListObjectMetadata(
 		return c.jira.ListObjectMetadata(ctx, objectNames)
 	}
 
+	if c.confluence != nil {
+		return c.confluence.ListObjectMetadata(ctx, objectNames)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
 func (c *Connector) Read(ctx context.Context, params connectors.ReadParams) (*connectors.ReadResult, error) {
 	if c.jira != nil {
 		return c.jira.Read(ctx, params)
+	}
+
+	if c.confluence != nil {
+		return c.confluence.Read(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented
@@ -79,12 +94,20 @@ func (c *Connector) Write(ctx context.Context, params connectors.WriteParams) (*
 		return c.jira.Write(ctx, params)
 	}
 
+	if c.confluence != nil {
+		return c.confluence.Write(ctx, params)
+	}
+
 	return nil, common.ErrNotImplemented
 }
 
 func (c *Connector) Delete(ctx context.Context, params connectors.DeleteParams) (*connectors.DeleteResult, error) {
 	if c.jira != nil {
 		return c.jira.Delete(ctx, params)
+	}
+
+	if c.confluence != nil {
+		return c.confluence.Delete(ctx, params)
 	}
 
 	return nil, common.ErrNotImplemented
