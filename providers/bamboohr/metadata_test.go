@@ -9,24 +9,31 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
-func TestListObjectMetadata(t *testing.T) {
+func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
+			Name:         "No objects returns missing objects error",
+			Input:        nil,
+			Server:       mockserver.Dummy(),
+			Expected:     nil,
+			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
 			Name: "Successful metadata for core HR objects",
 			Input: []string{
-				"employees_directory",
-				"meta_users",
-				"employees",
-				"time_off_requests",
-				"whos_out",
+				objectEmployeesDirectory,
+				objectMetaUsers,
+				objectEmployees,
+				objectTimeOffRequests,
+				objectWhosOut,
 			},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"employees_directory": {
+					objectEmployeesDirectory: {
 						DisplayName: "Employees Directory",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
@@ -41,7 +48,7 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
-					"meta_users": {
+					objectMetaUsers: {
 						DisplayName: "Users",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
@@ -56,7 +63,7 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
-					"employees": {
+					objectEmployees: {
 						DisplayName: "Employees",
 						Fields: map[string]common.FieldMetadata{
 							"employeeId": {
@@ -66,7 +73,7 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
-					"time_off_requests": {
+					objectTimeOffRequests: {
 						DisplayName: "Time Off Requests",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
@@ -76,7 +83,7 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
-					"whos_out": {
+					objectWhosOut: {
 						DisplayName: "Who's Out",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
@@ -92,20 +99,13 @@ func TestListObjectMetadata(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
-			Name:         "No objects returns missing objects error",
-			Input:        nil,
-			Server:       mockserver.Dummy(),
-			Expected:     nil,
-			ExpectedErrs: []error{common.ErrMissingObjects},
-		},
-		{
 			Name:       "Unsupported object returns object not supported error",
-			Input:      []string{"employees", "unknown_object"},
+			Input:      []string{objectEmployees, "unknown_object"},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"employees": {
+					objectEmployees: {
 						DisplayName: "Employees",
 						Fields: map[string]common.FieldMetadata{
 							"employeeId": {
@@ -121,6 +121,58 @@ func TestListObjectMetadata(t *testing.T) {
 				},
 			},
 			ExpectedErrs: nil,
+		},
+		{
+			Name:       "Describe webhooks",
+			Input:      []string{objectWebhooks},
+			Server:     mockserver.Dummy(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					objectWebhooks: {
+						DisplayName: "Webhookslists",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+		},
+		{
+			Name:       "Describe time tracking projects",
+			Input:      []string{objectTimeTrackingProjects},
+			Server:     mockserver.Dummy(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					objectTimeTrackingProjects: {
+						DisplayName: "Time Tracking Projects",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "id",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
 		},
 	}
 

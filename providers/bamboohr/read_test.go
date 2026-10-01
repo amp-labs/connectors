@@ -22,6 +22,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 	responseWhosOut := testutils.DataFromFile(t, "read/whos-out.json")
 	responseEmployeesPage1 := testutils.DataFromFile(t, "read/employees-page1.json")
 	responseEmptyData := testutils.DataFromFile(t, "read/empty-data.json")
+	responseWebhooksList := testutils.DataFromFile(t, "read/webhooks-list.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -257,6 +258,35 @@ func TestRead(t *testing.T) { //nolint:funlen
 				}},
 				NextPage: "https://example.bamboohr.com/api/v1/employees?page%5Blimit%5D=1&page%5Bafter%5D=next-cursor",
 				Done:     false,
+			},
+		},
+		{
+			Name:  "List webhooks",
+			Input: common.ReadParams{ObjectName: objectWebhooks, Fields: connectors.Fields("id", "name", "url")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/v1/webhooks"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseWebhooksList),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":   "4",
+						"name": "Example Webhook",
+						"url":  "https://www.example.com/hook",
+					},
+					Raw: map[string]any{
+						"id":   "4",
+						"name": "Example Webhook",
+					},
+					Id: "4",
+				}},
+				Done: true,
 			},
 		},
 	}

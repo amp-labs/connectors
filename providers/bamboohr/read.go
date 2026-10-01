@@ -129,7 +129,7 @@ func (c *Connector) parseReadResponse(
 }
 
 func nodeRecordsForRead(c *Connector, objectName string) common.NodeRecordsFunc {
-	if objectName == objectMetaUsers {
+	if keyedObjectRead(objectName) {
 		return keyedObjectRecordNodes()
 	}
 
@@ -140,9 +140,18 @@ func nodeRecordsForRead(c *Connector, objectName string) common.NodeRecordsFunc 
 	}
 }
 
+func keyedObjectRead(objectName string) bool {
+	switch objectName {
+	case objectMetaUsers, objectTrainingCategory, objectTrainingType:
+		return true
+	default:
+		return false
+	}
+}
+
 // keyedObjectRecordNodes returns a NodeRecordsFunc for read responses whose body is a
 // JSON object keyed by record id, not a wrapper with an array field. BambooHR uses this
-// shape for meta_users (see test/read/meta-users.json). Each object value becomes one
+// shape for meta_users and training category/type lists. Each object value becomes one
 // record node; iteration order is undefined.
 func keyedObjectRecordNodes() common.NodeRecordsFunc {
 	return func(node *ajson.Node) ([]*ajson.Node, error) {
