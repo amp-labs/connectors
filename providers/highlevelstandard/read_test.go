@@ -18,6 +18,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	businessesResponse := testutils.DataFromFile(t, "businesses.json")
 	calendarsGroupsResponse := testutils.DataFromFile(t, "calendars_groups.json")
 	productsCollectionsResponse := testutils.DataFromFile(t, "products_collections.json")
+	contactsResponse := testutils.DataFromFile(t, "contacts.json")
+	contactsLastPageResponse := testutils.DataFromFile(t, "contacts-last-page.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -128,6 +130,73 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				},
 				NextPage: "201",
 				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Read first page of contacts",
+			Input: common.ReadParams{ObjectName: "contacts", Fields: connectors.Fields("email")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/contacts/"),
+					mockcond.QueryParam("locationId", "iV1BEzddaWWLqU2kXhcN"),
+					mockcond.QueryParam("limit", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, contactsResponse),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"email": "jane@example.com",
+						},
+						Raw: map[string]any{
+							"id":         "ocQHyuzHvysMo5N5VsXc",
+							"locationId": "iV1BEzddaWWLqU2kXhcN",
+						},
+					},
+				},
+				NextPage: "startAfter=1737633708429&startAfterId=ocQHyuzHvysMo5N5VsXc",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read last page of contacts",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+				NextPage:   "startAfter=1737633708429&startAfterId=ocQHyuzHvysMo5N5VsXc",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/contacts/"),
+					mockcond.QueryParam("locationId", "iV1BEzddaWWLqU2kXhcN"),
+					mockcond.QueryParam("limit", "100"),
+					mockcond.QueryParam("startAfterId", "ocQHyuzHvysMo5N5VsXc"),
+					mockcond.QueryParam("startAfter", "1737633708429"),
+				},
+				Then: mockserver.Response(http.StatusOK, contactsLastPageResponse),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"email": "john@example.com",
+						},
+						Raw: map[string]any{
+							"id": "pdRIzvaIwztNp6O6WtYd",
+						},
+					},
+				},
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},
