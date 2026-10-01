@@ -1,0 +1,30 @@
+{
+  "results": [
+    {
+      "createdAt": "2025-06-26T20:39:48.350Z",
+      "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+      "version": {
+        "number": 1,
+        "message": "",
+        "minorEdit": false,
+        "authorId": "712020:dcef0c39-e30a-405a-afe5-9d34bf00b73f",
+        "createdAt": "2025-06-26T20:39:48.350Z",
+        "ncsStepVersion": "1"
+      },
+      "spaceId": "131189",
+      "status": "current",
+      "body": {},
+      "title": "Even a third blog post, on a roll!",
+      "id": "819206",
+      "_links": {
+        "editui": "/pages/resumedraft.action?draftId=819206",
+        "webui": "/spaces/SD/blog/2025/06/26/819206/Even+a+third+blog+post+on+a+roll",
+        "edituiv2": "/spaces/SD/blog/edit-v2/819206",
+        "tinyui": "/x/BoAM"
+      }
+    }
+  ],
+  "_links": {
+    "base": "https://withampersand-team-oqo0hkaj.atlassian.net/wiki"
+  }
+}
