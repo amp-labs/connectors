@@ -58,6 +58,14 @@ func TestGenerateSubscriptionArtifactName(t *testing.T) {
 		{"Empty prefix falls back to default", "", "Account", "", "amp_Account"},
 		{"Prefix truncates to leave room for the suffix", longPrefix, "Account", ArtifactSuffixUpdate,
 			longPrefix[:developerNameMaxLength-len("_Account_Update")] + "_Account_Update"},
+		{"Long project name truncates to exactly the cap", "amanda_test_project_two", "Opportunity",
+			ArtifactSuffixCreate, "amanda_test_project_t_Opportunity_Create"},
+		{"Long custom object truncates the object and keeps the suffix", "acme",
+			"Very_Long_Custom_Object_Name_For_Testing__c", ArtifactSuffixUpdate,
+			"acm_Very_Long_Custom_Object_Name_Update"},
+		{"Object truncation fills the cap exactly", "acme",
+			"Abcdefghijklmnopqrstuvwxyz_Abcdefghij__c", ArtifactSuffixCreate,
+			"acm_Abcdefghijklmnopqrstuvwxyz_Ab_Create"},
 	}
 
 	for _, tt := range tests {

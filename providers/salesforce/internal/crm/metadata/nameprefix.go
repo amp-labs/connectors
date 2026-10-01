@@ -4,9 +4,13 @@ import (
 	"strings"
 )
 
-// developerNameMaxLength is Salesforce's cap on a Flow API name and an outbound
-// message developer name.
-const developerNameMaxLength = 80
+// developerNameMaxLength caps the name shared by a flow and its outbound message.
+// Salesforce allows 80 for a Flow API name but only 40 for an OM's name and
+// fullName (manually verified in the Salesforce UI), so the OM limit governs both.
+const developerNameMaxLength = 40
+
+// minPrefixLength is the prefix kept when a long object name crowds it out.
+const minPrefixLength = 3
 
 // DefaultNamePrefix names artifacts when the caller supplies no usable prefix.
 const DefaultNamePrefix = "amp"
@@ -67,8 +71,8 @@ const (
 // event type's flow and its outbound message: "<prefix>_<Object>_<suffix>"
 // (e.g. "acme_Account_Create", or "acme_My_Object_c_Update" — custom-object
 // suffixes like "__c" collapse, since developer names cannot contain consecutive
-// underscores). An empty suffix gives "<prefix>_<Object>". The prefix is
-// truncated to keep the whole name within developerNameMaxLength.
+// underscores). An empty suffix gives "<prefix>_<Object>". The prefix, then the
+// object if needed, is truncated to keep the name within developerNameMaxLength.
 func GenerateSubscriptionArtifactName(prefix, objectName, suffix string) (string, error) {
 	if objectName == "" {
 		return "", errEmptyObjectName
@@ -84,13 +88,22 @@ func GenerateSubscriptionArtifactName(prefix, objectName, suffix string) (string
 		cleanObject = strings.ReplaceAll(cleanObject, "__", "_")
 	}
 
-	tail := cleanObject
+	suffixPart := ""
 	if suffix != "" {
-		tail += "_" + suffix
+		suffixPart = "_" + suffix
 	}
 
 	// One underscore joins the prefix to the rest.
-	available := developerNameMaxLength - len(tail) - 1
+	available := developerNameMaxLength - len(cleanObject) - len(suffixPart) - 1
+	if available < minPrefixLength {
+		// Trim the object instead so the suffix survives and the prefix stays recognizable.
+		objectRoom := developerNameMaxLength - minPrefixLength - len(suffixPart) - 1
+		cleanObject = strings.TrimRight(cleanObject[:objectRoom], "_")
+		available = minPrefixLength
+	}
+
+	tail := cleanObject + suffixPart
+
 	if len(cleanPrefix) > available {
 		cleanPrefix = strings.TrimRight(cleanPrefix[:available], "_")
 	}
