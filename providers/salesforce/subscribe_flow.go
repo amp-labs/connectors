@@ -75,8 +75,8 @@ type FlowConfig struct {
 	SelectedFields map[common.ObjectName][]string `json:"selectedFields,omitempty"`
 }
 
-// OutboundMessageMetadata is our record of a deployed OM, stored on
-// SubscribeResult.Flows[object].OutboundMessage. Delete uses Name for the
+// OutboundMessageMetadata is our record of a deployed OM, stored on a FlowPair
+// (or, for the legacy shape, SubscribeResult.Flows[object].OutboundMessage). Delete uses Name for the
 // destructive zip and as OutboundMessageName if the flow is Draft-redeployed.
 // Flow updates delete-then-recreate, so they only read this on that delete.
 // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_workflow.htm
@@ -93,8 +93,8 @@ type OutboundMessageMetadata struct {
 	DeployID string `json:"deployId,omitempty"`
 }
 
-// FlowMetadata is our record of a deployed flow, stored on
-// SubscribeResult.Flows[object].Flow. Delete uses Name plus RecordTriggerType
+// FlowMetadata is our record of a deployed flow, stored on a FlowPair (or, for
+// the legacy shape, SubscribeResult.Flows[object].Flow). Delete uses Name plus RecordTriggerType
 // and WatchFields to rebuild XML for the Draft deactivation fallback, then
 // deletes versions. Update only reads this on that delete half.
 // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm
@@ -116,21 +116,63 @@ type FlowMetadata struct {
 	DeployID string `json:"deployId,omitempty"`
 }
 
+// FlowPair is one deployed record-triggered flow and the outbound message it
+// invokes. They are deployed and torn down together.
+type FlowPair struct {
+	// OutboundMessage is the OM deployed in the same package as Flow.
+	OutboundMessage *OutboundMessageMetadata `json:"outboundMessage,omitempty"`
+
+	// Flow is the record-triggered flow deployed in the same package as the OM.
+	Flow *FlowMetadata `json:"flow,omitempty"`
+}
+
 // FlowSubscription is the persisted per-object record on SubscribeResult.Flows:
 // the OM and flow bookmarks for one object, written after the combined deploy
 // succeeds.
 type FlowSubscription struct {
 	ObjectName common.ObjectName `json:"objectName"`
 
-	// OutboundMessage is the OM deployed in the same package as Flow.
+	// Deprecated: OutboundMessage is the OM deployed in the same package as Flow (legacy shape).
 	OutboundMessage *OutboundMessageMetadata `json:"outboundMessage,omitempty"`
 
-	// Flow is the record-triggered flow deployed in the same package as the OM.
+	// Deprecated: Flow is the record-triggered flow deployed in the same package as the OM (legacy shape).
 	Flow *FlowMetadata `json:"flow,omitempty"`
+
+	// Pairs stores the flow + outbound message pair for each event type (create/updated) this config is subscribed to.
+	Pairs map[common.SubscriptionEventType]*FlowPair `json:"pairs,omitempty"`
 
 	// Events are the normalized event types this subscription covers
 	// (create/update; never delete).
 	Events []common.SubscriptionEventType `json:"events"`
+}
+
+// FlowPairs returns the flows + outbound message pairs recorded for the object.
+func (f *FlowSubscription) FlowPairs() []*FlowPair {
+	if f == nil {
+		return nil
+	}
+
+	// If the subscription contains an OM/Flow in the legacy shape, return the single pair.
+	if f.OutboundMessage != nil && f.Flow != nil {
+		return []*FlowPair{{
+			OutboundMessage: f.OutboundMessage,
+			Flow:            f.Flow,
+		}}
+	}
+
+	// Otherwise, look to see if the subscription contains a CreateEvent and/or UpdateEvent FlowPair.
+	pairs := make([]*FlowPair, 0, len(f.Pairs))
+
+	for _, eventType := range []common.SubscriptionEventType{
+		common.SubscriptionEventTypeCreate,
+		common.SubscriptionEventTypeUpdate,
+	} {
+		if pair := f.Pairs[eventType]; pair != nil && pair.Flow != nil && pair.OutboundMessage != nil {
+			pairs = append(pairs, pair)
+		}
+	}
+
+	return pairs
 }
 
 // subscribeWithFlow creates flow-based subscriptions for every object in
@@ -390,40 +432,45 @@ func (c *Connector) reconcileFlowSubscription(
 	// Delete deactivated versions of flows that stayed subscribed (Active stays).
 	c.deleteDeactivatedFlows(ctx, sfRes)
 
-	// For objects that were removed from the subscription, delete the flow and outbound message.
-	for _, objName := range droppedFlowObjects(prevState, sfRes) {
-		flowSub := prevState.Flows[objName]
-
-		if err := c.deleteFlowSubscription(ctx, objName, flowSub); err != nil {
-			return result, fmt.Errorf("reconcile deployed but could not remove dropped object: %w", err)
+	// Delete the flows + outbound messages the new subscription no longer has.
+	for objName, pairs := range droppedFlowPairs(prevState, sfRes) {
+		for _, pair := range pairs {
+			if err := c.deleteFlowPair(ctx, objName, pair); err != nil {
+				return result, fmt.Errorf("reconcile deployed but could not remove a dropped flow pair: %w", err)
+			}
 		}
 	}
 
 	return result, nil
 }
 
-// droppedFlowObjects diffs the previous and new subscription states and returns
-// objects that dropped out of the subscription.
-func droppedFlowObjects(prevState, newState *SubscribeResult) []common.ObjectName {
+// droppedFlowPairs diffs the previous and new subscription states and returns the
+// previous pairs whose flow the new state no longer has, keyed by object. This covers
+// an object being dropped from the subscription and an event being dropped from an object.
+func droppedFlowPairs(prevState, newState *SubscribeResult) map[common.ObjectName][]*FlowPair {
 	if prevState == nil {
 		return nil
 	}
 
-	removed := make([]common.ObjectName, 0, len(prevState.Flows))
+	dropped := make(map[common.ObjectName][]*FlowPair)
 
-	for objName, flowSub := range prevState.Flows {
-		if flowSub == nil || flowSub.Flow == nil || flowSub.OutboundMessage == nil {
-			continue
+	for objName, prevSub := range prevState.Flows {
+		kept := make(map[string]bool)
+
+		if newState != nil {
+			for _, pair := range newState.Flows[objName].FlowPairs() {
+				kept[pair.Flow.Name] = true
+			}
 		}
 
-		if _, kept := newState.Flows[objName]; kept {
-			continue
+		for _, pair := range prevSub.FlowPairs() {
+			if !kept[pair.Flow.Name] {
+				dropped[objName] = append(dropped[objName], pair)
+			}
 		}
-
-		removed = append(removed, objName)
 	}
 
-	return removed
+	return dropped
 }
 
 const flowVersionStatusActive = "Active"
@@ -434,45 +481,49 @@ const flowVersionStatusActive = "Active"
 // must not fail the update.
 func (c *Connector) deleteDeactivatedFlows(ctx context.Context, sfRes *SubscribeResult) {
 	for _, flowSub := range sfRes.Flows {
-		definitionID, err := c.findToolingEntityIDByDeveloperName(ctx, "FlowDefinition", flowSub.Flow.Name)
-		if err != nil {
-			logging.Logger(ctx).WarnContext(ctx,
-				"failed to delete deactivated flow versions during subscription update",
-				"flow", flowSub.Flow.Name,
-				"error", err,
-			)
+		for _, pair := range flowSub.FlowPairs() {
+			flowName := pair.Flow.Name
 
-			continue
-		}
+			definitionID, err := c.findToolingEntityIDByDeveloperName(ctx, "FlowDefinition", flowName)
+			if err != nil {
+				logging.Logger(ctx).WarnContext(ctx,
+					"failed to delete deactivated flow versions during subscription update",
+					"flow", flowName,
+					"error", err,
+				)
 
-		versions, err := c.listFlowVersions(ctx, definitionID)
-		if err != nil {
-			logging.Logger(ctx).WarnContext(ctx,
-				"failed to delete deactivated flow versions during subscription update",
-				"flow", flowSub.Flow.Name,
-				"error", err,
-			)
-
-			continue
-		}
-
-		for _, version := range versions {
-			if version.Status == flowVersionStatusActive {
 				continue
 			}
 
-			_, delErr := c.deleteToSFAPI(ctx,
-				"tooling/sobjects/Flow/"+version.ID,
-				fmt.Sprintf("flow %s version %d", flowSub.Flow.Name, version.VersionNumber),
-			)
-			if delErr != nil {
+			versions, err := c.listFlowVersions(ctx, definitionID)
+			if err != nil {
 				logging.Logger(ctx).WarnContext(ctx,
-					"tooling delete of deactivated flow version failed; leaving it in place",
-					"flow", flowSub.Flow.Name,
-					"version", version.VersionNumber,
-					"status", version.Status,
-					"error", delErr,
+					"failed to delete deactivated flow versions during subscription update",
+					"flow", flowName,
+					"error", err,
 				)
+
+				continue
+			}
+
+			for _, version := range versions {
+				if version.Status == flowVersionStatusActive {
+					continue
+				}
+
+				_, delErr := c.deleteToSFAPI(ctx,
+					"tooling/sobjects/Flow/"+version.ID,
+					fmt.Sprintf("flow %s version %d", flowName, version.VersionNumber),
+				)
+				if delErr != nil {
+					logging.Logger(ctx).WarnContext(ctx,
+						"tooling delete of deactivated flow version failed; leaving it in place",
+						"flow", flowName,
+						"version", version.VersionNumber,
+						"status", version.Status,
+						"error", delErr,
+					)
+				}
 			}
 		}
 	}
@@ -487,21 +538,19 @@ func (c *Connector) deleteDeactivatedFlows(ctx context.Context, sfRes *Subscribe
 // message the flow referenced is removed.
 func (c *Connector) deleteAllFlowSubscriptions(ctx context.Context, sfRes *SubscribeResult) error {
 	for objName, flowSub := range sfRes.Flows {
-		if err := c.deleteFlowSubscription(ctx, objName, flowSub); err != nil {
-			return err
+		for _, pair := range flowSub.FlowPairs() {
+			if err := c.deleteFlowPair(ctx, objName, pair); err != nil {
+				return err
+			}
 		}
 	}
 
 	return nil
 }
 
-// deleteFlowSubscription removes one object's artifacts dependents-first: the
-// flow (deactivated, then every version) and then the outbound message it
-// referenced. Shared by full teardown and by reconcile, which uses it for the
-// objects that dropped out of a subscription.
-func (c *Connector) deleteFlowSubscription(
-	ctx context.Context, objName common.ObjectName, flowSub *FlowSubscription,
-) error {
+// deleteFlowPair removes one flow pair dependents-first: the flow (deactivated,
+// then every version) and then the outbound message it referenced.
+func (c *Connector) deleteFlowPair(ctx context.Context, objName common.ObjectName, pair *FlowPair) error {
 	abort := func(err error) error {
 		logging.Logger(ctx).WarnContext(ctx,
 			"flow subscription delete failed mid-teardown; aborting before remaining flows are touched",
@@ -512,19 +561,17 @@ func (c *Connector) deleteFlowSubscription(
 		return fmt.Errorf("failed to delete flow subscription for object '%s': %w", objName, err)
 	}
 
-	if err := c.deleteFlow(ctx, flowSub); err != nil {
+	if err := c.deleteFlow(ctx, objName, pair); err != nil {
 		return abort(err)
 	}
 
-	omZipData, err := metadata.ConstructDestructiveOutboundMessage(
-		string(flowSub.ObjectName), flowSub.OutboundMessage.Name,
-	)
+	omZipData, err := metadata.ConstructDestructiveOutboundMessage(string(objName), pair.OutboundMessage.Name)
 	if err != nil {
 		return fmt.Errorf("failed to construct destructive outbound message zip for %s: %w",
-			flowSub.OutboundMessage.Name, err)
+			pair.OutboundMessage.Name, err)
 	}
 
-	omEntity := "outbound message " + flowSub.OutboundMessage.Name
+	omEntity := "outbound message " + pair.OutboundMessage.Name
 
 	omDeploy, err := c.deployDestructiveApex(ctx, omZipData, metadata.TestLevelNoTestRun)
 	if err != nil {
@@ -549,8 +596,8 @@ func (c *Connector) deleteFlowSubscription(
 // Teardown therefore deletes each Tooling Flow version by Id (the supported
 // path for inactive versions), then falls back to a version-suffixed
 // destructive deploy if any Tooling delete fails.
-func (c *Connector) deleteFlow(ctx context.Context, flowSub *FlowSubscription) error {
-	definitionID, err := c.deactivateFlow(ctx, flowSub)
+func (c *Connector) deleteFlow(ctx context.Context, objName common.ObjectName, pair *FlowPair) error {
+	definitionID, err := c.deactivateFlow(ctx, objName, pair)
 	if err != nil {
 		return err
 	}
@@ -569,12 +616,12 @@ func (c *Connector) deleteFlow(ctx context.Context, flowSub *FlowSubscription) e
 	for _, version := range versions {
 		_, delErr := c.deleteToSFAPI(ctx,
 			"tooling/sobjects/Flow/"+version.ID,
-			fmt.Sprintf("flow %s version %d", flowSub.Flow.Name, version.VersionNumber),
+			fmt.Sprintf("flow %s version %d", pair.Flow.Name, version.VersionNumber),
 		)
 		if delErr != nil {
 			logging.Logger(ctx).WarnContext(ctx,
 				"tooling delete of flow version failed; will try versioned metadata delete",
-				"flow", flowSub.Flow.Name,
+				"flow", pair.Flow.Name,
 				"version", version.VersionNumber,
 				"error", delErr,
 			)
@@ -587,13 +634,13 @@ func (c *Connector) deleteFlow(ctx context.Context, flowSub *FlowSubscription) e
 		return nil
 	}
 
-	zipData, err := metadata.ConstructDestructiveFlow(flowSub.Flow.Name, remaining)
+	zipData, err := metadata.ConstructDestructiveFlow(pair.Flow.Name, remaining)
 	if err != nil {
 		return fmt.Errorf("failed to construct versioned destructive flow zip for %s: %w",
-			flowSub.Flow.Name, err)
+			pair.Flow.Name, err)
 	}
 
-	entity := "flow versions of " + flowSub.Flow.Name
+	entity := "flow versions of " + pair.Flow.Name
 
 	deployResult, err := c.deployDestructiveApex(ctx, zipData, metadata.TestLevelNoTestRun)
 	if err != nil {
@@ -619,18 +666,18 @@ func (c *Connector) deleteFlow(ctx context.Context, flowSub *FlowSubscription) e
 // https://salesforce.stackexchange.com/questions/396198/deactivating-a-salesforce-flow-via-the-metadata-api
 // Fallback: redeploy the flow as Draft via the Metadata API, regenerated from
 // the stored FlowSubscription components.
-func (c *Connector) deactivateFlow(ctx context.Context, flowSub *FlowSubscription) (string, error) {
-	definitionID, err := c.findToolingEntityIDByDeveloperName(ctx, "FlowDefinition", flowSub.Flow.Name)
+func (c *Connector) deactivateFlow(ctx context.Context, objName common.ObjectName, pair *FlowPair) (string, error) {
+	definitionID, err := c.findToolingEntityIDByDeveloperName(ctx, "FlowDefinition", pair.Flow.Name)
 	if err != nil {
 		if errors.Is(err, errToolingEntityNotFound) {
 			logging.Logger(ctx).InfoContext(ctx, "flow already absent, skipping deactivation and deletion",
-				"flow", flowSub.Flow.Name,
+				"flow", pair.Flow.Name,
 			)
 
 			return "", nil
 		}
 
-		return "", fmt.Errorf("failed to look up FlowDefinition for %s: %w", flowSub.Flow.Name, err)
+		return "", fmt.Errorf("failed to look up FlowDefinition for %s: %w", pair.Flow.Name, err)
 	}
 
 	body := map[string]any{
@@ -648,25 +695,25 @@ func (c *Connector) deactivateFlow(ctx context.Context, flowSub *FlowSubscriptio
 
 	logging.Logger(ctx).WarnContext(ctx,
 		"tooling API flow deactivation failed; falling back to redeploying the flow as Draft",
-		"flow", flowSub.Flow.Name,
+		"flow", pair.Flow.Name,
 		"error", patchErr,
 	)
 
 	// Fallback: redeploy the flow as Draft via the Metadata API
 	params := metadata.FlowParams{
-		ObjectName:          string(flowSub.ObjectName),
-		FlowName:            flowSub.Flow.Name,
-		RecordTriggerType:   metadata.RecordTriggerType(flowSub.Flow.RecordTriggerType),
-		WatchFields:         flowSub.Flow.WatchFields,
-		OutboundMessageName: flowSub.OutboundMessage.Name,
+		ObjectName:          string(objName),
+		FlowName:            pair.Flow.Name,
+		RecordTriggerType:   metadata.RecordTriggerType(pair.Flow.RecordTriggerType),
+		WatchFields:         pair.Flow.WatchFields,
+		OutboundMessageName: pair.OutboundMessage.Name,
 	}
 
 	zipData, err := metadata.ConstructDraftFlow(params)
 	if err != nil {
-		return "", fmt.Errorf("failed to construct flow deactivation zip for %s: %w", flowSub.Flow.Name, err)
+		return "", fmt.Errorf("failed to construct flow deactivation zip for %s: %w", pair.Flow.Name, err)
 	}
 
-	entity := "flow deactivation " + flowSub.Flow.Name
+	entity := "flow deactivation " + pair.Flow.Name
 
 	deployResult, err := c.deployDestructiveApex(ctx, zipData, metadata.TestLevelNoTestRun)
 	if err != nil {
