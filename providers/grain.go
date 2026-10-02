@@ -5,15 +5,15 @@ const Grain Provider = "grain"
 func init() {
 	SetInfo(Grain, ProviderInfo{
 		DisplayName: "Grain",
-		AuthType:    ApiKey,
+		AuthType:    Oauth2,
 		BaseURL:     "https://api.grain.com/_/public-api",
-		ApiKeyOpts: &ApiKeyOpts{
-			AttachmentType: Header,
-			Header: &ApiKeyOptsHeader{
-				Name:        "Authorization",
-				ValuePrefix: "Bearer ",
-			},
-			DocsURL: "https://grain.com/app/settings/integrations?tab=api",
+		Oauth2Opts: &Oauth2Opts{
+			GrantType:                 AuthorizationCodePKCE,
+			AuthURL:                   "https://grain.com/_/public-api/oauth2/authorize",
+			TokenURL:                  "https://api.grain.com/_/public-api/oauth2/token",
+			ExplicitScopesRequired:    false,
+			ExplicitWorkspaceRequired: false,
+			ScopeQueryParam:           "scopes",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
