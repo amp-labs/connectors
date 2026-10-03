@@ -25,18 +25,29 @@ jobs:
           filters: |
             catalog:
               - 'providers/*.go'
+            objects:
+              # The object matrix is built from the catalog, every provider's shipped
+              # schemas.json, and the hand-declared entries for object-generic providers.
+              - 'providers/*.go'
+              - 'providers/**/schemas.json'
+              - 'providers/objects/declared.go'
 
       - name: Run script if catalog has changed
         if: steps.filter.outputs.catalog == 'true'
         run: go run scripts/catalog/json.go
         shell: bash
 
+      - name: Regenerate the object support matrix
+        if: steps.filter.outputs.objects == 'true'
+        run: go run scripts/objectmatrix/main.go
+        shell: bash
+
       - name: Push changes
-        if: steps.filter.outputs.catalog == 'true'
+        if: steps.filter.outputs.catalog == 'true' || steps.filter.outputs.objects == 'true'
         run: |
           git config --global user.email "devops@withampersand.com"
           git config --global user.name "Ampersand Ops"
-          git add internal/generated/catalog.json internal/generated
+          git add internal/generated/catalog.json internal/generated providers/objects/matrix.json
           git commit -m "[ampersand-ops] auto: update catalog"
           git remote set-url origin https://x-access-token:${{ secrets.AMPERSAND_OPS_PAT }}@github.com/${{ github.repository }}
           git push origin HEAD:main
