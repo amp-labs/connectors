@@ -16,7 +16,7 @@ const (
 // nolint:lll,funlen
 func init() {
 	SetInfo(Netsuite, ProviderInfo{
-		DisplayName: "Netsuite",
+		DisplayName: "NetSuite",
 		AuthType:    Oauth2,
 		BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com",
 		Oauth2Opts: &Oauth2Opts{
@@ -47,7 +47,7 @@ func init() {
 		DefaultModule: ModuleNetsuiteRESTAPI,
 		Modules: &Modules{
 			ModuleNetsuiteSuiteQL: {
-				DisplayName: "Netsuite (SuiteQL)",
+				DisplayName: "NetSuite (SuiteQL)",
 				BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/query",
 				Support: Support{
 					Proxy: true,
@@ -55,7 +55,7 @@ func init() {
 				},
 			},
 			ModuleNetsuiteRESTAPI: {
-				DisplayName: "Netsuite (REST API)",
+				DisplayName: "NetSuite (REST API)",
 				BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/record",
 				Support: Support{
 					Proxy: true,
@@ -64,7 +64,7 @@ func init() {
 				},
 			},
 			ModuleNetsuiteRESTlet: {
-				DisplayName: "Netsuite (RESTlet)",
+				DisplayName: "NetSuite (RESTlet)",
 				BaseURL:     "https://{{.workspace}}.restlets.api.netsuite.com",
 				Support: Support{
 					Proxy: true,
@@ -92,8 +92,8 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:         "workspace",
-					DisplayName:  "Netsuite URL Prefix",
-					Prompt:       "If your Netsuite URL is `https://1234567-sb.app.netsuite.com`, then the prefix is `1234567-sb`.",
+					DisplayName:  "NetSuite URL Prefix",
+					Prompt:       "If your NetSuite URL is `https://1234567-sb.app.netsuite.com`, then the prefix is `1234567-sb`.",
 					DefaultValue: "1234567-sb",
 					DocsURL:      "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_1498251763.html",
 					ModuleDependencies: &ModuleDependencies{
