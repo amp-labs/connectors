@@ -1,0 +1,23 @@
+{
+  "code": 200,
+  "status": "OK",
+  "message": "",
+  "details": {},
+  "response": [
+    {
+      "customer_id": 2,
+      "company": "Amp LiveTest",
+      "mod_datetime": "2026-10-05T10:11:57-05:00"
+    },
+    {
+      "customer_id": 3,
+      "company": "Amp LiveTest (updated)",
+      "mod_datetime": "2026-10-05T10:18:50-05:00"
+    },
+    {
+      "customer_id": 4,
+      "company": "Another one",
+      "mod_datetime": "2026-10-05T10:40:12-05:00"
+    }
+  ]
+}
