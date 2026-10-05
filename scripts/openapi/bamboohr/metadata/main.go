@@ -3,7 +3,6 @@
 package main
 
 import (
-	_ "embed"
 	"encoding/json"
 	"log/slog"
 	"strings"
@@ -19,13 +18,8 @@ import (
 )
 
 //nolint:gochecknoglobals
-var (
-	//go:embed manual-objects.json
-	manualObjectsJSON string
-
-	outputMetadata = scrapper.NewWriter[staticschema.FieldMetadataMapV2]( //nolint:gochecknoglobals
-		fileconv.NewPath("providers/bamboohr/internal/metadata"),
-	)
+var outputMetadata = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
+	fileconv.NewPath("providers/bamboohr/internal/metadata"),
 )
 
 type manualObject struct {
@@ -181,7 +175,7 @@ func main() {
 func addManualObjects(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any]) {
 	var objects []manualObject
 
-	err := json.Unmarshal([]byte(manualObjectsJSON), &objects)
+	err := json.Unmarshal(files.ManualObjects, &objects)
 	goutils.MustBeNil(err)
 
 	for _, object := range objects {

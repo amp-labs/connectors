@@ -2,7 +2,7 @@
 
 The static file `schemas.json` is generated from the BambooHR OpenAPI spec in `scripts/openapi/bamboohr/internal/files/openapi.yaml` ([BambooHR OpenAPI spec](https://openapi.bamboohr.io/main/latest/docs/openapi/public-openapi.yaml)). The YAML is stored with **Git LFS**. After clone, run `git lfs pull` before building or regenerating schemas.
 
-Regenerate after updating the OpenAPI file or manual field overrides in `scripts/openapi/bamboohr/metadata/manual-objects.json`:
+Regenerate after updating the OpenAPI file or manual field overrides in `scripts/openapi/bamboohr/internal/files/manual-objects.json`:
 
 ```bash
 go run ./scripts/openapi/bamboohr/metadata

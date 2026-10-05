@@ -12,5 +12,10 @@ var (
 	//go:embed openapi.yaml
 	apiFile []byte
 
+	// ManualObjects holds hand-authored list schemas the OpenAPI extractor cannot produce.
+	//
+	//go:embed manual-objects.json
+	ManualObjects []byte
+
 	FileManager = api3.NewOpenapiFileManager[any](apiFile) // nolint:gochecknoglobals
 )
