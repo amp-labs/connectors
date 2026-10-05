@@ -183,7 +183,6 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						Associations: map[string][]common.Association{
 							"contacts": {{
 								ObjectId:                    "ctc-100",
-								Raw:                         map[string]any{"id": "ctc-100", "firstName": "Diane"},
 								ProviderAssociationMetadata: map[string]any{"isPrimary": true},
 							}},
 						},
@@ -194,7 +193,6 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						Associations: map[string][]common.Association{
 							"contacts": {{
 								ObjectId:                    "ctc-200",
-								Raw:                         map[string]any{"id": "ctc-200"},
 								ProviderAssociationMetadata: map[string]any{"isPrimary": true},
 							}},
 						},
