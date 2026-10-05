@@ -1,8 +1,8 @@
-// Extracts list endpoint schemas from the BambooHR OpenAPI spec and writes providers/bamboohr/metadata/schemas.json.
+// Extracts list endpoint schemas from the BambooHR OpenAPI spec and writes
+// providers/bamboohr/internal/metadata/schemas.json.
 package main
 
 import (
-	_ "embed"
 	"encoding/json"
 	"log/slog"
 	"strings"
@@ -10,17 +10,16 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/providers/bamboohr/metadata"
-	"github.com/amp-labs/connectors/providers/bamboohr/metadata/openapi"
+	"github.com/amp-labs/connectors/scripts/openapi/bamboohr/internal/files"
 	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
+	"github.com/amp-labs/connectors/tools/fileconv"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
 
 //nolint:gochecknoglobals
-var (
-	//go:embed manual-objects.json
-	manualObjectsJSON string
+var outputMetadata = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
+	fileconv.NewPath("providers/bamboohr/internal/metadata"),
 )
 
 type manualObject struct {
@@ -119,7 +118,7 @@ func main() {
 		allowPaths = append(allowPaths, path)
 	}
 
-	explorer, err := openapi.FileManager.GetExplorer(
+	explorer, err := files.FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			func(displayName string) string {
 				return strings.ReplaceAll(displayName, "_", " ")
@@ -167,8 +166,8 @@ func main() {
 
 	addManualObjects(schemas)
 
-	goutils.MustBeNil(metadata.FileManager.FlushSchemas(schemas))
-	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+	goutils.MustBeNil(outputMetadata.FlushSchemas(schemas))
+	goutils.MustBeNil(outputMetadata.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.", "objects", len(supportedObjects))
 }
@@ -176,7 +175,7 @@ func main() {
 func addManualObjects(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any]) {
 	var objects []manualObject
 
-	err := json.Unmarshal([]byte(manualObjectsJSON), &objects)
+	err := json.Unmarshal(files.ManualObjects, &objects)
 	goutils.MustBeNil(err)
 
 	for _, object := range objects {
