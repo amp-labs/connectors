@@ -1,6 +1,6 @@
 [
   {
-    "objectName": "meta_users",
+    "objectName": "meta/users",
     "displayName": "Users",
     "path": "/meta/users",
     "responseKey": "",
@@ -47,7 +47,7 @@
     }
   },
   {
-    "objectName": "employees_directory",
+    "objectName": "employees/directory",
     "displayName": "Employees Directory",
     "path": "/employees/directory",
     "responseKey": "employees",
@@ -178,7 +178,7 @@
     }
   },
   {
-    "objectName": "training_category",
+    "objectName": "training/category",
     "displayName": "Training Categories",
     "path": "/training/category",
     "responseKey": "",
@@ -196,7 +196,7 @@
     }
   },
   {
-    "objectName": "training_type",
+    "objectName": "training/type",
     "displayName": "Training Types",
     "path": "/training/type",
     "responseKey": "",
@@ -224,7 +224,7 @@
     }
   },
   {
-    "objectName": "compensation_planning_cycles",
+    "objectName": "compensation/planning_cycles",
     "displayName": "Compensation Planning Cycles",
     "path": "/compensation/planning_cycles",
     "responseKey": "",

@@ -4,7 +4,7 @@
       "id": "root",
       "path": "",
       "objects": {
-        "alert_configurations": {
+        "alert-configurations": {
           "displayName": "Alert Configurations",
           "path": "/alert-configurations",
           "responseKey": "",
@@ -135,7 +135,7 @@
             }
           }
         },
-        "applicant_tracking_applications": {
+        "applicant_tracking/applications": {
           "displayName": "Applications",
           "path": "/applicant_tracking/applications",
           "responseKey": "applications",
@@ -171,7 +171,7 @@
             }
           }
         },
-        "applicant_tracking_hiring_leads": {
+        "applicant_tracking/hiring_leads": {
           "displayName": "Hiring Leads",
           "path": "/applicant_tracking/hiring_leads",
           "responseKey": "",
@@ -188,7 +188,7 @@
             }
           }
         },
-        "applicant_tracking_jobs": {
+        "applicant_tracking/jobs": {
           "displayName": "Job Openings",
           "path": "/applicant_tracking/jobs",
           "responseKey": "",
@@ -246,7 +246,7 @@
             }
           }
         },
-        "applicant_tracking_locations": {
+        "applicant_tracking/locations": {
           "displayName": "Locations",
           "path": "/applicant_tracking/locations",
           "responseKey": "",
@@ -303,7 +303,7 @@
             }
           }
         },
-        "applicant_tracking_statuses": {
+        "applicant_tracking/statuses": {
           "displayName": "Application Statuses",
           "path": "/applicant_tracking/statuses",
           "responseKey": "",
@@ -343,7 +343,7 @@
             }
           }
         },
-        "calendar_events": {
+        "calendar-events": {
           "displayName": "Calendar Events",
           "path": "/calendar-events",
           "responseKey": "data",
@@ -452,7 +452,7 @@
             }
           }
         },
-        "compensation_planning_cycles": {
+        "compensation/planning_cycles": {
           "displayName": "Compensation Planning Cycles",
           "path": "/compensation/planning_cycles",
           "responseKey": "",
@@ -1011,7 +1011,7 @@
             }
           }
         },
-        "employees_directory": {
+        "employees/directory": {
           "displayName": "Employees Directory",
           "path": "/employees/directory",
           "responseKey": "employees",
@@ -1146,7 +1146,7 @@
             }
           }
         },
-        "hris_custom_fields": {
+        "hris/custom-fields": {
           "displayName": "Custom Fields",
           "path": "/hris/custom-fields",
           "responseKey": "data",
@@ -1236,7 +1236,7 @@
             }
           }
         },
-        "hris_custom_tables": {
+        "hris/custom-tables": {
           "displayName": "Custom Tables",
           "path": "/hris/custom-tables",
           "responseKey": "data",
@@ -1326,7 +1326,7 @@
             }
           }
         },
-        "hris_org_locations": {
+        "hris/org/locations": {
           "displayName": "Org Locations",
           "path": "/hris/org/locations",
           "responseKey": "data",
@@ -1366,7 +1366,7 @@
             }
           }
         },
-        "meta_fields": {
+        "meta/fields": {
           "displayName": "Fields",
           "path": "/meta/fields",
           "responseKey": "",
@@ -1397,7 +1397,7 @@
             }
           }
         },
-        "meta_lists": {
+        "meta/lists": {
           "displayName": "Lists",
           "path": "/meta/lists",
           "responseKey": "",
@@ -1458,7 +1458,7 @@
             }
           }
         },
-        "meta_tables": {
+        "meta/tables": {
           "displayName": "Tables",
           "path": "/meta/tables",
           "responseKey": "",
@@ -1475,7 +1475,7 @@
             }
           }
         },
-        "meta_time_off_policies": {
+        "meta/time_off/policies": {
           "displayName": "Time Off Policies",
           "path": "/meta/time_off/policies",
           "responseKey": "",
@@ -1520,7 +1520,7 @@
             }
           }
         },
-        "meta_users": {
+        "meta/users": {
           "displayName": "Users",
           "path": "/meta/users",
           "responseKey": "",
@@ -1572,7 +1572,7 @@
             }
           }
         },
-        "new_hire_packets": {
+        "new-hire-packets": {
           "displayName": "New Hire Packets",
           "path": "/new-hire-packets",
           "responseKey": "newHirePackets",
@@ -1701,7 +1701,7 @@
             }
           }
         },
-        "scheduling_schedules": {
+        "scheduling/schedules": {
           "displayName": "Schedules",
           "path": "/scheduling/schedules",
           "responseKey": "data",
@@ -1792,7 +1792,7 @@
             }
           }
         },
-        "scheduling_shifts": {
+        "scheduling/shifts": {
           "displayName": "Shifts",
           "path": "/scheduling/shifts",
           "responseKey": "data",
@@ -1899,7 +1899,7 @@
             }
           }
         },
-        "time_off_requests": {
+        "time-off/requests": {
           "displayName": "Time Off Requests",
           "path": "/time-off/requests",
           "responseKey": "data",
@@ -2005,7 +2005,7 @@
             }
           }
         },
-        "time_tracking_break_policies": {
+        "time-tracking/break-policies": {
           "displayName": "Break Policies",
           "path": "/time-tracking/break-policies",
           "responseKey": "data",
@@ -2044,7 +2044,7 @@
             }
           }
         },
-        "time_tracking_clock_entries": {
+        "time-tracking/clock-entries": {
           "displayName": "Clock Entries",
           "path": "/time-tracking/clock-entries",
           "responseKey": "data",
@@ -2140,7 +2140,7 @@
             }
           }
         },
-        "time_tracking_configurations": {
+        "time-tracking/configurations": {
           "displayName": "Time Tracking Configurations",
           "path": "/time-tracking/configurations",
           "responseKey": "data",
@@ -2313,7 +2313,7 @@
             }
           }
         },
-        "time_tracking_hour_entries": {
+        "time-tracking/hour-entries": {
           "displayName": "Hour Entries",
           "path": "/time-tracking/hour-entries",
           "responseKey": "data",
@@ -2366,7 +2366,7 @@
             }
           }
         },
-        "time_tracking_projects": {
+        "time-tracking/projects": {
           "displayName": "Time Tracking Projects",
           "path": "/time-tracking/projects",
           "responseKey": "data",
@@ -2425,7 +2425,7 @@
             }
           }
         },
-        "time_tracking_shift_differentials": {
+        "time-tracking/shift-differentials": {
           "displayName": "Shift Differentials",
           "path": "/time-tracking/shift-differentials",
           "responseKey": "data",
@@ -2493,7 +2493,7 @@
             }
           }
         },
-        "training_category": {
+        "training/category": {
           "displayName": "Training Categories",
           "path": "/training/category",
           "responseKey": "",
@@ -2510,7 +2510,7 @@
             }
           }
         },
-        "training_type": {
+        "training/type": {
           "displayName": "Training Types",
           "path": "/training/type",
           "responseKey": "",
@@ -2568,7 +2568,7 @@
             }
           }
         },
-        "whos_out": {
+        "whos-out": {
           "displayName": "Who's Out",
           "path": "/whos-out",
           "responseKey": "data",
