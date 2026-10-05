@@ -16,17 +16,17 @@ func TestListObjectMetadata(t *testing.T) {
 		{
 			Name: "Successful metadata for core HR objects",
 			Input: []string{
-				"employees_directory",
-				"meta_users",
+				"employees/directory",
+				"meta/users",
 				"employees",
-				"time_off_requests",
-				"whos_out",
+				"time-off/requests",
+				"whos-out",
 			},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
-					"employees_directory": {
+					"employees/directory": {
 						DisplayName: "Employees Directory",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
@@ -41,7 +41,7 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
-					"meta_users": {
+					"meta/users": {
 						DisplayName: "Users",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
@@ -66,7 +66,7 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
-					"time_off_requests": {
+					"time-off/requests": {
 						DisplayName: "Time Off Requests",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
@@ -76,7 +76,7 @@ func TestListObjectMetadata(t *testing.T) {
 							},
 						},
 					},
-					"whos_out": {
+					"whos-out": {
 						DisplayName: "Who's Out",
 						Fields: map[string]common.FieldMetadata{
 							"id": {
