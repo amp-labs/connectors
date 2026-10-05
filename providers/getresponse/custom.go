@@ -3,6 +3,7 @@ package getresponse
 import (
 	"context"
 	"fmt"
+	"maps"
 	"strconv"
 	"strings"
 
@@ -17,6 +18,8 @@ import (
 const customFieldKeyPrefix = "cf_"
 
 const objectContacts = "contacts"
+
+const contactCampaignIdKey = "campaignId"
 
 // contactCustomFieldValue is one element of the customFieldValues array on GET /v3/contacts.
 // https://apireference.getresponse.com
@@ -306,10 +309,13 @@ func contactReadFieldsQueryForAPI(fieldNames []string) []string {
 // prepareContactWriteRecordData shapes RecordData for POST /v3/contacts.
 // Callers may set custom fields using connector keys cf_<customFieldId>; this converts
 // them into the customFieldValues array the GetResponse API expects.
+// A flat campaignId is also accepted and wrapped as campaign: {campaignId}.
 func prepareContactWriteRecordData(record map[string]any) map[string]any {
 	if len(record) == 0 {
 		return record
 	}
+
+	record = wrapFlatContactCampaignId(record)
 
 	fromCfKeys := collectContactCustomFieldsFromCfKeys(record)
 	if len(fromCfKeys) == 0 {
@@ -318,6 +324,24 @@ func prepareContactWriteRecordData(record map[string]any) map[string]any {
 
 	payload := copyContactWriteRecordExcludingCustomFields(record)
 	payload["customFieldValues"] = mergeContactCustomFieldValuesForWrite(record["customFieldValues"], fromCfKeys)
+
+	return payload
+}
+
+// wrapFlatContactCampaignId lets callers send a flat campaignId, since GetResponse requires
+// the nested campaign: {campaignId} object. An explicit campaign object takes precedence.
+func wrapFlatContactCampaignId(record map[string]any) map[string]any {
+	campaignId, ok := record[contactCampaignIdKey]
+	if !ok {
+		return record
+	}
+
+	payload := maps.Clone(record)
+	delete(payload, contactCampaignIdKey)
+
+	if _, hasCampaign := payload["campaign"]; !hasCampaign {
+		payload["campaign"] = map[string]any{contactCampaignIdKey: campaignId}
+	}
 
 	return payload
 }
