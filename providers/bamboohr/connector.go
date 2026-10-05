@@ -9,7 +9,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/bamboohr/metadata"
+	"github.com/amp-labs/connectors/providers/bamboohr/internal/metadata"
 )
 
 type Connector struct {
