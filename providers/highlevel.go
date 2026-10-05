@@ -9,7 +9,7 @@ const (
 func init() {
 	// HighlevelStandard configuration
 	SetInfo(HighLevelStandard, ProviderInfo{
-		DisplayName: "Highlevel Standard",
+		DisplayName: "HighLevel Standard",
 		AuthType:    Oauth2,
 		BaseURL:     "https://services.leadconnectorhq.com",
 		Oauth2Opts: &Oauth2Opts{
@@ -57,7 +57,7 @@ func init() {
 
 	// HighlevelWhiteLabel configuration
 	SetInfo(HighLevelWhiteLabel, ProviderInfo{
-		DisplayName: "Highlevel White Label",
+		DisplayName: "HighLevel White Label",
 		AuthType:    Oauth2,
 		BaseURL:     "https://services.leadconnectorhq.com",
 		Oauth2Opts: &Oauth2Opts{
