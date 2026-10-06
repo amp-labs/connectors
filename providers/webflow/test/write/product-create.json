@@ -1,0 +1,12 @@
+{
+  "product": {
+    "id": "product-1",
+    "isDraft": false,
+    "isArchived": false,
+    "lastUpdated": "2026-10-06T09:00:00.000Z",
+    "fieldData": { "name": "Five-Star Hat", "slug": "five-star-hat" }
+  },
+  "skus": [
+    { "id": "sku-1", "fieldData": { "name": "Five-Star Hat", "price": { "value": 2500, "unit": "USD" } } }
+  ]
+}

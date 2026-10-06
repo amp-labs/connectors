@@ -1,0 +1,9 @@
+{
+  "customFont": {
+    "id": "font-1",
+    "fontFamily": "Inter",
+    "weight": "400",
+    "italic": false,
+    "fontDisplay": "swap"
+  }
+}

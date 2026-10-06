@@ -1,0 +1,6 @@
+{
+  "message": "Validation Error: [\"Body should have required property 'url'\",\"Body should have required property 'triggerType'\"]",
+  "code": "validation_error",
+  "externalReference": null,
+  "details": []
+}
