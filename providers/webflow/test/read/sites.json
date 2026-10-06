@@ -1,0 +1,13 @@
+{
+  "sites": [
+    {
+      "id": "6ac4a4402b7737869ac6f61d",
+      "workspaceId": "6ac4958ab48150e921403604",
+      "displayName": "Joseph's Five-Star Site",
+      "shortName": "josephs-five-star-site",
+      "createdOn": "2026-10-06T07:33:20.000Z",
+      "lastUpdated": "2026-10-06T07:34:04.768Z",
+      "timeZone": "America/Los_Angeles"
+    }
+  ]
+}

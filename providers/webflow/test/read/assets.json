@@ -1,0 +1,23 @@
+{
+  "assets": [
+    {
+      "id": "asset-new",
+      "displayName": "fans.jpg",
+      "contentType": "image/jpeg",
+      "size": 81837,
+      "siteId": "test-site-id",
+      "createdOn": "2014-02-04T18:03:55.740Z",
+      "lastUpdated": "2026-10-06T07:33:22.807Z"
+    },
+    {
+      "id": "asset-old",
+      "displayName": "logo.svg",
+      "contentType": "image/svg+xml",
+      "size": 1204,
+      "siteId": "test-site-id",
+      "createdOn": "2014-02-04T17:58:21.704Z",
+      "lastUpdated": "2026-09-01T00:00:00.000Z"
+    }
+  ],
+  "pagination": { "limit": 100, "offset": 0, "total": 2 }
+}

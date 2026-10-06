@@ -103,7 +103,8 @@ func main() {
 		api3.WithArrayItemAutoSelection(),
 		// GET /sites/{site_id}/products returns items of {product, skus};
 		// lift the product fields to the top level so the object describes
-		// a product (skus stays as a nested array field).
+		// a product (skus stays as a nested array field). Read applies the
+		// same flattening to record fields (see providers/webflow/read.go).
 		api3.WithPropertyFlattening(func(objectName, fieldName string) bool {
 			return objectName == "products" && fieldName == "product"
 		}),

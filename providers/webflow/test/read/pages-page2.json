@@ -1,0 +1,15 @@
+{
+  "pages": [
+    {
+      "id": "page-2",
+      "siteId": "test-site-id",
+      "title": "About",
+      "slug": "about",
+      "archived": false,
+      "draft": true,
+      "createdOn": "2026-09-01T10:00:00.000Z",
+      "lastUpdated": "2026-09-02T10:00:00.000Z"
+    }
+  ],
+  "pagination": { "limit": 1, "offset": 1, "total": 2 }
+}
