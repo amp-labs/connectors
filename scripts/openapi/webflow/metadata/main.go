@@ -12,7 +12,7 @@
 // {domain_name}). ReadObjects is used instead of ReadObjectsGet because the
 // latter drops every path containing a path parameter.
 //
-// Excluded on purpose (see providers/webflow/metadata/README.md):
+// Excluded on purpose:
 //   - CMS items (/collections/{collection_id}/items): fields are defined per
 //     collection, so they need dynamic metadata rather than a static schema.
 //   - Two-level nested lists (comment replies, per-form submissions).
