@@ -3,23 +3,23 @@
 `schemas.json` is generated from the official Webflow Data API v2 OpenAPI spec
 by `scripts/openapi/webflow/metadata`. Do not edit it by hand.
 
-The spec lives at `openapi/v2.yml` in this directory and is stored with
-**Git LFS** (registered in `.gitattributes`). After a fresh clone run
-`git lfs pull` before regenerating.
+The spec lives at `scripts/openapi/webflow/internal/files/v2.yml` and is
+stored with **Git LFS** (registered in `.gitattributes`). After a fresh clone
+run `git lfs pull` before regenerating.
 
 ## Refreshing the spec
 
 Webflow publishes the spec on GitHub (MIT licensed):
 
 ```sh
-curl -L -o providers/webflow/metadata/openapi/v2.yml \
+curl -L -o scripts/openapi/webflow/internal/files/v2.yml \
   https://raw.githubusercontent.com/webflow/openapi-spec/main/openapi/v2.yml
 go run ./scripts/openapi/webflow/metadata
 ```
 
 The spec is OpenAPI 3.1 and fully inlined (no `components/schemas`). Three 3.1
-constructs are rewritten in memory by `openapi/file.go` before `kin-openapi`
-loads it; the file on disk stays verbatim:
+constructs are rewritten in memory by `scripts/openapi/webflow/internal/files/file.go`
+before `kin-openapi` loads it; the file on disk stays verbatim:
 
 - tuple `items: [{type: string}, {type: object}]` in the shared error schema
   becomes `items: {oneOf: [...]}`;
@@ -89,7 +89,7 @@ Checked against a workspace-level OAuth token and a freshly created site:
   key in the table above matches the live payload, and `pagination` is present
   exactly where noted below.
 - Four fields appear live but not in the spec; they are merged by the
-  generator from `scripts/openapi/webflow/metadata/live-fields.json`:
+  generator from `scripts/openapi/webflow/internal/files/live-fields.json`:
   `sites.fullSiteCompiledAt`, `pages.shouldPublish`, `forms.componentId`,
   `forms.componentElementId`.
 - Plan-gated endpoints: `redirects` and `activity_logs` answer

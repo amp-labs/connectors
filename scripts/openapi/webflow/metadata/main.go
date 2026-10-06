@@ -1,5 +1,5 @@
 // Generates providers/webflow/metadata/schemas.json from the Webflow Data API v2
-// OpenAPI spec (providers/webflow/metadata/openapi/v2.yml).
+// OpenAPI spec (scripts/openapi/webflow/internal/files/v2.yml).
 //
 // Run from the repo root:
 //
@@ -20,7 +20,6 @@
 package main
 
 import (
-	_ "embed"
 	"encoding/json"
 	"log/slog"
 	"strings"
@@ -30,8 +29,8 @@ import (
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/staticschema"
 	"github.com/amp-labs/connectors/providers/webflow/metadata"
-	"github.com/amp-labs/connectors/providers/webflow/metadata/openapi"
 	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
+	"github.com/amp-labs/connectors/scripts/openapi/webflow/internal/files"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 	"github.com/amp-labs/connectors/tools/scrapper"
 )
@@ -39,13 +38,6 @@ import (
 // The spec's server URL is https://api.webflow.com/v2 while the catalog base
 // URL is https://api.webflow.com, so the version is prepended to every path.
 const apiVersionPrefix = "/v2"
-
-// liveFieldsJSON lists fields observed in live API responses (2026-10-06) that
-// the spec does not declare. They are merged on top of the spec-derived fields
-// for objects that already exist; the file never introduces new objects.
-//
-//go:embed live-fields.json
-var liveFieldsJSON string //nolint:gochecknoglobals
 
 type liveFields struct {
 	ObjectName string                          `json:"objectName"`
@@ -115,7 +107,7 @@ func pathsOf(m map[string]string) []string {
 }
 
 func main() {
-	explorer, err := openapi.FileManager.GetExplorer(
+	explorer, err := files.FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			func(displayName string) string {
 				return strings.ReplaceAll(displayName, "_", " ")
@@ -185,11 +177,11 @@ func main() {
 	slog.Info("Completed.", "objects", len(objects), "expected", len(supportedObjects))
 }
 
-// addLiveFields merges undocumented-but-observed fields into existing objects.
+// addLiveFields merges undocumented-but-observed fields (files.LiveFields) into existing objects.
 func addLiveFields(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any]) {
 	var overlays []liveFields
 
-	goutils.MustBeNil(json.Unmarshal([]byte(liveFieldsJSON), &overlays))
+	goutils.MustBeNil(json.Unmarshal(files.LiveFields, &overlays))
 
 	objects := schemas.Modules[common.ModuleRoot].Objects
 

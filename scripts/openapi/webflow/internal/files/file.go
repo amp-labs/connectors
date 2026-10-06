@@ -1,4 +1,4 @@
-package openapi
+package files
 
 import (
 	_ "embed"
@@ -13,6 +13,14 @@ var (
 	//
 	//go:embed v2.yml
 	apiFile []byte
+
+	// LiveFields lists fields observed in live API responses (2026-10-06) that
+	// the spec does not declare. The generator merges them on top of the
+	// spec-derived fields for objects that already exist; the file never
+	// introduces new objects.
+	//
+	//go:embed live-fields.json
+	LiveFields []byte
 
 	FileManager = api3.NewOpenapiFileManager[any](mustNormalize(apiFile)) // nolint:gochecknoglobals
 )
