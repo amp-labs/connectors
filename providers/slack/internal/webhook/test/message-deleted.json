@@ -1,0 +1,37 @@
+{
+  "api_app_id": "A0B9P2K0V7U",
+  "authorizations": [
+    {
+      "enterprise_id": null,
+      "is_bot": true,
+      "is_enterprise_install": false,
+      "team_id": "T0B9P1UVDBL",
+      "user_id": "U0B9R8LFG1F"
+    }
+  ],
+  "event": {
+    "channel": "C0B9N5F9ULE",
+    "channel_type": "channel",
+    "deleted_ts": "1781123456.000200",
+    "event_ts": "1781123600.000400",
+    "hidden": true,
+    "previous_message": {
+      "client_msg_id": "b32c9c86-45d1-4b0c-8be6-6f9c2b6e5cd1",
+      "team": "T0B9P1UVDBL",
+      "text": "Looping back on this thread (edited)",
+      "thread_ts": "1781100000.000100",
+      "ts": "1781123456.000200",
+      "type": "message",
+      "user": "U0B9R8LFG1F"
+    },
+    "subtype": "message_deleted",
+    "ts": "1781123600.000400",
+    "type": "message"
+  },
+  "event_id": "Ev0B9TRVG9CD",
+  "event_time": 1781123600,
+  "is_ext_shared_channel": false,
+  "team_id": "T0B9P1UVDBL",
+  "token": "yO0sZ7JNeB5EXnVwNB3hvSCC",
+  "type": "event_callback"
+}

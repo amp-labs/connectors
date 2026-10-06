@@ -24,6 +24,30 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
+			// Messages have no singular lookup endpoint; the record lives in the webhook
+			// payload, so the caller is told to read it from there instead of fetching.
+			Name: "Messages report records as inline only",
+			Input: testconn.ReadByIdsParams{
+				ObjectName: "messages",
+				RecordIds:  []string{"C0B9N5F9ULE:1781123456.000200"},
+				Fields:     []string{"text"},
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrRecordsOnlyInline},
+		},
+		{
+			// Objects that are readable but have no ".info" endpoint keep the plain
+			// not-supported sentinel: their records are nowhere to be found.
+			Name: "Object without a singular endpoint is not fetchable",
+			Input: testconn.ReadByIdsParams{
+				ObjectName: "bookmarks",
+				RecordIds:  []string{"Bk0B9V3RLZ4M"},
+				Fields:     []string{"title"},
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrGetRecordNotSupportedForObject},
+		},
+		{
 			Name: "Read conversations by identifiers",
 			Input: testconn.ReadByIdsParams{
 				ObjectName: "conversations",

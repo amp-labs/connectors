@@ -106,6 +106,50 @@ complete, readable implementation.
 > `SubscriptionUpdateEvent` types only need to satisfy their `common` interfaces; they don't need to be
 > exported for this path.
 
+## Objects whose records exist only in the payload
+
+The fetch contract above assumes the server can retrieve the record by id after the event arrives.
+Some objects break that assumption: the provider exposes no singular lookup for them, while every
+webhook event ships the full record. Slack messages are the motivating case — a message has no
+standalone id, and is retrievable only through windowed `conversations.history` / `conversations.replies`
+calls, so there is nothing for `GetRecordsByIds` to fetch.
+
+If any object of your provider falls into this, do two things:
+
+**1. Return `common.ErrRecordsOnlyInline` from `GetRecordsByIds` for that object**, and only that
+object. The check is per object name, not per connector — the same connector keeps fetching normally
+for everything else.
+
+```go
+func (c *Connector) GetRecordsByIds(
+    ctx context.Context, objectName string, ids, fields []string, associations []string,
+) ([]common.ReadResultRow, error) {
+    if webhook.ObjectRecordsInline(objectName) {
+        return nil, fmt.Errorf("%w: %s", common.ErrRecordsOnlyInline, objectName)
+    }
+    ...
+}
+```
+
+**2. Implement `SubscriptionEventWithRecord` on the event type** so the record can be read out of the
+payload. `Record(fields)` returns a `ReadResultRow` marshaled exactly as a read would: `Raw` holds the
+full provider record, `Fields` holds the requested subset, and `Id` holds the same value `RecordId()`
+returns.
+
+Do not reach for `ErrGetRecordNotSupportedForObject` here. That error says only that the fetch is
+unavailable, so the server delivers the event with no record body. `ErrRecordsOnlyInline` additionally
+says where the record does live, which tells the server to proceed with no fetched records and read
+them from the events instead of dropping the batch or retrying.
+
+Two things follow from this that are easy to miss:
+
+- **The record id may need composing.** An object with no standalone id needs one built from the
+  fields that do identify it, and the same value must come back from both `RecordId()` and the row's
+  `Id`. Slack messages use `<channel>:<ts>`.
+- **Field inheritance yields nothing.** Subscribe inherits fields and mappings from the read object of
+  the same name, and an object that cannot be read has none, so the manifest must not declare one.
+  Expect `fields` and `mappedFields` to be empty and the record to be delivered in `raw`.
+
 ## Verification
 
 `VerifyWebhookMessage(ctx, request *common.WebhookRequest, params *common.VerificationParams)` receives
@@ -193,12 +237,18 @@ See [Live Tests (Stage 1)](./live-tests.md#stage-1-webhook-verification-runwebho
       real payload. Use the shared table-driven suites in `test/utils/testconn/`:
       `testconn.TestCaseVerifyWebhookMessage` (webhook verification) and
       `testconn.TestCaseSubscriptionEvent` (event mapping).
+- [ ] Any object the provider cannot fetch by id returns `common.ErrRecordsOnlyInline` from
+      `GetRecordsByIds` and implements `SubscriptionEventWithRecord`, so its record is read from the
+      payload. See [Objects whose records exist only in the
+      payload](#objects-whose-records-exist-only-in-the-payload).
 
 ## Reviewer focus
 
 - Signature algorithm matches the provider's docs (header name, hash, encoding).
 - Untrusted requests return `(false, nil)` rather than erroring.
 - Event mapping (object name, record id, event type) is correct for real payloads.
+- Objects with no by-id fetch return `ErrRecordsOnlyInline` rather than
+  `ErrGetRecordNotSupportedForObject`, and the check is scoped to those objects.
 
 ## Reference
 
