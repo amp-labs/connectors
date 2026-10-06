@@ -3,6 +3,7 @@ package webflow
 import (
 	"context"
 	"errors"
+	"maps"
 	"net/http"
 	"strconv"
 	"strings"
@@ -124,7 +125,7 @@ func (c *Connector) parseReadResponse(
 	recordsKey := metadata.Schemas.LookupArrayFieldName(c.ProviderContext.Module(), params.ObjectName)
 	records := recordsFromPath(recordsKey)
 	nextPage := nextPageFunc(spec, requestURL)
-	marshal := readhelper.MakeMarshaledDataFuncWithId(nil, spec.idField)
+	marshal := readhelper.MakeMarshaledDataFuncWithId(recordTransformer(params.ObjectName), spec.idField)
 
 	if spec.incrementalKey == "" {
 		return common.ParseResult(resp, records, nextPage, marshal, params.Fields)
@@ -212,4 +213,32 @@ func nextOffsetFromPagination(body *ajson.Node) (int64, bool, error) {
 	}
 
 	return nextOffset, true, nil
+}
+
+// recordTransformer shapes ReadResultRow.Fields per object. Only products
+// need it: the API returns {product: {...}, skus: [...]} envelopes, and the
+// metadata (generated with the same flattening) describes a product, so the
+// product's fields are lifted to the top level with skus kept alongside.
+// ReadResultRow.Raw keeps the untouched envelope.
+func recordTransformer(objectName string) common.RecordTransformer {
+	if objectName != objectProducts {
+		return nil
+	}
+
+	return flattenProduct
+}
+
+func flattenProduct(node *ajson.Node) (map[string]any, error) {
+	envelope, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
+	}
+
+	product, _ := envelope[fieldProduct].(map[string]any)
+
+	record := make(map[string]any, len(product)+1)
+	maps.Copy(record, product)
+	record[fieldSkus] = envelope[fieldSkus]
+
+	return record, nil
 }

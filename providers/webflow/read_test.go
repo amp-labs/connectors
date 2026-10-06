@@ -260,10 +260,10 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			Name: "Products keep the raw envelope and resolve id from product",
+			Name: "Products flatten product fields next to skus and keep the raw envelope",
 			Input: common.ReadParams{
 				ObjectName: objectProducts,
-				Fields:     connectors.Fields("product", "skus"),
+				Fields:     connectors.Fields("id", "fieldData", "lastUpdated", "skus"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -278,15 +278,9 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"product": map[string]any{
-							"id":          "product-1",
-							"cmsLocaleId": "653ad57de882f528b32e810e",
-							"isArchived":  false,
-							"isDraft":     false,
-							"createdOn":   "2026-09-10T08:00:00.000Z",
-							"lastUpdated": "2026-10-06T08:00:00.000Z",
-							"fieldData":   map[string]any{"name": "Five-Star Hat", "slug": "five-star-hat"},
-						},
+						"id":          "product-1",
+						"fielddata":   map[string]any{"name": "Five-Star Hat", "slug": "five-star-hat"},
+						"lastupdated": "2026-10-06T08:00:00.000Z",
 						"skus": []any{map[string]any{
 							"id":        "sku-1",
 							"fieldData": map[string]any{"name": "Five-Star Hat", "price": map[string]any{"value": float64(2500), "unit": "USD"}},

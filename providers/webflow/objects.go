@@ -34,6 +34,7 @@ const (
 const (
 	fieldLastUpdated = "lastUpdated"
 	fieldProduct     = "product"
+	fieldSkus        = "skus"
 
 	timestampFormat = time.RFC3339
 )
@@ -93,7 +94,8 @@ var readSpecs = map[string]readSpec{
 	objectRegisteredScripts: {paginationOffset, "", idField("id")},
 	// Custom code blocks carry no id field; ReadResultRow.Id stays empty.
 	objectCustomCodeBlocks: {paginationOffset, "", idField("id")},
-	// Products are {product, skus} envelopes; the id lives under product.
+	// Products are {product, skus} envelopes; the id lives under product and
+	// Fields are flattened to product fields + skus (see recordTransformer).
 	objectProducts: {paginationOffset, "", readhelper.NewNestedIdField([]string{fieldProduct}, "id")},
 
 	// Site-scoped, single response (limit/offset ignored).

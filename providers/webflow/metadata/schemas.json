@@ -1224,10 +1224,45 @@
           "path": "/v2/sites/{site_id}/products",
           "responseKey": "items",
           "fields": {
-            "product": {
-              "displayName": "product",
+            "cmsLocaleId": {
+              "displayName": "cmsLocaleId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fieldData": {
+              "displayName": "fieldData",
               "valueType": "other",
               "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isArchived": {
+              "displayName": "isArchived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isDraft": {
+              "displayName": "isDraft",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lastPublished": {
+              "displayName": "lastPublished",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
             },
             "skus": {
               "displayName": "skus",
