@@ -34,12 +34,15 @@ proxy must also serve v1), so every object path carries the `/v2` prefix.
 and object paths are complete.
 
 Every object except `sites` is site-scoped: its path contains `{site_id}`,
-kept verbatim (the same approach as Mailgun's `{domain_name}`). One OAuth token
-can be authorised for several sites (`GET /v2/token/introspect` lists them under
-`authorization.authorizedTo.siteIds`). How the read connector resolves the site
-is a read-phase decision; the two options are a `siteId` connection input or a
-fan-out over `GET /v2/sites` (recommended, since `siteId` is already a field on
-most records).
+kept verbatim (the same approach as Mailgun's `{domain_name}` and Breezy's
+`{company_id}`). The site comes from the `siteId` connection metadata input
+declared in `providers/webflow.go` and required by the connector
+(`common.RequireMetadata`); the read connector substitutes it into the path.
+One OAuth token can be authorised for several sites (`GET /v2/token/introspect`
+lists them under `authorization.authorizedTo.siteIds`), so one connection maps
+to one site. Auto-resolving the site after OAuth (a `PostAuthentication`
+metadata item, like Atlassian's `cloudId`) is possible later when a token is
+authorised for exactly one site.
 
 ## Objects
 

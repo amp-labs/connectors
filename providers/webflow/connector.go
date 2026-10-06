@@ -13,12 +13,21 @@ import (
 	"github.com/amp-labs/connectors/providers/webflow/metadata"
 )
 
+// metadataKeySiteID is the connection metadata key holding the Webflow site id.
+const metadataKeySiteID = "siteId"
+
 // Connector is the Webflow connector.
 type Connector struct {
 	*components.Connector
 
 	common.RequireAuthenticatedClient
+	common.RequireMetadata
+
 	components.SchemaProvider
+
+	// SiteID scopes site-level object paths (/v2/sites/{site_id}/...).
+	// Every object except `sites` requires it.
+	SiteID string
 }
 
 // NewConnector creates a new Webflow connector.
@@ -26,8 +35,12 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return components.Init(providers.Webflow, params, constructor)
 }
 
-func constructor(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
-	connector := &Connector{Connector: base}
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	connector := &Connector{
+		Connector:            base,
+		ExpectedMetadataKeys: []string{metadataKeySiteID},
+		SiteID:               params.Metadata[metadataKeySiteID],
+	}
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
 		connector.ProviderContext.Module(),

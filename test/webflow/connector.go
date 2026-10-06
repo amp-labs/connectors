@@ -13,11 +13,16 @@ import (
 
 func GetWebflowConnector(ctx context.Context) *connector.Connector {
 	filePath := credscanning.LoadPath(providers.Webflow)
-	reader := utils.MustCreateProvCredJSON(filePath, true)
+	reader := utils.MustCreateProvCredJSON(filePath, true,
+		credscanning.Field{Name: "siteId", PathJSON: "metadata.siteId"},
+	)
 
 	conn, err := connector.NewConnector(
 		common.ConnectorParams{
 			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
+			Metadata: map[string]string{
+				"siteId": reader.Get(credscanning.Field{Name: "siteId"}),
+			},
 		},
 	)
 	if err != nil {

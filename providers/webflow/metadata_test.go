@@ -176,6 +176,9 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		common.ConnectorParams{
 			Module:              common.ModuleRoot,
 			AuthenticatedClient: mockutils.NewClient(),
+			Metadata: map[string]string{
+				"siteId": "test-site-id",
+			},
 		},
 	)
 	if err != nil {
