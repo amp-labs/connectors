@@ -1,0 +1,9 @@
+{
+  "id": "cms_slider",
+  "displayName": "CMS Slider",
+  "version": "1.0.0",
+  "hostedLocation": "https://cdn.example.com/slider.js",
+  "integrityHash": "sha384-abc",
+  "canCopy": true,
+  "createdOn": "2026-10-06T09:00:00.000Z"
+}
