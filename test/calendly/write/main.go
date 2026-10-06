@@ -39,7 +39,7 @@ func testCreatingSchedulingLink(ctx context.Context, conn *cl.Connector) error {
 	params := common.WriteParams{
 		ObjectName: "scheduling_links",
 		RecordData: map[string]any{
-			"max_event_count": 1,
+			"max_event_count": "1",
 			"owner":           "https://api.calendly.com/event_types/4a2abc24-beca-487f-8bcc-dcdbc20cb370",
 			"owner_type":      "EventType",
 		},
