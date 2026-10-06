@@ -60,6 +60,7 @@ providers/paddle/openapi/openapi.yaml filter=lfs diff=lfs merge=lfs -text
 providers/pipedrive/openapi/specs.yaml filter=lfs diff=lfs merge=lfs -text
 providers/pipedrive/openapi/v2.yaml filter=lfs diff=lfs merge=lfs -text
 providers/recurly/openapi/openapi.yaml filter=lfs diff=lfs merge=lfs -text
+providers/webflow/metadata/openapi/v2.yml filter=lfs diff=lfs merge=lfs -text
 providers/zendesksupport/openapi/help-center-api.yaml filter=lfs diff=lfs merge=lfs -text
 providers/zendesksupport/openapi/support-api.yaml filter=lfs diff=lfs merge=lfs -text
 providers/zoom/metadata/openapi/meeting.json filter=lfs diff=lfs merge=lfs -text
