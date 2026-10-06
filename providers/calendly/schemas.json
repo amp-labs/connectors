@@ -648,6 +648,42 @@
             }
           }
         },
+        "scheduling_links": {
+          "displayName": "Scheduling Links",
+          "path": "/scheduling_links",
+          "fields": {
+            "owner": {
+              "displayName": "owner",
+              "valueType": "string",
+              "providerType": "string",
+              "referenceTo": [
+                "event_types"
+              ]
+            },
+            "owner_type": {
+              "displayName": "owner_type",
+              "valueType": "string",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "EventType",
+                  "displayValue": "EventType"
+                }
+              ]
+            },
+            "max_event_count": {
+              "displayName": "max_event_count",
+              "valueType": "string",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "1",
+                  "displayValue": "1"
+                }
+              ]
+            }
+          }
+        },
         "users/me": {
           "displayName": "Me",
           "path": "/users/me",

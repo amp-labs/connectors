@@ -13,7 +13,7 @@ func main() {
 
 	conn := calendly.GetCalendlyConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"activity_log_entries", "scheduled_events", "tests"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"activity_log_entries", "scheduled_events", "scheduling_links", "tests"})
 	if err != nil {
 		log.Fatal(err)
 	}
