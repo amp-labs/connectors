@@ -76,6 +76,90 @@ curl -L -o scripts/openapi/webflow/internal/files/v2.yml \
 go run ./scripts/openapi/webflow/metadata
 ```
 
+## Read
+
+Implemented in `read.go` (request building and response parsing) with the
+per-object table in `objects.go`, wired through `components.Reader` in
+`connector.go`. All 19 objects above are readable.
+
+### How a read works
+
+1. **Path.** The object path comes from `metadata/schemas.json`, so Read and
+   metadata can never disagree on an endpoint. `{site_id}` is replaced with
+   the connection's `siteId`; `sites` has no placeholder.
+2. **Pagination.** Webflow paginates with `limit`/`offset` and returns
+   `pagination: {limit, offset, total}`. The first request sends
+   `limit=<page size>&offset=0`; the next page is `offset + limit` while that
+   is below `total`, and the token handed back is the full next-page URL, so a
+   follow-up request is replayed as-is. Page size defaults to 100 and is
+   capped at 100, Webflow's documented maximum, so a silently reduced page
+   can never be mistaken for the last one.
+   `sites`, `collections`, `webhooks`, `custom_domains`, `google_tags` and
+   `redirects` ignore `limit`/`offset` and return the whole collection in one
+   response without a `pagination` object (verified live for the first
+   three); they are treated as single-page. `registered_scripts` is not
+   documented with pagination parameters but accepts them (verified live), so
+   it paginates like the rest.
+3. **Records.** The records array is located by the `responseKey` stored in
+   `schemas.json`. Records are returned as the API sends them; the only
+   reshaping is `products`, where the `{product, skus}` envelope is flattened
+   to the product's fields plus `skus`, mirroring the metadata. `Raw` keeps
+   the untouched envelope.
+4. **Record id.** `id` everywhere except `orders` (`orderId`), `google_tags`
+   (`tagId`) and `products` (`product.id`). `custom_code_blocks` records have
+   no identifier, so `Id` is left empty.
+5. **Errors.** Standard status mapping. Plan-gated endpoints answer 403
+   (`not_enterprise_plan_site`) and Ecommerce endpoints 409
+   (`ecommerce_not_enabled`) until enabled on the site; the Webflow message
+   is included in the error.
+
+### Incremental read
+
+No Webflow list endpoint accepts an "updated since" parameter (only CMS
+collection items do, and they are out of scope). Connector-side filtering on
+Since/Until is only applied when the endpoint can return records newest
+first, so pagination can stop at the first record older than Since;
+filtering an unsorted list would still fetch every page on every sync and
+only look incremental. `comments` is the one list with a sort
+(`sortBy=lastUpdated&sortOrder=desc`, verified live), so it is the only
+object with incremental support: read newest-first and filtered by
+`lastUpdated` with `readhelper`'s reverse-order time filter, inclusive on
+both ends. Every other object ignores Since/Until and is read in full.
+
+| Object | Incremental | Reason |
+|---|---|---|
+| `comments` | yes, `lastUpdated` newest first, early stop | only list with `sortBy`/`sortOrder` |
+| `activity_logs`, `asset_folders`, `assets`, `custom_code_blocks`, `forms`, `pages`, `products`, `registered_scripts` | no | carry `lastUpdated` but no sort parameter (assets verified live to come back in no date order) |
+| `sites`, `collections`, `webhooks`, `custom_domains`, `google_tags`, `redirects` | no | single response, no sort |
+| `form_submissions` | no | `dateSubmitted` only, no sort |
+| `components`, `custom_fonts` | no | no timestamp |
+| `orders` | no | `acceptedOn`/`fulfilledOn`/`refundedOn`/`disputeUpdatedOn` but no last-modified field and no sort |
+
+If Webflow adds sorting to another list, enabling incremental read for it is
+the `incrementalKey` entry in `objects.go`.
+
+### Decisions
+
+- **One connection, one site.** The site comes from the `siteId` input rather
+  than fanning out over every authorised site. It matches how Breezy
+  (`company_id`) and Mailgun (domain) scope their objects, keeps record
+  identity and pagination simple, and most records carry `siteId` anyway.
+- **Next-page token is the full URL.** Same as BambooHR and Mailgun; the
+  follow-up request needs no object-specific reconstruction.
+- **Products flattened on both sides.** Metadata and Read describe the same
+  shape; the raw envelope is still available on each row.
+- **`Support.Read` stays off** in `providers/webflow.go` until the separate
+  enable PR, following the BambooHR and Breezy sequence.
+
+### Verified live (2026-10-06)
+
+Against a non-Enterprise site without Ecommerce: `sites`, `pages`, `forms`
+return their records with correct ids; `assets` pages through 6 records with
+page sizes 2 and 4 (distinct ids, no extra empty request); empty objects
+return a finished empty page; `comments` with Since set returns cleanly.
+`redirects`, `activity_logs`, `orders` and `products` could not be exercised
+on that site (403/409) and are covered by unit tests only.
+
 ## Not supported
 
 - **CMS collection items** (`/collections/{collection_id}/items`): fields are
@@ -90,5 +174,5 @@ go run ./scripts/openapi/webflow/metadata
 ## Testing
 
 - Unit tests: `go test ./providers/webflow/...`
-- Live: `go run ./test/webflow/metadata` with a `webflow-creds.json` holding
-  the OAuth token and `metadata.siteId`.
+- Live: `go run ./test/webflow/metadata` and `go run ./test/webflow/read`
+  with a `webflow-creds.json` holding the OAuth token and `metadata.siteId`.
