@@ -76,25 +76,8 @@ var supportedObjects = map[string]string{
 
 //nolint:gochecknoglobals
 var displayNameOverrides = map[string]string{
-	"sites":              "Sites",
-	"activity_logs":      "Site Activity Logs",
-	"asset_folders":      "Asset Folders",
-	"assets":             "Assets",
-	"collections":        "Collections",
-	"comments":           "Comment Threads",
-	"components":         "Components",
-	"custom_code_blocks": "Custom Code Blocks",
-	"custom_domains":     "Custom Domains",
-	"custom_fonts":       "Custom Fonts",
-	"form_submissions":   "Form Submissions",
-	"forms":              "Forms",
-	"google_tags":        "Google Tags",
-	"orders":             "Orders",
-	"pages":              "Pages",
-	"products":           "Products",
-	"redirects":          "Redirects",
-	"registered_scripts": "Registered Scripts",
-	"webhooks":           "Webhooks",
+	"activity_logs": "Site Activity Logs",
+	"comments":      "Comment Threads",
 }
 
 func pathsOf(m map[string]string) []string {
