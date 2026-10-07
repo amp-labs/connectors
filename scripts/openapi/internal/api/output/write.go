@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/amp-labs/connectors/scripts/openapi/internal/api/filters"
@@ -22,19 +23,18 @@ var (
 func Write(fileName string, object any) error {
 	slog.Info("writing output", "file", fileName)
 
-	_, extension, ok := strings.Cut(fileName, ".")
-	if !ok {
+	if strings.HasSuffix(fileName, ".json.gz") {
+		return writeJsonZip(fileName, object)
+	} else if strings.HasSuffix(fileName, ".json") {
+		return writeJson(fileName, object)
+	}
+
+	extension := filepath.Ext(fileName)
+	if extension == "" {
 		return fmt.Errorf("%w: file name %v", ErrMissingFileExtension, fileName)
 	}
 
-	switch extension {
-	case "json":
-		return writeJson(fileName, object)
-	case "json.gz":
-		return writeJsonZip(fileName, object)
-	default:
-		return fmt.Errorf("%w: %v", ErrUnknownFileExtension, extension)
-	}
+	return fmt.Errorf("%w: %v", ErrUnknownFileExtension, extension)
 }
 
 func PrintUnusedRules(name string, rules filters.Rules) {

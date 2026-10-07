@@ -168,6 +168,69 @@ func TestShortestNameFromURLWithFullFallback(t *testing.T) {
 	}
 }
 
+// Validates duplicates are correctly identified before running the main algorithm
+// for ShortestNameFromUrl and ShortestNameFromUrlWithFullFallback.
+func TestDuplicateUrls(t *testing.T) {
+	t.Parallel()
+
+	input := []spec.Schema{
+		{UrlPath: "/store/peaches"},
+		{UrlPath: "/garden/apples"},
+		{UrlPath: "/garden/apples"},
+		{UrlPath: "/orchard/apples"},
+		{UrlPath: "/baskets/berries"},
+		{UrlPath: "/baskets/berries/"},
+		{UrlPath: "/warehouse/boxes"},
+	}
+
+	tests := []struct {
+		name string
+		fn   func([]spec.Schema) []spec.Schema
+	}{
+		{
+			name: "progressive disambiguation",
+			fn:   ShortestNameFromUrl,
+		},
+		{
+			name: "full fallback",
+			fn:   ShortestNameFromUrlWithFullFallback,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			output := tt.fn(input)
+
+			if len(output) != len(input) {
+				t.Fatalf("expected %d schemas, got %d", len(input), len(output))
+			}
+
+			for _, schema := range output {
+				switch schema.UrlPath {
+				case "/store/peaches":
+					testutils.CheckOutput(t, "store/peaches name", "peaches", schema.ObjectName)
+					testutils.CheckOutput(t, "store/peaches problem", nil, schema.Problem)
+
+				case "/orchard/apples":
+					testutils.CheckOutput(t, "orchard/apples name", "apples", schema.ObjectName)
+					testutils.CheckOutput(t, "orchard/apples problem", nil, schema.Problem)
+
+				case "/warehouse/boxes":
+					testutils.CheckOutput(t, "warehouse/boxes name", "boxes", schema.ObjectName)
+					testutils.CheckOutput(t, "warehouse/boxes problem", nil, schema.Problem)
+
+				case "/garden/apples", "/baskets/berries", "/baskets/berries/":
+					testutils.CheckOutput(t, schema.UrlPath+" name", "", schema.ObjectName)
+					testutils.CheckOutput(t, schema.UrlPath+" problem", true, schema.Problem != nil)
+
+				default:
+					t.Errorf("unexpected schema URL: %s", schema.UrlPath)
+				}
+			}
+		})
+	}
+}
+
 // makeSchemas wraps URLs into spec.Schema objects.
 func makeSchemas(urls []string) []spec.Schema {
 	schemas := make([]spec.Schema, len(urls))

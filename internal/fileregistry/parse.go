@@ -7,6 +7,10 @@ import (
 	"io"
 )
 
+// MustParseJSON parses fileData into type D.
+// fileData may contain gzip-compressed JSON.
+//
+// It panics if fileData cannot be parsed as JSON.
 func MustParseJSON[D any](fileData []byte) D {
 	var data D
 
@@ -20,7 +24,9 @@ func MustParseJSON[D any](fileData []byte) D {
 		}
 	}
 
-	_ = json.Unmarshal(fileData, &data)
+	if err := json.Unmarshal(fileData, &data); err != nil {
+		panic(err)
+	}
 
 	return data
 }

@@ -345,6 +345,7 @@ func buildFlowSubscription(
 
 			// A recorded name is reused so a prefix change upserts that flow and outbound message.
 			var artifactName string
+
 			if prevState != nil && prevState.Flows[objName] != nil {
 				if pair := prevState.Flows[objName].Pairs[eventType]; pair != nil && pair.Flow != nil {
 					artifactName = pair.Flow.Name
@@ -353,6 +354,7 @@ func buildFlowSubscription(
 
 			if artifactName == "" {
 				var err error
+
 				artifactName, err = metadata.GenerateSubscriptionArtifactName(
 					req.Flow.NamePrefix, string(objName), nameSuffix)
 				if err != nil {

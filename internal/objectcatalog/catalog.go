@@ -25,7 +25,8 @@ type urlPath struct {
 	Path string `json:"path"`
 }
 
-// MustLoad creates object metadata Catalog from static file.
+// MustLoad loads a Catalog from static JSON data.
+// It panics if fileData is not valid JSON.
 func MustLoad(fileData []byte) Catalog {
 	return Catalog{
 		Objects: fileregistry.MustParseJSON[map[string]ObjectSpec](fileData),

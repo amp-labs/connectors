@@ -110,10 +110,7 @@ func (o *listObject) GetFields(propertyFlattener PropertyFlattener) spec.Fields 
 		return make(spec.Fields)
 	}
 
-	return extractFields(o.endpointPath, propertyFlattener, o.itemsSchema,
-		fieldDefinitionLocation{
-			schema: o.itemsSchema,
-			paths:  []string{o.itemsSchemaRef},
-		},
-	)
+	startingLocation := newRootFieldLocation(o.itemsSchema, o.itemsSchemaRef)
+
+	return extractFields(o.endpointPath, propertyFlattener, o.itemsSchema, startingLocation)
 }

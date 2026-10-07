@@ -2,6 +2,7 @@ package document
 
 import (
 	"log/slog"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -11,11 +12,80 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
+// fieldDefinitionLocation represents a position in an OpenAPI schema tree.
+//
+// Each location corresponds to a single schema object in the OpenAPI file.
+// The paths slice holds the sequence of $ref URIs that must be followed from
+// the root schema to reach this location, e.g.:
+//
+//	[]string{"#/components/schemas/User", "#/components/schemas/Address"}
 type fieldDefinitionLocation struct {
+	// schema is the OpenAPI schema object at this location.
 	schema *openapi3.Schema
-	paths  []string
+
+	// paths is the ordered list of $ref URIs from the root schema to this
+	// schema. Each element is a full $ref string such as
+	// "#/components/schemas/CompanyReference".
+	paths []string
 }
 
+// newRootFieldLocation creates the root fieldDefinitionLocation for recursion.
+//
+// rootSchema is the top-level schema object from which field extraction starts.
+// path is the initial $ref URI that identifies this root schema within the
+// OpenAPI document (for example, "#/components/schemas/User").
+func newRootFieldLocation(rootSchema *openapi3.Schema, path string) fieldDefinitionLocation {
+	return fieldDefinitionLocation{
+		schema: rootSchema,
+		paths:  []string{path},
+	}
+}
+
+// newNestedLocation returns a child location with an extra path element and
+// a schema representing that child node in the OpenAPI schema tree.
+func (l fieldDefinitionLocation) newNestedLocation(
+	pathKey string,
+	schema *openapi3.Schema,
+) fieldDefinitionLocation {
+	pathsCopy := slices.Clone(l.paths)
+	pathsCopy = append(pathsCopy, pathKey)
+
+	return fieldDefinitionLocation{
+		schema: schema,
+		paths:  pathsCopy,
+	}
+}
+
+// extractFields walks the OpenAPI schema tree starting from location and
+// collects all discoverable fields into a spec.Fields map.
+//
+// endpointPath is the API endpoint path associated with these fields (e.g.
+// "/users" or "/companies/{id}"). propertyFlattener reports whether a given
+// property should be treated as a container whose inner fields are lifted up
+// rather than exposed as a nested object.
+//
+// origin is the original root schema from which this traversal began; it is
+// stored in each FieldOrigin so that callers can always trace a field back to
+// its top-level schema.
+//
+// location represents the current node in the schema tree. Its paths field
+// encodes how to reach this node from the root by following $ref URIs. As
+// extractFields recurses through anyOf, allOf, and properties, it creates
+// child locations via newNestedLocation, extending this reference path.
+//
+// The function handles:
+//   - anyOf: merges fields from all alternative schemas, representing the
+//     union of possible fields.
+//   - allOf: collects fields from all parent schemas, representing inherited
+//     fields.
+//   - properties: for each property, either:
+//   - flattens its inner fields if propertyFlattener returns true, or
+//   - records a top-level field with its type, enum options, and origin.
+//
+// The resulting spec.Fields map is keyed by property name and contains enough
+// metadata (including FieldOrigin with ItemsSchema, Schema, RefPath, and
+// ComponentRefs) to reconstruct how each field is defined and referenced in
+// the OpenAPI document.
 func extractFields(
 	endpointPath string,
 	propertyFlattener PropertyFlattener,
@@ -29,10 +99,8 @@ func extractFields(
 		// we merge those fields to represent the whole domain of possible fields
 		// of course omitting duplicates.
 		for _, ref := range location.schema.AnyOf {
-			fields := extractFields(endpointPath, propertyFlattener, origin, fieldDefinitionLocation{
-				schema: ref.Value,
-				paths:  append(location.paths, ref.Ref),
-			})
+			nestedLocation := location.newNestedLocation(ref.Ref, ref.Value)
+			fields := extractFields(endpointPath, propertyFlattener, origin, nestedLocation)
 			combinedFields.AddMapValues(fields)
 		}
 	}
@@ -41,10 +109,8 @@ func extractFields(
 	for _, ref := range location.schema.AllOf {
 		parentValue := ref.Value
 		if parentValue != nil {
-			fields := extractFields(endpointPath, propertyFlattener, origin, fieldDefinitionLocation{
-				schema: parentValue,
-				paths:  append(location.paths, ref.Ref),
-			})
+			nestedLocation := location.newNestedLocation(ref.Ref, parentValue)
+			fields := extractFields(endpointPath, propertyFlattener, origin, nestedLocation)
 			combinedFields.AddMapValues(fields)
 		}
 	}
@@ -53,10 +119,8 @@ func extractFields(
 	for property, propertySchema := range location.schema.Properties {
 		if propertyFlattener(endpointPath, property) {
 			// This property holds an array, and we need nested fields to be moved one level up.
-			fields := extractFields(endpointPath, propertyFlattener, origin, fieldDefinitionLocation{
-				schema: propertySchema.Value,
-				paths:  append(location.paths, propertySchema.Ref),
-			})
+			nestedLocation := location.newNestedLocation(propertySchema.Ref, propertySchema.Value)
+			fields := extractFields(endpointPath, propertyFlattener, origin, nestedLocation)
 			combinedFields.AddMapValues(fields)
 		} else {
 			// This is just a normal usual case where top level fields are collected as is.
