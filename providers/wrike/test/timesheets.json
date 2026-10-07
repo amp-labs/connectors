@@ -1,0 +1,15 @@
+{
+  "kind": "timesheet",
+  "data": [
+    {
+      "timesheetId": "TS-1",
+      "accountId": "IEAG5DBK",
+      "userId": "KUAAAAAA",
+      "periodStartDate": "2026-09-29",
+      "periodEndDate": "2026-10-05",
+      "timeframe": "Week",
+      "approval": { "status": "Draft" },
+      "rows": []
+    }
+  ]
+}
