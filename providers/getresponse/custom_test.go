@@ -124,6 +124,71 @@ func TestPrepareContactWriteRecordData(t *testing.T) {
 			t.Fatalf("entry: %#v", raw[0])
 		}
 	})
+
+	t.Run("flat campaignId is wrapped into campaign object", func(t *testing.T) {
+		t.Parallel()
+
+		in := map[string]any{"email": gofakeit.Email(), "campaignId": "abc"}
+		out := prepareContactWriteRecordData(in)
+
+		if _, ok := out["campaignId"]; ok {
+			t.Fatalf("flat campaignId should be removed: %#v", out)
+		}
+
+		campaign, ok := out["campaign"].(map[string]any)
+		if !ok || campaign["campaignId"] != "abc" {
+			t.Fatalf("campaign: %#v", out["campaign"])
+		}
+
+		if _, ok := in["campaign"]; ok {
+			t.Fatal("input record should not be mutated")
+		}
+	})
+
+	t.Run("explicit campaign object takes precedence over flat campaignId", func(t *testing.T) {
+		t.Parallel()
+
+		in := map[string]any{
+			"email":      gofakeit.Email(),
+			"campaignId": "flat",
+			"campaign":   map[string]any{"campaignId": "nested"},
+		}
+		out := prepareContactWriteRecordData(in)
+
+		if _, ok := out["campaignId"]; ok {
+			t.Fatalf("flat campaignId should be removed: %#v", out)
+		}
+
+		campaign, ok := out["campaign"].(map[string]any)
+		if !ok || campaign["campaignId"] != "nested" {
+			t.Fatalf("campaign: %#v", out["campaign"])
+		}
+	})
+
+	t.Run("flat campaignId and cf_ keys are both reshaped", func(t *testing.T) {
+		t.Parallel()
+
+		in := map[string]any{
+			"email":                 gofakeit.Email(),
+			"campaignId":            "abc",
+			CustomFieldKey("field"): "value",
+		}
+		out := prepareContactWriteRecordData(in)
+
+		if _, ok := out["campaignId"]; ok {
+			t.Fatalf("flat campaignId should be removed: %#v", out)
+		}
+
+		campaign, ok := out["campaign"].(map[string]any)
+		if !ok || campaign["campaignId"] != "abc" {
+			t.Fatalf("campaign: %#v", out["campaign"])
+		}
+
+		raw, ok := out["customFieldValues"].([]any)
+		if !ok || len(raw) != 1 {
+			t.Fatalf("customFieldValues: %#v", out["customFieldValues"])
+		}
+	})
 }
 
 func TestGetResponseCustomField_fieldMetadata(t *testing.T) {
