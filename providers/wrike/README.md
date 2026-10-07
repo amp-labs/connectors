@@ -112,3 +112,53 @@ provider-side.
 | `comments` | none | `createdDate` is capped at a 7-day window and `updatedDate` is deprecated; at most 1000 comments are returned |
 | `attachments` | none | `createdDate` is capped at a 31-day window |
 | all others | none | no date filter in the API; full read every sync |
+
+## Write
+
+Implemented in `write.go` with the per-object table `writeSpecs`. Create is
+`WriteParams` without a `RecordId`, update is with one; objects without the
+matching endpoint return `ErrOperationNotSupportedForObject`. Payloads are
+sent as JSON (verified live for POST and PUT, including array and object
+parameters such as `responsibles` and `dates`); the written record comes back
+in Wrike's `{kind, data: [record]}` envelope and its `id` (`timesheetId` for
+timesheets) is returned as `RecordId`.
+
+| Object | Create | Update |
+|---|---|---|
+| `customfields`, `groups`, `invitations`, `jobroles`, `spaces`, `timesheets`, `user_schedule_exclusions`, `workflows`, `workschedules` | `POST /v4/<object>` | `PUT /v4/<object>/{id}` |
+| `tasks`, `folders`, `comments`, `approvals`, `attachments`, `bookings`, `timelogs` | none (see below) | `PUT /v4/<object>/{id}` |
+| `contacts` | none | `PUT /v4/contacts/{id}` |
+
+Not writable: `access_roles`, `audit_log`, `custom_item_types`,
+`folder_blueprints`, `placeholders`, `request_forms`, `task_blueprints`,
+`timelog_categories`, `timesheet_submission_rules`, `user_types` (no
+per-record create or update; blueprints and request forms only have
+launch/submit actions).
+
+### Why some objects are update-only
+
+Wrike has no account-level create for tasks, folders, comments, approvals,
+attachments, bookings or timelogs: each is created under a parent
+(`POST /v4/folders/{folderId}/tasks`, `POST /v4/tasks/{taskId}/comments`, and
+so on). The connector's write API carries no parent identifier, and the
+connector has no way to choose a folder on the caller's behalf, so creates for
+these objects are not offered. Updates address the record by its own id and
+work normally.
+
+### Payload rules
+
+Wrike rejects any parameter the endpoint does not declare, including
+read-only fields, with `400 invalid_request` ("Parameter 'id' is not
+allowed"). The connector therefore strips only the record `id` on update and
+sends everything else unchanged, so a record copied from Read must be reduced
+to the writable parameters first. Write parameter names also differ from read
+field names for some objects (for example `addResponsibles` /
+`removeResponsibles` on task update versus `responsibleIds` on read); they
+are not translated.
+
+### Verified live (2026-10-07)
+
+Job role create and update, and an existing task's title update (then
+reverted), succeeded against the test account. Live script:
+`go run ./test/wrike/write`; it leaves the job role behind until delete
+support lands.
