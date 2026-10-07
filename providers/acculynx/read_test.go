@@ -14,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
+	"github.com/spyzhov/ajson"
 	"gotest.tools/v3/assert"
 )
 
@@ -201,7 +202,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					},
 				},
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment%2Ccontacts&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment%2Ccontacts&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -242,7 +243,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -304,7 +305,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -430,7 +431,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&dateFilterType=ModifiedDate&endDate=2026-04-30&includes=initialAppointment&pageSize=25&pageStartIndex=0&startDate=2026-04-01",
+					"/api/v2/jobs?assignment=unassigned&dateFilterType=ModifiedDate&endDate=2026-04-30&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-04-01",
 				Done: false,
 			},
 		},
@@ -577,7 +578,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					},
 				},
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -589,7 +590,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				ObjectName: "jobs",
 				Fields:     connectors.Fields("id"),
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -657,7 +658,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Expected: &common.ReadResult{
 				Rows: 2,
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -701,7 +702,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -747,7 +748,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=2&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=2&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -787,7 +788,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -964,7 +965,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					},
 				},
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1004,7 +1005,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1448,7 +1449,7 @@ func TestReadPaginationTermination(t *testing.T) {
 			Expected: &common.ReadResult{
 				Rows: 25,
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?includes=initialAppointment&pageSize=25&pageStartIndex=25",
+					"/api/v2/jobs?includes=initialAppointment&pageSize=25&pageStartIndex=25&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1534,7 +1535,7 @@ func TestReadPaginationTermination(t *testing.T) {
 			Expected: &common.ReadResult{
 				Rows: 10,
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1548,5 +1549,239 @@ func TestReadPaginationTermination(t *testing.T) {
 				return constructTestReadConnector(tt.Server.URL)
 			})
 		})
+	}
+}
+
+// buildJobsWindowServer serves one jobs page whose last record was modified at
+// lastModified, answering only when the jobs request satisfies cond. Custom
+// field definitions come back empty; everything else is a 500, so a test fails
+// loudly if the wire request is not the one the windowing logic should have
+// produced.
+func buildJobsWindowServer(
+	t *testing.T,
+	envelope map[string]int,
+	numItems int,
+	lastModified string,
+	cond mockcond.Condition,
+) *httptest.Server {
+	t.Helper()
+
+	items := make([]map[string]any, numItems)
+	for i := range items {
+		items[i] = map[string]any{"id": "j" + strconv.Itoa(i), "modifiedDate": "2026-07-03T00:00:00Z"}
+	}
+
+	if numItems > 0 {
+		items[numItems-1]["modifiedDate"] = lastModified
+	}
+
+	body := make(map[string]any, len(envelope)+1)
+	for key, value := range envelope {
+		body[key] = value
+	}
+
+	body["items"] = items
+
+	payload, err := json.Marshal(body)
+	if err != nil {
+		t.Fatalf("marshal jobs window response: %v", err)
+	}
+
+	return mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If:   mockcond.And{mockcond.Path("/api/v2/jobs"), cond},
+				Then: mockserver.Response(http.StatusOK, payload),
+			},
+			{
+				If:   mockcond.Path("/api/v2/company-settings/custom-fields"),
+				Then: mockserver.Response(http.StatusOK, customFieldDefinitionsEmptyResponse),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected request"}`),
+	}.Server()
+}
+
+// TestReadOffsetCapWindowing covers AccuLynx's pageStartIndex cap (ENG-4310):
+// offsets at or above 100,000 are rejected, so a jobs sweep that would reach
+// the cap restarts in a later ModifiedDate window instead.
+func TestReadOffsetCapWindowing(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	const filteredSweep = "/api/v2/jobs?dateFilterType=ModifiedDate&endDate=2026-10-01" +
+		"&pageSize=25&pageStartIndex=99975&sortBy=ModifiedDate&sortOrder=Ascending"
+
+	tests := []testconn.TestCaseRead{
+		{
+			// The prod failure: offset 99,975 is served, count says more remain,
+			// and the next offset would be 100,000. The sweep must move its
+			// window instead, one day before the last record's date, and
+			// remember where the window originally started.
+			Name: "Filtered sweep reaching the cap restarts in a later window",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				NextPage:   testconn.URLTestServer + filteredSweep + "&startDate=2026-07-03",
+			},
+			Server: buildJobsWindowServer(t,
+				map[string]int{"count": 120350, "pageSize": 25, "pageStartIndex": 99975}, 25,
+				"2026-08-14T15:02:00Z", mockcond.QueryParam(pageStartParam, "99975")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 25,
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?ampWindowStart=2026-07-03&dateFilterType=ModifiedDate&endDate=2026-10-01" +
+					"&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-08-13",
+				Done: false,
+			},
+		},
+		{
+			// Resuming a moved window: the internal parameter must not reach
+			// AccuLynx, but must survive into the next cursor.
+			Name: "Moved window keeps its state but never sends it to the provider",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?ampWindowStart=2026-07-03&dateFilterType=ModifiedDate&endDate=2026-10-01" +
+					"&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-08-13",
+			},
+			Server: buildJobsWindowServer(t,
+				map[string]int{"count": 20000, "pageSize": 25, "pageStartIndex": 0}, 25,
+				"2026-08-13T01:00:00Z", mockcond.And{
+					mockcond.QueryParamsMissing(windowStartParam),
+					mockcond.QueryParam(startDateParam, "2026-08-13"),
+				}),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 25,
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?ampWindowStart=2026-07-03&dateFilterType=ModifiedDate&endDate=2026-10-01" +
+					"&pageSize=25&pageStartIndex=25&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-08-13",
+				Done: false,
+			},
+		},
+		{
+			// The assigned sweep ends inside a moved window. The unassigned
+			// sweep must start from the original window, not the moved one, or
+			// unassigned jobs modified before 2026-08-13 would be skipped.
+			Name: "Handover to unassigned restores the original window start",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?ampWindowStart=2026-07-03&dateFilterType=ModifiedDate&endDate=2026-10-01" +
+					"&pageSize=25&pageStartIndex=25&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-08-13",
+			},
+			Server: buildJobsWindowServer(t,
+				map[string]int{"count": 35, "pageSize": 25, "pageStartIndex": 25}, 10,
+				"2026-09-30T08:00:00Z", mockcond.QueryParamsMissing(windowStartParam)),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 10,
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&dateFilterType=ModifiedDate&endDate=2026-10-01" +
+					"&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-07-03",
+				Done: false,
+			},
+		},
+		{
+			// 100,000 records all fall within one day of the window start, so
+			// moving the window would re-read the same records forever.
+			Name: "Window that cannot move past its start errors",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				NextPage:   testconn.URLTestServer + filteredSweep + "&startDate=2026-08-13",
+			},
+			Server: buildJobsWindowServer(t,
+				map[string]int{"count": 150000, "pageSize": 25, "pageStartIndex": 99975}, 25,
+				"2026-08-14T23:10:00Z", mockcond.QueryParam(pageStartParam, "99975")),
+			ExpectedErrs: []error{errOffsetCapReached},
+		},
+		{
+			// The page's last record is older than the ones before it, so
+			// AccuLynx did not honour sortBy. Moving the window from that record
+			// could skip records, so the read must error instead.
+			Name: "Page not sorted by modifiedDate errors instead of moving the window",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				NextPage:   testconn.URLTestServer + filteredSweep + "&startDate=2026-06-01",
+			},
+			Server: buildJobsWindowServer(t,
+				map[string]int{"count": 120350, "pageSize": 25, "pageStartIndex": 99975}, 25,
+				"2026-07-01T00:00:00Z", mockcond.QueryParam(pageStartParam, "99975")),
+			ExpectedErrs: []error{errOffsetCapReached},
+		},
+		{
+			// Only jobs can be filtered by date. Any other listing at the cap
+			// errors clearly instead of sending a request AccuLynx will reject.
+			Name: "Object without a date filter errors at the cap",
+			Input: common.ReadParams{
+				ObjectName: "users",
+				Fields:     connectors.Fields("id"),
+				NextPage:   testconn.URLTestServer + "/api/v2/users?pageSize=25&pageStartIndex=99975",
+			},
+			Server:       buildPaginationServer(t, map[string]int{"count": 120000, "pageSize": 25, "pageStartIndex": 99975}, 25),
+			ExpectedErrs: []error{errOffsetCapReached},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.Run(t, func() (testconn.TestableReader, error) {
+				return constructTestReadConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
+// TestUnfilteredJobsSweepWindowing covers sweeps without a date filter, such as
+// a full-history read or the jobs listing behind nested objects. Moving the
+// window adds a ModifiedDate filter with an open upper bound, and handing over
+// to the unassigned sweep removes it again.
+func TestUnfilteredJobsSweepWindowing(t *testing.T) {
+	t.Parallel()
+
+	reqURL, err := parseNextPageURL("https://api.acculynx.com/api/v2/jobs" +
+		"?pageSize=25&pageStartIndex=99975&sortBy=ModifiedDate&sortOrder=Ascending")
+	assert.NilError(t, err)
+
+	root, err := ajson.Unmarshal([]byte(
+		`{"count":120350,"pageSize":25,"pageStartIndex":99975,"items":[{"id":"j1","modifiedDate":"2026-08-14T15:02:00Z"}]}`))
+	assert.NilError(t, err)
+
+	moved, err := nextJobsWindowURL(objectJobs, reqURL, root, "items")
+	assert.NilError(t, err)
+
+	next, err := parseNextPageURL(moved)
+	assert.NilError(t, err)
+
+	for param, want := range map[string]string{
+		windowStartParam:    windowStartUnbounded,
+		dateFilterTypeParam: sortByModifiedDate,
+		startDateParam:      "2026-08-13",
+		pageStartParam:      "0",
+	} {
+		got, _ := next.GetFirstQueryParam(param)
+		assert.Equal(t, got, want, param)
+	}
+
+	_, until := pairedDateWindow(time.Time{}, time.Time{})
+	endDate, _ := next.GetFirstQueryParam(endDateParam)
+	assert.Equal(t, endDate, until.Format(time.DateOnly))
+
+	handover, err := nextJobsSequenceURL(objectJobs, next)
+	assert.NilError(t, err)
+
+	restored, err := parseNextPageURL(handover)
+	assert.NilError(t, err)
+
+	for _, param := range []string{windowStartParam, dateFilterTypeParam, startDateParam, endDateParam} {
+		assert.Assert(t, !restored.HasQueryParam(param), param)
 	}
 }
