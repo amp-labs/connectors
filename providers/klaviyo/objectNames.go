@@ -7,7 +7,7 @@ import (
 	"github.com/amp-labs/connectors/providers/klaviyo/internal/metadata"
 )
 
-// Supported object names can be found under schemas.json.
+// Supported object names can be found under internal/metadata/objectsMetadata.json.gz.
 var supportedObjectsByRead = metadata.Catalog.Objects.KeySet() //nolint:gochecknoglobals
 
 var prioritySinceFieldsForRead = []string{ //nolint:gochecknoglobals
