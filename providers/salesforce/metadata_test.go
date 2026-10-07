@@ -492,7 +492,8 @@ func TestUpsertMetadataCRM(t *testing.T) { // nolint:funlen,gocognit,cyclop
 							Description: "Story describing birthday",
 							ValueType:   common.ValueTypeString,
 							Required:    false,
-							Unique:      false,
+							Unique:      true,
+							ExternalId:  new(true),
 							Indexed:     false,
 							StringOptions: &common.StringFieldOptions{
 								Length: new(30),

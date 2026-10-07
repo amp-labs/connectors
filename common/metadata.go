@@ -165,6 +165,8 @@ type FieldDefinition struct {
 	Required bool `json:"required,omitempty"`
 	// Unique indicates if the field must be unique across all records.
 	Unique bool `json:"unique,omitempty"`
+	// ExternalId marks the field as an ID from an external system (indexed; usable as an upsert or relationship key).
+	ExternalId *bool `json:"externalId,omitempty"`
 	// Indexed indicates if the field should be indexed for faster search.
 	Indexed bool `json:"indexed,omitempty"`
 	// StringOptions contains additional options for string fields (if any).
