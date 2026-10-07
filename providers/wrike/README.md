@@ -74,3 +74,41 @@ curl -L -o scripts/openapi/wrike/internal/files/wrike_api_v4_ver154.json \
   https://developers.wrike.com/openapi/wrike_api_v4_ver154.yaml
 go run ./scripts/openapi/wrike/metadata
 ```
+
+## Read
+
+Implemented in `read.go` with the per-object table in `objects.go`; all 27
+objects are readable.
+
+- **Records.** Every response is the `{kind, data}` envelope; records come
+  from `data` (the `responseKey` in `schemas.json`) and are returned as-is.
+- **Pagination.** `tasks`, `approvals`, `timelogs`, `audit_log`,
+  `request_forms`, `task_blueprints` and `groups` page with `pageSize` and a
+  token (`nextPageToken`; `pageToken` for groups). The next-page value is the
+  full next URL, so the token travels with the original filters and `fields`
+  selection, which Wrike does not keep across pages (verified live). The last
+  page omits the token. Page size defaults to 100, capped at 1000 (100 for
+  `request_forms`). Every other object, including `folders` (which rejects
+  `pageSize`), returns the whole collection in one response.
+- **Optional fields.** Wrike returns some fields only when they are named in
+  its `fields` query parameter (JSON array; unknown names are rejected). The
+  allowed names per object are listed in `objects.go` from the spec; the ones
+  present in `ReadParams.Fields` are sent, so fields such as
+  `tasks.description` or `contacts.customFields` are actually returned.
+- **Record id.** `id` everywhere except `timesheets` (`timesheetId`);
+  `timesheet_submission_rules` records have no identifier.
+
+### Incremental read
+
+Range filters are a JSON object `{"start","end"}` in `yyyy-MM-ddTHH:mm:ssZ`
+(seconds only; millisecond input and empty ranges are rejected, verified
+live). Since maps to `start`, Until to `end`, both optional; filtering is
+provider-side.
+
+| Object | Filter | Notes |
+|---|---|---|
+| `tasks`, `folders`, `approvals`, `timelogs` | `updatedDate` | |
+| `audit_log` | `eventDate` | events are immutable |
+| `comments` | none | `createdDate` is capped at a 7-day window and `updatedDate` is deprecated; at most 1000 comments are returned |
+| `attachments` | none | `createdDate` is capped at a 31-day window |
+| all others | none | no date filter in the API; full read every sync |

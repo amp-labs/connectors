@@ -1,0 +1,29 @@
+{
+  "kind": "tasks",
+  "nextPageToken": "TOKEN-PAGE-2",
+  "responseSize": 3,
+  "data": [
+    {
+      "id": "IEAG5DBKKQ3U5ZXA",
+      "accountId": "IEAG5DBK",
+      "title": "Write the connector",
+      "status": "Active",
+      "importance": "High",
+      "createdDate": "2026-10-01T09:00:00Z",
+      "updatedDate": "2026-10-06T12:00:00Z",
+      "scope": "WsTask",
+      "permalink": "https://www.wrike.com/open.htm?id=1"
+    },
+    {
+      "id": "IEAG5DBKKQ3U5ZXB",
+      "accountId": "IEAG5DBK",
+      "title": "Review the connector",
+      "status": "Active",
+      "importance": "Normal",
+      "createdDate": "2026-10-02T09:00:00Z",
+      "updatedDate": "2026-10-06T13:00:00Z",
+      "scope": "WsTask",
+      "permalink": "https://www.wrike.com/open.htm?id=2"
+    }
+  ]
+}

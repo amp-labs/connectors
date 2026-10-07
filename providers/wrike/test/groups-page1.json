@@ -1,0 +1,7 @@
+{
+  "kind": "groups",
+  "nextPageToken": "GROUP-TOKEN-2",
+  "data": [
+    { "id": "KX77AAAA", "accountId": "IEAG5DBK", "title": "Engineering", "memberIds": ["KUAAAAAA"], "childIds": [], "parentIds": [], "avatarUrl": "", "myTeam": true }
+  ]
+}

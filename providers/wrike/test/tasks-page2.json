@@ -1,0 +1,16 @@
+{
+  "kind": "tasks",
+  "data": [
+    {
+      "id": "IEAG5DBKKQ3U5ZXC",
+      "accountId": "IEAG5DBK",
+      "title": "Ship the connector",
+      "status": "Completed",
+      "importance": "Low",
+      "createdDate": "2026-10-03T09:00:00Z",
+      "updatedDate": "2026-10-06T14:00:00Z",
+      "scope": "WsTask",
+      "permalink": "https://www.wrike.com/open.htm?id=3"
+    }
+  ]
+}

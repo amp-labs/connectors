@@ -1,0 +1,29 @@
+{
+  "kind": "contacts",
+  "data": [
+    {
+      "id": "KUAAAAAA",
+      "firstName": "Joseph",
+      "lastName": "K",
+      "type": "Person",
+      "profiles": [ { "accountId": "IEAG5DBK", "email": "joseph@example.com", "role": "User", "external": false, "admin": true, "owner": true } ],
+      "avatarUrl": "https://www.wrike.com/avatars/1.png",
+      "timezone": "Africa/Dar_es_Salaam",
+      "locale": "en",
+      "deleted": false,
+      "me": true,
+      "title": "Engineer"
+    },
+    {
+      "id": "KUAAAAAB",
+      "firstName": "Engineering",
+      "lastName": "",
+      "type": "Group",
+      "profiles": [],
+      "avatarUrl": "",
+      "timezone": "Z",
+      "locale": "en",
+      "deleted": false
+    }
+  ]
+}
