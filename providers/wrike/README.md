@@ -155,10 +155,3 @@ to the writable parameters first. Write parameter names also differ from read
 field names for some objects (for example `addResponsibles` /
 `removeResponsibles` on task update versus `responsibleIds` on read); they
 are not translated.
-
-### Verified live (2026-10-07)
-
-Job role create and update, and an existing task's title update (then
-reverted), succeeded against the test account. Live script:
-`go run ./test/wrike/write`; it leaves the job role behind until delete
-support lands.
