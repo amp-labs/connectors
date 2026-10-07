@@ -24,6 +24,7 @@ import (
 var (
 	errChildPagesExceeded = errors.New("acculynx: nested fetch exceeded page cap")
 	errMissingCount       = errors.New("acculynx: list response omitted count, cannot determine when pagination ends")
+	errOffsetCapReached   = errors.New("acculynx: list exceeds the provider's pageStartIndex cap")
 )
 
 const (
@@ -36,6 +37,35 @@ const (
 
 	pageSizeParam  = "pageSize"
 	pageStartParam = "pageStartIndex"
+
+	// AccuLynx rejects any pageStartIndex at or above 100,000 with a 400
+	// "Requested pageStartIndex is out of range", however many records the
+	// envelope's count reports (verified in prod: count 120350, offset 99975
+	// served, offset 100000 rejected). Offset paging alone therefore cannot
+	// reach past the first 100,000 records of a listing; jobs work around it
+	// with date windows (see nextJobsWindowURL).
+	maxPageStartIndex = 100_000
+
+	// Jobs are swept in ascending ModifiedDate order so that, when the offset
+	// cap is reached, the sweep can restart from the last record's date
+	// without skipping anything. https://apidocs.acculynx.com/reference/getjobs
+	sortByParam        = "sortBy"
+	sortOrderParam     = "sortOrder"
+	sortByModifiedDate = "ModifiedDate"
+	sortOrderAscending = "Ascending"
+
+	dateFilterTypeParam = "dateFilterType"
+	startDateParam      = "startDate"
+	endDateParam        = "endDate"
+
+	// windowStartParam is connector-internal state carried in the next-page
+	// URL once a jobs sweep has moved its startDate forward: the sweep's
+	// original startDate, or windowStartUnbounded when it had no date filter.
+	// The unassigned sweep restores it so that population is read from the
+	// original window start. buildReadRequest strips it before the request is
+	// sent, so AccuLynx never sees it.
+	windowStartParam     = "ampWindowStart"
+	windowStartUnbounded = "none"
 
 	// The /jobs listing without an assignment parameter returns exactly the
 	// jobs assigned to users; unassigned jobs are only reachable with
@@ -163,7 +193,14 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if params.NextPage != "" {
-		return http.NewRequestWithContext(ctx, http.MethodGet, params.NextPage.String(), nil)
+		next, err := parseNextPageURL(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+
+		next.RemoveQueryParam(windowStartParam)
+
+		return http.NewRequestWithContext(ctx, http.MethodGet, next.String(), nil)
 	}
 
 	url, err := c.buildInitialURL(params)
@@ -232,6 +269,23 @@ func applyPagination(url *urlbuilder.URL, objectName string, params common.ReadP
 	url.WithQueryParam(pageSizeParam, pageSizeWithCap(params))
 
 	url.WithQueryParam(pageStartParam, "0")
+
+	if objectName == objectJobs {
+		url.WithQueryParam(sortByParam, sortByModifiedDate)
+		url.WithQueryParam(sortOrderParam, sortOrderAscending)
+	}
+}
+
+// cursorURL returns the URL pagination state is read from: the caller's
+// next-page URL when resuming, which may carry connector-internal parameters
+// that buildReadRequest stripped from the wire request, otherwise the request
+// URL itself.
+func cursorURL(params common.ReadParams, request *http.Request) (*urlbuilder.URL, error) {
+	if params.NextPage != "" {
+		return parseNextPageURL(params.NextPage.String())
+	}
+
+	return urlbuilder.FromRawURL(request.URL)
 }
 
 // pageSizeWithCap returns params.PageSize when within bounds, otherwise
@@ -255,7 +309,7 @@ func (c *Connector) parseReadResponse(
 		return c.parseNestedResponse(ctx, params, request, resp)
 	}
 
-	reqURL, err := urlbuilder.FromRawURL(request.URL)
+	reqURL, err := cursorURL(params, request)
 	if err != nil {
 		return nil, err
 	}
@@ -408,7 +462,7 @@ func (c *Connector) parseNestedResponse(
 		return nil, err
 	}
 
-	reqURL, err := urlbuilder.FromRawURL(request.URL)
+	reqURL, err := cursorURL(params, request)
 	if err != nil {
 		return nil, err
 	}
@@ -631,6 +685,10 @@ func applyAppointmentsDateWindow(url *urlbuilder.URL, params common.ReadParams) 
 // provider change immediately instead of after an arbitrary page budget.
 // Objects whose responses carry no envelope are all paginationNone and return
 // early, so their absence is never a problem.
+//
+// When the next offset would reach maxPageStartIndex, which AccuLynx rejects,
+// jobs restart in a later date window (nextJobsWindowURL) and every other
+// object errors, since it has no date filter to move through.
 func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) common.NextPageFunc {
 	spec := objectReadSpecs.Get(objectName)
 	recordsKey := c.arrayFieldName(objectName)
@@ -658,6 +716,10 @@ func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) comm
 		// page eventually arrives.
 		if _, reported := envelopeInt(root, countKey); !reported {
 			return "", fmt.Errorf("%w: %s", errMissingCount, objectName)
+		}
+
+		if requested+records >= maxPageStartIndex {
+			return nextJobsWindowURL(objectName, reqURL, root, recordsKey)
 		}
 
 		next, err := cloneURL(reqURL)
@@ -694,10 +756,153 @@ func nextJobsSequenceURL(objectName string, reqURL *urlbuilder.URL) (string, err
 		return "", err
 	}
 
+	restoreOriginalWindow(next)
 	next.WithQueryParam(assignmentParam, assignmentUnassigned)
 	next.WithQueryParam(pageStartParam, "0")
 
 	return next.String(), nil
+}
+
+// nextJobsWindowURL continues a jobs sweep whose next offset would reach
+// AccuLynx's pageStartIndex cap. Jobs are sorted by ascending ModifiedDate, so
+// every record not yet read was modified no earlier than the last record on
+// this page: the sweep restarts at offset 0 with startDate moved up to that
+// record's date, keeping the window's endDate.
+//
+// startDate is a whole date, and AccuLynx may apply it in the account's own
+// timezone rather than UTC, so the new window starts one day before the last
+// record's UTC date. Records from that overlap are read again; delivery is
+// at-least-once, so re-reading is safe where skipping would not be.
+//
+// If the new startDate would not move past the current one, the window holds
+// more records than the cap and cannot be narrowed further with a date
+// filter. That errors instead of re-reading the same window forever.
+//
+// Moving the window is only safe if AccuLynx honoured sortBy, which could not
+// be verified against the live API when this was written. The page is checked
+// to be in ascending modifiedDate order first; if it is not, the read errors
+// rather than risk silently skipping records.
+func nextJobsWindowURL(
+	objectName string,
+	reqURL *urlbuilder.URL,
+	root *ajson.Node,
+	recordsKey string,
+) (string, error) {
+	if objectName != objectJobs {
+		return "", fmt.Errorf("%w: %s has no date filter to window by", errOffsetCapReached, objectName)
+	}
+
+	lastModified, err := lastModifiedDateInOrder(root, recordsKey)
+	if err != nil {
+		return "", err
+	}
+
+	newStart := lastModified.UTC().AddDate(0, 0, -1).Format(time.DateOnly)
+
+	currentStart, filtered := currentWindowStart(reqURL)
+	if filtered && newStart <= currentStart {
+		return "", fmt.Errorf(
+			"%w: more than %d jobs were modified between %s and %s, too many to page with day-level date filters",
+			errOffsetCapReached, maxPageStartIndex, currentStart, lastModified.UTC().Format(time.DateOnly))
+	}
+
+	next, err := cloneURL(reqURL)
+	if err != nil {
+		return "", err
+	}
+
+	if !next.HasQueryParam(windowStartParam) {
+		original := windowStartUnbounded
+		if filtered {
+			original = currentStart
+		}
+
+		next.WithQueryParam(windowStartParam, original)
+	}
+
+	if !filtered {
+		// AccuLynx rejects a startDate without an endDate, so an unfiltered
+		// sweep gets the same open upper bound pairedDateWindow uses.
+		_, until := pairedDateWindow(time.Time{}, time.Time{})
+		next.WithQueryParam(dateFilterTypeParam, sortByModifiedDate)
+		next.WithQueryParam(endDateParam, until.Format(time.DateOnly))
+	}
+
+	next.WithQueryParam(startDateParam, newStart)
+	next.WithQueryParam(pageStartParam, "0")
+
+	return next.String(), nil
+}
+
+// currentWindowStart returns the startDate of a sweep filtered by ModifiedDate,
+// and whether the sweep is filtered that way at all.
+func currentWindowStart(u *urlbuilder.URL) (string, bool) {
+	filterType, _ := u.GetFirstQueryParam(dateFilterTypeParam)
+	if filterType != sortByModifiedDate {
+		return "", false
+	}
+
+	return u.GetFirstQueryParam(startDateParam)
+}
+
+// restoreOriginalWindow undoes the startDate moves nextJobsWindowURL made, so
+// the next sweep covers the window the read was asked for.
+func restoreOriginalWindow(next *urlbuilder.URL) {
+	original, moved := next.GetFirstQueryParam(windowStartParam)
+	if !moved {
+		return
+	}
+
+	next.RemoveQueryParam(windowStartParam)
+
+	if original == windowStartUnbounded {
+		next.RemoveQueryParam(dateFilterTypeParam)
+		next.RemoveQueryParam(startDateParam)
+		next.RemoveQueryParam(endDateParam)
+
+		return
+	}
+
+	next.WithQueryParam(startDateParam, original)
+}
+
+// lastModifiedDateInOrder returns the last record's modifiedDate, after
+// checking that every record on the page has one and that they are in
+// ascending order, as sortBy=ModifiedDate&sortOrder=Ascending promises.
+func lastModifiedDateInOrder(root *ajson.Node, recordsKey string) (time.Time, error) {
+	nodes, err := common.MakeRecordsFunc(recordsKey)(root)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	if len(nodes) == 0 {
+		return time.Time{}, fmt.Errorf("%w: page has no records to window from", errOffsetCapReached)
+	}
+
+	var last time.Time
+
+	for index, node := range nodes {
+		raw, err := jsonquery.New(node).StringRequired("modifiedDate")
+		if err != nil {
+			return time.Time{}, fmt.Errorf("%w: record %d has no modifiedDate: %w", errOffsetCapReached, index, err)
+		}
+
+		modified, err := time.Parse(time.RFC3339, raw)
+		if err != nil {
+			return time.Time{}, fmt.Errorf("%w: record %d: %w", errOffsetCapReached, index, err)
+		}
+
+		if modified.Before(last) {
+			return time.Time{}, fmt.Errorf(
+				"%w: page is not in ascending modifiedDate order (record %d at %s follows %s), "+
+					"so the date window cannot be moved without skipping records",
+				errOffsetCapReached, index, raw, last.Format(time.RFC3339))
+		}
+
+		last = modified
+	}
+
+	return last, nil
 }
 
 // paginationExhausted reports whether a paged sweep should stop, given the page
