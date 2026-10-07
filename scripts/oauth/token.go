@@ -52,11 +52,13 @@ import (
 const (
 	HttpProtocol = "http"
 
-	DefaultCredsFile    = "creds.json"
-	DefaultServerPort   = 8080
-	DefaultCallbackPath = "/callbacks/v1/oauth"
-	DefaultSSLCert      = ".ssl/server.crt"
-	DefaultSSLKey       = ".ssl/server.key"
+	DefaultCredsFile = "creds.json"
+	// DefaultScopeDelimiter is what oauth2.Config.AuthCodeURL puts between scopes.
+	DefaultScopeDelimiter = " "
+	DefaultServerPort     = 8080
+	DefaultCallbackPath   = "/callbacks/v1/oauth"
+	DefaultSSLCert        = ".ssl/server.crt"
+	DefaultSSLKey         = ".ssl/server.key"
 
 	WaitBeforeExitSeconds    = 1
 	ReadHeaderTimeoutSeconds = 3
@@ -283,6 +285,9 @@ func setup() *OAuthApp {
 	callback := flag.String("callback", DefaultCallbackPath, "the full OAuth callback path (arbitrary)")
 	writeCreds := flag.Bool("writeCreds", false,
 		"Enable updating creds.json and <provider>-creds.json files")
+	scopeDelimiter := flag.String("scopeDelimiter", DefaultScopeDelimiter,
+		"delimiter placed between scopes in the authorization URL; "+
+			"the OAuth 2.0 default is a space, some providers (e.g. Wrike) require a comma")
 
 	flag.Parse()
 
@@ -382,7 +387,7 @@ func setup() *OAuthApp {
 		if len(oauthScopes) != 0 {
 			if customQueryName := providerInfo.Oauth2Opts.ScopeQueryParam; customQueryName == "" {
 				// Default query param is "scope".
-				app.Config.Scopes = oauthScopes
+				app.Config.Scopes = joinScopes(oauthScopes, *scopeDelimiter)
 			} else {
 				queryValue := strings.Join(oauthScopes, ",")
 				app.AuthOptions = append(app.AuthOptions, oauth2.SetAuthURLParam(customQueryName, queryValue))
@@ -487,4 +492,16 @@ func main() {
 
 		os.Exit(1)
 	}
+}
+
+// joinScopes prepares the scope list for oauth2.Config.Scopes. The oauth2
+// library always joins Scopes with a space (the OAuth 2.0 default), so a
+// provider that needs another delimiter gets the whole list pre-joined as a
+// single scope value.
+func joinScopes(scopes []string, delimiter string) []string {
+	if delimiter == DefaultScopeDelimiter {
+		return scopes
+	}
+
+	return []string{strings.Join(scopes, delimiter)}
 }

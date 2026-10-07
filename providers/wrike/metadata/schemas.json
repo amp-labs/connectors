@@ -1,0 +1,3044 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "access_roles": {
+          "displayName": "Access Roles",
+          "path": "/v4/access_roles",
+          "responseKey": "data",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "approvals": {
+          "displayName": "Approvals",
+          "path": "/v4/approvals",
+          "responseKey": "data",
+          "fields": {
+            "attachmentIds": {
+              "displayName": "attachmentIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "authorId": {
+              "displayName": "authorId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "autoFinishOnApprove": {
+              "displayName": "autoFinishOnApprove",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "autoFinishOnReject": {
+              "displayName": "autoFinishOnReject",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "decisions": {
+              "displayName": "decisions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dueDate": {
+              "displayName": "dueDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "finished": {
+              "displayName": "finished",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "finisherId": {
+              "displayName": "finisherId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reviewId": {
+              "displayName": "reviewId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Draft",
+                  "displayValue": "Draft"
+                },
+                {
+                  "value": "NotRequired",
+                  "displayValue": "NotRequired"
+                },
+                {
+                  "value": "Approved",
+                  "displayValue": "Approved"
+                },
+                {
+                  "value": "Rejected",
+                  "displayValue": "Rejected"
+                },
+                {
+                  "value": "Cancelled",
+                  "displayValue": "Cancelled"
+                },
+                {
+                  "value": "Pending",
+                  "displayValue": "Pending"
+                }
+              ]
+            },
+            "taskGroupStatusChange": {
+              "displayName": "taskGroupStatusChange",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "taskId": {
+              "displayName": "taskId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "FilesOnly",
+                  "displayValue": "FilesOnly"
+                },
+                {
+                  "value": "Regular",
+                  "displayValue": "Regular"
+                }
+              ]
+            },
+            "updatedDate": {
+              "displayName": "updatedDate",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "attachments": {
+          "displayName": "Attachments",
+          "path": "/v4/attachments",
+          "responseKey": "data",
+          "fields": {
+            "authorId": {
+              "displayName": "authorId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "commentId": {
+              "displayName": "commentId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contentType": {
+              "displayName": "contentType",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currentAttachmentId": {
+              "displayName": "currentAttachmentId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "height": {
+              "displayName": "height",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "originVersionId": {
+              "displayName": "originVersionId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "playlistUrl": {
+              "displayName": "playlistUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "previewUrl": {
+              "displayName": "previewUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reviewIds": {
+              "displayName": "reviewIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "size": {
+              "displayName": "size",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "taskId": {
+              "displayName": "taskId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Google",
+                  "displayValue": "Google"
+                },
+                {
+                  "value": "DAM",
+                  "displayValue": "DAM"
+                },
+                {
+                  "value": "OneDrive",
+                  "displayValue": "OneDrive"
+                },
+                {
+                  "value": "Wrike",
+                  "displayValue": "Wrike"
+                },
+                {
+                  "value": "External",
+                  "displayValue": "External"
+                },
+                {
+                  "value": "Box",
+                  "displayValue": "Box"
+                },
+                {
+                  "value": "SharePoint",
+                  "displayValue": "SharePoint"
+                },
+                {
+                  "value": "DropBox",
+                  "displayValue": "DropBox"
+                },
+                {
+                  "value": "Whiteboard",
+                  "displayValue": "Whiteboard"
+                }
+              ]
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "whiteboardId": {
+              "displayName": "whiteboardId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "width": {
+              "displayName": "width",
+              "valueType": "other",
+              "providerType": "number"
+            }
+          }
+        },
+        "audit_log": {
+          "displayName": "Audit Log",
+          "path": "/v4/audit_log",
+          "responseKey": "data",
+          "fields": {
+            "details": {
+              "displayName": "details",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "eventDate": {
+              "displayName": "eventDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "ipAddress": {
+              "displayName": "ipAddress",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "objectId": {
+              "displayName": "objectId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "objectName": {
+              "displayName": "objectName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "objectType": {
+              "displayName": "objectType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Account",
+                  "displayValue": "Account"
+                },
+                {
+                  "value": "Group",
+                  "displayValue": "Group"
+                },
+                {
+                  "value": "AnalyzeReportWidget",
+                  "displayValue": "AnalyzeReportWidget"
+                },
+                {
+                  "value": "Task",
+                  "displayValue": "Task"
+                },
+                {
+                  "value": "User",
+                  "displayValue": "User"
+                },
+                {
+                  "value": "WorkspaceSnapshot",
+                  "displayValue": "WorkspaceSnapshot"
+                },
+                {
+                  "value": "TimesheetTimeframeSettings",
+                  "displayValue": "TimesheetTimeframeSettings"
+                },
+                {
+                  "value": "CalendarExternalLink",
+                  "displayValue": "CalendarExternalLink"
+                },
+                {
+                  "value": "Attachment",
+                  "displayValue": "Attachment"
+                },
+                {
+                  "value": "Folder",
+                  "displayValue": "Folder"
+                },
+                {
+                  "value": "DataExport",
+                  "displayValue": "DataExport"
+                },
+                {
+                  "value": "PowerBIEntity",
+                  "displayValue": "PowerBIEntity"
+                },
+                {
+                  "value": "Whiteboard",
+                  "displayValue": "Whiteboard"
+                },
+                {
+                  "value": "Space",
+                  "displayValue": "Space"
+                },
+                {
+                  "value": "Comment",
+                  "displayValue": "Comment"
+                },
+                {
+                  "value": "RequestForm",
+                  "displayValue": "RequestForm"
+                },
+                {
+                  "value": "AccessRole",
+                  "displayValue": "AccessRole"
+                },
+                {
+                  "value": "Timesheet",
+                  "displayValue": "Timesheet"
+                },
+                {
+                  "value": "Invitation",
+                  "displayValue": "Invitation"
+                },
+                {
+                  "value": "Workflow",
+                  "displayValue": "Workflow"
+                },
+                {
+                  "value": "AnalyzeReport",
+                  "displayValue": "AnalyzeReport"
+                },
+                {
+                  "value": "Oauth2Client",
+                  "displayValue": "Oauth2Client"
+                },
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "PublicLink",
+                  "displayValue": "PublicLink"
+                },
+                {
+                  "value": "UserRole",
+                  "displayValue": "UserRole"
+                },
+                {
+                  "value": "CustomField",
+                  "displayValue": "CustomField"
+                },
+                {
+                  "value": "UserType",
+                  "displayValue": "UserType"
+                }
+              ]
+            },
+            "operation": {
+              "displayName": "operation",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "SecondFactorEnabled",
+                  "displayValue": "SecondFactorEnabled"
+                },
+                {
+                  "value": "CustomFieldRemoved",
+                  "displayValue": "CustomFieldRemoved"
+                },
+                {
+                  "value": "CalendarExternalLinksActivated",
+                  "displayValue": "CalendarExternalLinksActivated"
+                },
+                {
+                  "value": "TaskDuplication",
+                  "displayValue": "TaskDuplication"
+                },
+                {
+                  "value": "GanttSnapshotDeleted",
+                  "displayValue": "GanttSnapshotDeleted"
+                },
+                {
+                  "value": "CalendarExternalLinkDeleted",
+                  "displayValue": "CalendarExternalLinkDeleted"
+                },
+                {
+                  "value": "TaskRestored",
+                  "displayValue": "TaskRestored"
+                },
+                {
+                  "value": "CalendarExternalLinksDeactivated",
+                  "displayValue": "CalendarExternalLinksDeactivated"
+                },
+                {
+                  "value": "PowerBIPublicLinkDeleted",
+                  "displayValue": "PowerBIPublicLinkDeleted"
+                },
+                {
+                  "value": "ApprovalCanceled",
+                  "displayValue": "ApprovalCanceled"
+                },
+                {
+                  "value": "RequestFormCreated",
+                  "displayValue": "RequestFormCreated"
+                },
+                {
+                  "value": "SamlClearPasswordForSamlUsers",
+                  "displayValue": "SamlClearPasswordForSamlUsers"
+                },
+                {
+                  "value": "OneTimePasswordUsed",
+                  "displayValue": "OneTimePasswordUsed"
+                },
+                {
+                  "value": "AnalyzeWidgetPublicLinkCreated",
+                  "displayValue": "AnalyzeWidgetPublicLinkCreated"
+                },
+                {
+                  "value": "TaskErased",
+                  "displayValue": "TaskErased"
+                },
+                {
+                  "value": "InvitationPolicyChanged",
+                  "displayValue": "InvitationPolicyChanged"
+                },
+                {
+                  "value": "CalendarExternalLinkCreated",
+                  "displayValue": "CalendarExternalLinkCreated"
+                },
+                {
+                  "value": "UserTaskGroupRolesChanged",
+                  "displayValue": "UserTaskGroupRolesChanged"
+                },
+                {
+                  "value": "UserJoinedSpace",
+                  "displayValue": "UserJoinedSpace"
+                },
+                {
+                  "value": "SamlSSOSettingsChanged",
+                  "displayValue": "SamlSSOSettingsChanged"
+                },
+                {
+                  "value": "UserFailLogin",
+                  "displayValue": "UserFailLogin"
+                },
+                {
+                  "value": "SamlSSODisabled",
+                  "displayValue": "SamlSSODisabled"
+                },
+                {
+                  "value": "AdminMailSettingsChanged",
+                  "displayValue": "AdminMailSettingsChanged"
+                },
+                {
+                  "value": "CustomFieldRemovedFromFolder",
+                  "displayValue": "CustomFieldRemovedFromFolder"
+                },
+                {
+                  "value": "UserLoggedIn",
+                  "displayValue": "UserLoggedIn"
+                },
+                {
+                  "value": "UserRoleChanged",
+                  "displayValue": "UserRoleChanged"
+                },
+                {
+                  "value": "CustomFieldAddedToFolder",
+                  "displayValue": "CustomFieldAddedToFolder"
+                },
+                {
+                  "value": "UserTypeModified",
+                  "displayValue": "UserTypeModified"
+                },
+                {
+                  "value": "AccessCodeAccepted",
+                  "displayValue": "AccessCodeAccepted"
+                },
+                {
+                  "value": "PublicLinkExpirationChanged",
+                  "displayValue": "PublicLinkExpirationChanged"
+                },
+                {
+                  "value": "UserLogout",
+                  "displayValue": "UserLogout"
+                },
+                {
+                  "value": "PowerBIPublicLinkCreated",
+                  "displayValue": "PowerBIPublicLinkCreated"
+                },
+                {
+                  "value": "GuestReviewerRevoked",
+                  "displayValue": "GuestReviewerRevoked"
+                },
+                {
+                  "value": "ApprovedIpRangesOrSubnetsChanged",
+                  "displayValue": "ApprovedIpRangesOrSubnetsChanged"
+                },
+                {
+                  "value": "TaskScheduleChanged",
+                  "displayValue": "TaskScheduleChanged"
+                },
+                {
+                  "value": "CustomFieldRestored",
+                  "displayValue": "CustomFieldRestored"
+                },
+                {
+                  "value": "AccountDeleted",
+                  "displayValue": "AccountDeleted"
+                },
+                {
+                  "value": "UserAdminPermissionsChanged",
+                  "displayValue": "UserAdminPermissionsChanged"
+                },
+                {
+                  "value": "AttachDeleted",
+                  "displayValue": "AttachDeleted"
+                },
+                {
+                  "value": "SpaceDeleted",
+                  "displayValue": "SpaceDeleted"
+                },
+                {
+                  "value": "AuditReportCreated",
+                  "displayValue": "AuditReportCreated"
+                },
+                {
+                  "value": "UserTypeCreated",
+                  "displayValue": "UserTypeCreated"
+                },
+                {
+                  "value": "ExcelExportCreated",
+                  "displayValue": "ExcelExportCreated"
+                },
+                {
+                  "value": "AdminLoggedInAsUser",
+                  "displayValue": "AdminLoggedInAsUser"
+                },
+                {
+                  "value": "WorkflowCreated",
+                  "displayValue": "WorkflowCreated"
+                },
+                {
+                  "value": "TaskUnsharedFromAuthor",
+                  "displayValue": "TaskUnsharedFromAuthor"
+                },
+                {
+                  "value": "AccessAuditReportCsvExport",
+                  "displayValue": "AccessAuditReportCsvExport"
+                },
+                {
+                  "value": "AttachMarkAsFinal",
+                  "displayValue": "AttachMarkAsFinal"
+                },
+                {
+                  "value": "OneTimePasswordStatusSwitched",
+                  "displayValue": "OneTimePasswordStatusSwitched"
+                },
+                {
+                  "value": "ApproverAdded",
+                  "displayValue": "ApproverAdded"
+                },
+                {
+                  "value": "UserLeftSpace",
+                  "displayValue": "UserLeftSpace"
+                },
+                {
+                  "value": "TaskUnarchived",
+                  "displayValue": "TaskUnarchived"
+                },
+                {
+                  "value": "ApprovalDescriptionChanged",
+                  "displayValue": "ApprovalDescriptionChanged"
+                },
+                {
+                  "value": "GroupParentRemoved",
+                  "displayValue": "GroupParentRemoved"
+                },
+                {
+                  "value": "GuestReviewAccountSettingsChanged",
+                  "displayValue": "GuestReviewAccountSettingsChanged"
+                },
+                {
+                  "value": "WorkflowDeleted",
+                  "displayValue": "WorkflowDeleted"
+                },
+                {
+                  "value": "PasswordPolicyModified",
+                  "displayValue": "PasswordPolicyModified"
+                },
+                {
+                  "value": "GroupInviteeAdded",
+                  "displayValue": "GroupInviteeAdded"
+                },
+                {
+                  "value": "UserRestored",
+                  "displayValue": "UserRestored"
+                },
+                {
+                  "value": "WorkflowArchived",
+                  "displayValue": "WorkflowArchived"
+                },
+                {
+                  "value": "ApprovalDueDateChanged",
+                  "displayValue": "ApprovalDueDateChanged"
+                },
+                {
+                  "value": "AnalyzeWidgetPublicLinkDeleted",
+                  "displayValue": "AnalyzeWidgetPublicLinkDeleted"
+                },
+                {
+                  "value": "SpaceArchivedUnarchived",
+                  "displayValue": "SpaceArchivedUnarchived"
+                },
+                {
+                  "value": "TaskStatusChanged",
+                  "displayValue": "TaskStatusChanged"
+                },
+                {
+                  "value": "TaskCommentChanged",
+                  "displayValue": "TaskCommentChanged"
+                },
+                {
+                  "value": "AccessRoleDeleted",
+                  "displayValue": "AccessRoleDeleted"
+                },
+                {
+                  "value": "TaskUnassigned",
+                  "displayValue": "TaskUnassigned"
+                },
+                {
+                  "value": "AnalyzePublicLinkCreated",
+                  "displayValue": "AnalyzePublicLinkCreated"
+                },
+                {
+                  "value": "GuestReviewRejected",
+                  "displayValue": "GuestReviewRejected"
+                },
+                {
+                  "value": "TaskUnshared",
+                  "displayValue": "TaskUnshared"
+                },
+                {
+                  "value": "PasswordChanged",
+                  "displayValue": "PasswordChanged"
+                },
+                {
+                  "value": "RequestFormDeleted",
+                  "displayValue": "RequestFormDeleted"
+                },
+                {
+                  "value": "AttemptDownloadInfectedAttach",
+                  "displayValue": "AttemptDownloadInfectedAttach"
+                },
+                {
+                  "value": "InvitationSend",
+                  "displayValue": "InvitationSend"
+                },
+                {
+                  "value": "AccessRoleModified",
+                  "displayValue": "AccessRoleModified"
+                },
+                {
+                  "value": "SpaceCreated",
+                  "displayValue": "SpaceCreated"
+                },
+                {
+                  "value": "ApprovedDomainsChanged",
+                  "displayValue": "ApprovedDomainsChanged"
+                },
+                {
+                  "value": "WhiteboardShared",
+                  "displayValue": "WhiteboardShared"
+                },
+                {
+                  "value": "TimesheetStatusChanged",
+                  "displayValue": "TimesheetStatusChanged"
+                },
+                {
+                  "value": "TimelogLocked",
+                  "displayValue": "TimelogLocked"
+                },
+                {
+                  "value": "UserRevokeAdmin",
+                  "displayValue": "UserRevokeAdmin"
+                },
+                {
+                  "value": "RecycleBinErased",
+                  "displayValue": "RecycleBinErased"
+                },
+                {
+                  "value": "ApproverRemoved",
+                  "displayValue": "ApproverRemoved"
+                },
+                {
+                  "value": "UserDeleted",
+                  "displayValue": "UserDeleted"
+                },
+                {
+                  "value": "GanttSnapshotCreated",
+                  "displayValue": "GanttSnapshotCreated"
+                },
+                {
+                  "value": "GroupMemberRemoved",
+                  "displayValue": "GroupMemberRemoved"
+                },
+                {
+                  "value": "UserProfileUpdated",
+                  "displayValue": "UserProfileUpdated"
+                },
+                {
+                  "value": "SecondFactorUsageReportCreated",
+                  "displayValue": "SecondFactorUsageReportCreated"
+                },
+                {
+                  "value": "SecondFactorDisabled",
+                  "displayValue": "SecondFactorDisabled"
+                },
+                {
+                  "value": "WhiteboardCreated",
+                  "displayValue": "WhiteboardCreated"
+                },
+                {
+                  "value": "AttachViewed",
+                  "displayValue": "AttachViewed"
+                },
+                {
+                  "value": "AccessRoleCreated",
+                  "displayValue": "AccessRoleCreated"
+                },
+                {
+                  "value": "GroupMemberAdded",
+                  "displayValue": "GroupMemberAdded"
+                },
+                {
+                  "value": "AccountDataExportRequested",
+                  "displayValue": "AccountDataExportRequested"
+                },
+                {
+                  "value": "SamlSSOMetadataChanged",
+                  "displayValue": "SamlSSOMetadataChanged"
+                },
+                {
+                  "value": "GroupRenamed",
+                  "displayValue": "GroupRenamed"
+                },
+                {
+                  "value": "PublicLinkCreated",
+                  "displayValue": "PublicLinkCreated"
+                },
+                {
+                  "value": "TaskShared",
+                  "displayValue": "TaskShared"
+                },
+                {
+                  "value": "AccountModified",
+                  "displayValue": "AccountModified"
+                },
+                {
+                  "value": "PublicLinkPasswordRequested",
+                  "displayValue": "PublicLinkPasswordRequested"
+                },
+                {
+                  "value": "WorkflowModified",
+                  "displayValue": "WorkflowModified"
+                },
+                {
+                  "value": "PublicLinkDeleted",
+                  "displayValue": "PublicLinkDeleted"
+                },
+                {
+                  "value": "AccessCodeDeclined",
+                  "displayValue": "AccessCodeDeclined"
+                },
+                {
+                  "value": "AnalyzeWidgetPublicLinkAccessed",
+                  "displayValue": "AnalyzeWidgetPublicLinkAccessed"
+                },
+                {
+                  "value": "ApprovalCreated",
+                  "displayValue": "ApprovalCreated"
+                },
+                {
+                  "value": "Oauth2AccessRevoked",
+                  "displayValue": "Oauth2AccessRevoked"
+                },
+                {
+                  "value": "TaskParentRemoved",
+                  "displayValue": "TaskParentRemoved"
+                },
+                {
+                  "value": "AntivirusDeletedInfectedAttach",
+                  "displayValue": "AntivirusDeletedInfectedAttach"
+                },
+                {
+                  "value": "WhiteboardUnshared",
+                  "displayValue": "WhiteboardUnshared"
+                },
+                {
+                  "value": "RequestFormModified",
+                  "displayValue": "RequestFormModified"
+                },
+                {
+                  "value": "GroupInviteeRemoved",
+                  "displayValue": "GroupInviteeRemoved"
+                },
+                {
+                  "value": "GuestReviewerInvited",
+                  "displayValue": "GuestReviewerInvited"
+                },
+                {
+                  "value": "TaskArchived",
+                  "displayValue": "TaskArchived"
+                },
+                {
+                  "value": "AccountBackupCreated",
+                  "displayValue": "AccountBackupCreated"
+                },
+                {
+                  "value": "FeedCreated",
+                  "displayValue": "FeedCreated"
+                },
+                {
+                  "value": "AccessCodeGenerated",
+                  "displayValue": "AccessCodeGenerated"
+                },
+                {
+                  "value": "UserDeactivated",
+                  "displayValue": "UserDeactivated"
+                },
+                {
+                  "value": "AttachCopied",
+                  "displayValue": "AttachCopied"
+                },
+                {
+                  "value": "GroupParentAdded",
+                  "displayValue": "GroupParentAdded"
+                },
+                {
+                  "value": "GuestReviewerChanged",
+                  "displayValue": "GuestReviewerChanged"
+                },
+                {
+                  "value": "TimelogUnlocked",
+                  "displayValue": "TimelogUnlocked"
+                },
+                {
+                  "value": "TaskCreated",
+                  "displayValue": "TaskCreated"
+                },
+                {
+                  "value": "WhiteboardRemoved",
+                  "displayValue": "WhiteboardRemoved"
+                },
+                {
+                  "value": "OneTimePasswordRevoked",
+                  "displayValue": "OneTimePasswordRevoked"
+                },
+                {
+                  "value": "ApprovalFinished",
+                  "displayValue": "ApprovalFinished"
+                },
+                {
+                  "value": "TaskAssigned",
+                  "displayValue": "TaskAssigned"
+                },
+                {
+                  "value": "OneTimePasswordCreated",
+                  "displayValue": "OneTimePasswordCreated"
+                },
+                {
+                  "value": "GroupCreated",
+                  "displayValue": "GroupCreated"
+                },
+                {
+                  "value": "TimesheetCreated",
+                  "displayValue": "TimesheetCreated"
+                },
+                {
+                  "value": "UsersAndGroupsExported",
+                  "displayValue": "UsersAndGroupsExported"
+                },
+                {
+                  "value": "ApprovalFinalDecisionStrategyChanged",
+                  "displayValue": "ApprovalFinalDecisionStrategyChanged"
+                },
+                {
+                  "value": "AttachMoved",
+                  "displayValue": "AttachMoved"
+                },
+                {
+                  "value": "CustomFieldCreated",
+                  "displayValue": "CustomFieldCreated"
+                },
+                {
+                  "value": "AutomatedIntegrationsExecution",
+                  "displayValue": "AutomatedIntegrationsExecution"
+                },
+                {
+                  "value": "PowerBIPublicLinkAccessed",
+                  "displayValue": "PowerBIPublicLinkAccessed"
+                },
+                {
+                  "value": "AttachUnmarkAsFinal",
+                  "displayValue": "AttachUnmarkAsFinal"
+                },
+                {
+                  "value": "AnalyzePublicLinkAccessed",
+                  "displayValue": "AnalyzePublicLinkAccessed"
+                },
+                {
+                  "value": "TimesheetTimeframeSettingsModified",
+                  "displayValue": "TimesheetTimeframeSettingsModified"
+                },
+                {
+                  "value": "GroupDeleted",
+                  "displayValue": "GroupDeleted"
+                },
+                {
+                  "value": "CustomFieldModified",
+                  "displayValue": "CustomFieldModified"
+                },
+                {
+                  "value": "TaskCommentDeleted",
+                  "displayValue": "TaskCommentDeleted"
+                },
+                {
+                  "value": "AnalyzePublicLinkDeleted",
+                  "displayValue": "AnalyzePublicLinkDeleted"
+                },
+                {
+                  "value": "UserTypeDeleted",
+                  "displayValue": "UserTypeDeleted"
+                },
+                {
+                  "value": "TimesheetTimeframeSettingsCreated",
+                  "displayValue": "TimesheetTimeframeSettingsCreated"
+                },
+                {
+                  "value": "Oauth2AccessGranted",
+                  "displayValue": "Oauth2AccessGranted"
+                },
+                {
+                  "value": "UserGrantAdmin",
+                  "displayValue": "UserGrantAdmin"
+                },
+                {
+                  "value": "PublicLinksAccountSettingsChanged",
+                  "displayValue": "PublicLinksAccountSettingsChanged"
+                },
+                {
+                  "value": "WorkflowUnarchived",
+                  "displayValue": "WorkflowUnarchived"
+                },
+                {
+                  "value": "TaskDeleted",
+                  "displayValue": "TaskDeleted"
+                },
+                {
+                  "value": "InvitationAccepted",
+                  "displayValue": "InvitationAccepted"
+                },
+                {
+                  "value": "AccountDataExportGenerated",
+                  "displayValue": "AccountDataExportGenerated"
+                },
+                {
+                  "value": "SamlSSOEnabled",
+                  "displayValue": "SamlSSOEnabled"
+                },
+                {
+                  "value": "PublicLinkPasswordChanged",
+                  "displayValue": "PublicLinkPasswordChanged"
+                },
+                {
+                  "value": "TaskParentAdded",
+                  "displayValue": "TaskParentAdded"
+                },
+                {
+                  "value": "ApprovalDecisionMade",
+                  "displayValue": "ApprovalDecisionMade"
+                },
+                {
+                  "value": "GuestReviewAccepted",
+                  "displayValue": "GuestReviewAccepted"
+                },
+                {
+                  "value": "UserCustomFieldValueChanged",
+                  "displayValue": "UserCustomFieldValueChanged"
+                },
+                {
+                  "value": "UserActivated",
+                  "displayValue": "UserActivated"
+                },
+                {
+                  "value": "AttachUploaded",
+                  "displayValue": "AttachUploaded"
+                },
+                {
+                  "value": "AttachDownloaded",
+                  "displayValue": "AttachDownloaded"
+                }
+              ]
+            },
+            "sourceType": {
+              "displayName": "sourceType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "APIv4",
+                  "displayValue": "APIv4"
+                },
+                {
+                  "value": "Automation",
+                  "displayValue": "Automation"
+                },
+                {
+                  "value": "UI",
+                  "displayValue": "UI"
+                },
+                {
+                  "value": "Unknown",
+                  "displayValue": "Unknown"
+                },
+                {
+                  "value": "MCPv1",
+                  "displayValue": "MCPv1"
+                },
+                {
+                  "value": "MCPv2",
+                  "displayValue": "MCPv2"
+                },
+                {
+                  "value": "WrikeAgent",
+                  "displayValue": "WrikeAgent"
+                }
+              ]
+            },
+            "userEmail": {
+              "displayName": "userEmail",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userId": {
+              "displayName": "userId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "bookings": {
+          "displayName": "Bookings",
+          "path": "/v4/bookings",
+          "responseKey": "data",
+          "fields": {
+            "bookingDates": {
+              "displayName": "bookingDates",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "effortAllocation": {
+              "displayName": "effortAllocation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "responsibleId": {
+              "displayName": "responsibleId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "responsiblePlaceholderId": {
+              "displayName": "responsiblePlaceholderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "comments": {
+          "displayName": "Comments",
+          "path": "/v4/comments",
+          "responseKey": "data",
+          "fields": {
+            "authorId": {
+              "displayName": "authorId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "direction": {
+              "displayName": "direction",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emailSubject": {
+              "displayName": "emailSubject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "externalRequester": {
+              "displayName": "externalRequester",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "taskId": {
+              "displayName": "taskId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "text": {
+              "displayName": "text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Email",
+                  "displayValue": "Email"
+                },
+                {
+                  "value": "Regular",
+                  "displayValue": "Regular"
+                }
+              ]
+            },
+            "updatedDate": {
+              "displayName": "updatedDate",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/v4/contacts",
+          "responseKey": "data",
+          "fields": {
+            "avatarUrl": {
+              "displayName": "avatarUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "companyName": {
+              "displayName": "companyName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "currentBillRate": {
+              "displayName": "currentBillRate",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "currentCostRate": {
+              "displayName": "currentCostRate",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "customFields": {
+              "displayName": "customFields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "deleted": {
+              "displayName": "deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "firstName": {
+              "displayName": "firstName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "jobRoleId": {
+              "displayName": "jobRoleId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastName": {
+              "displayName": "lastName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locale": {
+              "displayName": "locale",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "location": {
+              "displayName": "location",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "me": {
+              "displayName": "me",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "memberIds": {
+              "displayName": "memberIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "myTeam": {
+              "displayName": "myTeam",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "primaryEmail": {
+              "displayName": "primaryEmail",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "profiles": {
+              "displayName": "profiles",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "timezone": {
+              "displayName": "timezone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Group",
+                  "displayValue": "Group"
+                },
+                {
+                  "value": "Asset",
+                  "displayValue": "Asset"
+                },
+                {
+                  "value": "Person",
+                  "displayValue": "Person"
+                },
+                {
+                  "value": "Robot",
+                  "displayValue": "Robot"
+                }
+              ]
+            },
+            "workScheduleId": {
+              "displayName": "workScheduleId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "custom_item_types": {
+          "displayName": "Custom Item Types",
+          "path": "/v4/custom_item_types",
+          "responseKey": "data",
+          "fields": {
+            "addedToSpaces": {
+              "displayName": "addedToSpaces",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "archivedBy": {
+              "displayName": "archivedBy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "archivedOn": {
+              "displayName": "archivedOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customFieldIds": {
+              "displayName": "customFieldIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "dataUsageStatistics": {
+              "displayName": "dataUsageStatistics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "icon": {
+              "displayName": "icon",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "relatedType": {
+              "displayName": "relatedType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "Task",
+                  "displayValue": "Task"
+                }
+              ]
+            },
+            "spaceId": {
+              "displayName": "spaceId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "customfields": {
+          "displayName": "Custom Fields",
+          "path": "/v4/customfields",
+          "responseKey": "data",
+          "fields": {
+            "accountId": {
+              "displayName": "accountId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "addedToSpaces": {
+              "displayName": "addedToSpaces",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "archivedBy": {
+              "displayName": "archivedBy",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "archivedOn": {
+              "displayName": "archivedOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dataUsageStatistics": {
+              "displayName": "dataUsageStatistics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "settings": {
+              "displayName": "settings",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "sharedIds": {
+              "displayName": "sharedIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "sharing": {
+              "displayName": "sharing",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "spaceId": {
+              "displayName": "spaceId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Multiple",
+                  "displayValue": "Multiple"
+                },
+                {
+                  "value": "Percentage",
+                  "displayValue": "Percentage"
+                },
+                {
+                  "value": "Text",
+                  "displayValue": "Text"
+                },
+                {
+                  "value": "Duration",
+                  "displayValue": "Duration"
+                },
+                {
+                  "value": "CalculatedNumeric",
+                  "displayValue": "CalculatedNumeric"
+                },
+                {
+                  "value": "Date",
+                  "displayValue": "Date"
+                },
+                {
+                  "value": "CalculatedDate",
+                  "displayValue": "CalculatedDate"
+                },
+                {
+                  "value": "Numeric",
+                  "displayValue": "Numeric"
+                },
+                {
+                  "value": "Contacts",
+                  "displayValue": "Contacts"
+                },
+                {
+                  "value": "Checkbox",
+                  "displayValue": "Checkbox"
+                },
+                {
+                  "value": "Currency",
+                  "displayValue": "Currency"
+                },
+                {
+                  "value": "DropDown",
+                  "displayValue": "DropDown"
+                },
+                {
+                  "value": "LinkToDatabase",
+                  "displayValue": "LinkToDatabase"
+                }
+              ]
+            }
+          }
+        },
+        "folder_blueprints": {
+          "displayName": "Folder Blueprints",
+          "path": "/v4/folder_blueprints",
+          "responseKey": "data",
+          "fields": {
+            "childIds": {
+              "displayName": "childIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customFields": {
+              "displayName": "customFields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "permalink": {
+              "displayName": "permalink",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scope": {
+              "displayName": "scope",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "TaskBp",
+                  "displayValue": "TaskBp"
+                },
+                {
+                  "value": "BpRoot",
+                  "displayValue": "BpRoot"
+                },
+                {
+                  "value": "FolderBp",
+                  "displayValue": "FolderBp"
+                }
+              ]
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "folders": {
+          "displayName": "Folders \u0026 Projects",
+          "path": "/v4/folders",
+          "responseKey": "data",
+          "fields": {
+            "childIds": {
+              "displayName": "childIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "color": {
+              "displayName": "color",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Indigo4",
+                  "displayValue": "Indigo4"
+                },
+                {
+                  "value": "Gray3",
+                  "displayValue": "Gray3"
+                },
+                {
+                  "value": "Indigo2",
+                  "displayValue": "Indigo2"
+                },
+                {
+                  "value": "Indigo3",
+                  "displayValue": "Indigo3"
+                },
+                {
+                  "value": "Gray2",
+                  "displayValue": "Gray2"
+                },
+                {
+                  "value": "Gray1",
+                  "displayValue": "Gray1"
+                },
+                {
+                  "value": "Yellow1",
+                  "displayValue": "Yellow1"
+                },
+                {
+                  "value": "Yellow2",
+                  "displayValue": "Yellow2"
+                },
+                {
+                  "value": "Yellow3",
+                  "displayValue": "Yellow3"
+                },
+                {
+                  "value": "Blue1",
+                  "displayValue": "Blue1"
+                },
+                {
+                  "value": "Yellow4",
+                  "displayValue": "Yellow4"
+                },
+                {
+                  "value": "Blue2",
+                  "displayValue": "Blue2"
+                },
+                {
+                  "value": "Green4",
+                  "displayValue": "Green4"
+                },
+                {
+                  "value": "Blue3",
+                  "displayValue": "Blue3"
+                },
+                {
+                  "value": "Green3",
+                  "displayValue": "Green3"
+                },
+                {
+                  "value": "Blue4",
+                  "displayValue": "Blue4"
+                },
+                {
+                  "value": "Green2",
+                  "displayValue": "Green2"
+                },
+                {
+                  "value": "Green1",
+                  "displayValue": "Green1"
+                },
+                {
+                  "value": "Orange4",
+                  "displayValue": "Orange4"
+                },
+                {
+                  "value": "Orange3",
+                  "displayValue": "Orange3"
+                },
+                {
+                  "value": "Orange2",
+                  "displayValue": "Orange2"
+                },
+                {
+                  "value": "Orange1",
+                  "displayValue": "Orange1"
+                },
+                {
+                  "value": "Person",
+                  "displayValue": "Person"
+                },
+                {
+                  "value": "Purple1",
+                  "displayValue": "Purple1"
+                },
+                {
+                  "value": "Purple2",
+                  "displayValue": "Purple2"
+                },
+                {
+                  "value": "Purple3",
+                  "displayValue": "Purple3"
+                },
+                {
+                  "value": "Pink1",
+                  "displayValue": "Pink1"
+                },
+                {
+                  "value": "Red3",
+                  "displayValue": "Red3"
+                },
+                {
+                  "value": "Pink2",
+                  "displayValue": "Pink2"
+                },
+                {
+                  "value": "Red4",
+                  "displayValue": "Red4"
+                },
+                {
+                  "value": "Pink3",
+                  "displayValue": "Pink3"
+                },
+                {
+                  "value": "Red1",
+                  "displayValue": "Red1"
+                },
+                {
+                  "value": "Pink4",
+                  "displayValue": "Pink4"
+                },
+                {
+                  "value": "Red2",
+                  "displayValue": "Red2"
+                },
+                {
+                  "value": "Purple4",
+                  "displayValue": "Purple4"
+                },
+                {
+                  "value": "DarkBlue1",
+                  "displayValue": "DarkBlue1"
+                },
+                {
+                  "value": "DarkBlue3",
+                  "displayValue": "DarkBlue3"
+                },
+                {
+                  "value": "DarkBlue2",
+                  "displayValue": "DarkBlue2"
+                },
+                {
+                  "value": "DarkBlue4",
+                  "displayValue": "DarkBlue4"
+                },
+                {
+                  "value": "YellowGreen4",
+                  "displayValue": "YellowGreen4"
+                },
+                {
+                  "value": "YellowGreen3",
+                  "displayValue": "YellowGreen3"
+                },
+                {
+                  "value": "YellowGreen2",
+                  "displayValue": "YellowGreen2"
+                },
+                {
+                  "value": "YellowGreen1",
+                  "displayValue": "YellowGreen1"
+                },
+                {
+                  "value": "Turquoise3",
+                  "displayValue": "Turquoise3"
+                },
+                {
+                  "value": "Turquoise4",
+                  "displayValue": "Turquoise4"
+                },
+                {
+                  "value": "Turquoise1",
+                  "displayValue": "Turquoise1"
+                },
+                {
+                  "value": "Turquoise2",
+                  "displayValue": "Turquoise2"
+                },
+                {
+                  "value": "Indigo1",
+                  "displayValue": "Indigo1"
+                },
+                {
+                  "value": "DarkCyan2",
+                  "displayValue": "DarkCyan2"
+                },
+                {
+                  "value": "None",
+                  "displayValue": "None"
+                },
+                {
+                  "value": "DarkCyan1",
+                  "displayValue": "DarkCyan1"
+                },
+                {
+                  "value": "DarkCyan4",
+                  "displayValue": "DarkCyan4"
+                },
+                {
+                  "value": "DarkCyan3",
+                  "displayValue": "DarkCyan3"
+                }
+              ]
+            },
+            "customItemTypeId": {
+              "displayName": "customItemTypeId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "project": {
+              "displayName": "project",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "scope": {
+              "displayName": "scope",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "WsTask",
+                  "displayValue": "WsTask"
+                },
+                {
+                  "value": "RbRoot",
+                  "displayValue": "RbRoot"
+                },
+                {
+                  "value": "RbFolder",
+                  "displayValue": "RbFolder"
+                },
+                {
+                  "value": "WsFolder",
+                  "displayValue": "WsFolder"
+                },
+                {
+                  "value": "WsRoot",
+                  "displayValue": "WsRoot"
+                },
+                {
+                  "value": "RbTask",
+                  "displayValue": "RbTask"
+                }
+              ]
+            },
+            "space": {
+              "displayName": "space",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "groups": {
+          "displayName": "Groups",
+          "path": "/v4/groups",
+          "responseKey": "data",
+          "fields": {
+            "accountId": {
+              "displayName": "accountId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "avatarUrl": {
+              "displayName": "avatarUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "childIds": {
+              "displayName": "childIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "memberIds": {
+              "displayName": "memberIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "myTeam": {
+              "displayName": "myTeam",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "parentIds": {
+              "displayName": "parentIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "invitations": {
+          "displayName": "Invitations",
+          "path": "/v4/invitations",
+          "responseKey": "data",
+          "fields": {
+            "accountId": {
+              "displayName": "accountId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external": {
+              "displayName": "external",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "firstName": {
+              "displayName": "firstName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "invitationDate": {
+              "displayName": "invitationDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "inviterUserId": {
+              "displayName": "inviterUserId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastName": {
+              "displayName": "lastName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resolvedDate": {
+              "displayName": "resolvedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "role": {
+              "displayName": "role",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "User",
+                  "displayValue": "User"
+                },
+                {
+                  "value": "Collaborator",
+                  "displayValue": "Collaborator"
+                }
+              ]
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Declined",
+                  "displayValue": "Declined"
+                },
+                {
+                  "value": "Cancelled",
+                  "displayValue": "Cancelled"
+                },
+                {
+                  "value": "Pending",
+                  "displayValue": "Pending"
+                },
+                {
+                  "value": "Accepted",
+                  "displayValue": "Accepted"
+                }
+              ]
+            },
+            "userTypeId": {
+              "displayName": "userTypeId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "jobroles": {
+          "displayName": "Job Roles",
+          "path": "/v4/jobroles",
+          "responseKey": "data",
+          "fields": {
+            "avatarUrl": {
+              "displayName": "avatarUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isDeleted": {
+              "displayName": "isDeleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "shortTitle": {
+              "displayName": "shortTitle",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "placeholders": {
+          "displayName": "Placeholders",
+          "path": "/v4/placeholders",
+          "responseKey": "data",
+          "fields": {
+            "avatarUrl": {
+              "displayName": "avatarUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "deleted": {
+              "displayName": "deleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "jobRoleId": {
+              "displayName": "jobRoleId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shortTitle": {
+              "displayName": "shortTitle",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "request_forms": {
+          "displayName": "Request Forms",
+          "path": "/v4/request_forms",
+          "responseKey": "data",
+          "fields": {
+            "dataUsageStatistics": {
+              "displayName": "dataUsageStatistics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pages": {
+              "displayName": "pages",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "spaceId": {
+              "displayName": "spaceId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "spaces": {
+          "displayName": "Spaces",
+          "path": "/v4/spaces",
+          "responseKey": "data",
+          "fields": {
+            "accessType": {
+              "displayName": "accessType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Locked",
+                  "displayValue": "Locked"
+                },
+                {
+                  "value": "Personal",
+                  "displayValue": "Personal"
+                },
+                {
+                  "value": "Private",
+                  "displayValue": "Private"
+                },
+                {
+                  "value": "Public",
+                  "displayValue": "Public"
+                }
+              ]
+            },
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "avatarUrl": {
+              "displayName": "avatarUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "defaultProjectWorkflowId": {
+              "displayName": "defaultProjectWorkflowId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "defaultTaskWorkflowId": {
+              "displayName": "defaultTaskWorkflowId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "guestRoleId": {
+              "displayName": "guestRoleId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "members": {
+              "displayName": "members",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "suggestedProjectWorkflowIds": {
+              "displayName": "suggestedProjectWorkflowIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "suggestedTaskWorkflowIds": {
+              "displayName": "suggestedTaskWorkflowIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "workScheduleId": {
+              "displayName": "workScheduleId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "task_blueprints": {
+          "displayName": "Task Blueprints",
+          "path": "/v4/task_blueprints",
+          "responseKey": "data",
+          "fields": {
+            "childIds": {
+              "displayName": "childIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customFields": {
+              "displayName": "customFields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "permalink": {
+              "displayName": "permalink",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scope": {
+              "displayName": "scope",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "TaskBp",
+                  "displayValue": "TaskBp"
+                },
+                {
+                  "value": "BpRoot",
+                  "displayValue": "BpRoot"
+                },
+                {
+                  "value": "FolderBp",
+                  "displayValue": "FolderBp"
+                }
+              ]
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "tasks": {
+          "displayName": "Tasks",
+          "path": "/v4/tasks",
+          "responseKey": "data",
+          "fields": {
+            "accountId": {
+              "displayName": "accountId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "attachmentCount": {
+              "displayName": "attachmentCount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "authorIds": {
+              "displayName": "authorIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "billingType": {
+              "displayName": "billingType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Billable",
+                  "displayValue": "Billable"
+                },
+                {
+                  "value": "NonBillable",
+                  "displayValue": "NonBillable"
+                }
+              ]
+            },
+            "briefDescription": {
+              "displayName": "briefDescription",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cascadingFieldSettings": {
+              "displayName": "cascadingFieldSettings",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "completedDate": {
+              "displayName": "completedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customFields": {
+              "displayName": "customFields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customItemTypeId": {
+              "displayName": "customItemTypeId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customStatusId": {
+              "displayName": "customStatusId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "dates": {
+              "displayName": "dates",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "dependencyIds": {
+              "displayName": "dependencyIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "effortAllocation": {
+              "displayName": "effortAllocation",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "finance": {
+              "displayName": "finance",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "followedByMe": {
+              "displayName": "followedByMe",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "followerIds": {
+              "displayName": "followerIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "hasAttachments": {
+              "displayName": "hasAttachments",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "importance": {
+              "displayName": "importance",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "High",
+                  "displayValue": "High"
+                },
+                {
+                  "value": "Low",
+                  "displayValue": "Low"
+                },
+                {
+                  "value": "Normal",
+                  "displayValue": "Normal"
+                }
+              ]
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "parentIds": {
+              "displayName": "parentIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "permalink": {
+              "displayName": "permalink",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "priority": {
+              "displayName": "priority",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "recurrent": {
+              "displayName": "recurrent",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "responsibleIds": {
+              "displayName": "responsibleIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "responsiblePlaceholderIds": {
+              "displayName": "responsiblePlaceholderIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "scope": {
+              "displayName": "scope",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "WsTask",
+                  "displayValue": "WsTask"
+                },
+                {
+                  "value": "RbRoot",
+                  "displayValue": "RbRoot"
+                },
+                {
+                  "value": "RbFolder",
+                  "displayValue": "RbFolder"
+                },
+                {
+                  "value": "WsFolder",
+                  "displayValue": "WsFolder"
+                },
+                {
+                  "value": "WsRoot",
+                  "displayValue": "WsRoot"
+                },
+                {
+                  "value": "RbTask",
+                  "displayValue": "RbTask"
+                }
+              ]
+            },
+            "sharedIds": {
+              "displayName": "sharedIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "Deferred",
+                  "displayValue": "Deferred"
+                },
+                {
+                  "value": "Completed",
+                  "displayValue": "Completed"
+                },
+                {
+                  "value": "Cancelled",
+                  "displayValue": "Cancelled"
+                }
+              ]
+            },
+            "subTaskIds": {
+              "displayName": "subTaskIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "superParentIds": {
+              "displayName": "superParentIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "superTaskIds": {
+              "displayName": "superTaskIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedDate": {
+              "displayName": "updatedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "workScheduleId": {
+              "displayName": "workScheduleId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "timelog_categories": {
+          "displayName": "Timelog Categories",
+          "path": "/v4/timelog_categories",
+          "responseKey": "data",
+          "fields": {
+            "hidden": {
+              "displayName": "hidden",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "order": {
+              "displayName": "order",
+              "valueType": "other",
+              "providerType": "number"
+            }
+          }
+        },
+        "timelogs": {
+          "displayName": "Timelogs",
+          "path": "/v4/timelogs",
+          "responseKey": "data",
+          "fields": {
+            "approvalStatus": {
+              "displayName": "approvalStatus",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "NotSubmitted",
+                  "displayValue": "NotSubmitted"
+                },
+                {
+                  "value": "Approved",
+                  "displayValue": "Approved"
+                },
+                {
+                  "value": "Rejected",
+                  "displayValue": "Rejected"
+                },
+                {
+                  "value": "Pending",
+                  "displayValue": "Pending"
+                }
+              ]
+            },
+            "billingType": {
+              "displayName": "billingType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Billable",
+                  "displayValue": "Billable"
+                },
+                {
+                  "value": "NonBillable",
+                  "displayValue": "NonBillable"
+                }
+              ]
+            },
+            "categoryId": {
+              "displayName": "categoryId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "comment": {
+              "displayName": "comment",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdDate": {
+              "displayName": "createdDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "exportStatus": {
+              "displayName": "exportStatus",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "NotExported",
+                  "displayValue": "NotExported"
+                },
+                {
+                  "value": "Exported",
+                  "displayValue": "Exported"
+                },
+                {
+                  "value": "ReadyForExport",
+                  "displayValue": "ReadyForExport"
+                }
+              ]
+            },
+            "finance": {
+              "displayName": "finance",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "hours": {
+              "displayName": "hours",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lockStatus": {
+              "displayName": "lockStatus",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Locked",
+                  "displayValue": "Locked"
+                },
+                {
+                  "value": "Unlocked",
+                  "displayValue": "Unlocked"
+                }
+              ]
+            },
+            "taskId": {
+              "displayName": "taskId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "trackedDate": {
+              "displayName": "trackedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "updatedDate": {
+              "displayName": "updatedDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userId": {
+              "displayName": "userId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "timesheet_submission_rules": {
+          "displayName": "Timesheet Submission Rules",
+          "path": "/v4/timesheet_submission_rules",
+          "responseKey": "data",
+          "fields": {
+            "enabled": {
+              "displayName": "enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "frequency": {
+              "displayName": "frequency",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Month",
+                  "displayValue": "Month"
+                },
+                {
+                  "value": "Week",
+                  "displayValue": "Week"
+                },
+                {
+                  "value": "Day",
+                  "displayValue": "Day"
+                }
+              ]
+            },
+            "ruleType": {
+              "displayName": "ruleType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Hard",
+                  "displayValue": "Hard"
+                },
+                {
+                  "value": "Soft",
+                  "displayValue": "Soft"
+                }
+              ]
+            },
+            "trackExceptionsMode": {
+              "displayName": "trackExceptionsMode",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "TotalCapacity",
+                  "displayValue": "TotalCapacity"
+                },
+                {
+                  "value": "ActualCapacity",
+                  "displayValue": "ActualCapacity"
+                }
+              ]
+            },
+            "workScheduleId": {
+              "displayName": "workScheduleId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "timesheets": {
+          "displayName": "Timesheets",
+          "path": "/v4/timesheets",
+          "responseKey": "data",
+          "fields": {
+            "accountId": {
+              "displayName": "accountId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "approval": {
+              "displayName": "approval",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "periodEndDate": {
+              "displayName": "periodEndDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "periodStartDate": {
+              "displayName": "periodStartDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "rows": {
+              "displayName": "rows",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "timeframe": {
+              "displayName": "timeframe",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Monthly",
+                  "displayValue": "Monthly"
+                },
+                {
+                  "value": "Weekly",
+                  "displayValue": "Weekly"
+                }
+              ]
+            },
+            "timesheetId": {
+              "displayName": "timesheetId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userId": {
+              "displayName": "userId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "user_schedule_exclusions": {
+          "displayName": "User Schedule Exceptions",
+          "path": "/v4/user_schedule_exclusions",
+          "responseKey": "data",
+          "fields": {
+            "exclusionType": {
+              "displayName": "exclusionType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "VacationPTO",
+                  "displayValue": "VacationPTO"
+                },
+                {
+                  "value": "Overtime",
+                  "displayValue": "Overtime"
+                },
+                {
+                  "value": "OtherNonWorking",
+                  "displayValue": "OtherNonWorking"
+                }
+              ]
+            },
+            "fromDate": {
+              "displayName": "fromDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isWorkDays": {
+              "displayName": "isWorkDays",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "toDate": {
+              "displayName": "toDate",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userId": {
+              "displayName": "userId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "user_types": {
+          "displayName": "User Types",
+          "path": "/v4/user_types",
+          "responseKey": "data",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "workflows": {
+          "displayName": "Workflows",
+          "path": "/v4/workflows",
+          "responseKey": "data",
+          "fields": {
+            "customStatuses": {
+              "displayName": "customStatuses",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "dataUsageStatistics": {
+              "displayName": "dataUsageStatistics",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hidden": {
+              "displayName": "hidden",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "standard": {
+              "displayName": "standard",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "workschedules": {
+          "displayName": "Work Schedules",
+          "path": "/v4/workschedules",
+          "responseKey": "data",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scheduleType": {
+              "displayName": "scheduleType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "Custom",
+                  "displayValue": "Custom"
+                },
+                {
+                  "value": "Default",
+                  "displayValue": "Default"
+                }
+              ]
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "userIds": {
+              "displayName": "userIds",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "workweek": {
+              "displayName": "workweek",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        }
+      }
+    }
+  }
+}
