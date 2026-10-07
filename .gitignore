@@ -134,7 +134,9 @@ bin/
 
 vendor/
 
+# Files created by OpenAPI extraction scripts.
 **/queryParamStats.json
+**/endpoints.json
 
 # Custom golangci-lint binary
 custom-gcl
