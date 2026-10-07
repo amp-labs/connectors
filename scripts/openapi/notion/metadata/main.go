@@ -226,22 +226,12 @@ func schemaType(schema *openapi3.Schema) string {
 		return ""
 	}
 
-	if schema.Type != nil {
-		for _, typ := range schema.Type.Slice() {
-			if typ != "" && typ != "null" {
-				return typ
-			}
-		}
+	if typ := declaredType(schema); typ != "" {
+		return typ
 	}
 
-	for _, ref := range append(append(schema.AllOf, schema.OneOf...), schema.AnyOf...) {
-		if ref == nil {
-			continue
-		}
-
-		if typ := schemaType(ref.Value); typ != "" {
-			return typ
-		}
+	if typ := compositeType(schema); typ != "" {
+		return typ
 	}
 
 	if schema.Items != nil {
@@ -250,6 +240,34 @@ func schemaType(schema *openapi3.Schema) string {
 
 	if len(schema.Properties) > 0 {
 		return "object"
+	}
+
+	return ""
+}
+
+func declaredType(schema *openapi3.Schema) string {
+	if schema.Type == nil {
+		return ""
+	}
+
+	for _, typ := range schema.Type.Slice() {
+		if typ != "" && typ != "null" {
+			return typ
+		}
+	}
+
+	return ""
+}
+
+func compositeType(schema *openapi3.Schema) string {
+	for _, ref := range append(append(schema.AllOf, schema.OneOf...), schema.AnyOf...) {
+		if ref == nil {
+			continue
+		}
+
+		if typ := schemaType(ref.Value); typ != "" {
+			return typ
+		}
 	}
 
 	return ""
