@@ -147,6 +147,7 @@ import (
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/teamwork"
 	"github.com/amp-labs/connectors/providers/webex"
+	"github.com/amp-labs/connectors/providers/webflow"
 	"github.com/amp-labs/connectors/providers/xero"
 	"github.com/amp-labs/connectors/providers/zendeskchat"
 	"github.com/amp-labs/connectors/providers/zendesksupport"
@@ -322,6 +323,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Teamleader:                        wrapper(newTeamleaderConnector),
 	providers.Teamwork:                          wrapper(newTeamworkConnector),
 	providers.Webex:                             wrapper(newWebexConnector),
+	providers.Webflow:                           wrapper(newWebflowConnector),
 	providers.Xero:                              wrapper(newXeroConnector),
 	providers.ZendeskChat:                       wrapper(newZendeskChatConnector),
 	providers.ZendeskSupport:                    wrapper(newZendeskSupportConnector),
@@ -1223,6 +1225,12 @@ func newWebexConnector(
 	params common.ConnectorParams,
 ) (*webex.Connector, error) {
 	return webex.NewConnector(params)
+}
+
+func newWebflowConnector(
+	params common.ConnectorParams,
+) (*webflow.Connector, error) {
+	return webflow.NewConnector(params)
 }
 
 func newChargebeeConnector(

@@ -1,0 +1,1547 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "activity_logs": {
+          "displayName": "Site Activity Logs",
+          "path": "/v2/sites/{site_id}/activity_logs",
+          "responseKey": "items",
+          "fields": {
+            "actorId": {
+              "displayName": "actorId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "actorName": {
+              "displayName": "actorName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "actorType": {
+              "displayName": "actorType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "user",
+                  "displayValue": "user"
+                },
+                {
+                  "value": "agent",
+                  "displayValue": "agent"
+                },
+                {
+                  "value": "workflow",
+                  "displayValue": "workflow"
+                },
+                {
+                  "value": "rule",
+                  "displayValue": "rule"
+                }
+              ]
+            },
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "event": {
+              "displayName": "event",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "styles_modified",
+                  "displayValue": "styles_modified"
+                },
+                {
+                  "value": "site_published",
+                  "displayValue": "site_published"
+                },
+                {
+                  "value": "ix2_modified_on_page",
+                  "displayValue": "ix2_modified_on_page"
+                },
+                {
+                  "value": "page_dom_modified",
+                  "displayValue": "page_dom_modified"
+                },
+                {
+                  "value": "cms_item",
+                  "displayValue": "cms_item"
+                },
+                {
+                  "value": "backup_created",
+                  "displayValue": "backup_created"
+                },
+                {
+                  "value": "page_custom_code_modified",
+                  "displayValue": "page_custom_code_modified"
+                },
+                {
+                  "value": "symbols_modified",
+                  "displayValue": "symbols_modified"
+                },
+                {
+                  "value": "variable_modified",
+                  "displayValue": "variable_modified"
+                },
+                {
+                  "value": "variables_modified",
+                  "displayValue": "variables_modified"
+                },
+                {
+                  "value": "cms_collection",
+                  "displayValue": "cms_collection"
+                },
+                {
+                  "value": "page_settings_modified",
+                  "displayValue": "page_settings_modified"
+                },
+                {
+                  "value": "page_settings_custom_code_modified",
+                  "displayValue": "page_settings_custom_code_modified"
+                },
+                {
+                  "value": "ix2_modified_on_component",
+                  "displayValue": "ix2_modified_on_component"
+                },
+                {
+                  "value": "ix2_modified_on_class",
+                  "displayValue": "ix2_modified_on_class"
+                },
+                {
+                  "value": "site_custom_code_modified",
+                  "displayValue": "site_custom_code_modified"
+                },
+                {
+                  "value": "page_duplicated",
+                  "displayValue": "page_duplicated"
+                },
+                {
+                  "value": "secondary_locale_page_content_modified",
+                  "displayValue": "secondary_locale_page_content_modified"
+                },
+                {
+                  "value": "page_renamed",
+                  "displayValue": "page_renamed"
+                },
+                {
+                  "value": "page_created",
+                  "displayValue": "page_created"
+                },
+                {
+                  "value": "page_deleted",
+                  "displayValue": "page_deleted"
+                },
+                {
+                  "value": "site_unpublished",
+                  "displayValue": "site_unpublished"
+                },
+                {
+                  "value": "backup_restored",
+                  "displayValue": "backup_restored"
+                },
+                {
+                  "value": "locale_added",
+                  "displayValue": "locale_added"
+                },
+                {
+                  "value": "branch_created",
+                  "displayValue": "branch_created"
+                },
+                {
+                  "value": "locale_display_name_updated",
+                  "displayValue": "locale_display_name_updated"
+                },
+                {
+                  "value": "locale_subdirectory_updated",
+                  "displayValue": "locale_subdirectory_updated"
+                },
+                {
+                  "value": "branch_merged",
+                  "displayValue": "branch_merged"
+                },
+                {
+                  "value": "locale_tag_updated",
+                  "displayValue": "locale_tag_updated"
+                },
+                {
+                  "value": "branch_deleted",
+                  "displayValue": "branch_deleted"
+                },
+                {
+                  "value": "locale_enabled",
+                  "displayValue": "locale_enabled"
+                },
+                {
+                  "value": "locale_removed",
+                  "displayValue": "locale_removed"
+                },
+                {
+                  "value": "locale_disabled",
+                  "displayValue": "locale_disabled"
+                },
+                {
+                  "value": "library_shared",
+                  "displayValue": "library_shared"
+                },
+                {
+                  "value": "library_unshared",
+                  "displayValue": "library_unshared"
+                },
+                {
+                  "value": "library_installed",
+                  "displayValue": "library_installed"
+                },
+                {
+                  "value": "library_uninstalled",
+                  "displayValue": "library_uninstalled"
+                },
+                {
+                  "value": "library_update_shared",
+                  "displayValue": "library_update_shared"
+                },
+                {
+                  "value": "library_update_accepted",
+                  "displayValue": "library_update_accepted"
+                },
+                {
+                  "value": "branch_review_created",
+                  "displayValue": "branch_review_created"
+                },
+                {
+                  "value": "branch_review_approved",
+                  "displayValue": "branch_review_approved"
+                },
+                {
+                  "value": "branch_review_canceled",
+                  "displayValue": "branch_review_canceled"
+                }
+              ]
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "newValue": {
+              "displayName": "newValue",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "payload": {
+              "displayName": "payload",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "previousValue": {
+              "displayName": "previousValue",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resourceId": {
+              "displayName": "resourceId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resourceName": {
+              "displayName": "resourceName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "resourceOperation": {
+              "displayName": "resourceOperation",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "CREATED",
+                  "displayValue": "CREATED"
+                },
+                {
+                  "value": "MODIFIED",
+                  "displayValue": "MODIFIED"
+                },
+                {
+                  "value": "PUBLISHED",
+                  "displayValue": "PUBLISHED"
+                },
+                {
+                  "value": "UNPUBLISHED",
+                  "displayValue": "UNPUBLISHED"
+                },
+                {
+                  "value": "DELETED",
+                  "displayValue": "DELETED"
+                },
+                {
+                  "value": "GROUP_REORDERED",
+                  "displayValue": "GROUP_REORDERED"
+                },
+                {
+                  "value": "GROUP_CREATED",
+                  "displayValue": "GROUP_CREATED"
+                },
+                {
+                  "value": "GROUP_DELETED",
+                  "displayValue": "GROUP_DELETED"
+                },
+                {
+                  "value": "REORDERED",
+                  "displayValue": "REORDERED"
+                }
+              ]
+            },
+            "source": {
+              "displayName": "source",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "WEBFLOW_AI",
+                  "displayValue": "WEBFLOW_AI"
+                },
+                {
+                  "value": "WEBFLOW_MCP",
+                  "displayValue": "WEBFLOW_MCP"
+                },
+                {
+                  "value": "DESIGNER",
+                  "displayValue": "DESIGNER"
+                },
+                {
+                  "value": "SYSTEM",
+                  "displayValue": "SYSTEM"
+                }
+              ]
+            },
+            "user": {
+              "displayName": "user",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "asset_folders": {
+          "displayName": "Asset Folders",
+          "path": "/v2/sites/{site_id}/asset_folders",
+          "responseKey": "assetFolders",
+          "fields": {
+            "assets": {
+              "displayName": "assets",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parentFolder": {
+              "displayName": "parentFolder",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "siteId": {
+              "displayName": "siteId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "assets": {
+          "displayName": "Assets",
+          "path": "/v2/sites/{site_id}/assets",
+          "responseKey": "assets",
+          "fields": {
+            "altText": {
+              "displayName": "altText",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "contentType": {
+              "displayName": "contentType",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "folderId": {
+              "displayName": "folderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hostedUrl": {
+              "displayName": "hostedUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "originalFileName": {
+              "displayName": "originalFileName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "siteId": {
+              "displayName": "siteId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "size": {
+              "displayName": "size",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "variants": {
+              "displayName": "variants",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "collections": {
+          "displayName": "Collections",
+          "path": "/v2/sites/{site_id}/collections",
+          "responseKey": "collections",
+          "fields": {
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "singularName": {
+              "displayName": "singularName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "slug": {
+              "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "comments": {
+          "displayName": "Comment Threads",
+          "path": "/v2/sites/{site_id}/comments",
+          "responseKey": "comments",
+          "fields": {
+            "author": {
+              "displayName": "author",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "breakpoint": {
+              "displayName": "breakpoint",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "content": {
+              "displayName": "content",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isResolved": {
+              "displayName": "isResolved",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "itemId": {
+              "displayName": "itemId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "localeId": {
+              "displayName": "localeId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "mentionedUsers": {
+              "displayName": "mentionedUsers",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "pageId": {
+              "displayName": "pageId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "siteId": {
+              "displayName": "siteId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "components": {
+          "displayName": "Components",
+          "path": "/v2/sites/{site_id}/components",
+          "responseKey": "components",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "group": {
+              "displayName": "group",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "readonly": {
+              "displayName": "readonly",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "custom_code_blocks": {
+          "displayName": "Custom Code Blocks",
+          "path": "/v2/sites/{site_id}/custom_code/blocks",
+          "responseKey": "blocks",
+          "fields": {
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pageId": {
+              "displayName": "pageId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scripts": {
+              "displayName": "scripts",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "siteId": {
+              "displayName": "siteId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "page",
+                  "displayValue": "page"
+                },
+                {
+                  "value": "site",
+                  "displayValue": "site"
+                }
+              ]
+            }
+          }
+        },
+        "custom_domains": {
+          "displayName": "Custom Domains",
+          "path": "/v2/sites/{site_id}/custom_domains",
+          "responseKey": "customDomains",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastPublished": {
+              "displayName": "lastPublished",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "custom_fonts": {
+          "displayName": "Custom Fonts",
+          "path": "/v2/sites/{site_id}/custom_fonts",
+          "responseKey": "customFonts",
+          "fields": {
+            "axes": {
+              "displayName": "axes",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "fileName": {
+              "displayName": "fileName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fontDisplay": {
+              "displayName": "fontDisplay",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "auto",
+                  "displayValue": "auto"
+                },
+                {
+                  "value": "block",
+                  "displayValue": "block"
+                },
+                {
+                  "value": "swap",
+                  "displayValue": "swap"
+                },
+                {
+                  "value": "fallback",
+                  "displayValue": "fallback"
+                },
+                {
+                  "value": "optional",
+                  "displayValue": "optional"
+                }
+              ]
+            },
+            "fontFamily": {
+              "displayName": "fontFamily",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "format": {
+              "displayName": "format",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "woff2",
+                  "displayValue": "woff2"
+                },
+                {
+                  "value": "woff",
+                  "displayValue": "woff"
+                },
+                {
+                  "value": "truetype",
+                  "displayValue": "truetype"
+                },
+                {
+                  "value": "opentype",
+                  "displayValue": "opentype"
+                },
+                {
+                  "value": "embedded-opentype",
+                  "displayValue": "embedded-opentype"
+                },
+                {
+                  "value": "svg",
+                  "displayValue": "svg"
+                }
+              ]
+            },
+            "hostedUrl": {
+              "displayName": "hostedUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "italic": {
+              "displayName": "italic",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "weight": {
+              "displayName": "weight",
+              "valueType": "int",
+              "providerType": "integer"
+            }
+          }
+        },
+        "form_submissions": {
+          "displayName": "Form Submissions",
+          "path": "/v2/sites/{site_id}/form_submissions",
+          "responseKey": "formSubmissions",
+          "fields": {
+            "dateSubmitted": {
+              "displayName": "dateSubmitted",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "formResponse": {
+              "displayName": "formResponse",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "localeId": {
+              "displayName": "localeId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "siteId": {
+              "displayName": "siteId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "workspaceId": {
+              "displayName": "workspaceId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "forms": {
+          "displayName": "Forms",
+          "path": "/v2/sites/{site_id}/forms",
+          "responseKey": "forms",
+          "fields": {
+            "componentElementId": {
+              "displayName": "componentElementId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "componentId": {
+              "displayName": "componentId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fields": {
+              "displayName": "fields",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "formElementId": {
+              "displayName": "formElementId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pageId": {
+              "displayName": "pageId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "pageName": {
+              "displayName": "pageName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "responseSettings": {
+              "displayName": "responseSettings",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "siteDomainId": {
+              "displayName": "siteDomainId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "siteId": {
+              "displayName": "siteId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "workspaceId": {
+              "displayName": "workspaceId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "google_tags": {
+          "displayName": "Google Tags",
+          "path": "/v2/sites/{site_id}/integrations/google_tags",
+          "responseKey": "googleTagIds",
+          "fields": {
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "order": {
+              "displayName": "order",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "tagId": {
+              "displayName": "tagId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "orders": {
+          "displayName": "Orders",
+          "path": "/v2/sites/{site_id}/orders",
+          "responseKey": "orders",
+          "fields": {
+            "acceptedOn": {
+              "displayName": "acceptedOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "allAddresses": {
+              "displayName": "allAddresses",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "applicationFee": {
+              "displayName": "applicationFee",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "billingAddress": {
+              "displayName": "billingAddress",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "comment": {
+              "displayName": "comment",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customData": {
+              "displayName": "customData",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "customerInfo": {
+              "displayName": "customerInfo",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "customerPaid": {
+              "displayName": "customerPaid",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "disputeLastStatus": {
+              "displayName": "disputeLastStatus",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "warning_needs_response",
+                  "displayValue": "warning_needs_response"
+                },
+                {
+                  "value": "warning_under_review",
+                  "displayValue": "warning_under_review"
+                },
+                {
+                  "value": "warning_closed",
+                  "displayValue": "warning_closed"
+                },
+                {
+                  "value": "needs_response",
+                  "displayValue": "needs_response"
+                },
+                {
+                  "value": "under_review",
+                  "displayValue": "under_review"
+                },
+                {
+                  "value": "charge_refunded",
+                  "displayValue": "charge_refunded"
+                },
+                {
+                  "value": "won",
+                  "displayValue": "won"
+                },
+                {
+                  "value": "lost",
+                  "displayValue": "lost"
+                }
+              ]
+            },
+            "disputeUpdatedOn": {
+              "displayName": "disputeUpdatedOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "disputedOn": {
+              "displayName": "disputedOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "downloadFiles": {
+              "displayName": "downloadFiles",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "fulfilledOn": {
+              "displayName": "fulfilledOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hasDownloads": {
+              "displayName": "hasDownloads",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isCustomerDeleted": {
+              "displayName": "isCustomerDeleted",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isShippingRequired": {
+              "displayName": "isShippingRequired",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "netAmount": {
+              "displayName": "netAmount",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "orderComment": {
+              "displayName": "orderComment",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "orderId": {
+              "displayName": "orderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "paymentProcessor": {
+              "displayName": "paymentProcessor",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "paypalDetails": {
+              "displayName": "paypalDetails",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "purchasedItems": {
+              "displayName": "purchasedItems",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "purchasedItemsCount": {
+              "displayName": "purchasedItemsCount",
+              "valueType": "other",
+              "providerType": "number"
+            },
+            "refundedOn": {
+              "displayName": "refundedOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shippingAddress": {
+              "displayName": "shippingAddress",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "shippingProvider": {
+              "displayName": "shippingProvider",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shippingTracking": {
+              "displayName": "shippingTracking",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shippingTrackingURL": {
+              "displayName": "shippingTrackingURL",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "pending",
+                  "displayValue": "pending"
+                },
+                {
+                  "value": "unfulfilled",
+                  "displayValue": "unfulfilled"
+                },
+                {
+                  "value": "fulfilled",
+                  "displayValue": "fulfilled"
+                },
+                {
+                  "value": "disputed",
+                  "displayValue": "disputed"
+                },
+                {
+                  "value": "dispute-lost",
+                  "displayValue": "dispute-lost"
+                },
+                {
+                  "value": "refunded",
+                  "displayValue": "refunded"
+                }
+              ]
+            },
+            "stripeCard": {
+              "displayName": "stripeCard",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "stripeDetails": {
+              "displayName": "stripeDetails",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "totals": {
+              "displayName": "totals",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "pages": {
+          "displayName": "Pages",
+          "path": "/v2/sites/{site_id}/pages",
+          "responseKey": "pages",
+          "fields": {
+            "archived": {
+              "displayName": "archived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "branchId": {
+              "displayName": "branchId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "canBranch": {
+              "displayName": "canBranch",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "collectionId": {
+              "displayName": "collectionId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "draft": {
+              "displayName": "draft",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isBranch": {
+              "displayName": "isBranch",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "localeId": {
+              "displayName": "localeId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "openGraph": {
+              "displayName": "openGraph",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "parentId": {
+              "displayName": "parentId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "publishedPath": {
+              "displayName": "publishedPath",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "seo": {
+              "displayName": "seo",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "shouldPublish": {
+              "displayName": "shouldPublish",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "siteId": {
+              "displayName": "siteId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "slug": {
+              "displayName": "slug",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "products": {
+          "displayName": "Products",
+          "path": "/v2/sites/{site_id}/products",
+          "responseKey": "items",
+          "fields": {
+            "cmsLocaleId": {
+              "displayName": "cmsLocaleId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fieldData": {
+              "displayName": "fieldData",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isArchived": {
+              "displayName": "isArchived",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "isDraft": {
+              "displayName": "isDraft",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "lastPublished": {
+              "displayName": "lastPublished",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "skus": {
+              "displayName": "skus",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "redirects": {
+          "displayName": "Redirects",
+          "path": "/v2/sites/{site_id}/redirects",
+          "responseKey": "redirects",
+          "fields": {
+            "fromUrl": {
+              "displayName": "fromUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "toUrl": {
+              "displayName": "toUrl",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "registered_scripts": {
+          "displayName": "Registered Scripts",
+          "path": "/v2/sites/{site_id}/registered_scripts",
+          "responseKey": "registeredScripts",
+          "fields": {
+            "canCopy": {
+              "displayName": "canCopy",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hostedLocation": {
+              "displayName": "hostedLocation",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "integrityHash": {
+              "displayName": "integrityHash",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "version": {
+              "displayName": "version",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "sites": {
+          "displayName": "Sites",
+          "path": "/v2/sites",
+          "responseKey": "sites",
+          "fields": {
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "customDomains": {
+              "displayName": "customDomains",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "dataCollectionEnabled": {
+              "displayName": "dataCollectionEnabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "dataCollectionType": {
+              "displayName": "dataCollectionType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "always",
+                  "displayValue": "always"
+                },
+                {
+                  "value": "optOut",
+                  "displayValue": "optOut"
+                },
+                {
+                  "value": "disabled",
+                  "displayValue": "disabled"
+                }
+              ]
+            },
+            "displayName": {
+              "displayName": "displayName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "fullSiteCompiledAt": {
+              "displayName": "fullSiteCompiledAt",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastPublished": {
+              "displayName": "lastPublished",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastUpdated": {
+              "displayName": "lastUpdated",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "locales": {
+              "displayName": "locales",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "parentFolderId": {
+              "displayName": "parentFolderId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "previewUrl": {
+              "displayName": "previewUrl",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "shortName": {
+              "displayName": "shortName",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "timeZone": {
+              "displayName": "timeZone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "workspaceId": {
+              "displayName": "workspaceId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "webhooks": {
+          "displayName": "Webhooks",
+          "path": "/v2/sites/{site_id}/webhooks",
+          "responseKey": "webhooks",
+          "fields": {
+            "createdOn": {
+              "displayName": "createdOn",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "filter": {
+              "displayName": "filter",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "lastTriggered": {
+              "displayName": "lastTriggered",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "siteId": {
+              "displayName": "siteId",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "triggerType": {
+              "displayName": "triggerType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "form_submission",
+                  "displayValue": "form_submission"
+                },
+                {
+                  "value": "site_publish",
+                  "displayValue": "site_publish"
+                },
+                {
+                  "value": "page_created",
+                  "displayValue": "page_created"
+                },
+                {
+                  "value": "page_metadata_updated",
+                  "displayValue": "page_metadata_updated"
+                },
+                {
+                  "value": "page_deleted",
+                  "displayValue": "page_deleted"
+                },
+                {
+                  "value": "ecomm_new_order",
+                  "displayValue": "ecomm_new_order"
+                },
+                {
+                  "value": "ecomm_order_changed",
+                  "displayValue": "ecomm_order_changed"
+                },
+                {
+                  "value": "ecomm_inventory_changed",
+                  "displayValue": "ecomm_inventory_changed"
+                },
+                {
+                  "value": "collection_item_created",
+                  "displayValue": "collection_item_created"
+                },
+                {
+                  "value": "collection_item_changed",
+                  "displayValue": "collection_item_changed"
+                },
+                {
+                  "value": "collection_item_deleted",
+                  "displayValue": "collection_item_deleted"
+                },
+                {
+                  "value": "collection_item_published",
+                  "displayValue": "collection_item_published"
+                },
+                {
+                  "value": "collection_item_unpublished",
+                  "displayValue": "collection_item_unpublished"
+                },
+                {
+                  "value": "comment_created",
+                  "displayValue": "comment_created"
+                }
+              ]
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "workspaceId": {
+              "displayName": "workspaceId",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
