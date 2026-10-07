@@ -16,7 +16,7 @@ func GetFreshdeskConnector(ctx context.Context) *freshdesk.Connector {
 
 	conn, err := freshdesk.NewConnector(
 		freshdesk.WithClient(ctx, http.DefaultClient, reader.Get(credscanning.Fields.Username), reader.Get(credscanning.Fields.Password)),
-		freshdesk.WithWorkspace("pepkarage"),
+		freshdesk.WithWorkspace(reader.Get(credscanning.Fields.Workspace)),
 	)
 	if err != nil {
 		testUtils.Fail("error creating Freshdesk connector", "error", err)
