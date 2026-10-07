@@ -17,7 +17,8 @@
                 <description>Story describing birthday</description>
                 <type>Text</type>
                 <required>false</required>
-                <unique>false</unique>
+                <unique>true</unique>
+                <externalId>true</externalId>
                 <indexed>false</indexed>
                 <length>30</length>
             </metadata>
