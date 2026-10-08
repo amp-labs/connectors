@@ -5,6 +5,7 @@ package main
 import (
 	"log/slog"
 	"slices"
+	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/goutils"
@@ -58,11 +59,11 @@ var objectNameToResponseField = datautils.NewDefaultMap(map[string]string{
 //
 //nolint:gochecknoglobals
 var resourceObjects = []resourceObject{
-	{name: "users", displayName: "Users", component: "userObjectResponse", path: "/v1/users"},
-	{name: "file_uploads", displayName: "File Uploads", component: "fileUploadObjectResponse", path: "/v1/file_uploads"},
-	{name: "pages", displayName: "Pages", component: "pageObjectResponse", path: "/v1/pages"},
-	{name: "data_sources", displayName: "Data Sources", component: "dataSourceObjectResponse", path: "/v1/data_sources"},
-	{name: "blocks", displayName: "Blocks", component: "blockObjectResponse", path: "/v1/blocks"},
+	{name: "users", displayName: "Users", component: "userObjectResponse", path: "/users"},
+	{name: "file_uploads", displayName: "File Uploads", component: "fileUploadObjectResponse", path: "/file_uploads"},
+	{name: "pages", displayName: "Pages", component: "pageObjectResponse", path: "/pages"},
+	{name: "data_sources", displayName: "Data Sources", component: "dataSourceObjectResponse", path: "/data_sources"},
+	{name: "blocks", displayName: "Blocks", component: "blockObjectResponse", path: "/blocks"},
 }
 
 type resourceObject struct {
@@ -108,7 +109,14 @@ func main() {
 			continue
 		}
 
-		addObject(schemas, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey, object.Fields)
+		addObject(
+			schemas,
+			object.ObjectName,
+			object.DisplayName,
+			pathWithoutVersion(object.URLPath),
+			object.ResponseKey,
+			object.Fields,
+		)
 
 		for _, queryParam := range object.QueryParams {
 			registry.Add(queryParam, object.ObjectName)
@@ -133,6 +141,21 @@ func main() {
 	goutils.MustBeNil(outputMetadata.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 
 	slog.Info("Completed.", "listObjects", len(supportedObjects), "resourceObjects", len(resourceObjects))
+}
+
+// pathWithoutVersion drops the API version. Object paths are the resource only,
+// for example OpenAPI /v1/blocks becomes /blocks.
+func pathWithoutVersion(path string) string {
+	trimmed, ok := strings.CutPrefix(path, "/v1")
+	if !ok || trimmed == "" {
+		return path
+	}
+
+	if !strings.HasPrefix(trimmed, "/") {
+		return "/" + trimmed
+	}
+
+	return trimmed
 }
 
 func addObject(

@@ -6,7 +6,7 @@
       "objects": {
         "blocks": {
           "displayName": "Blocks",
-          "path": "/v1/blocks",
+          "path": "/blocks",
           "responseKey": "results",
           "fields": {
             "audio": {
@@ -395,7 +395,7 @@
         },
         "data_sources": {
           "displayName": "Data Sources",
-          "path": "/v1/data_sources",
+          "path": "/data_sources",
           "responseKey": "results",
           "fields": {
             "cover": {
@@ -498,7 +498,7 @@
         },
         "file_uploads": {
           "displayName": "File Uploads",
-          "path": "/v1/file_uploads",
+          "path": "/file_uploads",
           "responseKey": "results",
           "fields": {
             "complete_url": {
@@ -604,7 +604,7 @@
         },
         "pages": {
           "displayName": "Pages",
-          "path": "/v1/pages",
+          "path": "/pages",
           "responseKey": "results",
           "fields": {
             "cover": {
@@ -692,7 +692,7 @@
         },
         "users": {
           "displayName": "Users",
-          "path": "/v1/users",
+          "path": "/users",
           "responseKey": "results",
           "fields": {
             "avatar_url": {
