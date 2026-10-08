@@ -74,6 +74,23 @@ type resourceObject struct {
 }
 
 func main() {
+	schemas, registry := schemasFromLists()
+
+	doc, err := files.Document()
+	goutils.MustBeNil(err)
+
+	addResourceObjects(schemas, doc)
+
+	goutils.MustBeNil(outputMetadata.FlushSchemas(schemas))
+	goutils.MustBeNil(outputMetadata.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
+
+	slog.Info("Completed.", "listObjects", len(supportedObjects), "resourceObjects", len(resourceObjects))
+}
+
+func schemasFromLists() (
+	*staticschema.Metadata[staticschema.FieldMetadataMapV2, any],
+	datautils.NamedLists[string],
+) {
 	explorer, err := files.FileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			api3.SlashesToSpaceSeparated,
@@ -123,9 +140,13 @@ func main() {
 		}
 	}
 
-	doc, err := files.Document()
-	goutils.MustBeNil(err)
+	return schemas, registry
+}
 
+func addResourceObjects(
+	schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any],
+	doc *openapi3.T,
+) {
 	for _, resource := range resourceObjects {
 		component := doc.Components.Schemas[resource.component]
 		if component == nil || component.Value == nil {
@@ -134,13 +155,15 @@ func main() {
 			continue
 		}
 
-		addObject(schemas, resource.name, resource.displayName, resource.path, "results", fieldsFromSchema(component.Value))
+		addObject(
+			schemas,
+			resource.name,
+			resource.displayName,
+			resource.path,
+			"results",
+			fieldsFromSchema(component.Value),
+		)
 	}
-
-	goutils.MustBeNil(outputMetadata.FlushSchemas(schemas))
-	goutils.MustBeNil(outputMetadata.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
-
-	slog.Info("Completed.", "listObjects", len(supportedObjects), "resourceObjects", len(resourceObjects))
 }
 
 // pathWithoutVersion drops the API version. Object paths are the resource only,
