@@ -2,8 +2,8 @@ package stripe
 
 import (
 	"context"
-	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/stripe"
@@ -15,9 +15,9 @@ func GetStripeConnector(ctx context.Context) *stripe.Connector {
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 
 	conn, err := stripe.NewConnector(
-		stripe.WithClient(ctx, http.DefaultClient,
-			reader.Get(credscanning.Fields.ApiKey),
-		),
+		common.ConnectorParams{
+			AuthenticatedClient: utils.NewAPIKeyClient(ctx, reader, providers.Stripe),
+		},
 	)
 	if err != nil {
 		utils.Fail("error creating Stripe connector", "error", err)

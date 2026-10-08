@@ -10,10 +10,28 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-// ReadThroughPages reads records from a connector page by page.
-// It continues advancing pagination until no more pages remain.
-// This is useful in tests to ensure pagination terminates and does not loop infinitely.
+// ReadThroughPages reads records from a connector page by page until the
+// connector reports no more pages. It is primarily useful in tests for
+// verifying that pagination terminates and does not loop indefinitely.
 func ReadThroughPages(ctx context.Context, connector connectors.ReadConnector, params common.ReadParams) {
+	readThroughPages(ctx, connector, params, func(result *common.ReadResult) {
+		utils.DumpJSON(result, os.Stdout)
+	})
+}
+
+// ReadThroughPagesFieldsOnly reads records from a connector page by page until
+// the connector reports no more pages. It is primarily useful in tests for
+// verifying that pagination terminates and for printing only the parsed fields
+// without the raw payload.
+func ReadThroughPagesFieldsOnly(ctx context.Context, connector connectors.ReadConnector, params common.ReadParams) {
+	readThroughPages(ctx, connector, params, func(result *common.ReadResult) {
+		utils.PrintReadResultWithoutRaw(result, os.Stdout)
+	})
+}
+
+func readThroughPages(ctx context.Context, connector connectors.ReadConnector, params common.ReadParams,
+	printer func(result *common.ReadResult),
+) {
 	var (
 		read = &common.ReadResult{
 			Done: false, // seed initial state so the loop runs at least once
@@ -34,7 +52,7 @@ func ReadThroughPages(ctx context.Context, connector connectors.ReadConnector, p
 
 		// Log and dump results for inspection.
 		slog.Info("Reading...", "page", params.NextPage)
-		utils.DumpJSON(read, os.Stdout)
+		printer(read)
 
 		numPages += 1
 	}

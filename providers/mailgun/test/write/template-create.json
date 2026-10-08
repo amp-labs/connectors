@@ -1,0 +1,19 @@
+{
+  "message": "template has been stored",
+  "template": {
+    "name": "welcome",
+    "description": "Welcome email",
+    "createdAt": "Wed, 05 Aug 2026 17:50:00 UTC",
+    "createdBy": "api",
+    "id": "46565d87-68b6-4edb-8b3c-34554af4bb77",
+    "domain": "example.com",
+    "version": {
+      "tag": "initial",
+      "template": "<html>Hi {{name}}</html>",
+      "createdAt": "Wed, 05 Aug 2026 17:50:00 UTC",
+      "comment": "",
+      "active": true,
+      "id": "3efd2b85-0f41-4a1d-9898-05d7e7459c4a"
+    }
+  }
+}

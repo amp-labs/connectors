@@ -1,6 +1,7 @@
 package microsoft
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -74,6 +75,32 @@ func handleErrorResponse(res *http.Response, body []byte) error {
 	}
 
 	return defaultJSONResponder.HandleErrorResponse(res, body)
+}
+
+// handleNonJSONErrorResponse is the Fallback handler: responses with no
+// Content-Type, or a media type with none registered. Graph sends its bodyless
+// 500 this way, so it lands here rather than at handleErrorResponse.
+//
+// Graph reports genuine transient failures through its documented envelope
+// (`{"error": {"code": "InternalServerError", ...}}`), so a 500 with an empty
+// body never took that path; in production this signature has only been
+// observed as a permanent, connection-specific failure. Narrow on purpose — a
+// bodyless 502/503/504 is an ordinary gateway failure and stays retryable, and
+// any envelope at all may still be transient. Everything else goes to
+// common.InterpretError, unchanged from before the Fallback existed.
+func handleNonJSONErrorResponse(res *http.Response, body []byte) error {
+	if res.StatusCode != http.StatusInternalServerError || len(bytes.TrimSpace(body)) != 0 {
+		return common.InterpretError(res, body)
+	}
+
+	// The response carries no other detail, so name the failing request.
+	detail := ""
+	if res.Request != nil && res.Request.URL != nil {
+		detail = fmt.Sprintf(" [%s %s]", res.Request.Method, res.Request.URL)
+	}
+
+	return fmt.Errorf("%w: microsoft returned 500 with no error body%s",
+		common.ErrServerNonRetryable, detail)
 }
 
 // claimsChallengeReason detects CAE (insufficient_claims) and step-up

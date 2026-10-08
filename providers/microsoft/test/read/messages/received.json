@@ -1,0 +1,58 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/mailFolders('inbox')/messages",
+  "value": [
+    {
+      "@odata.etag": "W/\"CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAEotHCz\"",
+      "id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEMAAB8hj1Rtd60SKTngNs3if9RAAEouWboAAA=",
+      "createdDateTime": "2026-04-22T19:44:58Z",
+      "lastModifiedDateTime": "2026-04-22T19:45:16Z",
+      "changeKey": "CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAEotHCz",
+      "categories": [],
+      "receivedDateTime": "2026-04-22T19:44:59Z",
+      "sentDateTime": "2026-04-22T19:44:49Z",
+      "hasAttachments": false,
+      "subject": "Microsoft subscription purchase confirmation",
+      "bodyPreview": "Details of your subscription purchase. Thanks for your purchase.",
+      "importance": "normal",
+      "parentFolderId": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQAuAAAAAABeMJSlO8qLToz2i2IQ1wsqAQB8hj1Rtd60SKTngNs3if9RAAAAAAEMAAA=",
+      "conversationId": "AAQkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQAQAN0wy81kLfpCgIuxabT2Tt0=",
+      "conversationIndex": "AQHc0pCA3TDLzWQt+kKAi7FptPZO3Q==",
+      "isDeliveryReceiptRequested": null,
+      "isReadReceiptRequested": false,
+      "isRead": true,
+      "isDraft": false,
+      "inferenceClassification": "focused",
+      "body": {
+        "contentType": "html",
+        "content": "<html></html>"
+      },
+      "sender": {
+        "emailAddress": {
+          "name": "Microsoft",
+          "address": "microsoft-noreply@microsoft.com"
+        }
+      },
+      "from": {
+        "emailAddress": {
+          "name": "Microsoft",
+          "address": "microsoft-noreply@microsoft.com"
+        }
+      },
+      "toRecipients": [
+        {
+          "emailAddress": {
+            "name": "John Doe",
+            "address": "JohnDoe@test.com"
+          }
+        }
+      ],
+      "ccRecipients": [],
+      "bccRecipients": [],
+      "replyTo": [],
+      "flag": {
+        "flagStatus": "notFlagged"
+      }
+    }
+  ],
+  "@odata.nextLink": "https://graph.microsoft.com/v1.0/me/mailFolders('inbox')/messages?%24filter=lastModifiedDateTime+gt+2026-04-22T19%3a00%3a00Z&%24top=1&%24skip=1"
+}

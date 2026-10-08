@@ -6,20 +6,25 @@ import (
 	"fmt"
 	"net/http"
 	neturl "net/url"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/acculynx/metadata"
 	"github.com/spyzhov/ajson"
 )
 
-var errChildPagesExceeded = errors.New("acculynx: nested fetch exceeded page cap")
+var (
+	errChildPagesExceeded = errors.New("acculynx: nested fetch exceeded page cap")
+	errMissingCount       = errors.New("acculynx: list response omitted count, cannot determine when pagination ends")
+)
 
 const (
 	// AccuLynx OpenAPI does not document maximum pageSize, but its API enforces
@@ -29,10 +34,20 @@ const (
 	defaultPageSize = "25"
 	maxPageSize     = 25
 
-	pageSizeParam    = "pageSize"
-	recordStartParam = "recordStartIndex"
-	pageStartParam   = "pageStartIndex"
-	pageNumberParam  = "pageNumber"
+	pageSizeParam  = "pageSize"
+	pageStartParam = "pageStartIndex"
+
+	// The /jobs listing without an assignment parameter returns exactly the
+	// jobs assigned to users; unassigned jobs are only reachable with
+	// assignment=unassigned (the two sets are disjoint, verified live —
+	// neither includes the other, and no "all" value exists).
+	// https://apidocs.acculynx.com/reference/getjobs
+	assignmentParam      = "assignment"
+	assignmentUnassigned = "unassigned"
+
+	// countKey is the envelope field holding the total number of unfiltered
+	// items for the object; used to terminate pagination exactly.
+	countKey = "count"
 
 	// AccuLynx 10 req/sec per API key gives plenty of headroom; 4 is a
 	// conservative cap for the per-parent fan-out.
@@ -56,18 +71,71 @@ const (
 	objectEstimates   = "estimates"
 	objectSupplements = "supplements"
 	objectCalendars   = "calendars"
+	objectUsers       = "users"
+
+	// objectJobsRepresentatives is a nested read object that is also a
+	// subscribe object: AccuLynx emits job.representatives.* topics for it.
+	objectJobsRepresentatives = "jobs/representatives"
 )
+
+// ReadParamsOpts is the connector-specific shape of common.ReadParams.Opts,
+// set by the server per customer (gong's ReadParamsOpts is the precedent).
+type ReadParamsOpts struct {
+	// HydrateEstimates enriches each /estimates row from its detail endpoint
+	// at the cost of one extra API call per record (up to pageSize per page).
+	// Off by default: plain estimates reads return the list stubs unchanged.
+	HydrateEstimates bool
+}
+
+// shouldHydrateEstimates reports whether the caller opted into estimate
+// hydration. False when Opts is unset or carries a different type.
+func shouldHydrateEstimates(params common.ReadParams) bool {
+	opts, ok := params.Opts.(ReadParamsOpts)
+
+	return ok && opts.HydrateEstimates
+}
+
+// includesByObject lists the AccuLynx ?includes= expansions applied
+// unconditionally on every read of the object. Contacts return phone/email as
+// reference-only stubs unless expanded, so we always request them — downstream
+// field filtering still drops fields the caller did not select. Jobs omit
+// initialAppointment from the payload entirely unless expanded; with
+// ?includes=initialAppointment it arrives in full (startDate/endDate/notes).
+// Note the OpenAPI spec types job.initialAppointment as a _link-only stub and
+// documents contacts as the sole expandable property — both are spec bugs; the
+// live API expands initialAppointment. Object-scoped (not org-scoped): the
+// connector has no org context. Association-driven includes (e.g. jobs ->
+// contacts) are handled separately in applyIncludes.
+//
+//nolint:gochecknoglobals
+var includesByObject = map[string][]string{
+	objectContacts: {"emailAddress", "phoneNumber"},
+	objectJobs:     {"initialAppointment"},
+
+	// The financials leaf serves its worksheet and amendments in full only
+	// when asked; without them the response carries reference stubs. Verified
+	// live: an expanded worksheet arrives with its sections and items, but a
+	// job whose worksheet is empty omits the key entirely instead of sending
+	// an empty expansion.
+	// https://apidocs.acculynx.com/reference/getfinancialsforjob
+	"jobs/financials": {"worksheet", "amendments"},
+}
 
 type nestedSpec struct {
 	parentObject string
 	leafSuffix   string
 }
 
+// nestedObjects is a map of objects which require a fan-out of parent objects to child objects.
+// For example, for the object "jobs/contacts", the parent object is "jobs" and the leaf suffix is "contacts".
+// We first need to list all jobs, and then for each job, we need to list all their contacts.
+//
 //nolint:gochecknoglobals
 var nestedObjects = datautils.Map[string, nestedSpec]{
 	"jobs/contacts":          {parentObject: objectJobs, leafSuffix: "contacts"},
 	"jobs/custom-fields":     {parentObject: objectJobs, leafSuffix: "custom-fields"},
 	"jobs/estimates":         {parentObject: objectJobs, leafSuffix: "estimates"},
+	"jobs/financials":        {parentObject: objectJobs, leafSuffix: "financials"},
 	"jobs/history":           {parentObject: objectJobs, leafSuffix: "history"},
 	"jobs/invoices":          {parentObject: objectJobs, leafSuffix: "invoices"},
 	"jobs/milestone-history": {parentObject: objectJobs, leafSuffix: "milestone-history"},
@@ -127,8 +195,32 @@ func (c *Connector) buildInitialURL(params common.ReadParams) (*urlbuilder.URL, 
 	}
 
 	applyPagination(url, objectName, params)
+	applyIncludes(url, objectName, params)
 
 	return url, nil
+}
+
+// applyIncludes appends AccuLynx ?includes= expansions to the read URL. Object
+// defaults come from includesByObject (always applied). Additionally, jobs
+// request the embedded contacts array only when the Job<->Contact association is
+// requested, so plain jobs reads are not bloated for orgs that did not opt in.
+//
+// AccuLynx takes every expansion as one comma-separated ?includes= value, and
+// urlbuilder's WithQueryParam replaces rather than appends — so the values are
+// collected and written in a single call. Setting the param twice would silently
+// drop the first expansion.
+func applyIncludes(url *urlbuilder.URL, objectName string, params common.ReadParams) {
+	includes := slices.Clone(includesByObject[objectName])
+
+	if objectName == objectJobs && slices.Contains(params.AssociatedObjects, jobContactsAssociation) {
+		includes = append(includes, jobContactsAssociation)
+	}
+
+	if len(includes) == 0 {
+		return
+	}
+
+	url.WithQueryParam("includes", strings.Join(includes, ","))
 }
 
 func applyPagination(url *urlbuilder.URL, objectName string, params common.ReadParams) {
@@ -139,16 +231,7 @@ func applyPagination(url *urlbuilder.URL, objectName string, params common.ReadP
 
 	url.WithQueryParam(pageSizeParam, pageSizeWithCap(params))
 
-	switch spec.pagination {
-	case paginationOffsetRecord:
-		url.WithQueryParam(recordStartParam, "0")
-	case paginationOffsetPage:
-		url.WithQueryParam(pageStartParam, "0")
-	case paginationPageNumber:
-		url.WithQueryParam(pageNumberParam, "1")
-	case paginationNone:
-		// No-op — handled above.
-	}
+	url.WithQueryParam(pageStartParam, "0")
 }
 
 // pageSizeWithCap returns params.PageSize when within bounds, otherwise
@@ -191,9 +274,50 @@ func (c *Connector) parseReadResponse(
 		resp,
 		c.recordsFunc(params.ObjectName),
 		c.makeFilterFunc(params, reqURL),
-		common.MakeMarshaledDataFunc(transformer),
+		c.readMarshaller(ctx, params, transformer),
 		params.Fields,
 	)
+}
+
+// readMarshaller wraps the base marshaller with row post-processors:
+//
+//   - estimates hydration (opt-in, one detail call per row — see
+//     estimates.go), chained first so the association extractors below see
+//     the final rows;
+//   - jobs -> contacts association: embedded contacts arrive via
+//     ?includes=contacts, pure reshape;
+//   - estimates -> jobs association: the job stub ({id, _link}) and
+//     isPrimary are on every estimate row, pure reshape.
+func (c *Connector) readMarshaller(
+	ctx context.Context,
+	params common.ReadParams,
+	transformer common.RecordTransformer,
+) common.MarshalFromNodeFunc {
+	marshaller := common.MakeMarshaledDataFunc(transformer)
+
+	if params.ObjectName == objectEstimates && shouldHydrateEstimates(params) {
+		marshaller = readhelper.ChainedMarshaller(marshaller, c.hydrateEstimateRows(ctx, params))
+	}
+
+	if params.ObjectName == objectJobs &&
+		slices.Contains(params.AssociatedObjects, jobContactsAssociation) {
+		marshaller = readhelper.ChainedMarshaller(marshaller, func(rows []common.ReadResultRow) error {
+			extractJobContacts(rows)
+
+			return nil
+		})
+	}
+
+	if params.ObjectName == objectEstimates &&
+		slices.Contains(params.AssociatedObjects, estimateJobAssociation) {
+		marshaller = readhelper.ChainedMarshaller(marshaller, func(rows []common.ReadResultRow) error {
+			extractEstimateJobs(rows)
+
+			return nil
+		})
+	}
+
+	return marshaller
 }
 
 // buildCustomFieldsTransformer fetches custom-field definitions and per-record
@@ -238,7 +362,19 @@ func (c *Connector) buildCustomFieldsTransformer(
 // recordsFunc resolves the records-array key from the schema's responseKey.
 // Most AccuLynx list responses wrap as {..., items: [...]}; the exception is
 // /acculynx/units-of-measure which uses "unitsOfMeasure".
+// singleObjectResponses lists objects whose endpoint answers with one JSON
+// object rather than a list; the response root is the record.
+//
+//nolint:gochecknoglobals
+var singleObjectResponses = datautils.NewStringSet("jobs/financials")
+
 func (c *Connector) recordsFunc(objectName string) common.NodeRecordsFunc {
+	if singleObjectResponses.Has(objectName) {
+		return func(node *ajson.Node) ([]*ajson.Node, error) {
+			return []*ajson.Node{node}, nil
+		}
+	}
+
 	return common.MakeRecordsFunc(c.arrayFieldName(objectName))
 }
 
@@ -355,12 +491,13 @@ func (c *Connector) fetchChildrenForParents(
 // the loop follows result.NextPage until the records-array length signals the
 // last page. Children configured as paginationNone exit after one iteration
 // because makeNextPage returns "" immediately.
-func (c *Connector) fetchChildPages(
-	ctx context.Context,
+// buildChildURL constructs the first-page URL of one parent's leaf endpoint,
+// with the object's pagination, includes and date-window parameters applied.
+func (c *Connector) buildChildURL(
 	parentID string,
 	params common.ReadParams,
 	nested nestedSpec,
-) ([]common.ReadResultRow, error) {
+) (*urlbuilder.URL, error) {
 	parentPath, err := metadata.Schemas.LookupURLPath(c.ProviderContext.Module(), nested.parentObject)
 	if err != nil {
 		return nil, err
@@ -374,10 +511,25 @@ func (c *Connector) fetchChildPages(
 	}
 
 	applyPagination(reqURL, params.ObjectName, params)
+	applyIncludes(reqURL, params.ObjectName, params)
 	applyHistoryDateWindow(reqURL, params)
 
 	if params.ObjectName == "calendars/appointments" {
 		applyAppointmentsDateWindow(reqURL, params)
+	}
+
+	return reqURL, nil
+}
+
+func (c *Connector) fetchChildPages(
+	ctx context.Context,
+	parentID string,
+	params common.ReadParams,
+	nested nestedSpec,
+) ([]common.ReadResultRow, error) {
+	reqURL, err := c.buildChildURL(parentID, params, nested)
+	if err != nil {
+		return nil, err
 	}
 
 	var allRows []common.ReadResultRow
@@ -385,6 +537,19 @@ func (c *Connector) fetchChildPages(
 	for range maxChildPagesPerParent {
 		resp, err := c.JSONHTTPClient().Get(ctx, reqURL.String())
 		if err != nil {
+			// Some leaves do not exist for every job: unassigned jobs answer
+			// 404 on representatives, estimates and milestone-history. The
+			// trigger is the assignment itself, not the milestone — an
+			// assigned job in the Lead milestone answers 200 on all leaves
+			// (verified live; the API reference documents only a generic
+			// 404). A missing leaf means "no child records", not a failed
+			// read — the same way non-user calendars 404 in GetRecordsByIds.
+			// This ends only this parent's page walk; the other parents each
+			// run their own fetchChildPages call.
+			if isNotFound(err) {
+				return allRows, nil
+			}
+
 			return nil, err
 		}
 
@@ -400,6 +565,7 @@ func (c *Connector) fetchChildPages(
 			return nil, err
 		}
 
+		attachNestedAssociations(params, parentID, result.Data)
 		allRows = append(allRows, result.Data...)
 
 		if result.NextPage == "" {
@@ -445,8 +611,26 @@ func applyAppointmentsDateWindow(url *urlbuilder.URL, params common.ReadParams) 
 }
 
 // makeNextPage returns a NextPageFunc tailored to the object's paginationStyle.
-// Pagination terminates when the records array is shorter than pageSize (the
-// universal "partial page = last page" signal used elsewhere in the repo).
+//
+// Pagination stops on any of three signals, in order of reliability:
+//
+//  1. The server ignored our offset — the echoed pageStartIndex does not match
+//     what we asked for. Continuing would re-request the same page forever,
+//     since a server replaying page one always returns a full page and so
+//     never trips the partial-page check below.
+//  2. Every record has been consumed — the echoed offset plus this page's
+//     record count has reached the envelope's total count.
+//  3. Partial page — fewer records than pageSize.
+//
+// Signals 1 and 2 read the shared AccuLynx list envelope:
+//
+//	{ "count": 163, "pageSize": 25, "pageStartIndex": 0, "items": [...] }
+//
+// A full page carrying no count means the total is unknown, so no signal can
+// prove the read ever ends: that errors rather than paging on, surfacing the
+// provider change immediately instead of after an arbitrary page budget.
+// Objects whose responses carry no envelope are all paginationNone and return
+// early, so their absence is never a problem.
 func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) common.NextPageFunc {
 	spec := objectReadSpecs.Get(objectName)
 	recordsKey := c.arrayFieldName(objectName)
@@ -461,9 +645,19 @@ func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) comm
 			return "", err
 		}
 
+		requested := queryParamIntOrDefault(reqURL, pageStartParam, 0)
 		per := queryParamIntOrDefault(reqURL, pageSizeParam, maxPageSize)
-		if records < per {
-			return "", nil
+
+		if envelopeExhausted(root, records, requested, per) {
+			return nextJobsSequenceURL(objectName, reqURL)
+		}
+
+		// Reaching here means the page was full and the offset was honoured, so
+		// the sweep would continue. Without count there is no signal that can
+		// bound it, so fail loudly now rather than page on and hope a short
+		// page eventually arrives.
+		if _, reported := envelopeInt(root, countKey); !reported {
+			return "", fmt.Errorf("%w: %s", errMissingCount, objectName)
 		}
 
 		next, err := cloneURL(reqURL)
@@ -471,23 +665,88 @@ func (c *Connector) makeNextPage(objectName string, reqURL *urlbuilder.URL) comm
 			return "", err
 		}
 
-		advancePagination(next, spec.pagination, records)
+		advanceOffset(next, pageStartParam, records)
 
 		return next.String(), nil
 	}
 }
 
-func advancePagination(u *urlbuilder.URL, style paginationStyle, records int) {
-	switch style {
-	case paginationOffsetRecord:
-		advanceOffset(u, recordStartParam, records)
-	case paginationOffsetPage:
-		advanceOffset(u, pageStartParam, records)
-	case paginationPageNumber:
-		advancePageNumber(u)
-	case paginationNone:
-		// No-op.
+// nextJobsSequenceURL continues an exhausted jobs sweep into the second
+// assignment population. Reading "jobs" must return every job, but the API
+// splits them across two disjoint listings (see assignmentParam): the sweep
+// therefore runs the default (assigned) listing first and, once exhausted,
+// restarts at the first unassigned page. The phase travels in the next-page
+// URL itself, so pagination state needs nothing new. Objects other than jobs,
+// and the unassigned sweep itself, end as before. The cloned URL may carry
+// include expansions the unassigned listing does not support (it documents
+// only "contact"); those are silently ignored, verified live.
+func nextJobsSequenceURL(objectName string, reqURL *urlbuilder.URL) (string, error) {
+	if objectName != objectJobs {
+		return "", nil
 	}
+
+	if _, ok := reqURL.GetFirstQueryParam(assignmentParam); ok {
+		return "", nil
+	}
+
+	next, err := cloneURL(reqURL)
+	if err != nil {
+		return "", err
+	}
+
+	next.WithQueryParam(assignmentParam, assignmentUnassigned)
+	next.WithQueryParam(pageStartParam, "0")
+
+	return next.String(), nil
+}
+
+// paginationExhausted reports whether a paged sweep should stop, given the page
+// just received. It encodes the same three data-driven signals makeNextPage
+// applies, for the hand-rolled loops in custom.go:
+//
+//   - the server echoed an offset other than the one requested, meaning it
+//     ignored our paging and re-served an earlier page;
+//   - the echoed offset plus this page's records reached the envelope total;
+//   - the page came back short.
+//
+// A zero count is treated as "no total reported" rather than "no records",
+// since an empty page already terminates via the short-page check.
+func paginationExhausted(records, requested, echoedOffset, total, per int) bool {
+	if echoedOffset != requested {
+		return true
+	}
+
+	if total > 0 && requested+records >= total {
+		return true
+	}
+
+	return records < per
+}
+
+// envelopeExhausted applies paginationExhausted to a raw list response. A
+// missing echoed offset is read as "the server agreed with us" and a missing
+// count as "no total reported", so endpoints that omit either field fall back
+// to the short-page signal alone.
+func envelopeExhausted(root *ajson.Node, records, requested, per int) bool {
+	echoed, ok := envelopeInt(root, pageStartParam)
+	if !ok {
+		echoed = requested
+	}
+
+	total, _ := envelopeInt(root, countKey)
+
+	return paginationExhausted(records, requested, echoed, total, per)
+}
+
+// envelopeInt reads a top-level integer from the AccuLynx list envelope,
+// reporting whether the field was present and numeric.
+func envelopeInt(root *ajson.Node, key string) (int, bool) {
+	value, err := jsonquery.New(root).IntegerOptional(key)
+	if err != nil || value == nil {
+		return 0, false
+	}
+
+	return int(*value), true
 }
 
 func arrayLength(root *ajson.Node, recordsKey string) (int, error) {
@@ -503,17 +762,6 @@ func advanceOffset(u *urlbuilder.URL, paramName string, increment int) {
 	current, _ := u.GetFirstQueryParam(paramName)
 	currentInt, _ := strconv.Atoi(current)
 	u.WithQueryParam(paramName, strconv.Itoa(currentInt+increment))
-}
-
-func advancePageNumber(u *urlbuilder.URL) {
-	current, _ := u.GetFirstQueryParam(pageNumberParam)
-
-	currentInt, err := strconv.Atoi(current)
-	if err != nil || currentInt < 1 {
-		currentInt = 1
-	}
-
-	u.WithQueryParam(pageNumberParam, strconv.Itoa(currentInt+1))
 }
 
 func queryParamIntOrDefault(u *urlbuilder.URL, key string, defaultValue int) int {

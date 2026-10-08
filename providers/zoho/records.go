@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers"
 )
 
 //nolint:revive
@@ -18,6 +19,13 @@ func (c *Connector) GetRecordsByIds(
 	fields []string,
 	associations []string,
 ) ([]common.ReadResultRow, error) {
+	// The Mail module fetches records through its own endpoints, addressed by
+	// composite ids ("<folderId>/<messageId>" for messages, "<groupId>/<taskId>"
+	// for group tasks), so delegate to the mail adapter.
+	if c.moduleID == providers.ModuleZohoMail {
+		return c.mailAdapter.GetRecordsByIds(ctx, objectName, recordIds, fields, associations)
+	}
+
 	if len(recordIds) == 0 {
 		return nil, fmt.Errorf("%w: recordIds is empty", errMissingParams)
 	}

@@ -18,6 +18,7 @@ func TestListObjectMetadata(t *testing.T) {
 	customersResponse := testutils.DataFromFile(t, "customers.json")
 	catalogResponse := testutils.DataFromFile(t, "catalog.json")
 	merchantsResponse := testutils.DataFromFile(t, "merchants.json")
+	catalogItemsResponse := testutils.DataFromFile(t, "catalog-items.json")
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
@@ -181,6 +182,34 @@ func TestListObjectMetadata(t *testing.T) {
 				Errors: map[string]error{
 					"customers": mockutils.ExpectedSubsetErrors{
 						common.ErrMissingExpectedValues,
+					},
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Catalog items metadata samples one record over POST",
+			Input: []string{objectCatalogItems},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/v2/catalog/search-catalog-items"),
+					mockcond.Body(`{"archived_state": "ARCHIVED_STATE_ALL", "limit": 1}`),
+				},
+				Then: mockserver.Response(http.StatusOK, catalogItemsResponse),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					objectCatalogItems: {
+						DisplayName: "Catalog Items",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   common.ValueTypeString,
+							},
+						},
 					},
 				},
 			},

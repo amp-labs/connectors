@@ -1,0 +1,14 @@
+[
+  {
+    "created": 1443651141,
+    "email": "bounce@example.com",
+    "reason": "550 5.1.1 The email account that you tried to reach does not exist.",
+    "status": "5.1.1"
+  },
+  {
+    "created": 1443651150,
+    "email": "bounce2@example.com",
+    "reason": "550 5.1.1 mailbox unavailable",
+    "status": "5.1.1"
+  }
+]

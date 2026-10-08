@@ -1,0 +1,27 @@
+{
+  "items": [
+    {
+      "id": "e1",
+      "account_id": "acc-1",
+      "account_name": "Acme",
+      "domain_id": "d1",
+      "domain_name": "mail.example.com",
+      "prev_band": "dynamic_good",
+      "new_band": "dynamic_poor",
+      "reason": "bounce_rate",
+      "bounce_rate": 6.1,
+      "complaint_rate": 0.05,
+      "processed_count": 1200,
+      "initiated_by": "system",
+      "owning_account_id": "acc-1",
+      "timestamp": "Tue, 15 Sep 2026 09:00:00 UTC"
+    }
+  ],
+  "total_items": 1,
+  "paging": {
+    "first": "https://api.mailgun.net/v1/dynamic_pools/history?page=first",
+    "last": "https://api.mailgun.net/v1/dynamic_pools/history?page=last",
+    "next": "https://api.mailgun.net/v1/dynamic_pools/history?page=next1",
+    "previous": "https://api.mailgun.net/v1/dynamic_pools/history?page=prev"
+  }
+}

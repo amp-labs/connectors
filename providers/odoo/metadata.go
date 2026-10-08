@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
 // E.g POST /json/2/ir.model/search_read.

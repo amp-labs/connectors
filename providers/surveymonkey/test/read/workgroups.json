@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "id": "9bccda1faa0d45363edb7fc22",
+      "name": "Brand Awareness",
+      "description": "Spreading the company brand",
+      "is_visible": true,
+      "organization_id": "2112",
+      "share_count": "0",
+      "members_count": 1,
+      "created_at": "2022-12-01T18:03:45",
+      "updated_at": "2022-12-05T18:03:45",
+      "default_role": {
+        "id": "40825440989a41cfaf8c50704",
+        "name": "Full Access"
+      },
+      "members": [
+        {
+          "is_owner": true,
+          "user_id": "101592"
+        }
+      ],
+      "membership": {
+        "is_owner": true,
+        "status": "active"
+      },
+      "metadata": {}
+    }
+  ],
+  "per_page": 100,
+  "page": 1,
+  "total": 1,
+  "links": {
+    "self": "https://api.surveymonkey.com/v3/workgroups?per_page=100&page=1"
+  }
+}

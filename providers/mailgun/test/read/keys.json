@@ -1,0 +1,41 @@
+{
+  "total_count": 3,
+  "items": [
+    {
+      "id": "6fafb9bf-519ce9bd",
+      "description": "API key",
+      "kind": "user",
+      "role": "admin",
+      "is_disabled": true,
+      "created_at": "2024-06-21T03:17:35",
+      "updated_at": "2024-06-21T03:17:35",
+      "domain_name": null,
+      "requestor": null,
+      "user_name": null
+    },
+    {
+      "id": "44ec4598-a2009175",
+      "description": "ampersend-api-key",
+      "kind": "user",
+      "role": "admin",
+      "is_disabled": false,
+      "created_at": "2026-09-15T10:37:21",
+      "updated_at": "2026-09-15T10:37:21",
+      "domain_name": null,
+      "requestor": "integration.user+mailgun@withampersand.com",
+      "user_name": null
+    },
+    {
+      "id": "pubkey-sample-account-public-key",
+      "description": "",
+      "kind": "public",
+      "role": "",
+      "is_disabled": false,
+      "created_at": "",
+      "updated_at": "",
+      "domain_name": null,
+      "requestor": null,
+      "user_name": null
+    }
+  ]
+}

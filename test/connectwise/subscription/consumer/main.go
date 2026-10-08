@@ -16,5 +16,5 @@ func main() {
 
 	conn := connTest.GetConnectWiseConnector(ctx)
 
-	testscenario.RunWebhookConsumer(ctx, conn, testscenario.WebhookRouter{}, nil)
+	testscenario.RunWebhookConsumer(ctx, &testscenario.WebhookProcessor{}, conn, nil)
 }

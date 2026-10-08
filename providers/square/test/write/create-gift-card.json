@@ -1,0 +1,12 @@
+{
+  "gift_card": {
+    "id": "gftc:6d55a92ac6db4f4c9b78be6a9b1a1a1a",
+    "type": "DIGITAL",
+    "state": "PENDING",
+    "balance_money": {
+      "amount": 0,
+      "currency": "USD"
+    },
+    "created_at": "2026-07-27T10:00:00Z"
+  }
+}

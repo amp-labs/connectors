@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/go-playground/validator"
@@ -35,6 +36,16 @@ type SubscribeResult struct {
 	// ManualApexTriggerManagement mirrors SubscriptionRequest.ManualApexTriggerManagement.
 	// See SubscriptionRequest's "Manual-mode contract" for the full semantics.
 	ManualApexTriggerManagement bool
+
+	// UseFlow mirrors SubscriptionRequest.UseFlow. When true, this result was
+	// produced by the flow-based path: Flows is populated and the CDC fields
+	// above (EventChannelMembers, ApexTriggers, quota fields) are empty.
+	// DeleteSubscription branches on this to pick the teardown path.
+	UseFlow bool `json:"useFlow,omitempty"`
+
+	// Flows maps object names to the record-triggered flow + outbound message
+	// pair deployed for them. Only populated when UseFlow is true.
+	Flows map[common.ObjectName]*FlowSubscription `json:"flows,omitempty"`
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -95,6 +106,16 @@ type SubscriptionRequest struct {
 
 	// ManualApexTriggerManagement: see "Manual-mode contract" above.
 	ManualApexTriggerManagement bool
+
+	// UseFlow selects the flow-based subscription path: instead of CDC channel
+	// members + apex triggers, a record-triggered flow and a workflow outbound
+	// message are deployed per object. When false (the default), the existing CDC
+	// path runs unchanged — existing installations are unaffected.
+	UseFlow bool `json:"useFlow,omitempty"`
+
+	// Flow carries the flow-path configuration. Required when UseFlow is true;
+	// ignored otherwise.
+	Flow *FlowConfig `json:"flow,omitempty"`
 }
 
 // subscribeProgress tracks which reversible operations completed during executeSubscribe,
@@ -106,8 +127,15 @@ type subscribeProgress struct {
 	deployedTriggers    map[common.ObjectName]*ApexTriggerResult
 }
 
-// Subscribe creates a Salesforce CDC subscription for the given objects, performing
-// up to three operations in order:
+// Subscribe creates event subscriptions for the given objects.
+//
+// When SubscriptionRequest.UseFlow is true, this delegates to
+// subscribeWithFlow: one Metadata API deploy of a record-triggered flow +
+// outbound message per object (no registration, no Apex, no CDC). See
+// subscribe_flow.go. RegistrationResult is not required on that path.
+//
+// Otherwise this is the existing CDC path, which performs up to three
+// operations in order:
 //
 //  1. Upsert quota optimization custom fields — only when the request configures
 //     them via SubscriptionRequest.QuotaOptimizationObjectFields. Skipped entirely
@@ -119,17 +147,39 @@ type subscribeProgress struct {
 //     The filter expression and enriched fields are populated only for objects
 //     with a quota field configured; otherwise the member is created without them.
 //
-// Any failure triggers a rollback that reverses completed steps in inverse order.
-// On success, returns a SubscriptionResult with Status = Success. On failure with
-// successful rollback, returns post-rollback state with Status = Failed. On failure
-// with failed rollback, returns the partial state with Status = FailedToRollback;
-// the caller should inspect Result to see what survived.
+// Any CDC-path failure triggers a rollback that reverses completed steps in
+// inverse order. On success, returns a SubscriptionResult with Status =
+// Success. On failure with successful rollback, returns post-rollback state
+// with Status = Failed. On failure with failed rollback, returns the partial
+// state with Status = FailedToRollback; the caller should inspect Result to
+// see what survived.
 //
-// Registration is required prior to subscribing.
+// Registration is required prior to subscribing on the CDC path.
 func (c *Connector) Subscribe(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (*common.SubscriptionResult, error) {
+	var req *SubscriptionRequest
+
+	if params.Request != nil {
+		var requestOk bool
+
+		req, requestOk = params.Request.(*SubscriptionRequest)
+		if !requestOk {
+			return nil, fmt.Errorf(
+				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
+				req, params.Request,
+			)
+		}
+	}
+
+	// The flow-based path diverts before the registration checks below: it
+	// deploys record-triggered flows + outbound messages and needs no event
+	// channel, named credential, or event relay.
+	if req != nil && req.UseFlow {
+		return c.subscribeWithFlow(ctx, params, req, nil)
+	}
+
 	if params.RegistrationResult == nil {
 		return nil, fmt.Errorf("%w: missing RegistrationResult", errMissingParams)
 	}
@@ -150,20 +200,6 @@ func (c *Connector) Subscribe(
 			registrationParams,
 			params.RegistrationResult.Result,
 		)
-	}
-
-	var req *SubscriptionRequest
-
-	if params.Request != nil {
-		var requestOk bool
-
-		req, requestOk = params.Request.(*SubscriptionRequest)
-		if !requestOk {
-			return nil, fmt.Errorf(
-				"%w: expected SubscribeParams.Request to be type '%T', but got '%T'", errInvalidRequestType,
-				req, params.Request,
-			)
-		}
 	}
 
 	sfRes, progress, execErr := c.executeSubscribe(ctx, params, registrationParams, req)
@@ -245,15 +281,8 @@ func (c *Connector) executeSubscribe(
 		if err != nil {
 			return sfRes, progress, err
 		}
-	} else {
-		deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
-
-		progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
-		sfRes.ApexTriggers = toApexTriggers(deployOut)
-
-		if err != nil {
-			return sfRes, progress, err
-		}
+	} else if err := c.deployTriggersToleratingTimeouts(ctx, params, req, sfRes, progress); err != nil {
+		return sfRes, progress, err
 	}
 
 	if err := c.createEventChannelMembers(ctx, params, registrationParams, req, sfRes); err != nil {
@@ -261,6 +290,45 @@ func (c *Connector) executeSubscribe(
 	}
 
 	return sfRes, progress, nil
+}
+
+// deployTriggersToleratingTimeouts deploys the CDC apex triggers and records the
+// outcome on sfRes/progress. A poll timeout is not treated as failure: when
+// EVERY deploy error is ErrDeployPollTimeout, the deploys are still
+// queued/running org-side (metadata deploys serialize per org, so queue wait can
+// exceed any reasonable poll window) and will land on their own, so Subscribe
+// proceeds instead of rolling back — CREATE/DELETE events flow as soon as the
+// channel members exist; UPDATE events for the affected objects are dropped by
+// the member filter until the trigger lands and starts flipping the indicator
+// field. If a deploy ultimately fails org-side, UPDATE events keep being
+// dropped — check Setup > Deployment Status for the verdict. Any real deploy
+// failure is returned and fails Subscribe as before.
+func (c *Connector) deployTriggersToleratingTimeouts(
+	ctx context.Context,
+	params common.SubscribeParams,
+	req *SubscriptionRequest,
+	sfRes *SubscribeResult,
+	progress *subscribeProgress,
+) error {
+	deployOut, err := c.deployApexTriggersForCDC(ctx, params, req)
+
+	progress.deployedTriggers = filterSuccessfulTriggers(deployOut)
+	sfRes.ApexTriggers = toApexTriggers(deployOut)
+
+	if err == nil {
+		return nil
+	}
+
+	if !onlyDeployPollTimeouts(deployOut) {
+		return err
+	}
+
+	logging.Logger(ctx).WarnContext(ctx,
+		"apex trigger deploy(s) still running after poll timeout; proceeding without waiting — "+
+			"UPDATE events are dropped until the trigger lands",
+		"objects", timedOutTriggerObjects(deployOut))
+
+	return nil
 }
 
 // createEventChannelMembers creates CDC event channel members for each subscribed object,
@@ -302,9 +370,13 @@ func (c *Connector) createEventChannelMembers(
 	return nil
 }
 
-// DeleteSubscription tears down a Salesforce CDC subscription by removing the
-// artifacts created by Subscribe / UpdateSubscription, in the inverse of creation
-// order:
+// DeleteSubscription tears down artifacts created by Subscribe /
+// UpdateSubscription.
+//
+// When the result is flow-based, this delegates to deleteAllFlowSubscriptions:
+// deactivate and delete each flow, then delete its outbound message.
+//
+// Otherwise this is the CDC path, inverse of creation:
 //
 //  1. Delete event channel members. The first failure aborts and returns an error;
 //     remaining triggers and fields are not touched.
@@ -315,14 +387,9 @@ func (c *Connector) createEventChannelMembers(
 //     field is still referenced by other metadata (e.g. PlatformEventChannelMembers
 //     on channels we don't manage).
 //
-// As each artifact is successfully removed, the corresponding entry is deleted
-// from params.Result so the surviving entries faithfully describe what is still
-// in Salesforce. Callers can inspect params.Result after the call (success or
-// failure) to see what remains.
-//
-// The dependency-removal rule is reflected in the order: filter expressions and
-// triggers (which reference the custom fields) are removed before the fields
-// they reference, so field deletion is not blocked by stale references.
+// Filter expressions and triggers (which reference the custom fields) are
+// removed before the fields they reference, so field deletion is not blocked
+// by stale references.
 //
 //nolint:cyclop,funlen
 func (c *Connector) DeleteSubscription(ctx context.Context, params common.SubscriptionResult) error {
@@ -338,6 +405,10 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 			sfRes,
 			params.Result,
 		)
+	}
+
+	if sfRes.UseFlow {
+		return c.deleteAllFlowSubscriptions(ctx, sfRes)
 	}
 
 	// Migrate old CheckboxField to IndicatorField for backwards compatibility.
@@ -479,23 +550,6 @@ func (c *Connector) UpdateSubscription(
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	// Validate params up-front (mirrors Subscribe) so a malformed input is
-	// rejected before any Salesforce-side mutation happens. Without this, a
-	// missing or invalid params would only be caught later by the inner
-	// Subscribe call — after upsertQuotaOptimizationFields, updateExistingSubscriptions,
-	// and DeleteSubscription have already run.
-	if params.RegistrationResult == nil {
-		return nil, fmt.Errorf("%w: missing RegistrationResult", errMissingParams)
-	}
-
-	if params.RegistrationResult.Result == nil {
-		return nil, fmt.Errorf("%w: missing RegistrationResult.Result", errMissingParams)
-	}
-
-	if err := validator.New().Struct(params); err != nil {
-		return nil, fmt.Errorf("invalid params: %w", err)
-	}
-
 	// validate the previous result
 	if previousResult.Result == nil {
 		return nil, fmt.Errorf("%w: missing previousResult.Result", errMissingParams)
@@ -526,6 +580,40 @@ func (c *Connector) UpdateSubscription(
 				req, params.Request,
 			)
 		}
+	}
+
+	// If updating in flow mode, route to reconcileFlowSubscription to upsert artifacts in Salesforce.
+	if prevState.UseFlow && req != nil && req.UseFlow {
+		return c.reconcileFlowSubscription(ctx, params, req, prevState)
+	}
+
+	// If switching between subscribe modes (CDC↔flow), delete-and-create the subscription.
+	if prevState.UseFlow || (req != nil && req.UseFlow) {
+		if err := c.DeleteSubscription(ctx, *previousResult); err != nil {
+			return &common.SubscriptionResult{
+				Status: common.SubscriptionStatusFailed,
+				Result: prevState,
+			}, fmt.Errorf("failed to delete previous subscription before flow update: %w", err)
+		}
+
+		return c.Subscribe(ctx, params)
+	}
+
+	// Validate params up-front (mirrors Subscribe) so a malformed input is
+	// rejected before any Salesforce-side mutation happens. Without this, a
+	// missing or invalid params would only be caught later by the inner
+	// Subscribe call — after upsertQuotaOptimizationFields, updateExistingSubscriptions,
+	// and DeleteSubscription have already run.
+	if params.RegistrationResult == nil {
+		return nil, fmt.Errorf("%w: missing RegistrationResult", errMissingParams)
+	}
+
+	if params.RegistrationResult.Result == nil {
+		return nil, fmt.Errorf("%w: missing RegistrationResult.Result", errMissingParams)
+	}
+
+	if err := validator.New().Struct(params); err != nil {
+		return nil, fmt.Errorf("invalid params: %w", err)
 	}
 
 	// nolint:lll
@@ -594,7 +682,7 @@ func (c *Connector) executeUpdateSubscription(
 
 	// Try updating existing subscriptions with filter expressions and enriched fields.
 	// If this fails, we simply return so minimal state change is done.
-	if err := c.updateExistingSubscriptions(ctx, req, diff); err != nil {
+	if err := c.updateExistingSubscriptions(ctx, req, prevState, diff); err != nil {
 		return buildPartialUpdateResult(prevState, &diff, nil, req, common.SubscriptionStatusFailed),
 			progress, err
 	}
@@ -1072,40 +1160,27 @@ func isObjectSubscribed(
 	return false
 }
 
-// updateExistingSubscriptions reconciles the per-object Salesforce configuration
-// for objects that remain subscribed across an UpdateSubscription call (i.e. the
-// overlap of prevState and the new request — neither newly added nor being
-// removed). Even though the subscription itself isn't being added or removed,
-// the new request can change how that subscription is configured, and those
-// changes need to be pushed to Salesforce:
+// updateExistingSubscriptions reconciles WatchFields and QuotaOptimizationObjectFields
+// for objects that remain subscribed. Quota fields may be added, removed, or renamed.
+// For a removal: delete the object's Apex trigger and clear its CDC filter expression
+// and enriched fields (see redeployExistingApexTriggers, updateExistingChannelMembers).
 //
-//   - WatchFields may differ from the previous request, which changes which
-//     record-field updates fire the apex trigger. The trigger code is generated
-//     from WatchFields, so a change here requires redeploying the trigger.
-//   - QuotaOptimizationObjectFields[obj] may be added, removed, or renamed.
-//     Adding requires deploying a trigger and setting the channel member's
-//     filter expression / enriched fields. Removing requires destructively
-//     deleting the trigger (handled by the orphan branch in
-//     redeployExistingApexTriggers) and clearing the filter / enriched fields.
-//     Renaming requires both: point trigger and filter at the new field name.
-//
-// We don't diff old vs new configuration before acting — both Metadata API
-// deploy (used for triggers) and Tooling API PATCH (used for channel members)
-// are idempotent on Salesforce, so unconditional reconciliation converges to
-// the desired state at the cost of one round trip per existing object when
-// nothing has changed. Diffing per-object config would be more complex than
-// that round trip is expensive.
-//
-// Order: triggers first, then channel members. Both reference the quota
-// custom field; the order between them is free, but doing triggers first
-// keeps the indicator field maintained while the new channel-member filter
-// goes live.
+// Does not compare old vs new config first: Salesforce Metadata deploy and Tooling
+// PATCH are idempotent, so rewriting the desired state every time is simpler than
+// detecting what changed. Triggers first, then channel members, so the indicator
+// field stays maintained while the new filter goes live.
 func (c *Connector) updateExistingSubscriptions(
 	ctx context.Context,
 	req *SubscriptionRequest,
+	prevState *SubscribeResult,
 	diff subscriptionDiff,
 ) error {
 	if req == nil {
+		return nil
+	}
+
+	// Skip Salesforce round trips when neither side has quota-optimization work.
+	if shouldSkipQuotaReconcile(req, prevState, diff) {
 		return nil
 	}
 
@@ -1114,6 +1189,47 @@ func (c *Connector) updateExistingSubscriptions(
 	}
 
 	return c.updateExistingChannelMembers(ctx, req, diff)
+}
+
+// shouldSkipQuotaReconcile is true when updateExistingSubscriptions would only rewrite
+// empty filters over empty filters and delete no triggers. Any of the checks below means
+// there is real work (or unknown prior state), so reconcile must run.
+func shouldSkipQuotaReconcile(
+	req *SubscriptionRequest,
+	prevState *SubscribeResult,
+	diff subscriptionDiff,
+) bool {
+	if prevState == nil {
+		return false // unknown prior state — reconcile to be safe
+	}
+
+	// Request still wants quota fields on some objects: install, keep, or update them.
+	if len(req.QuotaOptimizationObjectFields) > 0 {
+		return false
+	}
+
+	// Prior fields left on prevState after prepare: tear them down (full or partial disable).
+	if len(prevState.QuotaOptimizationObjectFields) > 0 {
+		return false
+	}
+
+	// Kept-object triggers with no matching request field: delete as orphans.
+	if len(diff.apexTriggersExisting) > 0 {
+		return false
+	}
+
+	// Kept members still carrying a filter (e.g. from a failed teardown)
+	for _, member := range diff.channelMembersExisting {
+		if member == nil || member.Metadata == nil {
+			continue
+		}
+
+		if member.Metadata.FilterExpression != "" || len(member.Metadata.EnrichedFields) > 0 {
+			return false
+		}
+	}
+
+	return true
 }
 
 // updateExistingChannelMembers updates filter expressions and enriched fields on

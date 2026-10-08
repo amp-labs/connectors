@@ -8,7 +8,12 @@ import (
 	"github.com/amp-labs/connectors/providers"
 )
 
-var ErrMissingAccountID = errors.New("missing Zoho Mail account id; post-authentication has not run")
+// ErrMissingAccountID reports that no Zoho Mail account id is attached to the
+// connection. Post-authentication resolves the id on a best effort basis, so
+// this also covers connections whose account has no mailbox or whose
+// integration was never granted the Zoho Mail scopes.
+var ErrMissingAccountID = errors.New(
+	"missing Zoho Mail account id; the connection has no Zoho Mail access or post-authentication has not run")
 
 type Adapter struct {
 	Client  *common.JSONHTTPClient
@@ -17,6 +22,11 @@ type Adapter struct {
 	// accountID is the Zoho Mail account id (type ZOHO_ACCOUNT).
 	// It is required for account-scoped endpoints (e.g.folders, messages)
 	accountID string
+
+	// hookSecret is the outgoing-webhook signing secret (the x-hook-secret value
+	// Zoho delivers on the first webhook request and the caller persists). It is
+	// used to verify webhook signatures. Empty means every webhook is rejected.
+	// hookSecret string
 }
 
 func NewAdapter(

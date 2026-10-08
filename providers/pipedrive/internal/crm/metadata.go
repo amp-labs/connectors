@@ -126,7 +126,7 @@ func (a *Adapter) parseMetadata( // nolint: gocognit,gocyclo,cyclop,funlen
 		mdtFlds := &common.FieldMetadata{
 			DisplayName:  fldRcd.Name,
 			IsCustom:     &fldRcd.IsCustom,
-			IsRequired:   &(req),
+			IsRequired:   &req,
 			ProviderType: fldRcd.FieldType,
 			ValueType:    nativeValueType(fldRcd.FieldType),
 		}

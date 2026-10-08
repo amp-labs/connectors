@@ -99,7 +99,17 @@ func (e *fieldNotFoundError) Unwrap() []error {
 func interpretJSONError(res *http.Response, body []byte) error { // nolint:cyclop
 	var errs []jsonError
 	if err := json.Unmarshal(body, &errs); err != nil {
-		return fmt.Errorf("json.Unmarshal failed: %w", err)
+		// Salesforce reports errors as a JSON array, but a single JSON object is
+		// also accepted so that payloads shaped that way — such as those authored
+		// by an intermediary in front of Salesforce — are still interpreted.
+		var single jsonError
+		if json.Unmarshal(body, &single) != nil || single.Message == "" {
+			// The body matches neither shape, so fall back to status-based handling
+			// rather than reporting the decode failure as the error itself.
+			return common.InterpretError(res, body)
+		}
+
+		errs = []jsonError{single}
 	}
 
 	for _, sfErr := range errs {

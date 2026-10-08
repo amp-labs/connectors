@@ -13,8 +13,8 @@ import (
 
 	bqstorage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/apache/arrow/go/v15/arrow"
 	"github.com/apache/arrow/go/v15/arrow/array"
 	"github.com/apache/arrow/go/v15/arrow/ipc"
@@ -369,11 +369,6 @@ func (c *Connector) buildRowRestriction(token *readSessionToken, params common.R
 			conditions = append(conditions,
 				fmt.Sprintf("%s < TIMESTAMP('%s')", c.timestampColumn, params.Until.UTC().Format(time.RFC3339)))
 		}
-	}
-
-	// Append any user-provided filter.
-	if params.Filter != "" {
-		conditions = append(conditions, params.Filter)
 	}
 
 	return strings.Join(conditions, " AND ")

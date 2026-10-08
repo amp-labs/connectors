@@ -77,6 +77,22 @@ func (convertor) NodeFromMap(mapping map[string]any) (*ajson.Node, error) {
 	return ajson.Unmarshal(data)
 }
 
+func (convertor) NodesFromArray(list []map[string]any) ([]*ajson.Node, error) {
+	var (
+		result = make([]*ajson.Node, len(list))
+		err    error
+	)
+
+	for index, mapping := range list {
+		result[index], err = Convertor.NodeFromMap(mapping)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return result, nil
+}
+
 func ParseNode[T any](node *ajson.Node) (*T, error) {
 	var template T
 

@@ -66,7 +66,8 @@ func Test_FilterSortedRecords(t *testing.T) {
 	}
 }
 
-func testEmptyRecords(createTestData func([]map[string]any) *ajson.Node, mockNextPageFunc func(*ajson.Node) (string, error),
+func testEmptyRecords(createTestData func([]map[string]any) *ajson.Node,
+	mockNextPageFunc func(*ajson.Node) (string, error),
 ) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
@@ -412,6 +413,21 @@ func TestMakeTimeFilterFuncWithZoom(t *testing.T) {
 			expectedErr:       nil,
 			expectedNextPage:  false, // ignore next page token, current page is empty
 			expectedRecordIDs: []string{},
+		},
+		{
+			name:  "Filtering without Since and Until params",
+			order: ReverseOrder,
+			payload: createPayload(true, // with next page
+				record{id: "A"},
+				record{id: "B"},
+				record{id: "C"},
+				record{id: "D"},
+			),
+			since:             "",
+			until:             "",
+			expectedErr:       nil,
+			expectedNextPage:  true,
+			expectedRecordIDs: []string{"A", "B", "C", "D"},
 		},
 		{
 			name:  "Payload without next page, reverse order",

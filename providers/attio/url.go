@@ -30,3 +30,7 @@ func (c *Connector) getObjectReadURL(objName string) (*urlbuilder.URL, error) {
 func (c *Connector) getObjectWriteURL(objName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(c.BaseURL, apiVersion, "objects", objName, "records")
 }
+
+func (c *Connector) getSubscribeURL() (*urlbuilder.URL, error) {
+	return c.getApiURL("webhooks")
+}

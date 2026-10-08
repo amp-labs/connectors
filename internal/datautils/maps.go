@@ -64,7 +64,7 @@ func (m Map[K, V]) DeepCopy() (Map[K, V], error) {
 }
 
 func (m Map[K, V]) Keys() []K {
-	keys := make([]K, 0)
+	keys := make([]K, 0, len(m))
 	for k := range m {
 		keys = append(keys, k)
 	}

@@ -1,0 +1,13 @@
+{
+  "object": "list",
+  "url": "/v1/treasury/financial_accounts",
+  "has_more": false,
+  "data": [
+    {
+      "id": "finAcc_00b_a9981a9bdebe",
+      "object": "treasury.financial_account",
+      "country": "US",
+      "status": "open"
+    }
+  ]
+}

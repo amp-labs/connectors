@@ -142,7 +142,9 @@ func (b *hashBuilder) Int64(v int64) *hashBuilder {
 	b.incrementField()
 
 	bts := make([]byte, int64Size)
-	binary.BigEndian.PutUint64(bts, uint64(v))
+	// G115: int64 and uint64 are the same width, so this is a deliberate
+	// reinterpretation of the bit pattern to get a deterministic encoding.
+	binary.BigEndian.PutUint64(bts, uint64(v)) //nolint:gosec
 
 	b.write(bts)
 

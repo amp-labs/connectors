@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "id": "5678",
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "email": "jane.new@example.com",
+      "phone_number": "",
+      "href": "https://api.surveymonkey.com/v3/contacts/5678",
+      "status": "active"
+    }
+  ],
+  "page": 1,
+  "per_page": 50,
+  "total": 1,
+  "links": {
+    "self": "https://api.surveymonkey.com/v3/contacts?page=1&per_page=50"
+  }
+}

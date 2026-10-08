@@ -10,10 +10,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/go-playground/validator"
 )
 
@@ -476,7 +476,8 @@ func (m eventMapping) toProviderEvents(commonEvent common.SubscriptionEventType)
 
 // getAllSupportedEvents returns all provider events that this mapping supports.
 func (m eventMapping) getAllSupportedEvents() []moduleEvent {
-	var events []moduleEvent
+	events := make([]moduleEvent, 0,
+		len(m.CreateEvents)+len(m.UpdateEvents)+len(m.DeleteEvents))
 
 	events = append(events, m.CreateEvents...)
 	events = append(events, m.UpdateEvents...)

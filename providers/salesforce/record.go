@@ -19,11 +19,9 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 ) ([]common.ReadResultRow, error) {
 	// Sanitize method arguments.
 	config := recordsByIDsParams{
-		ReadParams: common.ReadParams{
-			ObjectName:        objectName,
-			Fields:            datautils.NewSetFromList(fields),
-			AssociatedObjects: associations,
-		},
+		ObjectName:        objectName,
+		Fields:            datautils.NewSetFromList(fields),
+		AssociatedObjects: associations,
 		RecordIdentifiers: datautils.NewSetFromList(ids),
 	}
 
@@ -69,11 +67,12 @@ func (c *Connector) buildReadByIdentifierURL(config recordsByIDsParams) (*urlbui
 		return nil, err
 	}
 
-	query := makeSOQL(config.ReadParams, c.GetTimestampColumn(common.ObjectName(config.ObjectName))).
-		WithIDs(config.RecordIdentifiers.List()).
-		String()
+	soql, err := makeSOQL(config.ReadParams, c.GetTimestampColumn(common.ObjectName(config.ObjectName)))
+	if err != nil {
+		return nil, err
+	}
 
-	url.WithQueryParam("q", query)
+	url.WithQueryParam("q", soql.WithIDs(config.RecordIdentifiers.List()).String())
 
 	return url, nil
 }

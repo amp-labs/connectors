@@ -24,8 +24,13 @@ func init() {
 			},
 			Proxy:     true,
 			Read:      true,
-			Subscribe: false,
+			Subscribe: true,
 			Write:     true,
+		},
+		SubscribeRequirements: &SubscribeRequirements{
+			// Stripe supports creating webhook subscriptions programmatically via the
+			// webhook endpoints API: https://docs.stripe.com/api/webhook_endpoints/create
+			SubscribeByAPI: new(true),
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

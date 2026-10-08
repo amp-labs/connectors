@@ -25,6 +25,8 @@ func TestSubscriptionEvent_ObjectName(t *testing.T) {
 		{"job_updated", objectJobs, nil},
 		{"job.milestone.current_changed", objectJobs, nil},
 		{"job.financials.approved-value_changed", objectJobs, nil},
+		{"job.representatives.company_assigned", objectJobsRepresentatives, nil},
+		{"job.representatives.company_changed", objectJobsRepresentatives, nil},
 		{"unsupported_topic", "", errUnsupportedTopicName},
 	}
 
@@ -61,6 +63,10 @@ func TestSubscriptionEvent_EventType(t *testing.T) {
 		{"job_updated", common.SubscriptionEventTypeUpdate},
 		{"job.milestone.current_changed", common.SubscriptionEventTypeUpdate},
 		{"job.invoice_voided", common.SubscriptionEventTypeUpdate},
+		// _assigned would suffix-classify as "other"; the override pins it to
+		// update — the representative slot always exists, assignment fills it.
+		{"job.representatives.company_assigned", common.SubscriptionEventTypeUpdate},
+		{"job.representatives.company_changed", common.SubscriptionEventTypeUpdate},
 		{"job.something_weird", common.SubscriptionEventTypeOther},
 	}
 
@@ -128,6 +134,25 @@ func TestSubscriptionEvent_RecordId_RoutesByObjectType(t *testing.T) {
 	contactID, err := contactEvt.RecordId()
 	assert.NilError(t, err)
 	assert.Equal(t, contactID, "contact-456")
+
+	// Representative topics deliver inside the job wrapper and the record id
+	// is the job id: AccuLynx rotates the representative's own id on every
+	// assignment, so the job id is the slot's only stable identity.
+	repEvt := SubscriptionEvent{
+		eventFieldTopicName: "job.representatives.company_assigned",
+		eventFieldEvent: map[string]any{
+			objectWrapperJob: map[string]any{
+				innerFieldID: "job-789",
+				"companyRepresentative": map[string]any{
+					innerFieldID: "rep-001",
+				},
+			},
+		},
+	}
+
+	repID, err := repEvt.RecordId()
+	assert.NilError(t, err)
+	assert.Equal(t, repID, "job-789")
 }
 
 func TestSubscriptionEvent_RecordId_MissingObjectWrapperReturnsError(t *testing.T) {
@@ -233,8 +258,10 @@ func TestSubscriptionEvent_UpdatedFields(t *testing.T) {
 		{"job.work-type_changed", []string{"workType"}},
 		{"job.trade-type_changed", []string{"tradeTypes"}},
 		{"job.contacts.primary_changed", []string{"contacts"}},
-		{"job.representatives.company_assigned", []string{"companyRepresentative"}},
-		{"job.representatives.company_changed", []string{"companyRepresentative"}},
+		// Representative topics are updates to jobs/representatives itself, so
+		// no single job field describes the change — empty, per watchFieldsAuto.
+		{"job.representatives.company_assigned", []string{}},
+		{"job.representatives.company_changed", []string{}},
 		{"job.appointments.initial_created", []string{"initialAppointment"}},
 		{"job.appointments.initial_updated", []string{"initialAppointment"}},
 		{"job.invoice_updated", []string{"invoice"}},
@@ -443,4 +470,67 @@ func TestSubscriptionEvent_RecordId_CustomFieldStatusChanged_NoParentID(t *testi
 			assert.Assert(t, errors.Is(err, errParentRecordIDUnavailable))
 		})
 	}
+}
+
+// Real production payload captured live for job.contacts.primary_changed.
+//
+// AccuLynx serialises this topic's wrapper as "Job" — capitalised — while its
+// schema, its documented example and every other topic use lowercase "job".
+// Captured across repeated live deliveries; the payload is otherwise identical
+// to the documented example, so only the key casing differs. Before the
+// case-insensitive wrapper lookup this returned errMissingObjectWrapper and the
+// event could not be resolved to a record.
+func TestSubscriptionEvent_RealPayload_JobContactsPrimaryChanged_CapitalisedWrapper(t *testing.T) {
+	t.Parallel()
+
+	evt := SubscriptionEvent{
+		"topicName":      "job.contacts.primary_changed",
+		"eventDateTime":  "2026-09-01T09:24:08.4639561Z",
+		"eventId":        "cd9ac00c-fe90-4dbb-9902-64b2137a20d2",
+		"subscriptionId": "b76074e4-e7b1-4f40-8f22-dc4506ce0b7c",
+		"event": map[string]any{
+			"Job": map[string]any{
+				"id": "0a7a5afa-e0d6-4cd8-9e1f-0f443726fa49",
+				"jobContact": map[string]any{
+					"id":        "ad941b32-d24e-42b1-98ba-df27be30e329",
+					"isPrimary": true,
+					"contact": map[string]any{
+						"id": "62546ee3-6915-40d4-90f5-a5658388d416",
+					},
+				},
+				"_link": "https://api.acculynx.com/api/v2/jobs/0a7a5afa-e0d6-4cd8-9e1f-0f443726fa49",
+			},
+		},
+	}
+
+	obj, err := evt.ObjectName()
+	assert.NilError(t, err)
+	assert.Equal(t, obj, objectJobs)
+
+	rid, err := evt.RecordId()
+	assert.NilError(t, err)
+	assert.Equal(t, rid, "0a7a5afa-e0d6-4cd8-9e1f-0f443726fa49")
+
+	fields, err := evt.UpdatedFields()
+	assert.NilError(t, err)
+	assert.DeepEqual(t, fields, []string{"contacts"})
+}
+
+// The documented lowercase spelling must keep working — the case-insensitive
+// lookup is a fallback, not a replacement.
+func TestSubscriptionEvent_LowercaseWrapperStillResolves(t *testing.T) {
+	t.Parallel()
+
+	evt := SubscriptionEvent{
+		"topicName": "job.contacts.primary_changed",
+		"event": map[string]any{
+			"job": map[string]any{
+				"id": "5ac46861-75ae-45fe-b512-ff8d85ce8ab3",
+			},
+		},
+	}
+
+	rid, err := evt.RecordId()
+	assert.NilError(t, err)
+	assert.Equal(t, rid, "5ac46861-75ae-45fe-b512-ff8d85ce8ab3")
 }

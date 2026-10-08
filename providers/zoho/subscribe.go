@@ -8,12 +8,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/go-playground/validator"
 	"github.com/mitchellh/hashstructure"
 )
@@ -334,7 +334,7 @@ func (c *Connector) getModuleMetadata(
 	ctx context.Context,
 	params common.SubscribeParams,
 ) (map[string]map[string]any, error) {
-	objectNames := make([]string, 0)
+	objectNames := make([]string, 0, len(params.SubscriptionEvents))
 	for obj := range params.SubscriptionEvents {
 		objectNames = append(objectNames, string(obj))
 	}

@@ -54,11 +54,9 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{
-		Connector: base,
-		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{metadataKeyCompanyID, metadataKeyEnvironmentName},
-		},
-		incrementalRegistry: datautils.NewCache[string, bool](),
+		Connector:            base,
+		ExpectedMetadataKeys: []string{metadataKeyCompanyID, metadataKeyEnvironmentName},
+		incrementalRegistry:  datautils.NewCache[string, bool](),
 	}
 
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(

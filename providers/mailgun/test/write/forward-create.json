@@ -1,0 +1,14 @@
+{
+  "id": "6bd6c9dbd8b1c34c1bb1c34c",
+  "account_id": "66442309b8d50db47ba12658",
+  "domain_name": "example.com",
+  "domain_id": "6644230ca36a3a1d79b584fa",
+  "match": "inbound@example.com",
+  "forward": {
+    "urls": [
+      "https://example.com/inbound"
+    ]
+  },
+  "created_at": "Wed, 05 Aug 2026 17:10:00 UTC",
+  "updated_at": "Wed, 05 Aug 2026 17:10:00 UTC"
+}

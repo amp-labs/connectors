@@ -151,13 +151,20 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Create messages vis POST",
-			Input: common.WriteParams{ObjectName: "me/messages", RecordData: "dummy"},
+			Name: "Creating messages is not supported",
+			// The write operation is supported by drafts and sentMessages virtual fields.
+			Input:        common.WriteParams{ObjectName: "me/messages", RecordData: "dummy"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
+		},
+		{
+			Name:  "Create drafts via POST",
+			Input: common.WriteParams{ObjectName: "AMPERSAND-drafts", RecordData: "dummy"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
-					mockcond.Path("/v1.0/me/messages"),
+					mockcond.Path("/v1.0/me/mailFolders/drafts/messages"),
 				},
 				Then: mockserver.ResponseString(http.StatusOK, `{"subject": "hello", "id": "753"}`),
 			}.Server(),
@@ -168,13 +175,13 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name:  "Update messages vis PATCH",
-			Input: common.WriteParams{ObjectName: "me/messages", RecordData: "dummy", RecordId: "723"},
+			Name:  "Update drafts vis PATCH",
+			Input: common.WriteParams{ObjectName: "AMPERSAND-drafts", RecordData: "dummy", RecordId: "723"},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPATCH(),
-					mockcond.Path("/v1.0/me/messages/723"),
+					mockcond.Path("/v1.0/me/mailFolders/drafts/messages/723"),
 				},
 				Then: mockserver.ResponseString(http.StatusOK, `{"subject": "hello", "id": "753"}`),
 			}.Server(),
@@ -183,6 +190,31 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Success: true, RecordId: "753", Data: map[string]any{"subject": "hello"},
 			},
 			ExpectedErrs: nil,
+		},
+		{
+			Name: "Send message",
+			Input: common.WriteParams{
+				ObjectName: "AMPERSAND-messages",
+				RecordData: map[string]string{"subject": "Greetings!"},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/v1.0/me/sendMail"),
+					mockcond.Body(`{"message": {"subject": "Greetings!"}}`),
+				},
+				Then: mockserver.Response(http.StatusAccepted),
+			}.Server(),
+			Comparator:   testconn.ComparatorSubsetWrite,
+			Expected:     &common.WriteResult{Success: true, RecordId: "", Data: nil},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:         "Updating virtual messages is not valid",
+			Input:        common.WriteParams{ObjectName: "AMPERSAND-messages", RecordData: "dummy", RecordId: "723"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 	}
 

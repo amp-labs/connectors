@@ -1,10 +1,12 @@
 package mockserver
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 // Switch is a server recipe that describes multiple path a server may take.
@@ -21,7 +23,11 @@ type Switch struct {
 
 // Server creates mock server that will produce different response based on conditionals.
 func (c Switch) Server() *httptest.Server {
-	return NewServer(func(w http.ResponseWriter, r *http.Request) {
+	injector := contextInjector{}
+
+	server := NewServer(func(w http.ResponseWriter, r *http.Request) {
+		r = injector.attachToContext(r)
+
 		// Common setup is optional.
 		if c.Setup != nil {
 			c.Setup(w, r)
@@ -47,6 +53,20 @@ func (c Switch) Server() *httptest.Server {
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte(`{"error": {"message": "condition failed"}}`))
 	})
+
+	injector.MockServerUrl = server.URL
+
+	return server
+}
+
+type contextInjector struct {
+	MockServerUrl string
+}
+
+func (i contextInjector) attachToContext(r *http.Request) *http.Request {
+	ctx := r.Context()
+	ctx = context.WithValue(ctx, testconn.URLTestServer, i.MockServerUrl)
+	return r.WithContext(ctx)
 }
 
 // Case is one possible route a mock server can take if condition is satisfied.

@@ -21,6 +21,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 	responseUsersLast := testutils.DataFromFile(t, "read/users/2-second-page.json")
 	responseCalendarEvents := testutils.DataFromFile(t, "read/events/list.json")
 	responseMessagesEvents := testutils.DataFromFile(t, "read/messages/list.json")
+	responseDrafts := testutils.DataFromFile(t, "read/messages/drafts.json")
+	responseSentMessages := testutils.DataFromFile(t, "read/messages/sent.json")
+	responseReceivedMessages := testutils.DataFromFile(t, "read/messages/received.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -173,6 +176,78 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 					Id: "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEKAAB8hj1Rtd60SKTngNs3if9RAAEMs4ImAAA=",
 				}},
 				NextPage: "https://graph.microsoft.com/v1.0/me/messages?%24top=10&%24skip=10",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental read of virtual object drafts",
+			Input: common.ReadParams{
+				ObjectName: "AMPERSAND-drafts",
+				Fields:     connectors.Fields("subject"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1.0/me/mailFolders/drafts/messages"),
+					mockcond.QueryParam("$filter", "lastModifiedDateTime ge 2024-09-19T12:30:45.000Z"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseDrafts),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "https://graph.microsoft.com/v1.0/me/mailFolders('drafts')/messages?%24filter=lastModifiedDateTime+gt+2026-09-21T19%3a00%3a00Z&%24top=1&%24skip=1",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental read of virtual object sentMessages",
+			Input: common.ReadParams{
+				ObjectName: "AMPERSAND-sentMessages",
+				Fields:     connectors.Fields("subject"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1.0/me/mailFolders/sentitems/messages"),
+					mockcond.QueryParam("$filter", "lastModifiedDateTime ge 2024-09-19T12:30:45.000Z"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseSentMessages),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "https://graph.microsoft.com/v1.0/me/mailFolders('sentitems')/messages?%24filter=lastModifiedDateTime+gt+2026-09-01T19%3a00%3a00Z&%24top=1&%24skip=1",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Incremental read of virtual object inbox messages",
+			Input: common.ReadParams{
+				ObjectName: "AMPERSAND-messages",
+				Fields:     connectors.Fields("subject"),
+				Since: time.Date(2024, 9, 19, 4, 30, 45, 600,
+					time.FixedZone("UTC-8", -8*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1.0/me/mailFolders/inbox/messages"),
+					mockcond.QueryParam("$filter", "lastModifiedDateTime ge 2024-09-19T12:30:45.000Z"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseReceivedMessages),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "https://graph.microsoft.com/v1.0/me/mailFolders('inbox')/messages?%24filter=lastModifiedDateTime+gt+2026-04-22T19%3a00%3a00Z&%24top=1&%24skip=1",
 				Done:     false,
 			},
 			ExpectedErrs: nil,

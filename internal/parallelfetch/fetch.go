@@ -3,8 +3,8 @@ package parallelfetch
 import (
 	"context"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
 // Result holds the outcome of executing multiple generic tasks, containing

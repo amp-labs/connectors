@@ -1,6 +1,7 @@
 package stripe
 
 import (
+	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -39,21 +40,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					"coupons": {
 						DisplayName: "Coupons",
 						FieldsMap: map[string]string{
-							"id":               "id",
-							"livemode":         "livemode",
-							"currency":         "currency",
-							"currency_options": "currency_options",
-							"percent_off":      "percent_off",
+							"id":               "Id",
+							"livemode":         "Livemode",
+							"currency":         "Currency",
+							"currency_options": "Currency Options",
+							"percent_off":      "Percent Off",
 						},
 					},
 					"products": {
 						DisplayName: "Products",
 						FieldsMap: map[string]string{
-							"id":            "id",
-							"images":        "images",
-							"default_price": "default_price",
-							"tax_code":      "tax_code",
-							"unit_label":    "unit_label",
+							"id":            "Id",
+							"images":        "Images",
+							"default_price": "Default Price",
+							"tax_code":      "Tax Code",
+							"unit_label":    "Unit Label",
 						},
 					},
 				},
@@ -72,12 +73,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						DisplayName: "Payment Checkout Sessions",
 						Fields: map[string]common.FieldMetadata{
 							"line_items": {
-								DisplayName:  "line_items",
+								DisplayName:  "Line Items",
 								ValueType:    "other",
 								ProviderType: "object",
 							},
 							"currency": {
-								DisplayName:  "currency",
+								DisplayName:  "Currency",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
@@ -95,8 +96,23 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}
+}
+
+func constructTestConnector(server *httptest.Server) (*Connector, error) {
+	connector, err := NewConnector(
+		common.ConnectorParams{
+			AuthenticatedClient: server.Client(),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	connector.SetUnitTestMockServerBaseUrl(server.URL)
+
+	return connector, nil
 }

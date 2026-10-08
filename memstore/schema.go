@@ -22,16 +22,14 @@ func injectExtrasIntoSchemaMap(schemaMap map[string]any, structType reflect.Type
 
 	// Iterate over struct fields and extract jsonschema_extras tags
 	//nolint:intrange // NumField() is a method call with potential side effects
-	for i := 0; i < structType.NumField(); i++ {
-		field := structType.Field(i)
-
+	for field := range structType.Fields() {
 		// Get the JSON name for the field
 		jsonTag := field.Tag.Get("json")
 		if jsonTag == "" || jsonTag == "-" {
 			continue
 		}
 		// Extract just the field name (before any options like omitempty)
-		jsonName := strings.Split(jsonTag, ",")[0]
+		jsonName, _, _ := strings.Cut(jsonTag, ",")
 
 		// Get jsonschema_extras tag
 		extrasTag := field.Tag.Get("jsonschema_extras")
@@ -94,16 +92,14 @@ func filterRequiredFields(schemaMap map[string]any, structType reflect.Type) {
 	requiredFields := make(map[string]bool)
 
 	//nolint:intrange // NumField() is a method call with potential side effects
-	for i := 0; i < structType.NumField(); i++ {
-		field := structType.Field(i)
-
+	for field := range structType.Fields() {
 		// Get the JSON name for the field
 		jsonTag := field.Tag.Get("json")
 		if jsonTag == "" || jsonTag == "-" {
 			continue
 		}
 		// Extract just the field name (before any options like omitempty)
-		jsonName := strings.Split(jsonTag, ",")[0]
+		jsonName, _, _ := strings.Cut(jsonTag, ",")
 
 		// Check for "required" in jsonschema tag
 		jsonschemaTag := field.Tag.Get("jsonschema")
@@ -219,14 +215,14 @@ func DeriveSchemasFromStructs(schemas map[string]any) (map[string][]byte, error)
 		}
 
 		// Check for typed nil pointers (e.g., (*MyStruct)(nil))
-		if val.Kind() == reflect.Ptr && val.IsNil() {
+		if val.Kind() == reflect.Pointer && val.IsNil() {
 			return nil, fmt.Errorf("object %s: %w", objectName, ErrNilStruct)
 		}
 
 		typ := val.Type()
 
 		// Dereference pointer if needed
-		if typ.Kind() == reflect.Ptr {
+		if typ.Kind() == reflect.Pointer {
 			typ = typ.Elem()
 		}
 

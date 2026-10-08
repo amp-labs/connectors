@@ -1,12 +1,12 @@
-{
-  "unitsOfMeasure": [
-    {
-      "id": "EA",
-      "name": "Each"
-    },
-    {
-      "id": "SF",
-      "name": "Square Feet"
-    }
-  ]
-}
+[
+  {
+    "id": "2a7a0d47-a669-49a7-8f5a-4c834bc2b2f0",
+    "name": "BAG",
+    "friendlyName": "Bag"
+  },
+  {
+    "id": "7b087d4f-df5c-4533-9bd2-62dba5c72b28",
+    "name": "BD",
+    "friendlyName": "Bundle"
+  }
+]

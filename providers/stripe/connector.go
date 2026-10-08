@@ -2,69 +2,49 @@ package stripe
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/common/paramsbuilder"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/stripe/internal/core"
+	"github.com/amp-labs/connectors/providers/stripe/internal/reader"
 )
 
-const apiVersion = "v1"
+type (
+	ReadParamsOpts = reader.ReadParamsOpts
+	readerStrategy = reader.Strategy
+)
 
 type Connector struct {
-	BaseURL string
-	Client  *common.JSONHTTPClient
-	Module  common.Module
+	*core.Base
+
+	// Dependent services.
+	*readerStrategy
 }
 
-func NewConnector(opts ...Option) (*Connector, error) {
-	params, err := paramsbuilder.Apply(parameters{}, opts)
+func NewConnector(params common.ConnectorParams) (*Connector, error) {
+	base, err := core.NewBase(params)
 	if err != nil {
 		return nil, err
 	}
 
-	httpClient := params.Client.Caller
-	conn := &Connector{
-		Client: &common.JSONHTTPClient{
-			HTTPClient: httpClient,
-		},
-	}
-
-	// Read provider info
-	providerInfo, err := providers.ReadInfo(conn.Provider())
-	if err != nil {
-		return nil, err
-	}
-
-	// connector and its client must mirror base url and provide its own error parser
-	conn.setBaseURL(providerInfo.BaseURL)
-	conn.Client.HTTPClient.ErrorHandler = interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
-	}.Handle
-
-	return conn, nil
+	return &Connector{
+		Base:           base,
+		readerStrategy: reader.NewStrategy(base),
+	}, nil
 }
 
+// Provider returns the provider this connector talks to. It is declared here rather than
+// inherited from the embedded base because the subscribe registry registers a zero-value
+// Connector as its webhook verifier, which has no base: the base's Provider has a value
+// receiver, so the promoted call would dereference that nil pointer and panic.
 func (c *Connector) Provider() providers.Provider {
 	return providers.Stripe
 }
 
+// String returns a human-readable identifier for this connector. Declared for the same reason as
+// Provider: the zero-value verifier connector has no base to delegate to.
 func (c *Connector) String() string {
-	return c.Provider() + ".Connector"
-}
-
-func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.BaseURL, apiVersion, objectName)
-}
-
-func (c *Connector) setBaseURL(newURL string) {
-	c.BaseURL = newURL
-	c.Client.HTTPClient.Base = newURL
-}
-
-// https://docs.stripe.com/api/connected-accounts
-func makeConnectedAccountHeader(accountID string) common.Header {
-	return common.Header{
-		Key:   "Stripe-Account",
-		Value: accountID,
+	if c == nil || c.Base == nil {
+		return c.Provider() + ".Connector"
 	}
+
+	return c.Base.String()
 }

@@ -26,7 +26,8 @@ func (s Strategy) getModuleURL(paths ...string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(s.moduleInfo.BaseURL, paths...)
 }
 
+// getQueryURL returns the URL of a SOQL REST resource, see crmcore.QueryEndpoint.
 // https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_query.htm
-func (s Strategy) getQueryURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(s.moduleInfo.BaseURL, crmcore.RestAPISuffix, "query")
+func (s Strategy) getQueryURL(endpoint string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(s.moduleInfo.BaseURL, crmcore.RestAPISuffix, endpoint)
 }

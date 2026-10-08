@@ -7,16 +7,16 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
-func NewWebhookRouter() testscenario.WebhookRouter {
-	return testscenario.WebhookRouter{
-		Routes: []testscenario.WebhookRouteFunc{subscriptionConfirmation},
+func NewWebhookProcessor() *testscenario.WebhookProcessor {
+	return &testscenario.WebhookProcessor{
+		Interceptor: subscriptionConfirmation,
 	}
 }
 
 // Default handling.
 // https://learn.microsoft.com/en-us/graph/change-notifications-with-resource-data?tabs=csharp#decrypting-resource-data-from-change-notifications
 // https://learn.microsoft.com/en-us/graph/change-notifications-delivery-webhooks?tabs=http#notificationurl-validation
-var subscriptionConfirmation = testscenario.WebhookRouteFunc(
+var subscriptionConfirmation = testscenario.WebhookInterceptorFunc(
 	func(writer http.ResponseWriter, request *http.Request, data []byte) bool {
 		url, err := urlbuilder.FromRawURL(request.URL)
 		// During the Subscription creation Microsoft contacts webhook to verify that it is rechable.
@@ -35,8 +35,8 @@ var subscriptionConfirmation = testscenario.WebhookRouteFunc(
 			return true
 		}
 
-		writer.WriteHeader(http.StatusOK)
 		writer.Header().Set("Content-Type", "text/plain")
+		writer.WriteHeader(http.StatusOK)
 		_, _ = writer.Write([]byte(validationToken)) // nosemgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 
 		return true

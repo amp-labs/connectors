@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amp-labs/amp-common/future"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/future"
 	"github.com/google/uuid"
 	"github.com/kaptinlin/jsonschema"
 )

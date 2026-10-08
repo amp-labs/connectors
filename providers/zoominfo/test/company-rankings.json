@@ -1,0 +1,11 @@
+{
+  "data": [
+    {
+      "id": "fortune500",
+      "type": "CompanyRanking",
+      "attributes": {
+        "name": "Fortune 500"
+      }
+    }
+  ]
+}

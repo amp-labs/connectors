@@ -70,23 +70,36 @@ See the [examples directory](https://github.com/amp-labs/connectors/tree/main/ex
 
 This codebase uses the `future` and `simultaneously` packages to provide safe concurrency primitives. **Do NOT use the bare `go` keyword** - always use these primitives instead.
 
+Both packages live in [amp-common](https://github.com/amp-labs/amp-common) and are shared across
+Ampersand services:
+
+```go
+import (
+    "github.com/amp-labs/amp-common/future"
+    "github.com/amp-labs/amp-common/simultaneously"
+)
+```
+
+Prefer the context-aware variants (`future.GoContext`, `simultaneously.DoCtx`) wherever a
+`context.Context` is in scope - they let the caller cancel the work.
+
 ## Using the `future` package
 
 For launching async operations that return a result:
 
 ```go
 // Instead of: go func() { ... }()
-// Use future.Go for simple async operations:
-result := future.Go(func() (User, error) {
-    return fetchUser(id)
-})
-user, err := result.Await()
-
-// With context support:
+// Use future.GoContext so the caller can cancel the work:
 result := future.GoContext(ctx, func(ctx context.Context) (User, error) {
     return fetchUserWithContext(ctx, id)
 })
 user, err := result.AwaitContext(ctx)
+
+// When there is genuinely no context to thread through:
+result := future.Go(func() (User, error) {
+    return fetchUser(id)
+})
+user, err := result.Await()
 ```
 
 ## Using the `simultaneously` package
@@ -95,16 +108,30 @@ For running multiple operations in parallel with controlled concurrency:
 
 ```go
 // Instead of launching multiple goroutines with: go func() { ... }()
-// Use simultaneously.Do to run functions in parallel:
-err := simultaneously.Do(maxConcurrent,
+// Use simultaneously.DoCtx to run functions in parallel:
+err := simultaneously.DoCtx(ctx, maxConcurrent,
     func(ctx context.Context) error { return processItem1(ctx) },
     func(ctx context.Context) error { return processItem2(ctx) },
     func(ctx context.Context) error { return processItem3(ctx) },
 )
 
-// With context:
+// Building the callbacks up first is the common shape. simultaneously.Job is an
+// alias for func(ctx context.Context) error, so either spelling works:
+callbacks := make([]simultaneously.Job, 0, len(items))
+for _, item := range items {
+    callbacks = append(callbacks, func(ctx context.Context) error {
+        return process(ctx, item)
+    })
+}
+
 err := simultaneously.DoCtx(ctx, maxConcurrent, callbacks...)
+
+// simultaneously.Do is the same thing with a context.Background() - use it only
+// when no context is available.
+err := simultaneously.Do(maxConcurrent, callbacks...)
 ```
+
+`maxConcurrent < 1` means "run everything at once".
 
 **Why?** These primitives automatically handle panic recovery and prevent unbounded goroutine spawning, protecting against production outages.
 

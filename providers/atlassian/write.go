@@ -27,10 +27,10 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	if len(config.RecordId) == 0 {
 		// writing to the entity without id means
 		// that we are extending 'List' resource and creating a new record
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 	} else {
 		// only put is supported for updating 'Single' resource
-		write = c.Client.Put
+		write = c.JSONHTTPClient().Put
 
 		url.AddPath(config.RecordId)
 	}

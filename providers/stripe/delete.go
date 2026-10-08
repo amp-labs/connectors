@@ -11,7 +11,7 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 		return nil, err
 	}
 
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.Base.GetURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +19,7 @@ func (c *Connector) Delete(ctx context.Context, config common.DeleteParams) (*co
 	url.AddPath(config.RecordId)
 
 	// 200 OK is expected
-	_, err = c.Client.Delete(ctx, url.String())
+	_, err = c.JSONHTTPClient().Delete(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}

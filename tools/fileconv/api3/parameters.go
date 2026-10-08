@@ -80,7 +80,7 @@ func Pluralize(displayName string) string {
 }
 
 // ReadOperationMethodFilter callback that filters REST operations based on endpoint parameters.
-type ReadOperationMethodFilter func(objectName string, operation *openapi3.Operation) bool
+type ReadOperationMethodFilter func(objectPath string, operation *openapi3.Operation) bool
 
 // OnlyOptionalQueryParameters operation must include only optional query parameters.
 func OnlyOptionalQueryParameters(objectName string, operation *openapi3.Operation) bool {

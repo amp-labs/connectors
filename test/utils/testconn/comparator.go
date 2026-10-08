@@ -223,6 +223,41 @@ func ComparatorSubsetMetadata(_ string, actual, expected *common.ListObjectMetad
 	return result
 }
 
+// ComparatorSubsetMetadataWithMissingFields returns a comparator that checks
+// metadata using ComparatorSubsetMetadata and also verifies that selected
+// fields are absent from the returned object metadata.
+//
+// Use missingFields to specify object names and the fields that must not be
+// present in either Result[objectName].Fields.
+// Result[objectName].FieldsMap are supported for backwards compatability.
+func ComparatorSubsetMetadataWithMissingFields(
+	missingFields map[string][]string,
+) Comparator[*common.ListObjectMetadataResult] {
+	return func(serverURL string, actual, expected *common.ListObjectMetadataResult) *testutils.CompareResult {
+		result := testutils.NewCompareResult()
+
+		result.Merge(ComparatorSubsetMetadata(serverURL, actual, expected))
+		for objectName, fields := range missingFields {
+			objectMetadata, ok := actual.Result[objectName]
+			if !ok {
+				continue
+			}
+
+			for _, field := range fields {
+				if _, ok = objectMetadata.Fields[field]; ok {
+					result.AddDiff("Result[%v].Fields[%v] exists, but should be missing", objectName, field)
+				}
+
+				if _, ok = objectMetadata.FieldsMap[field]; ok {
+					result.AddDiff("Result[%v].FieldsMap[%v] exists, but should be missing", objectName, field)
+				}
+			}
+		}
+
+		return result
+	}
+}
+
 func ResolveTestServerURL(urlTemplate string, serverURL string) string {
 	return strings.ReplaceAll(urlTemplate, URLTestServer, serverURL)
 }
@@ -281,6 +316,21 @@ func ComparatorSubsetUpsertMetadata(_ string, actual, expected *common.UpsertMet
 	return result
 }
 
+// ComparatorSubscriptionSuccess verifies the operation returned a successful subscription result.
+func ComparatorSubscriptionSuccess(
+	_ string, actual, _ *common.SubscriptionResult,
+) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+
+	if actual == nil {
+		return result.AddDiff("subscription result is nil")
+	}
+
+	result.Assert("Status", common.SubscriptionStatusSuccess, actual.Status)
+
+	return result
+}
+
 // ComparatorSubscriptionWithResult returns a comparator for subscription results
 // that first compares the common SubscriptionResult fields and then compares the
 // nested Result values with the provided resultComparator.
@@ -294,6 +344,10 @@ func ComparatorSubscriptionWithResult[R any](
 	resultComparator func(expectedResult, actualResult *R) *testutils.CompareResult,
 ) Comparator[*common.SubscriptionResult] {
 	return func(_ string, actual, expected *common.SubscriptionResult) *testutils.CompareResult {
+		if result := compareSubscriptionPresence(actual, expected); !result.OK {
+			return result
+		}
+
 		result := testutils.NewCompareResult()
 		result.Merge(mockutils.SubscriptionResultComparator.CompareWithoutResultArg(actual, expected))
 
@@ -315,7 +369,28 @@ func ComparatorSubscriptionWithResult[R any](
 func ComparatorSubscriptionWithoutResult(
 	_ string, actual, expected *common.SubscriptionResult,
 ) *testutils.CompareResult {
+	if result := compareSubscriptionPresence(actual, expected); !result.OK {
+		return result
+	}
+
 	return mockutils.SubscriptionResultComparator.CompareWithoutResultArg(actual, expected)
+}
+
+func compareSubscriptionPresence(
+	actual, expected *common.SubscriptionResult,
+) *testutils.CompareResult {
+	result := testutils.NewCompareResult()
+
+	switch {
+	case actual == nil && expected == nil:
+		// No actual hence it is ok to have no expectation.
+	case actual != nil && expected == nil:
+		result.AddDiff("unexpected SubscriptionResult: got non-nil, want nil")
+	case actual == nil:
+		result.AddDiff("missing SubscriptionResult: got nil, want non-nil")
+	}
+
+	return result
 }
 
 func isPointer(v any) bool {

@@ -4,9 +4,19 @@
     {
       "id": "I0ABCDEF123",
       "channel_id": "C0ABCDEF123",
-      "inviting_team": {
-        "id": "T012AB3C4",
-        "name": "Acme Corp"
+      "date_last_updated": 1622591318,
+      "invite": {
+        "id": "I0139HVDSDQ",
+        "inviting_team": {
+          "id": "T012AB3C4",
+          "name": "Acme Corp"
+        }
+      },
+      "channel": {
+        "id": "C013AGH1GBD",
+        "is_private": false,
+        "is_im": false,
+        "name": "pb-shared-7"
       }
     }
   ],

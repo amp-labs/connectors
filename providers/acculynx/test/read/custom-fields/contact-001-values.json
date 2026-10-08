@@ -1,6 +1,6 @@
 {
-  "totalRecords": 2,
-  "recordStartIndex": 0,
+  "count": 2,
+  "pageStartIndex": 0,
   "pageSize": 100,
   "items": [
     {

@@ -79,6 +79,7 @@ type MetadataCustomField struct {
 	Type        string `xml:"type"`
 	Required    bool   `xml:"required"`
 	Unique      bool   `xml:"unique"`
+	ExternalId  *bool  `xml:"externalId,omitempty"`
 	Indexed     bool   `xml:"indexed"`
 
 	// Special properties.
@@ -115,6 +116,7 @@ func newMetadataCustomField(
 		Description:           definition.Description,
 		Required:              definition.Required,
 		Unique:                definition.Unique,
+		ExternalId:            definition.ExternalId,
 		Indexed:               definition.Indexed,
 	}
 

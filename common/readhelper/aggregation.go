@@ -2,9 +2,11 @@ package readhelper
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/goutils"
 )
 
 // AggregateNextPage holds a collection of next page tokens, each associated with a context.
@@ -42,8 +44,16 @@ func AggregateReadResults[C any](
 	registry map[string]common.ReadResult,
 	createPageContext PageContextCreator[C],
 	modifyReadResultRow ReadResultRowModifier,
-) *common.ReadResult {
-	result := &common.ReadResult{
+) (result *common.ReadResult, err error) {
+	defer goutils.PanicRecovery(func(cause error) {
+		// Recover if modifyReadResultRow incorrectly uses a row field.
+		// This can happen when ReadResultRow gains a new map field that
+		// has not been initialized before calling the modifier.
+		// Update this function to initialize any newly added map fields.
+		err = fmt.Errorf("%w: invalid impl of modifyReadResultRow", cause)
+	})
+
+	result = &common.ReadResult{
 		Rows:     0,
 		Data:     make([]common.ReadResultRow, 0),
 		NextPage: "",
@@ -55,8 +65,9 @@ func AggregateReadResults[C any](
 
 	for key, value := range registry {
 		result.Rows += value.Rows
-		// hasMore is true if at least one result has more data to read
-		hasMore = hasMore || !(value.Done)
+
+		// Set hasMore if at least one result contains additional data.
+		hasMore = hasMore || !value.Done
 
 		if value.NextPage != "" {
 			aggregate = append(aggregate, NextPageToken[C]{
@@ -66,7 +77,16 @@ func AggregateReadResults[C any](
 		}
 
 		for _, row := range value.Data {
-			modifyReadResultRow(key, &row) // side effect: modifies the row
+			// Initialize maps so modifyReadResultRow can safely write to them.
+			if row.Fields == nil {
+				row.Fields = make(map[string]any)
+			}
+
+			if row.Associations == nil {
+				row.Associations = make(map[string][]common.Association)
+			}
+
+			modifyReadResultRow(key, &row) // Modifies row in place.
 			result.Data = append(result.Data, row)
 		}
 	}
@@ -74,7 +94,18 @@ func AggregateReadResults[C any](
 	result.NextPage = aggregate.token()
 	result.Done = !hasMore
 
-	return result
+	for _, data := range result.Data {
+		// Clear empty maps that were initialized only for modifyReadResultRow.
+		if len(data.Fields) == 0 {
+			data.Fields = nil
+		}
+
+		if len(data.Associations) == 0 {
+			data.Associations = nil
+		}
+	}
+
+	return result, nil
 }
 
 // token marshals AggregateNextPage into a single common.NextPageToken.

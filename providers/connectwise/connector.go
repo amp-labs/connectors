@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
-	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/batch"
@@ -55,14 +54,10 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	clientID := params.Metadata["clientId"]
 	connector := &Connector{
-		Connector: base,
-		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{"clientId"},
-		},
-		clientID: clientID,
+		Connector:            base,
+		ExpectedMetadataKeys: []string{"clientId"},
+		clientID:             clientID,
 	}
-
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
 	errorHandler := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
@@ -109,6 +104,24 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 	return connector, nil
 }
 
+// Provider returns the provider this connector talks to. It is declared here rather than
+// inherited from the embedded base because the subscribe registry registers a zero-value
+// Connector as its webhook verifier, which has no base: the base's Provider has a value
+// receiver, so the promoted call would dereference that nil pointer and panic.
+func (c *Connector) Provider() providers.Provider {
+	return providers.ConnectWise
+}
+
+// String returns a human-readable identifier for this connector. Declared for the same reason as
+// Provider: the zero-value verifier connector has no base to delegate to.
+func (c *Connector) String() string {
+	if c == nil || c.Connector == nil {
+		return c.Provider() + ".Connector"
+	}
+
+	return c.Connector.String()
+}
+
 func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
 	objectPath, err := metadata.Schemas.FindURLPath(common.ModuleRoot, objectName)
 	if err != nil {
@@ -116,6 +129,10 @@ func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
 	}
 
 	return urlbuilder.New(c.ModuleInfo().BaseURL, apiVersion, objectPath)
+}
+
+func (c *Connector) getCommunicationTypesURL() (*urlbuilder.URL, error) {
+	return urlbuilder.New(c.ModuleInfo().BaseURL, apiVersion, "company/communicationTypes")
 }
 
 func (c *Connector) clientIdHeader() common.Header {

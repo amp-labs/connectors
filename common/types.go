@@ -41,8 +41,15 @@ var (
 	// ErrCaller represents non-retryable errors caused by bad input from the caller.
 	ErrCaller error = newClassedErr("caller error", ErrorClassBadRequest)
 
-	// ErrServer represents non-retryable errors caused by something on the server.
+	// ErrServer represents errors caused by something on the provider's side
+	// (any 5xx). Retryable: most 5xx responses are transient.
 	ErrServer error = newClassedErr("server error", ErrorClassProvider5xx)
+
+	// ErrServerNonRetryable represents a 5xx response that a connector has
+	// positively identified as permanent for this request, so retrying it
+	// cannot succeed.
+	ErrServerNonRetryable error = newClassedErr(
+		"non-retryable server error", ErrorClassProvider5xxPermanent)
 
 	// ErrUnknown represents an unknown status code response.
 	ErrUnknown error = newClassedErr("unknown error", ErrorClassUnknown)
@@ -118,6 +125,10 @@ var (
 	// ErrOperationNotSupportedForObject is returned when operation is not supported for this object.
 	ErrOperationNotSupportedForObject = errors.New("operation is not supported for this object in this module")
 
+	// ErrSubscribeEventNotSupportedForObject is returned when subscribe event type is not supported for this object.
+	ErrSubscribeEventNotSupportedForObject = errors.New("subscribe event type " +
+		"is not supported for this object in this module")
+
 	// ErrObjectNotSupported is returned when operation is not supported for this object.
 	ErrObjectNotSupported = errors.New("operation is not supported for this object")
 
@@ -171,6 +182,18 @@ var (
 	// from previous SubscriptionResult. This should not happen and it points to issues with implementation.
 	// Likely the result was not created properly by previous Create/Update step.
 	ErrPrevSubscriptionResultInvalid = errors.New("previous SubscriptionResult does not match expectations")
+
+	// ErrInvalidVirtualField is returned when Write cannot happen due to invalid virtual field.
+	ErrInvalidVirtualField = errors.New("virtual field is invalid")
+
+	// ErrMissingVerificationParams is returned when verification params are nil.
+	ErrMissingVerificationParams = errors.New("missing verification params")
+
+	// ErrInvalidVerificationParams is returned when VerificationParams is of unexpected type.
+	ErrInvalidVerificationParams = errors.New("invalid verification params")
+
+	// ErrMissingProviderParam is returned when connector expects non-empty value for a param inside VerificationParams.
+	ErrMissingProviderParam = errors.New("missing required provider parameter")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -195,28 +218,16 @@ type ReadParams struct {
 	// Deleted is true if we want to read deleted records instead of active records.
 	Deleted bool // optional, defaults to false
 
-	// Filter defines the filtering criteria for supported connectors.
-	// It is optional and behaves differently depending on the connector:
-	//	* Salesforce: It is a SOQL string that comes after the WHERE clause which will be used to filter the records.
+	// RawFilter is a filter in the provider's native syntax. Nil means no filter.
+	// Connectors that accept one implement connectors.RawFilterConnector, which declares
+	// the filter types they support. The type and its meaning depend on the connector:
+	//	* Salesforce ("soql"): A SOQL string that comes after the WHERE clause which will be used to filter the records.
 	//		Reference: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm
-	//	* Klaviyo: Comma separated methods following JSON:API filtering syntax.
-	//		Note: timing is already handled by Since argument.
-	//		Reference: https://developers.klaviyo.com/en/docs/filtering_
-	//	* Marketo: Comma-separated activityTypeIds for filtering lead activities.
+	//	* Marketo ("activityTypeIds"): Comma-separated activityTypeIds for filtering lead activities.
 	//		Note: Only supported when reading Lead Activities (not other endpoints).
 	//		Example: "1,6,12" (for visitWebpage, fillOutForm, emailClicked)
 	//		Reference: https://developer.adobe.com/marketo-apis/api/mapi/#tag/Activities
-	//  * GetResponse: An ampersand-style filter string that maps directly to GetResponse's
-	//      bracket-notation query parameters. Supports both `query[...]` and `sort[...]`.
-	//      Multiple filters can be separated by '&'.
-	//      Examples:
-	//          - "query[name]=campaign_name"
-	//          - "query[isDefault]=true"
-	//          - "sort[name]=ASC"
-	//          - "sort[createdOn]=DESC"
-	//          - "query[name]=test&sort[createdOn]=DESC"
-	//      Reference: https://apireference.getresponse.com/#operation/getCampaignList
-	Filter string // optional
+	RawFilter *RawFilter // optional
 
 	// BuilderFilter is an optional Ampersand-style structured filter for read actions.
 	// Multiple field filters are joined by AND. Only the "eq" operator is supported.
@@ -499,7 +510,7 @@ func (p BatchWriteParam) GetAllOrNone() bool {
 }
 
 func TransformWriteHeaders(headers []WriteHeader, mode HeaderMode) []Header {
-	transformedHeaders := []Header{}
+	transformedHeaders := make([]Header, 0, len(headers))
 	for _, header := range headers {
 		transformedHeaders = append(transformedHeaders, Header{
 			Key:   header.Key,
@@ -761,6 +772,10 @@ type FieldMetadata struct {
 	// True means the field must have a value, false means it is optional.
 	IsRequired *bool
 
+	// FieldId is the provider's unique identifier for this field.
+	// It is nil when the provider does not expose field identifiers.
+	FieldId *string //nolint:revive
+
 	// Values is a list of possible values for this field.
 	// It is applicable only if the type is either singleSelect or multiSelect, otherwise slice is nil.
 	Values []FieldValue
@@ -846,6 +861,29 @@ type SubscriptionUpdateEvent interface {
 
 	// UpdatedFields returns the fields that were updated in the event.
 	UpdatedFields() ([]string, error)
+}
+
+// SubscriptionEventWithRecord is implemented by events that carry a record inline.
+// The inline record may be incomplete, so callers may still prefer a provider fetch.
+type SubscriptionEventWithRecord interface {
+	SubscriptionEvent
+
+	// Record returns the single record carried inline in the webhook payload as a
+	// ReadResultRow, marshaled the same way a read returns it: Raw holds the full
+	// provider record and Fields holds the requested subset (lowercased), selected
+	// from the given fields. This lets callers map the inline record exactly like a
+	// fetched read, without a GetRecordsByIds call.
+	Record(fields []string) (ReadResultRow, error)
+}
+
+// SubscriptionEventWithCompleteRecord is implemented when the inline record is
+// authoritative and callers can skip the provider fetch.
+type SubscriptionEventWithCompleteRecord interface {
+	SubscriptionEventWithRecord
+
+	// InlineRecordIsComplete reports whether Record returns everything a fetch would, letting the
+	// caller skip GetRecordsByIds.
+	InlineRecordIsComplete() bool
 }
 
 // CollapsedSubscriptionEvent some providers send multiple events in a single webhook payload.
@@ -1120,6 +1158,10 @@ type SearchParams struct {
 	Fields   datautils.StringSet `json:"fields"             validate:"required"`
 	Filter   SearchFilter        `json:"filter"             validate:"required"`
 	NextPage NextPageToken       `json:"nextPage,omitempty"`
+
+	// RawFilter is a filter in the provider's native syntax, as for ReadParams.RawFilter.
+	// A search needs exactly one of Filter or RawFilter.
+	RawFilter *RawFilter `json:"rawFilter,omitempty"`
 
 	// Page Limit for the search. If omitted, return provider's default limit.
 	Limit int64 `json:"limit,omitempty"`

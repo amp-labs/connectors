@@ -1,0 +1,44 @@
+{
+  "communicationItems": [
+    {
+      "id": 99820,
+      "type": {
+        "id": 13,
+        "name": "Individual Professional",
+        "_info": {
+          "type_href": "https://sandbox-na.myconnectwise.net/v4_6_release/apis/3.0//company/communicationTypes/13"
+        }
+      },
+      "value": "professional.bob@test.com",
+      "defaultFlag": true,
+      "domain": "@test.com",
+      "communicationType": "Email"
+    },
+    {
+      "id": 99821,
+      "type": {
+        "id": 2,
+        "name": "Phone - Direct",
+        "_info": {
+          "type_href": "https://sandbox-na.myconnectwise.net/v4_6_release/apis/3.0//company/communicationTypes/2"
+        }
+      },
+      "value": "+380001000",
+      "defaultFlag": true,
+      "communicationType": "Phone"
+    },
+    {
+      "id": 99822,
+      "type": {
+        "id": 3,
+        "name": "Fax - Work",
+        "_info": {
+          "type_href": "https://sandbox-na.myconnectwise.net/v4_6_release/apis/3.0//company/communicationTypes/3"
+        }
+      },
+      "value": "+99969",
+      "defaultFlag": true,
+      "communicationType": "Fax"
+    }
+  ]
+}

@@ -1,0 +1,354 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "admin.conversations": {
+          "displayName": "Admin Conversations",
+          "path": "",
+          "responseKey": "",
+          "docs": "https://docs.slack.dev/reference/methods/admin.conversations.create",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_private": {
+              "displayName": "is_private",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "org_wide": {
+              "displayName": "org_wide",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "team_id": {
+              "displayName": "team_id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "bookmarks": {
+          "displayName": "Bookmarks",
+          "path": "",
+          "responseKey": "",
+          "docs": "https://docs.slack.dev/reference/methods/bookmarks.add",
+          "fields": {
+            "access_level": {
+              "displayName": "access_level",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "channel_id": {
+              "displayName": "channel_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "emoji": {
+              "displayName": "emoji",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "entity_id": {
+              "displayName": "entity_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "link": {
+              "displayName": "link",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent_id": {
+              "displayName": "parent_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "calls": {
+          "displayName": "Calls",
+          "path": "",
+          "responseKey": "",
+          "docs": "https://docs.slack.dev/reference/methods/calls.add",
+          "fields": {
+            "created_by": {
+              "displayName": "created_by",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "date_start": {
+              "displayName": "date_start",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "desktop_app_join_url": {
+              "displayName": "desktop_app_join_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_display_id": {
+              "displayName": "external_display_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "external_unique_id": {
+              "displayName": "external_unique_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "join_url": {
+              "displayName": "join_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "users": {
+              "displayName": "users",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "canvases": {
+          "displayName": "Canvases",
+          "path": "",
+          "responseKey": "",
+          "docs": "https://docs.slack.dev/reference/methods/canvases.create",
+          "fields": {
+            "channel_id": {
+              "displayName": "channel_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "document_content": {
+              "displayName": "document_content",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "chat.postMessage": {
+          "displayName": "Chat Postmessage",
+          "path": "",
+          "responseKey": "",
+          "docs": "https://docs.slack.dev/reference/methods/chat.postMessage",
+          "fields": {
+            "as_user": {
+              "displayName": "as_user",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "attachments": {
+              "displayName": "attachments",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "blocks": {
+              "displayName": "blocks",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "channel": {
+              "displayName": "channel",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "current_draft_last_updated_ts": {
+              "displayName": "current_draft_last_updated_ts",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "icon_emoji": {
+              "displayName": "icon_emoji",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "icon_url": {
+              "displayName": "icon_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "link_names": {
+              "displayName": "link_names",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "markdown_text": {
+              "displayName": "markdown_text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "mrkdwn": {
+              "displayName": "mrkdwn",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "parse": {
+              "displayName": "parse",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "reply_broadcast": {
+              "displayName": "reply_broadcast",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "text": {
+              "displayName": "text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "thread_ts": {
+              "displayName": "thread_ts",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "unfurl_app_links": {
+              "displayName": "unfurl_app_links",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "unfurl_links": {
+              "displayName": "unfurl_links",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "unfurl_media": {
+              "displayName": "unfurl_media",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "username": {
+              "displayName": "username",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "conversations.canvases": {
+          "displayName": "Conversations Canvases",
+          "path": "",
+          "responseKey": "",
+          "docs": "https://docs.slack.dev/reference/methods/conversations.canvases.create",
+          "fields": {
+            "channel_id": {
+              "displayName": "channel_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "document_content": {
+              "displayName": "document_content",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "slackLists": {
+          "displayName": "Slacklists",
+          "path": "",
+          "responseKey": "",
+          "docs": "https://docs.slack.dev/reference/methods/slackLists.create",
+          "fields": {
+            "copy_from_list_id": {
+              "displayName": "copy_from_list_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "description_blocks": {
+              "displayName": "description_blocks",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "include_copied_list_records": {
+              "displayName": "include_copied_list_records",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "schema": {
+              "displayName": "schema",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "todo_mode": {
+              "displayName": "todo_mode",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            }
+          }
+        },
+        "slackLists.items": {
+          "displayName": "Slacklists Items",
+          "path": "",
+          "responseKey": "",
+          "docs": "https://docs.slack.dev/reference/methods/slackLists.items.create",
+          "fields": {
+            "duplicated_item_id": {
+              "displayName": "duplicated_item_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "initial_fields": {
+              "displayName": "initial_fields",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "list_id": {
+              "displayName": "list_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "parent_item_id": {
+              "displayName": "parent_item_id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

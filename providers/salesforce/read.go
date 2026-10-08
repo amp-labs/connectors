@@ -54,12 +54,17 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	// If NextPage is not set, then we're reading the first page of results.
 	// We need to construct the SOQL query and then make the request.
 	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_query.htm
-	url, err := c.getRestApiURL("query")
+	url, err := c.getRestApiURL(core.QueryEndpoint(config.RawFilter != nil))
 	if err != nil {
 		return nil, err
 	}
 
-	url.WithQueryParam("q", makeSOQL(config, c.GetTimestampColumn(common.ObjectName(config.ObjectName))).String())
+	soql, err := makeSOQL(config, c.GetTimestampColumn(common.ObjectName(config.ObjectName)))
+	if err != nil {
+		return nil, err
+	}
+
+	url.WithQueryParam("q", soql.String())
 
 	return url, nil
 }
@@ -67,16 +72,20 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 // makeSOQL returns the SOQL query for the desired read operation.
 // The timestampColumn parameter specifies which field to use for Since/Until filtering
 // (typically "SystemModstamp").
-func makeSOQL(params common.ReadParams, timestampColumn string) *core.SOQLBuilder {
+// It fails if the params carry a raw filter that isn't a valid Salesforce raw filter.
+func makeSOQL(params common.ReadParams, timestampColumn string) (*core.SOQLBuilder, error) {
 	fields := associations.FieldsForSelectQueryRead(&params)
 	soql := (&core.SOQLBuilder{}).SelectFields(fields).From(params.ObjectName)
-	addWhereClauses(soql, params, timestampColumn)
 
-	return soql
+	if err := addWhereClauses(soql, params, timestampColumn); err != nil {
+		return nil, err
+	}
+
+	return soql, nil
 }
 
 // addWhereClauses adds WHERE clauses to the SOQL query based on the config.
-func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, timestampColumn string) {
+func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, timestampColumn string) error {
 	// If Since is not set, then we're doing a backfill. We read all rows (in pages)
 	if !config.Since.IsZero() {
 		soql.Where(timestampColumn + " > " + datautils.Time.FormatRFC3339inUTC(config.Since))
@@ -90,8 +99,13 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, timestamp
 		soql.Where("IsDeleted = true")
 	}
 
-	if config.Filter != "" {
-		soql.Where(config.Filter)
+	if config.RawFilter != nil {
+		filter, err := common.RawFilterAs[core.SOQLFilter](*config.RawFilter)
+		if err != nil {
+			return err
+		}
+
+		soql.WhereRawFilter(filter.Condition)
 	}
 
 	if config.BuilderFilter != nil {
@@ -107,6 +121,8 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, timestamp
 	if config.PageSize > 0 {
 		soql.Limit(int64(config.PageSize))
 	}
+
+	return nil
 }
 
 // DeployApexTriggersForFilteredRead builds and deploys filtered-read apex triggers

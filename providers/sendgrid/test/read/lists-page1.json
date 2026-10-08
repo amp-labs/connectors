@@ -1,0 +1,13 @@
+{
+  "result": [
+    {
+      "id": "list-abc-123",
+      "name": "Newsletter Subscribers",
+      "contact_count": 42
+    }
+  ],
+  "_metadata": {
+    "self": "https://api.sendgrid.com/v3/marketing/lists?page_size=1",
+    "next": "https://api.sendgrid.com/v3/marketing/lists?page_size=1&page_token=token-page-2"
+  }
+}

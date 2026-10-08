@@ -370,27 +370,6 @@ func TestBuildRowRestriction_Incremental(t *testing.T) {
 	}
 }
 
-func TestBuildRowRestriction_WithFilter(t *testing.T) {
-	t.Parallel()
-
-	c := &Connector{timestampColumn: "updated_at"}
-
-	token := &readSessionToken{
-		IsBackfill:  true,
-		WindowStart: "2024-01-01T00:00:00Z",
-		WindowEnd:   "2024-01-31T00:00:00Z",
-	}
-
-	restriction := c.buildRowRestriction(token, common.ReadParams{
-		Filter: "country_code = 'US'",
-	})
-
-	expected := "updated_at >= TIMESTAMP('2024-01-01T00:00:00Z') AND updated_at < TIMESTAMP('2024-01-31T00:00:00Z') AND country_code = 'US'"
-	if restriction != expected {
-		t.Errorf("buildRowRestriction() = %q, want %q", restriction, expected)
-	}
-}
-
 func TestBuildRowRestriction_IncrementalSinceOnly(t *testing.T) {
 	t.Parallel()
 

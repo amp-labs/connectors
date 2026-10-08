@@ -21,7 +21,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
 			Name:  "Successfully describe multiple objects with metadata",
-			Input: []string{"clients", "admins", "campaigns"},
+			Input: []string{"clients", "admins"},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
@@ -53,7 +53,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 						},
 					},
 				},
-				Errors: nil,
 			},
 			ExpectedErrs: nil,
 		},
@@ -78,7 +77,7 @@ func constructTestConnector(server *httptest.Server) (*Connector, error) {
 		return nil, err
 	}
 
-	connector.SetUnitTestMockServerBaseURL(server.URL)
+	connector.SetUnitTestMockServerBaseUrl(server.URL)
 
 	return connector, nil
 }

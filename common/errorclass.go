@@ -58,6 +58,10 @@ const (
 	// ErrorClassProvider5xx — 5xx server error on the provider side. Retryable.
 	ErrorClassProvider5xx ErrorClass = "provider_5xx"
 
+	// ErrorClassProvider5xxPermanent — a 5xx that a connector has positively
+	// identified as permanent. Non-retryable.
+	ErrorClassProvider5xxPermanent ErrorClass = "provider_5xx_permanent"
+
 	// ErrorClassRetryable — generic retryable error where a finer class isn't known.
 	ErrorClassRetryable ErrorClass = "retryable"
 )
@@ -143,6 +147,8 @@ func classOfMessage(raw string) ErrorClass {
 		strings.Contains(msg, "precondition check failed"),
 		strings.Contains(msg, "missing secret"):
 		return ErrorClassBadRequest
+	case strings.Contains(msg, "non-retryable server error"):
+		return ErrorClassProvider5xxPermanent
 	case strings.Contains(msg, "http status 5"),
 		strings.Contains(msg, "internal server error"),
 		strings.Contains(msg, "unexpected server error"):

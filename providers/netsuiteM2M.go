@@ -12,7 +12,7 @@ const NetsuiteM2M Provider = "netsuiteM2M"
 // nolint:lll,funlen
 func init() {
 	SetInfo(NetsuiteM2M, ProviderInfo{
-		DisplayName: "Netsuite",
+		DisplayName: "NetSuite",
 		AuthType:    Custom,
 		BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com",
 		CustomOpts: &CustomAuthOpts{
@@ -59,7 +59,7 @@ func init() {
 		DefaultModule: ModuleNetsuiteRESTAPI,
 		Modules: &Modules{
 			ModuleNetsuiteSuiteQL: {
-				DisplayName: "Netsuite M2M (SuiteQL)",
+				DisplayName: "NetSuite M2M (SuiteQL)",
 				BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/query",
 				Support: Support{
 					Proxy: true,
@@ -67,7 +67,7 @@ func init() {
 				},
 			},
 			ModuleNetsuiteRESTAPI: {
-				DisplayName: "Netsuite M2M (REST API)",
+				DisplayName: "NetSuite M2M (REST API)",
 				BaseURL:     "https://{{.workspace}}.suitetalk.api.netsuite.com/services/rest/record",
 				Support: Support{
 					Proxy: true,
@@ -76,7 +76,7 @@ func init() {
 				},
 			},
 			ModuleNetsuiteRESTlet: {
-				DisplayName: "Netsuite M2M (RESTlet)",
+				DisplayName: "NetSuite M2M (RESTlet)",
 				BaseURL:     "https://{{.workspace}}.restlets.api.netsuite.com",
 				Support: Support{
 					Proxy: true,
@@ -104,8 +104,8 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:         "workspace",
-					DisplayName:  "Netsuite URL Prefix",
-					Prompt:       "If your Netsuite URL is `https://1234567-sb.app.netsuite.com`, then the prefix is `1234567-sb`.",
+					DisplayName:  "NetSuite URL Prefix",
+					Prompt:       "If your NetSuite URL is `https://1234567-sb.app.netsuite.com`, then the prefix is `1234567-sb`.",
 					DefaultValue: "1234567-sb",
 					DocsURL:      "https://docs.oracle.com/en/cloud/saas/netsuite/ns-online-help/section_1498251763.html",
 					ModuleDependencies: &ModuleDependencies{
@@ -118,7 +118,7 @@ func init() {
 					Name:         "scriptURL",
 					DisplayName:  "RESTlet Deployment URL",
 					DocsURL:      "https://docs.withampersand.com/customer-guides/netsuite-m2m#6-verify-the-deployment",
-					Prompt:       "After you install the Netsuite bundle, go to the Deployments tab and copy the URL.",
+					Prompt:       "After you install the NetSuite bundle, go to the Deployments tab and copy the URL.",
 					DefaultValue: "/app/site/hosting/restlet.nl?script=3277&deploy=1",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleNetsuiteRESTlet: ModuleDependency{},

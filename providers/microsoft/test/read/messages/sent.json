@@ -1,0 +1,58 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('ae87552f-48fc-4dec-9322-65040bf9fdfd')/mailFolders('sentitems')/messages",
+  "value": [
+    {
+      "@odata.etag": "W/\"CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAGF7ahU\"",
+      "id": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQBGAAAAAABeMJSlO8qLToz2i2IQ1wsqBwB8hj1Rtd60SKTngNs3if9RAAAAAAEJAAB8hj1Rtd60SKTngNs3if9RAAGGBTAuAAA=",
+      "createdDateTime": "2026-06-25T00:11:41Z",
+      "lastModifiedDateTime": "2026-09-12T02:19:20Z",
+      "changeKey": "CQAAABYAAAB8hj1Rtd60SKTngNs3if9RAAGF7ahU",
+      "categories": [],
+      "receivedDateTime": "2026-09-11T23:44:34Z",
+      "sentDateTime": "2026-09-11T23:44:34Z",
+      "hasAttachments": false,
+      "subject": "Invitation to celebration",
+      "bodyPreview": "Join us in celebrating the 5 year jubilee.",
+      "importance": "normal",
+      "parentFolderId": "AAMkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQAuAAAAAABeMJSlO8qLToz2i2IQ1wsqAQB8hj1Rtd60SKTngNs3if9RAAAAAAEJAAA=",
+      "conversationId": "AAQkAGY0YzAwY2ViLWQyODktNDI3NS1iNmY4LTE5YzU0MjI5ZTA4OQAQAHpHBl1AQGNElqJRmREMjXo=",
+      "conversationIndex": "AQHdBDczekcGXUBAY0SWolGZEQyNeg==",
+      "isDeliveryReceiptRequested": false,
+      "isReadReceiptRequested": false,
+      "isRead": true,
+      "isDraft": false,
+      "inferenceClassification": "focused",
+      "body": {
+        "contentType": "text",
+        "content": "Join us in celebrating the 5 year jubilee."
+      },
+      "sender": {
+        "emailAddress": {
+          "name": "John Doe",
+          "address": "JohnDoe@test.com"
+        }
+      },
+      "from": {
+        "emailAddress": {
+          "name": "John Doe",
+          "address": "JohnDoe@test.com"
+        }
+      },
+      "toRecipients": [
+        {
+          "emailAddress": {
+            "name": "constantin@withampersand.com",
+            "address": "constantin@withampersand.com"
+          }
+        }
+      ],
+      "ccRecipients": [],
+      "bccRecipients": [],
+      "replyTo": [],
+      "flag": {
+        "flagStatus": "notFlagged"
+      }
+    }
+  ],
+  "@odata.nextLink": "https://graph.microsoft.com/v1.0/me/mailFolders('sentitems')/messages?%24filter=lastModifiedDateTime+gt+2026-09-01T19%3a00%3a00Z&%24top=1&%24skip=1"
+}

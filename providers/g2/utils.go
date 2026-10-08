@@ -227,7 +227,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		dimensions.Add(params.Fields.List())
 
 		// If a user is reading buyer_intent we need the time field for incremental read sync.
-		if !dimensions.Has("time") && (buyerIntents.Has(params.ObjectName)) { //nolint:lll
+		if !dimensions.Has("time") && buyerIntents.Has(params.ObjectName) { //nolint:lll
 			dimensions.Add([]string{"time"})
 		}
 

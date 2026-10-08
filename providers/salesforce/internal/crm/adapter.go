@@ -109,6 +109,11 @@ func (a Adapter) CheckDeployStatus(ctx context.Context, deployID string) (*metad
 	return a.customAdapter.CheckDeployStatus(ctx, deployID)
 }
 
+func (a Adapter) CancelDeploy(ctx context.Context, deployID string) (*metadata.CancelDeployResult, error) {
+	// Delegated.
+	return a.customAdapter.CancelDeploy(ctx, deployID)
+}
+
 // Gateway access to URLs.
 func (a Adapter) getModuleURL() string {
 	return a.ModuleInfo().BaseURL

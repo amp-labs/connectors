@@ -7,9 +7,11 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/acculynx/metadata"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
+	"gotest.tools/v3/assert"
 )
 
 func TestListObjectMetadata(t *testing.T) { //nolint:funlen
@@ -79,6 +81,27 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 						DisplayName: "Job Contacts",
 						FieldsMap: map[string]string{
 							"id": "id",
+						},
+					},
+				},
+			},
+			Comparator: testconn.ComparatorSubsetMetadata,
+		},
+		{
+			// Manually sourced from the spec's "financials" component — the
+			// endpoint answers with one object, which the explorer cannot
+			// extract from a list schema.
+			Name:   "Object-shaped jobs/financials is described",
+			Input:  []string{"jobs/financials"},
+			Server: mockserver.Dummy(),
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"jobs/financials": {
+						DisplayName: "Job Financials",
+						FieldsMap: map[string]string{
+							"jobId":      "jobId",
+							"balanceDue": "balanceDue",
+							"worksheet":  "worksheet",
 						},
 					},
 				},
@@ -229,4 +252,88 @@ func customFieldDefinitionsServer(fixture []byte) *httptest.Server {
 		},
 		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
 	}.Server()
+}
+
+// TestSchemaFieldsMatchLivePayloads guards fieldFixesByObject in the metadata
+// generator. The AccuLynx spec names several properties differently from what
+// the API returns, declares some it never sends, and omits others it always
+// sends. ListObjectMetadata feeds the field picker behind
+// `optionalFieldsAuto: all`, so a regression here surfaces as wrong field names
+// in a builder's UI rather than as a test failure.
+//
+// Each expectation below was taken from a live response.
+func TestSchemaFieldsMatchLivePayloads(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		object  string
+		present []string // returned by the API, so the schema must advertise them
+		absent  []string // never returned, so the schema must not advertise them
+	}{
+		{
+			object:  "company-settings/job-file-settings/photo-video-tags",
+			present: []string{"tagId", "tagName"},
+			absent:  []string{"id", "name"},
+		},
+		{
+			object:  "company-settings/job-file-settings/workflow-milestones",
+			present: []string{"id", "milestone"},
+			absent:  []string{"name", "statuses"},
+		},
+		{
+			object:  "company-settings/job-file-settings/trade-types",
+			present: []string{"id", "name"},
+			absent:  []string{"tradeId"},
+		},
+		{
+			object:  "company-settings/job-file-settings/document-folders",
+			present: []string{"companyID"},
+			absent:  []string{"companyId"},
+		},
+		{
+			object:  "company-settings/location-settings/account-types",
+			present: []string{"isActive"},
+			absent:  []string{"IsActive"},
+		},
+		{
+			object:  "company-settings/job-file-settings/job-categories",
+			present: []string{"id", "categoryId"},
+		},
+		{
+			object:  "contacts/email-addresses",
+			present: []string{"address", "type"},
+		},
+		{
+			object:  "contacts/custom-fields",
+			present: []string{"values", "formattedValues"},
+			absent:  []string{"customFieldDefinition"},
+		},
+		{
+			object:  "jobs/custom-fields",
+			present: []string{"values", "formattedValues"},
+			absent:  []string{"customFieldDefinition"},
+		},
+		{
+			object:  "jobs/history",
+			present: []string{"action", "date", "createdBy"},
+			absent:  []string{"type"},
+		},
+	}
+
+	for _, tt := range tests {
+		result, err := metadata.Schemas.Select(common.ModuleRoot, []string{tt.object})
+		assert.NilError(t, err)
+
+		fields := result.Result[tt.object].Fields
+
+		for _, name := range tt.present {
+			_, ok := fields[name]
+			assert.Assert(t, ok, "%s: expected field %q to be advertised", tt.object, name)
+		}
+
+		for _, name := range tt.absent {
+			_, ok := fields[name]
+			assert.Assert(t, !ok, "%s: field %q is never returned by AccuLynx", tt.object, name)
+		}
+	}
 }

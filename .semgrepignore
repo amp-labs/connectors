@@ -6,3 +6,9 @@
 /providers/*/test/*.html
 /providers/snowflake/read.go
 /providers/snowflake/postAuth.go
+
+# OpenAPI files should be stored under scripts within files package for each provider.
+# The files are downloaded and may contain data that are considered unsecure for sharing.
+# Instead of fixing the OpenAPI files which have no real data, they are ignored here.
+/scripts/openapi/*/internal/files/*.yaml
+/scripts/openapi/*/internal/files/*.json

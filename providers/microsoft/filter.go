@@ -2,6 +2,7 @@ package microsoft
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -152,7 +153,6 @@ var incrementalObjects = map[string]string{
 	"me/joinedTeams/microsoft.graph.getAllMessages()":   "lastModifiedDateTime",
 	"me/managedAppRegistrations":                        "createdDateTime",
 	"me/memberOf/microsoft.graph.group":                 "createdDateTime",
-	"me/messages":                                       "lastModifiedDateTime",
 	"me/messages/microsoft.graph.delta()":               "lastModifiedDateTime",
 	"me/onenote/operations":                             "createdDateTime",
 	"me/onlineMeetings":                                 "creationDateTime",
@@ -282,12 +282,19 @@ var incrementalObjects = map[string]string{
 	"windowsHelloForBusinessMethods":                         "createdDateTime",
 	"windowsInformationProtectionPolicies":                   "lastModifiedDateTime",
 	"workforceIntegrations":                                  "lastModifiedDateTime",
+
+	// Objects of Messages domain (core+virtual):
+	objectNameMessages:         "lastModifiedDateTime",
+	virtualObjectDrafts:        "lastModifiedDateTime",
+	virtualObjectSentMessages:  "lastModifiedDateTime",
+	virtualObjectInboxMessages: "lastModifiedDateTime",
 }
 
 // https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
 type filterQuery struct {
-	since string
-	until string
+	selects []string
+	since   string
+	until   string
 }
 
 func (q filterQuery) Since(objectName string, timestamp time.Time) filterQuery {
@@ -303,6 +310,12 @@ func (q filterQuery) Since(objectName string, timestamp time.Time) filterQuery {
 
 	value := datautils.Time.FormatRFC3339inUTCWithMilliseconds(timestamp)
 	q.since = fmt.Sprintf("%v ge %v", fieldName, value)
+
+	return q
+}
+
+func (q filterQuery) Select(selectText string) filterQuery {
+	q.selects = append(q.selects, selectText)
 
 	return q
 }
@@ -325,17 +338,54 @@ func (q filterQuery) Until(objectName string, timestamp time.Time) filterQuery {
 }
 
 func (q filterQuery) String() string {
-	if q.since == "" && q.until == "" {
-		return ""
-	}
-
-	if q.since != "" && q.until != "" {
-		return fmt.Sprintf("%v and %v", q.since, q.until)
-	}
+	conditions := make([]string, 0, len(q.selects)+2) // nolint:mnd
 
 	if q.since != "" {
-		return q.since
+		conditions = append(conditions, q.since)
 	}
 
-	return q.until
+	if q.until != "" {
+		conditions = append(conditions, q.until)
+	}
+
+	if len(q.selects) != 0 {
+		conditions = append(conditions, q.selects...)
+	}
+
+	return strings.Join(conditions, " and ")
+}
+
+// advancedQueryObjects are the Microsoft Entra directory-object collections that
+// require Graph "advanced query" ($count=true together with the
+// ConsistencyLevel: eventual header) in order to $filter on properties such as
+// createdDateTime. Without it Graph rejects the request with "Unsupported or
+// invalid query filter clause specified for property 'createdDateTime' of
+// resource 'Group'".
+//
+// The set is the authoritative directory-object list from
+// https://learn.microsoft.com/graph/aad-advanced-queries ("Advanced query
+// capabilities are supported only on directory objects ... including the
+// following objects"), mapped to their collection names.
+// nolint:gochecknoglobals
+var advancedQueryObjects = map[string]bool{
+	"users":                  true,
+	"groups":                 true,
+	"applications":           true,
+	"servicePrincipals":      true,
+	"devices":                true,
+	"administrativeUnits":    true,
+	"contacts":               true, // orgContact
+	"appRoleAssignments":     true,
+	"oauth2PermissionGrants": true,
+	// Delta-query variants of directory objects that incrementalObjects also filters
+	// on createdDateTime — they need the same advanced-query parameters.
+	"users/microsoft.graph.delta()":        true,
+	"groups/microsoft.graph.delta()":       true,
+	"applications/microsoft.graph.delta()": true,
+}
+
+// needsAdvancedQuery reports whether reads of objectName must use Graph advanced
+// query capabilities (see advancedQueryObjects).
+func needsAdvancedQuery(objectName string) bool {
+	return advancedQueryObjects[objectName]
 }

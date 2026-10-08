@@ -88,9 +88,8 @@ func (readResultComparator) SubsetFields(actual, expected *common.ReadResult) *t
 	}
 
 	for i := range expected.Data {
-		for field := range expected.Data[i].Fields {
+		for field, exp := range expected.Data[i].Fields {
 			got, ok := actual.Data[i].Fields[field]
-			exp := expected.Data[i].Fields[field]
 
 			if _, anyValue := exp.(Any); anyValue {
 				if !ok {

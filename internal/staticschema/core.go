@@ -2,6 +2,7 @@ package staticschema
 
 import (
 	"maps"
+	"slices"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -69,6 +70,12 @@ type FieldMetadata struct {
 	ProviderType string           `json:"providerType,omitempty"`
 	ReadOnly     *bool            `json:"readOnly,omitempty"`
 	Values       FieldValues      `json:"values,omitempty"`
+
+	// ReferenceTo is the list of object names this field references.
+	// It is applicable only to lookup fields, otherwise nil.
+	// Ex: ConnectWise Contact.company is a lookup pointing to the companies object,
+	// so its field metadata is {"valueType": "reference", "referenceTo": ["companies"]}.
+	ReferenceTo []string `json:"referenceTo,omitempty"`
 }
 
 type FieldValues []FieldValue
@@ -109,6 +116,7 @@ func (m FieldMetadataMapV2) convertToCommon() map[string]common.FieldMetadata {
 			ProviderType: field.ProviderType,
 			ReadOnly:     field.ReadOnly,
 			Values:       values,
+			ReferenceTo:  slices.Clone(field.ReferenceTo),
 		}
 	}
 
@@ -119,14 +127,14 @@ func (m FieldMetadataMapV2) convertToCommon() map[string]common.FieldMetadata {
 // The immutable map serves as a unified registry of metadata for the connector.
 // ListObjectMetadata returns a copy that consumers are allowed to modify as needed.
 func (o Object[F, C]) getObjectMetadata() *common.ObjectMetadata {
-	if fieldsMap, isV1 := (any(o.Fields)).(FieldMetadataMapV1); isV1 {
+	if fieldsMap, isV1 := any(o.Fields).(FieldMetadataMapV1); isV1 {
 		return &common.ObjectMetadata{
 			DisplayName: o.DisplayName,
 			FieldsMap:   datautils.FromMap(fieldsMap).ShallowCopy(),
 		}
 	}
 
-	fields, isV2 := (any(o.Fields)).(FieldMetadataMapV2)
+	fields, isV2 := any(o.Fields).(FieldMetadataMapV2)
 	if !isV2 {
 		// Unknown fieldsMap version.
 		return &common.ObjectMetadata{}
@@ -180,20 +188,20 @@ func (m *Metadata[F, C]) Add( // nolint:funlen
 	// - This is a workaround for limitations in Go generics.
 	// - During compilation, only one execution path is valid for each concrete type.
 	//   The other paths are unreachable and conceptually invalid, as they pertain to entirely different types.
-	if presentFields, isV1 := (any(object.Fields)).(FieldMetadataMapV1); isV1 {
+	if presentFields, isV1 := any(object.Fields).(FieldMetadataMapV1); isV1 {
 		fieldsMap := make(FieldMetadataMapV1)
 		maps.Copy(fieldsMap, presentFields)
-		maps.Copy(fieldsMap, (any(fieldMetadataMap)).(FieldMetadataMapV1)) // nolint:forcetypeassert
+		maps.Copy(fieldsMap, any(fieldMetadataMap).(FieldMetadataMapV1)) // nolint:forcetypeassert
 
 		object.Fields = any(fieldsMap).(F) // nolint:forcetypeassert
 
 		return
 	}
 
-	if presentFields, isV2 := (any(object.Fields)).(FieldMetadataMapV2); isV2 {
+	if presentFields, isV2 := any(object.Fields).(FieldMetadataMapV2); isV2 {
 		fieldsMap := make(FieldMetadataMapV2)
 		maps.Copy(fieldsMap, presentFields)
-		maps.Copy(fieldsMap, (any(fieldMetadataMap)).(FieldMetadataMapV2)) // nolint:forcetypeassert
+		maps.Copy(fieldsMap, any(fieldMetadataMap).(FieldMetadataMapV2)) // nolint:forcetypeassert
 
 		object.Fields = any(fieldsMap).(F) // nolint:forcetypeassert
 

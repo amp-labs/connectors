@@ -45,7 +45,7 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 	//
 	// For multi-segment paths (e.g., "calendars/groups"), the URL does not require a trailing slash.
 	// Example: https://highlevel.stoplight.io/docs/integrations/89e47b6c05e67-get-groups
-	if !(strings.Contains(objectName, "/")) {
+	if !strings.Contains(objectName, "/") {
 		urlRaw, err := url.ToURL()
 		if err != nil {
 			return nil, err
@@ -159,7 +159,7 @@ func (c *Connector) buildReadRequest( // nolint:cyclop
 	//
 	// For multi-segment paths (e.g., "calendars/groups"), the URL does not require a trailing slash.
 	// Example: https://highlevel.stoplight.io/docs/integrations/89e47b6c05e67-get-groups
-	if !(strings.Contains(params.ObjectName, "/")) {
+	if !strings.Contains(params.ObjectName, "/") {
 		urlRaw, err := url.ToURL()
 		if err != nil {
 			return nil, err
@@ -229,7 +229,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	if !(strings.Contains(params.ObjectName, "/")) {
+	if !strings.Contains(params.ObjectName, "/") {
 		urlRaw, err := url.ToURL()
 		if err != nil {
 			return nil, err

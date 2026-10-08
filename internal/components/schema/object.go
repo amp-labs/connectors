@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
 var _ components.SchemaProvider = &ObjectSchemaProvider{}

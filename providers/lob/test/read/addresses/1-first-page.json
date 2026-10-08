@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "id": "adr_5c49d278ef3b7986",
+      "description": null,
+      "name": "CHRISTEN GARDNER",
+      "company": null,
+      "phone": null,
+      "email": "Christen@lob.com",
+      "address_line1": "210 KING ST",
+      "address_line2": null,
+      "address_city": "SAN FRANCISCO",
+      "address_state": "CA",
+      "address_zip": "94107-1702",
+      "address_country": "UNITED STATES",
+      "metadata": {},
+      "date_created": "2026-08-19T01:28:32.171Z",
+      "date_modified": "2026-08-19T01:28:32.171Z",
+      "recipient_moved": false,
+      "object": "address"
+    },
+    {
+      "id": "adr_317fce961b645606",
+      "description": null,
+      "name": "JOAN LANE",
+      "company": null,
+      "phone": null,
+      "email": "Joan@lob.com",
+      "address_line1": "210 KING ST",
+      "address_line2": null,
+      "address_city": "SAN FRANCISCO",
+      "address_state": "CA",
+      "address_zip": "94107-1702",
+      "address_country": "UNITED STATES",
+      "metadata": {},
+      "date_created": "2026-08-19T01:14:11.292Z",
+      "date_modified": "2026-08-19T01:14:11.292Z",
+      "recipient_moved": false,
+      "object": "address"
+    }
+  ],
+  "object": "list",
+  "next_url": "https://api.lob.com/v1/addresses?limit=2&after=eyJkYXRlT2Zmc2V0IjoiMjAyNi0wOC0xOVQwMToxNDoxMS4yOTJaIiwiaWRPZmZzZXQiOiJhZHJfMzE3ZmNlOTYxYjY0NTYwNiJ9",
+  "previous_url": null,
+  "count": 2
+}

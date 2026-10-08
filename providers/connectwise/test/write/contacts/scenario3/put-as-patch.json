@@ -1,0 +1,112 @@
+[
+  {
+    "op": "replace",
+    "path": "customFields",
+    "value": []
+  },
+  {
+    "op": "remove",
+    "path": "lastName"
+  },
+  {
+    "op": "remove",
+    "path": "inactiveFlag"
+  },
+  {
+    "op": "remove",
+    "path": "disablePortalLoginFlag"
+  },
+  {
+    "op": "remove",
+    "path": "unsubscribeFlag"
+  },
+  {
+    "op": "remove",
+    "path": "mobileGuid"
+  },
+  {
+    "op": "remove",
+    "path": "defaultFlag"
+  },
+  {
+    "op": "remove",
+    "path": "marriedFlag"
+  },
+  {
+    "op": "remove",
+    "path": "portalSecurityLevel"
+  },
+  {
+    "op": "remove",
+    "path": "defaultBillingFlag"
+  },
+  {
+    "op": "remove",
+    "path": "childrenFlag"
+  },
+  {
+    "op": "remove",
+    "path": "types"
+  },
+  {
+    "op": "replace",
+    "path": "firstName",
+    "value": "Maurice Emard"
+  },
+  {
+    "op": "replace",
+    "path": "lastName",
+    "value": "Andrew Schmeler"
+  },
+  {
+    "op": "replace",
+    "path": "customFields",
+    "value": [
+      {
+        "id": 59,
+        "value": false
+      },
+      {
+        "id": 83,
+        "value": "Skiing"
+      }
+    ]
+  },
+  {
+    "op": "add",
+    "path": "/communicationItems/3",
+    "value": {
+      "type": {
+        "id": "1"
+      },
+      "value": "professional.bob.updated@test.com",
+      "defaultFlag": true,
+      "communicationType": "Email"
+    }
+  },
+  {
+    "op": "replace",
+    "path": "/communicationItems/1/value",
+    "value": "+380111358"
+  },
+  {
+    "op": "add",
+    "path": "/communicationItems/3",
+    "value": {
+      "type": {
+        "id": "26"
+      },
+      "value": "+77767",
+      "defaultFlag": true,
+      "communicationType": "Fax"
+    }
+  },
+  {
+    "op": "remove",
+    "path": "/communicationItems/2"
+  },
+  {
+    "op": "remove",
+    "path": "/communicationItems/0"
+  }
+]

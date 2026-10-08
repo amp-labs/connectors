@@ -73,9 +73,8 @@ func WithMetadata(metadata map[string]string) Option {
 }
 
 func (p parameters) GetCatalogVars() []catalogreplacer.CatalogVariable {
-	variables := []catalogreplacer.CatalogVariable{
-		&p.Workspace,
-	}
+	variables := make([]catalogreplacer.CatalogVariable, 0, 1+len(p.Metadata.GetCatalogVars()))
+	variables = append(variables, &p.Workspace)
 
 	for _, v := range p.Metadata.GetCatalogVars() {
 		variables = append(variables, v)

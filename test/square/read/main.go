@@ -46,8 +46,19 @@ func main() {
 	utils.DumpJSON(res, os.Stdout)
 
 	res, err = conn.Read(ctx, common.ReadParams{
-		ObjectName: "payments",
-		Fields:     connectors.Fields("id", "amount_money", "status", "created_at"),
+		ObjectName: "catalogItems",
+		Fields:     connectors.Fields("id", "type", "item_data", "created_at"),
+		PageSize:   2,
+	})
+	if err != nil {
+		utils.Fail("error reading from square", "error", err)
+	}
+
+	utils.DumpJSON(res, os.Stdout)
+
+	res, err = conn.Read(ctx, common.ReadParams{
+		ObjectName: "teamMembers",
+		Fields:     connectors.Fields("id", "given_name", "family_name", "email_address", "status"),
 		PageSize:   2,
 	})
 	if err != nil {

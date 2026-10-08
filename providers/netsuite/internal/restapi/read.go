@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/amp-labs/connectors/providers/netsuite/internal/shared"
 )
 
@@ -41,7 +41,12 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 		return nil, err
 	}
 
-	url.WithQueryParam("limit", strconv.Itoa(maxRecordsPerPage))
+	limit := maxRecordsPerPage
+	if params.PageSize > 0 {
+		limit = params.PageSize
+	}
+
+	url.WithQueryParam("limit", strconv.Itoa(limit))
 
 	// Attach Since & Until, if provided.
 	var queries []string

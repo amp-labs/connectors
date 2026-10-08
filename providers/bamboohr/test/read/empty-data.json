@@ -1,0 +1,12 @@
+{
+  "data": [],
+  "meta": {
+    "page": 1,
+    "pageSize": 100,
+    "totalPages": 1,
+    "totalItems": 0
+  },
+  "_links": {
+    "next": null
+  }
+}

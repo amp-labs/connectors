@@ -37,6 +37,12 @@ func main() {
 	if err := readLeads(ctx, conn); err != nil {
 		slog.Error(err.Error())
 	}
+
+	for _, objectName := range mailThreadObjectNames {
+		if err := readMailThreads(ctx, conn, objectName); err != nil {
+			slog.Error(err.Error(), "objectName", objectName)
+		}
+	}
 }
 
 func readActivities(ctx context.Context, conn *pipedrive.Connector) error {
@@ -93,6 +99,37 @@ func readLeads(ctx context.Context, conn *pipedrive.Connector) error {
 		ObjectName: "leads",
 		Since:      time.Now().Add(-720 * time.Hour),
 		Fields:     connectors.Fields("origin", "channel", "title", "id"),
+	}
+
+	result, err := conn.Read(ctx, config)
+	if err != nil {
+		return err
+	}
+
+	// Print the results
+	jsonStr, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	_, _ = os.Stdout.Write(jsonStr)
+	_, _ = os.Stdout.WriteString("\n")
+
+	return nil
+}
+
+// mailThreadObjectNames are the accepted names for mail threads: the canonical
+// "mailThreads" and the "mailbox/mailThreads" alias. Both resolve to /v1/mailbox/mailThreads.
+var mailThreadObjectNames = []string{ //nolint:gochecknoglobals
+	"mailThreads",
+	"mailbox/mailThreads",
+}
+
+// readMailThreads reads mail threads under the given object name.
+func readMailThreads(ctx context.Context, conn *pipedrive.Connector, objectName string) error {
+	config := connectors.ReadParams{
+		ObjectName: objectName,
+		Fields:     connectors.Fields("id", "subject", "folders"),
 	}
 
 	result, err := conn.Read(ctx, config)

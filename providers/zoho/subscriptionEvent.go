@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/zoho/internal/mail"
 )
 
 var (
@@ -30,15 +32,22 @@ func (evt SubscriptionEvent) PreLoadData(data *common.SubscriptionEventPreLoadDa
 	return nil
 }
 
-// VerifyWebhookMessage verifies the signature of a webhook message from Zoho CRM.
-// Zoho does not send a signature, but instead,
-// they ask us to provide tokens of our choice that they attach to webhook messages
-// they call it "token", in the response body.
-func (*Connector) VerifyWebhookMessage(
-	_ context.Context,
+// VerifyWebhookMessage verifies the authenticity of an incoming webhook.
+//
+// Zoho Mail signs each delivery with an HMAC-SHA256 signature, so the Mail
+// module verifies it cryptographically (delegated to the mail adapter).
+//
+// Zoho CRM does not send a signature; instead it echoes back a caller-supplied
+// token in the response body, which we compare against the expected value.
+func (c *Connector) VerifyWebhookMessage(
+	ctx context.Context,
 	request *common.WebhookRequest,
 	params *common.VerificationParams,
 ) (bool, error) {
+	if c.moduleID == providers.ModuleZohoMail {
+		return c.mailAdapter.VerifyWebhookMessage(ctx, request, params)
+	}
+
 	zohoParams, err := common.AssertType[*ZohoVerificationParams](params.Param)
 	if err != nil {
 		return false, fmt.Errorf("invalid verification params: %w", err)
@@ -93,6 +102,11 @@ func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
 
 //nolint:funlen
 func (e CollapsedSubscriptionEvent) SubscriptionEventList() ([]common.SubscriptionEvent, error) {
+	// The zoho provider exposes a single collapsed-event type, but a delivery
+	// may be from CRM or Mail. Route Mail payloads to the mail adapter's parser.
+	if mail.IsWebhookPayload(e) {
+		return mail.CollapsedSubscriptionEvent(e).SubscriptionEventList()
+	}
 	/*
 		{
 			"server_time": 1750102639787,
@@ -307,14 +321,39 @@ func (evt SubscriptionEvent) RecordId() (string, error) {
 
 // EventTimeStampNano returns the timestamp of the event in nanoseconds.
 func (evt SubscriptionEvent) EventTimeStampNano() (int64, error) {
-	m := evt.asMap()
-
-	serverTime, err := m.AsInt("server_time")
+	serverTime, err := serverTimeMillis(evt.asMap())
 	if err != nil {
 		return 0, err
 	}
 
 	return time.UnixMilli(serverTime).UnixNano(), nil
+}
+
+// serverTimeMillis reads the "server_time" epoch-millis value regardless of how
+// the caller decoded the webhook body. It first tries StringMap.AsInt, which
+// handles the float64 a plain json.Unmarshal produces; if that fails it falls
+// back to parsing a json.Number/string, which is what a caller that decoded with
+// json.Decoder.UseNumber produces. This keeps the timestamp readable under both
+// decode modes (UseNumber is needed by other Zoho modules to preserve 64-bit
+// ids, and AsInt rejects json.Number because its reflect kind is String).
+func serverTimeMillis(m common.StringMap) (int64, error) {
+	if ms, err := m.AsInt("server_time"); err == nil {
+		return ms, nil
+	}
+
+	raw, err := m.Get("server_time")
+	if err != nil {
+		return 0, err
+	}
+
+	switch v := raw.(type) {
+	case json.Number:
+		return v.Int64()
+	case string:
+		return json.Number(v).Int64()
+	default:
+		return 0, fmt.Errorf("%w: server_time expected a number, got %T", errTypeMismatch, raw)
+	}
 }
 
 // UpdatedFields returns the fields that were updated in the event.

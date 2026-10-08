@@ -53,9 +53,9 @@ func init() {
 				Delete: false,
 			},
 			Proxy:     true,
-			Read:      false,
+			Read:      true,
 			Subscribe: false,
-			Write:     false,
+			Write:     true,
 		},
 	})
 }

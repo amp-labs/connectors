@@ -36,7 +36,12 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 			return nil, err
 		}
 
-		url.WithQueryParam("limit", strconv.Itoa(maxRecordsPerPage))
+		limit := maxRecordsPerPage
+		if params.PageSize > 0 {
+			limit = params.PageSize
+		}
+
+		url.WithQueryParam("limit", strconv.Itoa(limit))
 		urlStr = url.String()
 	}
 
@@ -72,7 +77,9 @@ func (a *Adapter) parseReadResponse(
 
 func makeSuiteQLBody(params common.ReadParams) suiteQLQueryBody {
 	body := suiteQLQueryBody{
-		Query: "SELECT * FROM " + params.ObjectName,
+		// unqueryvet: ObjectName is an arbitrary NetSuite record type, so the
+		// connector cannot know its columns ahead of time.
+		Query: "SELECT * FROM " + params.ObjectName, //nolint:unqueryvet
 	}
 
 	dateColumn := "lastModifiedDate"

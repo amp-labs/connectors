@@ -11,11 +11,17 @@ import (
 	"github.com/go-playground/validator"
 )
 
+// ErrDeployPollTimeout is returned (wrapped) when a Metadata API deploy did not
+// finish within the poll window. The deploy itself is NOT canceled — metadata
+// deploys serialize per org, so it stays queued/running org-side and can still
+// land later. Exported so callers can distinguish "still running" from a real
+// deploy failure via errors.Is.
+var ErrDeployPollTimeout = errors.New("deploy poll timeout")
+
 var (
 	errInvalidRequestType      = errors.New("invalid request type")
 	errMissingParams           = errors.New("missing required parameters")
 	errDeployFailed            = errors.New("apex trigger deployment failed")
-	errDeployPollTimeout       = errors.New("deploy poll timeout")
 	errDestructiveDeployFailed = errors.New("destructive apex trigger deployment failed")
 )
 
@@ -265,8 +271,19 @@ func GetRawChannelNameFromObject(objectName string) string {
 	return objectName
 }
 
+// GetChangeDataCaptureChannelMembershipName builds the developer name (fullName) of a
+// PlatformEventChannelMember. Per the Salesforce Metadata API docs, "two consecutive
+// underscores in full names designate either a component name suffix or a namespace
+// prefix" and are unsupported anywhere else in a full name, so the "__" in custom object
+// change events (my_object__ChangeEvent) is collapsed to a single underscore — e.g.
+// SalesEvents_chn_MyCustomObj_ChangeEvent in the docs' example; otherwise Salesforce
+// parses everything before it as a namespace and rejects the create. The un-collapsed
+// event name remains valid as the member's SelectedEntity, which names the entity rather
+// than the component.
+//
+// https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_platformeventchannelmember.htm
 func GetChangeDataCaptureChannelMembershipName(rawChannelName string, eventName string) string {
-	return rawChannelName + "_chn_" + eventName
+	return rawChannelName + "_chn_" + strings.ReplaceAll(eventName, "__", "_")
 }
 
 func GetRawPEName(peName string) string {

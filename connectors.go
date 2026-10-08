@@ -241,6 +241,23 @@ type WebhookVerifierConnector interface {
 	) (bool, error)
 }
 
+// SubscriptionEventObjectNameConnector resolves the object name for a subscription
+// event whose payload identifies the object only by a provider type id rather than
+// a name (e.g. Attio record.* events carry an id.object_id, a per-workspace UUID).
+//
+// It exists because a plain SubscriptionEvent cannot resolve such an id on its own:
+// the mapping from type id to name is provider state that must be fetched (and may
+// be cached). Callers should prefer this method when a connector implements it, and
+// fall back to SubscriptionEvent.ObjectName() otherwise.
+type SubscriptionEventObjectNameConnector interface {
+	Connector
+
+	// GetObjectNameFromEvent resolves the object name for the given subscription
+	// event by mapping the event's object type id to an object name, fetching from
+	// the provider (and caching) when necessary.
+	GetObjectNameFromEvent(ctx context.Context, event common.SubscriptionEvent) (string, error)
+}
+
 // SubscribeConnector defines the interface for connectors that manage webhook subscriptions.
 //
 // Connectors implementing this interface are responsible for creating, updating, and deleting
@@ -440,4 +457,16 @@ type SearchConnector interface {
 	//   - *SearchResult: the result containing the search results
 	//   - error: any error that occurred while searching
 	Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error)
+}
+
+// RawFilterConnector is a connector that accepts a provider-native filter in
+// ReadParams.RawFilter and SearchParams.RawFilter. Each connector declares which
+// filter types it supports; callers check a filter here before passing its value
+// to Read or Search.
+type RawFilterConnector interface {
+	Connector
+
+	// ValidateRawFilter checks that the connector supports the filter's type and that
+	// its filter is a valid value for that type. Errors wrap common.ErrInvalidRawFilter.
+	ValidateRawFilter(filter common.RawFilter) error
 }

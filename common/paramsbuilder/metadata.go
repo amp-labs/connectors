@@ -47,7 +47,7 @@ func (m *Metadata) WithMetadata(metadata map[string]string, requiredKeys []strin
 }
 
 func (m *Metadata) GetCatalogVars() []catalogreplacer.CustomCatalogVariable {
-	result := make([]catalogreplacer.CustomCatalogVariable, 0)
+	result := make([]catalogreplacer.CustomCatalogVariable, 0, len(m.Map))
 
 	for key, value := range m.Map {
 		result = append(result, catalogreplacer.CustomCatalogVariable{

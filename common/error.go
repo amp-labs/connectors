@@ -92,8 +92,7 @@ func (p ErrorPostProcessor) handleError(err error) error {
 // Any future errors that need to be converted to the in-house errors should be added here.
 // One important and widespread error is InvalidGrant which happens on invalid refresh token.
 func transformOauth2LibraryError(err error) error {
-	var urlErr *url.Error
-	if errors.As(err, &urlErr) {
+	if urlErr, ok := errors.AsType[*url.Error](err); ok {
 		var oauthErr *oauth2.RetrieveError
 		if urlErr != nil && errors.As(urlErr.Err, &oauthErr) {
 			if oauthErr.ErrorCode == "invalid_grant" {

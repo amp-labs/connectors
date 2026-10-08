@@ -1,10 +1,12 @@
 package webhook
 
 import (
+	"encoding/json"
 	"fmt"
 	"maps"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 )
 
 // CollapsedSubscriptionEvent represents the raw webhook payload.
@@ -15,9 +17,10 @@ type CollapsedSubscriptionEvent map[string]any
 type Event map[string]any
 
 var (
-	_ common.SubscriptionEvent          = Event{}
-	_ common.SubscriptionUpdateEvent    = Event{}
-	_ common.CollapsedSubscriptionEvent = CollapsedSubscriptionEvent{}
+	_ common.SubscriptionEvent           = Event{}
+	_ common.SubscriptionUpdateEvent     = Event{}
+	_ common.SubscriptionEventWithRecord = Event{}
+	_ common.CollapsedSubscriptionEvent  = CollapsedSubscriptionEvent{}
 )
 
 func (e CollapsedSubscriptionEvent) RawMap() (map[string]any, error) {
@@ -96,6 +99,33 @@ func (e Event) PreLoadData(data *common.SubscriptionEventPreLoadData) error {
 
 func (e Event) UpdatedFields() ([]string, error) {
 	return nil, nil
+}
+
+// Record returns the single record carried inline in the webhook payload as a
+// ReadResultRow. ConnectWise embeds the changed record as an escaped JSON string under
+// the "Entity" field, so we unmarshal it and marshal it through the same read helper
+// GetRecordsByIds uses - Raw holds the full record and Fields holds the requested subset
+// (lowercased) - so the inline record maps exactly like a fetched read.
+func (e Event) Record(fields []string) (common.ReadResultRow, error) {
+	entity, ok := e["Entity"].(string)
+	if !ok || entity == "" {
+		return common.ReadResultRow{}, fmt.Errorf("%w: 'Entity'", common.ErrMissingField)
+	}
+
+	var record map[string]any
+	if err := json.Unmarshal([]byte(entity), &record); err != nil {
+		return common.ReadResultRow{}, fmt.Errorf("parsing connectwise webhook 'Entity': %w", err)
+	}
+
+	marshaler := readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id"))
+
+	rows, err := marshaler([]map[string]any{record}, fields)
+	if err != nil {
+		return common.ReadResultRow{}, err
+	}
+
+	// A webhook carries exactly one record, so the marshaler returns exactly one row.
+	return rows[0], nil
 }
 
 // ObjectNameToObjectType maps ConnectWise connector object names

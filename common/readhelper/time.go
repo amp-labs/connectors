@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 )
 
 // TimeOrder describes the chronological ordering of records within a response.
@@ -120,4 +121,22 @@ func (b TimeBoundary) After(params common.ReadParams, timestamp time.Time) bool 
 	}
 
 	return timestamp.After(params.Until)
+}
+
+// TimeFormat formats input according to the given timestamp format kind.
+// Supported kinds:
+//   - TimestampFormatUnixSec
+//   - TimestampFormatUnixMs
+//   - time.RFC3339, time.RFC3339Nano, or any Go layout string.
+func TimeFormat(input time.Time, formatKind string) string {
+	switch formatKind {
+	case TimestampFormatUnixSec:
+		return datautils.Time.Unix(input)
+	case TimestampFormatUnixMs:
+		return datautils.Time.UnixMilli(input)
+	default:
+		// Treat as a standard Go layout string. Example: "time.RFC3339".
+		// Normalize to UTC so query params are always in UTC.
+		return input.UTC().Format(formatKind)
+	}
 }

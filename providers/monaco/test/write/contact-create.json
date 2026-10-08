@@ -1,0 +1,15 @@
+{
+  "data": {
+    "id": "con_new001",
+    "account_id": null,
+    "first_name": "Grace",
+    "last_name": "Hopper",
+    "email": "grace@acme.com",
+    "title": "Rear Admiral",
+    "created_at": "2026-08-07T09:00:00Z",
+    "updated_at": "2026-08-07T09:00:00Z"
+  },
+  "meta": {
+    "timestamp": "2026-08-07T09:00:00Z"
+  }
+}

@@ -8,6 +8,24 @@ import (
 
 const Salesforce Provider = "salesforce"
 
+// IsSalesforce reports whether the provider is part of the Salesforce family:
+// the base provider and its twins, which reuse the same connector
+// implementation, APIs and modules, and differ only in authentication scheme
+// (salesforceJWT) or in which hosts they address (salesforceCustomClientCredentials).
+//
+// Prefer this over comparing against Salesforce directly, so that behavior
+// gated on "this is Salesforce" reaches every twin. Where a twin is
+// deliberately excluded — the OAuth flow specifics, for instance — compare
+// against the specific provider so the exclusion is visible.
+//
+// SalesforceMarketing is not part of this family; it is a separate product with
+// its own connector.
+func IsSalesforce(provider Provider) bool {
+	return provider == Salesforce ||
+		provider == SalesforceJWT ||
+		provider == SalesforceCustomClientCredentials
+}
+
 const (
 	// ModuleSalesforceCRM
 	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm
@@ -32,7 +50,7 @@ func init() { // nolint:funlen
 			Url:                "https://{{.workspace}}.my.salesforce.com/services/oauth2/userinfo",
 		},
 		Oauth2Opts: &Oauth2Opts{
-			GrantType:                 AuthorizationCode,
+			GrantType:                 AuthorizationCodePKCE,
 			AuthURL:                   "https://{{.workspace}}.my.salesforce.com/services/oauth2/authorize",
 			AuthURLParams:             map[string]string{"prompt": "login"},
 			TokenURL:                  "https://{{.workspace}}.my.salesforce.com/services/oauth2/token",
@@ -80,7 +98,16 @@ func init() { // nolint:funlen
 					},
 				},
 				SubscribeRequirements: &SubscribeRequirements{
-					Registration:   new(true),
+					Registration: new(true),
+					// PostProcess: Salesforce cannot deliver change events to Ampersand on its own. After the
+					// subscription is created via API, a setup step must happen in a *third-party* system that the
+					// connector has no access to: Salesforce publishes Change Data Capture / Platform Events onto
+					// its own event bus, and those must be routed out to AWS EventBridge (a Salesforce
+					// "Event Relay" configured against an AWS partner event source), which Ampersand then
+					// consumes. That AWS/EventBridge wiring is the "post-process" — it lives outside the
+					// connector (server-side), so the connector's only job is to *declare* that it is required by
+					// setting this flag. Contrast with Registration above, which is an in-provider one-time setup
+					// the connector itself performs; PostProcess is external and connector-less.
 					PostProcess:    new(true),
 					SubscribeByAPI: new(true),
 				},
@@ -154,6 +181,7 @@ func init() { // nolint:funlen
 					DocsURL:     "https://help.salesforce.com/s/articleView?language=en_US&id=sf.faq_domain_name_what.htm&type=5",
 					// ModuleDependencies specifies which modules REQUIRE this metadata item.
 					// Here, it means: "the CRM module depends on/requires the workspace metadata".
+					Prompt: "The part of the Salesforce URL that comes before .my.salesforce.com or .lightning.force.com.",
 					ModuleDependencies: &ModuleDependencies{
 						ModuleSalesforceCRM:                   {},
 						ModuleSalesforceAccountEngagement:     {},
@@ -170,6 +198,27 @@ func init() { // nolint:funlen
 					Name: "businessUnitId",
 					Prompt: "Business Unit ID is the 18-character ID that starts with 0Uv, " +
 						"found in Business Unit Setup within Salesforce Setup or Marketing Setup.",
+				},
+			},
+			// PostAuthentication metadata is fetched from Salesforce right after a
+			// connection is created (via Connector.GetPostAuthInfo) and stored on the
+			// connection's provider metadata. The username powers the flow-based
+			// Subscribe path: it becomes the outbound message's integration user.
+			// The lookup is best-effort — tokens minted without an identity scope
+			// (id/openid/profile/full) cannot call the userinfo endpoint, and
+			// GetPostAuthInfo degrades to an empty result rather than failing the
+			// connection.
+			// The username comes from the UserInfo endpoint's preferred_username
+			// response parameter ("Username of the queried user"):
+			// https://help.salesforce.com/s/articleView?id=sf.remoteaccess_using_userinfo_endpoint.htm
+			// Scope requirements ("id — Allows access to the identity URL service"):
+			// https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_tokens_scopes.htm
+			PostAuthentication: []MetadataItemPostAuthentication{
+				{
+					Name: "username",
+					ModuleDependencies: &ModuleDependencies{
+						ModuleSalesforceCRM: {},
+					},
 				},
 			},
 		},

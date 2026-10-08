@@ -22,6 +22,12 @@ type ExtendedSchema[C any] struct {
 	ResponseKey string
 	Problem     error
 	Custom      C
+
+	// ItemSchemaName is the OpenAPI component name of the schema describing a single item
+	// of this object, if the response referenced one. Empty when the response schema is inlined.
+	// Ex: GET /company/contacts responds with {"items": {"$ref": "#/components/schemas/Contact"}},
+	// so the contacts object has ItemSchemaName "Contact".
+	ItemSchemaName string
 }
 
 type Schemas[C any] []ExtendedSchema[C]
@@ -30,6 +36,14 @@ type Field struct {
 	Name         string
 	Type         string
 	ValueOptions []string
+
+	// SchemaRefName is the OpenAPI component name this field's schema referenced.
+	// For object fields it is the property's own $ref, for array fields the $ref of its items.
+	// Empty when the property schema is inlined.
+	// Ex: Contact property "company": {"$ref": "#/components/schemas/CompanyReference"}
+	// yields SchemaRefName "CompanyReference", and "types": {"type": "array",
+	// "items": {"$ref": "#/components/schemas/ContactTypeReference"}} yields "ContactTypeReference".
+	SchemaRefName string
 }
 
 type Fields = datautils.Map[string, Field]

@@ -1,0 +1,10 @@
+{
+  "custom_attribute_definition": {
+    "key": "favorite-drink",
+    "name": "Favorite Drink",
+    "description": "The customer's favorite drink",
+    "version": 1,
+    "updated_at": "2026-07-27T10:00:00Z",
+    "created_at": "2026-07-27T10:00:00Z"
+  }
+}

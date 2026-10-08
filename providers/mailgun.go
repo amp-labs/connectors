@@ -10,6 +10,26 @@ func init() {
 		BasicOpts: &BasicAuthOpts{
 			DocsURL: "https://documentation.mailgun.com/docs/mailgun/api-reference/authentication/",
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					// The Mailgun sending domain. Required for domain-scoped
+					// objects (bounces, complaints, templates, etc.); the connector
+					// substitutes it into the request path for read, write and delete.
+					Name:        "workspace",
+					DisplayName: "Domain name",
+					DocsURL:     "https://documentation.mailgun.com/docs/mailgun/api-reference/intro/",
+				},
+				{
+					// Resolved to the regional base URL in the connector.
+					Name:         "region",
+					DisplayName:  "Region",
+					DefaultValue: "us",
+					Prompt:       `Mailgun API region: "us" (api.mailgun.net) or "eu" (api.eu.mailgun.net).`,
+					DocsURL:      "https://documentation.mailgun.com/docs/mailgun/api-reference/intro/",
+				},
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

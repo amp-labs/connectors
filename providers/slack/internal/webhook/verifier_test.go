@@ -1,25 +1,22 @@
 package webhook
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"strconv"
 	"testing"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
-
-const testSigningKey = "3e81ee19b766670a1e6058fa895148ce"
 
 func TestVerifyWebhookMessage(t *testing.T) {
 	t.Parallel()
@@ -30,6 +27,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 	validTimestamp := strconv.FormatInt(time.Now().Unix(), 10)
 	invalidTimestamp := strconv.FormatInt(time.Now().Add(-1*time.Hour).Unix(), 10)
 
+	const testSigningKey = "3e81ee19b766670a1e6058fa895148ce"
 	validSlackSignature := computeSlackSignature(testSigningKey, validTimestamp, string(eventMessage))
 	invalidSlackSignature := "mismatching-signature-from-provider"
 
@@ -43,6 +41,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 					},
 					Body: eventMessage,
 				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: testSigningKey}},
 			},
 			Server:   mockserver.Dummy(),
 			Expected: false,
@@ -60,6 +59,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 					},
 					Body: eventMessage,
 				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: testSigningKey}},
 			},
 			Server:   mockserver.Dummy(),
 			Expected: false,
@@ -78,6 +78,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 					},
 					Body: eventMessage,
 				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: testSigningKey}},
 			},
 			Server:   mockserver.Dummy(),
 			Expected: false,
@@ -92,6 +93,7 @@ func TestVerifyWebhookMessage(t *testing.T) {
 					},
 					Body: eventMessage,
 				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: testSigningKey}},
 			},
 			Server:   mockserver.Dummy(),
 			Expected: false,
@@ -109,9 +111,29 @@ func TestVerifyWebhookMessage(t *testing.T) {
 					},
 					Body: eventMessage,
 				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: testSigningKey}},
 			},
 			Server:   mockserver.Dummy(),
 			Expected: true,
+		},
+		{
+			Name: "Verification param without the signing key",
+			Input: testconn.WebhookMessageVerificationParams{
+				Request: &common.WebhookRequest{
+					Headers: http.Header{
+						"X-Slack-Signature":         []string{validSlackSignature},
+						"X-Slack-Request-Timestamp": []string{validTimestamp},
+					},
+					Body: eventMessage,
+				},
+				Params: &common.VerificationParams{Param: &VerificationParams{SigningSecret: ""}},
+			},
+			Server:   mockserver.Dummy(),
+			Expected: false,
+			ExpectedErrs: []error{
+				common.ErrMissingProviderParam,
+				testutils.StringError("SigningSecret is empty"),
+			},
 		},
 	}
 
@@ -120,25 +142,34 @@ func TestVerifyWebhookMessage(t *testing.T) {
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableWebhookMessageVerifier, error) {
-				return constructTestVerifier(tt.Server)
+				return constructTestVerifier()
 			})
 		})
 	}
 }
 
-func constructTestVerifier(server *httptest.Server) (*Verifier, error) {
-	transport, err := components.NewTransport(providers.ConnectWise, common.ConnectorParams{
-		AuthenticatedClient: server.Client(),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	transport.SetUnitTestMockServerBaseURL(server.URL)
-
-	verifier := NewVerifier(transport.JSONHTTPClient(), transport.ProviderInfo(), testSigningKey)
+func constructTestVerifier() (*Verifier, error) {
+	verifier := NewVerifier()
 
 	return verifier, nil
+}
+
+// TestVerifyWebhookMessageNilVerifier pins the backstop for an unconstructed verifier: a nil
+// *Verifier (e.g. the nil embed of a zero-value slack.Connector) must return a clear error from
+// the promoted call, never panic in the method-promotion wrapper.
+func TestVerifyWebhookMessageNilVerifier(t *testing.T) {
+	t.Parallel()
+
+	var v *Verifier
+
+	ok, err := v.VerifyWebhookMessage(context.Background(), &common.WebhookRequest{}, nil)
+	if ok {
+		t.Error("VerifyWebhookMessage() = true, want false on nil verifier")
+	}
+
+	if !errors.Is(err, errVerifierNotInitialized) {
+		t.Errorf("VerifyWebhookMessage() error = %v, want errVerifierNotInitialized", err)
+	}
 }
 
 func computeSlackSignature(signingKey, timestamp, body string) string {

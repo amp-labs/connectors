@@ -46,7 +46,6 @@ func CreateOAuth2AuthorizationCodeClient(
 					AuthStyle: oauth2.AuthStyleInParams,
 				},
 			},
-
 			// Token represents the OAuth2 token. This is obtained after the user authenticates with a browser.
 			// See scripts/oauth/token.go for an example of how to obtain this token (if you don't have one yet).
 			Token: &oauth2.Token{

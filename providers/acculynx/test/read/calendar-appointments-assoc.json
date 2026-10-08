@@ -1,0 +1,19 @@
+{
+  "count": 2,
+  "pageSize": 100,
+  "pageStartIndex": 0,
+  "items": [
+    {
+      "id": "appt-1",
+      "title": "Site visit",
+      "jobId": "job-777",
+      "jobName": "Roof Replace",
+      "eventType": "Appointment"
+    },
+    {
+      "id": "appt-2",
+      "title": "Lunch",
+      "eventType": "Personal"
+    }
+  ]
+}

@@ -1,0 +1,221 @@
+package metadata
+
+import (
+	"archive/zip"
+	"bytes"
+	"encoding/xml"
+	"errors"
+	"fmt"
+	"strings"
+
+	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
+)
+
+// This file builds Metadata API deploy packages for Workflow Outbound Messages
+// — the delivery half of the flow-based subscription path. An outbound message
+// POSTs a SOAP notification to a configured HTTPS endpoint whenever the
+// flow that references it fires.
+
+var errOutboundMessageRequiredParams = errors.New(
+	"objectName, name, endpointURL, and integrationUsername are required")
+
+const metadataXmlns = "http://soap.sforce.com/2006/04/metadata"
+
+// OutboundMessageParams contains the parameters for constructing the deploy
+// package of one workflow outbound message.
+//
+// Field semantics mirror the WorkflowOutboundMessage metadata type; see the
+// official docs:
+// https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_workflow.htm
+type OutboundMessageParams struct {
+	// ObjectName is the Salesforce object the outbound message belongs to
+	// (e.g., "Lead").
+	ObjectName string
+
+	// Name is the outbound message developer name WITHOUT the object prefix
+	// (e.g., "amp_Lead_Create"). The Metadata API addresses the component as
+	// "<ObjectName>.<Name>". Use GenerateSubscriptionArtifactName()
+	// to generate this.
+	Name string
+
+	// EndpointURL is where Salesforce POSTs the SOAP outbound message.
+	// Must be an HTTPS endpoint reachable from Salesforce.
+	EndpointURL string
+
+	// IntegrationUsername is the Salesforce username whose permissions the
+	// outbound message payload is evaluated under.
+	IntegrationUsername string
+
+	// Fields lists the object fields included in the outbound message payload.
+	// Id, CreatedDate, and LastModifiedDate are always included on top of
+	// whatever the caller lists: Id is how consumers fetch the full record, and the
+	// audit timestamps let the event parser infer create vs update.
+	Fields []string
+}
+
+// OutboundMessageFullName returns the Metadata API full name of the outbound
+// message component, which is prefixed by the object it belongs to.
+func OutboundMessageFullName(objectName, outboundMessageName string) string {
+	return objectName + "." + outboundMessageName
+}
+
+// ValidateOutboundMessageParams checks that all required fields are present.
+func ValidateOutboundMessageParams(params OutboundMessageParams) error {
+	if params.ObjectName == "" || params.Name == "" ||
+		params.EndpointURL == "" || params.IntegrationUsername == "" {
+		return errOutboundMessageRequiredParams
+	}
+
+	return nil
+}
+
+// The XML structs below mirror the Metadata API WSDL. Element order matters:
+// Salesforce validates deploy XML against an XSD sequence, so struct fields
+// are declared in the order a metadata retrieve produces them.
+//
+// Official field reference and example XML for Workflow / WorkflowOutboundMessage:
+// https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_workflow.htm
+
+type workflowOutboundMessageXML struct {
+	FullName           string   `xml:"fullName"`
+	APIVersion         string   `xml:"apiVersion"`
+	Description        string   `xml:"description"`
+	EndpointURL        string   `xml:"endpointUrl"`
+	Fields             []string `xml:"fields"`
+	IncludeSessionID   bool     `xml:"includeSessionId"`
+	IntegrationUser    string   `xml:"integrationUser"`
+	Name               string   `xml:"name"`
+	Protected          bool     `xml:"protected"`
+	UseDeadLetterQueue bool     `xml:"useDeadLetterQueue"`
+}
+
+type workflowXML struct {
+	XMLName          xml.Name                     `xml:"Workflow"`
+	Xmlns            string                       `xml:"xmlns,attr"`
+	OutboundMessages []workflowOutboundMessageXML `xml:"outboundMessages"`
+}
+
+// ensureOutboundMessageFields prepends Id, CreatedDate, and LastModifiedDate to the caller's fields,
+// deduping case-insensitively.
+func ensureOutboundMessageFields(fields []string) []string {
+	required := []string{"Id", "CreatedDate", "LastModifiedDate"}
+
+	result := make([]string, 0, len(required)+len(fields))
+	seen := make(map[string]bool, len(required)+len(fields))
+
+	for _, field := range append(required, fields...) {
+		key := strings.ToLower(field)
+		if seen[key] {
+			continue
+		}
+
+		seen[key] = true
+
+		result = append(result, field)
+	}
+
+	return result
+}
+
+// generateWorkflowXML returns the workflows/<Object>.workflow file content
+// carrying the given outbound message components. If an object is subscribed to
+// both create and update, both OM workflows are added to the same file.
+func generateWorkflowXML(params ...OutboundMessageParams) (string, error) {
+	outboundMessages := make([]workflowOutboundMessageXML, 0, len(params))
+
+	for _, om := range params {
+		outboundMessages = append(outboundMessages, workflowOutboundMessageXML{
+			FullName:         om.Name,
+			APIVersion:       core.APIVersion,
+			Description:      "THIS IS AN AUTOMATED OUTBOUND MESSAGE. DO NOT EDIT.",
+			EndpointURL:      om.EndpointURL,
+			Fields:           ensureOutboundMessageFields(om.Fields),
+			IncludeSessionID: false,
+			IntegrationUser:  om.IntegrationUsername,
+			Name:             om.Name,
+			Protected:        false,
+			// Salesforce retries failed deliveries for up to 24 hours on
+			// its own; the dead letter queue is unnecessary for our
+			// at-least-once pipeline.
+			UseDeadLetterQueue: false,
+		})
+	}
+
+	workflow := workflowXML{
+		Xmlns:            metadataXmlns,
+		OutboundMessages: outboundMessages,
+	}
+
+	out, err := xml.MarshalIndent(workflow, "", "    ")
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal workflow XML: %w", err)
+	}
+
+	return xml.Header + string(out) + "\n", nil
+}
+
+// ConstructDestructiveOutboundMessage builds a zipped destructive changes
+// package that removes the outbound message. Deploy this AFTER every
+// flow that references it is gone.
+//
+// https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy_deleting_files.htm
+func ConstructDestructiveOutboundMessage(objectName, outboundMessageName string) ([]byte, error) {
+	if objectName == "" || outboundMessageName == "" {
+		return nil, errEmptyObjectName
+	}
+
+	return constructDestructiveZip(triggerPackageType{
+		Members: []string{OutboundMessageFullName(objectName, outboundMessageName)},
+		Name:    "WorkflowOutboundMessage",
+	})
+}
+
+// constructDestructiveZip builds a destructive-changes zip for the given
+// package types with the empty package.xml required by the Metadata API.
+func constructDestructiveZip(types ...triggerPackageType) ([]byte, error) {
+	emptyPkg := triggerPackageXML{
+		Xmlns:   metadataXmlns,
+		Version: core.APIVersion,
+		Types:   []triggerPackageType{},
+	}
+
+	emptyPkgXML, err := xml.MarshalIndent(emptyPkg, "", "    ")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal empty package.xml: %w", err)
+	}
+
+	destructivePkg := triggerPackageXML{
+		Xmlns:   metadataXmlns,
+		Version: core.APIVersion,
+		Types:   types,
+	}
+
+	destructiveXML, err := xml.MarshalIndent(destructivePkg, "", "    ")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal destructiveChanges.xml: %w", err)
+	}
+
+	return buildZip(map[string][]byte{
+		"package.xml":            []byte(xml.Header + string(emptyPkgXML)),
+		"destructiveChanges.xml": []byte(xml.Header + string(destructiveXML)),
+	})
+}
+
+// buildZip writes the given name→content entries into an in-memory zip.
+func buildZip(entries map[string][]byte) ([]byte, error) {
+	var buf bytes.Buffer
+
+	zipWriter := zip.NewWriter(&buf)
+
+	for name, content := range entries {
+		if err := addTriggerToZip(zipWriter, name, content); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := zipWriter.Close(); err != nil {
+		return nil, fmt.Errorf("failed to close zip writer: %w", err)
+	}
+
+	return buf.Bytes(), nil
+}

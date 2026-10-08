@@ -25,6 +25,11 @@ type Factory struct {
 	Registry         scanning.Registry
 	CredsFilePath    string
 	Metadata         map[string]string
+
+	// Secrets optionally pre-supplies the secrets a multi-step custom auth flow
+	// would acquire (from the creds file's "secrets" object), letting the proxy
+	// skip the live connect flow.
+	Secrets map[string]string
 }
 
 type ClientAuthParams struct {

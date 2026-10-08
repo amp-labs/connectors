@@ -1,0 +1,4 @@
+{
+  "message": "Address has been added to the bounces table",
+  "address": "bounced@example.com"
+}

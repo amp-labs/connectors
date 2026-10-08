@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -16,6 +17,7 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 	components.SchemaProvider
 	components.Reader
+	components.Writer
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -45,6 +47,17 @@ func constructor(_ common.ConnectorParams, base *components.Connector) (*Connect
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  common.InterpretError,
+		},
+	)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
 			ErrorHandler:  common.InterpretError,
 		},
 	)

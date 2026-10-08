@@ -1,0 +1,33 @@
+{
+  "events": [
+    {
+      "id": "a1",
+      "event_type": "ip_listed",
+      "channel": "email",
+      "settings": {
+        "emails": [
+          "ops@example.com"
+        ]
+      },
+      "disabled_at": null
+    },
+    {
+      "id": "a2",
+      "event_type": "domain_reputation_decreased",
+      "channel": "webhook",
+      "settings": {
+        "url": "https://example.com/alerts"
+      },
+      "disabled_at": null
+    }
+  ],
+  "webhooks": {
+    "signing_key": ""
+  },
+  "slack": {
+    "token": "",
+    "team_id": null,
+    "team_name": null,
+    "scope": null
+  }
+}

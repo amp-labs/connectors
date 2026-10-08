@@ -19,7 +19,7 @@ func main() {
 		utils.Fail(err.Error())
 	}
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"calls", "companies", "users"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"calls", "companies", "users", "sms-threads"})
 	if err != nil {
 		log.Fatal(err)
 	}

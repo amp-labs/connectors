@@ -185,14 +185,18 @@ func (a *Adapter) upsertPermissionSet(ctx context.Context, permissions FieldPerm
 	// Validate that PermissionSet was successfully created/updated.
 	success := false
 
+	var sfErrors []Error
+
 	for _, result := range response.Response.Results {
-		if result.FullName == DefaultPermissionSetName && result.Success {
-			success = true
+		if result.FullName == DefaultPermissionSetName {
+			success = result.Success
+			sfErrors = result.Errors
 		}
 	}
 
 	if !success {
-		return fmt.Errorf("%w: failed for %s", ErrPermissionSetUpsert, DefaultPermissionSetName)
+		// Include the Salesforce-reported errors so the reason is visible in logs.
+		return fmt.Errorf("%w: failed for %s: %+v", ErrPermissionSetUpsert, DefaultPermissionSetName, sfErrors)
 	}
 
 	return nil

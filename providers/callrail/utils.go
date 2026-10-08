@@ -15,6 +15,7 @@ import (
 var responseField = datautils.NewDefaultMap(datautils.Map[string, string]{ //nolint: gochecknoglobals
 	"integration_triggers": "integration_criteria",
 	"text-messages":        "conversations",
+	"sms-threads":          "sms_threads",
 }, func(objectname string) string {
 	return objectname
 })

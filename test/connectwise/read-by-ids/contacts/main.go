@@ -42,7 +42,7 @@ func run() error {
 				FirstName: firstName,
 				LastName:  lastName,
 			}, testscenario.RecordCreationRecipe{
-				ReadFields: datautils.NewSet("id", "firstName", "lastName"),
+				ReadFields: datautils.NewSet("id", "firstName"),
 				SearchBy: testscenario.Property{
 					Key:   "firstname",
 					Value: firstName,
@@ -60,7 +60,7 @@ func run() error {
 
 	res, err := conn.GetRecordsByIds(ctx,
 		"contacts", identifiers,
-		[]string{"firstName", "lastName"}, nil)
+		[]string{"firstName", "lastName", "customField51"}, nil)
 	if err != nil {
 		return err
 	}

@@ -13,17 +13,17 @@ import (
 // ErrTimestampKeyNotFound is returned when a unix-ms timestamp field is absent from a record.
 var ErrTimestampKeyNotFound = errors.New("bad since timestamp key: field not found")
 
-// TimestampFormatUnixMs is a special format string that signals the timestamp field
-// holds a Unix epoch value in milliseconds (int64), rather than a formatted string.
-// Internally this maps to time.UnixMilli, allowing reuse of MakeTimeFilterFunc
-// for providers that store timestamps as integer milliseconds.
-const TimestampFormatUnixMs = "unix_ms"
-
 // TimestampFormatUnixSec is a special format string that signals the timestamp field
 // holds a Unix epoch value in seconds (int64), rather than a formatted string.
 // Internally this maps to time.Unix, allowing reuse of MakeTimeFilterFunc
 // for providers that store timestamps as integer seconds.
 const TimestampFormatUnixSec = "unix_sec"
+
+// TimestampFormatUnixMs is a special format string that signals the timestamp field
+// holds a Unix epoch value in milliseconds (int64), rather than a formatted string.
+// Internally this maps to time.UnixMilli, allowing reuse of MakeTimeFilterFunc
+// for providers that store timestamps as integer milliseconds.
+const TimestampFormatUnixMs = "unix_ms"
 
 // FilterSortedRecords filters and returns only the records that have changed since the last sync,
 // based on a provided timestamp key and reference value.
@@ -87,7 +87,7 @@ func FilterSortedRecords(data *ajson.Node, recordsKey string, since time.Time, /
 		}
 
 		// Check if this record is newer than our reference time
-		if since.Before(*recordTimestamp) {
+		if since.Before(recordTimestamp) {
 			updatedNodeRecords = append(updatedNodeRecords, nodeRecord)
 
 			// If this is the last record and it's new, we might have more pages
@@ -181,18 +181,26 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 			return nil, "", nil
 		}
 
+		// No time bounds: preserve all records and continue pagination.
+		if params.Since.IsZero() && params.Until.IsZero() {
+			next, err := nextPageFunc(body)
+
+			return records, next, err
+		}
+
 		var (
 			filtered   []*ajson.Node
 			stopPaging bool
 		)
 
+		// Filter records and determine whether later pages can be skipped.
 		for _, nodeRecord := range records {
 			recordTimestamp, err := extractTimestamp(nodeRecord, timestampKey, timestampFormat, zoom...)
 			if err != nil {
 				return nil, "", err
 			}
 
-			if boundary.Contains(params, *recordTimestamp) {
+			if boundary.Contains(params, recordTimestamp) {
 				filtered = append(filtered, nodeRecord)
 
 				continue
@@ -204,7 +212,7 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 				// -------------[.......]---------- * --------------->
 				//           (since   UNTIL)     (record)
 				// If record is after the until, then anything further is too new.
-				if boundary.After(params, *recordTimestamp) {
+				if boundary.After(params, recordTimestamp) {
 					stopPaging = true
 				}
 			case ReverseOrder:
@@ -212,11 +220,11 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 				// <-------------[.......]---------- * ---------------
 				//           (until   SINCE)     (record)
 				// If record is before the since, then anything further is even older.
-				if boundary.Before(params, *recordTimestamp) {
+				if boundary.Before(params, recordTimestamp) {
 					stopPaging = true
 				}
 			case Unordered:
-				// cannot infer anything
+				// Record order provides no basis for stopping early.
 			}
 
 			if stopPaging {
@@ -224,7 +232,7 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 			}
 		}
 
-		// Proven exhaustion.
+		// A timestamp outside the boundary proves later pages cannot match.
 		if stopPaging {
 			return filtered, "", nil
 		}
@@ -236,60 +244,57 @@ func MakeTimeFilterFuncWithZoom( // nolint:cyclop
 	}
 }
 
-func extractTimestamp(nodeRecord *ajson.Node, timestampKey string, timestampFormat string, zoom ...string,
-) (*time.Time, error) {
-	if timestampFormat == TimestampFormatUnixMs {
-		return extractUnixMsTimestamp(nodeRecord, timestampKey, zoom...)
+func extractTimestamp(node *ajson.Node, timestampKey string, timestampFormat string, zoom ...string,
+) (time.Time, error) {
+	switch timestampFormat {
+	case TimestampFormatUnixSec:
+		return convertIntToTime(node, zoom, timestampKey, func(value int64) time.Time {
+			return time.Unix(value, 0)
+		})
+	case TimestampFormatUnixMs:
+		return convertIntToTime(node, zoom, timestampKey, time.UnixMilli)
+	default:
+		return convertStrToTime(node, zoom, timestampKey, timestampFormat)
+	}
+}
+
+// convertIntToTime reads an integer field and converts it to a time.Time using timeFormat function.
+func convertIntToTime(
+	node *ajson.Node,
+	zoom []string,
+	timestampKey string,
+	timeFormat func(int64) time.Time,
+) (time.Time, error) {
+	val, err := jsonquery.New(node, zoom...).IntegerOptional(timestampKey)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("error: bad since timestamp key: %w", err)
 	}
 
-	if timestampFormat == TimestampFormatUnixSec {
-		return extractUnixSecTimestamp(nodeRecord, timestampKey, zoom...)
+	if val == nil {
+		return time.Time{}, fmt.Errorf("%w: %q", ErrTimestampKeyNotFound, timestampKey)
 	}
 
+	timestamp := timeFormat(*val)
+
+	return timestamp, nil
+}
+
+// convertIntToTime reads a string field and converts it to a time.Time using timestampFormat.
+func convertStrToTime(nodeRecord *ajson.Node,
+	zoom []string,
+	timestampKey string,
+	timestampFormat string,
+) (time.Time, error) {
 	// Extract the timestamp value from the record as a formatted string.
 	timestamp, err := jsonquery.New(nodeRecord, zoom...).StringRequired(timestampKey)
 	if err != nil {
-		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
+		return time.Time{}, fmt.Errorf("error: bad since timestamp key: %w", err)
 	}
 
 	recordTimestamp, err := time.Parse(timestampFormat, timestamp)
 	if err != nil {
-		return nil, fmt.Errorf("error: cannot parse timestamp for key %q: %w", timestampKey, err)
+		return time.Time{}, fmt.Errorf("error: cannot parse timestamp for key %q: %w", timestampKey, err)
 	}
 
-	return &recordTimestamp, nil
-}
-
-// extractUnixMsTimestamp reads an integer millisecond epoch field and converts it
-// to a time.Time using time.UnixMilli.
-func extractUnixMsTimestamp(nodeRecord *ajson.Node, timestampKey string, zoom ...string) (*time.Time, error) {
-	val, err := jsonquery.New(nodeRecord, zoom...).IntegerOptional(timestampKey)
-	if err != nil {
-		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
-	}
-
-	if val == nil {
-		return nil, fmt.Errorf("%w: %q", ErrTimestampKeyNotFound, timestampKey)
-	}
-
-	t := time.UnixMilli(*val)
-
-	return &t, nil
-}
-
-// extractUnixSecTimestamp reads an integer seconds epoch field and converts it
-// to a time.Time using time.Unix.
-func extractUnixSecTimestamp(nodeRecord *ajson.Node, timestampKey string, zoom ...string) (*time.Time, error) {
-	val, err := jsonquery.New(nodeRecord, zoom...).IntegerOptional(timestampKey)
-	if err != nil {
-		return nil, fmt.Errorf("error: bad since timestamp key: %w", err)
-	}
-
-	if val == nil {
-		return nil, fmt.Errorf("%w: %q", ErrTimestampKeyNotFound, timestampKey)
-	}
-
-	t := time.Unix(*val, 0)
-
-	return &t, nil
+	return recordTimestamp, nil
 }

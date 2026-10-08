@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"sync"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 )
 
 func (a *Adapter) ListObjectMetadata(

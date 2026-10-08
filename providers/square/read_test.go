@@ -24,6 +24,7 @@ func TestRead(t *testing.T) {
 	merchantsResponse := testutils.DataFromFile(t, "merchants.json")
 	giftCardsResponse := testutils.DataFromFile(t, "gift_cards.json")
 	cardsResponse := testutils.DataFromFile(t, "cards.json")
+	catalogItemsResponse := testutils.DataFromFile(t, "catalog-items.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -396,6 +397,44 @@ func TestRead(t *testing.T) {
 					},
 				},
 				NextPage: "JbFx7dkqZ8aBcDeF",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read catalog items POSTs its criteria as a JSON body",
+			Input: common.ReadParams{
+				ObjectName: objectCatalogItems,
+				Fields:     connectors.Fields("id"),
+				NextPage:   "Ck9DQUpJRUNPRjhIWQ",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/v2/catalog/search-catalog-items"),
+					mockcond.Body(`{
+						"archived_state": "ARCHIVED_STATE_ALL",
+						"cursor": "Ck9DQUpJRUNPRjhIWQ",
+						"limit": 100
+					}`),
+				},
+				Then: mockserver.Response(http.StatusOK, catalogItemsResponse),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Id:     "W62UWFY35CWMYGVWK6TWJDNI",
+						Fields: map[string]any{"id": "W62UWFY35CWMYGVWK6TWJDNI"},
+						Raw: map[string]any{
+							"id":   "W62UWFY35CWMYGVWK6TWJDNI",
+							"type": "ITEM",
+						},
+					},
+				},
+				NextPage: "Ck9DQUpJRUNPRjhIWQ",
 				Done:     false,
 			},
 			ExpectedErrs: nil,

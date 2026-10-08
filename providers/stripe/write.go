@@ -13,7 +13,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	url, err := c.getURL(config.ObjectName)
+	url, err := c.Base.GetURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -21,9 +21,9 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 	var write common.WriteMethod
 
 	if len(config.RecordId) == 0 {
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 	} else {
-		write = c.Client.Post
+		write = c.JSONHTTPClient().Post
 
 		url.AddPath(config.RecordId)
 	}

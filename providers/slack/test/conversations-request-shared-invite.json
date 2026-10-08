@@ -1,12 +1,17 @@
 {
   "ok": true,
-  "invites": [
+  "invite_requests": [
     {
-      "id": "I0XYZ789",
-      "invite_id": "INV123",
-      "channel": {
-        "id": "C0ABCDEF123",
-        "name": "general"
+      "date_last_updated": 1722372331,
+      "id": "I12345",
+      "inviting_team": {
+        "id": "E12345",
+        "name": "Acme corp"
+      },
+      "inviting_user": {
+        "id": "U12345",
+        "team_id": "E12345",
+        "name": "acme-corp-user"
       }
     }
   ],

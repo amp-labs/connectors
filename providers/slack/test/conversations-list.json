@@ -2,22 +2,48 @@
     "ok": true,
     "channels": [
         {
-            "id": "C0ABCDEF123",
-            "name": "general",
+            "id": "C0B9KKUG937",
+            "created": 1781111233,
+            "creator": "U0B9QSKKHU1",
+            "is_org_shared": false,
+            "is_im": false,
+            "context_team_id": "T0B9P1UVDBL",
+            "updated": 1785171008955,
+            "name": "new-channel",
+            "name_normalized": "new-channel",
             "is_channel": true,
             "is_group": false,
-            "is_im": false,
             "is_mpim": false,
             "is_private": false,
-            "created": 1449252889,
-            "updated": 1449252889,
             "is_archived": false,
-            "is_general": true,
-            "name_normalized": "general",
+            "is_general": false,
             "is_shared": false,
-            "is_org_shared": false,
+            "is_ext_shared": false,
+            "unlinked": 0,
+            "is_pending_ext_shared": false,
+            "pending_shared": [],
+            "parent_conversation": null,
+            "purpose": {
+                "value": "This channel is for everything #new-channel. Hold meetings, share docs and make decisions together with your team.",
+                "creator": "U0B9QSKKHU1",
+                "last_set": 1781111233
+            },
+            "topic": {
+                "value": "",
+                "creator": "",
+                "last_set": 0
+            },
+            "shared_team_ids": [
+                "T0B9P1UVDBL"
+            ],
+            "pending_connected_team_ids": [],
             "is_member": true,
-            "num_members": 4
+            "num_members": 1,
+            "properties": {
+                "use_case": "project",
+                "is_dormant": true
+            },
+            "previous_names": []
         }
     ],
     "response_metadata": {

@@ -47,7 +47,7 @@ func (c *Connector) paramsForBatchRead(
 
 	requestIdentifiers := make([]batch.RequestID, len(identifiers))
 	for index, identifier := range identifiers {
-		url, err := c.getURL(objectName)
+		url, err := c.getReadUrl(objectName)
 		if err != nil {
 			return nil, nil, err
 		}

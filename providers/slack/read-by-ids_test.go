@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
@@ -73,18 +72,4 @@ func TestGetRecordsByIds(t *testing.T) { // nolint:funlen,cyclop
 			})
 		})
 	}
-}
-
-func TestSingleRecordMappings(t *testing.T) {
-	result := testutils.NewCompareResult()
-
-	first := datautils.FromMap(readSingleRecordResourceNameToQueryParam).KeySet()
-	second := datautils.FromMap(readSingleRecordResourceNameToResponseField).KeySet()
-
-	if !first.Equals(second) {
-		result.AddDiff("key sets are different")
-	}
-
-	result.Validate(t, "Keys are shared between "+
-		"readSingleRecordResourceNameToQueryParam and readSingleRecordResourceNameToResponseField")
 }

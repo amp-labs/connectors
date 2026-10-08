@@ -53,7 +53,7 @@ type objectDefinition struct {
 }
 
 func (d objectDefinition) GetFields() []staticschema.FieldMetadataMapV2 {
-	fields := make([]staticschema.FieldMetadataMapV2, 0)
+	fields := make([]staticschema.FieldMetadataMapV2, 0, len(d.Sample))
 
 	for fieldName, value := range d.Sample {
 		primitiveType := getPrimitiveType(value)

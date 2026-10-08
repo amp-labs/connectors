@@ -10,7 +10,7 @@ import (
 // It handles nested structs, pointers, slices, arrays, maps (including pointers-to-maps), and structs inside maps.
 func substituteStruct(input any, substitutions map[string]string) error {
 	val := reflect.ValueOf(input)
-	if val.Kind() != reflect.Ptr || val.IsNil() {
+	if val.Kind() != reflect.Pointer || val.IsNil() {
 		return nil
 	}
 

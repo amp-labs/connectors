@@ -34,6 +34,9 @@ const (
 	HeaderModeSetIfMissing
 )
 
+// redactedValue replaces the value of a sensitive header when logging.
+const redactedValue = "<redacted>"
+
 // Header is a key/value pair that can be added to a request.
 type Header struct {
 	Key   string     `json:"key"`
@@ -149,17 +152,17 @@ func redactSensitiveRequestHeaders(hdrs []Header) Headers {
 	for _, hdr := range hdrs {
 		switch {
 		case strings.EqualFold(hdr.Key, "Authorization"):
-			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+			redacted = append(redacted, Header{Key: hdr.Key, Value: redactedValue})
 		case strings.EqualFold(hdr.Key, "X-Shopify-Access-Token"):
-			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+			redacted = append(redacted, Header{Key: hdr.Key, Value: redactedValue})
 		case strings.EqualFold(hdr.Key, "Proxy-Authorization"):
-			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+			redacted = append(redacted, Header{Key: hdr.Key, Value: redactedValue})
 		case strings.EqualFold(hdr.Key, "x-amz-security-token"):
-			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+			redacted = append(redacted, Header{Key: hdr.Key, Value: redactedValue})
 		case strings.EqualFold(hdr.Key, "X-Api-Key"):
-			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+			redacted = append(redacted, Header{Key: hdr.Key, Value: redactedValue})
 		case strings.EqualFold(hdr.Key, "X-Admin-Key"):
-			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+			redacted = append(redacted, Header{Key: hdr.Key, Value: redactedValue})
 		default:
 			redacted = append(redacted, hdr)
 		}
@@ -178,7 +181,7 @@ func redactSensitiveResponseHeaders(hdrs []Header) Headers {
 	for _, hdr := range hdrs {
 		switch {
 		case strings.EqualFold(hdr.Key, "Set-Cookie"):
-			redacted = append(redacted, Header{Key: hdr.Key, Value: "<redacted>"})
+			redacted = append(redacted, Header{Key: hdr.Key, Value: redactedValue})
 		default:
 			redacted = append(redacted, hdr)
 		}

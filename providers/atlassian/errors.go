@@ -49,7 +49,7 @@ func (r ResponseMessagesError) CombineErr(base error) error {
 	}
 
 	if len(r.Errors) != 0 {
-		messages := make([]string, 0)
+		messages := make([]string, 0, len(r.Errors))
 		for k, v := range r.Errors {
 			messages = append(messages, fmt.Sprintf("%v:%v", k, v))
 		}

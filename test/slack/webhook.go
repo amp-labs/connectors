@@ -1,0 +1,42 @@
+package slackshared
+
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/amp-labs/connectors/test/utils/testscenario"
+)
+
+func NewWebhookProcessor() *testscenario.WebhookProcessor {
+	return &testscenario.WebhookProcessor{
+		Interceptor: subscriptionConfirmation,
+	}
+}
+
+// https://docs.slack.dev/reference/events/url_verification/
+var subscriptionConfirmation = testscenario.WebhookInterceptorFunc(
+	func(writer http.ResponseWriter, request *http.Request, data []byte) bool {
+		body := requestBody{}
+		if err := json.Unmarshal(data, &body); err != nil {
+			return false
+		}
+
+		if body.Challenge == "" {
+			return false
+		}
+
+		writer.Header().Set("Content-Type", "text/plain")
+		writer.WriteHeader(http.StatusOK)
+
+		// Bypassing HTML escaping is ok for this being used for local testing.
+		_, _ = writer.Write([]byte(body.Challenge)) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
+
+		return true
+	},
+)
+
+type requestBody struct {
+	Token     string `json:"token"`
+	Challenge string `json:"challenge"`
+	Type      string `json:"type"`
+}

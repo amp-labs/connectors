@@ -1,0 +1,46 @@
+{
+  "id": "est-1",
+  "isPrimary": true,
+  "estimateNumber": "1042",
+  "title": "Roof replacement",
+  "description": "Full tear-off and replacement",
+  "notes": "",
+  "createdDate": "2026-05-10T17:56:54Z",
+  "modifiedDate": "2026-05-11T09:00:00Z",
+  "profitMarginRate": 30.0,
+  "profitMarginTotal": 42.86,
+  "financials": {
+    "taxRate": 0.0,
+    "taxTotal": 0.0,
+    "overheadRate": 0.0,
+    "overheadTotal": 0.0,
+    "profitRate": 0.0,
+    "profitTotal": 0.0,
+    "totalCost": 100.0,
+    "totalPrice": 142.86
+  },
+  "sections": [
+    {
+      "id": "sec-1",
+      "title": "Roofing Section",
+      "description": "",
+      "createdDate": "2026-05-10T17:56:54Z",
+      "modifiedDate": "2026-05-10T17:56:54Z",
+      "_link": "https://api.acculynx.com/api/v2/estimates/est-1/sections/sec-1"
+    }
+  ],
+  "createdBy": {
+    "id": "user-10",
+    "displayName": "Diane Hatch",
+    "role": {
+      "id": 1,
+      "name": "CompanyAdmin"
+    },
+    "_link": "https://api.acculynx.com/api/v2/users/user-10"
+  },
+  "job": {
+    "id": "job-777",
+    "_link": "https://api.acculynx.com/api/v2/jobs/job-777"
+  },
+  "_link": "https://api.acculynx.com/api/v2/estimates/est-1"
+}

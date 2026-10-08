@@ -3,7 +3,7 @@
 # ====================
 
 # Linter versions - keep in sync with .github/workflows/linter.yml
-GOLANGCI_LINT_VERSION=v2.7.1
+GOLANGCI_LINT_VERSION=v2.13.2
 
 # Install all linters required by make fix
 .PHONY: install/linters
@@ -11,7 +11,7 @@ install/linters:
 	@echo "Installing gci..."
 	go install github.com/daixiang0/gci@latest
 	@echo "Installing golangci-lint $(GOLANGCI_LINT_VERSION)..."
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $$(go env GOPATH)/bin $(GOLANGCI_LINT_VERSION)
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 	@echo "Installing typos..."
 	cargo install typos-cli
 	@echo "Linters installed successfully!"
@@ -90,17 +90,23 @@ fix/sort:
 .PHONY: format
 format: fix
 
+GOTESTSUM_VERSION := v1.13.0
 .PHONY: test
 test:
-	go test -v ./...
+	go run gotest.tools/gotestsum@$(GOTESTSUM_VERSION) \
+		--format-hide-empty-pkg \
+		--hide-summary=skipped \
+		./...
 
 .PHONY: test-parallel
 test-parallel:
-	go test -v ./... -parallel=8 -count=3
-
-.PHONY: test-pretty
-test-pretty:
-	go run gotest.tools/gotestsum@latest
+	go run gotest.tools/gotestsum@$(GOTESTSUM_VERSION) \
+		--format-hide-empty-pkg \
+		--hide-summary=skipped \
+		-- \
+		-parallel=8 \
+		-count=3 \
+		./...
 
 # Creates PR URLs for each template
 # Click on one of them or manually add ?template=<file.md> to the URL if you are creating a PR via the Github website

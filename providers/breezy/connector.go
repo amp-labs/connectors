@@ -33,11 +33,9 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 
 func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{
-		Connector: base,
-		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{"company_id"},
-		},
-		CompanyID: params.Metadata["company_id"],
+		Connector:            base,
+		ExpectedMetadataKeys: []string{"company_id"},
+		CompanyID:            params.Metadata["company_id"],
 	}
 
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(

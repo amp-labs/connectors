@@ -1,0 +1,294 @@
+{
+  "accounts": {
+    "0": "account.updated"
+  },
+  "application_fees": {
+    "0": "application_fee.created",
+    "1": "application_fee.refunded"
+  },
+  "billing/alerts": {
+    "0": "billing.alert.triggered"
+  },
+  "billing/credit_balance_transactions": {
+    "0": "billing.credit_balance_transaction.created"
+  },
+  "billing/credit_grants": {
+    "0": "billing.credit_grant.created",
+    "1": "billing.credit_grant.updated"
+  },
+  "billing/meters": {
+    "0": "billing.meter.created",
+    "1": "billing.meter.deactivated",
+    "2": "billing.meter.reactivated",
+    "3": "billing.meter.updated"
+  },
+  "billing_portal/configurations": {
+    "0": "billing_portal.configuration.created",
+    "1": "billing_portal.configuration.updated"
+  },
+  "charges": {
+    "0": "charge.captured",
+    "1": "charge.expired",
+    "2": "charge.failed",
+    "3": "charge.pending",
+    "4": "charge.refunded",
+    "5": "charge.succeeded",
+    "6": "charge.updated"
+  },
+  "checkout/sessions": {
+    "0": "checkout.session.async_payment_failed",
+    "1": "checkout.session.async_payment_succeeded",
+    "2": "checkout.session.completed",
+    "3": "checkout.session.expired"
+  },
+  "climate/orders": {
+    "0": "climate.order.canceled",
+    "1": "climate.order.created",
+    "2": "climate.order.delayed",
+    "3": "climate.order.delivered",
+    "4": "climate.order.product_substituted"
+  },
+  "climate/products": {
+    "0": "climate.product.created",
+    "1": "climate.product.pricing_updated"
+  },
+  "coupons": {
+    "0": "coupon.created",
+    "1": "coupon.deleted",
+    "2": "coupon.updated"
+  },
+  "credit_notes": {
+    "0": "credit_note.created",
+    "1": "credit_note.updated",
+    "2": "credit_note.voided"
+  },
+  "customers": {
+    "0": "customer.created",
+    "1": "customer.deleted",
+    "2": "customer.updated"
+  },
+  "disputes": {
+    "0": "charge.dispute.closed",
+    "1": "charge.dispute.created",
+    "2": "charge.dispute.funds_reinstated",
+    "3": "charge.dispute.funds_withdrawn",
+    "4": "charge.dispute.updated"
+  },
+  "files": {
+    "0": "file.created"
+  },
+  "financial_connections/accounts": {
+    "0": "financial_connections.account.account_numbers_updated",
+    "1": "financial_connections.account.created",
+    "10": "financial_connections.account.upcoming_account_number_expiry",
+    "11": "financial_connections.account.upcoming_deactivation",
+    "2": "financial_connections.account.deactivated",
+    "3": "financial_connections.account.disconnected",
+    "4": "financial_connections.account.expected_deactivation_date_updated",
+    "5": "financial_connections.account.reactivated",
+    "6": "financial_connections.account.refreshed_balance",
+    "7": "financial_connections.account.refreshed_ownership",
+    "8": "financial_connections.account.refreshed_transactions",
+    "9": "financial_connections.account.supported_payment_method_types_updated"
+  },
+  "identity/verification_sessions": {
+    "0": "identity.verification_session.canceled",
+    "1": "identity.verification_session.created",
+    "2": "identity.verification_session.processing",
+    "3": "identity.verification_session.redacted",
+    "4": "identity.verification_session.requires_input",
+    "5": "identity.verification_session.verified"
+  },
+  "invoice_payments": {
+    "0": "invoice_payment.paid"
+  },
+  "invoiceitems": {
+    "0": "invoiceitem.created",
+    "1": "invoiceitem.deleted"
+  },
+  "invoices": {
+    "0": "invoice.created",
+    "1": "invoice.deleted",
+    "10": "invoice.payment_failed",
+    "11": "invoice.payment_succeeded",
+    "12": "invoice.sent",
+    "13": "invoice.upcoming",
+    "14": "invoice.updated",
+    "15": "invoice.voided",
+    "16": "invoice.will_be_due",
+    "2": "invoice.finalization_failed",
+    "3": "invoice.finalized",
+    "4": "invoice.marked_uncollectible",
+    "5": "invoice.overdue",
+    "6": "invoice.overpaid",
+    "7": "invoice.paid",
+    "8": "invoice.payment_action_required",
+    "9": "invoice.payment_attempt_required"
+  },
+  "issuing/authorizations": {
+    "0": "issuing_authorization.created",
+    "1": "issuing_authorization.request",
+    "2": "issuing_authorization.updated"
+  },
+  "issuing/cardholders": {
+    "0": "issuing_cardholder.created",
+    "1": "issuing_cardholder.updated"
+  },
+  "issuing/cards": {
+    "0": "issuing_card.created",
+    "1": "issuing_card.updated"
+  },
+  "issuing/disputes": {
+    "0": "issuing_dispute.closed",
+    "1": "issuing_dispute.created",
+    "2": "issuing_dispute.funds_reinstated",
+    "3": "issuing_dispute.funds_rescinded",
+    "4": "issuing_dispute.submitted",
+    "5": "issuing_dispute.updated"
+  },
+  "issuing/personalization_designs": {
+    "0": "issuing_personalization_design.activated",
+    "1": "issuing_personalization_design.deactivated",
+    "2": "issuing_personalization_design.rejected",
+    "3": "issuing_personalization_design.updated"
+  },
+  "issuing/transactions": {
+    "0": "issuing_transaction.created",
+    "1": "issuing_transaction.purchase_details_receipt_updated",
+    "2": "issuing_transaction.updated"
+  },
+  "payment_intents": {
+    "0": "payment_intent.amount_capturable_updated",
+    "1": "payment_intent.canceled",
+    "2": "payment_intent.created",
+    "3": "payment_intent.partially_funded",
+    "4": "payment_intent.payment_failed",
+    "5": "payment_intent.processing",
+    "6": "payment_intent.requires_action",
+    "7": "payment_intent.succeeded"
+  },
+  "payment_links": {
+    "0": "payment_link.created",
+    "1": "payment_link.updated"
+  },
+  "payment_methods": {
+    "0": "payment_method.attached",
+    "1": "payment_method.automatically_updated",
+    "2": "payment_method.detached",
+    "3": "payment_method.updated"
+  },
+  "payouts": {
+    "0": "payout.canceled",
+    "1": "payout.created",
+    "2": "payout.failed",
+    "3": "payout.paid",
+    "4": "payout.reconciliation_completed",
+    "5": "payout.updated"
+  },
+  "plans": {
+    "0": "plan.created",
+    "1": "plan.deleted",
+    "2": "plan.updated"
+  },
+  "prices": {
+    "0": "price.created",
+    "1": "price.deleted",
+    "2": "price.updated"
+  },
+  "products": {
+    "0": "product.created",
+    "1": "product.deleted",
+    "2": "product.updated"
+  },
+  "promotion_codes": {
+    "0": "promotion_code.created",
+    "1": "promotion_code.updated"
+  },
+  "quotes": {
+    "0": "quote.accepted",
+    "1": "quote.canceled",
+    "2": "quote.created",
+    "3": "quote.finalized",
+    "4": "quote.will_expire"
+  },
+  "radar/early_fraud_warnings": {
+    "0": "radar.early_fraud_warning.created",
+    "1": "radar.early_fraud_warning.updated"
+  },
+  "refunds": {
+    "0": "charge.refund.updated"
+  },
+  "reporting/report_runs": {
+    "0": "reporting.report_run.failed",
+    "1": "reporting.report_run.succeeded"
+  },
+  "reporting/report_types": {
+    "0": "reporting.report_type.updated"
+  },
+  "reviews": {
+    "0": "review.closed",
+    "1": "review.opened"
+  },
+  "setup_intents": {
+    "0": "setup_intent.canceled",
+    "1": "setup_intent.created",
+    "2": "setup_intent.requires_action",
+    "3": "setup_intent.setup_failed",
+    "4": "setup_intent.succeeded"
+  },
+  "sigma/scheduled_query_runs": {
+    "0": "sigma.scheduled_query_run.created"
+  },
+  "subscription_schedules": {
+    "0": "subscription_schedule.aborted",
+    "1": "subscription_schedule.canceled",
+    "2": "subscription_schedule.completed",
+    "3": "subscription_schedule.created",
+    "4": "subscription_schedule.expiring",
+    "5": "subscription_schedule.released",
+    "6": "subscription_schedule.updated"
+  },
+  "subscriptions": {
+    "0": "customer.subscription.created",
+    "1": "customer.subscription.deleted",
+    "2": "customer.subscription.paused",
+    "3": "customer.subscription.pending_update_applied",
+    "4": "customer.subscription.pending_update_expired",
+    "5": "customer.subscription.resumed",
+    "6": "customer.subscription.trial_will_end",
+    "7": "customer.subscription.updated"
+  },
+  "tax_ids": {
+    "0": "customer.tax_id.created",
+    "1": "customer.tax_id.deleted",
+    "2": "customer.tax_id.updated"
+  },
+  "tax_rates": {
+    "0": "tax_rate.created",
+    "1": "tax_rate.updated"
+  },
+  "terminal/readers": {
+    "0": "terminal.reader.action_failed",
+    "1": "terminal.reader.action_succeeded",
+    "2": "terminal.reader.action_updated"
+  },
+  "test_helpers/test_clocks": {
+    "0": "test_helpers.test_clock.advancing",
+    "1": "test_helpers.test_clock.created",
+    "2": "test_helpers.test_clock.deleted",
+    "3": "test_helpers.test_clock.internal_failure",
+    "4": "test_helpers.test_clock.ready"
+  },
+  "topups": {
+    "0": "topup.canceled",
+    "1": "topup.created",
+    "2": "topup.failed",
+    "3": "topup.reversed",
+    "4": "topup.succeeded"
+  },
+  "transfers": {
+    "0": "transfer.created",
+    "1": "transfer.reversed",
+    "2": "transfer.updated"
+  }
+}

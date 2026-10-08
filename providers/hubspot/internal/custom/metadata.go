@@ -118,8 +118,7 @@ func (a *Adapter) fetchGroupName(ctx context.Context, objectName string) (*strin
 	if err != nil {
 		// Check that record was not found.
 		// It is not considered an error but a valid exist path.
-		var httpError *common.HTTPError
-		if errors.As(err, &httpError) {
+		if httpError, ok := errors.AsType[*common.HTTPError](err); ok {
 			if httpError.Status == http.StatusNotFound {
 				return nil, nil // nolint:nilnil
 			}

@@ -45,6 +45,16 @@ func (a *Adapter) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error
 		return nil, err
 	}
 
+	// Mail threads are always read from the inbox. The endpoint defaults to that folder
+	// anyway, but we send it explicitly rather than depend on the server default.
+	// It has no date filter, so no start date is sent either.
+	// https://developers.pipedrive.com/docs/api/v1/Mailbox
+	if canonicalObjectName(config.ObjectName) == objectNameMailThreads {
+		url.WithQueryParam("folder", mailboxFolderInbox)
+
+		return url, nil
+	}
+
 	// begin fetching objects at provided start date
 	// Supporting objects are: Activities & Notes only.
 	if !config.Since.IsZero() {

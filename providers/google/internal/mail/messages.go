@@ -7,12 +7,12 @@ import (
 	"maps"
 	"net/http"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/internal/simultaneously"
 	"github.com/spyzhov/ajson"
 )
 
