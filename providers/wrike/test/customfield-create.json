@@ -1,0 +1,13 @@
+{
+  "kind": "customfields",
+  "data": [
+    {
+      "id": "IEAG5DBKJUAAAAAA",
+      "accountId": "IEAG5DBK",
+      "title": "Connector Priority",
+      "type": "Text",
+      "sharedIds": [],
+      "settings": { "inheritanceType": "All" }
+    }
+  ]
+}

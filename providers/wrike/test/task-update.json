@@ -1,0 +1,14 @@
+{
+  "kind": "tasks",
+  "data": [
+    {
+      "id": "MAAAAAEQ_kSH",
+      "accountId": "IEAG5DBK",
+      "title": "Connector JSON probe 2",
+      "status": "Completed",
+      "importance": "Low",
+      "updatedDate": "2026-10-07T09:00:00Z",
+      "scope": "WsTask"
+    }
+  ]
+}
