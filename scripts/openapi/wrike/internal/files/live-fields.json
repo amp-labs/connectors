@@ -1,0 +1,12 @@
+[
+  {
+    "objectName": "approvals",
+    "fields": {
+      "reviewId": {
+        "displayName": "reviewId",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  }
+]
