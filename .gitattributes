@@ -13,6 +13,7 @@ scripts/openapi/lob/internal/files/openapi.json filter=lfs diff=lfs merge=lfs -t
 scripts/openapi/marketo/metadata/asset.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/marketo/metadata/mapi.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/microsoft/internal/files/default_clean.yaml filter=lfs diff=lfs merge=lfs -text
+scripts/openapi/notion/internal/files/openapi.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/nutshell/internal/files/openapi.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/pipeliner/internal/files/api.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/revenuecat/swagger.yaml filter=lfs diff=lfs merge=lfs -text
