@@ -221,6 +221,13 @@ func fieldsFromSchema(schema *openapi3.Schema) metadatadef.Fields {
 	return fields
 }
 
+// walkSchema unions fields across allOf, oneOf, and anyOf.
+// The shared extractor copies an enum array into ValueOptions and keeps the
+// owning schema on FieldOrigin. Notion discriminators are not enums. Each
+// anyOf or oneOf branch sets the same property with const, for example block
+// type "paragraph" or user type "person". Merging those branches keeps one
+// field and drops the other const values, and extractFields does not walk oneOf.
+// This walk records every const and enum so the property becomes one singleSelect.
 func walkSchema(schema *openapi3.Schema, collected map[string]*collectedField) {
 	if schema == nil {
 		return
