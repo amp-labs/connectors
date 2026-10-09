@@ -1,23 +1,16 @@
 package jump
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
-	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
-	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestListObjectMetadata(t *testing.T) {
 	t.Parallel()
-
-	contactsResponse := testutils.DataFromFile(t, "metadata-contacts.json")
-	requestContacts := testutils.DataFromFile(t, "metadata/request/contacts.json")
-	emptyContactsResponse := testutils.DataFromFile(t, "metadata-empty-contacts.json")
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
@@ -27,76 +20,43 @@ func TestListObjectMetadata(t *testing.T) {
 			ExpectedErrs: []error{common.ErrMissingObjects},
 		},
 		{
-			Name:  "Sample contacts metadata from first list record",
-			Input: []string{"contacts"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Method(http.MethodPost),
-					mockcond.Body(string(requestContacts)),
-				},
-				Then: mockserver.Response(http.StatusOK, contactsResponse),
-			}.Server(),
+			Name:       "Contacts metadata is served from the static schema",
+			Input:      []string{"contacts"},
+			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"contacts": {
 						DisplayName: "Contacts",
 						Fields: map[string]common.FieldMetadata{
-							"contactInfo": {
-								DisplayName: "contactInfo",
-								ValueType:   common.ValueTypeOther,
-							},
-							"email": {
-								DisplayName: "email",
-								ValueType:   common.ValueTypeString,
-							},
 							"id": {
-								DisplayName: "id",
-								ValueType:   common.ValueTypeString,
-							},
-							"insertedAt": {
-								DisplayName: "insertedAt",
-								ValueType:   common.ValueTypeString,
-							},
-							"integrationReferences": {
-								DisplayName: "integrationReferences",
-								ValueType:   common.ValueTypeOther,
-							},
-							"name": {
-								DisplayName: "name",
-								ValueType:   common.ValueTypeString,
+								DisplayName:  "id",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "ID!",
 							},
 							"status": {
-								DisplayName: "status",
-								ValueType:   common.ValueTypeString,
+								DisplayName:  "status",
+								ValueType:    common.ValueTypeSingleSelect,
+								ProviderType: "ContactStatus",
+								Values: []common.FieldValue{
+									{Value: "UNCONFIRMED", DisplayValue: "UNCONFIRMED"},
+									{Value: "CONFIRMED", DisplayValue: "CONFIRMED"},
+								},
 							},
-							"type": {
-								DisplayName: "type",
-								ValueType:   common.ValueTypeString,
+							"updatedAt": {
+								DisplayName:  "updatedAt",
+								ValueType:    common.ValueTypeDateTime,
+								ProviderType: "DateTime",
+							},
+							"contactInfo": {
+								DisplayName:  "contactInfo",
+								ValueType:    common.ValueTypeOther,
+								ProviderType: "[ContactInfo]",
 							},
 						},
 					},
 				},
-			},
-		},
-		{
-			Name:  "Returns error when contacts list is empty",
-			Input: []string{"contacts"},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If: mockcond.And{
-					mockcond.Method(http.MethodPost),
-					mockcond.Body(string(requestContacts)),
-				},
-				Then: mockserver.Response(http.StatusOK, emptyContactsResponse),
-			}.Server(),
-			Comparator: testconn.ComparatorSubsetMetadata,
-			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{},
-				Errors: map[string]error{
-					"contacts": common.ErrMissingExpectedValues,
-				},
+				Errors: nil,
 			},
 		},
 	}
@@ -120,7 +80,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		return nil, err
 	}
 
-	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+	connector.SetUnitTestMockServerBaseUrl(serverURL)
 
 	return connector, nil
 }

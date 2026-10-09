@@ -17,12 +17,18 @@ func main() {
 
 	utils.SetupLogging()
 
-	conn := connTest.GetConnector(ctx)
+	conn := connTest.GetJumpConnector(ctx)
 
 	res, err := conn.ListObjectMetadata(ctx, []string{
 		"contacts",
+		"documents",
+		"integrations",
+		"meetingPreps",
 		"meetings",
 		"notes",
+		"pulses",
+		"scorecards",
+		"signalDefinitions",
 		"tasks",
 		"users",
 	})

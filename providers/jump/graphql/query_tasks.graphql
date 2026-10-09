@@ -22,9 +22,11 @@ query Tasks {
       description
       due
       id
+      insertedAt
       meetingId
       status
       title
+      updatedAt
     }
     pageInfo {
       hasNextPage

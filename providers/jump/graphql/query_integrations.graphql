@@ -17,6 +17,7 @@ query Integrations {
       insertedAt
       kind
       service
+      updatedAt
     }
     pageInfo {
       hasNextPage

@@ -27,6 +27,7 @@ query Meetings {
       }
       {{- end}}
       id
+      insertedAt
       {{- if index .Fields "meetingEvents"}}
       meetingEvents {
         id
@@ -178,6 +179,7 @@ query Meetings {
       transcriptCreatedAt
       transcriptId
       transcriptLanguage
+      updatedAt
     }
     pageInfo {
       hasNextPage

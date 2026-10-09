@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/jump/metadata"
 )
 
 type Connector struct {
@@ -26,19 +27,11 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	registry := components.NewEmptyEndpointRegistry()
+	// Jump disables GraphQL introspection, so metadata is generated from the published schema (SDL).
+	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(connector.ProviderContext.Module(), metadata.Schemas)
 
-	connector.SchemaProvider = schema.NewObjectSchemaProvider(
-		connector.HTTPClient().Client,
-		schema.FetchModeParallel,
-		operations.SingleObjectMetadataHandlers{
-			BuildRequest:  connector.buildSingleObjectMetadataRequest,
-			ParseResponse: connector.parseSingleObjectMetadataResponse,
-			ErrorHandler: interpreter.ErrorHandler{
-				JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-			}.Handle,
-		},
-	)
+	// Each object has a query template under graphql/, objects without one are rejected when building the request.
+	registry := components.NewEmptyEndpointRegistry()
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,

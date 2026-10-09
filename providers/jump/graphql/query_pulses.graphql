@@ -17,6 +17,15 @@ query Pulses {
       insertedAt
       meetingTypes
       name
+      {{- if index .Fields "questions"}}
+      questions {
+        analysisType
+        id
+        order
+        question
+      }
+      {{- end}}
+      updatedAt
     }
     pageInfo {
       hasNextPage

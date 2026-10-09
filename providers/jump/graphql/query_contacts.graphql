@@ -4,6 +4,9 @@ query Contacts {
     {{if .After}}
     after: "{{.After}}"
     {{end}}
+    {{if .InsertedAfter}}
+    insertedAfter: "{{.InsertedAfter}}"
+    {{end}}
     {{if .UpdatedAfter}}
     updatedAfter: "{{.UpdatedAfter}}"
     {{end}}
@@ -33,6 +36,7 @@ query Contacts {
       name
       status
       type
+      updatedAt
     }
     pageInfo {
       hasNextPage

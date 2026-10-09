@@ -32,6 +32,7 @@ query Scorecards {
       meetingTypes
       name
       showCumulative
+      updatedAt
       viewable
     }
     pageInfo {

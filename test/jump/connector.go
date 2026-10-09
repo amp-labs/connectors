@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-func GetConnector(ctx context.Context) *jump.Connector {
+func GetJumpConnector(ctx context.Context) *jump.Connector {
 	filePath := credscanning.LoadPath(providers.Jump)
 	reader := utils.MustCreateProvCredJSON(filePath, false)
 

@@ -17,8 +17,23 @@ query Users {
       firstName
       fullName
       id
+      insertedAt
       lastName
       owner
+      {{- if index .Fields "scimMetadata"}}
+      scimMetadata {
+        costCenter
+        department
+        division
+        employeeNumber
+        managerExternalId
+        organization
+        title
+        userType
+      }
+      {{- end}}
+      scimUnmappedAttributes
+      updatedAt
     }
     pageInfo {
       hasNextPage

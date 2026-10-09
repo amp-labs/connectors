@@ -17,6 +17,7 @@ query Notes {
       meetingId
       note
       subject
+      updatedAt
     }
     pageInfo {
       hasNextPage

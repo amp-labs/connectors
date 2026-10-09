@@ -19,6 +19,7 @@ query SignalDefinitions {
       modelVersion
       name
       prompt
+      updatedAt
     }
     pageInfo {
       hasNextPage
