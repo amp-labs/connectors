@@ -297,6 +297,10 @@ func TestGetRecordsByIds_AttachesJobContactsAssociation(t *testing.T) {
 	assert.Equal(t, len(assocs), 1)
 	assert.Equal(t, assocs[0].ObjectId, "ctc-100")
 	assert.Equal(t, assocs[0].ProviderAssociationMetadata["isPrimary"], true)
+
+	// The embedded contact lacks the emailAddress/phoneNumber expansions, so it
+	// must not be passed as Raw — the server hydrates the contact instead.
+	assert.Assert(t, assocs[0].Raw == nil)
 }
 
 func TestGetRecordsByIds_NoAssociationsRequestedAttachesNone(t *testing.T) {

@@ -284,8 +284,8 @@ func (c *Connector) parseReadResponse(
 //   - estimates hydration (opt-in, one detail call per row — see
 //     estimates.go), chained first so the association extractors below see
 //     the final rows;
-//   - jobs -> contacts association: embedded contacts arrive via
-//     ?includes=contacts, pure reshape;
+//   - jobs -> contacts association: contact ids and isPrimary arrive via
+//     ?includes=contacts, pure reshape (the server hydrates the contacts);
 //   - estimates -> jobs association: the job stub ({id, _link}) and
 //     isPrimary are on every estimate row, pure reshape.
 func (c *Connector) readMarshaller(
