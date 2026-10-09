@@ -1,0 +1,43 @@
+query Users {
+  users(
+    first: {{.First}}
+    {{if .After}}
+    after: "{{.After}}"
+    {{end}}
+    {{if .UpdatedAfter}}
+    updatedAfter: "{{.UpdatedAfter}}"
+    {{end}}
+    {{if .UpdatedBefore}}
+    updatedBefore: "{{.UpdatedBefore}}"
+    {{end}}
+  ) {
+    items {
+      deactivatedAt
+      email
+      firstName
+      fullName
+      id
+      insertedAt
+      lastName
+      owner
+      {{- if index .Fields "scimMetadata"}}
+      scimMetadata {
+        costCenter
+        department
+        division
+        employeeNumber
+        managerExternalId
+        organization
+        title
+        userType
+      }
+      {{- end}}
+      scimUnmappedAttributes
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

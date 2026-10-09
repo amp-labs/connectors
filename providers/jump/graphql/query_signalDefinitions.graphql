@@ -1,0 +1,29 @@
+query SignalDefinitions {
+  signalDefinitions(
+    first: {{.First}}
+    {{if .After}}
+    after: "{{.After}}"
+    {{end}}
+    {{if .UpdatedAfter}}
+    updatedAfter: "{{.UpdatedAfter}}"
+    {{end}}
+    {{if .UpdatedBefore}}
+    updatedBefore: "{{.UpdatedBefore}}"
+    {{end}}
+  ) {
+    items {
+      createdById
+      id
+      insertedAt
+      key
+      modelVersion
+      name
+      prompt
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

@@ -1,0 +1,40 @@
+query MeetingPreps {
+  meetingPreps(
+    first: {{.First}}
+    {{if .After}}
+    after: "{{.After}}"
+    {{end}}
+    {{if .UpdatedAfter}}
+    updatedAfter: "{{.UpdatedAfter}}"
+    {{end}}
+    {{if .UpdatedBefore}}
+    updatedBefore: "{{.UpdatedBefore}}"
+    {{end}}
+  ) {
+    items {
+      {{- if index .Fields "answers"}}
+      answers {
+        answer
+        question
+      }
+      {{- end}}
+      contactId
+      id
+      insertedAt
+      {{- if index .Fields "prepContents"}}
+      prepContents {
+        content
+        insertedAt
+        name
+        updatedAt
+      }
+      {{- end}}
+      updatedAt
+      userId
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
