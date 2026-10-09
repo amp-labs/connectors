@@ -20,9 +20,6 @@ func main() {
 
 	result, err := conn.ListObjectMetadata(ctx, []string{
 		"users",
-		"pages",
-		"data_sources",
-		"blocks",
 		"file_uploads",
 	})
 	if err != nil {

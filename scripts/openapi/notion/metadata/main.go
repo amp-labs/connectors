@@ -25,9 +25,10 @@ var outputMetadata = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
 )
 
 // Workspace collections with a GET list and no parent id.
-// Pages, data sources, and blocks are added from their object schemas below.
-// Comments and views need a parent id, so they are not connector objects.
-// Search is an action, not an object.
+// Pages and data sources come only from POST /v1/search, which cannot take a time window.
+// Blocks are listed at GET /v1/blocks/{block_id}/children, which needs a parent id.
+// Comments and views need a parent id. Search is an action.
+// None of those are connector objects.
 //
 //nolint:gochecknoglobals
 var supportedObjects = map[string]string{
@@ -51,19 +52,13 @@ var objectNameToResponseField = datautils.NewDefaultMap(map[string]string{
 	},
 )
 
-// Resource objects whose list call is not a parent-free GET.
-// Pages and data sources are listed with POST /v1/search.
-// Blocks are listed with GET /v1/blocks/{block_id}/children.
-// users and file_uploads are also listed here so nullable fields keep their types.
-// The OpenAPI list extractor leaves oneOf properties without a type.
+// Component overlays for the list objects above.
+// The list extractor leaves oneOf properties without a type and does not collect const.
 //
 //nolint:gochecknoglobals
 var resourceObjects = []resourceObject{
 	{name: "users", displayName: "Users", component: "userObjectResponse", path: "/users"},
 	{name: "file_uploads", displayName: "File Uploads", component: "fileUploadObjectResponse", path: "/file_uploads"},
-	{name: "pages", displayName: "Pages", component: "pageObjectResponse", path: "/pages"},
-	{name: "data_sources", displayName: "Data Sources", component: "dataSourceObjectResponse", path: "/data_sources"},
-	{name: "blocks", displayName: "Blocks", component: "blockObjectResponse", path: "/blocks"},
 }
 
 type resourceObject struct {
@@ -167,7 +162,7 @@ func addResourceObjects(
 }
 
 // pathWithoutVersion drops the API version. Object paths are the resource only,
-// for example OpenAPI /v1/blocks becomes /blocks.
+// for example OpenAPI /v1/users becomes /users.
 func pathWithoutVersion(path string) string {
 	trimmed, ok := strings.CutPrefix(path, "/v1")
 	if !ok || trimmed == "" {
@@ -242,19 +237,6 @@ func fieldsFromSchema(schema *openapi3.Schema) metadatadef.Fields {
 //	      type: const "bot"
 //
 // Collected fields: object ["user"], type ["bot", "person"].
-//
-// blockObjectResponse:
-//
-//	anyOf:
-//	  paragraphBlockObjectResponse
-//	    type: const "paragraph"
-//	    object: const "block"
-//	  audioBlockObjectResponse
-//	    type: const "audio"
-//	    object: const "block"
-//	  ... one schema per block type
-//
-// Collected fields: type ["audio", "bookmark", "paragraph", ...], object ["block"].
 //
 // A real enum is collected from the property itself.
 // fileUploadObjectResponse.status is enum ["pending", "uploaded", "expired", "failed"].

@@ -17,9 +17,6 @@ func TestListObjectMetadata(t *testing.T) {
 			Name: "Successful metadata for core Notion objects",
 			Input: []string{
 				"users",
-				"pages",
-				"data_sources",
-				"blocks",
 				"file_uploads",
 			},
 			Server:     mockserver.Dummy(),
@@ -42,41 +39,6 @@ func TestListObjectMetadata(t *testing.T) {
 									{Value: "bot", DisplayValue: "bot"},
 									{Value: "person", DisplayValue: "person"},
 								},
-							},
-						},
-					},
-					"pages": {
-						DisplayName: "Pages",
-						Fields: map[string]common.FieldMetadata{
-							"url": {
-								DisplayName:  "url",
-								ValueType:    "string",
-								ProviderType: "string",
-							},
-							"properties": {
-								DisplayName:  "properties",
-								ValueType:    "other",
-								ProviderType: "object",
-							},
-						},
-					},
-					"data_sources": {
-						DisplayName: "Data Sources",
-						Fields: map[string]common.FieldMetadata{
-							"title": {
-								DisplayName:  "title",
-								ValueType:    "other",
-								ProviderType: "array",
-							},
-						},
-					},
-					"blocks": {
-						DisplayName: "Blocks",
-						Fields: map[string]common.FieldMetadata{
-							"has_children": {
-								DisplayName:  "has_children",
-								ValueType:    "boolean",
-								ProviderType: "boolean",
 							},
 						},
 					},

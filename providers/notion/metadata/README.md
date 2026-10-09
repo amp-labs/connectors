@@ -6,4 +6,4 @@
 go run ./scripts/openapi/notion/metadata
 ```
 
-The catalog base URL is `https://api.notion.com`. Each object path is the resource only, without the `v1` version segment (`/v1/blocks` becomes `/blocks`).
+The catalog base URL is `https://api.notion.com`. Each object path is the resource only, without the `v1` version segment (`/v1/users` becomes `/users`).
