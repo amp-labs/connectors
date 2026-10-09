@@ -223,7 +223,8 @@ func fieldsFromSchema(schema *openapi3.Schema) metadatadef.Fields {
 // not expanded.
 //
 // The shared list extractor copies an enum array into ValueOptions and does not
-// walk oneOf. Notion discriminators are often const on each branch, not enum arrays.
+// walk oneOf. Notion often has no enum array; each oneOf or anyOf branch is one
+// option, and that option is a const on the branch.
 //
 // userObjectResponse:
 //
