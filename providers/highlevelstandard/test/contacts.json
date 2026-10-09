@@ -1,0 +1,22 @@
+{
+  "contacts": [
+    {
+      "id": "ocQHyuzHvysMo5N5VsXc",
+      "locationId": "iV1BEzddaWWLqU2kXhcN",
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "email": "jane@example.com",
+      "dateAdded": "2025-01-23T12:01:48.429Z"
+    }
+  ],
+  "count": 2,
+  "meta": {
+    "total": 2,
+    "nextPageUrl": "https://services.leadconnectorhq.com/contacts/?locationId=iV1BEzddaWWLqU2kXhcN&startAfter=1737633708429&startAfterId=ocQHyuzHvysMo5N5VsXc",
+    "startAfterId": "ocQHyuzHvysMo5N5VsXc",
+    "startAfter": 1737633708429,
+    "currentPage": 1,
+    "nextPage": 2,
+    "prevPage": null
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "contacts": [
+    {
+      "id": "pdRIzvaIwztNp6O6WtYd",
+      "locationId": "iV1BEzddaWWLqU2kXhcN",
+      "firstName": "John",
+      "lastName": "Roe",
+      "email": "john@example.com",
+      "dateAdded": "2025-01-24T09:15:00.000Z"
+    }
+  ],
+  "count": 2,
+  "meta": {
+    "total": 2,
+    "nextPageUrl": null,
+    "startAfterId": null,
+    "startAfter": null,
+    "currentPage": 2,
+    "nextPage": null,
+    "prevPage": 1
+  }
+}
