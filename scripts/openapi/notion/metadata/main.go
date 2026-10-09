@@ -221,13 +221,44 @@ func fieldsFromSchema(schema *openapi3.Schema) metadatadef.Fields {
 	return fields
 }
 
-// walkSchema unions fields across allOf, oneOf, and anyOf.
-// The shared extractor copies an enum array into ValueOptions and keeps the
-// owning schema on FieldOrigin. Notion discriminators are not enums. Each
-// anyOf or oneOf branch sets the same property with const, for example block
-// type "paragraph" or user type "person". Merging those branches keeps one
-// field and drops the other const values, and extractFields does not walk oneOf.
-// This walk records every const and enum so the property becomes one singleSelect.
+// walkSchema flattens a component into one field map.
+// It follows allOf, oneOf, and anyOf, then records each direct property.
+// Properties that share a name are merged. const and enum on those properties
+// are unioned. The first non-null type is kept. Nested object properties are
+// not expanded.
+//
+// Notion often has no enum array. Each oneOf or anyOf branch is one option,
+// and that option is a const on the branch.
+//
+// userObjectResponse:
+//
+//	allOf:
+//	  userObjectResponseCommon
+//	    object: const "user"
+//	  oneOf:
+//	    personUserObjectResponse
+//	      type: const "person"
+//	    botUserObjectResponse
+//	      type: const "bot"
+//
+// Collected fields: object ["user"], type ["bot", "person"].
+//
+// blockObjectResponse:
+//
+//	anyOf:
+//	  paragraphBlockObjectResponse
+//	    type: const "paragraph"
+//	    object: const "block"
+//	  audioBlockObjectResponse
+//	    type: const "audio"
+//	    object: const "block"
+//	  ... one schema per block type
+//
+// Collected fields: type ["audio", "bookmark", "paragraph", ...], object ["block"].
+//
+// A real enum is collected from the property itself.
+// fileUploadObjectResponse.status is enum ["pending", "uploaded", "expired", "failed"].
+// filename is oneOf [string, null], so the collected type is string and there are no options.
 func walkSchema(schema *openapi3.Schema, collected map[string]*collectedField) {
 	if schema == nil {
 		return
