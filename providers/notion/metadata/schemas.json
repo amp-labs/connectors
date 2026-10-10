@@ -1,0 +1,174 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "file_uploads": {
+          "displayName": "File Uploads",
+          "path": "/file_uploads",
+          "responseKey": "results",
+          "fields": {
+            "complete_url": {
+              "displayName": "complete_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "content_length": {
+              "displayName": "content_length",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "content_type": {
+              "displayName": "content_type",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_by": {
+              "displayName": "created_by",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "created_time": {
+              "displayName": "created_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "expiry_time": {
+              "displayName": "expiry_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "file_import_result": {
+              "displayName": "file_import_result",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "filename": {
+              "displayName": "filename",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "in_trash": {
+              "displayName": "in_trash",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "last_edited_time": {
+              "displayName": "last_edited_time",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "number_of_parts": {
+              "displayName": "number_of_parts",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "object": {
+              "displayName": "object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "file_upload",
+                  "displayValue": "file_upload"
+                }
+              ]
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "expired",
+                  "displayValue": "expired"
+                },
+                {
+                  "value": "failed",
+                  "displayValue": "failed"
+                },
+                {
+                  "value": "pending",
+                  "displayValue": "pending"
+                },
+                {
+                  "value": "uploaded",
+                  "displayValue": "uploaded"
+                }
+              ]
+            },
+            "upload_url": {
+              "displayName": "upload_url",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "results",
+          "fields": {
+            "avatar_url": {
+              "displayName": "avatar_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "bot": {
+              "displayName": "bot",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "object": {
+              "displayName": "object",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "user",
+                  "displayValue": "user"
+                }
+              ]
+            },
+            "person": {
+              "displayName": "person",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "bot",
+                  "displayValue": "bot"
+                },
+                {
+                  "value": "person",
+                  "displayValue": "person"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
