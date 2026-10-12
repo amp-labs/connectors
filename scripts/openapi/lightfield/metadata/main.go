@@ -123,17 +123,7 @@ func valueTypeOf(schema *openapi3.SchemaRef) common.ValueType {
 		return common.ValueTypeOther
 	}
 
-	types := make([]string, 0)
-	if schema.Value.Type != nil {
-		types = append(types, schema.Value.Type.Slice()...)
-	}
-
-	for _, option := range schema.Value.AnyOf {
-		if option.Value != nil && option.Value.Type != nil {
-			types = append(types, option.Value.Type.Slice()...)
-		}
-	}
-
+	types := schemaTypes(schema.Value)
 	nonNull := make([]string, 0, len(types))
 
 	for _, typeName := range types {
@@ -147,4 +137,20 @@ func valueTypeOf(schema *openapi3.SchemaRef) common.ValueType {
 	}
 
 	return common.ValueTypeOther
+}
+
+// schemaTypes collects the schema's own types and those of each anyOf option.
+func schemaTypes(schema *openapi3.Schema) []string {
+	types := make([]string, 0)
+	if schema.Type != nil {
+		types = append(types, schema.Type.Slice()...)
+	}
+
+	for _, option := range schema.AnyOf {
+		if option.Value != nil && option.Value.Type != nil {
+			types = append(types, option.Value.Type.Slice()...)
+		}
+	}
+
+	return types
 }
