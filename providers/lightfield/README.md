@@ -9,8 +9,9 @@ Read-only deep connector for the Lightfield CRM REST API (public beta).
   `accounts:read`, `contacts:read`, `opportunities:read` and `members:read` scopes.
 - Base URL `https://api.lightfield.app`; every path is under `/v1`.
 - Every request also carries `Lightfield-Version: 2026-03-01`, which the spec marks as required.
-  The connector sets it on reads and definitions calls. The catalog cannot add it, so proxy
-  callers would have to send it themselves (proxy was not in scope for this build).
+  The connector sets it on reads and definitions calls. The catalog cannot add a fixed header to
+  ApiKey auth, so raw proxy callers must send it themselves. Proxy was not requested and is not
+  built here; the header is reported as a common-header limitation.
 
 ## Objects
 
