@@ -1,0 +1,579 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "accounts": {
+          "displayName": "Account Configuration",
+          "description": "Retrieves information pertaining to the account configured for an organization.",
+          "path": "/v2/accounts/configuration",
+          "httpMethod": "GET",
+          "responseKey": "",
+          "fields": {
+            "organisation_id": {
+              "displayName": "organisation_id",
+              "valueType": "int",
+              "providerType": "integer",
+              "description": "Unique Identifier of an organization"
+            },
+            "organisation_domain": {
+              "displayName": "organisation_domain",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Full domain name of the organisation"
+            },
+            "account_id": {
+              "displayName": "account_id",
+              "valueType": "int",
+              "providerType": "integer",
+              "description": "Unique identifier for the Freshchat account"
+            },
+            "account_domain": {
+              "displayName": "account_domain",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Domain name of the Freshchat account"
+            },
+            "app_id": {
+              "displayName": "app_id",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Organization-level identifier for app integration"
+            },
+            "bundle_id": {
+              "displayName": "bundle_id",
+              "valueType": "int",
+              "providerType": "integer",
+              "description": "Unique identifier of the bundle (0 if not in a bundle)"
+            },
+            "bundle_type": {
+              "displayName": "bundle_type",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Type of bundle: freshchat, sales360, support360"
+            },
+            "plan_type": {
+              "displayName": "plan_type",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Subscription plan: Free, Growth, Pro, Enterprise"
+            },
+            "datacenter": {
+              "displayName": "datacenter",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Deployment datacenter: US, EUC, AUS, IND, US2"
+            }
+          }
+        },
+        "agents": {
+          "displayName": "Agents List",
+          "description": "Retrieves a list of all agents in the account.",
+          "path": "/v2/agents",
+          "httpMethod": "GET",
+          "responseKey": "agents",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Identifier of the agent object, auto-generated when agent information is configured"
+            },
+            "created_time": {
+              "displayName": "created_time",
+              "valueType": "datetime",
+              "providerType": "date-time",
+              "description": "Timestamp when agent's record was created (UTC)"
+            },
+            "agent_capacity": {
+              "displayName": "agent_capacity",
+              "valueType": "int",
+              "providerType": "integer",
+              "description": "Number of active conversations the agent can handle when active on IntelliAssign"
+            },
+            "agent_status": {
+              "displayName": "agent_status",
+              "valueType": "other",
+              "providerType": "object",
+              "description": "Omniroute, Intelliassign, or Custom status of the agent (includes id and name)"
+            },
+            "availability_status": {
+              "displayName": "availability_status",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Status for conversation auto-assignment: AVAILABLE, UNAVAILABLE"
+            },
+            "avatar": {
+              "displayName": "avatar",
+              "valueType": "other",
+              "providerType": "object",
+              "description": "Display picture with url attribute"
+            },
+            "biography": {
+              "displayName": "biography",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Meaningful description about the agent"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Email address of the agent"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "First name of the agent"
+            },
+            "freshid_group_ids": {
+              "displayName": "freshid_group_ids",
+              "valueType": "other",
+              "providerType": "array",
+              "description": "Identifiers (in Freshworks' master record) of groups the agent belongs to"
+            },
+            "freshid_uuid": {
+              "displayName": "freshid_uuid",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Universally unique identifier across Freshworks' master record"
+            },
+            "groups": {
+              "displayName": "groups",
+              "valueType": "other",
+              "providerType": "array",
+              "description": "Identifiers (in Freshchat system) of groups the agent belongs to"
+            },
+            "is_deactivated": {
+              "displayName": "is_deactivated",
+              "valueType": "bool",
+              "providerType": "boolean",
+              "description": "Specifies whether the agent is deactivated"
+            },
+            "is_deleted": {
+              "displayName": "is_deleted",
+              "valueType": "bool",
+              "providerType": "boolean",
+              "description": "Specifies whether agent's details are deleted"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Last name of the agent"
+            },
+            "license_type": {
+              "displayName": "license_type",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Employment terms: Fulltime, Occasional, etc."
+            },
+            "locale": {
+              "displayName": "locale",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Language associated with agent's location (ISO-639 code)"
+            },
+            "login_status": {
+              "displayName": "login_status",
+              "valueType": "bool",
+              "providerType": "boolean",
+              "description": "Whether agent is logged into Freshchat system"
+            },
+            "org_contact_id": {
+              "displayName": "org_contact_id",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Auto-generated identifier when agent is saved as a contact in Freshworks' system"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Phone number of the agent"
+            },
+            "role_id": {
+              "displayName": "role_id",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "System-generated identifier of the role assigned to the agent"
+            },
+            "role_name": {
+              "displayName": "role_name",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Meaningful identifier of agent's role (Account admin, Admin, Super user, Agent)"
+            },
+            "routing_type": {
+              "displayName": "routing_type",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Assignment rule: Intelliassign, OCR, DISABLED"
+            },
+            "scope": {
+              "displayName": "scope",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Level of access: Global, Group, Me, None"
+            },
+            "skill_id": {
+              "displayName": "skill_id",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Identifier of load level mapped to the agent for IntelliAssign"
+            },
+            "social_profiles": {
+              "displayName": "social_profiles",
+              "valueType": "other",
+              "providerType": "array",
+              "description": "Social media profiles (id and type: facebook, twitter, skype, linkedin)"
+            },
+            "timezone": {
+              "displayName": "timezone",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Timezone in Area/Location format (e.g., Asia/Kolkata)"
+            }
+          }
+        },
+        "groups": {
+          "displayName": "Groups List",
+          "description": "Retrieves a list of all groups configured in the Freshchat system.",
+          "path": "/v2/groups",
+          "httpMethod": "GET",
+          "responseKey": "groups",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Identifier of the group, auto-generated when a group is configured"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Name of the group"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Meaningful description about the group"
+            },
+            "routing_type": {
+              "displayName": "routing_type",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Type of auto-routing: INTELLIASSIGN, OCR, DISABLED"
+            },
+            "routing_logic": {
+              "displayName": "routing_logic",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Routing logic: DISABLED, LOAD_BASED, ROUND_ROBIN, OCR"
+            }
+          }
+        },
+        "channels": {
+          "displayName": "Channels List",
+          "description": "Retrieves a list of all channels (topics) configured in the Freshchat system.",
+          "path": "/v2/channels",
+          "httpMethod": "GET",
+          "responseKey": "channels",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Identifier of the channel, auto-generated when a topic is created"
+            },
+            "updated_time": {
+              "displayName": "updated_time",
+              "valueType": "datetime",
+              "providerType": "date-time",
+              "description": "Timestamp when topic details were last updated (UTC)"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "A descriptive identifier of the topic"
+            },
+            "icon": {
+              "displayName": "icon",
+              "valueType": "other",
+              "providerType": "object",
+              "description": "Pictorial representation with url attribute"
+            },
+            "enabled": {
+              "displayName": "enabled",
+              "valueType": "bool",
+              "providerType": "boolean",
+              "description": "Whether to display the topic on the conversation widget"
+            },
+            "public": {
+              "displayName": "public",
+              "valueType": "bool",
+              "providerType": "boolean",
+              "description": "Whether the topic is visible across all web pages"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array",
+              "description": "Tags associated with a private topic for web messenger customization"
+            },
+            "welcome_message": {
+              "displayName": "welcome_message",
+              "valueType": "other",
+              "providerType": "object",
+              "description": "Message that sets context about the topic"
+            },
+            "locale": {
+              "displayName": "locale",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Language ISO-639 code for multi-language support"
+            }
+          }
+        },
+        "roles": {
+          "displayName": "Roles List",
+          "description": "Retrieves a list of all roles configured in the Freshchat system.",
+          "path": "/v2/roles",
+          "httpMethod": "GET",
+          "responseKey": "roles",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Identifier of the role, auto-generated when a new role is configured"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Name of the role"
+            },
+            "is_custom_role": {
+              "displayName": "is_custom_role",
+              "valueType": "bool",
+              "providerType": "boolean",
+              "description": "Specifies whether the role is a custom role"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Meaningful description about the role"
+            }
+          }
+        },
+        "outbound_messages": {
+          "displayName": "Outbound Messages",
+          "description": "Sends outbound messages through integrated business channels (e.g., WhatsApp).",
+          "path": "/v2/outbound-messages",
+          "httpMethod": "GET",
+          "responseKey": "",
+          "fields": {
+            "message_id": {
+              "displayName": "message_id",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Identifier of an outbound message (response attribute)"
+            },
+            "from": {
+              "displayName": "from",
+              "valueType": "other",
+              "providerType": "object",
+              "description": "Business number from which the message is sent (mandatory)"
+            },
+            "provider": {
+              "displayName": "provider",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Channel through which messages are received: whatsapp (mandatory)"
+            },
+            "to": {
+              "displayName": "to",
+              "valueType": "other",
+              "providerType": "array",
+              "description": "List of recipient numbers or handles (mandatory)"
+            },
+            "data": {
+              "displayName": "data",
+              "valueType": "other",
+              "providerType": "object",
+              "description": "Message template data posted to the recipient (mandatory)"
+            },
+            "request_id": {
+              "displayName": "request_id",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Identifier of the request to send an outbound message (response attribute)"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Status: Accepted, Sent, Delivered, Failed (mandatory)"
+            },
+            "failure_code": {
+              "displayName": "failure_code",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Code explaining why the request failed (response attribute)"
+            },
+            "failure_reason": {
+              "displayName": "failure_reason",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Reason why the request failed (response attribute)"
+            },
+            "created_on": {
+              "displayName": "created_on",
+              "valueType": "int",
+              "providerType": "integer",
+              "description": "Timestamp when the request was triggered (epoch format, response attribute)"
+            }
+          }
+        },
+        "historical_metrics": {
+          "displayName": "Historical Metrics",
+          "description": "Retrieves historical metrics for conversations, CSAT, and other analytics.",
+          "path": "/v2/metrics/historical",
+          "httpMethod": "GET",
+          "responseKey": "",
+          "fields": {
+            "metric": {
+              "displayName": "metric",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Name of the metric to be retrieved (mandatory)"
+            },
+            "start": {
+              "displayName": "start",
+              "valueType": "datetime",
+              "providerType": "date-time",
+              "description": "Starting date of the time period (UTC, mandatory)"
+            },
+            "end": {
+              "displayName": "end",
+              "valueType": "datetime",
+              "providerType": "date-time",
+              "description": "Ending date of the time period (UTC, mandatory)"
+            },
+            "interval": {
+              "displayName": "interval",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Frequency: 1m, 5m, 15m, 1h, 1d, 1w, 1mo"
+            },
+            "aggregator": {
+              "displayName": "aggregator",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Method to summarize atomic metrics: min, max, avg, median, p90"
+            },
+            "x_time": {
+              "displayName": "x_time",
+              "valueType": "int",
+              "providerType": "integer",
+              "description": "Minutes for real-time metrics like assigned_x_mins_ago"
+            },
+            "group_by": {
+              "displayName": "group_by",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Grouping criteria: group, agent, rating"
+            },
+            "filter_by": {
+              "displayName": "filter_by",
+              "valueType": "string",
+              "providerType": "string",
+              "description": "Filter by agent.id or group.id (e.g., group=group_id_1)"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users List",
+          "description": "Retrieves a list of all users who meet specific search criteria.",
+          "path": "/v2/users",
+          "httpMethod": "GET",
+          "responseKey": "users",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_time": {
+              "displayName": "created_time",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "updated_time": {
+              "displayName": "updated_time",
+              "valueType": "datetime",
+              "providerType": "date-time"
+            },
+            "avatar": {
+              "displayName": "avatar",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "first_name": {
+              "displayName": "first_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "last_name": {
+              "displayName": "last_name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "login_status": {
+              "displayName": "login_status",
+              "valueType": "bool",
+              "providerType": "boolean"
+            },
+            "org_contact_id": {
+              "displayName": "org_contact_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "phone": {
+              "displayName": "phone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "properties": {
+              "displayName": "properties",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "reference_id": {
+              "displayName": "reference_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "restore_id": {
+              "displayName": "restore_id",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
