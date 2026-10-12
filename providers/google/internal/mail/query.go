@@ -2,25 +2,33 @@ package mail
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// TimeQuery represents a Gmail-compatible time filter for search queries.
+// SearchBoxQuery represents a Gmail-compatible filter for mail search queries.
 // It constructs a `q` parameter using `after:` and `before:` with YYYY/MM/DD format or Unix time.
 //
 // This is intended for incremental reads of Gmail collection endpoints (messages, drafts, threads).
-type TimeQuery struct {
-	since string
-	until string
+type SearchBoxQuery struct {
+	since      string
+	until      string
+	conditions []string
 }
 
-func newTimeQuery() *TimeQuery {
-	return &TimeQuery{}
+func newSearchBoxQuery() SearchBoxQuery {
+	return SearchBoxQuery{}
 }
 
-func (q *TimeQuery) WithSince(timestamp time.Time) *TimeQuery {
+func (q SearchBoxQuery) WithCondition(condition string) SearchBoxQuery {
+	q.conditions = append(q.conditions, condition)
+
+	return q
+}
+
+func (q SearchBoxQuery) WithSince(timestamp time.Time) SearchBoxQuery {
 	if !timestamp.IsZero() {
 		q.since = datautils.Time.Unix(timestamp)
 	}
@@ -28,7 +36,7 @@ func (q *TimeQuery) WithSince(timestamp time.Time) *TimeQuery {
 	return q
 }
 
-func (q *TimeQuery) WithUntil(timestamp time.Time) *TimeQuery {
+func (q SearchBoxQuery) WithUntil(timestamp time.Time) SearchBoxQuery {
 	if !timestamp.IsZero() {
 		q.until = datautils.Time.Unix(timestamp)
 	}
@@ -36,18 +44,20 @@ func (q *TimeQuery) WithUntil(timestamp time.Time) *TimeQuery {
 	return q
 }
 
-func (q *TimeQuery) String() string {
-	if q.since == "" && q.until == "" {
-		return ""
-	}
-
-	if q.since != "" && q.until != "" {
-		return fmt.Sprintf("after:%v before:%v", q.since, q.until)
-	}
+func (q SearchBoxQuery) String() string {
+	var conditions []string
 
 	if q.since != "" {
-		return fmt.Sprintf("after:%v", q.since)
+		conditions = append(conditions, fmt.Sprintf("after:%v", q.since))
 	}
 
-	return fmt.Sprintf("before:%v", q.until)
+	if q.until != "" {
+		conditions = append(conditions, fmt.Sprintf("before:%v", q.until))
+	}
+
+	if len(q.conditions) != 0 {
+		conditions = append(conditions, q.conditions...)
+	}
+
+	return strings.Join(conditions, " ")
 }
