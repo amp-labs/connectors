@@ -29,7 +29,7 @@ const (
 
 // List users has no timestamp, so Since and Until cannot be applied.
 // List file uploads has no time query param. Those rows are filtered on
-// last_edited_time after the response, and pages are not stopped early
+// last_edited_time after the response. Later pages are not stopped early
 // because the list order is not documented.
 // https://developers.notion.com/reference/get-users
 // https://developers.notion.com/reference/list-file-uploads
