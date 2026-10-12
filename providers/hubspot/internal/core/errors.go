@@ -20,6 +20,11 @@ const hubspotMigrationStatusCode = 477
 // for the API (because Search and List APIs use different pagination tokens).
 const invalidPaginationCursorMessageSubstring = "Cannot deserialize value of type"
 
+// missingScopesCategory is the error category HubSpot sets on a 403 caused by the token
+// lacking a required scope, as opposed to the user lacking permission.
+// https://developers.hubspot.com/docs/guides/api/app-management/oauth-tokens
+const missingScopesCategory = "MISSING_SCOPES"
+
 // InterpretJSONError interprets the error response from Hubspot
 // as per https://developers.hubspot.com/docs/api/error-handling.
 func InterpretJSONError(res *http.Response, body []byte) error {
@@ -41,7 +46,8 @@ func InterpretJSONError(res *http.Response, body []byte) error {
 	case http.StatusUnauthorized:
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrAccessToken, apiError))
 	case http.StatusForbidden:
-		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrForbidden, apiError))
+		return common.NewHTTPError(res.StatusCode, body, headers,
+			createError(forbiddenSentinel(apiError), apiError))
 	case http.StatusTooManyRequests, http.StatusBadGateway, http.StatusGatewayTimeout:
 		return common.NewHTTPError(res.StatusCode, body, headers, createError(common.ErrLimitExceeded, apiError))
 	case http.StatusServiceUnavailable:
@@ -51,6 +57,18 @@ func InterpretJSONError(res *http.Response, body []byte) error {
 	default:
 		return common.InterpretError(res, body)
 	}
+}
+
+// forbiddenSentinel picks between the two kinds of 403 HubSpot returns. It labels a scope
+// failure in the error body, and that is worth keeping: the remedy is to reconnect
+// granting the scope, not to change the user's HubSpot permissions. Everything else stays
+// ErrForbidden, which ErrMissingScopes also satisfies.
+func forbiddenSentinel(apiError *HubspotError) error {
+	if apiError.Category == missingScopesCategory {
+		return common.ErrMissingScopes
+	}
+
+	return common.ErrForbidden
 }
 
 func createError(baseErr error, hubspotError *HubspotError) error {

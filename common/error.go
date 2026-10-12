@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"golang.org/x/oauth2"
 )
@@ -30,7 +31,7 @@ func InterpretError(res *http.Response, body []byte) error {
 		return NewHTTPError(res.StatusCode, body, headers, createError(ErrAccessToken))
 	case http.StatusForbidden:
 		// Forbidden, not retryable
-		return NewHTTPError(res.StatusCode, body, headers, createError(ErrForbidden))
+		return NewHTTPError(res.StatusCode, body, headers, createError(forbiddenSentinel(res.Header)))
 	case http.StatusNotFound:
 		// Semantics are debatable (temporarily missing vs. permanently gone), but for now treat this as a retryable error
 		return NewHTTPError(res.StatusCode, body, headers, createError(ErrRetryable))
@@ -46,6 +47,37 @@ func InterpretError(res *http.Response, body []byte) error {
 	}
 
 	return NewHTTPError(res.StatusCode, body, headers, createError(ErrUnknown))
+}
+
+// forbiddenSentinel picks between the two kinds of 403. RFC 6750 gives providers a
+// standard way to say "this token lacks the scope" rather than "this user lacks
+// permission", and the two have opposite remedies: reconnect granting more scopes, versus
+// change the user's provider-side roles. Honour the challenge when present; otherwise a
+// 403 is just forbidden.
+func forbiddenSentinel(header http.Header) error {
+	if hasInsufficientScopeChallenge(header) {
+		return ErrMissingScopes
+	}
+
+	return ErrForbidden
+}
+
+// insufficientScopeChallenge is the error code RFC 6750 section 3.1 defines for a request
+// whose token lacks the scope the resource requires.
+const insufficientScopeChallenge = `error="insufficient_scope"`
+
+// hasInsufficientScopeChallenge reports whether a response carries the RFC 6750
+// insufficient_scope challenge. Matching is case-insensitive on the parameter because the
+// header is not consistently cased across providers; the quoted value itself is defined by
+// the RFC as lowercase.
+func hasInsufficientScopeChallenge(header http.Header) bool {
+	for _, value := range header.Values("WWW-Authenticate") {
+		if strings.Contains(strings.ToLower(value), insufficientScopeChallenge) {
+			return true
+		}
+	}
+
+	return false
 }
 
 type ErrorPostProcessor struct {
