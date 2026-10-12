@@ -25,6 +25,9 @@ go run token.go
 - `-callback`: The full OAuth callback path (default: `/callbacks/v1/oauth`)
 - `-writeCreds`: If set to `true`, the script updates `creds.json` and the corresponding provider-specific file with the
   new token information.
+- `-scopeDelimiter`: Character placed between scopes in the authorization URL. Defaults to a space, the OAuth 2.0
+  standard. Some providers only accept comma-delimited scopes (Wrike, for example); pass `-scopeDelimiter ,` for
+  those. The `scopes` value in the creds file stays comma-separated either way.
 
 # Credential Updates
 
