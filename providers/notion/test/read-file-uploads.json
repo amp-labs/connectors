@@ -1,0 +1,19 @@
+{
+  "object": "list",
+  "results": [
+    {
+      "object": "file_upload",
+      "id": "file-new",
+      "status": "uploaded",
+      "last_edited_time": "2025-06-01T00:00:00.000Z"
+    },
+    {
+      "object": "file_upload",
+      "id": "file-old",
+      "status": "expired",
+      "last_edited_time": "2020-01-01T00:00:00.000Z"
+    }
+  ],
+  "next_cursor": null,
+  "has_more": false
+}
