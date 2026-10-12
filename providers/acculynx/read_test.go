@@ -580,6 +580,65 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
+			Name: "Read jobs/financials attaches the job association",
+			Input: common.ReadParams{
+				ObjectName:        "jobs/financials",
+				Fields:            connectors.Fields("jobId", "balanceDue"),
+				AssociatedObjects: []string{"jobs"},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs"),
+							mockcond.QueryParam("pageStartIndex", "0"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobsListResponse),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs/job-001/financials"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobFinancials001Response),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/jobs/job-002/financials"),
+						},
+						Then: mockserver.Response(http.StatusOK, jobFinancials002Response),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"jobid": "job-001", "balancedue": -2400.00},
+						Raw:    map[string]any{"jobId": "job-001", "balanceDue": -2400.00},
+						Associations: map[string][]common.Association{
+							"jobs": {{ObjectId: "job-001"}},
+						},
+					},
+					{
+						Fields: map[string]any{"jobid": "job-002", "balancedue": 150.75},
+						Raw:    map[string]any{"jobId": "job-002", "balanceDue": 150.75},
+						Associations: map[string][]common.Association{
+							"jobs": {{ObjectId: "job-002"}},
+						},
+					},
+				},
+				NextPage: testconn.URLTestServer +
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+				Done: false,
+			},
+		},
+		{
 			// Second half of the two-population jobs sweep: a short page of the
 			// unassigned listing ends the read with no further hand-over.
 			Name: "Jobs unassigned sweep ends the read",

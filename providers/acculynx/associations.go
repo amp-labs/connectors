@@ -72,15 +72,17 @@ func addAssociation(row *common.ReadResultRow, key, objectID string) {
 func attachNestedAssociations(params common.ReadParams, parentID string, rows []common.ReadResultRow) {
 	attachAppointmentAssociations(params, parentID, rows)
 	attachRepresentativeAssociations(params, parentID, rows)
+	attachFinancialAssociations(params, parentID, rows)
 }
 
-// representativeJobAssociation and estimateJobAssociation are the association
-// keys for the Representative->Job and Estimate->Job edges. Like the
+// representativeJobAssociation, estimateJobAssociation and financialJobAssociation are the association
+// keys for the Representative->Job, Estimate->Job, and Financial->Job edges. Like the
 // appointment keys above, they match the target object name the server
 // hydrates via GetRecordsByIds.
 const (
 	representativeJobAssociation = objectJobs
 	estimateJobAssociation       = objectJobs
+	financialJobAssociation      = objectJobs
 )
 
 // attachRepresentativeAssociations attaches the Representative->Job edge to
@@ -104,6 +106,22 @@ func attachRepresentativeAssociations(params common.ReadParams, jobID string, ro
 
 	for idx := range rows {
 		addAssociation(&rows[idx], representativeJobAssociation, jobID)
+	}
+}
+
+// attachFinancialAssociations attaches the Financial->Job edge to jobs/financials
+// rows, using the fan-out parent job id like attachRepresentativeAssociations.
+func attachFinancialAssociations(params common.ReadParams, jobID string, rows []common.ReadResultRow) {
+	if params.ObjectName != "jobs/financials" || jobID == "" {
+		return
+	}
+
+	if !slices.Contains(params.AssociatedObjects, financialJobAssociation) {
+		return
+	}
+
+	for idx := range rows {
+		addAssociation(&rows[idx], financialJobAssociation, jobID)
 	}
 }
 
