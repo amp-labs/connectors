@@ -33,6 +33,8 @@ Lightfield wraps values: `fields: {"$name": {"value": "Acme", "valueType": "TEXT
 `relationships: {"$owner": {"values": ["usr_1"], ...}}`. Read flattens both into top-level fields
 keyed verbatim (`$name`, `$owner`, custom slugs such as `icp-score`). A field becomes its `value`;
 a relationship becomes its `values` array of IDs, whatever its cardinality. `Raw` is untouched.
+Metadata types HAS_ONE relationships as `reference` (with `ReferenceTo` when the target is an
+object this connector reads; `user` is not) and HAS_MANY ones as `other`, being lists of IDs.
 
 ## Pagination
 

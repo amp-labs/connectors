@@ -87,7 +87,7 @@ func typedValueField(field spec.Field) spec.Field {
 
 	if cardinality := singleEnum(property.Value.Properties["cardinality"]); cardinality != "" {
 		field.Type = cardinality
-		field.ValueType = common.ValueTypeOther
+		field.ValueType = relationshipValueType(cardinality)
 
 		return field
 	}
@@ -95,6 +95,17 @@ func typedValueField(field spec.Field) spec.Field {
 	field.ValueType = valueTypeOf(property)
 
 	return field
+}
+
+// relationshipValueType matches the connector's typing of relationships: HAS_ONE is a lookup,
+// HAS_MANY is a list of IDs and stays other. The only spec relationship among the read objects is
+// members.$user, whose target `user` is not an object this connector reads, so it has no ReferenceTo.
+func relationshipValueType(cardinality string) common.ValueType {
+	if cardinality == "HAS_ONE" {
+		return common.ValueTypeReference
+	}
+
+	return common.ValueTypeOther
 }
 
 // timestampField marks the record timestamps, documented as ISO 8601 strings, as datetimes.

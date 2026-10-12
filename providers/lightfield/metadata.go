@@ -122,8 +122,8 @@ func (d definitionsResponse) addTo(objectMetadata *common.ObjectMetadata) {
 		})
 	}
 
-	// Read returns a relationship as the list of related record IDs, whatever its cardinality.
 	for key, definition := range d.RelationshipDefinitions {
+		// ReferenceTo stays empty for targets this connector does not read, such as `user`.
 		var referenceTo []string
 		if objectName, ok := objectNameByType[definition.ObjectType]; ok {
 			referenceTo = []string{objectName}
@@ -131,12 +131,24 @@ func (d definitionsResponse) addTo(objectMetadata *common.ObjectMetadata) {
 
 		objectMetadata.AddFieldMetadata(key, common.FieldMetadata{
 			DisplayName:  displayName(definition.Label, key),
-			ValueType:    common.ValueTypeOther,
+			ValueType:    relationshipValueType(definition.Cardinality),
 			ProviderType: definition.Cardinality,
 			IsCustom:     isCustom(definition.System),
 			ReferenceTo:  referenceTo,
 		})
 	}
+}
+
+// relationshipValueType types a relationship by its cardinality. Read returns the relationship's
+// `values` array of related record IDs, which for HAS_ONE holds the single linked record (a lookup).
+// A HAS_MANY relationship is a list of IDs rather than one lookup, so it stays other.
+// https://docs.lightfield.app/using-the-api/fields-and-relationships#relationship-definition-object
+func relationshipValueType(cardinality string) common.ValueType {
+	if cardinality == "HAS_ONE" {
+		return common.ValueTypeReference
+	}
+
+	return common.ValueTypeOther
 }
 
 // valueType maps Lightfield value types to Ampersand ones.

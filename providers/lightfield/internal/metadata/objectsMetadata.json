@@ -81,7 +81,7 @@
       },
       "$user": {
         "displayName": "User",
-        "valueType": "other",
+        "valueType": "reference",
         "providerType": "HAS_ONE"
       },
       "createdAt": {

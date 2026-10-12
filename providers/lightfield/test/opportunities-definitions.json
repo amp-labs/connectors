@@ -72,6 +72,15 @@
       "system": true,
       "cardinality": "HAS_ONE",
       "objectType": "user"
+    },
+    "stakeholders": {
+      "id": "rd_stakeholders",
+      "slug": "stakeholders",
+      "label": "Stakeholders",
+      "description": null,
+      "system": false,
+      "cardinality": "HAS_MANY",
+      "objectType": "contact"
     }
   }
 }
