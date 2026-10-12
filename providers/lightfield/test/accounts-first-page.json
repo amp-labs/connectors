@@ -1,0 +1,38 @@
+{
+  "data": [
+    {
+      "id": "acc_2",
+      "createdAt": "2026-09-02T10:00:00.000Z",
+      "updatedAt": "2026-09-20T08:15:00.000Z",
+      "httpLink": "https://crm.lightfield.app/crm/accounts/acc_2",
+      "externalId": null,
+      "fields": {
+        "$name": {"value": "Globex", "valueType": "TEXT"},
+        "$website": {"value": ["https://globex.example.com"], "valueType": "URL"},
+        "icp-score": {"value": 7, "valueType": "NUMBER"}
+      },
+      "relationships": {
+        "$owner": {"cardinality": "HAS_ONE", "objectType": "user", "values": ["usr_1"]},
+        "$contact": {"cardinality": "HAS_MANY", "objectType": "contact", "values": ["con_1", "con_2"]}
+      }
+    },
+    {
+      "id": "acc_1",
+      "createdAt": "2026-08-15T09:30:00.000Z",
+      "updatedAt": null,
+      "httpLink": "https://crm.lightfield.app/crm/accounts/acc_1",
+      "externalId": "sf-001",
+      "fields": {
+        "$name": {"value": "Acme Corp", "valueType": "TEXT"},
+        "$website": {"value": [], "valueType": "URL"},
+        "icp-score": {"value": null, "valueType": "NUMBER"}
+      },
+      "relationships": {
+        "$owner": {"cardinality": "HAS_ONE", "objectType": "user", "values": []},
+        "$contact": {"cardinality": "HAS_MANY", "objectType": "contact", "values": []}
+      }
+    }
+  ],
+  "object": "list",
+  "totalCount": 3
+}

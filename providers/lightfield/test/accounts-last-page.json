@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "id": "acc_0",
+      "createdAt": "2026-07-01T12:00:00.000Z",
+      "updatedAt": "2026-09-25T16:45:00.000Z",
+      "httpLink": "https://crm.lightfield.app/crm/accounts/acc_0",
+      "externalId": null,
+      "fields": {
+        "$name": {"value": "Initech", "valueType": "TEXT"}
+      },
+      "relationships": {
+        "$owner": {"cardinality": "HAS_ONE", "objectType": "user", "values": ["usr_2"]}
+      }
+    }
+  ],
+  "object": "list",
+  "totalCount": 3
+}
