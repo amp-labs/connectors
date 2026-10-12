@@ -1,0 +1,1327 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "/contacts",
+          "responseKey": "contacts",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "prefix": {
+              "displayName": "Prefix",
+              "valueType": "string"
+            },
+            "first_name": {
+              "displayName": "First Name",
+              "valueType": "string"
+            },
+            "middle_name": {
+              "displayName": "Middle Name",
+              "valueType": "string"
+            },
+            "last_name": {
+              "displayName": "Last Name",
+              "valueType": "string"
+            },
+            "suffix": {
+              "displayName": "Suffix",
+              "valueType": "string"
+            },
+            "nickname": {
+              "displayName": "Nickname",
+              "valueType": "string"
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "person",
+                  "displayValue": "person"
+                },
+                {
+                  "value": "household",
+                  "displayValue": "household"
+                },
+                {
+                  "value": "organization",
+                  "displayValue": "organization"
+                },
+                {
+                  "value": "trust",
+                  "displayValue": "trust"
+                }
+              ]
+            },
+            "gender": {
+              "displayName": "Gender",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Female",
+                  "displayValue": "Female"
+                },
+                {
+                  "value": "Male",
+                  "displayValue": "Male"
+                },
+                {
+                  "value": "Non-binary",
+                  "displayValue": "Non-binary"
+                },
+                {
+                  "value": "Unknown",
+                  "displayValue": "Unknown"
+                }
+              ]
+            },
+            "contact_source": {
+              "displayName": "Contact Source",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Referral",
+                  "displayValue": "Referral"
+                },
+                {
+                  "value": "Conference",
+                  "displayValue": "Conference"
+                },
+                {
+                  "value": "Direct Mail",
+                  "displayValue": "Direct Mail"
+                },
+                {
+                  "value": "Cold Call",
+                  "displayValue": "Cold Call"
+                },
+                {
+                  "value": "Other",
+                  "displayValue": "Other"
+                }
+              ]
+            },
+            "contact_type": {
+              "displayName": "Contact Type",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Client",
+                  "displayValue": "Client"
+                },
+                {
+                  "value": "Past Client",
+                  "displayValue": "Past Client"
+                },
+                {
+                  "value": "Prospect",
+                  "displayValue": "Prospect"
+                },
+                {
+                  "value": "Vendor",
+                  "displayValue": "Vendor"
+                },
+                {
+                  "value": "Organization",
+                  "displayValue": "Organization"
+                }
+              ]
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Active",
+                  "displayValue": "Active"
+                },
+                {
+                  "value": "Inactive",
+                  "displayValue": "Inactive"
+                }
+              ]
+            },
+            "job_title": {
+              "displayName": "Job Title",
+              "valueType": "string"
+            },
+            "company_name": {
+              "displayName": "Company Name",
+              "valueType": "string"
+            },
+            "twitter_name": {
+              "displayName": "Twitter Name",
+              "valueType": "string"
+            },
+            "linkedin_url": {
+              "displayName": "LinkedIn URL",
+              "valueType": "string"
+            },
+            "occupation": {
+              "displayName": "Occupation",
+              "valueType": "other",
+              "providerType": "Object"
+            },
+            "birth_date": {
+              "displayName": "Birth Date",
+              "valueType": "date"
+            },
+            "anniversary": {
+              "displayName": "Anniversary",
+              "valueType": "date"
+            },
+            "birth_place": {
+              "displayName": "Birth Place",
+              "valueType": "string"
+            },
+            "maiden_name": {
+              "displayName": "Maiden Name",
+              "valueType": "string"
+            },
+            "background_information": {
+              "displayName": "Background Information",
+              "valueType": "string"
+            },
+            "personal_interests": {
+              "displayName": "Personal Interests",
+              "valueType": "string"
+            },
+            "important_information": {
+              "displayName": "Important Information",
+              "valueType": "string"
+            },
+            "marital_status": {
+              "displayName": "Marital Status",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Married",
+                  "displayValue": "Married"
+                },
+                {
+                  "value": "Single",
+                  "displayValue": "Single"
+                },
+                {
+                  "value": "Divorced",
+                  "displayValue": "Divorced"
+                },
+                {
+                  "value": "Widowed",
+                  "displayValue": "Widowed"
+                },
+                {
+                  "value": "Life Partner",
+                  "displayValue": "Life Partner"
+                },
+                {
+                  "value": "Separated",
+                  "displayValue": "Separated"
+                },
+                {
+                  "value": "Unknown",
+                  "displayValue": "Unknown"
+                }
+              ]
+            },
+            "date_of_death": {
+              "displayName": "Date Of Death",
+              "valueType": "date"
+            },
+            "gross_annual_income": {
+              "displayName": "Gross Annual Income",
+              "valueType": "float"
+            },
+            "adjusted_gross_income": {
+              "displayName": "Adjusted Gross Income",
+              "valueType": "float"
+            },
+            "estimated_taxes": {
+              "displayName": "Estimated Taxes",
+              "valueType": "float"
+            },
+            "assets": {
+              "displayName": "Assets",
+              "valueType": "float"
+            },
+            "non_liquid_assets": {
+              "displayName": "Non-liquid Assets",
+              "valueType": "float"
+            },
+            "liabilities": {
+              "displayName": "Liabilities",
+              "valueType": "float"
+            },
+            "investment_objective": {
+              "displayName": "Investment Objective",
+              "valueType": "string"
+            },
+            "time_horizon": {
+              "displayName": "Time Horizon",
+              "valueType": "string"
+            },
+            "risk_tolerance": {
+              "displayName": "Risk Tolerance",
+              "valueType": "string"
+            },
+            "mutual_fund_experience": {
+              "displayName": "Mutual Fund Experience",
+              "valueType": "string"
+            },
+            "stocks_and_bonds_experience": {
+              "displayName": "Stocks And Bonds Experience",
+              "valueType": "string"
+            },
+            "partnerships_experience": {
+              "displayName": "Partnerships Experience",
+              "valueType": "string"
+            },
+            "other_investing_experience": {
+              "displayName": "Other Investing Experience",
+              "valueType": "string"
+            },
+            "client_since": {
+              "displayName": "Client Since",
+              "valueType": "date"
+            },
+            "retirement_date": {
+              "displayName": "Retirement Date",
+              "valueType": "date"
+            },
+            "signed_fee_agreement_date": {
+              "displayName": "Signed Fee Agreement Date",
+              "valueType": "date"
+            },
+            "signed_ips_agreement_date": {
+              "displayName": "Signed IPS Agreement Date",
+              "valueType": "date"
+            },
+            "signed_fp_agreement_date": {
+              "displayName": "Signed FP Agreement Date",
+              "valueType": "date"
+            },
+            "last_adv_offering_date": {
+              "displayName": "Last ADV Offering Date",
+              "valueType": "date"
+            },
+            "initial_crs_offering_date": {
+              "displayName": "Initial CRS Offering Date",
+              "valueType": "date"
+            },
+            "last_crs_offering_date": {
+              "displayName": "Last CRS Offering Date",
+              "valueType": "date"
+            },
+            "last_privacy_offering_date": {
+              "displayName": "Last Privacy Offering Date",
+              "valueType": "date"
+            },
+            "drivers_license": {
+              "displayName": "Drivers License",
+              "valueType": "other",
+              "providerType": "Object"
+            },
+            "passport_number": {
+              "displayName": "Passport Number",
+              "valueType": "string"
+            },
+            "green_card_number": {
+              "displayName": "Green Card Number",
+              "valueType": "string"
+            },
+            "external_unique_id": {
+              "displayName": "External Unique ID",
+              "valueType": "string"
+            },
+            "assigned_to": {
+              "displayName": "Assigned To",
+              "valueType": "int",
+              "providerType": "User ID"
+            },
+            "referred_by": {
+              "displayName": "Referred By",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "attorney": {
+              "displayName": "Attorney",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "cpa": {
+              "displayName": "CPA",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "doctor": {
+              "displayName": "Doctor",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "insurance": {
+              "displayName": "Insurance",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "business_manager": {
+              "displayName": "Business Manager",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "family_officer": {
+              "displayName": "Family Officer",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "assistant": {
+              "displayName": "Assistant",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "other": {
+              "displayName": "Other",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "trusted_contact": {
+              "displayName": "Trusted Contact",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "confirmed_by_tax_return": {
+              "displayName": "Confirmed By Tax Return",
+              "valueType": "boolean"
+            },
+            "tax_year": {
+              "displayName": "Tax Year",
+              "valueType": "int"
+            },
+            "tax_bracket": {
+              "displayName": "Tax Bracket",
+              "valueType": "string"
+            },
+            "household": {
+              "displayName": "Household",
+              "valueType": "other",
+              "providerType": "Object"
+            },
+            "street_addresses": {
+              "displayName": "Street Addresses",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "email_addresses": {
+              "displayName": "Email Addresses",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "phone_numbers": {
+              "displayName": "Phone Numbers",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "websites": {
+              "displayName": "Websites",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "custom_fields": {
+              "displayName": "Custom Fields",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "contact_roles": {
+              "displayName": "Contact Roles",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "image": {
+              "displayName": "Image",
+              "valueType": "string",
+              "readOnly": true
+            },
+            "visible_to": {
+              "displayName": "Visible To",
+              "valueType": "string",
+              "providerType": "Everyone|Private|{user_group_id}"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-contacts"
+        },
+        "tasks": {
+          "displayName": "Tasks",
+          "path": "/tasks",
+          "responseKey": "tasks",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "due_date": {
+              "displayName": "Due Date",
+              "valueType": "datetime"
+            },
+            "complete": {
+              "displayName": "Complete",
+              "valueType": "boolean"
+            },
+            "category": {
+              "displayName": "Category",
+              "valueType": "int"
+            },
+            "linked_to": {
+              "displayName": "Linked To",
+              "valueType": "other",
+              "providerType": "Array (Document)"
+            },
+            "priority": {
+              "displayName": "Priority",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Low",
+                  "displayValue": "Low"
+                },
+                {
+                  "value": "Medium",
+                  "displayValue": "Medium"
+                },
+                {
+                  "value": "High",
+                  "displayValue": "High"
+                }
+              ]
+            },
+            "visible_to": {
+              "displayName": "Visible To",
+              "valueType": "string",
+              "providerType": "Everyone|Private|{user_group_id}"
+            },
+            "due_later": {
+              "displayName": "Due Later",
+              "valueType": "string"
+            },
+            "subtasks": {
+              "displayName": "Subtasks",
+              "valueType": "other",
+              "providerType": "Array (Task)"
+            },
+            "custom_fields": {
+              "displayName": "Custom Fields",
+              "valueType": "other",
+              "providerType": "Array"
+            },
+            "frame": {
+              "displayName": "Frame",
+              "valueType": "string"
+            },
+            "repeats": {
+              "displayName": "Repeats",
+              "valueType": "boolean"
+            },
+            "completer": {
+              "displayName": "Completer",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string"
+            },
+            "description_html": {
+              "displayName": "Description (HTML)",
+              "valueType": "string"
+            },
+            "assigned_to": {
+              "displayName": "Assigned To",
+              "valueType": "int",
+              "providerType": "User ID"
+            },
+            "assigned_to_team": {
+              "displayName": "Assigned To Team",
+              "valueType": "int",
+              "providerType": "Team ID"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-tasks"
+        },
+        "events": {
+          "displayName": "Events",
+          "path": "/events",
+          "responseKey": "events",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "title": {
+              "displayName": "Title",
+              "valueType": "string"
+            },
+            "starts_at": {
+              "displayName": "Starts At",
+              "valueType": "datetime"
+            },
+            "ends_at": {
+              "displayName": "Ends At",
+              "valueType": "datetime"
+            },
+            "repeats": {
+              "displayName": "Repeats",
+              "valueType": "boolean"
+            },
+            "event_category": {
+              "displayName": "Event Category",
+              "valueType": "int"
+            },
+            "all_day": {
+              "displayName": "All Day",
+              "valueType": "boolean"
+            },
+            "location": {
+              "displayName": "Location",
+              "valueType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string"
+            },
+            "state": {
+              "displayName": "State",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "unconfirmed",
+                  "displayValue": "unconfirmed"
+                },
+                {
+                  "value": "confirmed",
+                  "displayValue": "confirmed"
+                },
+                {
+                  "value": "tentative",
+                  "displayValue": "tentative"
+                },
+                {
+                  "value": "completed",
+                  "displayValue": "completed"
+                },
+                {
+                  "value": "cancelled",
+                  "displayValue": "cancelled"
+                }
+              ]
+            },
+            "visible_to": {
+              "displayName": "Visible To",
+              "valueType": "string",
+              "providerType": "Everyone|Private|{user_group_id}"
+            },
+            "email_invitees": {
+              "displayName": "Email Invitees",
+              "valueType": "boolean"
+            },
+            "linked_to": {
+              "displayName": "Linked To",
+              "valueType": "other",
+              "providerType": "Array (Document)"
+            },
+            "invitees": {
+              "displayName": "Invitees",
+              "valueType": "other",
+              "providerType": "Array (InviteeRequest)"
+            },
+            "custom_fields": {
+              "displayName": "Custom Fields",
+              "valueType": "other",
+              "providerType": "Array"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-events"
+        },
+        "opportunities": {
+          "displayName": "Opportunities",
+          "path": "/opportunities",
+          "responseKey": "opportunities",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string"
+            },
+            "target_close": {
+              "displayName": "Target Close",
+              "valueType": "datetime"
+            },
+            "probability": {
+              "displayName": "Probability",
+              "valueType": "float"
+            },
+            "stage": {
+              "displayName": "Stage",
+              "valueType": "int"
+            },
+            "manager": {
+              "displayName": "Manager",
+              "valueType": "int",
+              "providerType": "User ID"
+            },
+            "next_step": {
+              "displayName": "Next Step",
+              "valueType": "string"
+            },
+            "amounts": {
+              "displayName": "Amounts",
+              "valueType": "other",
+              "providerType": "Array (Amount)"
+            },
+            "linked_to": {
+              "displayName": "Linked To",
+              "valueType": "other",
+              "providerType": "Array (Document)"
+            },
+            "visible_to": {
+              "displayName": "Visible To",
+              "valueType": "string",
+              "providerType": "Everyone|Private|{user_group_id}"
+            },
+            "custom_fields": {
+              "displayName": "Custom Fields",
+              "valueType": "other",
+              "providerType": "Array"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-opportunities"
+        },
+        "projects": {
+          "displayName": "Projects",
+          "path": "/projects",
+          "responseKey": "projects",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string"
+            },
+            "organizer": {
+              "displayName": "Organizer",
+              "valueType": "int",
+              "providerType": "User ID"
+            },
+            "visible_to": {
+              "displayName": "Visible To",
+              "valueType": "string",
+              "providerType": "Everyone|Private|{user_group_id}"
+            },
+            "image": {
+              "displayName": "Image",
+              "valueType": "string",
+              "readOnly": true
+            },
+            "custom_fields": {
+              "displayName": "Custom Fields",
+              "valueType": "other",
+              "providerType": "Array"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-projects"
+        },
+        "notes": {
+          "displayName": "Notes",
+          "path": "/notes",
+          "responseKey": "status_updates",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "content": {
+              "displayName": "Content",
+              "valueType": "string"
+            },
+            "linked_to": {
+              "displayName": "Linked To",
+              "valueType": "other",
+              "providerType": "Array (Document)"
+            },
+            "visible_to": {
+              "displayName": "Visible To",
+              "valueType": "string",
+              "providerType": "Everyone|Private|{user_group_id}"
+            },
+            "tags": {
+              "displayName": "Tags",
+              "valueType": "other",
+              "providerType": "Array (Tag)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-notes"
+        },
+        "workflows": {
+          "displayName": "Workflows",
+          "path": "/workflows",
+          "responseKey": "workflows",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "label": {
+              "displayName": "Label",
+              "valueType": "string"
+            },
+            "linked_to": {
+              "displayName": "Linked To",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "visible_to": {
+              "displayName": "Visible To",
+              "valueType": "string",
+              "providerType": "Everyone|Private|{user_group_id}"
+            },
+            "workflow_template": {
+              "displayName": "Workflow Template",
+              "valueType": "other",
+              "providerType": "WorkflowTemplate"
+            },
+            "kind": {
+              "displayName": "Kind",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Contact",
+                  "displayValue": "Contact"
+                },
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "Opportunity",
+                  "displayValue": "Opportunity"
+                }
+              ]
+            },
+            "workflow_steps": {
+              "displayName": "Workflow Steps",
+              "valueType": "other",
+              "providerType": "Array (WorkflowStep)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-workflows"
+        },
+        "workflow_templates": {
+          "displayName": "Workflow Templates",
+          "path": "/workflow_templates",
+          "responseKey": "workflow_templates",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "sequential": {
+              "displayName": "Sequential",
+              "valueType": "boolean"
+            },
+            "description": {
+              "displayName": "Description",
+              "valueType": "string"
+            },
+            "description_html": {
+              "displayName": "Description (HTML)",
+              "valueType": "string"
+            },
+            "shared": {
+              "displayName": "Shared",
+              "valueType": "boolean"
+            },
+            "ready": {
+              "displayName": "Ready",
+              "valueType": "boolean"
+            },
+            "workflow_milestones": {
+              "displayName": "Workflow Milestones",
+              "valueType": "other",
+              "providerType": "Array (WorkflowTemplateMilestone)"
+            },
+            "workflow_steps": {
+              "displayName": "Workflow Steps",
+              "valueType": "other",
+              "providerType": "Array (WorkflowTemplateStep)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-workflow-templates"
+        },
+        "comments": {
+          "displayName": "Comments",
+          "path": "/comments",
+          "responseKey": "comments",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "body": {
+              "displayName": "Body",
+              "valueType": "other",
+              "providerType": "Object (text, html)"
+            },
+            "resource_type": {
+              "displayName": "Resource Type",
+              "valueType": "string"
+            },
+            "resource_id": {
+              "displayName": "Resource ID",
+              "valueType": "int"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-comments"
+        },
+        "activity": {
+          "displayName": "Activity Stream",
+          "path": "/activity",
+          "responseKey": "stream_items",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "creator": {
+              "displayName": "Creator",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "created_at": {
+              "displayName": "Created At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "updated_at": {
+              "displayName": "Updated At",
+              "valueType": "datetime",
+              "readOnly": true
+            },
+            "body": {
+              "displayName": "Body",
+              "valueType": "string",
+              "providerType": "HTML"
+            },
+            "linked_to": {
+              "displayName": "Linked To",
+              "valueType": "other",
+              "providerType": "Document"
+            },
+            "icon": {
+              "displayName": "Icon",
+              "valueType": "string",
+              "readOnly": true
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-activity-stream"
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "users",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "email": {
+              "displayName": "Email",
+              "valueType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "account": {
+              "displayName": "Account",
+              "valueType": "int"
+            },
+            "excluded_from_assignments": {
+              "displayName": "Excluded From Assignments",
+              "valueType": "boolean"
+            },
+            "status": {
+              "displayName": "Status",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "active",
+                  "displayValue": "active"
+                },
+                {
+                  "value": "invited",
+                  "displayValue": "invited"
+                },
+                {
+                  "value": "inactive",
+                  "displayValue": "inactive"
+                },
+                {
+                  "value": "legacy",
+                  "displayValue": "legacy"
+                }
+              ]
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-users"
+        },
+        "teams": {
+          "displayName": "Teams",
+          "path": "/teams",
+          "responseKey": "teams",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "members": {
+              "displayName": "Members",
+              "valueType": "other",
+              "providerType": "Array (AccountUser)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-teams"
+        },
+        "user_groups": {
+          "displayName": "User Groups",
+          "path": "/user_groups",
+          "responseKey": "user_groups",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "user": {
+              "displayName": "User",
+              "valueType": "int",
+              "providerType": "nullable, populated for \"Only Me\" groups"
+            },
+            "members": {
+              "displayName": "Members",
+              "valueType": "other",
+              "providerType": "Array (user id)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-user-groups"
+        },
+        "contact_roles": {
+          "displayName": "Contact Roles",
+          "path": "/categories/contact_roles",
+          "responseKey": "contact_roles",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "available_options": {
+              "displayName": "Available Options",
+              "valueType": "other",
+              "providerType": "Array (ContactRoleOption)"
+            },
+            "removed_options": {
+              "displayName": "Removed Options",
+              "valueType": "other",
+              "providerType": "Array (RemovedContactRoleOption)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-contact-roles"
+        },
+        "custom_fields": {
+          "displayName": "Custom Fields",
+          "path": "/categories/custom_fields",
+          "responseKey": "custom_fields",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "document_type": {
+              "displayName": "Document Type",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Contact",
+                  "displayValue": "Contact"
+                },
+                {
+                  "value": "Opportunity",
+                  "displayValue": "Opportunity"
+                },
+                {
+                  "value": "Project",
+                  "displayValue": "Project"
+                },
+                {
+                  "value": "Task",
+                  "displayValue": "Task"
+                },
+                {
+                  "value": "Event",
+                  "displayValue": "Event"
+                },
+                {
+                  "value": "ManualInvestmentAccount",
+                  "displayValue": "ManualInvestmentAccount"
+                },
+                {
+                  "value": "DataFile",
+                  "displayValue": "DataFile"
+                }
+              ]
+            },
+            "field_type": {
+              "displayName": "Field Type",
+              "valueType": "string"
+            },
+            "options": {
+              "displayName": "Options",
+              "valueType": "other",
+              "providerType": "Array (label)"
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-custom-fields"
+        },
+        "tags": {
+          "displayName": "Tags",
+          "path": "/categories/tags",
+          "responseKey": "tags",
+          "fields": {
+            "id": {
+              "displayName": "ID",
+              "valueType": "int",
+              "readOnly": true
+            },
+            "type": {
+              "displayName": "Type",
+              "valueType": "string",
+              "readOnly": true
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string"
+            },
+            "document_type": {
+              "displayName": "Document Type",
+              "valueType": "singleSelect",
+              "values": [
+                {
+                  "value": "Contact",
+                  "displayValue": "Contact"
+                },
+                {
+                  "value": "Note",
+                  "displayValue": "Note"
+                }
+              ]
+            }
+          },
+          "docs": "https://dev.wealthbox.com/#topics-tags"
+        }
+      }
+    }
+  }
+}
