@@ -328,12 +328,23 @@ func (f fieldDescription) transformToFieldMetadata() common.FieldMetadata {
 		referenceTo = []string{resolveReferencedObjectName(f.ReferencedObjectType)}
 	}
 
+	// HubSpot reports a single readOnlyValue rather than separate create and update
+	// permissions, so both mirror it. Populating them anyway means a caller can ask the
+	// same question of every provider instead of special-casing the ones that answer it
+	// properly; the shape is honest, HubSpot simply has nothing finer to say.
+	writable := !f.ModificationMetadata.ReadOnlyValue
+
 	return common.FieldMetadata{
 		DisplayName:  f.Label,
 		ValueType:    valueType,
 		ProviderType: f.Type + "." + f.FieldType,
 		ReadOnly:     new(f.ModificationMetadata.ReadOnlyValue),
-		IsCustom:     new(!f.IsBuiltIn),
+		Permissions: &common.FieldPermissions{
+			Readable:   new(true),
+			Createable: new(writable),
+			Updateable: new(writable),
+		},
+		IsCustom: new(!f.IsBuiltIn),
 		// IsRequired is not known from current struct,
 		// info is acquired by different API call and set by fetchRequiredFieldsBestEffort.
 		IsRequired:  nil,

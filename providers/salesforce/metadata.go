@@ -240,11 +240,50 @@ func (f fieldResult) transformToFieldMetadata() common.FieldMetadata { //nolint:
 		ValueType:    valueType,
 		ProviderType: f.Type,
 		ReadOnly:     new(f.isReadOnly()),
+		Permissions:  f.permissions(),
 		IsCustom:     f.Custom,
 		IsRequired:   f.isRequired(),
 		Values:       values,
 		ReferenceTo:  f.getReferenceTo(),
 	}
+}
+
+// permissions reports what the running user can do with this field.
+//
+// Salesforce reports createable and updateable separately, and isReadOnly collapses them:
+// a field that is createable but not updateable -- a record type, an external id, an
+// opportunity's CloseDate on some orgs -- is not read-only, yet an update to it fails.
+// Keeping the two apart is the difference between predicting that failure and discovering
+// it in production.
+//
+// Autonumber and calculated fields are writable by no one, whatever createable says, so
+// they are reported as such.
+//
+// Readable is inferred from presence: a field describe is filtered by field-level
+// security, so a field the running user cannot read does not appear in the response at all.
+func (f fieldResult) permissions() *common.FieldPermissions {
+	if f.Createable == nil && f.Updateable == nil {
+		return &common.FieldPermissions{Readable: new(true)}
+	}
+
+	isAutonumber := f.Autonumber != nil && *f.Autonumber
+	isCalculated := f.Calculated != nil && *f.Calculated
+
+	// Salesforce populates autonumber and formula fields itself, so neither is writable by
+	// anyone whatever createable and updateable claim.
+	providerManaged := isAutonumber || isCalculated
+
+	permissions := &common.FieldPermissions{Readable: new(true)}
+
+	if f.Createable != nil {
+		permissions.Createable = new(*f.Createable && !providerManaged)
+	}
+
+	if f.Updateable != nil {
+		permissions.Updateable = new(*f.Updateable && !providerManaged)
+	}
+
+	return permissions
 }
 
 func (f fieldResult) getReferenceTo() []string {
