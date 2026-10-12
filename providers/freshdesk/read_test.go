@@ -18,6 +18,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	zeroRecords := testutils.DataFromFile(t, "empty.json")
 	mailboxes := testutils.DataFromFile(t, "mailboxes.json")
+	tickets := testutils.DataFromFile(t, "tickets.json")
+	settings := testutils.DataFromFile(t, "settings.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -86,6 +88,70 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					Id: "1",
 				}},
 				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// Settings answers with a lone object, which stands for a single record.
+			Name:  "Singleton object is read as one record",
+			Input: common.ReadParams{ObjectName: "settings", Fields: connectors.Fields("primary_language")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/v2/settings/helpdesk"),
+				Then:  mockserver.Response(http.StatusOK, settings),
+			}.Server(),
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"primary_language": "en",
+					},
+					Raw: map[string]any{
+						"primary_language":      "en",
+						"supported_languages":   []any{},
+						"portal_languages":      []any{},
+						"help_widget_languages": []any{},
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// Freshdesk points at the page that follows through the Link header.
+			Name:  "Next page is read from the Link header",
+			Input: common.ReadParams{ObjectName: "tickets", Fields: connectors.Fields("id")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/v2/tickets"),
+				Then: mockserver.ResponseChainedFuncs(
+					mockserver.Header("Link",
+						`<https://ampersand.freshdesk.com/api/v2/tickets?per_page=1&page=2>; rel="next"`),
+					mockserver.Response(http.StatusOK, tickets),
+				),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     2,
+				NextPage: "https://ampersand.freshdesk.com/api/v2/tickets?per_page=1&page=2",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// The header is absent on the last page, which is how a read ends.
+			Name:  "Read is done when no Link header is sent",
+			Input: common.ReadParams{ObjectName: "tickets", Fields: connectors.Fields("id")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/v2/tickets"),
+				Then:  mockserver.Response(http.StatusOK, tickets),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     2,
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},

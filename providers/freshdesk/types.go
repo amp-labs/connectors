@@ -49,9 +49,11 @@ var writeSupportedObjects = datautils.NewSet( //nolint:gochecknoglobals
 
 // objectResourcePath represents a mapping of an object to it's read/write resource.
 var objectResourcePath = map[string]string{ //nolint:gochecknoglobals
-	"mailboxes":     "email/mailboxes",
-	"settings":      "settings/helpdesk",
-	"skills":        "admin/skills",
-	"thread":        "collaboration/threads",
-	"ticket-fields": "admin/ticket_fields",
+	"company-fields": "company_fields",
+	"contact-fields": "contact_fields",
+	"mailboxes":      "email/mailboxes",
+	"settings":       "settings/helpdesk",
+	"skills":         "admin/skills",
+	"thread":         "collaboration/threads",
+	"ticket-fields":  "admin/ticket_fields",
 }
