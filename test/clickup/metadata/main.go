@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"os"
 
 	"github.com/amp-labs/connectors/test/clickup"
@@ -15,10 +14,10 @@ func main() {
 	conn := clickup.GetClickupConnector(ctx) // nolint
 
 	// nolint
-	m, err := conn.ListObjectMetadata(ctx, []string{"team"})
+	result, err := conn.ListObjectMetadata(ctx, []string{"channels", "groups", "tasks", "teams"})
 	if err != nil {
-		log.Fatal(err)
+		utils.Fail("error reading from connector", "error", err)
 	}
 
-	utils.DumpJSON(m, os.Stdout)
+	utils.DumpJSON(result, os.Stdout)
 }
