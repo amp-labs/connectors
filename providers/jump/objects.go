@@ -69,3 +69,23 @@ var optionalFieldComplexity = map[string]map[string]int{
 		"scimMetadata": 9,
 	},
 }
+
+// objectMutations names the mutations that create, update and delete records of an object.
+type objectMutations struct {
+	create string
+	update string
+	delete string
+}
+
+// writeMutations lists the objects Jump can write. Only contacts have create, update and delete mutations,
+// the remaining mutations (uploadDocument, sendNotetaker, deactivateUser) are actions rather than record writes.
+// https://my.jumpapp.com/enterprise/documentation/reference?tab=mutations
+//
+//nolint:gochecknoglobals
+var writeMutations = map[string]objectMutations{
+	contactsObjectName: {
+		create: "createContact",
+		update: "updateContact",
+		delete: "deleteContact",
+	},
+}

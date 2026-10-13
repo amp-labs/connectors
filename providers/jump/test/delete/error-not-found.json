@@ -1,0 +1,17 @@
+{
+  "data": {
+    "deleteContact": null
+  },
+  "errors": [
+    {
+      "message": "Contact not found",
+      "path": ["deleteContact"],
+      "extensions": {
+        "code": "CONTACT_NOT_FOUND",
+        "details": {
+          "id": "con_7c1e2f0a9b3d4e5f6a7"
+        }
+      }
+    }
+  ]
+}

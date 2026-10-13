@@ -1,0 +1,17 @@
+{
+  "data": {
+    "createContact": null
+  },
+  "errors": [
+    {
+      "message": "Email has invalid format",
+      "path": ["createContact"],
+      "extensions": {
+        "code": "VALIDATION_FAILED",
+        "details": {
+          "email": ["has invalid format"]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "query": "mutation DeleteContact($id: ID!, $userId: ID) {\n  deleteContact(id: $id, userId: $userId) {\n    success\n  }\n}\n",
+  "variables": {
+    "id": "con_7c1e2f0a9b3d4e5f6a7",
+    "userId": "usr_42fe28110261430cadc"
+  }
+}

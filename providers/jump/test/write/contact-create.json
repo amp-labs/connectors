@@ -1,0 +1,15 @@
+{
+  "data": {
+    "createContact": {
+      "id": "con_7c1e2f0a9b3d4e5f6a7",
+      "type": "INDIVIDUAL",
+      "status": "CONFIRMED",
+      "insertedAt": "2026-10-12T10:15:30.123456Z",
+      "updatedAt": "2026-10-12T10:15:30.123456Z",
+      "name": "amp-test Contact",
+      "email": "amp-test-001@example.com",
+      "contactInfo": [],
+      "integrationReferences": []
+    }
+  }
+}
