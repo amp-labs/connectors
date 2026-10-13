@@ -9,17 +9,32 @@ import (
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	[]interpreter.FormatTemplate{
 		{
+			MustKeys: []string{"ECODE"},
+			Template: func() interpreter.ErrorDescriptor { return &CodeError{} },
+		},
+		{
 			MustKeys: nil,
-			Template: func() interpreter.ErrorDescriptor { return &ResponseError{} },
+			Template: func() interpreter.ErrorDescriptor { return &GenericError{} },
 		},
 	}...,
 )
 
-type ResponseError struct {
+type CodeError struct {
 	Err  string `json:"err"`
 	Code string `json:"ECODE"`
 }
 
-func (r ResponseError) CombineErr(base error) error {
-	return fmt.Errorf("%w: %v: %v", base, r.Code, r.Err)
+func (e CodeError) CombineErr(base error) error {
+	return fmt.Errorf("%w: %v: %v", base, e.Code, e.Err)
+}
+
+type GenericError struct {
+	Status    int    `json:"status"`
+	Message   string `json:"message"`
+	TraceId   int    `json:"trace_id"`
+	Timestamp int64  `json:"timestamp"`
+}
+
+func (e GenericError) CombineErr(base error) error {
+	return fmt.Errorf("%w: %v", base, e.Message)
 }
