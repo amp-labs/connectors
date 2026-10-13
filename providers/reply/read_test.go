@@ -2,6 +2,7 @@ package reply
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -23,6 +24,19 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseSequences := testutils.DataFromFile(t, "read/sequences.json")
 	errorValidation := testutils.DataFromFile(t, "read/err-validation.json")
 	errorUnauthorized := testutils.DataFromFile(t, "read/err-unauthorized.json")
+
+	serveContacts := func(body string) *httptest.Server {
+		return mockserver.Switch{
+			Setup: mockserver.ContentJSON(),
+			Cases: mockserver.Cases{{
+				If:   mockcond.Path("/v3/custom-fields"),
+				Then: mockserver.ResponseString(http.StatusOK, `[]`),
+			}, {
+				If:   mockcond.Path("/v3/contacts"),
+				Then: mockserver.ResponseString(http.StatusOK, body),
+			}},
+		}.Server()
+	}
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -150,53 +164,78 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Sequences incremental read sends createdAfter",
+			Name: "Sequences have no modification time so Since neither reaches Reply nor drops records",
 			Input: common.ReadParams{
 				ObjectName: "sequences",
 				Fields:     connectors.Fields("name"),
-				Since:      time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC),
+				Since:      time.Date(2026, 9, 8, 13, 0, 0, 0, time.UTC),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v3/sequences"),
-					mockcond.QueryParam("createdAfter", "2026-01-02T03:04:05Z"),
+					mockcond.QueryParamsMissing("createdAfter"),
 				},
-				Then: mockserver.ResponseString(http.StatusOK, `{"items":[],"hasMore":false}`),
+				Then: mockserver.Response(http.StatusOK, responseSequences),
 			}.Server(),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
-				Rows: 0,
+				Rows: 2,
 				Done: true,
 			},
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Sequences Since and Until window filters connector-side",
+			Name: "Contacts Since filters on lastModifiedAt, keeps records without one and continues pagination",
 			Input: common.ReadParams{
-				ObjectName: "sequences",
-				Fields:     connectors.Fields("name"),
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
 				Since:      time.Date(2026, 9, 8, 12, 0, 0, 0, time.UTC),
-				// Between the two records' created times: only the earlier
-				// sequence (12:15:35) falls inside the window.
-				Until: time.Date(2026, 9, 8, 13, 0, 0, 0, time.UTC),
 			},
-			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v3/sequences"),
-				Then:  mockserver.Response(http.StatusOK, responseSequences),
-			}.Server(),
+			Server: serveContacts(`{"items":[
+				{"id":1,"email":"a@example.invalid","lastModifiedAt":"2026-09-08T11:35:58.57"},
+				{"id":2,"email":"b@example.invalid","lastModifiedAt":"2026-09-08T12:08:22.58"},
+				{"id":3,"email":"c@example.invalid","lastModifiedAt":null}
+			],"hasMore":true}`),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{
+					{
+						Id:     "2",
+						Fields: map[string]any{"email": "b@example.invalid"},
+						Raw:    map[string]any{"lastModifiedAt": "2026-09-08T12:08:22.58"},
+					},
+					{
+						Id:     "3",
+						Fields: map[string]any{"email": "c@example.invalid"},
+						Raw:    map[string]any{"lastModifiedAt": nil},
+					},
+				},
+				NextPage: testconn.URLTestServer + "/v3/contacts?skip=100&top=100",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Contacts Since and Until window is inclusive on both ends",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+				Since:      time.Date(2026, 9, 8, 11, 35, 58, 570000000, time.UTC),
+				Until:      time.Date(2026, 9, 8, 12, 0, 0, 0, time.UTC),
+			},
+			Server: serveContacts(`{"items":[
+				{"id":1,"email":"a@example.invalid","lastModifiedAt":"2026-09-08T11:35:58.57"},
+				{"id":2,"email":"b@example.invalid","lastModifiedAt":"2026-09-08T12:08:22.58"}
+			],"hasMore":false}`),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
-					Id: "1768686",
-					Fields: map[string]any{
-						"name": "Deep Connector Test Sequence",
-					},
-					Raw: map[string]any{
-						"created": "2026-09-08T12:15:35.52+00:00",
-					},
+					Id:     "1",
+					Fields: map[string]any{"email": "a@example.invalid"},
+					Raw:    map[string]any{"lastModifiedAt": "2026-09-08T11:35:58.57"},
 				}},
 				Done: true,
 			},

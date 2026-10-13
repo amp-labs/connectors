@@ -42,27 +42,26 @@ func main() {
 		Fields:     connectors.Fields("name", "timezoneId"),
 	})
 
-	// Incremental read: only sequences support a provider-side time filter.
+	// Contacts are filtered connector-side: a future Since yields zero records.
 	readObject(ctx, conn, common.ReadParams{
-		ObjectName: "sequences",
-		Fields:     connectors.Fields("name", "created"),
-		Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
-	})
-
-	// Since in the future must yield zero records, proving the filter applies.
-	readObject(ctx, conn, common.ReadParams{
-		ObjectName: "sequences",
-		Fields:     connectors.Fields("name"),
+		ObjectName: "contacts",
+		Fields:     connectors.Fields("email", "lastModifiedAt"),
 		Since:      time.Now().Add(24 * time.Hour),
 	})
 
-	// Until has no provider-side parameter; the window is enforced
-	// connector-side, so a narrow window returns only the older sequence.
+	// A window returns only the contacts modified inside it.
+	readObject(ctx, conn, common.ReadParams{
+		ObjectName: "contacts",
+		Fields:     connectors.Fields("email", "lastModifiedAt"),
+		Since:      time.Date(2026, 9, 8, 11, 0, 0, 0, time.UTC),
+		Until:      time.Date(2026, 9, 8, 12, 0, 0, 0, time.UTC),
+	})
+
+	// Sequences are a full read: a future Since still returns every sequence.
 	readObject(ctx, conn, common.ReadParams{
 		ObjectName: "sequences",
 		Fields:     connectors.Fields("name", "created"),
-		Since:      time.Date(2026, 9, 8, 12, 0, 0, 0, time.UTC),
-		Until:      time.Date(2026, 9, 8, 13, 0, 0, 0, time.UTC),
+		Since:      time.Now().Add(24 * time.Hour),
 	})
 }
 
