@@ -1,0 +1,26 @@
+{
+  "data": [
+    {
+      "creator": "308680077",
+      "archived": null,
+      "chat_room_category": null,
+      "id": "2kxv6e49-92",
+      "type": "ASK_AI",
+      "visibility": "PRIVATE",
+      "parent": {
+        "id": "90122172553",
+        "type": 12
+      },
+      "created_at": 1791576886024,
+      "updated_at": 1791576886024,
+      "latest_comment_at": 1791576886312,
+      "room_updated_at": 1791576886544,
+      "workspace_id": "90122172553",
+      "links": {
+        "members": "/api/v3/workspaces/90122172553/chat/channels/2kxv6e49-92/members",
+        "followers": "/api/v3/workspaces/90122172553/chat/channels/2kxv6e49-92/followers"
+      }
+    }
+  ],
+  "next_cursor": "eyJzdGFydFRpbWUiOiIxNzkxNTc2ODg2MzEyIiwic3RhcnRJZCI6IjJreHY2ZTQ5LTkyIn0"
+}
