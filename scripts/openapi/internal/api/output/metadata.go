@@ -1,7 +1,9 @@
 package output
 
 import (
+	"encoding/json"
 	"log/slog"
+	"maps"
 	"path/filepath"
 
 	"github.com/amp-labs/connectors/common"
@@ -14,26 +16,35 @@ const (
 	ObjectMetadataZipFile = "objectsMetadata.json.gz"
 )
 
-func WriteMetadata(dirName string, pipe pipeline.Pipeline[spec.Schema]) error {
-	return writeMetadata(dirName, ObjectMetadataFile, pipe)
+func WriteMetadata(dirName string, pipe pipeline.Pipeline[spec.Schema], options ...MetadataOption) error {
+	return writeMetadata(dirName, ObjectMetadataFile, pipe, options...)
 }
 
-func WriteZippedMetadata(dirName string, pipe pipeline.Pipeline[spec.Schema]) error {
-	return writeMetadata(dirName, ObjectMetadataZipFile, pipe)
+func WriteZippedMetadata(dirName string, pipe pipeline.Pipeline[spec.Schema], options ...MetadataOption) error {
+	return writeMetadata(dirName, ObjectMetadataZipFile, pipe, options...)
 }
 
-func writeMetadata(dirName, fileName string, pipe pipeline.Pipeline[spec.Schema]) error {
+func writeMetadata(dirName, fileName string, pipe pipeline.Pipeline[spec.Schema], options ...MetadataOption) error {
 	if err := validate(pipe); err != nil {
+		return err
+	}
+
+	params := createMetadataParams(options)
+
+	metadata, err := extractObjectMetadata(params, pipe)
+	if err != nil {
 		return err
 	}
 
 	return Write(
 		filepath.Join(dirName, fileName),
-		extractObjectMetadata(pipe),
+		metadata,
 	)
 }
 
-func extractObjectMetadata(pipe pipeline.Pipeline[spec.Schema]) map[string]objectMetadata {
+func extractObjectMetadata(params metadataParams,
+	pipe pipeline.Pipeline[spec.Schema],
+) (map[string]objectMetadata, error) {
 	result := make(map[string]objectMetadata)
 
 	for _, object := range pipe.List() {
@@ -64,7 +75,25 @@ func extractObjectMetadata(pipe pipeline.Pipeline[spec.Schema]) map[string]objec
 		}
 	}
 
-	return result
+	if len(params.manualObjects) > 0 {
+		manualObjects, err := parseManualObjects(params.manualObjects)
+		if err != nil {
+			return nil, err
+		}
+
+		maps.Copy(result, manualObjects)
+	}
+
+	return result, nil
+}
+
+func parseManualObjects(data []byte) (map[string]objectMetadata, error) {
+	var result map[string]objectMetadata
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 // This matches common.ObjectMetadata.
@@ -128,4 +157,34 @@ func getFieldValueOptions(field spec.Field) []fieldValue {
 	}
 
 	return values
+}
+
+type metadataParams struct {
+	manualObjects []byte
+}
+
+// MetadataOption configures how object metadata is written to a file.
+type MetadataOption func(params *metadataParams)
+
+func createMetadataParams(opts []MetadataOption) metadataParams {
+	var params metadataParams
+	for _, opt := range opts {
+		opt(&params)
+	}
+
+	return params
+}
+
+// WithManualObjects adds manually defined object metadata to the generated
+// metadata before writing it to a file.
+//
+// The provided data must be a JSON object mapping object names to their
+// metadata. Manual entries take precedence over generated entries with the
+// same object name.
+//
+// Returns an error if the provided JSON cannot be parsed.
+func WithManualObjects(manualObjects []byte) MetadataOption {
+	return func(params *metadataParams) {
+		params.manualObjects = manualObjects
+	}
 }
