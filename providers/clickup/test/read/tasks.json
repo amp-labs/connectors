@@ -1,0 +1,256 @@
+{
+  "tasks": [
+    {
+      "id": "869ff7zem",
+      "custom_id": null,
+      "custom_item_id": 0,
+      "name": "Brand new task from Dashboard",
+      "text_content": "Some important description text should go here.",
+      "description": "Some important description text should go here.",
+      "status": {
+        "status": "to do",
+        "id": "sc901223163439_bwrpZqzA",
+        "color": "#87909e",
+        "type": "open",
+        "orderindex": 0
+      },
+      "orderindex": "10001791596832.81568700000000000000000000000000",
+      "date_created": "1791596832715",
+      "date_updated": "1791596832772",
+      "date_closed": null,
+      "date_done": null,
+      "archived": false,
+      "creator": {},
+      "assignees": [],
+      "group_assignees": [],
+      "watchers": [],
+      "checklists": [],
+      "tags": [],
+      "parent": null,
+      "top_level_parent": null,
+      "priority": null,
+      "due_date": null,
+      "start_date": null,
+      "points": null,
+      "time_estimate": null,
+      "custom_fields": [
+        {
+          "id": "093ce8b5-2e3c-4e15-9706-2772ac57a0ae",
+          "name": "Age",
+          "type": "number",
+          "type_config": {
+            "use_grouping": true,
+            "number_format": "en-US"
+          },
+          "date_created": "1791596818271",
+          "hide_from_guests": false,
+          "value": "21",
+          "value_richtext": null,
+          "required": false
+        },
+        {
+          "id": "87aa2a7f-2984-435f-99d5-131a2c257b0b",
+          "name": "WIP",
+          "type": "checkbox",
+          "type_config": {},
+          "date_created": "1791596707298",
+          "hide_from_guests": false,
+          "value": "true",
+          "value_richtext": null,
+          "required": false
+        }
+      ],
+      "dependencies": [],
+      "linked_tasks": [],
+      "locations": [],
+      "team_id": "90122172553",
+      "url": "https://app.clickup.com/t/869ff7zem",
+      "sharing": {
+      },
+      "permission_level": "create",
+      "list": {
+        "id": "901223163439",
+        "name": "Personal List",
+        "access": true
+      },
+      "project": {
+        "id": "901215544343",
+        "name": "hidden",
+        "hidden": true,
+        "access": true
+      },
+      "folder": {
+        "id": "901215544343",
+        "name": "hidden",
+        "hidden": true,
+        "access": true
+      },
+      "space": {
+        "id": "901210839451"
+      }
+    },
+    {
+      "id": "869ff5pu0",
+      "custom_id": null,
+      "custom_item_id": 0,
+      "name": "Server Migration to AWS Central",
+      "text_content": "",
+      "description": "To be done soon.",
+      "status": {
+        "status": "waiting",
+        "id": "sc901223163455_TIsY2KS9",
+        "color": "#f44336",
+        "type": "custom",
+        "orderindex": 3
+      },
+      "orderindex": "10001791576902.36440400000000000000000000000000",
+      "date_created": "1791576902337",
+      "date_updated": "1791597816437",
+      "date_closed": null,
+      "date_done": null,
+      "archived": false,
+      "creator": {
+      },
+      "assignees": [],
+      "group_assignees": [],
+      "watchers": [
+      ],
+      "checklists": [],
+      "tags": [],
+      "parent": null,
+      "top_level_parent": null,
+      "priority": {},
+      "due_date": "1793383200000",
+      "start_date": null,
+      "points": null,
+      "time_estimate": null,
+      "custom_fields": [
+        {
+          "id": "c458548e-fdae-471a-86b9-13ec6967fb42",
+          "name": "Documentation Link",
+          "type": "url",
+          "type_config": {},
+          "date_created": "1791576901702",
+          "hide_from_guests": false,
+          "value": "https://developer.clickup.com/reference/getwebhooks",
+          "value_richtext": "",
+          "required": false
+        },
+        {
+          "id": "75c3d6c8-2df9-4a33-8966-a5c1cf314552",
+          "name": "Next Step Summary",
+          "type": "short_text",
+          "type_config": {
+            "ai": {
+              "prompt": "Summarize the most recent task comments and activity into a concise one-sentence next action.",
+              "source": "custom"
+            }
+          },
+          "date_created": "1791576901703",
+          "hide_from_guests": false,
+          "required": false
+        },
+        {
+          "id": "b835acc4-0a53-49ff-a18b-9b3fd58419bb",
+          "name": "Request Type",
+          "type": "drop_down",
+          "type_config": {
+            "sorting": "manual",
+            "options": [
+              {
+                "id": "070848f1-9dc0-4bbd-bb89-84f99823f3db",
+                "name": "Support",
+                "color": "#4A90E2",
+                "orderindex": 0
+              },
+              {
+                "id": "fb1b802a-70ab-4784-a36d-2fe0f0bb906b",
+                "name": "Hardware",
+                "color": "#50E3C2",
+                "orderindex": 1
+              },
+              {
+                "id": "8a700f8d-45cb-4297-a834-2582e2a7390c",
+                "name": "Software",
+                "color": "#9013FE",
+                "orderindex": 2
+              },
+              {
+                "id": "130e38d2-f5d9-4587-b0e1-cb7c1f8f0c6e",
+                "name": "Security",
+                "color": "#D0021B",
+                "orderindex": 3
+              },
+              {
+                "id": "d5402b29-423a-48d5-8f66-e47c5033b16f",
+                "name": "Vendor Management",
+                "color": "#F5A623",
+                "orderindex": 4
+              },
+              {
+                "id": "9b560b4b-e26a-4e1f-a32c-531eba7a0111",
+                "name": "Infrastructure",
+                "color": "#7ED321",
+                "orderindex": 5
+              }
+            ]
+          },
+          "date_created": "1791576901699",
+          "hide_from_guests": false,
+          "required": false
+        },
+        {
+          "id": "623050ee-bc9e-454f-a079-71da8eee60f8",
+          "name": "Requester",
+          "type": "users",
+          "type_config": {
+            "single_user": true,
+            "include_groups": false,
+            "include_guests": false,
+            "include_team_members": false
+          },
+          "date_created": "1791576901696",
+          "hide_from_guests": false,
+          "required": false
+        },
+        {
+          "id": "0f731309-507d-46d7-bd3e-bf4561da4c7b",
+          "name": "System/Vendor",
+          "type": "short_text",
+          "type_config": {},
+          "date_created": "1791576901704",
+          "hide_from_guests": false,
+          "required": false
+        }
+      ],
+      "dependencies": [],
+      "linked_tasks": [],
+      "locations": [],
+      "team_id": "90122172553",
+      "url": "https://app.clickup.com/t/869ff5pu0",
+      "sharing": {},
+      "permission_level": "create",
+      "list": {
+        "id": "901223163455",
+        "name": "IT CRM Hub",
+        "access": true
+      },
+      "project": {
+        "id": "901215544359",
+        "name": "hidden",
+        "hidden": true,
+        "access": true
+      },
+      "folder": {
+        "id": "901215544359",
+        "name": "hidden",
+        "hidden": true,
+        "access": true
+      },
+      "space": {
+        "id": "901210839446"
+      }
+    }
+  ],
+  "last_page": false
+}

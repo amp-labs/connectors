@@ -1,0 +1,63 @@
+{
+  "views": {
+    "displayName": "Views",
+    "path": "/v2/team/{workspace_id}/view",
+    "fields": {
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "list": {
+        "displayName": "List",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "parent": {
+        "displayName": "Parent",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "grouping": {
+        "displayName": "Grouping",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "divide": {
+        "displayName": "Divide",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "sorting": {
+        "displayName": "Sorting",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "filters": {
+        "displayName": "Filters",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "columns": {
+        "displayName": "Columns",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "team_sidebar": {
+        "displayName": "Team Sidebar",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "settings": {
+        "displayName": "Settings",
+        "valueType": "other",
+        "providerType": "object"
+      }
+    }
+  }
+}

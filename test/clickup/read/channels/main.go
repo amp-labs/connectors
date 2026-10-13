@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"log/slog"
-	"os"
 	"os/signal"
 	"syscall"
 
@@ -11,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	connTest "github.com/amp-labs/connectors/test/clickup"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
 func main() {
@@ -23,14 +22,9 @@ func main() {
 
 	conn := connTest.GetClickupConnector(ctx)
 
-	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "team",
-		Fields:     connectors.Fields("id", "name", "color", "avatar"),
+	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
+		ObjectName: "channels",
+		Fields:     connectors.Fields("id", "latest_comment_at", "type"),
+		PageSize:   3,
 	})
-	if err != nil {
-		utils.Fail("error reading from Clickup", "error", err)
-	}
-
-	slog.Info("Reading team..")
-	utils.DumpJSON(res, os.Stdout)
 }
