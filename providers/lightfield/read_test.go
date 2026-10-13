@@ -259,7 +259,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				If: mockcond.And{
 					mockcond.Path("/v1/members"),
 					mockcond.QueryParam("offset", "0"),
-					mockcond.QueryParamsMissing("$updatedAt[greaterThan]", "$updatedAt[lessThan]"),
+					mockcond.QueryParamsMissing("$updatedAt[greaterThan]", "$updatedAt[lessThanOrEqual]"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseMembers),
 			}.Server(),
@@ -296,8 +296,11 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/v1/members"),
-				Then:  mockserver.Response(http.StatusOK, responseMembers),
+				If: mockcond.And{
+					mockcond.Path("/v1/members"),
+					mockcond.QueryParamsMissing("$updatedAt[greaterThan]", "$updatedAt[lessThanOrEqual]"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseMembers),
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
