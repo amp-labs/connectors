@@ -45,11 +45,13 @@ object this connector reads; `user` is not) and HAS_MANY ones as `other`, being 
 
 ## Incremental read
 
-The list endpoints have no updated-since filter: filters apply to entries of `fields`, and
-`updatedAt` is a record property. Lists are sorted by `createdAt`, newest first. So every read
-fetches all pages and the connector keeps records whose `updatedAt` (or `createdAt` when
-`updatedAt` is null) is within `[Since, Until]`. Lists are served from a search index and may
-lag recent writes, per the docs.
+Accounts, contacts and opportunities filter on the server: `Since` is sent as
+`$updatedAt[greaterThan]` and `Until` as `$updatedAt[lessThan]` (RFC 3339, UTC), and both carry
+over to every page ([List methods](https://docs.lightfield.app/using-the-api/list-endpoints#filtering)).
+The `$` is part of the key; `updatedAt[greaterThan]` returns 400 `unknown_field`.
+`/v1/members` rejects filters (400 `unrecognized_keys`), so members are read in full and the
+connector keeps those whose `updatedAt` (or `createdAt` when null) is within `[Since, Until]`.
+List results come from a search index that may lag recent changes, so a read can miss them.
 
 ## Rate limits
 

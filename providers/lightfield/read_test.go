@@ -132,7 +132,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			Name: "Incremental read keeps records updated within the window and keeps paging",
+			Name: "Incremental read of accounts sends updatedAt filters and returns every record it gets",
 			Input: common.ReadParams{
 				ObjectName: "accounts",
 				Fields:     connectors.Fields("$name"),
@@ -146,19 +146,53 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					mockcond.Path("/v1/accounts"),
 					mockcond.QueryParam("limit", "2"),
 					mockcond.QueryParam("offset", "0"),
+					mockcond.QueryParam("$updatedAt[greaterThan]", "2026-09-01T00:00:00Z"),
+					mockcond.QueryParam("$updatedAt[lessThan]", "2026-09-21T00:00:00Z"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseAccountsFirstPage),
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 1,
+				// The provider filters; acc_1 (never updated) is not dropped by the connector.
+				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Id:     "acc_2",
 					Fields: map[string]any{"$name": "Globex"},
 					Raw:    map[string]any{"id": "acc_2"},
+				}, {
+					Id:     "acc_1",
+					Fields: map[string]any{"$name": "Acme Corp"},
+					Raw:    map[string]any{"id": "acc_1"},
 				}},
-				NextPage: testconn.URLTestServer + "/v1/accounts?limit=2&offset=2",
-				Done:     false,
+				NextPage: testconn.URLTestServer + "/v1/accounts?" +
+					"%24updatedAt%5BgreaterThan%5D=2026-09-01T00%3A00%3A00Z&" +
+					"%24updatedAt%5BlessThan%5D=2026-09-21T00%3A00%3A00Z&limit=2&offset=2",
+				Done: false,
+			},
+		},
+		{
+			Name: "Incremental read of members sends no filters and filters records locally",
+			Input: common.ReadParams{
+				ObjectName: "members",
+				Fields:     connectors.Fields("$email"),
+				Since:      time.Date(2026, 3, 1, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/members"),
+					mockcond.QueryParam("offset", "0"),
+					mockcond.QueryParamsMissing("$updatedAt[greaterThan]", "$updatedAt[lessThan]"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseMembers),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				// mem_1 was last updated on 2026-02-01, before Since.
+				Rows:     0,
+				Data:     []common.ReadResultRow{},
+				NextPage: "",
+				Done:     true,
 			},
 		},
 		{

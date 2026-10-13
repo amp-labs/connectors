@@ -33,6 +33,15 @@ var objectsWithDefinitions = datautils.NewSet( // nolint:gochecknoglobals
 	objectNameOpportunities,
 )
 
+// Objects whose list endpoint filters on `$updatedAt[greaterThan|lessThan]`.
+// /v1/members documents only limit and offset and rejects filters (400 unrecognized_keys).
+// https://docs.lightfield.app/using-the-api/list-endpoints#filtering
+var objectsWithUpdatedAtFilter = datautils.NewSet( // nolint:gochecknoglobals
+	objectNameAccounts,
+	objectNameContacts,
+	objectNameOpportunities,
+)
+
 // SupportedReadObjects lists the objects this connector reads.
 func SupportedReadObjects() []string {
 	return slices.Clone(supportedObjects)

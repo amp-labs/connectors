@@ -52,8 +52,9 @@ func makeNextPageFunc(requestURL *url.URL) common.NextPageFunc {
 }
 
 // makeUpdatedAtFilter keeps records whose last update falls within [Since, Until].
-// Lists are sorted by createdAt, newest first, and offer no updated-at filter, so every page
-// must be read and paging can never stop early: an old record may have been updated recently.
+// It serves /v1/members, which rejects filter query parameters (400 unrecognized_keys).
+// Lists are sorted by createdAt, newest first, so every page must be read and paging can never
+// stop early: an old record may have been updated recently.
 // updatedAt is nullable; a record that was never updated is placed at its createdAt.
 func makeUpdatedAtFilter(nextPage common.NextPageFunc) common.RecordsFilterFunc {
 	boundary := readhelper.NewTimeBoundary()
