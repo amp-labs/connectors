@@ -170,7 +170,15 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 				If:    mockcond.Path("/v1/accounts/definitions"),
 				Then:  mockserver.Response(http.StatusForbidden, responseForbidden),
 			}.Server(),
-			Comparator: testconn.ComparatorSubsetMetadata,
+			// accounts must not come back with its catalog-only fields.
+			Comparator: func(serverURL string, actual, expected *common.ListObjectMetadataResult) *testutils.CompareResult {
+				result := testconn.ComparatorSubsetMetadata(serverURL, actual, expected)
+				if _, ok := actual.Result["accounts"]; ok {
+					result.AddDiff("Result[accounts] exists, but the object failed")
+				}
+
+				return result
+			},
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"members": {

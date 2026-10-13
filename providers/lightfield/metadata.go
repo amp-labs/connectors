@@ -5,6 +5,8 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/objectcatalog"
 	"github.com/amp-labs/connectors/providers/lightfield/internal/metadata"
 )
 
@@ -21,23 +23,30 @@ func (c *Connector) ListObjectMetadata(
 		return nil, err
 	}
 
-	result := selection.Result()
+	failures := make(map[string]error)
 
-	for objectName, objectMetadata := range result.Result {
+	for _, objectName := range datautils.NewSetFromList(objectNames).List() {
 		if !objectsWithDefinitions.Has(objectName) {
 			continue
 		}
 
 		definitions, err := c.fetchDefinitions(ctx, objectName)
 		if err != nil {
-			delete(result.Result, objectName)
-			result.AppendError(objectName, err)
+			failures[objectName] = err
 
 			continue
 		}
 
-		definitions.addTo(&objectMetadata)
-		result.Result[objectName] = objectMetadata
+		definitions.addTo(selection, objectName)
+	}
+
+	result := selection.Result()
+
+	// Selection can only add fields, not drop an object or record an error, so an object whose
+	// definitions call failed is moved from Result to Errors here instead of returning partial fields.
+	for objectName, err := range failures {
+		delete(result.Result, objectName)
+		result.AppendError(objectName, err)
 	}
 
 	return result, nil
@@ -108,11 +117,11 @@ var objectNameByType = map[string]string{ // nolint:gochecknoglobals
 	"opportunity": objectNameOpportunities,
 }
 
-func (d definitionsResponse) addTo(objectMetadata *common.ObjectMetadata) {
+func (d definitionsResponse) addTo(selection objectcatalog.Selection, objectName string) {
 	for key, definition := range d.FieldDefinitions {
 		valueType, values := definition.valueType()
 
-		objectMetadata.AddFieldMetadata(key, common.FieldMetadata{
+		selection.AddField(objectName, key, common.FieldMetadata{
 			DisplayName:  displayName(definition.Label, key),
 			ValueType:    valueType,
 			ProviderType: definition.ValueType,
@@ -125,11 +134,11 @@ func (d definitionsResponse) addTo(objectMetadata *common.ObjectMetadata) {
 	for key, definition := range d.RelationshipDefinitions {
 		// ReferenceTo stays empty for targets this connector does not read, such as `user`.
 		var referenceTo []string
-		if objectName, ok := objectNameByType[definition.ObjectType]; ok {
-			referenceTo = []string{objectName}
+		if target, ok := objectNameByType[definition.ObjectType]; ok {
+			referenceTo = []string{target}
 		}
 
-		objectMetadata.AddFieldMetadata(key, common.FieldMetadata{
+		selection.AddField(objectName, key, common.FieldMetadata{
 			DisplayName:  displayName(definition.Label, key),
 			ValueType:    relationshipValueType(definition.Cardinality),
 			ProviderType: definition.Cardinality,
