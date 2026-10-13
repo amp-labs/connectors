@@ -8,8 +8,10 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/clickup/internal/metadata"
@@ -18,6 +20,8 @@ import (
 var (
 	_ connectors.ObjectMetadataConnector = (*Connector)(nil)
 	_ connectors.ReadConnector           = (*Connector)(nil)
+	_ connectors.WriteConnector          = (*Connector)(nil)
+	_ connectors.DeleteConnector         = (*Connector)(nil)
 )
 
 type Connector struct {
@@ -30,6 +34,8 @@ type Connector struct {
 	// supported operations
 	components.SchemaProvider
 	components.Reader
+	components.Writer
+	components.Deleter
 
 	// Workspace is used to resolve the majority of Objects.
 	// ClickUp API v3 uses term workspace_id while v2 uses team_id
@@ -65,6 +71,28 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 		},
 	)
 
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
+
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
+
 	return connector, nil
 }
 
@@ -77,6 +105,18 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	path, err := metadata.Catalog.ReadPathWithIds(objectName,
 		httpkit.PathIdentifier{Name: "workspace_id", Value: c.workspace},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return urlbuilder.New(c.ProviderInfo().BaseURL, path)
+}
+
+func (c *Connector) getWriteDeleteURL(pathTemplate string, recordId string) (*urlbuilder.URL, error) {
+	path, err := httpkit.ResolveUrlPathTemplate(pathTemplate,
+		httpkit.PathIdentifier{Name: "workspace_id", Value: c.workspace},
+		httpkit.PathIdentifier{Name: "record_id", Value: recordId},
 	)
 	if err != nil {
 		return nil, err
