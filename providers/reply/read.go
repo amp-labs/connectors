@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/reply/metadata"
 	"github.com/spyzhov/ajson"
@@ -19,9 +18,21 @@ const (
 	// Reply accepts up to 1000 records per page (default 25).
 	// https://docs.reply.io/api-reference/sequences/list-all-sequences
 	defaultPageSize = 100
-
-	objectSequences = "sequences"
 )
+
+// incrementalTimeFields maps an object to its modification-time field; every
+// other object is a full read.
+// https://docs.reply.io/api-reference/contacts/list-all-contacts
+//
+//nolint:gochecknoglobals
+var incrementalTimeFields = map[string]string{
+	"contacts": "lastModifiedAt",
+}
+
+// recordTimeLayouts: contacts return zone-less UTC timestamps, other objects RFC 3339.
+//
+//nolint:gochecknoglobals
+var recordTimeLayouts = []string{time.RFC3339, "2006-01-02T15:04:05"}
 
 // Objects whose list endpoint wraps records in {"items": [...], "hasMore": bool}
 // paginate with top/skip. The remaining objects return a root-level array in a
@@ -59,18 +70,6 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		url.WithQueryParam("top", strconv.Itoa(defaultPageSize))
 	}
 
-	// Sequences is the only object with a provider-side time filter, and it
-	// scopes by creation time; Until has no provider-side parameter, so the
-	// full window is enforced connector-side on the created field during
-	// parsing. Contacts declare createdAt/lastModifiedAt in their schema, but
-	// the live API always returns null for both and the filter endpoint
-	// silently ignores time rules, so no other object can be read
-	// incrementally (verified against the live API).
-	// https://docs.reply.io/api-reference/sequences/list-all-sequences
-	if params.ObjectName == objectSequences && !params.Since.IsZero() {
-		url.WithQueryParam("createdAfter", datautils.Time.FormatRFC3339inUTC(params.Since))
-	}
-
 	return url, nil
 }
 
@@ -95,21 +94,50 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
-// makeFilterFunc applies the Since/Until window connector-side for sequences —
-// the one object whose records carry a populated timestamp (created). Reply
-// has no provider-side Until parameter, and its documentation states no sort
-// order, so records are treated as unordered. Every other object has no
-// usable timestamp and passes through unfiltered.
+// makeFilterFunc keeps records without a parsable timestamp, because
+// readhelper.MakeTimeFilterFunc fails the whole read on a null one.
 func makeFilterFunc(params common.ReadParams, request *http.Request) common.RecordsFilterFunc {
-	if params.ObjectName != objectSequences {
-		return readhelper.MakeIdentityFilterFunc(makeNextRecordsURL(request))
+	nextPage := makeNextRecordsURL(request)
+
+	timeField, incremental := incrementalTimeFields[params.ObjectName]
+	if !incremental || (params.Since.IsZero() && params.Until.IsZero()) {
+		return readhelper.MakeIdentityFilterFunc(nextPage)
 	}
 
-	return readhelper.MakeTimeFilterFunc(
-		readhelper.Unordered,
-		readhelper.NewTimeBoundary(),
-		"created", time.RFC3339,
-		makeNextRecordsURL(request))
+	boundary := readhelper.NewTimeBoundary()
+
+	return func(params common.ReadParams, body *ajson.Node, records []*ajson.Node) ([]*ajson.Node, string, error) {
+		next, err := nextPage(body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		filtered := make([]*ajson.Node, 0, len(records))
+
+		for _, record := range records {
+			timestamp, found := recordTime(record, timeField)
+			if !found || boundary.Contains(params, timestamp) {
+				filtered = append(filtered, record)
+			}
+		}
+
+		return filtered, next, nil
+	}
+}
+
+func recordTime(record *ajson.Node, field string) (time.Time, bool) {
+	value, err := jsonquery.New(record).StringOptional(field)
+	if err != nil || value == nil {
+		return time.Time{}, false
+	}
+
+	for _, layout := range recordTimeLayouts {
+		if timestamp, err := time.ParseInLocation(layout, *value, time.UTC); err == nil {
+			return timestamp, true
+		}
+	}
+
+	return time.Time{}, false
 }
 
 // makeGetRecords locates the records array: under the schema's response key
