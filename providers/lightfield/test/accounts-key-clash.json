@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "id": "acc_9",
+      "createdAt": "2026-07-01T12:00:00.000Z",
+      "updatedAt": "2026-09-25T16:45:00.000Z",
+      "httpLink": "https://crm.lightfield.app/crm/accounts/acc_9",
+      "externalId": null,
+      "fields": {
+        "$name": {"value": "Hooli", "valueType": "TEXT"},
+        "updatedAt": {"value": "custom value", "valueType": "TEXT"},
+        "partners": {"value": "field value", "valueType": "TEXT"}
+      },
+      "relationships": {
+        "partners": {"cardinality": "HAS_MANY", "objectType": "account", "values": ["acc_1"]}
+      }
+    }
+  ],
+  "object": "list",
+  "totalCount": 1
+}

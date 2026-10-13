@@ -51,13 +51,14 @@ func makeNextPageFunc(requestURL *url.URL) common.NextPageFunc {
 	}
 }
 
-// makeUpdatedAtFilter keeps records whose last update falls within [Since, Until].
+// makeUpdatedAtFilter keeps records whose last update falls within (Since, Until],
+// matching ReadParams: Since is exclusive and Until inclusive.
 // It serves /v1/members, which rejects filter query parameters (400 unrecognized_keys).
 // Lists are sorted by createdAt, newest first, so every page must be read and paging can never
 // stop early: an old record may have been updated recently.
 // updatedAt is nullable; a record that was never updated is placed at its createdAt.
 func makeUpdatedAtFilter(nextPage common.NextPageFunc) common.RecordsFilterFunc {
-	boundary := readhelper.NewTimeBoundary()
+	boundary := readhelper.NewTimeBoundary(readhelper.ExcludeSince())
 
 	return func(params common.ReadParams, body *ajson.Node, records []*ajson.Node) ([]*ajson.Node, string, error) {
 		next, err := nextPage(body)
@@ -142,9 +143,12 @@ func flattenRecord(node *ajson.Node) (map[string]any, error) {
 	return record, nil
 }
 
-// TODO: The docs do not say whether a custom field slug can equal a relationship slug
-// or a record property (id, createdAt...). On a clash the earlier value wins:
-// record properties, then fields, then relationships. Raw keeps everything.
+// setIfAbsent decides key clashes. System fields and relationships are `$`-prefixed, but custom
+// ones are not (https://docs.lightfield.app/using-the-api/fields-and-relationships#field-keys),
+// so a custom field may share a name with a record property (id, createdAt, updatedAt, httpLink,
+// externalId) or with a custom relationship. The earlier value wins: record properties, then
+// fields, then relationships. Record properties are kept because id and updatedAt drive record
+// identity and incremental reads. The shadowed value stays available in Raw.
 func setIfAbsent(record map[string]any, key string, value any) {
 	if _, exists := record[key]; !exists {
 		record[key] = value

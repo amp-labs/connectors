@@ -20,6 +20,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	responseAccountsFirstPage := testutils.DataFromFile(t, "accounts-first-page.json")
 	responseAccountsLastPage := testutils.DataFromFile(t, "accounts-last-page.json")
 	responseMembers := testutils.DataFromFile(t, "members.json")
+	responseAccountsKeyClash := testutils.DataFromFile(t, "accounts-key-clash.json")
 
 	versionHeader := http.Header{"Lightfield-Version": []string{"2026-03-01"}}
 
@@ -137,8 +138,8 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				ObjectName: "accounts",
 				Fields:     connectors.Fields("$name"),
 				PageSize:   2,
-				Since:      time.Date(2026, 9, 1, 0, 0, 0, 0, time.UTC),
-				Until:      time.Date(2026, 9, 21, 0, 0, 0, 0, time.UTC),
+				Since:      time.Date(2026, 9, 1, 0, 0, 0, 123_000_000, time.UTC),
+				Until:      time.Date(2026, 9, 21, 0, 0, 0, 456_000_000, time.UTC),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -146,8 +147,8 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					mockcond.Path("/v1/accounts"),
 					mockcond.QueryParam("limit", "2"),
 					mockcond.QueryParam("offset", "0"),
-					mockcond.QueryParam("$updatedAt[greaterThan]", "2026-09-01T00:00:00Z"),
-					mockcond.QueryParam("$updatedAt[lessThan]", "2026-09-21T00:00:00Z"),
+					mockcond.QueryParam("$updatedAt[greaterThan]", "2026-09-01T00:00:00.123Z"),
+					mockcond.QueryParam("$updatedAt[lessThanOrEqual]", "2026-09-21T00:00:00.456Z"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseAccountsFirstPage),
 			}.Server(),
@@ -165,9 +166,85 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					Raw:    map[string]any{"id": "acc_1"},
 				}},
 				NextPage: testconn.URLTestServer + "/v1/accounts?" +
-					"%24updatedAt%5BgreaterThan%5D=2026-09-01T00%3A00%3A00Z&" +
-					"%24updatedAt%5BlessThan%5D=2026-09-21T00%3A00%3A00Z&limit=2&offset=2",
+					"%24updatedAt%5BgreaterThan%5D=2026-09-01T00%3A00%3A00.123Z&" +
+					"%24updatedAt%5BlessThanOrEqual%5D=2026-09-21T00%3A00%3A00.456Z&limit=2&offset=2",
 				Done: false,
+			},
+		},
+		{
+			Name: "Since alone is sent as an exclusive updatedAt bound with milliseconds",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 10, 12, 22, 7, 48, 174_000_000, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/contacts"),
+					mockcond.QueryParam("$updatedAt[greaterThan]", "2026-10-12T22:07:48.174Z"),
+					mockcond.QueryParamsMissing("$updatedAt[lessThanOrEqual]"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsLastPage),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 1, NextPage: "", Done: true},
+		},
+		{
+			Name: "Until alone is sent as an inclusive updatedAt bound with milliseconds",
+			Input: common.ReadParams{
+				ObjectName: "opportunities",
+				Fields:     connectors.Fields("id"),
+				Until:      time.Date(2026, 10, 12, 22, 7, 48, 174_000_000, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/opportunities"),
+					mockcond.QueryParam("$updatedAt[lessThanOrEqual]", "2026-10-12T22:07:48.174Z"),
+					mockcond.QueryParamsMissing("$updatedAt[greaterThan]"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountsLastPage),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 1, NextPage: "", Done: true},
+		},
+		{
+			Name:  "Record properties win over custom fields of the same name, and fields over relationships",
+			Input: common.ReadParams{ObjectName: "accounts", Fields: connectors.Fields("updatedAt", "partners", "$name")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v1/accounts"),
+				Then:  mockserver.Response(http.StatusOK, responseAccountsKeyClash),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id: "acc_9",
+					Fields: map[string]any{
+						"updatedat": "2026-09-25T16:45:00.000Z",
+						"partners":  "field value",
+						"$name":     "Hooli",
+					},
+					// The shadowed custom field and relationship stay in Raw.
+					Raw: map[string]any{
+						"fields": map[string]any{
+							"$name":     map[string]any{"value": "Hooli", "valueType": "TEXT"},
+							"updatedAt": map[string]any{"value": "custom value", "valueType": "TEXT"},
+							"partners":  map[string]any{"value": "field value", "valueType": "TEXT"},
+						},
+						"relationships": map[string]any{
+							"partners": map[string]any{
+								"cardinality": "HAS_MANY",
+								"objectType":  "account",
+								"values":      []any{"acc_1"},
+							},
+						},
+					},
+				}},
+				NextPage: "",
+				Done:     true,
 			},
 		},
 		{
@@ -191,6 +268,45 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// mem_1 was last updated on 2026-02-01, before Since.
 				Rows:     0,
 				Data:     []common.ReadResultRow{},
+				NextPage: "",
+				Done:     true,
+			},
+		},
+		{
+			Name: "Member updated exactly at Since is excluded",
+			Input: common.ReadParams{
+				ObjectName: "members",
+				Fields:     connectors.Fields("$email"),
+				Since:      time.Date(2026, 2, 1, 9, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v1/members"),
+				Then:  mockserver.Response(http.StatusOK, responseMembers),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, NextPage: "", Done: true},
+		},
+		{
+			Name: "Member updated exactly at Until is included",
+			Input: common.ReadParams{
+				ObjectName: "members",
+				Fields:     connectors.Fields("$email"),
+				Until:      time.Date(2026, 2, 1, 9, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v1/members"),
+				Then:  mockserver.Response(http.StatusOK, responseMembers),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id:     "mem_1",
+					Fields: map[string]any{"$email": "jane@example.com"},
+					Raw:    map[string]any{"id": "mem_1"},
+				}},
 				NextPage: "",
 				Done:     true,
 			},

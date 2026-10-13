@@ -24,9 +24,10 @@ const (
 
 	// DATETIME filters, `$<field>[<operator>]=<value>`. The `$` is part of the key:
 	// `updatedAt[greaterThan]` is rejected with 400 unknown_field.
+	// The operators match ReadParams: Since is exclusive and Until inclusive.
 	// https://docs.lightfield.app/using-the-api/list-endpoints#filtering
 	updatedSinceParam = "$updatedAt[greaterThan]"
-	updatedUntilParam = "$updatedAt[lessThan]"
+	updatedUntilParam = "$updatedAt[lessThanOrEqual]"
 )
 
 var versionHeader = common.Header{ // nolint:gochecknoglobals
@@ -73,13 +74,15 @@ func (c *Connector) readURL(params common.ReadParams) (*urlbuilder.URL, error) {
 	readURL.WithQueryParam("limit", strconv.Itoa(min(readhelper.PageSizeWithDefault(params, maxPageSize), maxPageSize)))
 	readURL.WithQueryParam("offset", "0")
 
+	// updatedAt has millisecond precision, so the bounds keep milliseconds:
+	// a whole-second Until would drop records updated within its last second.
 	if objectsWithUpdatedAtFilter.Has(params.ObjectName) {
 		if !params.Since.IsZero() {
-			readURL.WithQueryParam(updatedSinceParam, datautils.Time.FormatRFC3339inUTC(params.Since))
+			readURL.WithQueryParam(updatedSinceParam, datautils.Time.FormatRFC3339inUTCWithMilliseconds(params.Since))
 		}
 
 		if !params.Until.IsZero() {
-			readURL.WithQueryParam(updatedUntilParam, datautils.Time.FormatRFC3339inUTC(params.Until))
+			readURL.WithQueryParam(updatedUntilParam, datautils.Time.FormatRFC3339inUTCWithMilliseconds(params.Until))
 		}
 	}
 

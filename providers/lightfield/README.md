@@ -34,6 +34,7 @@ Lightfield wraps values: `fields: {"$name": {"value": "Acme", "valueType": "TEXT
 `relationships: {"$owner": {"values": ["usr_1"], ...}}`. Read flattens both into top-level fields
 keyed verbatim (`$name`, `$owner`, custom slugs such as `icp-score`). A field becomes its `value`;
 a relationship becomes its `values` array of IDs, whatever its cardinality. `Raw` is untouched.
+Custom keys have no `$`, so on a name clash the record property wins, then fields, then relationships.
 Metadata types HAS_ONE relationships as `reference` (with `ReferenceTo` when the target is an
 object this connector reads; `user` is not) and HAS_MANY ones as `other`, being lists of IDs.
 
@@ -46,11 +47,12 @@ object this connector reads; `user` is not) and HAS_MANY ones as `other`, being 
 ## Incremental read
 
 Accounts, contacts and opportunities filter on the server: `Since` is sent as
-`$updatedAt[greaterThan]` and `Until` as `$updatedAt[lessThan]` (RFC 3339, UTC), and both carry
-over to every page ([List methods](https://docs.lightfield.app/using-the-api/list-endpoints#filtering)).
+`$updatedAt[greaterThan]` and `Until` as `$updatedAt[lessThanOrEqual]` (RFC 3339 UTC with
+milliseconds), so Since is exclusive and Until inclusive as in ReadParams; both carry over to every
+page ([List methods](https://docs.lightfield.app/using-the-api/list-endpoints#filtering)).
 The `$` is part of the key; `updatedAt[greaterThan]` returns 400 `unknown_field`.
 `/v1/members` rejects filters (400 `unrecognized_keys`), so members are read in full and the
-connector keeps those whose `updatedAt` (or `createdAt` when null) is within `[Since, Until]`.
+connector keeps those whose `updatedAt` (or `createdAt` when null) is within `(Since, Until]`.
 List results come from a search index that may lag recent changes, so a read can miss them.
 
 ## Rate limits
