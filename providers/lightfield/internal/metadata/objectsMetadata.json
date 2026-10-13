@@ -1,0 +1,135 @@
+{
+  "accounts": {
+    "path": "/v1/accounts",
+    "displayName": "Accounts",
+    "fields": {
+      "createdAt": {
+        "displayName": "Created At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "externalId": {
+        "displayName": "External Id",
+        "valueType": "string"
+      },
+      "httpLink": {
+        "displayName": "Http Link",
+        "valueType": "string"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "updatedAt": {
+        "displayName": "Updated At",
+        "valueType": "datetime"
+      }
+    }
+  },
+  "contacts": {
+    "path": "/v1/contacts",
+    "displayName": "Contacts",
+    "fields": {
+      "createdAt": {
+        "displayName": "Created At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "externalId": {
+        "displayName": "External Id",
+        "valueType": "string"
+      },
+      "httpLink": {
+        "displayName": "Http Link",
+        "valueType": "string"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "updatedAt": {
+        "displayName": "Updated At",
+        "valueType": "datetime"
+      }
+    }
+  },
+  "members": {
+    "path": "/v1/members",
+    "displayName": "Members",
+    "fields": {
+      "$email": {
+        "displayName": "Email",
+        "valueType": "string",
+        "providerType": "EMAIL"
+      },
+      "$name": {
+        "displayName": "Name",
+        "valueType": "other",
+        "providerType": "FULL_NAME"
+      },
+      "$profileImage": {
+        "displayName": "Profile Image",
+        "valueType": "string",
+        "providerType": "URL"
+      },
+      "$role": {
+        "displayName": "Role",
+        "valueType": "string",
+        "providerType": "TEXT"
+      },
+      "$user": {
+        "displayName": "User",
+        "valueType": "reference",
+        "providerType": "HAS_ONE"
+      },
+      "createdAt": {
+        "displayName": "Created At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "httpLink": {
+        "displayName": "Http Link",
+        "valueType": "string"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "updatedAt": {
+        "displayName": "Updated At",
+        "valueType": "datetime"
+      }
+    }
+  },
+  "opportunities": {
+    "path": "/v1/opportunities",
+    "displayName": "Opportunities",
+    "fields": {
+      "createdAt": {
+        "displayName": "Created At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "externalId": {
+        "displayName": "External Id",
+        "valueType": "string"
+      },
+      "httpLink": {
+        "displayName": "Http Link",
+        "valueType": "string"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "updatedAt": {
+        "displayName": "Updated At",
+        "valueType": "datetime"
+      }
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "objectType": "opportunity",
+  "fieldDefinitions": {
+    "$name": {
+      "id": "ad_name",
+      "slug": "name",
+      "label": "Name",
+      "description": null,
+      "valueType": "TEXT",
+      "system": true,
+      "readOnly": false,
+      "typeConfiguration": {}
+    },
+    "$stage": {
+      "id": "ad_stage",
+      "slug": "stage",
+      "label": "Stage",
+      "description": "What stage is the opportunity in?",
+      "valueType": "SINGLE_SELECT",
+      "system": true,
+      "typeConfiguration": {
+        "options": [
+          {"id": "opt_prospecting", "label": "Prospecting", "description": null},
+          {"id": "opt_closed_won", "label": "Closed Won", "description": null}
+        ]
+      }
+    },
+    "$amount": {
+      "id": "ad_amount",
+      "slug": "amount",
+      "label": "Amount",
+      "description": null,
+      "valueType": "CURRENCY",
+      "system": true,
+      "typeConfiguration": {"currency": "USD"}
+    },
+    "$summary": {
+      "id": null,
+      "slug": "summary",
+      "label": "Summary",
+      "description": null,
+      "valueType": "READONLY_MARKDOWN",
+      "system": true,
+      "readOnly": true,
+      "typeConfiguration": {}
+    },
+    "priority": {
+      "id": "ad_priority",
+      "slug": "priority",
+      "label": "Priority",
+      "description": null,
+      "valueType": "NUMBER",
+      "system": false,
+      "typeConfiguration": {}
+    }
+  },
+  "relationshipDefinitions": {
+    "$account": {
+      "id": null,
+      "slug": "account",
+      "label": "Account",
+      "description": null,
+      "system": true,
+      "cardinality": "HAS_ONE",
+      "objectType": "account"
+    },
+    "$owner": {
+      "id": null,
+      "slug": "owner",
+      "label": "Owner",
+      "description": null,
+      "system": true,
+      "cardinality": "HAS_ONE",
+      "objectType": "user"
+    },
+    "stakeholders": {
+      "id": "rd_stakeholders",
+      "slug": "stakeholders",
+      "label": "Stakeholders",
+      "description": null,
+      "system": false,
+      "cardinality": "HAS_MANY",
+      "objectType": "contact"
+    }
+  }
+}
