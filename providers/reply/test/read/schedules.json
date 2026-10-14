@@ -1,0 +1,127 @@
+[
+  {
+    "id": 559907,
+    "name": "Default",
+    "timezoneId": "SA Pacific Standard Time",
+    "excludeHolidays": false,
+    "useProspectTimezone": true,
+    "useFollowUpSchedule": false,
+    "mainTimings": [
+      {
+        "weekDay": "Sunday",
+        "isActive": false,
+        "timeRanges": [
+          {
+            "fromTime": {
+              "hour": 0,
+              "minute": 0
+            },
+            "toTime": {
+              "hour": 24,
+              "minute": 0
+            }
+          }
+        ]
+      },
+      {
+        "weekDay": "Monday",
+        "isActive": true,
+        "timeRanges": [
+          {
+            "fromTime": {
+              "hour": 9,
+              "minute": 0
+            },
+            "toTime": {
+              "hour": 17,
+              "minute": 0
+            }
+          }
+        ]
+      },
+      {
+        "weekDay": "Tuesday",
+        "isActive": true,
+        "timeRanges": [
+          {
+            "fromTime": {
+              "hour": 9,
+              "minute": 0
+            },
+            "toTime": {
+              "hour": 17,
+              "minute": 0
+            }
+          }
+        ]
+      },
+      {
+        "weekDay": "Wednesday",
+        "isActive": true,
+        "timeRanges": [
+          {
+            "fromTime": {
+              "hour": 9,
+              "minute": 0
+            },
+            "toTime": {
+              "hour": 17,
+              "minute": 0
+            }
+          }
+        ]
+      },
+      {
+        "weekDay": "Thursday",
+        "isActive": true,
+        "timeRanges": [
+          {
+            "fromTime": {
+              "hour": 9,
+              "minute": 0
+            },
+            "toTime": {
+              "hour": 17,
+              "minute": 0
+            }
+          }
+        ]
+      },
+      {
+        "weekDay": "Friday",
+        "isActive": true,
+        "timeRanges": [
+          {
+            "fromTime": {
+              "hour": 9,
+              "minute": 0
+            },
+            "toTime": {
+              "hour": 17,
+              "minute": 0
+            }
+          }
+        ]
+      },
+      {
+        "weekDay": "Saturday",
+        "isActive": false,
+        "timeRanges": [
+          {
+            "fromTime": {
+              "hour": 0,
+              "minute": 0
+            },
+            "toTime": {
+              "hour": 24,
+              "minute": 0
+            }
+          }
+        ]
+      }
+    ],
+    "followUpTimings": [],
+    "isDefault": true,
+    "status": "isDefaultForCurrentUser"
+  }
+]

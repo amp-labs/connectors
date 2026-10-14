@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "id": 1768769,
+      "name": "Deep Connector Test Sequence B",
+      "status": "new",
+      "isArchived": false,
+      "created": "2026-09-08T13:42:07.49+00:00",
+      "ownerUserId": 500176,
+      "health": "blocked"
+    },
+    {
+      "id": 1768686,
+      "name": "Deep Connector Test Sequence",
+      "status": "new",
+      "isArchived": false,
+      "created": "2026-09-08T12:15:35.52+00:00",
+      "ownerUserId": 500176,
+      "health": "blocked"
+    }
+  ],
+  "hasMore": false
+}
