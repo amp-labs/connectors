@@ -40,16 +40,16 @@ func loadHTMLPage(url string, wait int64) (string, error) {
 	defer cancel()
 
 	// Run Chrome headless and extract the final rendered HTML.
-	var htmlContent string
-
-	err := chromedp.Run(ctx,
+	err := chromedp.Do(ctx,
 		chromedp.Navigate(url),
 		// Wait for JavaScript to load content
 		chromedp.Sleep(time.Duration(wait)*time.Second),
-		chromedp.OuterHTML("html", &htmlContent),
 	)
+	if err != nil {
+		return "", err
+	}
 
-	return htmlContent, err
+	return chromedp.Run(ctx, chromedp.OuterHTML("html"))
 }
 
 func LoadFile(filename string, object any) error {
