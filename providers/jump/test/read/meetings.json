@@ -1,0 +1,46 @@
+{
+    "data": {
+        "meetings": {
+            "items": [
+                {
+                    "duration": null,
+                    "endedAt": null,
+                    "id": "mtg_2df34b22211d4f248f8",
+                    "meetingType": null,
+                    "meetingUrl": null,
+                    "platformMeetingId": null,
+                    "rawTranscript": "",
+                    "source": "WEB_RECORDER",
+                    "startedAt": "2026-06-27T23:06:44.246638Z",
+                    "status": "FAILED",
+                    "summaryCreated": false,
+                    "topic": null,
+                    "transcriptCreatedAt": null,
+                    "transcriptId": null,
+                    "transcriptLanguage": null
+                },
+                {
+                    "duration": null,
+                    "endedAt": null,
+                    "id": "mtg_fbff3264957a48b4888",
+                    "meetingType": null,
+                    "meetingUrl": null,
+                    "platformMeetingId": null,
+                    "rawTranscript": "John Smith: Jane, Good to see you. How was the weekend? Did Leah's recital go well?\n\nJane Doe: It did. She was fantastic.",
+                    "source": null,
+                    "startedAt": "2026-06-23T23:18:09.022872Z",
+                    "status": "COMPLETED",
+                    "summaryCreated": true,
+                    "topic": "Example meeting",
+                    "transcriptCreatedAt": null,
+                    "transcriptId": null,
+                    "transcriptLanguage": null
+                }
+            ],
+            "pageInfo": {
+                "endCursor": "g3QAAAACdwJpZG0AAAAXbXRnX2ZiZmYzMjY0OTU3YTQ4YjQ4ODh3CnN0YXJ0ZWRfYXR0AAAADXcLbWljcm9zZWNvbmRoAmIAAFlYYQZ3BnNlY29uZGEJdwhjYWxlbmRhcncTRWxpeGlyLkNhbGVuZGFyLklTT3cFbW9udGhhBncKX19zdHJ1Y3RfX3cPRWxpeGlyLkRhdGVUaW1ldwp1dGNfb2Zmc2V0YQB3CnN0ZF9vZmZzZXRhAHcEeWVhcmIAAAfqdwRob3VyYRd3A2RheWEXdwl6b25lX2FiYnJtAAAAA1VUQ3cGbWludXRlYRJ3CXRpbWVfem9uZW0AAAAHRXRjL1VUQw==",
+                "hasNextPage": false
+            }
+        }
+    }
+}

@@ -1,0 +1,35 @@
+query Pulses {
+  pulses(
+    first: {{.First}}
+    {{if .After}}
+    after: "{{.After}}"
+    {{end}}
+    {{if .UpdatedAfter}}
+    updatedAfter: "{{.UpdatedAfter}}"
+    {{end}}
+    {{if .UpdatedBefore}}
+    updatedBefore: "{{.UpdatedBefore}}"
+    {{end}}
+  ) {
+    items {
+      description
+      id
+      insertedAt
+      meetingTypes
+      name
+      {{- if index .Fields "questions"}}
+      questions {
+        analysisType
+        id
+        order
+        question
+      }
+      {{- end}}
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
