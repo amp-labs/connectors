@@ -83,6 +83,10 @@ func (c *Connector) Provider() providers.Provider {
 
 // String returns a human-readable identifier for this connector. Declared for the same reason as
 // Provider: the zero-value verifier connector has no base to delegate to.
+//
+// Unlike Provider above, this still delegates instead of returning a constant: the base renders
+// "<provider>.Connector[<module>]", so collapsing it would drop the module from existing log
+// output. The constant is only the fallback for when there is no base to ask.
 func (c *Connector) String() string {
 	if c == nil || c.Connector == nil {
 		return c.Provider() + ".Connector"
