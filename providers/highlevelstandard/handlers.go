@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	neturl "net/url"
 	"strconv"
 	"strings"
 
@@ -21,18 +22,13 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
-	if objectsWithLocationIdInParam.Has(objectName) {
-		url.WithQueryParam("locationId", c.locationId)
-	}
+	c.addLocationQueryParams(url, objectName)
 
-	if objectWithAltTypeAndIdQueryParam.Has(objectName) {
-		url.WithQueryParam("altId", c.locationId)
-		url.WithQueryParam("altType", "location")
+	if paginationObjects.Has(objectName) || cursorPaginationObjects.Has(objectName) {
+		url.WithQueryParam("limit", "1")
 	}
 
 	if paginationObjects.Has(objectName) {
-		url.WithQueryParam("limit", "1")
-
 		if objectWithSkipQueryParam.Has(objectName) {
 			url.WithQueryParam("skip", "0")
 		} else {
@@ -122,7 +118,7 @@ func (c *Connector) buildReadRequest( // nolint:cyclop
 		err      error
 	)
 
-	if params.NextPage != "" {
+	if params.NextPage != "" && !cursorPaginationObjects.Has(params.ObjectName) {
 		// Parse the page number from NextPage
 		nextPage, err = strconv.Atoi(params.NextPage.String())
 		if err != nil {
@@ -135,13 +131,12 @@ func (c *Connector) buildReadRequest( // nolint:cyclop
 		return nil, err
 	}
 
-	if objectsWithLocationIdInParam.Has(params.ObjectName) {
-		url.WithQueryParam("locationId", c.locationId)
-	}
+	c.addLocationQueryParams(url, params.ObjectName)
 
-	if objectWithAltTypeAndIdQueryParam.Has(params.ObjectName) {
-		url.WithQueryParam("altId", c.locationId)
-		url.WithQueryParam("altType", "location")
+	if cursorPaginationObjects.Has(params.ObjectName) {
+		if err := addCursorQueryParams(url, params.NextPage.String()); err != nil {
+			return nil, err
+		}
 	}
 
 	if paginationObjects.Has(params.ObjectName) {
@@ -183,6 +178,39 @@ func (c *Connector) buildReadRequest( // nolint:cyclop
 	return req, nil
 }
 
+// addLocationQueryParams scopes the request to the connection's location,
+// either via locationId or via the altId/altType pair, depending on the object.
+func (c *Connector) addLocationQueryParams(url *urlbuilder.URL, objectName string) {
+	if objectsWithLocationIdInParam.Has(objectName) {
+		url.WithQueryParam("locationId", c.locationId)
+	}
+
+	if objectWithAltTypeAndIdQueryParam.Has(objectName) {
+		url.WithQueryParam("altId", c.locationId)
+		url.WithQueryParam("altType", "location")
+	}
+}
+
+// addCursorQueryParams sets the page size and, when a next page token is present,
+// the startAfterId/startAfter cursor produced by makeNextCursor.
+func addCursorQueryParams(url *urlbuilder.URL, nextPage string) error {
+	url.WithQueryParam("limit", strconv.Itoa(defaultPageSize))
+
+	if nextPage == "" {
+		return nil
+	}
+
+	cursor, err := neturl.ParseQuery(nextPage)
+	if err != nil {
+		return err
+	}
+
+	url.WithQueryParam(cursorParamStartAfterId, cursor.Get(cursorParamStartAfterId))
+	url.WithQueryParam(cursorParamStartAfter, cursor.Get(cursorParamStartAfter))
+
+	return nil
+}
+
 func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
@@ -193,6 +221,16 @@ func (c *Connector) parseReadResponse(
 		offset int
 		err    error
 	)
+
+	if cursorPaginationObjects.Has(params.ObjectName) {
+		return common.ParseResult(
+			response,
+			common.ExtractRecordsFromPath(objectsNodePath.Get(params.ObjectName)),
+			makeNextCursor,
+			common.GetMarshaledData,
+			params.Fields,
+		)
+	}
 
 	if params.NextPage.String() != "" {
 		offset, err = strconv.Atoi(params.NextPage.String())
