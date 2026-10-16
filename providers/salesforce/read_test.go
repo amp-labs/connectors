@@ -294,6 +294,111 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Page size caps the query sorted by Id, and a full capped query resumes after the last Id",
+			Input: common.ReadParams{
+				ObjectName: "leads",
+				Fields:     connectors.Fields("City"),
+				Since:      time.Date(2024, 1, 2, 3, 4, 5, 0, time.UTC),
+				PageSize:   2,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/services/data/v60.0/query"),
+					mockcond.QueryParam("q",
+						"SELECT Id,City FROM leads WHERE SystemModstamp > 2024-01-02T03:04:05Z ORDER BY Id LIMIT 2"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{
+					"totalSize": 2,
+					"done": true,
+					"records": [
+						{"attributes": {"type": "Lead"}, "Id": "00Q000000000001AAA", "City": "Oslo"},
+						{"attributes": {"type": "Lead"}, "Id": "00Q000000000002AAA", "City": "Lima"}
+					]
+				}`),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     2,
+				NextPage: "after-id:00Q000000000002AAA",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Capped read resumes after the Id in the page token and ends when the cap is not reached",
+			Input: common.ReadParams{
+				ObjectName: "leads",
+				Fields:     connectors.Fields("City"),
+				PageSize:   2,
+				NextPage:   "after-id:00Q000000000002AAA",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/services/data/v60.0/query"),
+					mockcond.QueryParam("q",
+						"SELECT Id,City FROM leads WHERE Id > '00Q000000000002AAA' ORDER BY Id LIMIT 2"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{
+					"totalSize": 1,
+					"done": true,
+					"records": [
+						{"attributes": {"type": "Lead"}, "Id": "00Q000000000003AAA", "City": "Pune"}
+					]
+				}`),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Capped query with more batches follows the Salesforce next page URL",
+			Input: common.ReadParams{
+				ObjectName: "leads",
+				Fields:     connectors.Fields("City"),
+				PageSize:   3,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/services/data/v60.0/query"),
+					mockcond.QueryParam("q", "SELECT Id,City FROM leads ORDER BY Id LIMIT 3"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{
+					"totalSize": 3,
+					"done": false,
+					"nextRecordsUrl": "/services/data/v60.0/query/01g000000000001AAA-2",
+					"records": [
+						{"attributes": {"type": "Lead"}, "Id": "00Q000000000001AAA", "City": "Oslo"},
+						{"attributes": {"type": "Lead"}, "Id": "00Q000000000002AAA", "City": "Lima"}
+					]
+				}`),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     2,
+				NextPage: "/services/data/v60.0/query/01g000000000001AAA-2",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Malformed after-id page token is rejected",
+			Input: common.ReadParams{
+				ObjectName: "leads",
+				Fields:     connectors.Fields("City"),
+				PageSize:   2,
+				NextPage:   "after-id:00Q' OR Name != '",
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrNextPageInvalid},
+		},
 	}
 
 	for _, tt := range tests {
