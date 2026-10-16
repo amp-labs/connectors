@@ -20,10 +20,11 @@ const (
 // Check the "SOQL and SOSL Reference" book:
 // https://resources.docs.salesforce.com/latest/latest/en-us/sfdc/pdf/salesforce_soql_sosl.pdf
 type SOQLBuilder struct {
-	fields string
-	from   string
-	where  []string
-	limit  string
+	fields  string
+	from    string
+	where   []string
+	orderBy string
+	limit   string
 }
 
 func (s *SOQLBuilder) SelectFields(fields []string) *SOQLBuilder {
@@ -49,6 +50,13 @@ func (s *SOQLBuilder) From(from string) *SOQLBuilder {
 
 func (s *SOQLBuilder) Limit(limit int64) *SOQLBuilder {
 	s.limit = strconv.FormatInt(limit, 10)
+
+	return s
+}
+
+// OrderBy sorts the results by the given fields, ascending.
+func (s *SOQLBuilder) OrderBy(fields ...string) *SOQLBuilder {
+	s.orderBy = strings.Join(fields, ",")
 
 	return s
 }
@@ -94,6 +102,10 @@ func (s *SOQLBuilder) String() string {
 
 	if len(s.where) != 0 {
 		query += " WHERE " + strings.Join(s.where, " AND ")
+	}
+
+	if len(s.orderBy) != 0 {
+		query += " ORDER BY " + s.orderBy
 	}
 
 	if len(s.limit) != 0 {

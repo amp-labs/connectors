@@ -2,17 +2,33 @@ package salesforce
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/associations"
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
 
-const defaultSOQLPageSize = 2000
+const (
+	defaultSOQLPageSize = 2000
+
+	// afterIDPageTokenPrefix starts a NextPage token that resumes a capped read after a record Id.
+	// Salesforce's own next page tokens are URL paths, so they never start with it.
+	afterIDPageTokenPrefix = "after-id:"
+)
+
+var (
+	errMissingRecordID = errors.New("salesforce record has no Id")
+
+	// salesforceIDPattern matches a 15 or 18 character Salesforce record Id.
+	salesforceIDPattern = regexp.MustCompile(`^[a-zA-Z0-9]{15}(?:[a-zA-Z0-9]{3})?$`)
+)
 
 // Read reads data from Salesforce. By default, it will read all rows (backfill). However, if Since is set,
 // it will read only rows that have been updated since the specified time.
@@ -35,23 +51,34 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	return common.ParseResult(
+	result, err := common.ParseResult(
 		rsp,
 		core.GetRecords,
 		core.GetNextRecordsURL,
 		core.GetDataMarshallerForRead(config),
 		config.Fields,
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	return continueCappedRead(config, rsp, result)
 }
 
 func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	if len(config.NextPage) != 0 {
+	afterID, err := parseAfterIDPageToken(config.NextPage)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(config.NextPage) != 0 && afterID == "" {
 		// If NextPage is set, then we're reading the next page of results.
 		// All that matters is the NextPage URL, the fields are ignored.
 		return c.getDomainURL(config.NextPage.String())
 	}
 
-	// If NextPage is not set, then we're reading the first page of results.
+	// Otherwise we're reading the first page of a query: either the first page of the read,
+	// or the first page after a capped query ran out (see continueCappedRead).
 	// We need to construct the SOQL query and then make the request.
 	// https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_query.htm
 	url, err := c.getRestApiURL(core.QueryEndpoint(config.RawFilter != nil))
@@ -64,9 +91,85 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
+	addPageSizeCap(soql, config.PageSize, afterID)
+
 	url.WithQueryParam("q", soql.String())
 
 	return url, nil
+}
+
+// addPageSizeCap caps the query at pageSize rows, sorted by Id, starting after afterID when it is set.
+// A SOQL LIMIT caps the whole query, not one batch of it, so a capped query ends the read early
+// unless the read resumes after the last Id it returned (see continueCappedRead).
+func addPageSizeCap(soql *core.SOQLBuilder, pageSize int, afterID string) {
+	if afterID != "" {
+		soql.Where("Id > '" + afterID + "'")
+	}
+
+	if pageSize <= 0 && afterID == "" {
+		return
+	}
+
+	soql.OrderBy("Id")
+
+	if pageSize > 0 {
+		soql.Limit(int64(pageSize))
+	}
+}
+
+// continueCappedRead keeps a read with a PageSize going once its capped query runs out.
+// Salesforce reports such a query as done after PageSize rows even when more rows match,
+// so a query that returned all PageSize rows is followed by one for the rows after its last Id.
+func continueCappedRead(
+	config common.ReadParams,
+	rsp *common.JSONHTTPResponse,
+	result *common.ReadResult,
+) (*common.ReadResult, error) {
+	if config.PageSize <= 0 || !result.Done || len(result.Data) == 0 {
+		return result, nil
+	}
+
+	body, ok := rsp.Body()
+	if !ok {
+		return nil, common.ErrEmptyJSONHTTPResponse
+	}
+
+	// totalSize counts the rows of the whole query, across all of its batches.
+	// If it is missing, assume the cap was reached: one extra query is cheaper than lost rows.
+	totalSize, err := jsonquery.New(body).IntegerWithDefault("totalSize", int64(config.PageSize))
+	if err != nil {
+		return nil, err
+	}
+
+	if totalSize < int64(config.PageSize) {
+		return result, nil
+	}
+
+	lastID := result.Data[len(result.Data)-1].Id
+	if lastID == "" {
+		return nil, fmt.Errorf("%w: cannot resume a capped read without the last record's Id", errMissingRecordID)
+	}
+
+	result.NextPage = common.NextPageToken(afterIDPageTokenPrefix + lastID)
+	result.Done = false
+
+	return result, nil
+}
+
+// parseAfterIDPageToken returns the Id a capped read resumes after,
+// or an empty string when the token is not one made by continueCappedRead.
+func parseAfterIDPageToken(token common.NextPageToken) (string, error) {
+	afterID, ok := strings.CutPrefix(token.String(), afterIDPageTokenPrefix)
+	if !ok {
+		return "", nil
+	}
+
+	// The Id is placed in the SOQL as-is, so only accept a well-formed Salesforce Id.
+	if !salesforceIDPattern.MatchString(afterID) {
+		return "", fmt.Errorf("%w: %q", common.ErrNextPageInvalid, token)
+	}
+
+	return afterID, nil
 }
 
 // makeSOQL returns the SOQL query for the desired read operation.
@@ -116,10 +219,6 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, timestamp
 
 			soql.Where(buildSOQLEqCondition(ff.FieldName, ff.Value))
 		}
-	}
-
-	if config.PageSize > 0 {
-		soql.Limit(int64(config.PageSize))
 	}
 
 	return nil
