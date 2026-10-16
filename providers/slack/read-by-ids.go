@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/amp-labs/connectors/providers/slack/internal/mappings"
+	"github.com/amp-labs/connectors/providers/slack/internal/webhook"
 )
 
 var _ connectors.BatchRecordReaderConnector = (*Connector)(nil)
@@ -28,11 +29,25 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 		return nil, common.ErrMissingObjects
 	}
 
+	// Messages cannot be fetched by id — Slack has no singular message lookup — but every
+	// message event carries the message itself, so callers are told to read the record
+	// from the webhook payload instead of fetching or retrying.
+	if webhook.ObjectRecordsInline(objectName) {
+		return nil, fmt.Errorf("%w: %s", common.ErrRecordsOnlyInline, objectName)
+	}
+
 	// Ensure identifiers are non-repeating.
 	identifiers := datautils.NewSetFromList(recordIds).List()
 
 	info, err := mappings.GetReadItemInfo(c.Provider(), objectName)
 	if err != nil {
+		// Objects that exist for reading but have no ".info" endpoint, and objects absent
+		// from the mappings, are reported with the sentinel that marks the fetch as
+		// unavailable, matching the other mapping-driven connectors.
+		if errors.Is(err, common.ErrObjectNotSupported) || errors.Is(err, common.ErrOperationNotSupportedForObject) {
+			return nil, fmt.Errorf("%w: %s", common.ErrGetRecordNotSupportedForObject, objectName)
+		}
+
 		return nil, err
 	}
 

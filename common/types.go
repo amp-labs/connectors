@@ -154,6 +154,19 @@ var (
 
 	ErrGetRecordNotSupportedForObject = errors.New("getRecord is not supported for the object")
 
+	// ErrRecordsOnlyInline is returned by GetRecordsByIds for an object whose records
+	// cannot be fetched by id because the provider exposes no singular lookup for it,
+	// and whose subscription events instead carry the full record inline in the webhook
+	// payload (see SubscriptionEventWithRecord). Slack messages are the motivating case:
+	// a message has no standalone id and is retrievable only through the windowed
+	// conversations.history/replies calls, while every message event ships the message.
+	//
+	// It is distinct from ErrGetRecordNotSupportedForObject, which says only that the
+	// fetch is unavailable. This error additionally tells the caller where the record
+	// does live, so the caller should proceed with no fetched records and read them from
+	// the events rather than dropping the batch or retrying the fetch.
+	ErrRecordsOnlyInline = errors.New("records for the object are available only inline in the webhook payload")
+
 	// ErrImplementation is returned when the code takes an unexpected or logically invalid execution path.
 	// It should be used to explicitly catch cases that would otherwise lead to panics (e.g., nil pointer dereference).
 	// This typically indicates a broken assumption or inconsistency in the implementation logic.
