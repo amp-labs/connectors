@@ -324,6 +324,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Teamwork:                          wrapper(newTeamworkConnector),
 	providers.Webex:                             wrapper(newWebexConnector),
 	providers.Wrike:                             wrapper(newWrikeConnector),
+	providers.WrikeEU:                           wrapper(newWrikeEUConnector),
+	providers.WrikeUS2:                          wrapper(newWrikeUS2Connector),
 	providers.Xero:                              wrapper(newXeroConnector),
 	providers.ZendeskChat:                       wrapper(newZendeskChatConnector),
 	providers.ZendeskSupport:                    wrapper(newZendeskSupportConnector),
@@ -1231,6 +1233,18 @@ func newWrikeConnector(
 	params common.ConnectorParams,
 ) (*wrike.Connector, error) {
 	return wrike.NewConnector(params)
+}
+
+func newWrikeEUConnector(
+	params common.ConnectorParams,
+) (*wrike.Connector, error) {
+	return wrike.NewConnectorForProvider(providers.WrikeEU, params)
+}
+
+func newWrikeUS2Connector(
+	params common.ConnectorParams,
+) (*wrike.Connector, error) {
+	return wrike.NewConnectorForProvider(providers.WrikeUS2, params)
 }
 
 func newChargebeeConnector(

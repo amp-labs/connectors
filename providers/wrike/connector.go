@@ -27,9 +27,16 @@ type Connector struct {
 	components.Writer
 }
 
-// NewConnector creates a new Wrike connector.
+// NewConnector creates a new Wrike connector for accounts on www.wrike.com.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Init(providers.Wrike, params, constructor)
+	return NewConnectorForProvider(providers.Wrike, params)
+}
+
+// NewConnectorForProvider creates a Wrike connector under a regional provider
+// (Wrike, WrikeEU, WrikeUS2). The implementation is shared; only the catalog
+// base URL, i.e. the data centre host, differs.
+func NewConnectorForProvider(provider providers.Provider, params common.ConnectorParams) (*Connector, error) {
+	return components.Init(provider, params, constructor)
 }
 
 func constructor(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {

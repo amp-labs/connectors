@@ -43,6 +43,21 @@ Object names are the last URL segment, which is also how Wrike's reference
 names each resource (`customfields`, `jobroles`, `timelogs` are spelled
 that way by Wrike).
 
+## Regions
+
+Wrike stores each account in one data centre and its API answers only on that
+host; other hosts return 401. The OAuth token response names the host in
+`host`. One implementation is registered under three providers:
+
+| Provider | Display name | Base URL |
+|---|---|---|
+| `wrike` | Wrike | `https://www.wrike.com/api` |
+| `wrikeEU` | Wrike (EU) | `https://app-eu.wrike.com/api` |
+| `wrikeUS2` | Wrike (US2) | `https://app-us2.wrike.com/api` |
+
+OAuth endpoints are the same for all three: the code exchange and token
+refresh are accepted on any host.
+
 ## Metadata
 
 `ListObjectMetadata` is served from the static `metadata/schemas.json`,
@@ -155,10 +170,3 @@ to the writable parameters first. Write parameter names also differ from read
 field names for some objects (for example `addResponsibles` /
 `removeResponsibles` on task update versus `responsibleIds` on read); they
 are not translated.
-
-### Verified live (2026-10-07)
-
-Job role create and update, and an existing task's title update (then
-reverted), succeeded against the test account. Live script:
-`go run ./test/wrike/write`; it leaves the job role behind until delete
-support lands.
