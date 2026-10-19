@@ -3,6 +3,7 @@ package common
 import (
 	"cmp"
 	"errors"
+	"fmt"
 	"net/http"
 	"slices"
 )
@@ -145,6 +146,71 @@ func isNotFoundErr(err error) bool {
 // succeeds as a whole or fails as a whole.
 func NewBatchReadResult(rows []ReadResultRow) *BatchReadResult {
 	return &BatchReadResult{Rows: rows}
+}
+
+// GetMarshaledDataForBatchRequest converts the records a batch-by-id request
+// returned into rows, and reports every requested id the provider did not
+// return as a FailureReasonNotFound failure.
+//
+// It exists because GetMarshaledData only ever sees the records that came back:
+// a batch endpoint asked for five ids and answering with three produces three
+// rows and no indication that two are missing. Providers omit unknown ids from
+// a batch response rather than erroring, so the absent ids are the only signal
+// that a record is gone, and recovering them needs the requested set.
+//
+// Rows keep the order the provider returned them in. Failures follow the order
+// the ids were requested in. An id is matched to a record by the record's own
+// "id" field, normalized the same way GetMarshaledData normalizes it, so a
+// numeric id in the payload still matches the string that was requested. A
+// repeated id is reported at most once.
+func GetMarshaledDataForBatchRequest(
+	records []map[string]any,
+	requestedIds []string,
+	fields []string,
+) (*BatchReadResult, error) {
+	rows, err := GetMarshaledData(records, fields)
+	if err != nil {
+		return nil, err
+	}
+
+	result := NewBatchReadResult(rows)
+	result.ReportMissingIds(requestedIds)
+
+	return result, nil
+}
+
+// ReportMissingIds adds a FailureReasonNotFound failure for every requested id
+// that is not present in Rows.
+//
+// It is the row-level half of GetMarshaledDataForBatchRequest, for connectors
+// that build their rows through ParseResult and so already hold
+// []ReadResultRow. Failures are appended in the order the ids were requested;
+// a repeated id is reported at most once.
+//
+// Rows must carry the id the caller asked for. A connector whose rows are
+// keyed differently from its request would otherwise report every record as
+// missing.
+func (r *BatchReadResult) ReportMissingIds(requestedIds []string) {
+	if r == nil {
+		return
+	}
+
+	returned := make(map[string]bool, len(r.Rows))
+	for _, row := range r.Rows {
+		returned[row.Id] = true
+	}
+
+	reported := make(map[string]bool, len(requestedIds))
+
+	for _, id := range requestedIds {
+		if returned[id] || reported[id] {
+			continue
+		}
+
+		reported[id] = true
+
+		r.AddFailure(id, fmt.Errorf("%w: %s not returned by the batch request", ErrNotFound, id))
+	}
 }
 
 // AddFailure records a failed id on the result, deriving the reason from err.
