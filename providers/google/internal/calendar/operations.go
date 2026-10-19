@@ -134,7 +134,7 @@ func (a *Adapter) parseReadResponse(
 	return common.ParseResult(resp,
 		common.ExtractOptionalRecordsFromPath(responseFieldName),
 		makeNextRecordsURL(url),
-		common.GetMarshaledData,
+		marshalRecordsWithNestedFields,
 		params.Fields,
 	)
 }
@@ -180,7 +180,14 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 		}
 	}
 
-	jsonData, err := json.Marshal(params.RecordData)
+	recordData, err := common.RecordDataToMap(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	// Dotted field names from the metadata schema (e.g. "start.dateTime") are turned into
+	// the nested objects the provider expects.
+	jsonData, err := json.Marshal(nestRecordData(recordData))
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal record data: %w", err)
 	}

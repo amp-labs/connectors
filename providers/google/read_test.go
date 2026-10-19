@@ -285,6 +285,35 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Read events resolves dotted nested fields",
+			Input: common.ReadParams{
+				ObjectName: "events",
+				Fields:     connectors.Fields("id", "start.dateTime", "end.timeZone", "start.date"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/calendar/v3/calendars/primary/events"),
+				Then:  mockserver.Response(http.StatusOK, responseEventsLastPage),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"id":             "p3nkh1hg41683vdhlcq4k12iso",
+						"start.datetime": "2025-06-03T10:00:00-07:00",
+						"end.timezone":   "America/Los_Angeles",
+					},
+					Raw: map[string]any{
+						"summary": "Meeting with Integration",
+					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {
