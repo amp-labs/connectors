@@ -237,7 +237,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						"relationships": map[string]any{
 							"partners": map[string]any{
 								"cardinality": "HAS_MANY",
-								"objectType":  "account",
+								"objectType":  "$account",
 								"values":      []any{"acc_1"},
 							},
 						},

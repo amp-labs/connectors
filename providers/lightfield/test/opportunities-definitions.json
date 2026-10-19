@@ -1,5 +1,5 @@
 {
-  "objectType": "opportunity",
+  "objectType": "$opportunity",
   "fieldDefinitions": {
     "$name": {
       "id": "ad_name",
@@ -62,7 +62,7 @@
       "description": null,
       "system": true,
       "cardinality": "HAS_ONE",
-      "objectType": "account"
+      "objectType": "$account"
     },
     "$owner": {
       "id": null,
@@ -80,7 +80,7 @@
       "description": null,
       "system": false,
       "cardinality": "HAS_MANY",
-      "objectType": "contact"
+      "objectType": "$contact"
     }
   }
 }
