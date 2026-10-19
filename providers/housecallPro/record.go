@@ -2,12 +2,13 @@ package housecallpro
 
 import (
 	"context"
+	"errors"
 
-	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/amp-labs/connectors/providers/housecallPro/metadata"
 )
 
@@ -42,31 +43,37 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	// HousecallPro has no batch endpoint, so each id is fetched on its own.
 	// Results are written to a per-id slot so the output order stays the order
 	// the ids were requested in, independent of which fetch finishes first.
-	fetched := make([][]common.ReadResultRow, len(recordIDs))
-	jobs := make([]simultaneously.Job, len(recordIDs))
+	// Tasks are keyed by the id's position rather than the id itself, so the
+	// output order follows the requested order and a repeated id still gets its
+	// own slot.
+	tasks := make([]parallelfetch.Task[int, []common.ReadResultRow], len(recordIDs))
 
 	for i, recordID := range recordIDs {
 		idx, currentID := i, recordID
 
-		jobs[idx] = func(ctx context.Context) error {
+		tasks[idx] = func(ctx context.Context) (int, *[]common.ReadResultRow, error) {
 			rows, err := c.fetchSingleRecord(ctx, path, currentID, fields, marshal)
 			if err != nil {
-				return err
+				return idx, nil, err
 			}
 
-			fetched[idx] = rows
-
-			return nil
+			return idx, &rows, nil
 		}
 	}
 
-	if err := simultaneously.DoCtx(ctx, maxConcurrentRecordFetch, jobs...); err != nil {
-		return nil, err
+	// parallelfetch attempts every id and collects each failure against its own
+	// task, so one bad id no longer cancels the fetches still in flight.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+	if len(result.Errors) != 0 {
+		return nil, errors.Join(result.Errors.Values()...)
 	}
 
 	out := make([]common.ReadResultRow, 0, len(recordIDs))
-	for _, rows := range fetched {
-		out = append(out, rows...)
+
+	for i := range recordIDs {
+		if rows, ok := result.Records[i]; ok {
+			out = append(out, rows...)
+		}
 	}
 
 	extractAssociations(objectName, associations, out)
