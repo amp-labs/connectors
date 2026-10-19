@@ -315,7 +315,7 @@ func (a *Adapter) fetchEvent(
 		return common.ReadResultRow{}, err
 	}
 
-	rows, err := common.GetMarshaledData([]map[string]any{record}, fields.List())
+	rows, err := marshalRecordsWithNestedFields([]map[string]any{record}, fields.List())
 	if err != nil {
 		return common.ReadResultRow{}, err
 	}

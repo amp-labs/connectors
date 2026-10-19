@@ -25,8 +25,10 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "events",
-		Fields:     connectors.Fields("summary", "description"),
-		Deleted:    true,
+		// Dotted names resolve values from the nested start/end/source objects.
+		Fields: connectors.Fields("summary", "start.dateTime", "start.date", "end.dateTime",
+			"end.timeZone", "source.title"),
+		Deleted: true,
 	})
 	if err != nil {
 		utils.Fail("error reading from connector", "error", err)

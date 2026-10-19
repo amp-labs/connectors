@@ -66,6 +66,31 @@ func TestCalendarListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cy
 								ValueType:    "boolean",
 								ProviderType: "boolean",
 							},
+							"start": {
+								DisplayName:  "Start",
+								ValueType:    "other",
+								ProviderType: "object",
+							},
+							"start.dateTime": {
+								DisplayName:  "Start Date Time",
+								ValueType:    "datetime",
+								ProviderType: "string",
+							},
+							"end.date": {
+								DisplayName:  "End Date",
+								ValueType:    "date",
+								ProviderType: "string",
+							},
+							"source.url": {
+								DisplayName:  "Source Url",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"extendedProperties.private": {
+								DisplayName:  "Extended Properties Private",
+								ValueType:    "other",
+								ProviderType: "object",
+							},
 						},
 					},
 				},

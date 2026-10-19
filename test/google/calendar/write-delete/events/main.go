@@ -13,19 +13,8 @@ import (
 	"github.com/brianvoe/gofakeit/v6"
 )
 
-type createPayload struct {
-	Start   dateTime `json:"start"`
-	End     dateTime `json:"end"`
-	Summary string   `json:"summary"`
-}
-
 type updatePayload struct {
 	Summary string `json:"summary"`
-}
-
-type dateTime struct {
-	DateTime string `json:"dateTime"`
-	TimeZone string `json:"timeZone"`
 }
 
 func main() {
@@ -46,24 +35,26 @@ func main() {
 	startTimeStr := datautils.Time.FormatRFC3339inUTCWithMilliseconds(startTime)
 	endTimeStr := datautils.Time.FormatRFC3339inUTCWithMilliseconds(endTime)
 
+	// Timing, origin and tracing are sent as the dotted field names exposed by the
+	// metadata schema; the connector nests them into the objects Google expects.
 	testscenario.ValidateCreateUpdateDelete(ctx, conn,
 		"events",
-		createPayload{
-			Start: dateTime{
-				DateTime: startTimeStr,
-				TimeZone: "America/Los_Angeles",
-			},
-			End: dateTime{
-				DateTime: endTimeStr,
-				TimeZone: "America/Los_Angeles",
-			},
-			Summary: summaryBefore,
+		map[string]any{
+			"summary":                          summaryBefore,
+			"start.dateTime":                   startTimeStr,
+			"start.timeZone":                   "America/Los_Angeles",
+			"end.dateTime":                     endTimeStr,
+			"end.timeZone":                     "America/Los_Angeles",
+			"source.title":                     "Ampersand live test",
+			"source.url":                       "https://withampersand.com",
+			"extendedProperties.private.crmId": "42",
 		},
 		updatePayload{
 			Summary: summaryAfter,
 		},
 		testscenario.CRUDTestSuite{
-			ReadFields: datautils.NewSet("id", "summary"),
+			ReadFields: datautils.NewSet("id", "summary", "start.dateTime", "source.title",
+				"extendedProperties.private.crmId"),
 			SearchBy: testscenario.Property{
 				Key:   "summary",
 				Value: summaryBefore,
