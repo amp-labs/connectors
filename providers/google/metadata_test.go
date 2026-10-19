@@ -1,17 +1,22 @@
 package google
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
+	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
 func TestCalendarListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
+
+	responseExtendedProperties := testutils.DataFromFile(t, "calendar/metadata/events-extended-properties.json")
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
@@ -90,6 +95,55 @@ func TestCalendarListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cy
 								DisplayName:  "Extended Properties Private",
 								ValueType:    "other",
 								ProviderType: "object",
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Events metadata discovers extendedProperties keys from sampled events",
+			Input: []string{"events"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/calendar/v3/calendars/primary/events"),
+					mockcond.QueryParam("maxResults", "2500"),
+					mockcond.QueryParam("fields", "items(extendedProperties)"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseExtendedProperties),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"events": {
+						DisplayName: "Events",
+						Fields: map[string]common.FieldMetadata{
+							"extendedProperties.private": {
+								DisplayName:  "Extended Properties Private",
+								ValueType:    "other",
+								ProviderType: "object",
+							},
+							"extendedProperties.private.crmId": {
+								DisplayName:  "Extended Properties Private crmId",
+								ValueType:    "string",
+								ProviderType: "string",
+								IsCustom:     new(true),
+							},
+							"extendedProperties.private.dealStage": {
+								DisplayName:  "Extended Properties Private dealStage",
+								ValueType:    "string",
+								ProviderType: "string",
+								IsCustom:     new(true),
+							},
+							"extendedProperties.shared.team": {
+								DisplayName:  "Extended Properties Shared team",
+								ValueType:    "string",
+								ProviderType: "string",
+								IsCustom:     new(true),
 							},
 						},
 					},
