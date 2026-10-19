@@ -38,9 +38,11 @@ import (
 //     https://developers.google.com/workspace/gmail/api/reference/quota
 const gmailMaxConcurrentFetches = 5
 
-// errMessageNotFound marks a message that came back 404 so the parallel fetch
-// can skip it without failing the batch. It never escapes fetchMessagesByIDs.
-var errMessageNotFound = errors.New("gmail: message not found")
+// errMessageNotFound marks a message that came back 404. It wraps
+// common.ErrNotFound so that when the failure is reported to the caller,
+// common.FailureReasonOf classifies it as FailureReasonNotFound rather than
+// leaving it unknown.
+var errMessageNotFound = fmt.Errorf("gmail: message not found: %w", common.ErrNotFound)
 
 // fetchMessages retrieves the full message payloads for all message IDs found
 // in the provided collection response.
@@ -97,9 +99,11 @@ func (a *Adapter) fetchMessages(
 // fetchMessagesByIDs fetches full message payloads for the given IDs concurrently.
 // This is the same fan-out/fan-in pattern as fetchMessages but accepts explicit IDs
 // instead of extracting them from a collection response.
-func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (MessageRecords, error) {
+func (a *Adapter) fetchMessagesByIDs(
+	ctx context.Context, messageIDs []string,
+) (MessageRecords, map[int]error, error) {
 	if len(messageIDs) == 0 {
-		return MessageRecords{}, nil
+		return MessageRecords{}, nil, nil
 	}
 
 	tasks := make([]parallelfetch.Task[int, MessageRecord], len(messageIDs))
@@ -113,12 +117,6 @@ func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (
 				return idx, nil, err
 			}
 
-			if message == nil {
-				// Skipped (404). Reported as a sentinel rather than a nil record
-				// because parallelfetch treats every non-error task as carrying one.
-				return idx, nil, errMessageNotFound
-			}
-
 			return idx, message, nil
 		}
 	}
@@ -127,32 +125,21 @@ func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (
 	// task, so one bad id no longer cancels the fetches still in flight.
 	result := parallelfetch.Execute(ctx, tasks, gmailMaxConcurrentFetches)
 
-	// A message that no longer exists is skipped rather than failing the batch,
-	// as it was before. Every other failure still fails the call as a whole.
-	realErrs := make([]error, 0, len(result.Errors))
-
-	for _, err := range result.Errors {
-		if !errors.Is(err, errMessageNotFound) {
-			realErrs = append(realErrs, err)
-		}
-	}
-
-	if len(realErrs) != 0 {
-		return nil, errors.Join(realErrs...)
-	}
-
 	messageRegistry := make(MessageRecords, len(messageIDs))
 
 	for _, message := range result.Records {
 		id, ok := message["id"].(string)
 		if !ok {
-			return nil, errors.New("missing field 'id' in response for object 'messages'") // nolint:err113
+			return nil, nil, errors.New("missing field 'id' in response for object 'messages'") // nolint:err113
 		}
 
 		messageRegistry[id] = message
 	}
 
-	return messageRegistry, nil
+	// Failures are returned keyed by the id's position rather than folded into a
+	// single error, so the caller can report each one against the id that
+	// produced it. A 404 arrives here as errMessageNotFound.
+	return messageRegistry, result.Errors, nil
 }
 
 // fetchMessage returns a concurrently executable job that fetches a single message
@@ -167,11 +154,11 @@ func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId str
 	return func(ctx context.Context) error {
 		message, err := a.fetchMessageRecord(ctx, messageId)
 		if err != nil {
-			return err
-		}
+			if errors.Is(err, errMessageNotFound) {
+				return nil
+			}
 
-		if message == nil {
-			return nil
+			return err
 		}
 
 		select {
@@ -183,8 +170,9 @@ func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId str
 	}
 }
 
-// fetchMessageRecord fetches a single message by ID. A 404 yields (nil, nil):
-// the message is gone and callers skip it rather than failing the whole batch.
+// fetchMessageRecord fetches a single message by ID. A 404 yields
+// errMessageNotFound, which the read path skips and the by-ids path reports as
+// a per-record failure.
 func (a *Adapter) fetchMessageRecord(ctx context.Context, messageId string) (*MessageRecord, error) {
 	url, err := a.getMessageURL(messageId)
 	if err != nil {
@@ -200,7 +188,7 @@ func (a *Adapter) fetchMessageRecord(ctx context.Context, messageId string) (*Me
 				"messageId", messageId,
 			)
 
-			return nil, nil //nolint:nilnil
+			return nil, fmt.Errorf("%w (id %s)", errMessageNotFound, messageId)
 		}
 
 		return nil, err

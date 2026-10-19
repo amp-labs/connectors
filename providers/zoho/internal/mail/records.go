@@ -31,8 +31,12 @@ const (
 )
 
 var (
-	errNoRecordIDs     = errors.New("no record ids provided")
-	errInvalidRecordID = errors.New(`invalid zoho mail record id, expected "<folderId>/<messageId>"`)
+	errNoRecordIDs = errors.New("no record ids provided")
+	// errInvalidRecordID wraps common.ErrBadRequest so that when the failure is
+	// reported to the caller, common.FailureReasonOf classifies it as
+	// FailureReasonPermanent — a malformed id will never resolve on retry.
+	errInvalidRecordID = fmt.Errorf(
+		`%w: invalid zoho mail record id, expected "<folderId>/<messageId>"`, common.ErrBadRequest)
 )
 
 // GetRecordsByIds fetches full records for the given record ids.
@@ -92,9 +96,6 @@ func (a *Adapter) GetRecordsByIds(
 	// parallelfetch attempts every id and collects each failure against its own
 	// task, so one bad id no longer cancels the fetches still in flight.
 	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
-	if len(result.Errors) != 0 {
-		return nil, errors.Join(result.Errors.Values()...)
-	}
 
 	rows := make([]common.ReadResultRow, 0, len(recordIds))
 	for i := range recordIds {
@@ -103,7 +104,18 @@ func (a *Adapter) GetRecordsByIds(
 		}
 	}
 
-	return common.NewBatchReadResult(rows), nil
+	batch := common.NewBatchReadResult(rows)
+
+	// Each failure is reported against the id that produced it rather than
+	// collapsing the batch into one error. A malformed composite id fails only
+	// its own entry, so one bad webhook payload no longer sinks the batch.
+	for idx, err := range result.Errors {
+		batch.AddFailure(recordIds[idx], err)
+	}
+
+	batch.SortFailuresByRequestOrder(recordIds)
+
+	return batch, nil
 }
 
 // getMessageByID fetches a single email's metadata. The folderId is mandatory,
