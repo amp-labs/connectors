@@ -7,12 +7,7 @@ import (
 )
 
 // nestedFieldSeparator joins the segments of a nested field path, e.g. "start.dateTime".
-//
 // Google Calendar events keep their timing, origin and tracing data inside nested objects
-// (start, end, source, extendedProperties). The metadata schema exposes the useful leaves
-// as dotted field names so that they can be mapped individually. Those dotted names are
-// translated back into nested JSON on write and resolved from nested JSON on read.
-//
 // https://developers.google.com/workspace/calendar/api/v3/reference/events#resource
 const nestedFieldSeparator = "."
 
