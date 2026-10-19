@@ -2,7 +2,6 @@ package lightfield
 
 import (
 	"context"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -111,11 +110,13 @@ type relationshipDefinition struct {
 	System      *bool  `json:"system"`
 }
 
-// Lightfield objectType of a relationship target -> object name in this connector.
+// Lightfield objectType of a relationship target -> object name in this connector. The API names
+// its built-in objects with a `$` prefix (`$account`); the docs' examples show them bare, but the
+// live responses don't.
 var objectNameByType = map[string]string{ // nolint:gochecknoglobals
-	"account":     objectNameAccounts,
-	"contact":     objectNameContacts,
-	"opportunity": objectNameOpportunities,
+	"$account":     objectNameAccounts,
+	"$contact":     objectNameContacts,
+	"$opportunity": objectNameOpportunities,
 }
 
 func (d definitionsResponse) addTo(selection objectcatalog.Selection, objectName string) {
@@ -134,10 +135,8 @@ func (d definitionsResponse) addTo(selection objectcatalog.Selection, objectName
 
 	for key, definition := range d.RelationshipDefinitions {
 		// ReferenceTo stays empty for targets this connector does not read, such as `user`.
-		// The API names its built-in objects with a `$` prefix (`$account`), though the docs'
-		// examples show them bare, so the lookup accepts both.
 		var referenceTo []string
-		if target, ok := objectNameByType[strings.TrimPrefix(definition.ObjectType, "$")]; ok {
+		if target, ok := objectNameByType[definition.ObjectType]; ok {
 			referenceTo = []string{target}
 		}
 
