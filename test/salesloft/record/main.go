@@ -57,7 +57,7 @@ func TestGetRecordsByIdsPeople(ctx context.Context, conn *salesloft.Connector) {
 	// Step 2: Fetch the created records using GetRecordsByIds
 	fmt.Println("\nFetching people by IDs...")
 
-	res, err := conn.GetRecordsByIds(ctx,
+	batchRes, err := conn.GetRecordsByIds(ctx,
 		"people",
 		recordIDs,
 		[]string{"id", "firstName", "email_address"},
@@ -65,6 +65,8 @@ func TestGetRecordsByIdsPeople(ctx context.Context, conn *salesloft.Connector) {
 	if err != nil {
 		utils.Fail("error getting records by ids", "error", err)
 	}
+
+	res := batchRes.Rows
 
 	fmt.Printf("\nSuccessfully fetched %d people:\n", len(res))
 	utils.DumpJSON(res, os.Stdout)
@@ -121,7 +123,7 @@ func TestGetRecordsByCalls(ctx context.Context, conn *salesloft.Connector) {
 	// Step 2: Fetch the created records using GetRecordsByIds
 	fmt.Println("\nFetching accounts by IDs...")
 
-	res, err := conn.GetRecordsByIds(ctx,
+	batchRes, err := conn.GetRecordsByIds(ctx,
 		"accounts",
 		recordIDs,
 		[]string{"id", "name", "domain"},
@@ -129,6 +131,8 @@ func TestGetRecordsByCalls(ctx context.Context, conn *salesloft.Connector) {
 	if err != nil {
 		utils.Fail("error getting records by ids", "error", err)
 	}
+
+	res := batchRes.Rows
 
 	fmt.Printf("\nSuccessfully fetched %d accounts:\n", len(res))
 	utils.DumpJSON(res, os.Stdout)

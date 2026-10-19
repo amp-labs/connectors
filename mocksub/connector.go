@@ -97,7 +97,7 @@ func (c *Connector) GetRecordsByIds(
 	recordIds []string,
 	fields []string,
 	_ []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	records := make([]map[string]any, 0, len(recordIds))
 
 	for _, id := range recordIds {
@@ -106,7 +106,12 @@ func (c *Connector) GetRecordsByIds(
 		}
 	}
 
-	return common.GetMarshaledData(records, fields)
+	rows, err := common.GetMarshaledData(records, fields)
+	if err != nil {
+		return nil, err
+	}
+
+	return common.NewBatchReadResult(rows), nil
 }
 
 // VerifyWebhookMessage reports every message as valid. Mock providers declare verification

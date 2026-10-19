@@ -319,7 +319,7 @@ func (a *Adapter) GetRecordsByIds( //nolint:revive
 	recordIds []string, //nolint:revive
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	if objectName != objectNameEvents {
 		return nil, common.ErrGetRecordNotSupportedForObject
 	}
@@ -372,7 +372,7 @@ func (a *Adapter) GetRecordsByIds( //nolint:revive
 		pageURL = result.NextPage.String()
 	}
 
-	return rows, nil
+	return common.NewBatchReadResult(rows), nil
 }
 
 // watchResult pairs a created watch channel with the object it belongs to so the
