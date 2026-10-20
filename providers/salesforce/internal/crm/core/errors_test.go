@@ -98,6 +98,11 @@ func TestInterpretJSONError_FieldNotFoundStaysBare(t *testing.T) {
 	if !errors.Is(err, common.ErrBadRequest) {
 		t.Errorf("expected error to wrap ErrBadRequest via errors.Is")
 	}
+
+	// ErrFieldNotFound comes first in Unwrap, so its class wins over ErrBadRequest's.
+	if got := common.ClassOf(err); got != common.ErrorClassSchemaDriftField {
+		t.Errorf("ClassOf = %q, want %q", got, common.ErrorClassSchemaDriftField)
+	}
 }
 
 func TestInterpretXMLError_WrapsHTTPErrorWithBody(t *testing.T) {
