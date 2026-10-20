@@ -21,13 +21,6 @@ func main() {
 
 	conn := connTest.GetNotionConnector(ctx)
 
-	slog.Info("=== Reading users ===")
-	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
-		ObjectName: "users",
-		Fields:     connectors.Fields("id", "name", "type"),
-		PageSize:   2,
-	})
-
 	slog.Info("=== Reading file uploads ===")
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "file_uploads",
