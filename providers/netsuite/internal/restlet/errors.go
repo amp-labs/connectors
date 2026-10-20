@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
+
+	"github.com/amp-labs/connectors/common"
 )
 
 var (
@@ -19,6 +22,28 @@ const (
 	// maxDetailsLen caps the length of non-stack errorDetails appended to the error message.
 	maxDetailsLen = 1000
 )
+
+// requestLimitExceededCode is NetSuite's governance rejection when the account's request limit is
+// reached. NetSuite answers it with a 400 before the RESTlet runs, so retrying is safe.
+const requestLimitExceededCode = "SSS_REQUEST_LIMIT_EXCEEDED"
+
+// interpretError maps NetSuite's request-limit rejection to ErrLimitExceeded so it is retried, and
+// leaves every other error response to the default handling.
+func interpretError(res *http.Response, body []byte) error {
+	var payload struct {
+		Error struct {
+			Code    string `json:"code"`
+			Message string `json:"message"`
+		} `json:"error"`
+	}
+
+	if json.Unmarshal(body, &payload) == nil && payload.Error.Code == requestLimitExceededCode {
+		return common.NewHTTPError(res.StatusCode, body, common.GetResponseHeaders(res),
+			fmt.Errorf("%w: %s", common.ErrLimitExceeded, payload.Error.Message))
+	}
+
+	return common.InterpretError(res, body)
+}
 
 func parseRestletError(resp *restletResponse) error {
 	var errBody restletErrorBody
@@ -76,7 +101,7 @@ func stackFrames(raw json.RawMessage) []string {
 	var frames []string
 
 	for _, part := range parts {
-		for _, line := range strings.Split(part, "\n") {
+		for line := range strings.SplitSeq(part, "\n") {
 			line = strings.TrimSpace(line)
 			if !strings.HasPrefix(line, "at ") {
 				continue
