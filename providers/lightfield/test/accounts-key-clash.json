@@ -12,7 +12,7 @@
         "partners": {"value": "field value", "valueType": "TEXT"}
       },
       "relationships": {
-        "partners": {"cardinality": "HAS_MANY", "objectType": "account", "values": ["acc_1"]}
+        "partners": {"cardinality": "HAS_MANY", "objectType": "$account", "values": ["acc_1"]}
       }
     }
   ],

@@ -110,11 +110,13 @@ type relationshipDefinition struct {
 	System      *bool  `json:"system"`
 }
 
-// Lightfield objectType of a relationship target -> object name in this connector.
+// Lightfield objectType of a relationship target -> object name in this connector. The API names
+// its built-in objects with a `$` prefix (`$account`); the docs' examples show them bare, but the
+// live responses don't.
 var objectNameByType = map[string]string{ // nolint:gochecknoglobals
-	"account":     objectNameAccounts,
-	"contact":     objectNameContacts,
-	"opportunity": objectNameOpportunities,
+	"$account":     objectNameAccounts,
+	"$contact":     objectNameContacts,
+	"$opportunity": objectNameOpportunities,
 }
 
 func (d definitionsResponse) addTo(selection objectcatalog.Selection, objectName string) {
