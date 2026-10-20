@@ -3,7 +3,10 @@ package restlet
 import (
 	"encoding/json"
 	"errors"
+	"net/http"
 	"testing"
+
+	"github.com/amp-labs/connectors/common"
 )
 
 func TestParseRestletError(t *testing.T) {
@@ -77,5 +80,32 @@ func TestStackFramesCapped(t *testing.T) {
 
 	if got := len(stackFrames(raw)); got != maxStackFrames {
 		t.Fatalf("frames = %d, want %d", got, maxStackFrames)
+	}
+}
+
+func TestInterpretErrorRequestLimitIsLimitExceeded(t *testing.T) {
+	t.Parallel()
+
+	body := []byte(`{"error" : {"code" : "SSS_REQUEST_LIMIT_EXCEEDED", "message" : "Request Limit Exceeded!"}}`)
+
+	err := interpretError(&http.Response{StatusCode: http.StatusBadRequest, Header: http.Header{}}, body)
+	if !errors.Is(err, common.ErrLimitExceeded) || errors.Is(err, common.ErrCaller) {
+		t.Errorf("expected ErrLimitExceeded and not ErrCaller, got %v", err)
+	}
+
+	var httpErr *common.HTTPError
+	if !errors.As(err, &httpErr) || string(httpErr.Body) != string(body) {
+		t.Errorf("expected *common.HTTPError keeping the body, got %v", err)
+	}
+}
+
+func TestInterpretErrorOtherErrorsUseDefaultHandling(t *testing.T) {
+	t.Parallel()
+
+	body := []byte(`{"error" : {"code" : "INVALID_LOGIN_ATTEMPT", "message" : "Invalid login attempt."}}`)
+
+	err := interpretError(&http.Response{StatusCode: http.StatusBadRequest, Header: http.Header{}}, body)
+	if !errors.Is(err, common.ErrCaller) || errors.Is(err, common.ErrLimitExceeded) {
+		t.Errorf("expected the default ErrCaller, got %v", err)
 	}
 }

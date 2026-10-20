@@ -84,7 +84,7 @@ func newAdapter(provider providers.Provider, params common.ConnectorParams) (*Ad
 			operations.SingleObjectMetadataHandlers{
 				BuildRequest:  adapter.buildObjectMetadataRequest,
 				ParseResponse: adapter.parseObjectMetadataResponse,
-				ErrorHandler:  common.InterpretError,
+				ErrorHandler:  interpretError,
 			},
 		)
 
@@ -95,7 +95,7 @@ func newAdapter(provider providers.Provider, params common.ConnectorParams) (*Ad
 			operations.ReadHandlers{
 				BuildRequest:  adapter.buildReadRequest,
 				ParseResponse: adapter.parseReadResponse,
-				ErrorHandler:  common.InterpretError,
+				ErrorHandler:  interpretError,
 			},
 		)
 
@@ -106,7 +106,7 @@ func newAdapter(provider providers.Provider, params common.ConnectorParams) (*Ad
 			operations.WriteHandlers{
 				BuildRequest:  adapter.buildWriteRequest,
 				ParseResponse: adapter.parseWriteResponse,
-				ErrorHandler:  common.InterpretError,
+				ErrorHandler:  interpretError,
 			},
 		)
 
@@ -117,7 +117,7 @@ func newAdapter(provider providers.Provider, params common.ConnectorParams) (*Ad
 			operations.DeleteHandlers{
 				BuildRequest:  adapter.buildDeleteRequest,
 				ParseResponse: adapter.parseDeleteResponse,
-				ErrorHandler:  common.InterpretError,
+				ErrorHandler:  interpretError,
 			},
 		)
 
