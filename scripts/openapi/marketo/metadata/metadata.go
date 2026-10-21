@@ -76,7 +76,7 @@ func constructDefinitions(file string, length int) (map[string]string, openapi2.
 		if pathLength(k) == length && v.Get != nil {
 			obj := retrieveObject(k)
 
-			for _, j := range v.Get.Responses {
+			for _, j := range v.Get.Responses.Map() {
 				dfn := cleanDefinitions(j.Schema.Ref)
 				definitions[obj] = dfn
 			}
