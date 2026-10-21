@@ -534,6 +534,39 @@ func TestWithUnencodedQueryParam(t *testing.T) { // nolint:funlen
 		expected string
 	}{
 		{
+			name:  "Unencoded parameter without encoded parameters",
+			input: "https://api.example.com/videos",
+			modifier: func(u *URL) {
+				u.WithUnencodedQueryParam("videoId", "%3A45565451%3A")
+			},
+			expected: "https://api.example.com/videos?videoId=%3A45565451%3A",
+		},
+		{
+			name:  "Unencoded list without encoded parameters",
+			input: "https://api.example.com/videos",
+			modifier: func(u *URL) {
+				u.WithUnencodedQueryParamList("videoId", []string{"%3Aone%3A", "%3Atwo%3A"})
+			},
+			expected: "https://api.example.com/videos?videoId=%3Aone%3A&videoId=%3Atwo%3A",
+		},
+		{
+			name:  "Empty unencoded value without encoded parameters",
+			input: "https://api.example.com/videos",
+			modifier: func(u *URL) {
+				u.WithUnencodedQueryParam("cursor", "")
+			},
+			expected: "https://api.example.com/videos?cursor=",
+		},
+		{
+			name:  "Unencoded parameter after removing the last encoded parameter",
+			input: "https://api.example.com/videos?format=json",
+			modifier: func(u *URL) {
+				u.WithUnencodedQueryParam("videoId", "(69874521)")
+				u.RemoveQueryParam("format")
+			},
+			expected: "https://api.example.com/videos?videoId=(69874521)",
+		},
+		{
 			name:  "Add one query parameter",
 			input: "https://video.google.co.uk:80/videoplay?docid=-7246927612831078230&hl=en",
 			modifier: func(u *URL) {
