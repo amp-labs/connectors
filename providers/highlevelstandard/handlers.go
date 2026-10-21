@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	neturl "net/url"
 	"strconv"
 	"strings"
 
@@ -118,7 +117,17 @@ func (c *Connector) buildReadRequest( // nolint:cyclop
 		err      error
 	)
 
-	if params.NextPage != "" && !cursorPaginationObjects.Has(params.ObjectName) {
+	if params.NextPage != "" && cursorPaginationObjects.Has(params.ObjectName) {
+		// The next page token is the full URL of the next page, see makeNextCursorURL.
+		url, err := urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+
+		return newGetRequest(ctx, url)
+	}
+
+	if params.NextPage != "" {
 		// Parse the page number from NextPage
 		nextPage, err = strconv.Atoi(params.NextPage.String())
 		if err != nil {
@@ -134,9 +143,7 @@ func (c *Connector) buildReadRequest( // nolint:cyclop
 	c.addLocationQueryParams(url, params.ObjectName)
 
 	if cursorPaginationObjects.Has(params.ObjectName) {
-		if err := addCursorQueryParams(url, params.NextPage.String()); err != nil {
-			return nil, err
-		}
+		url.WithQueryParam("limit", strconv.Itoa(defaultPageSize))
 	}
 
 	if paginationObjects.Has(params.ObjectName) {
@@ -168,6 +175,10 @@ func (c *Connector) buildReadRequest( // nolint:cyclop
 		}
 	}
 
+	return newGetRequest(ctx, url)
+}
+
+func newGetRequest(ctx context.Context, url *urlbuilder.URL) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
 		return nil, err
@@ -191,26 +202,6 @@ func (c *Connector) addLocationQueryParams(url *urlbuilder.URL, objectName strin
 	}
 }
 
-// addCursorQueryParams sets the page size and, when a next page token is present,
-// the startAfterId/startAfter cursor produced by makeNextCursor.
-func addCursorQueryParams(url *urlbuilder.URL, nextPage string) error {
-	url.WithQueryParam("limit", strconv.Itoa(defaultPageSize))
-
-	if nextPage == "" {
-		return nil
-	}
-
-	cursor, err := neturl.ParseQuery(nextPage)
-	if err != nil {
-		return err
-	}
-
-	url.WithQueryParam(cursorParamStartAfterId, cursor.Get(cursorParamStartAfterId))
-	url.WithQueryParam(cursorParamStartAfter, cursor.Get(cursorParamStartAfter))
-
-	return nil
-}
-
 func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
@@ -223,10 +214,15 @@ func (c *Connector) parseReadResponse(
 	)
 
 	if cursorPaginationObjects.Has(params.ObjectName) {
+		url, err := urlbuilder.FromRawURL(request.URL)
+		if err != nil {
+			return nil, err
+		}
+
 		return common.ParseResult(
 			response,
 			common.ExtractRecordsFromPath(objectsNodePath.Get(params.ObjectName)),
-			makeNextCursor,
+			makeNextCursorURL(url),
 			common.GetMarshaledData,
 			params.Fields,
 		)

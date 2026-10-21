@@ -1,10 +1,10 @@
 package highlevelstandard
 
 import (
-	"net/url"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -168,39 +168,40 @@ const (
 	cursorParamStartAfter   = "startAfter"
 )
 
-// makeNextCursor builds the next page token from the response "meta" object.
-// The token is an encoded query string holding the startAfterId and startAfter values.
+// makeNextCursorURL builds the next page URL by setting the startAfterId and startAfter
+// cursor from the response "meta" object on the current request URL.
 // An empty token is returned when the response has no next page.
-func makeNextCursor(node *ajson.Node) (string, error) {
-	meta, err := jsonquery.New(node).ObjectOptional("meta")
-	if err != nil || meta == nil {
-		return "", err
+func makeNextCursorURL(url *urlbuilder.URL) common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		meta, err := jsonquery.New(node).ObjectOptional("meta")
+		if err != nil || meta == nil {
+			return "", err
+		}
+
+		nextPageURL, err := jsonquery.New(meta).StrWithDefault("nextPageUrl", "")
+		if err != nil {
+			return "", err
+		}
+
+		startAfterId, err := jsonquery.New(meta).StrWithDefault(cursorParamStartAfterId, "")
+		if err != nil {
+			return "", err
+		}
+
+		if nextPageURL == "" || startAfterId == "" {
+			return "", nil
+		}
+
+		startAfter, err := jsonquery.New(meta).IntegerWithDefault(cursorParamStartAfter, 0)
+		if err != nil {
+			return "", err
+		}
+
+		url.WithQueryParam(cursorParamStartAfterId, startAfterId)
+		url.WithQueryParam(cursorParamStartAfter, strconv.FormatInt(startAfter, 10))
+
+		return url.String(), nil
 	}
-
-	nextPageURL, err := jsonquery.New(meta).StrWithDefault("nextPageUrl", "")
-	if err != nil {
-		return "", err
-	}
-
-	startAfterId, err := jsonquery.New(meta).StrWithDefault(cursorParamStartAfterId, "")
-	if err != nil {
-		return "", err
-	}
-
-	if nextPageURL == "" || startAfterId == "" {
-		return "", nil
-	}
-
-	startAfter, err := jsonquery.New(meta).IntegerWithDefault(cursorParamStartAfter, 0)
-	if err != nil {
-		return "", err
-	}
-
-	cursor := url.Values{}
-	cursor.Set(cursorParamStartAfterId, startAfterId)
-	cursor.Set(cursorParamStartAfter, strconv.FormatInt(startAfter, 10))
-
-	return cursor.Encode(), nil
 }
 
 var writeObjectsNodePath = datautils.NewDefaultMap(map[string]string{ //nolint:gochecknoglobals

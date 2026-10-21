@@ -159,8 +159,9 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 				},
-				NextPage: "startAfter=1737633708429&startAfterId=ocQHyuzHvysMo5N5VsXc",
-				Done:     false,
+				NextPage: testconn.URLTestServer + "/contacts/?limit=100&locationId=iV1BEzddaWWLqU2kXhcN" +
+					"&startAfter=1737633708429&startAfterId=ocQHyuzHvysMo5N5VsXc",
+				Done: false,
 			},
 			ExpectedErrs: nil,
 		},
@@ -169,7 +170,8 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Input: common.ReadParams{
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("email"),
-				NextPage:   "startAfter=1737633708429&startAfterId=ocQHyuzHvysMo5N5VsXc",
+				NextPage: testconn.URLTestServer + "/contacts/?limit=100&locationId=iV1BEzddaWWLqU2kXhcN" +
+					"&startAfter=1737633708429&startAfterId=ocQHyuzHvysMo5N5VsXc",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
