@@ -21,18 +21,13 @@ func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, object
 		return nil, err
 	}
 
-	if objectsWithLocationIdInParam.Has(objectName) {
-		url.WithQueryParam("locationId", c.locationId)
-	}
+	c.addLocationQueryParams(url, objectName)
 
-	if objectWithAltTypeAndIdQueryParam.Has(objectName) {
-		url.WithQueryParam("altId", c.locationId)
-		url.WithQueryParam("altType", "location")
+	if paginationObjects.Has(objectName) || cursorPaginationObjects.Has(objectName) {
+		url.WithQueryParam("limit", "1")
 	}
 
 	if paginationObjects.Has(objectName) {
-		url.WithQueryParam("limit", "1")
-
 		if objectWithSkipQueryParam.Has(objectName) {
 			url.WithQueryParam("skip", "0")
 		} else {
@@ -122,6 +117,16 @@ func (c *Connector) buildReadRequest( // nolint:cyclop
 		err      error
 	)
 
+	if params.NextPage != "" && cursorPaginationObjects.Has(params.ObjectName) {
+		// The next page token is the full URL of the next page, see makeNextCursorURL.
+		url, err := urlbuilder.New(params.NextPage.String())
+		if err != nil {
+			return nil, err
+		}
+
+		return newGetRequest(ctx, url)
+	}
+
 	if params.NextPage != "" {
 		// Parse the page number from NextPage
 		nextPage, err = strconv.Atoi(params.NextPage.String())
@@ -135,13 +140,10 @@ func (c *Connector) buildReadRequest( // nolint:cyclop
 		return nil, err
 	}
 
-	if objectsWithLocationIdInParam.Has(params.ObjectName) {
-		url.WithQueryParam("locationId", c.locationId)
-	}
+	c.addLocationQueryParams(url, params.ObjectName)
 
-	if objectWithAltTypeAndIdQueryParam.Has(params.ObjectName) {
-		url.WithQueryParam("altId", c.locationId)
-		url.WithQueryParam("altType", "location")
+	if cursorPaginationObjects.Has(params.ObjectName) {
+		url.WithQueryParam("limit", strconv.Itoa(defaultPageSize))
 	}
 
 	if paginationObjects.Has(params.ObjectName) {
@@ -173,6 +175,10 @@ func (c *Connector) buildReadRequest( // nolint:cyclop
 		}
 	}
 
+	return newGetRequest(ctx, url)
+}
+
+func newGetRequest(ctx context.Context, url *urlbuilder.URL) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
 		return nil, err
@@ -181,6 +187,19 @@ func (c *Connector) buildReadRequest( // nolint:cyclop
 	req.Header.Add("Version", apiVersion)
 
 	return req, nil
+}
+
+// addLocationQueryParams scopes the request to the connection's location,
+// either via locationId or via the altId/altType pair, depending on the object.
+func (c *Connector) addLocationQueryParams(url *urlbuilder.URL, objectName string) {
+	if objectsWithLocationIdInParam.Has(objectName) {
+		url.WithQueryParam("locationId", c.locationId)
+	}
+
+	if objectWithAltTypeAndIdQueryParam.Has(objectName) {
+		url.WithQueryParam("altId", c.locationId)
+		url.WithQueryParam("altType", "location")
+	}
 }
 
 func (c *Connector) parseReadResponse(
@@ -193,6 +212,21 @@ func (c *Connector) parseReadResponse(
 		offset int
 		err    error
 	)
+
+	if cursorPaginationObjects.Has(params.ObjectName) {
+		url, err := urlbuilder.FromRawURL(request.URL)
+		if err != nil {
+			return nil, err
+		}
+
+		return common.ParseResult(
+			response,
+			common.ExtractRecordsFromPath(objectsNodePath.Get(params.ObjectName)),
+			makeNextCursorURL(url),
+			common.GetMarshaledData,
+			params.Fields,
+		)
+	}
 
 	if params.NextPage.String() != "" {
 		offset, err = strconv.Atoi(params.NextPage.String())
