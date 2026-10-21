@@ -59,7 +59,7 @@ func ResolveUrlPathTemplate(pathTemplate string, ids ...PathIdentifier) (string,
 // ExtractPathIds returns the names of identifiers enclosed in braces in a URL path.
 //
 // Identifiers are returned in the order they appear in the path.
-// Example: /v3/orders/{order_id}/line_items/{line_items_id}
+// Example: /v3/orders/{order_id}/line_items/{line_items_id}.
 func ExtractPathIds(urlPath string) []string {
 	varIDPattern := regexp.MustCompile(`\{([^{}]+)\}`)
 

@@ -2,15 +2,13 @@
 package output
 
 import (
-	"compress/gzip"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
-	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/amp-labs/connectors/internal/codec"
 	"github.com/amp-labs/connectors/scripts/openapi/internal/api/filters"
 	"github.com/amp-labs/connectors/scripts/openapi/internal/core"
 )
@@ -24,9 +22,9 @@ func Write(fileName string, object any) error {
 	slog.Info("writing output", "file", fileName)
 
 	if strings.HasSuffix(fileName, ".json.gz") {
-		return writeJsonZip(fileName, object)
+		return codec.WriteJsonZip(fileName, object)
 	} else if strings.HasSuffix(fileName, ".json") {
-		return writeJson(fileName, object)
+		return codec.WriteJson(fileName, object)
 	}
 
 	extension := filepath.Ext(fileName)
@@ -77,37 +75,4 @@ func PrintAppliedKeys(name string, registry core.TrackedMap[string, string]) {
 	for _, key := range keys {
 		fmt.Printf("\t%v\n", key)
 	}
-}
-
-func writeJson(filename string, object any) error {
-	data, err := json.MarshalIndent(object, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	data = append(data, '\n')
-
-	return os.WriteFile(filename, data, os.ModePerm) //nolint:gosec
-}
-
-func writeJsonZip(filename string, object any) error {
-	data, err := json.MarshalIndent(object, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	file, err := os.Create(filename)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	writer := gzip.NewWriter(file)
-	defer writer.Close()
-
-	if _, err := writer.Write(data); err != nil {
-		return err
-	}
-
-	return file.Sync()
 }
