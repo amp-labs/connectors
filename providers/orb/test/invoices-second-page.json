@@ -1,0 +1,313 @@
+{
+  "data": [
+    {
+      "id": "UDB67YkhpVDMatKL",
+      "memo": "",
+      "total": "0.00",
+      "status": "draft",
+      "maximum": null,
+      "minimum": null,
+      "paid_at": null,
+      "currency": "USD",
+      "customer": {
+        "id": "SHQR8maQnwYy4jkr",
+        "external_customer_id": "test"
+      },
+      "discount": null,
+      "due_date": null,
+      "metadata": {},
+      "subtotal": "0.00",
+      "discounts": [],
+      "issued_at": null,
+      "voided_at": null,
+      "amount_due": "0.00",
+      "created_at": "2026-09-06T00:46:15+00:00",
+      "line_items": [
+        {
+          "id": "M9f6SxHzfCizUig4",
+          "name": "GB Used",
+          "price": {
+            "id": "Qqkobod4jH3WXHCq",
+            "item": {
+              "id": "c6NZVR2k6gALW54v",
+              "name": "GB Used"
+            },
+            "name": "GB Used",
+            "cadence": "monthly",
+            "maximum": null,
+            "minimum": null,
+            "currency": "GB",
+            "discount": null,
+            "metadata": {},
+            "created_at": "2025-09-25T15:24:45+00:00",
+            "model_type": "unit",
+            "price_type": "usage_price",
+            "archived_at": null,
+            "unit_config": {
+              "unit_amount": "1.00",
+              "scaling_factor": null
+            },
+            "billing_mode": "in_arrear",
+            "license_type": null,
+            "maximum_amount": null,
+            "minimum_amount": null,
+            "billable_metric": {
+              "id": "oFYuQehhkprZzFpK"
+            },
+            "conversion_rate": 420.0,
+            "plan_phase_order": null,
+            "credit_allocation": null,
+            "external_price_id": null,
+            "replaces_price_id": null,
+            "fixed_price_quantity": null,
+            "invoice_grouping_key": "system_used",
+            "conversion_rate_config": {
+              "unit_config": {
+                "unit_amount": "420.00"
+              },
+              "conversion_rate_type": "unit"
+            },
+            "composite_price_filters": null,
+            "billing_cycle_configuration": {
+              "duration": 1,
+              "duration_unit": "month"
+            },
+            "invoicing_cycle_configuration": null,
+            "dimensional_price_configuration": null
+          },
+          "amount": "0.00",
+          "filter": null,
+          "end_date": "2026-11-01T00:00:00+00:00",
+          "grouping": null,
+          "quantity": 0.0,
+          "subtotal": "0.00",
+          "start_date": "2026-10-01T00:00:00+00:00",
+          "adjustments": [],
+          "tax_amounts": [],
+          "sub_line_items": [],
+          "credits_applied": "0.00",
+          "adjusted_subtotal": "0.00",
+          "usage_customer_ids": null,
+          "partially_invoiced_amount": "0.00"
+        }
+      ],
+      "invoice_pdf": null,
+      "credit_notes": [],
+      "invoice_date": "2026-11-01T00:00:00+00:00",
+      "subscription": {
+        "id": "iVHfeZaiVabnjM3X"
+      },
+      "invoice_number": "draft",
+      "invoice_source": "subscription",
+      "maximum_amount": null,
+      "minimum_amount": null,
+      "sync_failed_at": null,
+      "auto_collection": {
+        "enabled": false,
+        "num_attempts": 0,
+        "next_attempt_at": null,
+        "previously_attempted_at": null
+      },
+      "billing_address": null,
+      "customer_tax_id": null,
+      "issue_failed_at": null,
+      "will_auto_issue": false,
+      "payment_attempts": [],
+      "shipping_address": null,
+      "payment_failed_at": null,
+      "hosted_invoice_url": "https://invoices.withorb.com/view?token=IjhCcHpFSENackE1c1ZWQ3Ii._b2Dljjufyi94UTkLZd5PGO-xJo",
+      "payment_started_at": null,
+      "scheduled_issue_at": "2026-11-01T00:00:00+00:00",
+      "payment_received_at": null,
+      "eligible_to_issue_at": "2026-11-01T12:05:00+00:00",
+      "hidden_line_item_count": 0,
+      "customer_balance_transactions": []
+    },
+    {
+      "id": "RznCTmNF4VqL5g6L",
+      "memo": null,
+      "total": "12.00",
+      "status": "draft",
+      "maximum": null,
+      "minimum": null,
+      "paid_at": null,
+      "currency": "USD",
+      "customer": {
+        "id": "TuwejzVgofS2q9vf",
+        "external_customer_id": "claude-billedaction-20261020193033-customer"
+      },
+      "discount": null,
+      "due_date": null,
+      "metadata": {},
+      "subtotal": "12.00",
+      "discounts": [],
+      "issued_at": null,
+      "voided_at": null,
+      "amount_due": "12.00",
+      "created_at": "2026-10-20T19:30:36+00:00",
+      "line_items": [
+        {
+          "id": "8CH9ZHitAiXjQCRp",
+          "name": "new read",
+          "price": {
+            "id": "2HF77Who6tFMjM2T",
+            "item": {
+              "id": "i2nvG58ir57mGXCn",
+              "name": "claude-billedaction-20261020193033-item"
+            },
+            "name": "new read",
+            "cadence": "monthly",
+            "maximum": null,
+            "minimum": null,
+            "currency": "USD",
+            "discount": null,
+            "metadata": {},
+            "created_at": "2026-10-20T19:30:35+00:00",
+            "model_type": "unit",
+            "price_type": "usage_price",
+            "archived_at": null,
+            "unit_config": {
+              "prorated": false,
+              "unit_amount": "1.00",
+              "scaling_factor": null
+            },
+            "billing_mode": "in_arrear",
+            "license_type": null,
+            "maximum_amount": null,
+            "minimum_amount": null,
+            "billable_metric": {
+              "id": "bAmaK892xcz454Dc"
+            },
+            "conversion_rate": null,
+            "plan_phase_order": null,
+            "credit_allocation": null,
+            "external_price_id": null,
+            "replaces_price_id": null,
+            "fixed_price_quantity": null,
+            "invoice_grouping_key": null,
+            "conversion_rate_config": null,
+            "composite_price_filters": null,
+            "billing_cycle_configuration": {
+              "duration": 1,
+              "duration_unit": "month"
+            },
+            "invoicing_cycle_configuration": null,
+            "dimensional_price_configuration": null
+          },
+          "amount": "10.00",
+          "filter": null,
+          "end_date": "2026-11-01T00:00:00+00:00",
+          "grouping": null,
+          "quantity": 10.0,
+          "subtotal": "10.00",
+          "start_date": "2026-10-20T00:00:00+00:00",
+          "adjustments": [],
+          "tax_amounts": [],
+          "sub_line_items": [],
+          "credits_applied": "0.00",
+          "adjusted_subtotal": "10.00",
+          "usage_customer_ids": null,
+          "partially_invoiced_amount": "0.00"
+        },
+        {
+          "id": "QR5BouEyGaJhPDD9",
+          "name": "old read",
+          "price": {
+            "id": "5z7kMuSdKoz5kKpr",
+            "item": {
+              "id": "i2nvG58ir57mGXCn",
+              "name": "claude-billedaction-20261020193033-item"
+            },
+            "name": "old read",
+            "cadence": "monthly",
+            "maximum": null,
+            "minimum": null,
+            "currency": "USD",
+            "discount": null,
+            "metadata": {},
+            "created_at": "2026-10-20T19:30:35+00:00",
+            "model_type": "unit",
+            "price_type": "usage_price",
+            "archived_at": null,
+            "unit_config": {
+              "prorated": false,
+              "unit_amount": "1.00",
+              "scaling_factor": null
+            },
+            "billing_mode": "in_arrear",
+            "license_type": null,
+            "maximum_amount": null,
+            "minimum_amount": null,
+            "billable_metric": {
+              "id": "A5sERPAZdnwG6F5i"
+            },
+            "conversion_rate": null,
+            "plan_phase_order": null,
+            "credit_allocation": null,
+            "external_price_id": null,
+            "replaces_price_id": null,
+            "fixed_price_quantity": null,
+            "invoice_grouping_key": null,
+            "conversion_rate_config": null,
+            "composite_price_filters": null,
+            "billing_cycle_configuration": {
+              "duration": 1,
+              "duration_unit": "month"
+            },
+            "invoicing_cycle_configuration": null,
+            "dimensional_price_configuration": null
+          },
+          "amount": "2.00",
+          "filter": null,
+          "end_date": "2026-11-01T00:00:00+00:00",
+          "grouping": null,
+          "quantity": 2.0,
+          "subtotal": "2.00",
+          "start_date": "2026-10-20T00:00:00+00:00",
+          "adjustments": [],
+          "tax_amounts": [],
+          "sub_line_items": [],
+          "credits_applied": "0.00",
+          "adjusted_subtotal": "2.00",
+          "usage_customer_ids": null,
+          "partially_invoiced_amount": "0.00"
+        }
+      ],
+      "invoice_pdf": null,
+      "credit_notes": [],
+      "invoice_date": "2026-11-01T00:00:00+00:00",
+      "subscription": {
+        "id": "T5vwsUpibhk3BdEW"
+      },
+      "invoice_number": "draft",
+      "invoice_source": "subscription",
+      "maximum_amount": null,
+      "minimum_amount": null,
+      "sync_failed_at": null,
+      "auto_collection": {
+        "enabled": false,
+        "num_attempts": 0,
+        "next_attempt_at": null,
+        "previously_attempted_at": null
+      },
+      "billing_address": null,
+      "customer_tax_id": null,
+      "issue_failed_at": null,
+      "will_auto_issue": false,
+      "payment_attempts": [],
+      "shipping_address": null,
+      "payment_failed_at": null,
+      "hosted_invoice_url": "https://invoices.withorb.com/view?token=IlIyZGJhM0pMSGRrdXVGY1Mi.-i7Wx2WQZFqDQvuTunxlYKlc4Sc",
+      "payment_started_at": null,
+      "scheduled_issue_at": "2026-11-01T00:00:00+00:00",
+      "payment_received_at": null,
+      "eligible_to_issue_at": "2026-11-01T12:05:00+00:00",
+      "hidden_line_item_count": 0,
+      "customer_balance_transactions": []
+    }
+  ],
+  "pagination_metadata": {
+    "has_more": true,
+    "next_cursor": "hpwhpptfRw3vsUhL"
+  }
+}

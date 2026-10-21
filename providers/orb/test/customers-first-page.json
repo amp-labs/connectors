@@ -1,0 +1,76 @@
+{
+  "data": [
+    {
+      "id": "TuwejzVgofS2q9vf",
+      "name": "claude-billedaction-20261020193033-customer",
+      "email": "claude-test@example.com",
+      "tax_id": null,
+      "balance": "0.00",
+      "currency": "USD",
+      "metadata": {},
+      "timezone": "Etc/UTC",
+      "hierarchy": {
+        "parent": null,
+        "children": []
+      },
+      "created_at": "2026-10-20T19:30:35+00:00",
+      "portal_url": "https://portal.withorb.com/view?token=IkQ2MzNLQTNtekR4WGpkcGIi.6rdmhjXNX6AjNu-nk9MvksiEu5M",
+      "auto_issuance": false,
+      "email_delivery": true,
+      "auto_collection": false,
+      "billing_address": null,
+      "payment_provider": null,
+      "shipping_address": null,
+      "additional_emails": [],
+      "payment_provider_id": null,
+      "external_customer_id": "claude-billedaction-20261020193033-customer",
+      "automatic_tax_enabled": true,
+      "payment_configuration": null,
+      "default_payment_method": null,
+      "reporting_configuration": null,
+      "exempt_from_automated_tax": false,
+      "accounting_sync_configuration": {
+        "excluded": false,
+        "accounting_providers": []
+      }
+    },
+    {
+      "id": "oT64AUpHxfBLLuNn",
+      "name": "claude-summary-20261020181156-customer",
+      "email": "claude-test@example.com",
+      "tax_id": null,
+      "balance": "0.00",
+      "currency": "USD",
+      "metadata": {},
+      "timezone": "Etc/UTC",
+      "hierarchy": {
+        "parent": null,
+        "children": []
+      },
+      "created_at": "2026-10-20T18:11:57+00:00",
+      "portal_url": "https://portal.withorb.com/view?token=ImtTbWVUWHJWeWFVVFA0Nlki.DEj7cwW9HNI6sQ7Gkw27wF-vJx8",
+      "auto_issuance": false,
+      "email_delivery": true,
+      "auto_collection": false,
+      "billing_address": null,
+      "payment_provider": null,
+      "shipping_address": null,
+      "additional_emails": [],
+      "payment_provider_id": null,
+      "external_customer_id": "claude-summary-20261020181156-customer",
+      "automatic_tax_enabled": true,
+      "payment_configuration": null,
+      "default_payment_method": null,
+      "reporting_configuration": null,
+      "exempt_from_automated_tax": false,
+      "accounting_sync_configuration": {
+        "excluded": false,
+        "accounting_providers": []
+      }
+    }
+  ],
+  "pagination_metadata": {
+    "has_more": true,
+    "next_cursor": "eN3gvMFjPt5FjLbc"
+  }
+}
