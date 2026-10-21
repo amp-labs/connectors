@@ -23,11 +23,11 @@ func main() {
 
 	tests := []common.ReadParams{
 		{
-			ObjectName: "employees_directory",
+			ObjectName: "employees/directory",
 			Fields:     connectors.Fields("id", "firstName", "lastName", "jobTitle"),
 		},
 		{
-			ObjectName: "meta_users",
+			ObjectName: "meta/users",
 			Fields:     connectors.Fields("id", "employeeId", "email", "status"),
 		},
 		{
@@ -36,12 +36,12 @@ func main() {
 			PageSize:   100,
 		},
 		{
-			ObjectName: "whos_out",
+			ObjectName: "whos-out",
 			Fields:     connectors.Fields("id", "employeeId", "start", "end"),
 			PageSize:   100,
 		},
 		{
-			ObjectName: "applicant_tracking_jobs",
+			ObjectName: "applicant_tracking/jobs",
 			Fields:     connectors.Fields("id", "title", "status"),
 		},
 	}
