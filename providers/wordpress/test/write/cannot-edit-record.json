@@ -1,0 +1,7 @@
+{
+  "code": "rest_cannot_edit",
+  "message": "Sorry, you are not allowed to edit this post.",
+  "data": {
+    "status": 403
+  }
+}
