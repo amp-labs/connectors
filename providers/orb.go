@@ -16,6 +16,11 @@ func init() {
 			},
 			DocsURL: "https://docs.withorb.com/tutorials/first-usage-event#step-2-generate-an-api-key",
 		},
+		Media: &Media{
+			Regular: &MediaTypeRegular{
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792652511/media/orb_regular_logo.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
