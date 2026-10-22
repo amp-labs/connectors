@@ -1,0 +1,15 @@
+{
+  "pages": [
+    {
+      "id": "page-1",
+      "siteId": "test-site-id",
+      "title": "Home",
+      "slug": "index",
+      "archived": false,
+      "draft": false,
+      "createdOn": "2014-02-04T01:20:54.605Z",
+      "lastUpdated": "2026-10-06T07:34:04.768Z"
+    }
+  ],
+  "pagination": { "limit": 1, "offset": 0, "total": 2 }
+}

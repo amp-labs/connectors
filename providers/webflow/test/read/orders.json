@@ -1,0 +1,12 @@
+{
+  "orders": [
+    {
+      "orderId": "a1b2-c3d4",
+      "status": "unfulfilled",
+      "comment": "",
+      "acceptedOn": "2026-10-01T10:00:00.000Z",
+      "customerPaid": { "unit": "USD", "value": 2500, "string": "$ 25.00" }
+    }
+  ],
+  "pagination": { "limit": 100, "offset": 0, "total": 1 }
+}
