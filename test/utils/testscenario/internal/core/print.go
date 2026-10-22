@@ -15,7 +15,7 @@ func PrintError(err error) bool {
 		return false
 	}
 
-	fmt.Println("[test failed]", "error", err.Error())
+	fmt.Println("[test failed] reason:", err.Error())
 	if httpError, ok := errors.AsType[*common.HTTPError](err); ok {
 		utils.DumpJSON(httpError.Body, os.Stdout)
 		return true
