@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -131,12 +132,39 @@ func (a *Adapter) parseReadResponse(
 		return nil, err
 	}
 
+	if params.ObjectName == objectNameEvents {
+		// Events expose nested fields in JSONPath notation, resolved by the shared selector.
+		return common.ParseResult(resp,
+			func(node *ajson.Node) ([]*ajson.Node, error) {
+				return jsonquery.New(node).ArrayOptional(responseFieldName)
+			},
+			makeNextRecordsURL(url),
+			readhelper.MakeMarshaledSelectedDataFunc(eventFieldsSelector, nil),
+			params.Fields,
+		)
+	}
+
 	return common.ParseResult(resp,
 		common.ExtractOptionalRecordsFromPath(responseFieldName),
 		makeNextRecordsURL(url),
-		marshalRecordsWithNestedFields,
+		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+// eventFieldsSelector whitelists requested fields of an event node and reports its identifier.
+func eventFieldsSelector(node *ajson.Node, fields []string) (map[string]any, string, error) {
+	record, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, "", err
+	}
+
+	identifier, err := jsonquery.New(node).StrWithDefault("id", "")
+	if err != nil {
+		return nil, "", err
+	}
+
+	return selectEventFields(record, fields), identifier, nil
 }
 
 func makeNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
@@ -185,9 +213,16 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 		return nil, err
 	}
 
-	// Dotted field names from the metadata schema (e.g. "start.dateTime") are turned into
-	// the nested objects the provider expects.
-	jsonData, err := json.Marshal(nestRecordData(recordData))
+	if params.ObjectName == objectNameEvents {
+		// JSONPath field names from the metadata schema (e.g. "$['start']['dateTime']")
+		// are turned into the nested objects the provider expects.
+		recordData, err = nestRecordData(recordData)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	jsonData, err := json.Marshal(recordData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal record data: %w", err)
 	}

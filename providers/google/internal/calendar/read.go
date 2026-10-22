@@ -315,12 +315,16 @@ func (a *Adapter) fetchEvent(
 		return common.ReadResultRow{}, err
 	}
 
-	rows, err := marshalRecordsWithNestedFields([]map[string]any{record}, fields.List())
+	identifier, err := jsonquery.New(body).StrWithDefault("id", "")
 	if err != nil {
 		return common.ReadResultRow{}, err
 	}
 
-	return rows[0], nil
+	return common.ReadResultRow{
+		Id:     identifier,
+		Fields: selectEventFields(record, fields.List()),
+		Raw:    record,
+	}, nil
 }
 
 // buildEventsURLForCalendar builds the first-page events URL for the given calendar.

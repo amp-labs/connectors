@@ -34,7 +34,7 @@ var (
 		"/users/me/settings":     "settings",
 	}
 	// nestedFieldParents lists object fields whose direct child properties are also exposed
-	// as dotted field names (e.g. "start.dateTime") next to the parent object itself.
+	// as JSONPath field names (e.g. "$['start']['dateTime']") next to the parent object itself.
 	//
 	// The metadata model is flat, so this is the only way to let users map a single
 	// nested value. Google requires start/end as objects and rejects a flat timestamp
@@ -148,8 +148,8 @@ func providerTypeConvertToValueType(providerType string) common.ValueType {
 	}
 }
 
-// nestedFields produces dotted field metadata for the configured parents of an object.
-// Each direct child property of a parent becomes "<parent>.<child>" with the display name
+// nestedFields produces JSONPath field metadata for the configured parents of an object.
+// Each direct child property of a parent becomes "$['<parent>']['<child>']" with the display name
 // "<Parent> <Child>". Children that are themselves objects (e.g. extendedProperties.private,
 // a free-form map) are emitted as objects without expanding further.
 func nestedFields(document *openapi3.T, objectName string) staticschema.FieldMetadataMapV2 {
@@ -181,7 +181,7 @@ func nestedFields(document *openapi3.T, objectName string) staticschema.FieldMet
 			}
 
 			providerType := schemaProviderType(childSchema.Value)
-			result[parent+"."+child] = staticschema.FieldMetadata{
+			result[fmt.Sprintf("$['%v']['%v']", parent, child)] = staticschema.FieldMetadata{
 				DisplayName: fmt.Sprintf("%v %v",
 					fieldNameConvertToDisplayName(parent), fieldNameConvertToDisplayName(child)),
 				ValueType:    leafValueType(providerType, childSchema.Value.Format),

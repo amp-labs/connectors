@@ -35,26 +35,26 @@ func main() {
 	startTimeStr := datautils.Time.FormatRFC3339inUTCWithMilliseconds(startTime)
 	endTimeStr := datautils.Time.FormatRFC3339inUTCWithMilliseconds(endTime)
 
-	// Timing, origin and tracing are sent as the dotted field names exposed by the
+	// Timing, origin and tracing are sent as the JSONPath field names exposed by the
 	// metadata schema; the connector nests them into the objects Google expects.
 	testscenario.ValidateCreateUpdateDelete(ctx, conn,
 		"events",
 		map[string]any{
-			"summary":                          summaryBefore,
-			"start.dateTime":                   startTimeStr,
-			"start.timeZone":                   "America/Los_Angeles",
-			"end.dateTime":                     endTimeStr,
-			"end.timeZone":                     "America/Los_Angeles",
-			"source.title":                     "Ampersand live test",
-			"source.url":                       "https://withampersand.com",
-			"extendedProperties.private.crmId": "42",
+			"summary":                summaryBefore,
+			"$['start']['dateTime']": startTimeStr,
+			"$['start']['timeZone']": "America/Los_Angeles",
+			"$['end']['dateTime']":   endTimeStr,
+			"$['end']['timeZone']":   "America/Los_Angeles",
+			"$['source']['title']":   "Ampersand live test",
+			"$['source']['url']":     "https://withampersand.com",
+			"$['extendedProperties']['private']['com.acme.dealId']": "42",
 		},
 		updatePayload{
 			Summary: summaryAfter,
 		},
 		testscenario.CRUDTestSuite{
-			ReadFields: datautils.NewSet("id", "summary", "start.dateTime", "source.title",
-				"extendedProperties.private.crmId"),
+			ReadFields: datautils.NewSet("id", "summary", "$['start']['dateTime']", "$['source']['title']",
+				"$['extendedProperties']['private']['com.acme.dealId']"),
 			SearchBy: testscenario.Property{
 				Key:   "summary",
 				Value: summaryBefore,

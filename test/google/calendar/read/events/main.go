@@ -25,9 +25,9 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "events",
-		// Dotted names resolve values from the nested start/end/source objects.
-		Fields: connectors.Fields("summary", "start.dateTime", "start.date", "end.dateTime",
-			"end.timeZone", "source.title"),
+		// JSONPath names resolve values from the nested start/end/source objects.
+		Fields: connectors.Fields("summary", "$['start']['dateTime']", "$['start']['date']",
+			"$['end']['dateTime']", "$['end']['timeZone']", "$['source']['title']", "$['extendedProperties']['private']['crmId']"),
 		Deleted: true,
 	})
 	if err != nil {

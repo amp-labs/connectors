@@ -120,18 +120,19 @@ func TestCalendarWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Create event with dotted timing fields nests them for the provider",
+			Name: "Create event with JSONPath fields nests them for the provider",
 			Input: common.WriteParams{
 				ObjectName: "events",
 				RecordData: map[string]any{
-					"summary":                          "Monthly team meeting",
-					"start.dateTime":                   "2025-08-07T15:30:00-07:00",
-					"start.timeZone":                   "America/Los_Angeles",
-					"end.dateTime":                     "2025-08-07T17:22:11-07:00",
-					"end.timeZone":                     "America/Los_Angeles",
-					"source.title":                     "CRM",
-					"source.url":                       "https://crm.example.com/deals/42",
-					"extendedProperties.private.crmId": "42",
+					"summary":                "Monthly team meeting",
+					"$['start']['dateTime']": "2025-08-07T15:30:00-07:00",
+					"$['start']['timeZone']": "America/Los_Angeles",
+					"$['end']['dateTime']":   "2025-08-07T17:22:11-07:00",
+					"$['end']['timeZone']":   "America/Los_Angeles",
+					"$['source']['title']":   "CRM",
+					"$['source']['url']":     "https://crm.example.com/deals/42",
+					// Google allows dots inside extendedProperties keys; bracket notation keeps them whole.
+					"$['extendedProperties']['private']['com.acme.dealId']": "42",
 				},
 			},
 			Server: mockserver.Conditional{
@@ -144,7 +145,7 @@ func TestCalendarWrite(t *testing.T) { // nolint:funlen,cyclop
 						"start": {"dateTime": "2025-08-07T15:30:00-07:00", "timeZone": "America/Los_Angeles"},
 						"end": {"dateTime": "2025-08-07T17:22:11-07:00", "timeZone": "America/Los_Angeles"},
 						"source": {"title": "CRM", "url": "https://crm.example.com/deals/42"},
-						"extendedProperties": {"private": {"crmId": "42"}}
+						"extendedProperties": {"private": {"com.acme.dealId": "42"}}
 					}`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseEvent),
@@ -160,6 +161,18 @@ func TestCalendarWrite(t *testing.T) { // nolint:funlen,cyclop
 				},
 			},
 			ExpectedErrs: nil,
+		},
+		{
+			Name: "Create event with overlapping plain and JSONPath fields is rejected",
+			Input: common.WriteParams{
+				ObjectName: "events",
+				RecordData: map[string]any{
+					"start":                  "2025-08-07T15:30:00-07:00",
+					"$['start']['dateTime']": "2025-08-07T15:30:00-07:00",
+				},
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{testutils.StringError("conflicting fields in record data")},
 		},
 	}
 
