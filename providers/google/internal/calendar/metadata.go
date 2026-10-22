@@ -43,7 +43,7 @@ var extendedPropertyBuckets = []string{"private", "shared"} // nolint:gochecknog
 
 // ListObjectMetadata serves the static schema. For events it additionally discovers the
 // free-form extendedProperties keys in use by sampling recent events on the primary calendar,
-// and exposes each as "extendedProperties.<bucket>.<key>" so they can be picked like any field.
+// and exposes each as "$['extendedProperties']['<bucket>']['<key>']" so they can be picked like any field.
 //
 // The keys are customer-defined, so they cannot live in the static schema. Discovery is best
 // effort: when sampling fails the static schema is returned unchanged and a warning is logged.
@@ -76,7 +76,12 @@ func (a *Adapter) ListObjectMetadata(
 
 	for _, bucket := range extendedPropertyBuckets {
 		for _, key := range keys[bucket] {
-			fieldName := strings.Join([]string{fieldExtendedProperties, bucket, key}, nestedFieldSeparator)
+			if strings.Contains(key, "'") {
+				// Cannot be represented in bracket notation; the field name would not parse back.
+				continue
+			}
+
+			fieldName := jsonPathField(fieldExtendedProperties, bucket, key)
 
 			events.AddFieldMetadata(fieldName, common.FieldMetadata{
 				DisplayName:  fmt.Sprintf("Extended Properties %v %v", naming.CapitalizeFirstLetterEveryWord(bucket), key),

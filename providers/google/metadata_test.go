@@ -76,22 +76,22 @@ func TestCalendarListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cy
 								ValueType:    "other",
 								ProviderType: "object",
 							},
-							"start.dateTime": {
+							"$['start']['dateTime']": {
 								DisplayName:  "Start Date Time",
 								ValueType:    "datetime",
 								ProviderType: "string",
 							},
-							"end.date": {
+							"$['end']['date']": {
 								DisplayName:  "End Date",
 								ValueType:    "date",
 								ProviderType: "string",
 							},
-							"source.url": {
+							"$['source']['url']": {
 								DisplayName:  "Source Url",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
-							"extendedProperties.private": {
+							"$['extendedProperties']['private']": {
 								DisplayName:  "Extended Properties Private",
 								ValueType:    "other",
 								ProviderType: "object",
@@ -122,24 +122,24 @@ func TestCalendarListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cy
 					"events": {
 						DisplayName: "Events",
 						Fields: map[string]common.FieldMetadata{
-							"extendedProperties.private": {
+							"$['extendedProperties']['private']": {
 								DisplayName:  "Extended Properties Private",
 								ValueType:    "other",
 								ProviderType: "object",
 							},
-							"extendedProperties.private.crmId": {
+							"$['extendedProperties']['private']['crmId']": {
 								DisplayName:  "Extended Properties Private crmId",
 								ValueType:    "string",
 								ProviderType: "string",
 								IsCustom:     new(true),
 							},
-							"extendedProperties.private.dealStage": {
-								DisplayName:  "Extended Properties Private dealStage",
+							"$['extendedProperties']['private']['com.acme.dealStage']": {
+								DisplayName:  "Extended Properties Private com.acme.dealStage",
 								ValueType:    "string",
 								ProviderType: "string",
 								IsCustom:     new(true),
 							},
-							"extendedProperties.shared.team": {
+							"$['extendedProperties']['shared']['team']": {
 								DisplayName:  "Extended Properties Shared team",
 								ValueType:    "string",
 								ProviderType: "string",

@@ -286,10 +286,11 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
-			Name: "Read events resolves dotted nested fields",
+			Name: "Read events resolves JSONPath nested fields",
 			Input: common.ReadParams{
 				ObjectName: "events",
-				Fields:     connectors.Fields("id", "start.dateTime", "end.timeZone", "start.date"),
+				Fields: connectors.Fields("id", "$['start']['dateTime']", "$['end']['timeZone']",
+					"$['start']['date']"),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -301,9 +302,10 @@ func TestCalendarRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Rows: 1,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{
-						"id":             "p3nkh1hg41683vdhlcq4k12iso",
-						"start.datetime": "2025-06-03T10:00:00-07:00",
-						"end.timezone":   "America/Los_Angeles",
+						"id": "p3nkh1hg41683vdhlcq4k12iso",
+						// Nested fields come back nested, keys lowercased like every other field.
+						"start": map[string]any{"datetime": "2025-06-03T10:00:00-07:00"},
+						"end":   map[string]any{"timezone": "America/Los_Angeles"},
 					},
 					Raw: map[string]any{
 						"summary": "Meeting with Integration",

@@ -4,7 +4,7 @@
       "extendedProperties": {
         "private": {
           "crmId": "42",
-          "dealStage": "negotiation"
+          "com.acme.dealStage": "negotiation"
         },
         "shared": {
           "team": "sales"
