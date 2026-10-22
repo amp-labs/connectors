@@ -9,8 +9,10 @@ import (
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
+	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/wordpress/internal/metadata"
@@ -19,6 +21,8 @@ import (
 var (
 	_ connectors.ObjectMetadataConnector = (*Connector)(nil)
 	_ connectors.ReadConnector           = (*Connector)(nil)
+	_ connectors.WriteConnector          = (*Connector)(nil)
+	_ connectors.DeleteConnector         = (*Connector)(nil)
 )
 
 type Connector struct {
@@ -28,6 +32,8 @@ type Connector struct {
 	common.RequireWorkspace
 
 	components.Reader
+	components.Writer
+	components.Deleter
 
 	workspace string
 }
@@ -43,7 +49,7 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 	}
 
 	errorHandler := interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
+		JSON: interpreter.NewFaultyResponder(errorFormats, statusCodeMapping),
 	}.Handle
 
 	connector.Reader = reader.NewHTTPReader(
@@ -53,6 +59,28 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
+
+	connector.Writer = writer.NewHTTPWriter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.WriteHandlers{
+			BuildRequest:  connector.buildWriteRequest,
+			ParseResponse: connector.parseWriteResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
+
+	connector.Deleter = deleter.NewHTTPDeleter(
+		connector.HTTPClient().Client,
+		components.NewEmptyEndpointRegistry(),
+		connector.ProviderContext.Module(),
+		operations.DeleteHandlers{
+			BuildRequest:  connector.buildDeleteRequest,
+			ParseResponse: connector.parseDeleteResponse,
 			ErrorHandler:  errorHandler,
 		},
 	)
@@ -83,4 +111,15 @@ func (c Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	}
 
 	return urlbuilder.New(c.ProviderInfo().BaseURL, path)
+}
+
+func (c Connector) getWriteDeleteURL(objectName string, recordId string) (*urlbuilder.URL, error) {
+	path, err := metadata.Catalog.ReadPathWithIds(objectName,
+		httpkit.PathIdentifier{Name: "workspace_id", Value: c.workspace},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return urlbuilder.New(c.ProviderInfo().BaseURL, path, recordId)
 }
