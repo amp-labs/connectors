@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os/signal"
 	"syscall"
 
@@ -65,40 +67,42 @@ func main() {
 	)
 }
 
-func updateValidation(expectedGivenName string, expectedFamilyName string) func(record map[string]any) {
-	return func(record map[string]any) {
+func updateValidation(expectedGivenName string, expectedFamilyName string) func(record map[string]any) error {
+	return func(record map[string]any) error {
 		object, err := jsonquery.Convertor.NodeFromMap(record)
 		if err != nil {
-			utils.Fail("invalid test", "error", err)
+			return err
 		}
 
 		array, err := jsonquery.New(object).ArrayRequired("names")
 		if err != nil {
-			utils.Fail("missing names property in response")
+			return errors.New("missing names property in response")
 		}
 
 		if len(array) == 0 {
-			utils.Fail("names is an empty array")
+			return errors.New("names is an empty array")
 		}
 
 		nameObject := array[0]
 
 		actualGivenName, err := jsonquery.New(nameObject).StringRequired("givenName")
 		if err != nil {
-			utils.Fail("missing givenName property")
+			return errors.New("missing givenName property")
 		}
 
 		actualFamilyName, err := jsonquery.New(nameObject).StringRequired("familyName")
 		if err != nil {
-			utils.Fail("missing familyName property")
+			return errors.New("missing familyName property")
 		}
 
 		if actualGivenName != expectedGivenName {
-			utils.Fail("mismatching givenName", "expected", expectedGivenName, "actual", actualGivenName)
+			return fmt.Errorf("mismatching givenName expected(%v), actual(%v)", expectedGivenName, actualGivenName)
 		}
 
 		if actualFamilyName != expectedFamilyName {
-			utils.Fail("mismatching familyName", "expected", expectedFamilyName, "actual", actualFamilyName)
+			return fmt.Errorf("mismatching familyName expected(%v), actual(%v)", expectedFamilyName, actualFamilyName)
 		}
+
+		return nil
 	}
 }

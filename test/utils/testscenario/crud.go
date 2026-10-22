@@ -4,14 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
+	"github.com/amp-labs/connectors/test/utils/testscenario/internal/core"
 )
 
 type ConnectorCRUD interface {
@@ -47,7 +50,7 @@ type CRUDTestSuite struct {
 
 	// ValidateUpdatedFields optionally verifies that updates took effect correctly.
 	// Use this when UpdatedFields is insufficient — for example, when validating nested arrays or objects.
-	ValidateUpdatedFields func(record map[string]any)
+	ValidateUpdatedFields func(record map[string]any) error
 
 	// PostCreate runs after create succeeds and before the first read/search. Optional.
 	PostCreate func(ctx context.Context, conn ConnectorCRUD, createResult *common.WriteResult) error
@@ -82,39 +85,64 @@ func ValidateCreateUpdateDelete[CP, UP any](
 ) {
 	fmt.Println("> TEST Create/Update/Delete", objectName)
 
+	// At the end of execution print success or failure. Controlled by setting success flag throughout execution.
+	success := true
+	defer func() {
+		if success {
+			fmt.Println("> Successful test completion")
+		} else {
+			fmt.Println("> Test Failed ...")
+			os.Exit(1)
+		}
+	}()
+
 	// CREATE
 	fmt.Println("Creating", objectName)
 	createResult, err := createObject(ctx, conn, objectName, &createPayload)
-	failOnError(err)
+	if success = !core.PrintError(err) && success; !success {
+		return
+	}
 
 	if suite.PostCreate != nil {
 		err = suite.PostCreate(ctx, conn, createResult)
-		failOnError(err)
+		if success = !core.PrintError(err) && success; !success {
+			return
+		}
 	}
 
-	if suite.WaitBeforeSearch != 0 {
-		fmt.Println("... waiting")
-		time.Sleep(suite.WaitBeforeSearch)
-	}
+	// Schedule DELETE
+	objectId := ""
+	defer func() {
+		if objectId == "" {
+			fmt.Printf("Cannot remove object(%v) without id\n", objectName)
+			success = false
+		} else {
+			fmt.Printf("Removing object(%v) with id(%v)\n", objectName, objectId)
+			err = removeObject(ctx, conn, objectName, objectId)
+			removalOk := !core.PrintError(err)
+			if removalOk {
+				fmt.Printf("Record with id(%v) is removed\n", objectId)
+			}
 
-	objectID := createResult.RecordId
+			success = removalOk && success
+		}
+	}()
 
+	// Acquire Object Identifier.
+	objectId = createResult.RecordId
 	if !suite.SearchBy.isZero() {
-		// READ
-		fmt.Println("Reading", objectName)
-		res, err := readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
-		failOnError(err)
+		if identifier, ok := findRecordId(ctx, conn, objectName,
+			suite.ReadFields, suite.WaitBeforeSearch, suite.SearchBy, suite.RecordIdentifierKey,
+		); ok {
+			objectId = identifier
+		} else {
+			success = false
 
-		// SEARCH
-		fmt.Println("Finding recently created", objectName)
-
-		search := suite.SearchBy
-		object, err := searchObjectRecord(res, search.Key, search.Value)
-		failOnError(err)
-		objectID = object.getRecordIdentifierValue(suite.RecordIdentifierKey)
+			return
+		}
 	}
 
-	fmt.Println("Object record identifier is", objectID)
+	fmt.Println("Object record identifier is", objectId)
 
 	// PREPROCESS UPDATE PAYLOAD
 	preprocessPayloadFunc := suite.PreprocessUpdatePayload
@@ -127,49 +155,83 @@ func ValidateCreateUpdateDelete[CP, UP any](
 
 	// UPDATE
 	fmt.Println("Updating some object properties")
-	updateRes, err := updateObject(ctx, conn, objectName, objectID, &updatePayload)
-	failOnError(err)
-	fmt.Println("Validate object has changed accordingly")
+	updateRes, err := updateObject(ctx, conn, objectName, objectId, &updatePayload)
+	if success = !core.PrintError(err) && success; !success {
+		return
+	}
 
+	// VALIDATE UPDATE
+	fmt.Println("Verify object fields match the expected updated values")
 	if suite.WaitBeforeSearch != 0 {
 		fmt.Println("... waiting")
 		time.Sleep(suite.WaitBeforeSearch)
 	}
 
-	// VALIDATE UPDATE
 	validateUpdatedFieldsFunc := suite.ValidateUpdatedFields
 	if validateUpdatedFieldsFunc == nil {
 		// By default, compare each field to string counterpart.
 		// Complicated responses with nested objects or arrays require custom func.
-		validateUpdatedFieldsFunc = func(record map[string]any) {
-			for k, v := range suite.UpdatedFields {
-				if !mockutils.DoesObjectCorrespondToString(record[k], v) {
-					utils.Fail("error updated properties do not match", k, v, record[k])
+		validateUpdatedFieldsFunc = func(record map[string]any) error {
+			for key, expectedValue := range suite.UpdatedFields {
+				actualValue := record[key]
+				if !mockutils.DoesObjectCorrespondToString(actualValue, expectedValue) {
+					return fmt.Errorf("error updated properties do not match key(%v), expected(%v), actual(%v)",
+						key, expectedValue, actualValue)
 				}
 			}
+
+			return nil
 		}
 	}
 
-	var updatedFields map[string]any
-
+	// Extract the Fields from a record by the object id.
+	// Then validate that the fields were updated as expected.
+	var currentObjectFields map[string]any
 	if !suite.SearchBy.isZero() {
 		res, err := readObjects(ctx, conn, objectName, suite.ReadFields, suite.SearchBy.Since)
-		failOnError(err)
-		object, err := searchObjectRecord(res, suite.RecordIdentifierKey, objectID)
-		failOnError(err)
-		updatedFields = object.Fields
+		if success = !core.PrintError(err) && success; !success {
+			return
+		}
+
+		object, err := searchObjectRecord(res, suite.RecordIdentifierKey, objectId)
+		if success = !core.PrintError(err) && success; !success {
+			return
+		}
+		currentObjectFields = object.Fields
 	} else {
 		fmt.Println("Using response of update operation to validate the changes")
-		updatedFields = updateRes.Data
+		currentObjectFields = updateRes.Data
 	}
 
-	validateUpdatedFieldsFunc(updatedFields)
+	success = !core.PrintError(validateUpdatedFieldsFunc(currentObjectFields)) && success
+}
 
-	// DELETE
-	fmt.Println("Removing this", objectName)
-	err = removeObject(ctx, conn, objectName, objectID)
-	failOnError(err)
-	fmt.Println("> Successful test completion")
+func findRecordId(ctx context.Context,
+	conn ConnectorCRUD,
+	objectName string,
+	readFields datautils.StringSet,
+	waitBeforeSearch time.Duration,
+	searchBy Property,
+	identifierKey string,
+) (objectID string, ok bool) {
+	if waitBeforeSearch != 0 {
+		fmt.Println("... waiting")
+		time.Sleep(waitBeforeSearch)
+	}
+
+	fmt.Println("Reading", objectName)
+	res, err := readObjects(ctx, conn, objectName, readFields, searchBy.Since)
+	if core.PrintError(err) {
+		return "", false
+	}
+
+	fmt.Println("Finding recently created", objectName)
+	object, err := searchObjectRecord(res, searchBy.Key, searchBy.Value)
+	if core.PrintError(err) {
+		return "", false
+	}
+
+	return object.getRecordIdentifierValue(identifierKey), true
 }
 
 type objectRecord struct {
@@ -256,7 +318,8 @@ func readObjects(
 
 func searchObjectRecord(res *common.ReadResult, key, value string) (*objectRecord, error) {
 	for _, data := range res.Data {
-		if mockutils.DoesObjectCorrespondToString(data.Fields[key], value) {
+		field, _ := readhelper.ExtractProperty(data.Fields, key)
+		if mockutils.DoesObjectCorrespondToString(field, value) {
 			return &objectRecord{data}, nil
 		}
 

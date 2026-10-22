@@ -93,6 +93,15 @@ func SelectFields(
 	return output
 }
 
+// ExtractProperty retrieves a value from a nested map structure using a key or JSONPath expression.
+//
+// NOTE: this function could become part of "github.com/amp-labs/amp-common".
+func ExtractProperty(record map[string]any, key string) (any, bool) {
+	path := ParseJSONPath(key)
+
+	return getNestedValue(record, path)
+}
+
 // ParseJSONPath splits a JSONPath-like expression into path tokens.
 //
 // Supported tokens are object keys in bracket form and array wildcards:

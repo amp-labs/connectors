@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"os/signal"
 	"reflect"
 	"syscall"
@@ -89,15 +90,15 @@ func main() {
 				Value: subject,
 			},
 			RecordIdentifierKey: "id",
-			ValidateUpdatedFields: func(record map[string]any) {
+			ValidateUpdatedFields: func(record map[string]any) error {
 				if !reflect.DeepEqual(record["subject"], updatedSubject) {
-					utils.Fail("subject mismatch")
+					return errors.New("subject mismatch")
 				}
 				if !reflect.DeepEqual(record["body"], map[string]any{
 					"content":     updatedBodyData,
 					"contentType": TextContentType,
 				}) {
-					utils.Fail("body mismatch")
+					return errors.New("body mismatch")
 				}
 				if !reflect.DeepEqual(record["from"], map[string]any{
 					"emailAddress": map[string]any{
@@ -105,7 +106,7 @@ func main() {
 						"name":    from,
 					},
 				}) {
-					utils.Fail("from mismatch")
+					return errors.New("from mismatch")
 				}
 				if !reflect.DeepEqual(record["torecipients"], []any{
 					map[string]any{
@@ -115,8 +116,10 @@ func main() {
 						},
 					},
 				}) {
-					utils.Fail("torecipients mismatch")
+					return errors.New("torecipients mismatch")
 				}
+
+				return nil
 			},
 		},
 	)
