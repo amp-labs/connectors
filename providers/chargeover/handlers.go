@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -86,6 +86,17 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	return &objectMetadata, nil
 }
 
+// escapeWhereValue formats a timestamp for use as a value inside ChargeOver's `where` query parameter.
+// Colons and commas are reserved characters in a where clause and must be escaped with a backslash,
+// see https://developer.chargeover.com/docs/api-information/escape-syntax/example-escape-syntax.
+// Percent-encoding the colons instead makes ChargeOver stop parsing the timestamp at the first
+// encoded colon, which silently truncates the filter to hour precision.
+func escapeWhereValue(timestamp time.Time) string {
+	return whereEscaper.Replace(timestamp.Format(time.RFC3339))
+}
+
+var whereEscaper = strings.NewReplacer(":", `\:`, ",", `\,`) //nolint:gochecknoglobals
+
 type records struct {
 	Response []map[string]any `json:"response"`
 }
@@ -107,15 +118,13 @@ func (c *Connector) constructReadURL(params common.ReadParams) (*urlbuilder.URL,
 	if !params.Since.IsZero() && !doNotFilter.Has(params.ObjectName) {
 		if filteringFields.Has(params.ObjectName) {
 			fld := filteringFields.Get(params.ObjectName)
-			// ChargeOver requires URL-encoded timestamps in query parameters
-			escapedSince := url.QueryEscape(params.Since.Format(time.RFC3339))
+			where := fld + ":GTE:" + escapeWhereValue(params.Since)
 
 			if !params.Until.IsZero() {
-				escapedUntil := url.QueryEscape(params.Until.Format(time.RFC3339))
-				urlbuild.WithQueryParam("where", fld+":GTE:"+escapedSince+","+fld+":LTE:"+escapedUntil)
-			} else {
-				urlbuild.WithQueryParam("where", fld+":GTE:"+escapedSince)
+				where += "," + fld + ":LTE:" + escapeWhereValue(params.Until)
 			}
+
+			urlbuild.WithQueryParam("where", where)
 		}
 	}
 
