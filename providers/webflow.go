@@ -18,6 +18,19 @@ func init() {
 				ScopesField: "scope",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					// Every object except `sites` is scoped to a site
+					// (/v2/sites/{site_id}/...). The connector substitutes this
+					// value into the request path.
+					Name:        "siteId",
+					DisplayName: "Site ID",
+					DocsURL:     "https://help.webflow.com/hc/en-us/sections/33776399764499-Site-Settings",
+					Prompt:      "The ID of the Webflow site to connect (e.g. `6ac4a4402b7737869ac6f61d`), found under Site settings > General.", //nolint:lll
+				},
+			},
+		},
 		//nolint:lll
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{

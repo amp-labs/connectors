@@ -1,0 +1,37 @@
+[
+  {
+    "objectName": "sites",
+    "fields": {
+      "fullSiteCompiledAt": {
+        "displayName": "fullSiteCompiledAt",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  {
+    "objectName": "pages",
+    "fields": {
+      "shouldPublish": {
+        "displayName": "shouldPublish",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      }
+    }
+  },
+  {
+    "objectName": "forms",
+    "fields": {
+      "componentId": {
+        "displayName": "componentId",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "componentElementId": {
+        "displayName": "componentElementId",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  }
+]
