@@ -41,5 +41,17 @@ func init() {
 			Subscribe: false,
 			Write:     false,
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Site ID or Domain",
+					DocsURL:     "https://developer.wordpress.com/docs/api/1.1/get/me/sites/",
+					Prompt: "Call the endpoint that lists the sites available to the connected account " +
+						"and select the ID of the site to use for this connection.",
+					ModuleDependencies: &ModuleDependencies{},
+				},
+			},
+		},
 	})
 }
