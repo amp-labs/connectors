@@ -1,0 +1,8 @@
+{
+  "id": "webhook-1",
+  "triggerType": "form_submission",
+  "url": "https://example.com/hooks/webflow",
+  "siteId": "test-site-id",
+  "workspaceId": "workspace-1",
+  "createdOn": "2026-10-06T09:00:00.000Z"
+}

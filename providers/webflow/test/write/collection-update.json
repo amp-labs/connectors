@@ -1,0 +1,9 @@
+{
+  "id": "collection-1",
+  "displayName": "Blog Posts (updated)",
+  "singularName": "Blog Post",
+  "slug": "blog-posts",
+  "createdOn": "2026-09-10T08:00:00.000Z",
+  "lastUpdated": "2026-10-06T09:00:00.000Z",
+  "fields": []
+}

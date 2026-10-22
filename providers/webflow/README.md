@@ -160,6 +160,73 @@ return a finished empty page; `comments` with Since set returns cleanly.
 `redirects`, `activity_logs`, `orders` and `products` could not be exercised
 on that site (403/409) and are covered by unit tests only.
 
+## Write
+
+Implemented in `write.go` with the per-object table `writeSpecs`, wired
+through `components.Writer` in `connector.go`. Create is `WriteParams` without
+a `RecordId`; update is with one. Objects without the matching endpoint return
+`ErrOperationNotSupportedForObject`.
+
+| Object | Create | Update |
+|---|---|---|
+| `collections` | `POST /v2/sites/{site_id}/collections` | `PATCH /v2/collections/{id}` |
+| `assets` | `POST /v2/sites/{site_id}/assets` (registers an upload, see below) | `PATCH /v2/assets/{id}` |
+| `custom_fonts` | `POST /v2/sites/{site_id}/custom_fonts` (registers an upload) | `PATCH /v2/sites/{site_id}/custom_fonts/{id}` |
+| `products` | `POST /v2/sites/{site_id}/products` | `PATCH /v2/sites/{site_id}/products/{id}` |
+| `redirects` | `POST /v2/sites/{site_id}/redirects` | `PATCH /v2/sites/{site_id}/redirects/{id}` |
+| `asset_folders` | `POST /v2/sites/{site_id}/asset_folders` | none in the API |
+| `webhooks` | `POST /v2/sites/{site_id}/webhooks` | none in the API |
+| `registered_scripts` | `POST …/registered_scripts/inline` or `…/hosted` | none in the API |
+| `sites` | none (needs a workspace id) | `PATCH /v2/sites/{id}` |
+| `pages` | none | `PUT /v2/pages/{id}` |
+| `form_submissions` | none | `PATCH /v2/sites/{site_id}/form_submissions/{id}` |
+| `comments` | none | `PATCH /v2/sites/{site_id}/comments/{id}` (body `{resolved}`) |
+| `orders` | none | `PATCH /v2/sites/{site_id}/orders/{id}` |
+
+Not writable: `activity_logs`, `components`, `custom_code_blocks`,
+`custom_domains`, `forms`, `google_tags` (no per-record write endpoint;
+Google tags are replaced as a whole list).
+
+### How a write works
+
+- **Payload.** `RecordData` is sent as the JSON body unchanged. Webflow
+  ignores unknown and read-only fields on PATCH (verified live on assets with
+  `id`, `createdOn`, `siteId` and a bogus field, all 200) but validates the
+  types of known fields strictly, so a page record copied from Read with
+  `null` values is rejected with `validation_error`; send only the fields to
+  change.
+- **Paths** are explicit per object because several update endpoints are not
+  under the site (`collections`, `pages`, `assets`, `sites`). Updates use
+  PATCH except `pages` (PUT).
+- **Record id** in the result is `id` from the response, `orderId` for
+  orders, `product.id` for a product create (the response is `{product,
+  skus}`) and `customFont.id` for custom fonts. When the response has no id
+  the request's `RecordId` is echoed back.
+- **Registered scripts** have two create endpoints. A payload with
+  `sourceCode` is registered as an inline script, anything else as a hosted
+  one (`hostedLocation` + `integrityHash`).
+- **Uploads.** Creating an asset or custom font registers the upload:
+  Webflow returns the new id plus `uploadUrl`/`uploadDetails` (assets) or
+  `upload` (fonts), and the caller must then PUT the file to that URL. The
+  connector does not transfer file bytes.
+- **Products** accept the flattened shape Read returns: product fields at
+  the top level, SKUs under `skus`, optional `publishStatus`. The connector
+  builds the API's `{product, sku, publishStatus}` body from it, using `sku`
+  if given or else the first element of `skus` (the API writes one SKU per
+  call; create requires one, update accepts none). Any further entries in
+  `skus` are dropped: additional SKUs are created through
+  `POST /v2/sites/{site_id}/products/{product_id}/skus`, which is not an
+  object in this connector. A payload that already has a `product` key is
+  taken as the API shape and sent unchanged. Not verified live (the test site
+  has no Ecommerce); covered by unit tests.
+
+### Verified live (2026-10-06)
+
+Webhook create, collection create and update, and page title update (then
+reverted) succeeded against the test site. `redirects` and site update are
+Enterprise-gated (403) and `orders`/`products` need Ecommerce (409), so those
+paths are covered by unit tests only.
+
 ## Not supported
 
 - **CMS collection items** (`/collections/{collection_id}/items`): fields are
@@ -174,5 +241,7 @@ on that site (403/409) and are covered by unit tests only.
 ## Testing
 
 - Unit tests: `go test ./providers/webflow/...`
-- Live: `go run ./test/webflow/metadata` and `go run ./test/webflow/read`
-  with a `webflow-creds.json` holding the OAuth token and `metadata.siteId`.
+- Live: `go run ./test/webflow/metadata`, `go run ./test/webflow/read` and
+  `go run ./test/webflow/write` with a `webflow-creds.json` holding the OAuth
+  token and `metadata.siteId`. The write script leaves a webhook and a
+  collection behind until delete support lands.
