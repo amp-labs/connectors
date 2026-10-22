@@ -1,0 +1,7 @@
+{
+  "code": "rest_already_trashed",
+  "message": "The post has already been deleted.",
+  "data": {
+    "status": 410
+  }
+}
