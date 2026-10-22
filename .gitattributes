@@ -66,3 +66,6 @@ providers/zendesksupport/openapi/help-center-api.yaml filter=lfs diff=lfs merge=
 providers/zendesksupport/openapi/support-api.yaml filter=lfs diff=lfs merge=lfs -text
 providers/zoom/metadata/openapi/meeting.json filter=lfs diff=lfs merge=lfs -text
 providers/zoom/metadata/openapi/user.json filter=lfs diff=lfs merge=lfs -text
+
+# Large files in Scraping scripts.
+scripts/scraper/wordpress/internal/files/combined-responses.json filter=lfs diff=lfs merge=lfs -text
