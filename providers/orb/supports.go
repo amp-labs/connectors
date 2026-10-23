@@ -9,10 +9,12 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 )
 
+const objectNameInvoices = "invoices"
+
 var supportedObjects = []string{ // nolint:gochecknoglobals
 	"customers",
 	"subscriptions",
-	"invoices",
+	objectNameInvoices,
 	// Billable metrics, GET /v1/metrics.
 	"metrics",
 }

@@ -21,6 +21,12 @@ const (
 	maxPageSize = 100
 )
 
+// List invoices returns only `issued`, `paid` and `synced` invoices unless `status[]` is given,
+// so every status is requested: a full read must also see invoices that were voided after they
+// were issued, and drafts. Draft values are Orb's last computation and may lag behind its refresh.
+// https://docs.withorb.com/api-reference/invoice/list-invoices
+var invoiceStatuses = []string{"draft", "issued", "paid", "synced", "void"} // nolint:gochecknoglobals
+
 // buildReadRequest lists an object with cursor pagination.
 //
 // Every object is read in full: Since and Until are not sent. Orb's list endpoints filter only by
@@ -41,6 +47,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	readURL.WithQueryParam("limit", strconv.Itoa(min(readhelper.PageSizeWithDefault(params, maxPageSize), maxPageSize)))
+
+	if params.ObjectName == objectNameInvoices {
+		readURL.WithQueryParamList("status[]", invoiceStatuses)
+	}
 
 	if params.NextPage != "" {
 		readURL.WithQueryParam("cursor", params.NextPage.String())
