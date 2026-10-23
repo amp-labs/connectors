@@ -13,16 +13,13 @@ import (
 func GetClarifyConnector(ctx context.Context) *clarify.Connector {
 	filePath := credscanning.LoadPath(providers.Clarify)
 
-	reader := utils.MustCreateProvCredJSON(filePath, false,
-		credscanning.Field{Name: "workspace", PathJSON: "metadata.workspace"},
-	)
+	fieldWorkspace := credscanning.Field{Name: "workspace", PathJSON: "metadata.workspace"}
+	reader := utils.MustCreateProvCredJSON(filePath, false, fieldWorkspace)
 
 	conn, err := clarify.NewConnector(
 		common.ConnectorParams{
 			AuthenticatedClient: utils.NewAPIKeyClient(ctx, reader, providers.Clarify),
-			Metadata: map[string]string{
-				"workspace": reader.Get(credscanning.Field{Name: "workspace"}),
-			},
+			Workspace:           reader.Get(fieldWorkspace),
 		},
 	)
 	if err != nil {
