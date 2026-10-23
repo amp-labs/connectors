@@ -18,6 +18,11 @@ func init() {
 			},
 			DocsURL: "https://api.sybill.ai/docs/authentication.html",
 		},
+		Media: &Media{
+			Regular: &MediaTypeRegular{
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792742921/media/sybill_regular_logo.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
