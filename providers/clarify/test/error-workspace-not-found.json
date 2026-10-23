@@ -1,0 +1,8 @@
+{
+  "errors": [
+    {
+      "status": "404",
+      "detail": "Workspace not found"
+    }
+  ]
+}
