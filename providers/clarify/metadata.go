@@ -1,0 +1,297 @@
+package clarify
+
+import (
+	"context"
+	"encoding/json"
+	"strings"
+
+	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/internal/datautils"
+)
+
+// Schema resources are identified by a URL whose last segments name the object:
+// https://getclarify.ai/schemas/entities/person, .../entities/c_sales_order.
+// `.../core/*` entries are shared base definitions, not objects.
+// https://developer.clarify.ai/docs/guides/schemas-and-relationships#schema-fields
+const entitySchemaMarker = "/entities/"
+
+// listObjectMetadata describes objects from GET /v1/workspaces/{slug}/schemas, which returns every
+// object's JSON Schema (fields, types, enums, relationships), built-in and custom alike, so custom
+// fields are described with the workspace's own names. The list is fetched once per call.
+// https://developer.clarify.ai/docs/getting-started/key-concepts#schemas-and-fields
+func (c *Connector) listObjectMetadata(
+	ctx context.Context, objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	schemas, err := c.fetchSchemas(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result := common.NewListObjectMetadataResult()
+
+	for _, objectName := range datautils.NewSetFromList(objectNames).List() {
+		entity, ok := schemas[objectName]
+		if !ok {
+			result.AppendError(objectName, common.ErrObjectNotSupported)
+
+			continue
+		}
+
+		result.Result[objectName] = *entity.objectMetadata(objectName)
+	}
+
+	return result, nil
+}
+
+// fetchSchemas reads every page of the schemas list, following links.next, keyed by object name.
+func (c *Connector) fetchSchemas(ctx context.Context) (map[string]entitySchema, error) {
+	schemasURL, err := c.workspaceURL("schemas")
+	if err != nil {
+		return nil, err
+	}
+
+	schemas := make(map[string]entitySchema)
+	next := schemasURL.String()
+
+	for next != "" {
+		response, err := c.JSONHTTPClient().Get(ctx, next)
+		if err != nil {
+			return nil, err
+		}
+
+		page, err := common.UnmarshalJSON[schemasResponse](response)
+		if err != nil {
+			return nil, err
+		}
+
+		if page == nil {
+			return nil, common.ErrEmptyJSONHTTPResponse
+		}
+
+		for _, resource := range page.Data {
+			_, objectName, found := strings.Cut(resource.ID, entitySchemaMarker)
+			if !found || objectName == "" {
+				continue
+			}
+
+			schemas[objectName] = resource.Attributes
+		}
+
+		next = ""
+		if page.Links.Next != nil {
+			next = *page.Links.Next
+		}
+	}
+
+	return schemas, nil
+}
+
+// https://developer.clarify.ai/docs/api-reference/schemas/getSchemas
+type schemasResponse struct {
+	Data []struct {
+		ID         string       `json:"id"`
+		Attributes entitySchema `json:"attributes"`
+	} `json:"data"`
+	Links struct {
+		Next *string `json:"next"`
+	} `json:"links"`
+}
+
+type entitySchema struct {
+	Title      string                    `json:"title"`
+	Label      *entityLabel              `json:"xClarifyLabel"`
+	Properties map[string]schemaProperty `json:"properties"`
+}
+
+type entityLabel struct {
+	Plural   string `json:"plural"`
+	Singular string `json:"singular"`
+}
+
+type schemaProperty struct {
+	Type         schemaType            `json:"type"`
+	Format       string                `json:"format"`
+	Title        string                `json:"title"`
+	Enum         []any                 `json:"enum"`
+	ReadOnly     *bool                 `json:"readOnly"`
+	Items        *schemaProperty       `json:"items"`
+	Relationship *relationshipProperty `json:"xClarifyRelationship"`
+}
+
+type relationshipProperty struct {
+	Kind   string `json:"kind"`
+	Field  string `json:"field"`
+	Entity string `json:"entity"`
+}
+
+// schemaType is a JSON Schema `type`: one name, or a list of names such as ["string", "null"].
+type schemaType []string
+
+func (t *schemaType) UnmarshalJSON(data []byte) error {
+	var single string
+	if err := json.Unmarshal(data, &single); err == nil {
+		*t = schemaType{single}
+
+		return nil
+	}
+
+	var list []string
+	if err := json.Unmarshal(data, &list); err != nil {
+		return err
+	}
+
+	*t = list
+
+	return nil
+}
+
+// name is the type without "null", which only marks the field as nullable.
+func (t schemaType) name() string {
+	for _, name := range t {
+		if name != "null" {
+			return name
+		}
+	}
+
+	return ""
+}
+
+func (e entitySchema) objectMetadata(objectName string) *common.ObjectMetadata {
+	fields := make(common.FieldsMetadata, len(e.Properties)+1)
+
+	for name, property := range e.Properties {
+		if !property.isReadable() {
+			continue
+		}
+
+		fields[name] = property.fieldMetadata(name)
+	}
+
+	// Read returns the resource id as `id`, beside the `_id` attribute.
+	if _, ok := fields["id"]; !ok {
+		fields["id"] = common.FieldMetadata{
+			DisplayName:  "ID",
+			ValueType:    common.ValueTypeString,
+			ProviderType: "string",
+			ReadOnly:     new(true),
+		}
+	}
+
+	return common.NewObjectMetadata(e.displayName(objectName), fields)
+}
+
+func (e entitySchema) displayName(objectName string) string {
+	if e.Label != nil && e.Label.Plural != "" {
+		return e.Label.Plural
+	}
+
+	if e.Title != "" {
+		return e.Title
+	}
+
+	return naming.CapitalizeFirstLetterEveryWord(objectName)
+}
+
+// isReadable reports whether Read returns the property among a record's attributes. To-one
+// relationships are stored as a foreign-key attribute (company_id); to-many relationships are kept
+// between records and are only returned through `include`, which this connector does not request.
+// https://developer.clarify.ai/docs/guides/import-crm-data#4-link-people-to-deals
+func (p schemaProperty) isReadable() bool {
+	if p.Relationship == nil {
+		return true
+	}
+
+	return p.Relationship.Kind == "many-to-one" || p.Relationship.Kind == "one-to-one"
+}
+
+func (p schemaProperty) fieldMetadata(name string) common.FieldMetadata {
+	valueType, values := p.valueType()
+
+	displayName := p.Title
+	if displayName == "" {
+		displayName = name
+	}
+
+	field := common.FieldMetadata{
+		DisplayName:  displayName,
+		ValueType:    valueType,
+		ProviderType: p.providerType(),
+		ReadOnly:     p.ReadOnly,
+		Values:       values,
+	}
+
+	if p.Relationship != nil {
+		field.ValueType = common.ValueTypeReference
+		field.ReferenceTo = []string{objectNameForEntity(p.Relationship.Entity)}
+	}
+
+	return field
+}
+
+func (p schemaProperty) providerType() string {
+	if p.Format != "" {
+		return p.Type.name() + ":" + p.Format
+	}
+
+	return p.Type.name()
+}
+
+// valueType maps a JSON Schema type and format to an Ampersand value type.
+// Collection fields (email_addresses, domains) are objects holding an `items` array, so they are other.
+// https://developer.clarify.ai/docs/getting-started/key-concepts#collection-fields
+func (p schemaProperty) valueType() (common.ValueType, []common.FieldValue) {
+	if len(p.Enum) != 0 {
+		return common.ValueTypeSingleSelect, enumValues(p.Enum)
+	}
+
+	switch p.Type.name() {
+	case "string":
+		switch p.Format {
+		case "date-time":
+			return common.ValueTypeDateTime, nil
+		case "date":
+			return common.ValueTypeDate, nil
+		default:
+			return common.ValueTypeString, nil
+		}
+	case "number":
+		return common.ValueTypeFloat, nil
+	case "integer":
+		return common.ValueTypeInt, nil
+	case "boolean":
+		return common.ValueTypeBoolean, nil
+	case "array":
+		if p.Items != nil && len(p.Items.Enum) != 0 {
+			return common.ValueTypeMultiSelect, enumValues(p.Items.Enum)
+		}
+
+		return common.ValueTypeOther, nil
+	default:
+		return common.ValueTypeOther, nil
+	}
+}
+
+func enumValues(enum []any) []common.FieldValue {
+	values := make([]common.FieldValue, 0, len(enum))
+
+	for _, value := range enum {
+		text, ok := value.(string)
+		if !ok {
+			continue
+		}
+
+		values = append(values, common.FieldValue{Value: text, DisplayValue: text})
+	}
+
+	return values
+}
+
+// objectNameForEntity names a relationship target by this connector's object name.
+func objectNameForEntity(entity string) string {
+	if entity == "user" {
+		return objectNameUsers
+	}
+
+	return entity
+}
