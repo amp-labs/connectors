@@ -163,6 +163,17 @@ func isSalesforceFlowEnabled(inst *openapi.Installation) bool {
 		subscribeConfig.ProviderOptions.UseSalesforceFlows.Enabled
 }
 
+// isSalesforceFlowManuallyManaged reports whether the customer manages the installation's flows.
+func isSalesforceFlowManuallyManaged(inst *openapi.Installation) bool {
+	if !isSalesforceFlowEnabled(inst) {
+		return false
+	}
+
+	manual := inst.Config.Content.Subscribe.ProviderOptions.UseSalesforceFlows.ManualManagement
+
+	return manual != nil && *manual
+}
+
 // buildSalesforceFlowRequest builds the flow-mode SubscriptionRequest, or nil when the
 // installation is not on flow subscribe. Everything but the selected fields is derived here; a
 // resolver error propagates rather than defaulting, since outbound messages serializing the wrong
@@ -176,6 +187,13 @@ func buildSalesforceFlowRequest(
 ) (*salesforce.SubscriptionRequest, error) {
 	if !isSalesforceFlowEnabled(inst) {
 		return nil, nil //nolint:nilnil // not a flow installation → CDC path.
+	}
+
+	if isSalesforceFlowManuallyManaged(inst) {
+		return &salesforce.SubscriptionRequest{
+			UseFlow: true,
+			Flow:    &salesforce.FlowConfig{ManualManagement: true},
+		}, nil
 	}
 
 	if deps.SalesforceFlow == nil {
