@@ -65,8 +65,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 				datautils.Time.FormatRFC3339inUTC(params.Since.Add(-conversationLookback)))
 		}
 
+		// startedBefore is exclusive (a live read leaves out a meeting starting exactly at it),
+		// so one second is added to keep Until inclusive at the second precision of startTime.
 		if !params.Until.IsZero() {
-			readURL.WithQueryParam(startedBeforeParam, datautils.Time.FormatRFC3339inUTC(params.Until))
+			readURL.WithQueryParam(startedBeforeParam,
+				datautils.Time.FormatRFC3339inUTC(params.Until.Truncate(time.Second).Add(time.Second)))
 		}
 	}
 
