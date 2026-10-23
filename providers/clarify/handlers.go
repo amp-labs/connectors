@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
@@ -21,11 +22,15 @@ const (
 	pageLimitParam  = "page[limit]"
 	pageOffsetParam = "page[offset]"
 
-	// Datetime filter operators: `Is after` is exclusive and `Is on or before` inclusive,
-	// matching ReadParams (Since exclusive, Until inclusive).
+	// Datetime filter operators.
 	// https://developer.clarify.ai/docs/api-basics/filtering#operators-by-field-type
-	updatedSinceParam = "filter[_updated_at][Is after]"
-	updatedUntilParam = "filter[_updated_at][Is on or before]"
+	// Records show `_updated_at` in milliseconds, but Clarify compares a finer stored value: live, a record
+	// shown as .797Z matched `Is after .797Z`, and one shown as .124Z missed `Is on or before .124Z`.
+	// So both bounds move to the next millisecond: `Is on or after` Since+1ms excludes Since's
+	// millisecond, and `Is before` Until+1ms includes Until's, matching ReadParams (Since exclusive,
+	// Until inclusive) at the precision records carry.
+	updatedSinceParam = "filter[_updated_at][Is on or after]"
+	updatedUntilParam = "filter[_updated_at][Is before]"
 )
 
 // Operator names contain spaces, which the docs encode as %20 rather than `+`.
@@ -62,17 +67,22 @@ func (c *Connector) readURL(params common.ReadParams) (string, error) {
 
 	if isRecordObject(params.ObjectName) {
 		if !params.Since.IsZero() {
-			readURL.WithQueryParam(updatedSinceParam, datautils.Time.FormatRFC3339inUTCWithMilliseconds(params.Since))
+			readURL.WithQueryParam(updatedSinceParam, nextMillisecond(params.Since))
 		}
 
 		if !params.Until.IsZero() {
-			readURL.WithQueryParam(updatedUntilParam, datautils.Time.FormatRFC3339inUTCWithMilliseconds(params.Until))
+			readURL.WithQueryParam(updatedUntilParam, nextMillisecond(params.Until))
 		}
 	}
 
 	readURL.AddEncodingExceptions(spaceEncoding)
 
 	return readURL.String(), nil
+}
+
+// nextMillisecond formats the start of the millisecond after t's, in UTC.
+func nextMillisecond(t time.Time) string {
+	return datautils.Time.FormatRFC3339inUTCWithMilliseconds(t.Truncate(time.Millisecond).Add(time.Millisecond))
 }
 
 func (c *Connector) listURL(objectName string) (*urlbuilder.URL, error) {

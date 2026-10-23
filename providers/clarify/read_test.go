@@ -119,7 +119,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Expected:   &common.ReadResult{Rows: 0, NextPage: "", Done: true},
 		},
 		{
-			Name: "Incremental read sends _updated_at filters and keeps them on the next page",
+			Name: "Incremental read sends _updated_at bounds moved to the next millisecond and keeps them on the next page",
 			Input: common.ReadParams{
 				ObjectName: "company",
 				Fields:     connectors.Fields("name"),
@@ -131,8 +131,8 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v1/workspaces/test-ws/objects/company/resources"),
-					mockcond.QueryParam("filter[_updated_at][Is after]", "2026-10-01T00:00:00.123Z"),
-					mockcond.QueryParam("filter[_updated_at][Is on or before]", "2026-10-23T00:00:00.456Z"),
+					mockcond.QueryParam("filter[_updated_at][Is on or after]", "2026-10-01T00:00:00.124Z"),
+					mockcond.QueryParam("filter[_updated_at][Is before]", "2026-10-23T00:00:00.457Z"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCompanyFirstPage),
 			}.Server(),
@@ -140,8 +140,8 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Expected: &common.ReadResult{
 				Rows: 2,
 				NextPage: testconn.URLTestServer + "/v1/workspaces/test-ws/objects/company/resources?" +
-					"filter%5B_updated_at%5D%5BIs%20after%5D=2026-10-01T00%3A00%3A00.123Z&" +
-					"filter%5B_updated_at%5D%5BIs%20on%20or%20before%5D=2026-10-23T00%3A00%3A00.456Z&" +
+					"filter%5B_updated_at%5D%5BIs%20before%5D=2026-10-23T00%3A00%3A00.457Z&" +
+					"filter%5B_updated_at%5D%5BIs%20on%20or%20after%5D=2026-10-01T00%3A00%3A00.124Z&" +
 					"page%5Blimit%5D=2&page%5Boffset%5D=2",
 				Done: false,
 			},
