@@ -110,6 +110,7 @@ import (
 	"github.com/amp-labs/connectors/providers/nutshell"
 	"github.com/amp-labs/connectors/providers/odoo"
 	"github.com/amp-labs/connectors/providers/okta"
+	"github.com/amp-labs/connectors/providers/orb"
 	"github.com/amp-labs/connectors/providers/outplay"
 	"github.com/amp-labs/connectors/providers/outreach"
 	"github.com/amp-labs/connectors/providers/paddle"
@@ -281,6 +282,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Nutshell:                          wrapper(newNutshellConnector),
 	providers.Odoo:                              wrapper(newOdooConnector),
 	providers.Okta:                              wrapper(newOktaConnector),
+	providers.Orb:                               wrapper(newOrbConnector),
 	providers.Outplay:                           wrapper(newOutplayConnector),
 	providers.Outreach:                          wrapper(newOutreachConnector),
 	providers.Paddle:                            wrapper(newPaddleConnector),
@@ -1045,6 +1047,12 @@ func newLeverConnector(
 	params common.ConnectorParams,
 ) (*lever.Connector, error) {
 	return lever.NewConnector(params)
+}
+
+func newOrbConnector(
+	params common.ConnectorParams,
+) (*orb.Connector, error) {
+	return orb.NewConnector(params)
 }
 
 func newLightfieldConnector(
