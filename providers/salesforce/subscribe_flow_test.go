@@ -3,7 +3,10 @@ package salesforce
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"slices"
+	"sync/atomic"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -487,5 +490,155 @@ func TestFlowPairs(t *testing.T) {
 				t.Errorf("FlowPairs() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func testManualFlowRequest() *SubscriptionRequest {
+	return &SubscriptionRequest{UseFlow: true, Flow: &FlowConfig{ManualManagement: true}}
+}
+
+// TestManualFlowSubscription covers the result recorded for customer-managed flows: no flows,
+// the requested objects and events, and the same delete-event rule as a deployed subscription.
+func TestManualFlowSubscription(t *testing.T) {
+	t.Parallel()
+
+	result, err := manualFlowSubscription(testSubscribeParams(map[common.ObjectName]common.ObjectEvents{
+		"Account": {Events: common.SubscriptionEventTypes{common.SubscriptionEventTypeCreate}},
+		"Contact": {Events: common.SubscriptionEventTypes{
+			common.SubscriptionEventTypeCreate, common.SubscriptionEventTypeUpdate,
+		}},
+	}))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if result.Status != common.SubscriptionStatusSuccess {
+		t.Errorf("status = %q, want success", result.Status)
+	}
+
+	sfRes, ok := result.Result.(*SubscribeResult)
+	if !ok || !sfRes.UseFlow || !sfRes.ManualFlowManagement || len(sfRes.Flows) != 0 {
+		t.Errorf("result = %+v, want a flow result marked manual with no flows", result.Result)
+	}
+
+	objects := slices.Clone(result.Objects)
+	slices.Sort(objects)
+
+	if !slices.Equal(objects, []common.ObjectName{"Account", "Contact"}) {
+		t.Errorf("objects = %v, want Account and Contact", objects)
+	}
+
+	events := slices.Clone(result.Events)
+	slices.Sort(events)
+
+	if !slices.Equal(events, []common.SubscriptionEventType{
+		common.SubscriptionEventTypeCreate, common.SubscriptionEventTypeUpdate,
+	}) {
+		t.Errorf("events = %v, want create and update", events)
+	}
+
+	_, err = manualFlowSubscription(testSubscribeParams(map[common.ObjectName]common.ObjectEvents{
+		"Account": {Events: common.SubscriptionEventTypes{common.SubscriptionEventTypeDelete}},
+	}))
+	if !errors.Is(err, errFlowNoSupportedEvents) {
+		t.Errorf("delete event error = %v, want errFlowNoSupportedEvents", err)
+	}
+}
+
+// TestManualFlowManagementMakesNoSalesforceCalls checks that subscribe, update and delete never
+// call Salesforce when the customer manages the flows.
+func TestManualFlowManagementMakesNoSalesforceCalls(t *testing.T) {
+	t.Parallel()
+
+	var requests atomic.Int64
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		requests.Add(1)
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer server.Close()
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	params := testSubscribeParams(map[common.ObjectName]common.ObjectEvents{
+		"Account": {Events: common.SubscriptionEventTypes{common.SubscriptionEventTypeUpdate}},
+	})
+	params.Request = testManualFlowRequest()
+
+	subscribed, err := conn.Subscribe(t.Context(), params)
+	if err != nil {
+		t.Fatalf("Subscribe: unexpected error: %v", err)
+	}
+
+	updated, err := conn.UpdateSubscription(t.Context(), params, subscribed)
+	if err != nil {
+		t.Fatalf("UpdateSubscription: unexpected error: %v", err)
+	}
+
+	if sfRes, ok := updated.Result.(*SubscribeResult); !ok || !sfRes.ManualFlowManagement {
+		t.Errorf("updated result = %+v, want it still marked manual", updated.Result)
+	}
+
+	if err := conn.DeleteSubscription(t.Context(), *updated); err != nil {
+		t.Fatalf("DeleteSubscription: unexpected error: %v", err)
+	}
+
+	if got := requests.Load(); got != 0 {
+		t.Errorf("expected no Salesforce requests, got %d", got)
+	}
+}
+
+// TestUpdateSubscriptionRejectsFlowManagementSwitch checks that moving between Ampersand-managed
+// and customer-managed flows fails before Salesforce is called.
+func TestUpdateSubscriptionRejectsFlowManagementSwitch(t *testing.T) {
+	t.Parallel()
+
+	var requests atomic.Int64
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		requests.Add(1)
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer server.Close()
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	managed := &SubscribeResult{
+		UseFlow: true,
+		Flows: map[common.ObjectName]*FlowSubscription{
+			"Account": {ObjectName: "Account", Events: []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate}},
+		},
+	}
+	manual := &SubscribeResult{UseFlow: true, ManualFlowManagement: true}
+
+	tests := []struct {
+		name      string
+		prevState *SubscribeResult
+		req       *SubscriptionRequest
+	}{
+		{"managed to manual", managed, testManualFlowRequest()},
+		{"manual to managed", manual, testFlowRequest()},
+	}
+
+	for _, tt := range tests {
+		params := testSubscribeParams(map[common.ObjectName]common.ObjectEvents{
+			"Account": {Events: common.SubscriptionEventTypes{common.SubscriptionEventTypeUpdate}},
+		})
+		params.Request = tt.req
+
+		_, err := conn.UpdateSubscription(t.Context(), params, &common.SubscriptionResult{Result: tt.prevState})
+		if !errors.Is(err, errFlowManagementSwitch) {
+			t.Errorf("%s: error = %v, want errFlowManagementSwitch", tt.name, err)
+		}
+	}
+
+	if got := requests.Load(); got != 0 {
+		t.Errorf("expected no Salesforce requests, got %d", got)
 	}
 }

@@ -51,6 +51,8 @@ var (
 		"flow-based subscriptions support only create/update events")
 	errFlowDeployFailed         = errors.New("flow subscription deployment failed")
 	errFlowTeardownDeployFailed = errors.New("flow subscription teardown deployment failed")
+	errFlowManagementSwitch     = errors.New(
+		"switching between Ampersand-managed and customer-managed flows is not supported")
 )
 
 // FlowConfig carries the flow-path settings on SubscriptionRequest.
@@ -75,6 +77,47 @@ type FlowConfig struct {
 	// SelectedFields is the installation's selected read-field list per object, which
 	// are the fields that are delivered in the subscription payload.
 	SelectedFields map[common.ObjectName][]string `json:"selectedFields,omitempty"`
+
+	// ManualManagement means the customer builds the flows and outbound messages themselves, so
+	// nothing is deployed and the other fields are ignored.
+	ManualManagement bool `json:"manualManagement,omitempty"`
+}
+
+// isManualFlowManagement reports whether the request is in flow mode with customer-managed flows.
+func (r *SubscriptionRequest) isManualFlowManagement() bool {
+	return r != nil && r.UseFlow && r.Flow != nil && r.Flow.ManualManagement
+}
+
+// manualFlowSubscription records a customer-managed flow subscription without calling Salesforce.
+// It applies the same event rules as a deployed one.
+func manualFlowSubscription(params common.SubscribeParams) (*common.SubscriptionResult, error) {
+	seen := make(map[common.SubscriptionEventType]bool)
+	events := make([]common.SubscriptionEventType, 0, 2) //nolint:mnd
+	objects := make([]common.ObjectName, 0, len(params.SubscriptionEvents))
+
+	for objName, objEvents := range params.SubscriptionEvents {
+		eventTypes, err := flowEventTypes(objName, objEvents)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, eventType := range eventTypes {
+			if !seen[eventType] {
+				seen[eventType] = true
+
+				events = append(events, eventType)
+			}
+		}
+
+		objects = append(objects, objName)
+	}
+
+	return &common.SubscriptionResult{
+		Status:  common.SubscriptionStatusSuccess,
+		Result:  &SubscribeResult{UseFlow: true, ManualFlowManagement: true},
+		Events:  events,
+		Objects: objects,
+	}, nil
 }
 
 // OutboundMessageMetadata is our record of a deployed OM, stored on a FlowPair
@@ -192,6 +235,12 @@ func (c *Connector) subscribeWithFlow(
 	req *SubscriptionRequest,
 	prevState *SubscribeResult,
 ) (*common.SubscriptionResult, error) {
+	// If this is a customer-managed flow subscription, return the subscription result without
+	// touching the customer's Salesforce instance.
+	if req.isManualFlowManagement() {
+		return manualFlowSubscription(params)
+	}
+
 	if req.Flow == nil || req.Flow.EndpointURL == "" {
 		return nil, errFlowEndpointURLRequired
 	}
@@ -306,28 +355,10 @@ func buildFlowSubscription(
 	subscriptions := make([]*FlowSubscription, 0, len(params.SubscriptionEvents))
 
 	for objName, objEvents := range params.SubscriptionEvents {
-		// Outbound messages cannot fire on delete. Each requested create or update gets one pair.
-		if slices.Contains(objEvents.Events, common.SubscriptionEventTypeDelete) {
-			return nil, nil, fmt.Errorf(
-				"failed to build flow subscription for object %s: %w: delete events are not supported",
-				objName, errFlowNoSupportedEvents)
-		}
-
-		var eventTypes []common.SubscriptionEventType
-
-		for _, eventType := range []common.SubscriptionEventType{
-			common.SubscriptionEventTypeCreate,
-			common.SubscriptionEventTypeUpdate,
-		} {
-			if slices.Contains(objEvents.Events, eventType) {
-				eventTypes = append(eventTypes, eventType)
-			}
-		}
-
-		if len(eventTypes) == 0 {
-			return nil, nil, fmt.Errorf(
-				"failed to build flow subscription for object %s: %w: requested %v",
-				objName, errFlowNoSupportedEvents, objEvents.Events)
+		// Each requested create or update gets one pair.
+		eventTypes, err := flowEventTypes(objName, objEvents)
+		if err != nil {
+			return nil, nil, err
 		}
 
 		selectedFields := req.Flow.SelectedFields[objName]
@@ -411,6 +442,37 @@ func buildFlowSubscription(
 	return flowComponents, subscriptions, nil
 }
 
+// flowEventTypes returns the object's requested create and update events. Any delete event is an error,
+// because outbound messages cannot fire on delete. An object with no create or update event is also an error.
+func flowEventTypes(
+	objName common.ObjectName, objEvents common.ObjectEvents,
+) ([]common.SubscriptionEventType, error) {
+	if slices.Contains(objEvents.Events, common.SubscriptionEventTypeDelete) {
+		return nil, fmt.Errorf(
+			"failed to build flow subscription for object %s: %w: delete events are not supported",
+			objName, errFlowNoSupportedEvents)
+	}
+
+	var eventTypes []common.SubscriptionEventType
+
+	for _, eventType := range []common.SubscriptionEventType{
+		common.SubscriptionEventTypeCreate,
+		common.SubscriptionEventTypeUpdate,
+	} {
+		if slices.Contains(objEvents.Events, eventType) {
+			eventTypes = append(eventTypes, eventType)
+		}
+	}
+
+	if len(eventTypes) == 0 {
+		return nil, fmt.Errorf(
+			"failed to build flow subscription for object %s: %w: requested %v",
+			objName, errFlowNoSupportedEvents, objEvents.Events)
+	}
+
+	return eventTypes, nil
+}
+
 // flowPairEndpointURL returns the endpoint URL for one event type's outbound message.
 func flowPairEndpointURL(endpointURL string, eventType common.SubscriptionEventType) (string, error) {
 	parsed, err := url.Parse(endpointURL)
@@ -463,6 +525,17 @@ func (c *Connector) reconcileFlowSubscription(
 	req *SubscriptionRequest,
 	prevState *SubscribeResult,
 ) (*common.SubscriptionResult, error) {
+	// Cannot switch between customer-managed flow mode and Ampersand-managed flow mode.
+	if prevState.ManualFlowManagement != req.isManualFlowManagement() {
+		return nil, errFlowManagementSwitch
+	}
+
+	// If this is a customer-managed flow subscription, return the subscription result without
+	// touching the customer's Salesforce instance.
+	if prevState.ManualFlowManagement {
+		return manualFlowSubscription(params)
+	}
+
 	// Upsert the new subscription.
 	result, err := c.subscribeWithFlow(ctx, params, req, prevState)
 	if err != nil {

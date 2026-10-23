@@ -46,6 +46,10 @@ type SubscribeResult struct {
 	// Flows maps object names to the record-triggered flow + outbound message
 	// pair deployed for them. Only populated when UseFlow is true.
 	Flows map[common.ObjectName]*FlowSubscription `json:"flows,omitempty"`
+
+	// ManualFlowManagement mirrors FlowConfig.ManualManagement: the customer owns the flows and
+	// outbound messages, so Flows stays empty and update and delete never touch the org.
+	ManualFlowManagement bool `json:"manualFlowManagement,omitempty"`
 }
 
 func (c *Connector) EmptySubscriptionParams() *common.SubscribeParams {
@@ -405,6 +409,13 @@ func (c *Connector) DeleteSubscription(ctx context.Context, params common.Subscr
 			sfRes,
 			params.Result,
 		)
+	}
+
+	// If this is a customer-managed flow subscription, leave the Salesforce flows/OMs in place.
+	if sfRes.ManualFlowManagement {
+		logging.Logger(ctx).InfoContext(ctx, "flows are managed by the customer; leaving them in place")
+
+		return nil
 	}
 
 	if sfRes.UseFlow {
