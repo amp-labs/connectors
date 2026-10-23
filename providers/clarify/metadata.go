@@ -34,7 +34,7 @@ func (c *Connector) listObjectMetadata(
 
 	for _, objectName := range datautils.NewSetFromList(objectNames).List() {
 		entity, ok := schemas[entityForObject(objectName)]
-		if !ok || !(isRecordObject(objectName) || objectName == objectNameUsers) {
+		if !ok || (!isRecordObject(objectName) && objectName != objectNameUsers) {
 			result.AppendError(objectName, common.ErrObjectNotSupported)
 
 			continue
@@ -85,27 +85,16 @@ func (c *Connector) fetchSchemas(ctx context.Context) (map[string]entitySchema, 
 	next := schemasURL.String()
 
 	for next != "" {
-		response, err := c.JSONHTTPClient().Get(ctx, next)
+		page, err := c.fetchSchemasPage(ctx, next)
 		if err != nil {
 			return nil, err
-		}
-
-		page, err := common.UnmarshalJSON[schemasResponse](response)
-		if err != nil {
-			return nil, err
-		}
-
-		if page == nil {
-			return nil, common.ErrEmptyJSONHTTPResponse
 		}
 
 		for _, resource := range page.Data {
 			_, objectName, found := strings.Cut(resource.ID, entitySchemaMarker)
-			if !found || objectName == "" {
-				continue
+			if found && objectName != "" {
+				schemas[objectName] = resource.Attributes
 			}
-
-			schemas[objectName] = resource.Attributes
 		}
 
 		next = ""
@@ -118,6 +107,24 @@ func (c *Connector) fetchSchemas(ctx context.Context) (map[string]entitySchema, 
 	}
 
 	return schemas, nil
+}
+
+func (c *Connector) fetchSchemasPage(ctx context.Context, pageURL string) (*schemasResponse, error) {
+	response, err := c.JSONHTTPClient().Get(ctx, pageURL)
+	if err != nil {
+		return nil, err
+	}
+
+	page, err := common.UnmarshalJSON[schemasResponse](response)
+	if err != nil {
+		return nil, err
+	}
+
+	if page == nil {
+		return nil, common.ErrEmptyJSONHTTPResponse
+	}
+
+	return page, nil
 }
 
 // onBaseURL keeps a links.next URL's path and cursor but sends it to the connector's base URL: list
@@ -321,26 +328,25 @@ func (p schemaProperty) valueType() (common.ValueType, []common.FieldValue) {
 		return common.ValueTypeDate, nil
 	}
 
-	switch p.Type.name() {
-	case "string":
-		return common.ValueTypeString, nil
-	case "number":
-		return common.ValueTypeFloat, nil
-	case "integer":
-		return common.ValueTypeInt, nil
-	case "boolean":
-		return common.ValueTypeBoolean, nil
-	case "array":
-		if p.Items != nil {
-			if values := enumValues(p.Items.Enum); len(values) != 0 {
-				return common.ValueTypeMultiSelect, values
-			}
+	if p.Type.name() == "array" && p.Items != nil {
+		if values := enumValues(p.Items.Enum); len(values) != 0 {
+			return common.ValueTypeMultiSelect, values
 		}
-
-		return common.ValueTypeOther, nil
-	default:
-		return common.ValueTypeOther, nil
 	}
+
+	if valueType, ok := valueTypeByJSONType[p.Type.name()]; ok {
+		return valueType, nil
+	}
+
+	return common.ValueTypeOther, nil
+}
+
+// JSON Schema types with a direct Ampersand value type; objects, arrays and shared types are other.
+var valueTypeByJSONType = map[string]common.ValueType{ // nolint:gochecknoglobals
+	"string":  common.ValueTypeString,
+	"number":  common.ValueTypeFloat,
+	"integer": common.ValueTypeInt,
+	"boolean": common.ValueTypeBoolean,
 }
 
 func enumValues(enum []any) []common.FieldValue {
