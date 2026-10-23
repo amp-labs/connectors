@@ -139,7 +139,7 @@ func (a *Adapter) parseReadResponse(
 				return jsonquery.New(node).ArrayOptional(responseFieldName)
 			},
 			makeNextRecordsURL(url),
-			readhelper.MakeMarshaledSelectedDataFunc(eventFieldsSelector, nil),
+			readhelper.MakeMarshaledSelectedDataFunc(makeEventFieldsSelector(params.Fields.List()), nil),
 			params.Fields,
 		)
 	}
@@ -152,19 +152,24 @@ func (a *Adapter) parseReadResponse(
 	)
 }
 
-// eventFieldsSelector whitelists requested fields of an event node and reports its identifier.
-func eventFieldsSelector(node *ajson.Node, fields []string) (map[string]any, string, error) {
-	record, err := jsonquery.Convertor.ObjectToMap(node)
-	if err != nil {
-		return nil, "", err
-	}
+// makeEventFieldsSelector returns a selector that whitelists the requested fields of each
+// event node and reports its identifier. The field list is classified once, up front.
+func makeEventFieldsSelector(fields []string) readhelper.SelectedFieldsFunc {
+	selection := newEventFieldSelection(fields)
 
-	identifier, err := jsonquery.New(node).StrWithDefault("id", "")
-	if err != nil {
-		return nil, "", err
-	}
+	return func(node *ajson.Node, _ []string) (map[string]any, string, error) {
+		record, err := jsonquery.Convertor.ObjectToMap(node)
+		if err != nil {
+			return nil, "", err
+		}
 
-	return selectEventFields(record, fields), identifier, nil
+		identifier, err := jsonquery.New(node).StrWithDefault("id", "")
+		if err != nil {
+			return nil, "", err
+		}
+
+		return selection.apply(record), identifier, nil
+	}
 }
 
 func makeNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {

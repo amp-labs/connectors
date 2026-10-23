@@ -42,7 +42,7 @@ const (
 var extendedPropertyBuckets = []string{"private", "shared"} // nolint:gochecknoglobals
 
 // ListObjectMetadata serves the static schema. For events it additionally discovers the
-// free-form extendedProperties keys in use by sampling recent events on the primary calendar,
+// free-form extendedProperties keys in use by sampling one page of primary-calendar events,
 // and exposes each as "$['extendedProperties']['<bucket>']['<key>']" so they can be picked like any field.
 //
 // The keys are customer-defined, so they cannot live in the static schema. Discovery is best
@@ -99,6 +99,10 @@ func (a *Adapter) ListObjectMetadata(
 
 // discoverExtendedPropertyKeys reads one page of primary-calendar events, requesting only the
 // extendedProperties part of each item, and returns the sorted distinct keys per bucket.
+//
+// events.list without a time window or ordering returns events in the provider's default
+// order, so on calendars with more than one page of history the sample may not include the
+// most recently created events, and keys used only on other calendars are not seen.
 func (a *Adapter) discoverExtendedPropertyKeys(ctx context.Context) (map[string][]string, error) {
 	url, err := a.getURL(objectNameEvents)
 	if err != nil {

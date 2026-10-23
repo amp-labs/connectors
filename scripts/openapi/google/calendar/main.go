@@ -38,7 +38,7 @@ var (
 	//
 	// The metadata model is flat, so this is the only way to let users map a single
 	// nested value. Google requires start/end as objects and rejects a flat timestamp
-	// mapped to "start"; the connector nests dotted keys on write and resolves them on read.
+	// mapped to "start"; the connector nests JSONPath keys on write and resolves them on read.
 	// Keyed by object name, then the OpenAPI component that describes one record of it.
 	nestedFieldParents = map[string]nestedFieldConfig{
 		"events": {

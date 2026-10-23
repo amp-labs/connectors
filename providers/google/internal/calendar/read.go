@@ -310,6 +310,14 @@ func (a *Adapter) fetchEvent(
 		return common.ReadResultRow{}, common.ErrEmptyJSONHTTPResponse
 	}
 
+	// Raw and the selection input are converted separately: the shared field selector may
+	// write into the map it selects from when a parent and one of its children are both
+	// requested, and Raw must stay exactly as the provider returned it.
+	raw, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return common.ReadResultRow{}, err
+	}
+
 	record, err := jsonquery.Convertor.ObjectToMap(body)
 	if err != nil {
 		return common.ReadResultRow{}, err
@@ -322,8 +330,8 @@ func (a *Adapter) fetchEvent(
 
 	return common.ReadResultRow{
 		Id:     identifier,
-		Fields: selectEventFields(record, fields.List()),
-		Raw:    record,
+		Fields: newEventFieldSelection(fields.List()).apply(record),
+		Raw:    raw,
 	}, nil
 }
 
