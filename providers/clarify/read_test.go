@@ -119,7 +119,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Expected:   &common.ReadResult{Rows: 0, NextPage: "", Done: true},
 		},
 		{
-			Name: "Incremental read sends _updated_at bounds moved to the next millisecond and keeps them on the next page",
+			Name: "Incremental read asks for the whole seconds of the window and keeps them on the next page",
 			Input: common.ReadParams{
 				ObjectName: "company",
 				Fields:     connectors.Fields("name"),
@@ -131,8 +131,8 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.Path("/v1/workspaces/test-ws/objects/company/resources"),
-					mockcond.QueryParam("filter[_updated_at][Is on or after]", "2026-10-01T00:00:00.124Z"),
-					mockcond.QueryParam("filter[_updated_at][Is before]", "2026-10-23T00:00:00.457Z"),
+					mockcond.QueryParam("filter[_updated_at][Is on or after]", "2026-10-01T00:00:00Z"),
+					mockcond.QueryParam("filter[_updated_at][Is before]", "2026-10-23T00:00:01Z"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseCompanyFirstPage),
 			}.Server(),
@@ -140,10 +140,43 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Expected: &common.ReadResult{
 				Rows: 2,
 				NextPage: testconn.URLTestServer + "/v1/workspaces/test-ws/objects/company/resources?" +
-					"filter%5B_updated_at%5D%5BIs%20before%5D=2026-10-23T00%3A00%3A00.457Z&" +
-					"filter%5B_updated_at%5D%5BIs%20on%20or%20after%5D=2026-10-01T00%3A00%3A00.124Z&" +
+					"filter%5B_updated_at%5D%5BIs%20before%5D=2026-10-23T00%3A00%3A01Z&" +
+					"filter%5B_updated_at%5D%5BIs%20on%20or%20after%5D=2026-10-01T00%3A00%3A00Z&" +
 					"page%5Blimit%5D=2&page%5Boffset%5D=2",
 				Done: false,
+			},
+		},
+		{
+			Name: "Records in the boundary seconds are trimmed to (Since, Until] by millisecond",
+			Input: common.ReadParams{
+				ObjectName: "company",
+				Fields:     connectors.Fields("name"),
+				// Equal to the first record's _updated_at, which Since excludes.
+				Since: time.Date(2026, 10, 22, 6, 41, 4, 124_000_000, time.UTC),
+				// Equal to the second record's _updated_at, which Until includes.
+				Until: time.Date(2026, 10, 22, 19, 20, 32, 797_000_000, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.QueryParam("filter[_updated_at][Is on or after]", "2026-10-22T06:41:04Z"),
+					mockcond.QueryParam("filter[_updated_at][Is before]", "2026-10-22T19:20:33Z"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCompanyFirstPage),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id:     "0adf6280-c5d7-4b64-9de2-db7bc81ba0e5",
+					Fields: map[string]any{"name": "Ampersand"},
+					Raw:    map[string]any{"type": "company"},
+				}},
+				// The page held 2 records, so the next page skips both, filtered or not.
+				NextPage: testconn.URLTestServer + "/v1/workspaces/test-ws/objects/company/resources?" +
+					"filter%5B_updated_at%5D%5BIs%20before%5D=2026-10-22T19%3A20%3A33Z&" +
+					"filter%5B_updated_at%5D%5BIs%20on%20or%20after%5D=2026-10-22T06%3A41%3A04Z&" +
+					"page%5Blimit%5D=500&page%5Boffset%5D=2",
 			},
 		},
 		{

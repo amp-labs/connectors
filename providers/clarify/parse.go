@@ -49,7 +49,9 @@ func makeNextPageFunc(requestURL *url.URL) common.NextPageFunc {
 
 // makeUpdatedAtFilter keeps records whose `_updated_at` falls within (Since, Until],
 // matching ReadParams: Since is exclusive and Until inclusive.
-// It serves GET /users, which documents only page and sortOrder parameters, so every page is read.
+// For records it trims the whole-second window the API filter returns (see updatedSinceParam).
+// For users it is the only filter: GET /users documents only page and sortOrder parameters, so every
+// page is read.
 func makeUpdatedAtFilter(nextPage common.NextPageFunc) common.RecordsFilterFunc {
 	boundary := readhelper.NewTimeBoundary(readhelper.ExcludeSince())
 
