@@ -16,6 +16,11 @@ func init() {
 			},
 			DocsURL: "https://circleback.ai/docs/api#get-an-api-key",
 		},
+		Media: &Media{
+			Regular: &MediaTypeRegular{
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792743779/media/circleback_regular_logo.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
