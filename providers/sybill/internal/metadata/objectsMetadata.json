@@ -1,0 +1,314 @@
+{
+  "accounts": {
+    "path": "/v1/accounts",
+    "displayName": "Accounts",
+    "fields": {
+      "accountId": {
+        "displayName": "Account Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "createdDate": {
+        "displayName": "Created Date",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "lastActivityDate": {
+        "displayName": "Last Activity Date",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "latestDeal": {
+        "displayName": "Latest Deal",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "Owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "website": {
+        "displayName": "Website",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "conversations": {
+    "path": "/v1/conversations",
+    "displayName": "Conversations",
+    "fields": {
+      "category": {
+        "displayName": "Category",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "prospect_discovery",
+            "displayValue": "prospect_discovery"
+          },
+          {
+            "value": "prospect_demo",
+            "displayValue": "prospect_demo"
+          },
+          {
+            "value": "prospect_trial",
+            "displayValue": "prospect_trial"
+          },
+          {
+            "value": "prospect_negotiation",
+            "displayValue": "prospect_negotiation"
+          },
+          {
+            "value": "closed_lost",
+            "displayValue": "closed_lost"
+          },
+          {
+            "value": "closed_won",
+            "displayValue": "closed_won"
+          },
+          {
+            "value": "customer_onboarding",
+            "displayValue": "customer_onboarding"
+          },
+          {
+            "value": "customer_support",
+            "displayValue": "customer_support"
+          },
+          {
+            "value": "customer_checkin",
+            "displayValue": "customer_checkin"
+          },
+          {
+            "value": "customer_commercials",
+            "displayValue": "customer_commercials"
+          },
+          {
+            "value": "interview",
+            "displayValue": "interview"
+          },
+          {
+            "value": "user_research",
+            "displayValue": "user_research"
+          },
+          {
+            "value": "partner_call",
+            "displayValue": "partner_call"
+          },
+          {
+            "value": "consulting_call",
+            "displayValue": "consulting_call"
+          },
+          {
+            "value": "advisor_call",
+            "displayValue": "advisor_call"
+          },
+          {
+            "value": "investor_call",
+            "displayValue": "investor_call"
+          },
+          {
+            "value": "vendor_call",
+            "displayValue": "vendor_call"
+          },
+          {
+            "value": "other",
+            "displayValue": "other"
+          },
+          {
+            "value": "one_on_one",
+            "displayValue": "one_on_one"
+          },
+          {
+            "value": "sales_team",
+            "displayValue": "sales_team"
+          },
+          {
+            "value": "customer_team",
+            "displayValue": "customer_team"
+          },
+          {
+            "value": "customer_service_team",
+            "displayValue": "customer_service_team"
+          },
+          {
+            "value": "marketing_team",
+            "displayValue": "marketing_team"
+          },
+          {
+            "value": "product_team",
+            "displayValue": "product_team"
+          },
+          {
+            "value": "engineering_team",
+            "displayValue": "engineering_team"
+          },
+          {
+            "value": "it_team",
+            "displayValue": "it_team"
+          },
+          {
+            "value": "hr_team",
+            "displayValue": "hr_team"
+          },
+          {
+            "value": "operations_team",
+            "displayValue": "operations_team"
+          },
+          {
+            "value": "finance_team",
+            "displayValue": "finance_team"
+          },
+          {
+            "value": "legal_team",
+            "displayValue": "legal_team"
+          },
+          {
+            "value": "investment_team",
+            "displayValue": "investment_team"
+          },
+          {
+            "value": "consulting_team",
+            "displayValue": "consulting_team"
+          },
+          {
+            "value": "company_wide",
+            "displayValue": "company_wide"
+          }
+        ]
+      },
+      "conversationId": {
+        "displayName": "Conversation Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "crm": {
+        "displayName": "Crm",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "endTime": {
+        "displayName": "End Time",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "participants": {
+        "displayName": "Participants",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "recordings": {
+        "displayName": "Recordings",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "sourceId": {
+        "displayName": "Source Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "startTime": {
+        "displayName": "Start Time",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "summary": {
+        "displayName": "Summary",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "title": {
+        "displayName": "Title",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "transcript": {
+        "displayName": "Transcript",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "type": {
+        "displayName": "Type",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "INTERNAL",
+            "displayValue": "INTERNAL"
+          },
+          {
+            "value": "EXTERNAL",
+            "displayValue": "EXTERNAL"
+          }
+        ]
+      }
+    }
+  },
+  "deals": {
+    "path": "/v1/deals",
+    "displayName": "Deals",
+    "fields": {
+      "accountName": {
+        "displayName": "Account Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "amount": {
+        "displayName": "Amount",
+        "valueType": "float",
+        "providerType": "number"
+      },
+      "closeDate": {
+        "displayName": "Close Date",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "closed": {
+        "displayName": "Closed",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "createdDate": {
+        "displayName": "Created Date",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "dealId": {
+        "displayName": "Deal Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "lastActivityDate": {
+        "displayName": "Last Activity Date",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "owner": {
+        "displayName": "Owner",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "pipeline": {
+        "displayName": "Pipeline",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "stage": {
+        "displayName": "Stage",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  }
+}

@@ -145,6 +145,7 @@ import (
 	"github.com/amp-labs/connectors/providers/stripe"
 	"github.com/amp-labs/connectors/providers/supersend"
 	"github.com/amp-labs/connectors/providers/surveymonkey"
+	"github.com/amp-labs/connectors/providers/sybill"
 	"github.com/amp-labs/connectors/providers/talkdesk"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/teamwork"
@@ -323,6 +324,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.SquareSandbox:                     wrapper(newSquareSandboxConnector),
 	providers.SuperSend:                         wrapper(newSuperSendConnector),
 	providers.SurveyMonkey:                      wrapper(newSurveyMonkeyConnector),
+	providers.Sybill:                            wrapper(newSybillConnector),
 	providers.Talkdesk:                          wrapper(newTalkdeskConnector),
 	providers.Teamleader:                        wrapper(newTeamleaderConnector),
 	providers.Teamwork:                          wrapper(newTeamworkConnector),
@@ -1371,6 +1373,10 @@ func newSuperSendConnector(params common.ConnectorParams) (*supersend.Connector,
 
 func newSurveyMonkeyConnector(params common.ConnectorParams) (*surveymonkey.Connector, error) {
 	return surveymonkey.NewConnector(params)
+}
+
+func newSybillConnector(params common.ConnectorParams) (*sybill.Connector, error) {
+	return sybill.NewConnector(params)
 }
 
 func newCallRail(params common.ConnectorParams) (*callrail.Connector, error) {
