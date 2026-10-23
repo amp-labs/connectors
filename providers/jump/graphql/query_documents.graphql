@@ -1,0 +1,32 @@
+query Documents {
+  documents(
+    first: {{.First}}
+    {{if .After}}
+    after: "{{.After}}"
+    {{end}}
+    {{if .UpdatedAfter}}
+    updatedAfter: "{{.UpdatedAfter}}"
+    {{end}}
+    {{if .UpdatedBefore}}
+    updatedBefore: "{{.UpdatedBefore}}"
+    {{end}}
+  ) {
+    items {
+      contactId
+      id
+      insertedAt
+      name
+      {{- if index .Fields "parsedResult"}}
+      parsedResult
+      {{- end}}
+      parsedText
+      processingState
+      updatedAt
+      userId
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

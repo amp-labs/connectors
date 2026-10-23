@@ -1,0 +1,813 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "",
+      "objects": {
+        "contacts": {
+          "displayName": "Contacts",
+          "path": "",
+          "responseKey": "items",
+          "fields": {
+            "contactInfo": {
+              "displayName": "contactInfo",
+              "valueType": "other",
+              "providerType": "[ContactInfo]"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "ID!"
+            },
+            "insertedAt": {
+              "displayName": "insertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "integrationReferences": {
+              "displayName": "integrationReferences",
+              "valueType": "other",
+              "providerType": "[ContactIntegrationReference]"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "ContactStatus",
+              "values": [
+                {
+                  "value": "UNCONFIRMED",
+                  "displayValue": "UNCONFIRMED"
+                },
+                {
+                  "value": "CONFIRMED",
+                  "displayValue": "CONFIRMED"
+                }
+              ]
+            },
+            "type": {
+              "displayName": "type",
+              "valueType": "singleSelect",
+              "providerType": "ContactType",
+              "values": [
+                {
+                  "value": "INDIVIDUAL",
+                  "displayValue": "INDIVIDUAL"
+                },
+                {
+                  "value": "HOUSEHOLD",
+                  "displayValue": "HOUSEHOLD"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            }
+          }
+        },
+        "documents": {
+          "displayName": "Documents",
+          "path": "",
+          "responseKey": "items",
+          "fields": {
+            "contactId": {
+              "displayName": "contactId",
+              "valueType": "string",
+              "providerType": "ID"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "ID!"
+            },
+            "insertedAt": {
+              "displayName": "insertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "parsedResult": {
+              "displayName": "parsedResult",
+              "valueType": "other",
+              "providerType": "Json"
+            },
+            "parsedText": {
+              "displayName": "parsedText",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "processingState": {
+              "displayName": "processingState",
+              "valueType": "singleSelect",
+              "providerType": "DocumentProcessingState",
+              "values": [
+                {
+                  "value": "NOT_STARTED",
+                  "displayValue": "NOT_STARTED"
+                },
+                {
+                  "value": "PROCESSING",
+                  "displayValue": "PROCESSING"
+                },
+                {
+                  "value": "PROCESSED",
+                  "displayValue": "PROCESSED"
+                },
+                {
+                  "value": "FAILED",
+                  "displayValue": "FAILED"
+                }
+              ]
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "userId": {
+              "displayName": "userId",
+              "valueType": "string",
+              "providerType": "ID"
+            }
+          }
+        },
+        "integrations": {
+          "displayName": "Integrations",
+          "path": "",
+          "responseKey": "items",
+          "fields": {
+            "accountEmail": {
+              "displayName": "accountEmail",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "ID!"
+            },
+            "insertedAt": {
+              "displayName": "insertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "kind": {
+              "displayName": "kind",
+              "valueType": "string",
+              "providerType": "String!"
+            },
+            "service": {
+              "displayName": "service",
+              "valueType": "string",
+              "providerType": "String!"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            }
+          }
+        },
+        "meetingPreps": {
+          "displayName": "Meeting Preps",
+          "path": "",
+          "responseKey": "items",
+          "fields": {
+            "answers": {
+              "displayName": "answers",
+              "valueType": "other",
+              "providerType": "[MeetingPrepAnswer]"
+            },
+            "contactId": {
+              "displayName": "contactId",
+              "valueType": "string",
+              "providerType": "ID"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "ID!"
+            },
+            "insertedAt": {
+              "displayName": "insertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "prepContents": {
+              "displayName": "prepContents",
+              "valueType": "other",
+              "providerType": "[MeetingPrepContent]"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "userId": {
+              "displayName": "userId",
+              "valueType": "string",
+              "providerType": "ID"
+            }
+          }
+        },
+        "meetings": {
+          "displayName": "Meetings",
+          "path": "",
+          "responseKey": "items",
+          "fields": {
+            "duration": {
+              "displayName": "duration",
+              "valueType": "int",
+              "providerType": "Int"
+            },
+            "endedAt": {
+              "displayName": "endedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "host": {
+              "displayName": "host",
+              "valueType": "other",
+              "providerType": "Participant"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "ID!"
+            },
+            "insertedAt": {
+              "displayName": "insertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "meetingEvents": {
+              "displayName": "meetingEvents",
+              "valueType": "other",
+              "providerType": "[MeetingEvent]"
+            },
+            "meetingType": {
+              "displayName": "meetingType",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "meetingUrl": {
+              "displayName": "meetingUrl",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "notes": {
+              "displayName": "notes",
+              "valueType": "other",
+              "providerType": "[Note]"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "other",
+              "providerType": "EnterpriseUser"
+            },
+            "participants": {
+              "displayName": "participants",
+              "valueType": "other",
+              "providerType": "[Participant]"
+            },
+            "platformMeetingId": {
+              "displayName": "platformMeetingId",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "pulseResults": {
+              "displayName": "pulseResults",
+              "valueType": "other",
+              "providerType": "[PulseResult]"
+            },
+            "rawTranscript": {
+              "displayName": "rawTranscript",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "recordSuggestions": {
+              "displayName": "recordSuggestions",
+              "valueType": "other",
+              "providerType": "[RecordSuggestion]"
+            },
+            "scorecardResults": {
+              "displayName": "scorecardResults",
+              "valueType": "other",
+              "providerType": "[ScorecardResult]"
+            },
+            "signalResults": {
+              "displayName": "signalResults",
+              "valueType": "other",
+              "providerType": "[SignalResult]"
+            },
+            "source": {
+              "displayName": "source",
+              "valueType": "singleSelect",
+              "providerType": "MeetingSource",
+              "values": [
+                {
+                  "value": "ZOOM",
+                  "displayValue": "ZOOM"
+                },
+                {
+                  "value": "ZOOM_PHONE",
+                  "displayValue": "ZOOM_PHONE"
+                },
+                {
+                  "value": "ZOOM_APP",
+                  "displayValue": "ZOOM_APP"
+                },
+                {
+                  "value": "GOOGLE_MEET",
+                  "displayValue": "GOOGLE_MEET"
+                },
+                {
+                  "value": "MICROSOFT_TEAMS",
+                  "displayValue": "MICROSOFT_TEAMS"
+                },
+                {
+                  "value": "MICROSOFT_TEAMS_PHONE",
+                  "displayValue": "MICROSOFT_TEAMS_PHONE"
+                },
+                {
+                  "value": "RINGCENTRAL",
+                  "displayValue": "RINGCENTRAL"
+                },
+                {
+                  "value": "INTULSE",
+                  "displayValue": "INTULSE"
+                },
+                {
+                  "value": "DIALPAD",
+                  "displayValue": "DIALPAD"
+                },
+                {
+                  "value": "GENESYS",
+                  "displayValue": "GENESYS"
+                },
+                {
+                  "value": "VONAGE",
+                  "displayValue": "VONAGE"
+                },
+                {
+                  "value": "AMAZON_CONNECT",
+                  "displayValue": "AMAZON_CONNECT"
+                },
+                {
+                  "value": "WEBEX",
+                  "displayValue": "WEBEX"
+                },
+                {
+                  "value": "WEBEX_CALLING",
+                  "displayValue": "WEBEX_CALLING"
+                },
+                {
+                  "value": "GOTOMEETING",
+                  "displayValue": "GOTOMEETING"
+                },
+                {
+                  "value": "GO_TO_CONNECT",
+                  "displayValue": "GO_TO_CONNECT"
+                },
+                {
+                  "value": "MOBILE",
+                  "displayValue": "MOBILE"
+                },
+                {
+                  "value": "WEB_RECORDER",
+                  "displayValue": "WEB_RECORDER"
+                },
+                {
+                  "value": "BYO_AUDIO",
+                  "displayValue": "BYO_AUDIO"
+                },
+                {
+                  "value": "TWILIO",
+                  "displayValue": "TWILIO"
+                },
+                {
+                  "value": "TRANSCRIPTION_PROXY",
+                  "displayValue": "TRANSCRIPTION_PROXY"
+                },
+                {
+                  "value": "TRANSCRIPT_UPLOAD",
+                  "displayValue": "TRANSCRIPT_UPLOAD"
+                }
+              ]
+            },
+            "startedAt": {
+              "displayName": "startedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "MeetingStatus",
+              "values": [
+                {
+                  "value": "CREATING",
+                  "displayValue": "CREATING"
+                },
+                {
+                  "value": "MEETING_CREATED",
+                  "displayValue": "MEETING_CREATED"
+                },
+                {
+                  "value": "PROCESSING_AUDIO",
+                  "displayValue": "PROCESSING_AUDIO"
+                },
+                {
+                  "value": "PROCESSING_TRANSCRIPT",
+                  "displayValue": "PROCESSING_TRANSCRIPT"
+                },
+                {
+                  "value": "CHOOSING_TYPE",
+                  "displayValue": "CHOOSING_TYPE"
+                },
+                {
+                  "value": "RUNNING_AUTOMATIONS",
+                  "displayValue": "RUNNING_AUTOMATIONS"
+                },
+                {
+                  "value": "TOPIC_ADDED",
+                  "displayValue": "TOPIC_ADDED"
+                },
+                {
+                  "value": "COMPLETED",
+                  "displayValue": "COMPLETED"
+                },
+                {
+                  "value": "FAILED",
+                  "displayValue": "FAILED"
+                }
+              ]
+            },
+            "summaryCreated": {
+              "displayName": "summaryCreated",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "tasks": {
+              "displayName": "tasks",
+              "valueType": "other",
+              "providerType": "[Task]"
+            },
+            "topic": {
+              "displayName": "topic",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "transcript": {
+              "displayName": "transcript",
+              "valueType": "other",
+              "providerType": "[TranscriptPart]"
+            },
+            "transcriptCreatedAt": {
+              "displayName": "transcriptCreatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "transcriptId": {
+              "displayName": "transcriptId",
+              "valueType": "string",
+              "providerType": "ID"
+            },
+            "transcriptLanguage": {
+              "displayName": "transcriptLanguage",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            }
+          }
+        },
+        "notes": {
+          "displayName": "Notes",
+          "path": "",
+          "responseKey": "items",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "ID!"
+            },
+            "insertedAt": {
+              "displayName": "insertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "meetingId": {
+              "displayName": "meetingId",
+              "valueType": "string",
+              "providerType": "ID"
+            },
+            "note": {
+              "displayName": "note",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            }
+          }
+        },
+        "pulses": {
+          "displayName": "Pulses",
+          "path": "",
+          "responseKey": "items",
+          "fields": {
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "ID!"
+            },
+            "insertedAt": {
+              "displayName": "insertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "meetingTypes": {
+              "displayName": "meetingTypes",
+              "valueType": "other",
+              "providerType": "[String]"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "questions": {
+              "displayName": "questions",
+              "valueType": "other",
+              "providerType": "[PulseQuestion]"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            }
+          }
+        },
+        "scorecards": {
+          "displayName": "Scorecards",
+          "path": "",
+          "responseKey": "items",
+          "fields": {
+            "calcType": {
+              "displayName": "calcType",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "calcValue": {
+              "displayName": "calcValue",
+              "valueType": "float",
+              "providerType": "Float"
+            },
+            "criteria": {
+              "displayName": "criteria",
+              "valueType": "other",
+              "providerType": "[ScorecardCriterion]"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "format": {
+              "displayName": "format",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "ID!"
+            },
+            "insertedAt": {
+              "displayName": "insertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "meetingTypes": {
+              "displayName": "meetingTypes",
+              "valueType": "other",
+              "providerType": "[String]"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "showCumulative": {
+              "displayName": "showCumulative",
+              "valueType": "boolean",
+              "providerType": "Boolean"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "viewable": {
+              "displayName": "viewable",
+              "valueType": "other",
+              "providerType": "[String]"
+            }
+          }
+        },
+        "signalDefinitions": {
+          "displayName": "Signal Definitions",
+          "path": "",
+          "responseKey": "items",
+          "fields": {
+            "createdById": {
+              "displayName": "createdById",
+              "valueType": "string",
+              "providerType": "ID"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "ID!"
+            },
+            "insertedAt": {
+              "displayName": "insertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "key": {
+              "displayName": "key",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "modelVersion": {
+              "displayName": "modelVersion",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "prompt": {
+              "displayName": "prompt",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            }
+          }
+        },
+        "tasks": {
+          "displayName": "Tasks",
+          "path": "",
+          "responseKey": "items",
+          "fields": {
+            "assignee": {
+              "displayName": "assignee",
+              "valueType": "other",
+              "providerType": "Assignee"
+            },
+            "description": {
+              "displayName": "description",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "due": {
+              "displayName": "due",
+              "valueType": "date",
+              "providerType": "Date"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "ID!"
+            },
+            "insertedAt": {
+              "displayName": "insertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "meetingId": {
+              "displayName": "meetingId",
+              "valueType": "string",
+              "providerType": "ID"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "",
+          "responseKey": "items",
+          "fields": {
+            "deactivatedAt": {
+              "displayName": "deactivatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "String!"
+            },
+            "firstName": {
+              "displayName": "firstName",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "fullName": {
+              "displayName": "fullName",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "ID!"
+            },
+            "insertedAt": {
+              "displayName": "insertedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            },
+            "lastName": {
+              "displayName": "lastName",
+              "valueType": "string",
+              "providerType": "String"
+            },
+            "owner": {
+              "displayName": "owner",
+              "valueType": "boolean",
+              "providerType": "Boolean!"
+            },
+            "scimMetadata": {
+              "displayName": "scimMetadata",
+              "valueType": "other",
+              "providerType": "ScimMetadata"
+            },
+            "scimUnmappedAttributes": {
+              "displayName": "scimUnmappedAttributes",
+              "valueType": "other",
+              "providerType": "Json"
+            },
+            "updatedAt": {
+              "displayName": "updatedAt",
+              "valueType": "datetime",
+              "providerType": "DateTime"
+            }
+          }
+        }
+      }
+    }
+  }
+}
