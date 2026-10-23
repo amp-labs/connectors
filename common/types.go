@@ -83,7 +83,7 @@ var (
 
 	// ErrFieldNotFound is returned when a requested field was not found or is not
 	// accessible on the object. It is a subset of ErrBadRequest.
-	ErrFieldNotFound = errors.New("field not found or not accessible")
+	ErrFieldNotFound error = newClassedErr("field not found or not accessible", ErrorClassSchemaDriftField)
 
 	// ErrConflict is returned when we get a 409 response from the provider.
 	ErrConflict = errors.New("conflict")
