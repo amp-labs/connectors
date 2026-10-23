@@ -22,6 +22,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	responseNotFound := testutils.DataFromFile(t, "error-workspace-not-found.json")
 	responseCompanyFirstPage := testutils.DataFromFile(t, "company-first-page.json")
 	responseCompanyEmpty := testutils.DataFromFile(t, "company-empty.json")
+	responseUsers := testutils.DataFromFile(t, "users.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -177,6 +178,42 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					"filter%5B_updated_at%5D%5BIs%20before%5D=2026-10-22T19%3A20%3A33Z&" +
 					"filter%5B_updated_at%5D%5BIs%20on%20or%20after%5D=2026-10-22T06%3A41%3A04Z&" +
 					"page%5Blimit%5D=500&page%5Boffset%5D=2",
+			},
+		},
+		{
+			Name: "Users are filtered by _updated_at in the connector, with no filter sent",
+			Input: common.ReadParams{
+				ObjectName: "users",
+				Fields:     connectors.Fields("email", "name", "is_service_account"),
+				Since:      time.Date(2026, 10, 22, 19, 19, 16, 898_000_000, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/workspaces/test-ws/users"),
+					mockcond.QueryParam("page[limit]", "500"),
+					mockcond.QueryParamsMissing("filter[_updated_at][Is on or after]"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseUsers),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id: "user_01M5JGTFZ74NN9TRQX0F65Y2V2",
+					Fields: map[string]any{
+						"email": "jordan.kim@example.com",
+						"name": map[string]any{
+							"full_name":  "Jordan Kim",
+							"last_name":  "Kim",
+							"first_name": "Jordan",
+						},
+						"is_service_account": false,
+					},
+					Raw: map[string]any{"type": "user"},
+				}},
+				NextPage: "",
+				Done:     true,
 			},
 		},
 		{

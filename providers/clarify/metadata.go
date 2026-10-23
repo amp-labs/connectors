@@ -3,6 +3,7 @@ package clarify
 import (
 	"context"
 	"encoding/json"
+	"net/url"
 	"path"
 	"strings"
 
@@ -39,10 +40,38 @@ func (c *Connector) listObjectMetadata(
 			continue
 		}
 
-		result.Result[objectName] = *entity.objectMetadata(objectName)
+		metadata := entity.objectMetadata(objectName)
+		if objectName == objectNameUsers {
+			restrictToUsersEndpoint(metadata)
+		}
+
+		result.Result[objectName] = *metadata
 	}
 
 	return result, nil
+}
+
+// The `user` entity schema also describes stored columns that GET /users does not return (auth0_id,
+// workos_id, _deleted_at, _created_by, ...), and lacks the derived is_service_account it does return.
+// These are the attributes of ListOfUsersResponse in the OpenAPI spec, which the live response matches.
+// https://developer.clarify.ai/docs/api-reference/users/getUsers
+var usersEndpointFields = datautils.NewSet( // nolint:gochecknoglobals
+	"id", "_id", "name", "email", "roles", "_created_at", "_updated_at", "last_active_at", "profile_picture",
+)
+
+func restrictToUsersEndpoint(metadata *common.ObjectMetadata) {
+	for name := range metadata.Fields {
+		if !usersEndpointFields.Has(name) {
+			metadata.RemoveFieldMetadata(name)
+		}
+	}
+
+	metadata.AddFieldMetadata("is_service_account", common.FieldMetadata{
+		DisplayName:  "Is service account",
+		ValueType:    common.ValueTypeBoolean,
+		ProviderType: "boolean",
+		ReadOnly:     new(true),
+	})
 }
 
 // fetchSchemas reads every page of the schemas list, following links.next, keyed by object name.
@@ -81,11 +110,33 @@ func (c *Connector) fetchSchemas(ctx context.Context) (map[string]entitySchema, 
 
 		next = ""
 		if page.Links.Next != nil {
-			next = *page.Links.Next
+			next, err = c.onBaseURL(*page.Links.Next)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
 	return schemas, nil
+}
+
+// onBaseURL keeps a links.next URL's path and cursor but sends it to the connector's base URL: list
+// endpoints return links.next with an http:// scheme that does not answer (see makeNextPageFunc).
+func (c *Connector) onBaseURL(link string) (string, error) {
+	next, err := url.Parse(link)
+	if err != nil {
+		return "", err
+	}
+
+	base, err := url.Parse(c.ProviderInfo().BaseURL)
+	if err != nil {
+		return "", err
+	}
+
+	next.Scheme = base.Scheme
+	next.Host = base.Host
+
+	return next.String(), nil
 }
 
 // https://developer.clarify.ai/docs/api-reference/schemas/getSchemas

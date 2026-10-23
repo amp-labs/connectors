@@ -175,6 +175,33 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 			},
 		},
 		{
+			Name:  "Users list only what GET /users returns",
+			Input: []string{"users"},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseSchemas),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadataWithMissingFields(map[string][]string{
+				"users": {"auth0_id", "workos_id", "_deleted_at", "_created_by", "owned_deals"},
+			}),
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"users": {
+						DisplayName: "Users",
+						Fields: map[string]common.FieldMetadata{
+							"is_service_account": {
+								DisplayName:  "Is service account",
+								ValueType:    common.ValueTypeBoolean,
+								ProviderType: "boolean",
+								ReadOnly:     new(true),
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+		},
+		{
 			Name:  "Error response fails the call",
 			Input: []string{"company"},
 			Server: mockserver.Fixed{
