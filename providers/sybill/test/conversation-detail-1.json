@@ -1,0 +1,58 @@
+{
+  "type": "EXTERNAL",
+  "title": "Test Co 25 – QBR (connie-sample)",
+  "endTime": "2026-09-26T15:30:00+00:00",
+  "summary": {
+    "Outcome": "Alex Sample 25 identified a follow-up deck and a pricing review as the next steps.",
+    "Key Takeaways": [
+      {
+        "topic": "Meeting context",
+        "key_takeaway": "Alex Sample 25 opened the meeting as a QBR."
+      },
+      {
+        "topic": "Connector testing",
+        "key_takeaway": "Jordan Demo 25 stated that this was sample data for connector testing."
+      },
+      {
+        "topic": "Follow-up",
+        "key_takeaway": "The stated next steps were a follow-up deck and a pricing review; no owners or deadlines were specified."
+      }
+    ]
+  },
+  "category": "customer_checkin",
+  "sourceId": "c1dc1ed3-bd87-4d71-8dd1-3da00bacb8b3",
+  "startTime": "2026-09-26T15:00:00+00:00",
+  "transcript": [
+    {
+      "text": "Thanks for joining the QBR today.",
+      "endTime": 11.0,
+      "speaker": "Alex Sample 25",
+      "startTime": 5.0
+    },
+    {
+      "text": "Happy to be here. This is sample data for connector testing.",
+      "endTime": 19.0,
+      "speaker": "Jordan Demo 25",
+      "startTime": 11.0
+    },
+    {
+      "text": "Great. Next step is a follow-up deck and a pricing review.",
+      "endTime": 1800.0,
+      "speaker": "Alex Sample 25",
+      "startTime": 19.0
+    }
+  ],
+  "participants": [
+    {
+      "name": "Alex Sample 25",
+      "email": "alex.sample25@testco25.example.com",
+      "attended": true
+    },
+    {
+      "name": "Jordan Demo 25",
+      "email": "jordan.demo25@testco25.example.com",
+      "attended": true
+    }
+  ],
+  "conversationId": "f119701c-3ff7-5e8c-8e01-2feea07b015b"
+}

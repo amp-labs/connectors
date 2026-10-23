@@ -1,0 +1,58 @@
+{
+  "type": "EXTERNAL",
+  "title": "Test Co 24 – Onboarding kickoff (connie-sample)",
+  "endTime": "2026-09-25T15:30:00+00:00",
+  "summary": {
+    "Outcome": "Alex Sample 24 identified a follow-up deck and a pricing review as the next steps.",
+    "Key Takeaways": [
+      {
+        "topic": "Onboarding kickoff",
+        "key_takeaway": "Alex Sample 24 and Jordan Demo 24 participated in an onboarding kickoff."
+      },
+      {
+        "topic": "Connector testing",
+        "key_takeaway": "Jordan Demo 24 stated that this was sample data for connector testing."
+      },
+      {
+        "topic": "Next steps",
+        "key_takeaway": "Alex Sample 24 stated that the next step was a follow-up deck and a pricing review."
+      }
+    ]
+  },
+  "category": "customer_onboarding",
+  "sourceId": "c1dc1ed3-bd87-4d71-8dd1-3da00bacb8b3",
+  "startTime": "2026-09-25T15:00:00+00:00",
+  "transcript": [
+    {
+      "text": "Thanks for joining the onboarding kickoff today.",
+      "endTime": 11.0,
+      "speaker": "Alex Sample 24",
+      "startTime": 5.0
+    },
+    {
+      "text": "Happy to be here. This is sample data for connector testing.",
+      "endTime": 19.0,
+      "speaker": "Jordan Demo 24",
+      "startTime": 11.0
+    },
+    {
+      "text": "Great. Next step is a follow-up deck and a pricing review.",
+      "endTime": 1800.0,
+      "speaker": "Alex Sample 24",
+      "startTime": 19.0
+    }
+  ],
+  "participants": [
+    {
+      "name": "Alex Sample 24",
+      "email": "alex.sample24@testco24.example.com",
+      "attended": true
+    },
+    {
+      "name": "Jordan Demo 24",
+      "email": "jordan.demo24@testco24.example.com",
+      "attended": true
+    }
+  ],
+  "conversationId": "144e1a84-f4d7-558c-bf67-ca8262a983d2"
+}
