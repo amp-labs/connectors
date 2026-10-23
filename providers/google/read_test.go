@@ -487,6 +487,59 @@ func TestCalendarReadEventsDatabookOpts(t *testing.T) { //nolint:funlen
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			// The series master goes through the single-event fetch. Selecting a parent together
+			// with one of its JSONPath children must give the parent, unchanged, and Raw must stay
+			// exactly as the provider returned it.
+			Name: "series master keeps Raw untouched when parent and JSONPath child are both selected",
+			Input: common.ReadParams{
+				ObjectName: "events",
+				Fields:     connectors.Fields("id", "start", "$['start']['dateTime']"),
+				Opts: ReadParamsOpts{
+					ReadEventsForAllCalendars: true,
+					SingleEvents:              true,
+					FetchSeriesMasters:        true,
+					TimeMin:                   timeMin,
+					TimeMax:                   timeMax,
+				},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If:   mockcond.Path("/calendar/v3/users/me/calendarList"),
+					Then: mockserver.Response(http.StatusOK, responseCalendarList),
+				}, {
+					If:   mockcond.Path("/calendar/v3/calendars/integration@test.com/events/master-1"),
+					Then: mockserver.Response(http.StatusOK, responseMaster),
+				}, {
+					If:   mockcond.Path("/calendar/v3/calendars/integration@test.com/events"),
+					Then: mockserver.Response(http.StatusOK, responseEvents),
+				}},
+			}.Server(),
+			Comparator: func(_ string, actual, _ *common.ReadResult) *testutils.CompareResult {
+				result := testutils.NewCompareResult()
+
+				for _, row := range actual.Data {
+					if row.Id != "master-1" {
+						continue
+					}
+
+					result.Assert("master Raw.start", map[string]any{
+						"dateTime": "2026-01-01T09:00:00Z", "timeZone": "UTC",
+					}, row.Raw["start"])
+
+					result.Assert("master Fields.start (parent wins)", map[string]any{
+						"dateTime": "2026-01-01T09:00:00Z", "timeZone": "UTC",
+					}, row.Fields["start"])
+
+					return result
+				}
+
+				return result.AddDifference("series master row master-1 not found")
+			},
+			Expected:     &common.ReadResult{},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {

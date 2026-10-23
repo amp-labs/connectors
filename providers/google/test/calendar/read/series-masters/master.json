@@ -5,5 +5,13 @@
   "summary": "Standup",
   "recurrence": [
     "RRULE:FREQ=DAILY"
-  ]
+  ],
+  "start": {
+    "dateTime": "2026-01-01T09:00:00Z",
+    "timeZone": "UTC"
+  },
+  "end": {
+    "dateTime": "2026-01-01T09:15:00Z",
+    "timeZone": "UTC"
+  }
 }

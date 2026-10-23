@@ -83,11 +83,30 @@ func TestNestRecordData(t *testing.T) {
 			wantErr: errConflictingFields,
 		},
 		{
+			name: "single-segment JSONPath key is stored under the provider field name",
+			input: map[string]any{
+				"$['summary']":           "Standup",
+				"$['start']['dateTime']": "2026-10-20T10:00:00Z",
+			},
+			want: map[string]any{
+				"summary": "Standup",
+				"start":   map[string]any{"dateTime": "2026-10-20T10:00:00Z"},
+			},
+		},
+		{
+			name: "single-segment JSONPath key conflicting with the plain key is rejected",
+			input: map[string]any{
+				"summary":      "Standup",
+				"$['summary']": "Other",
+			},
+			wantErr: errConflictingFields,
+		},
+		{
 			name: "array wildcards are rejected",
 			input: map[string]any{
 				"$['attendees'][*]['email']": "a@example.com",
 			},
-			wantErr: errFieldPathNotSupported,
+			wantErr: errArrayWildcardNotSupported,
 		},
 	}
 
@@ -108,24 +127,48 @@ func TestNestRecordData(t *testing.T) {
 	}
 }
 
-func TestSelectEventFields(t *testing.T) {
+func TestNestRecordDataDoesNotMutateInput(t *testing.T) {
+	t.Parallel()
+
+	input := map[string]any{
+		"start":                  map[string]any{"timeZone": "UTC"},
+		"$['start']['dateTime']": "2026-10-20T10:00:00Z",
+		"extendedProperties":     map[string]any{"private": map[string]any{"crmId": "42"}},
+		"$['extendedProperties']['private']['dealStage']": "won",
+	}
+
+	first, err := nestRecordData(input)
+	assert.NilError(t, err)
+
+	// The caller's nested maps are left untouched, so the same write can be retried.
+	assert.DeepEqual(t, input["start"], map[string]any{"timeZone": "UTC"})
+	assert.DeepEqual(t, input["extendedProperties"],
+		map[string]any{"private": map[string]any{"crmId": "42"}})
+
+	second, err := nestRecordData(input)
+	assert.NilError(t, err)
+	assert.DeepEqual(t, first, second)
+}
+
+func TestEventFieldSelection(t *testing.T) {
 	t.Parallel()
 
 	record := map[string]any{
-		"id":      "evt-1",
-		"summary": "Standup",
-		"start":   map[string]any{"dateTime": "2026-10-20T10:00:00Z", "timeZone": "UTC"},
+		"id":       "evt-1",
+		"summary":  "Standup",
+		"htmlLink": "https://calendar.google.com/event?eid=1",
+		"start":    map[string]any{"dateTime": "2026-10-20T10:00:00Z", "timeZone": "UTC"},
 		"extendedProperties": map[string]any{
 			"private": map[string]any{"com.acme.dealId": "42"},
 		},
 	}
 
-	got := selectEventFields(record, []string{
+	got := newEventFieldSelection([]string{
 		"summary",
 		"$['start']['dateTime']",
 		"$['start']['date']", // absent for timed events
 		"$['extendedProperties']['private']['com.acme.dealId']",
-	})
+	}).apply(record)
 
 	assert.DeepEqual(t, got, map[string]any{
 		"id":      "evt-1",
@@ -135,4 +178,23 @@ func TestSelectEventFields(t *testing.T) {
 			"private": map[string]any{"com.acme.dealid": "42"},
 		},
 	})
+
+	// Plain fields keep the case-insensitive lookup events always had; a single-segment
+	// JSONPath is just a plain field.
+	got = newEventFieldSelection([]string{"HTMLLINK", "$['Summary']"}).apply(record)
+	assert.DeepEqual(t, got, map[string]any{
+		"id":       "evt-1",
+		"htmllink": "https://calendar.google.com/event?eid=1",
+		"summary":  "Standup",
+	})
+
+	// Parent and child requested together: the parent wins, every time.
+	parentAndChild := newEventFieldSelection([]string{"start", "$['start']['dateTime']"})
+	for range 50 {
+		got = parentAndChild.apply(record)
+		assert.DeepEqual(t, got, map[string]any{
+			"id":    "evt-1",
+			"start": map[string]any{"dateTime": "2026-10-20T10:00:00Z", "timeZone": "UTC"},
+		})
+	}
 }
