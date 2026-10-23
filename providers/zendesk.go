@@ -1,8 +1,9 @@
 package providers
 
 const (
-	ZendeskChat    Provider = "zendeskChat"
-	ZendeskSupport Provider = "zendeskSupport"
+	ZendeskChat                  Provider = "zendeskChat"
+	ZendeskSunshineConversations Provider = "zendeskSunshineConversations"
+	ZendeskSupport               Provider = "zendeskSupport"
 )
 
 func init() { // nolint:funlen
@@ -87,6 +88,46 @@ func init() { // nolint:funlen
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Subdomain",
+				},
+			},
+		},
+	})
+
+	// Zendesk Sunshine Conversations configuration
+	// Basic auth uses an API key ID as the username and its secret as the password.
+	// Requests are made under /v2/apps/{appId}/..., so the app ID goes in the proxied path.
+	// https://developer.zendesk.com/documentation/conversations/getting-started/api-authentication/
+	SetInfo(ZendeskSunshineConversations, ProviderInfo{
+		DisplayName: "Zendesk Sunshine Conversations",
+		AuthType:    Basic,
+		BaseURL:     "https://{{.workspace}}.zendesk.com/sc",
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1723143621/media/zendeskSunshineConversations_1723143620.png", // nolint:lll
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722102329/media/zendeskSupport_1722102328.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1723143621/media/zendeskSunshineConversations_1723143620.png", // nolint:lll
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722102362/media/zendeskSupport_1722102361.svg",
+			},
+		},
+		Support: Support{
+			BulkWrite: BulkWriteSupport{
+				Insert: false,
+				Update: false,
+				Upsert: false,
+				Delete: false,
+			},
+			Proxy:     true,
+			Read:      false,
+			Subscribe: false,
+			Write:     false,
 		},
 		Metadata: &ProviderMetadata{
 			Input: []MetadataItemInput{
