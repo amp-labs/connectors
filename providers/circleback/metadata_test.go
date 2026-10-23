@@ -32,8 +32,8 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 			},
 		},
 		{
-			Name:       "Meetings and action items come from the catalog, meetings with the transcript",
-			Input:      []string{"meetings", "action-items", "people"},
+			Name:       "Objects come from the catalog, meetings with the transcript",
+			Input:      []string{"meetings", "action-items", "people", "companies"},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -92,9 +92,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 						Fields: map[string]common.FieldMetadata{
 							"companyId": {
 								DisplayName:  "Company Id",
-								ValueType:    common.ValueTypeReference,
+								ValueType:    common.ValueTypeFloat,
 								ProviderType: "number",
-								ReferenceTo:  []string{"companies"},
+							},
+						},
+					},
+					"companies": {
+						DisplayName: "Companies",
+						Fields: map[string]common.FieldMetadata{
+							"domain": {
+								DisplayName:  "Domain",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
 							},
 						},
 					},

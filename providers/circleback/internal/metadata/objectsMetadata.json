@@ -73,11 +73,6 @@
         "valueType": "string",
         "providerType": "string"
       },
-      "id": {
-        "displayName": "Id",
-        "valueType": "float",
-        "providerType": "number"
-      },
       "name": {
         "displayName": "Name",
         "valueType": "string",
@@ -195,11 +190,8 @@
     "fields": {
       "companyId": {
         "displayName": "Company Id",
-        "valueType": "reference",
-        "providerType": "number",
-        "referenceTo": [
-          "companies"
-        ]
+        "valueType": "float",
+        "providerType": "number"
       },
       "companyName": {
         "displayName": "Company Name",

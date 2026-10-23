@@ -20,6 +20,8 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	responseMeetings := testutils.DataFromFile(t, "meetings-first-page.json")
 	responseTranscript := testutils.DataFromFile(t, "transcript.json")
 	responseActionItems := testutils.DataFromFile(t, "action-items.json")
+	responsePeople := testutils.DataFromFile(t, "people-first-page.json")
+	responseCompanies := testutils.DataFromFile(t, "companies.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -210,9 +212,43 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					mockcond.Path("/api/people"),
 					mockcond.QueryParam("limit", "2"),
 				},
-				Then: mockserver.ResponseString(http.StatusOK, `[]`),
+				Then: mockserver.Response(http.StatusOK, responsePeople),
 			}.Server(),
-			Expected: &common.ReadResult{Rows: 0, Data: []common.ReadResultRow{}, Done: true},
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Id:     "63602481",
+					Fields: map[string]any{"id": float64(63602481)},
+					Raw:    map[string]any{"companyId": float64(8276573)},
+				}},
+				Done: true,
+			},
+		},
+		{
+			Name: "Companies are identified by their domain",
+			Input: common.ReadParams{
+				ObjectName: "companies",
+				Fields:     connectors.Fields("name", "domain"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/api/companies"),
+				Then:  mockserver.Response(http.StatusOK, responseCompanies),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 40,
+				Data: []common.ReadResultRow{{
+					Id: "testco60.example.com",
+					Fields: map[string]any{
+						"name":   "Internet Assigned Numbers Authority (IANA)",
+						"domain": "testco60.example.com",
+					},
+					Raw: map[string]any{"domain": "testco60.example.com"},
+				}},
+				Done: true,
+			},
 		},
 	}
 

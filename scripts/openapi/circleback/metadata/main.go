@@ -45,9 +45,9 @@ func main() {
 			mapping.CamelCaseToSpaceSeparated,
 			mapping.CapitalizeFirstLetterEveryWord,
 		)).
+		Map(withoutCompanyID).
 		Map(mapping.Fields(
 			typedField,
-			referenceField,
 			mappingfields.DisplayNameFormat(func(_, name string) string {
 				return mapping.CapitalizeFirstLetterEveryWord(mapping.CamelCaseToSpaceSeparated(name))
 			}),
@@ -77,19 +77,14 @@ func typedField(field spec.Field) spec.Field {
 		return field
 	}
 
-	option := options[0]
+	return typedScalar(field, options[0])
+}
 
+func typedScalar(field spec.Field, option *openapi3.Schema) spec.Field {
 	switch {
-	case option.Type.Is(openapi3.TypeString) && option.Format == "date-time":
-		field.Type = openapi3.TypeString
-		field.ValueType = common.ValueTypeDateTime
-	case option.Type.Is(openapi3.TypeString) && len(option.Enum) != 0:
-		field.Type = openapi3.TypeString
-		field.ValueType = common.ValueTypeSingleSelect
-		field.ValueOptions = enumValues(option.Enum)
 	case option.Type.Is(openapi3.TypeString):
 		field.Type = openapi3.TypeString
-		field.ValueType = common.ValueTypeString
+		field.ValueType, field.ValueOptions = stringValueType(option)
 	case option.Type.Is(openapi3.TypeNumber):
 		field.Type = openapi3.TypeNumber
 		field.ValueType = common.ValueTypeFloat
@@ -104,14 +99,26 @@ func typedField(field spec.Field) spec.Field {
 	return field
 }
 
-// referenceField links people to their company: `companyId` is the `id` of a companies record.
-func referenceField(field spec.Field) spec.Field {
-	if field.URLPath == "/people" && field.Name == "companyId" {
-		field.ValueType = common.ValueTypeReference
-		field.ReferenceTo = []string{"companies"}
+func stringValueType(option *openapi3.Schema) (common.ValueType, []string) {
+	switch {
+	case option.Format == "date-time":
+		return common.ValueTypeDateTime, nil
+	case len(option.Enum) != 0:
+		return common.ValueTypeSingleSelect, enumValues(option.Enum)
+	default:
+		return common.ValueTypeString, nil
+	}
+}
+
+// withoutCompanyID drops the optional companies `id`: GET /companies never returns it, and a company
+// is identified by its `domain` (GET /company/{domain}). For the same reason people's `companyId`
+// is not typed as a reference: no companies record carries the id it would point to.
+func withoutCompanyID(schema spec.Schema) spec.Schema {
+	if schema.UrlPath == "/companies" {
+		delete(schema.Fields, "id")
 	}
 
-	return field
+	return schema
 }
 
 // nonNullOptions returns the schema itself, or its anyOf alternatives without the null one.

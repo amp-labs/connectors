@@ -85,7 +85,7 @@ func (c *Connector) parseReadResponse(
 		)
 	}
 
-	marshal := readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id"))
+	marshal := readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField(idField(params.ObjectName)))
 	if params.ObjectName == objectNameMeetings && params.Fields.Has(fieldTranscript) {
 		marshal = c.withTranscripts(ctx, marshal)
 	}
@@ -96,4 +96,15 @@ func (c *Connector) parseReadResponse(
 		marshal,
 		params.Fields,
 	)
+}
+
+// idField names the field that identifies a record. Companies carry no `id` in the list response
+// (the spec's optional `id` never appears); a company is identified by its `domain`,
+// which is also the key of GET /company/{domain}.
+func idField(objectName string) string {
+	if objectName == objectNameCompanies {
+		return "domain"
+	}
+
+	return "id"
 }
