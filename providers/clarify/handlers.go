@@ -46,7 +46,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 }
 
 func (c *Connector) readURL(params common.ReadParams) (string, error) {
-	// links.next is percent-encoded and keeps the filters; the docs ask to fetch it verbatim.
+	// The next page is the first request with an advanced page[offset]; see makeNextPageFunc.
 	if params.NextPage != "" {
 		return params.NextPage.String(), nil
 	}
@@ -93,9 +93,11 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	filter := readhelper.MakeIdentityFilterFunc(getNextRecordsURL)
+	nextPage := makeNextPageFunc(request.URL)
+
+	filter := readhelper.MakeIdentityFilterFunc(nextPage)
 	if !isRecordObject(params.ObjectName) {
-		filter = makeUpdatedAtFilter(getNextRecordsURL)
+		filter = makeUpdatedAtFilter(nextPage)
 	}
 
 	return common.ParseResultFiltered(params, response,

@@ -2,18 +2,49 @@ package clarify
 
 import (
 	"fmt"
+	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
+	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
 
-// getNextRecordsURL returns links.next, which is null on the last page.
-// https://developer.clarify.ai/docs/api-basics/pagination#response
-func getNextRecordsURL(node *ajson.Node) (string, error) {
-	return jsonquery.New(node, "links").StrWithDefault("next", "")
+// makeNextPageFunc advances page[offset] past the records returned while links.next is set; links.next
+// is null on the last page (https://developer.clarify.ai/docs/api-basics/pagination#response).
+// The docs ask to fetch links.next verbatim, but the live API returns it with an http:// scheme
+// (http://api.clarify.ai/v1/...), which does not answer, so the next page is built from the request
+// URL instead. That also keeps the request's filters and page size.
+func makeNextPageFunc(requestURL *url.URL) common.NextPageFunc {
+	return func(node *ajson.Node) (string, error) {
+		next, err := jsonquery.New(node, "links").StrWithDefault("next", "")
+		if err != nil || next == "" {
+			return "", err
+		}
+
+		records, err := jsonquery.New(node).ArrayRequired("data")
+		if err != nil {
+			return "", err
+		}
+
+		offset, err := strconv.Atoi(requestURL.Query().Get(pageOffsetParam))
+		if err != nil {
+			return "", fmt.Errorf("invalid %s in read request: %w", pageOffsetParam, err)
+		}
+
+		nextURL, err := urlbuilder.FromRawURL(requestURL)
+		if err != nil {
+			return "", err
+		}
+
+		nextURL.WithQueryParam(pageOffsetParam, strconv.Itoa(offset+len(records)))
+		nextURL.AddEncodingExceptions(spaceEncoding)
+
+		return nextURL.String(), nil
+	}
 }
 
 // makeUpdatedAtFilter keeps records whose `_updated_at` falls within (Since, Until],

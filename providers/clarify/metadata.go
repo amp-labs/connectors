@@ -3,6 +3,7 @@ package clarify
 import (
 	"context"
 	"encoding/json"
+	"path"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -31,8 +32,8 @@ func (c *Connector) listObjectMetadata(
 	result := common.NewListObjectMetadataResult()
 
 	for _, objectName := range datautils.NewSetFromList(objectNames).List() {
-		entity, ok := schemas[objectName]
-		if !ok {
+		entity, ok := schemas[entityForObject(objectName)]
+		if !ok || !(isRecordObject(objectName) || objectName == objectNameUsers) {
 			result.AppendError(objectName, common.ErrObjectNotSupported)
 
 			continue
@@ -116,7 +117,13 @@ type schemaProperty struct {
 	Enum         []any                 `json:"enum"`
 	ReadOnly     *bool                 `json:"readOnly"`
 	Items        *schemaProperty       `json:"items"`
+	OneOf        []schemaVariant       `json:"oneOf"`
 	Relationship *relationshipProperty `json:"xClarifyRelationship"`
+}
+
+// schemaVariant is one branch of a nullable shared type: {"$ref": ".../core/collectionOfEmails"}.
+type schemaVariant struct {
+	Ref string `json:"$ref"`
 }
 
 type relationshipProperty struct {
@@ -229,7 +236,15 @@ func (p schemaProperty) fieldMetadata(name string) common.FieldMetadata {
 	return field
 }
 
+// providerType is the JSON Schema type with its format, or the shared type a oneOf points to
+// (collectionOfEmails, personName, summary).
 func (p schemaProperty) providerType() string {
+	for _, variant := range p.OneOf {
+		if variant.Ref != "" {
+			return path.Base(variant.Ref)
+		}
+	}
+
 	if p.Format != "" {
 		return p.Type.name() + ":" + p.Format
 	}
@@ -241,20 +256,23 @@ func (p schemaProperty) providerType() string {
 // Collection fields (email_addresses, domains) are objects holding an `items` array, so they are other.
 // https://developer.clarify.ai/docs/getting-started/key-concepts#collection-fields
 func (p schemaProperty) valueType() (common.ValueType, []common.FieldValue) {
-	if len(p.Enum) != 0 {
-		return common.ValueTypeSingleSelect, enumValues(p.Enum)
+	// Enums list null among their values; an enum of only null offers no options.
+	if values := enumValues(p.Enum); len(values) != 0 {
+		return common.ValueTypeSingleSelect, values
+	}
+
+	// Timestamps are typed "object" or ["object", "string"] with format date-time (_created_at,
+	// _updated_at, start), yet records carry them as ISO strings, so the format decides.
+	switch p.Format {
+	case "date-time":
+		return common.ValueTypeDateTime, nil
+	case "date":
+		return common.ValueTypeDate, nil
 	}
 
 	switch p.Type.name() {
 	case "string":
-		switch p.Format {
-		case "date-time":
-			return common.ValueTypeDateTime, nil
-		case "date":
-			return common.ValueTypeDate, nil
-		default:
-			return common.ValueTypeString, nil
-		}
+		return common.ValueTypeString, nil
 	case "number":
 		return common.ValueTypeFloat, nil
 	case "integer":
@@ -262,8 +280,10 @@ func (p schemaProperty) valueType() (common.ValueType, []common.FieldValue) {
 	case "boolean":
 		return common.ValueTypeBoolean, nil
 	case "array":
-		if p.Items != nil && len(p.Items.Enum) != 0 {
-			return common.ValueTypeMultiSelect, enumValues(p.Items.Enum)
+		if p.Items != nil {
+			if values := enumValues(p.Items.Enum); len(values) != 0 {
+				return common.ValueTypeMultiSelect, values
+			}
 		}
 
 		return common.ValueTypeOther, nil
@@ -285,6 +305,15 @@ func enumValues(enum []any) []common.FieldValue {
 	}
 
 	return values
+}
+
+// entityForObject names the schema that describes an object: users are the `user` entity.
+func entityForObject(objectName string) string {
+	if objectName == objectNameUsers {
+		return "user"
+	}
+
+	return objectName
 }
 
 // objectNameForEntity names a relationship target by this connector's object name.
