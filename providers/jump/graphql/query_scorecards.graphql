@@ -1,16 +1,5 @@
-query Scorecards {
-  scorecards(
-    first: {{.First}}
-    {{if .After}}
-    after: "{{.After}}"
-    {{end}}
-    {{if .UpdatedAfter}}
-    updatedAfter: "{{.UpdatedAfter}}"
-    {{end}}
-    {{if .UpdatedBefore}}
-    updatedBefore: "{{.UpdatedBefore}}"
-    {{end}}
-  ) {
+query Scorecards($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  scorecards(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
     items {
       calcType
       calcValue

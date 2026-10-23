@@ -1,16 +1,5 @@
-query Notes {
-  notes(
-    first: {{.First}}
-    {{if .After}}
-    after: "{{.After}}"
-    {{end}}
-    {{if .UpdatedAfter}}
-    updatedAfter: "{{.UpdatedAfter}}"
-    {{end}}
-    {{if .UpdatedBefore}}
-    updatedBefore: "{{.UpdatedBefore}}"
-    {{end}}
-  ) {
+query Notes($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  notes(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
     items {
       id
       insertedAt

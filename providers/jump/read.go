@@ -32,21 +32,27 @@ const (
 //go:embed graphql/*.graphql
 var queryFiles embed.FS
 
+// QueryParameters are the GraphQL variables of a list query.
+// Values are sent as variables rather than rendered into the query, so the template cannot alter them.
 type QueryParameters struct {
-	First         int
-	After         string
-	InsertedAfter string
-	UpdatedAfter  string
-	UpdatedBefore string
-	Fields        map[string]bool
+	First         int    `json:"first"`
+	After         string `json:"after,omitempty"`
+	InsertedAfter string `json:"insertedAfter,omitempty"`
+	UpdatedAfter  string `json:"updatedAfter,omitempty"`
+	UpdatedBefore string `json:"updatedBefore,omitempty"`
 }
 
-// buildReadRequest renders the object's query template with the page size, page token and time window.
+// queryTemplate selects the optional nested relations rendered into the query.
+type queryTemplate struct {
+	Fields map[string]bool
+}
+
+// buildReadRequest renders the object's query template and sends the page size, page token and time window
+// as GraphQL variables.
 // https://my.jumpapp.com/enterprise/documentation (Pagination)
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	queryParams := QueryParameters{
-		First:  pageSize(params),
-		Fields: queryTemplateFields(params.ObjectName, params.Fields),
+		First: pageSize(params),
 	}
 
 	if params.NextPage != "" {
@@ -65,7 +71,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		queryParams.UpdatedBefore = params.Until.UTC().Format(time.RFC3339Nano)
 	}
 
-	return c.buildGraphQLRequest(ctx, params.ObjectName, queryParams)
+	selection := queryTemplate{
+		Fields: queryTemplateFields(params.ObjectName, params.Fields),
+	}
+
+	return c.buildGraphQLRequest(ctx, params.ObjectName, selection, queryParams)
 }
 
 // queryTemplateFields marks the requested fields for the query template.
@@ -108,9 +118,11 @@ func setNextPage(queryParams *QueryParameters, params common.ReadParams) error {
 	}
 
 	queryParams.InsertedAfter = token.InsertedAfter
-	// The inclusive filter returns the previous page's last record again, so one more record is requested
-	// when the complexity limit allows it. Otherwise that record takes one slot of the page.
-	queryParams.First = min(queryParams.First+1, maxPageSizeWithinLimit(params))
+	// The inclusive filter returns every record already read at the boundary insertedAt again.
+	// Requesting the largest page the complexity limit allows, rather than the caller's page size,
+	// lets the window advance past as many records sharing one insertedAt as possible.
+	// filterContacts trims the page back to the requested size.
+	queryParams.First = maxPageSizeWithinLimit(params)
 
 	return nil
 }
@@ -118,14 +130,15 @@ func setNextPage(queryParams *QueryParameters, params common.ReadParams) error {
 func (c *Connector) buildGraphQLRequest(
 	ctx context.Context,
 	objectName string,
-	queryParams QueryParameters,
+	selection queryTemplate,
+	variables QueryParameters,
 ) (*http.Request, error) {
 	url, err := urlbuilder.New(c.ProviderInfo().BaseURL)
 	if err != nil {
 		return nil, err
 	}
 
-	query, err := graphql.Operation(queryFiles, "query", objectName, queryParams)
+	query, err := graphql.Operation(queryFiles, "query", objectName, selection)
 	if errors.Is(err, fs.ErrNotExist) {
 		return nil, fmt.Errorf("%w: %s", common.ErrOperationNotSupportedForObject, objectName)
 	}
@@ -134,8 +147,9 @@ func (c *Connector) buildGraphQLRequest(
 		return nil, err
 	}
 
-	requestBody := map[string]string{
-		"query": query,
+	requestBody := map[string]any{
+		"query":     query,
+		"variables": variables,
 	}
 
 	jsonBody, err := json.Marshal(requestBody)
@@ -277,8 +291,8 @@ func (t contactsPageToken) seen(insertedAt time.Time, id string) bool {
 	return insertedAt.Before(boundary) || (insertedAt.Equal(boundary) && id <= t.LastID)
 }
 
-// filterContacts drops records already returned on earlier pages and produces the next page token
-// from the last record not returned before.
+// filterContacts drops records already returned on earlier pages, trims the page to the requested size
+// and produces the next page token from the last record returned.
 func filterContacts(
 	params common.ReadParams, body *ajson.Node, records []*ajson.Node,
 ) ([]*ajson.Node, string, error) {
@@ -303,11 +317,19 @@ func filterContacts(
 		return nil, "", err
 	}
 
+	// Subsequent pages request more records than the caller asked for, see setNextPage.
+	if size := pageSize(params); len(filtered) > size {
+		filtered = filtered[:size]
+		hasNextPage = true
+	}
+
 	if !hasNextPage {
 		return filtered, "", nil
 	}
 
-	// More contacts than fit on a page share the same insertedAt, so the window cannot advance.
+	// Every record on the page shares the boundary insertedAt and was already returned.
+	// Jump offers no other argument to page within one instant, so stop rather than loop or skip records.
+	// This happens only when more contacts than fit on one page were inserted in the same microsecond.
 	if len(filtered) == 0 {
 		return nil, "", fmt.Errorf("%w: contacts pagination cannot advance", common.ErrNextPageInvalid)
 	}

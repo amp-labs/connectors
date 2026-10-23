@@ -1,16 +1,5 @@
-query Integrations {
-  integrations(
-    first: {{.First}}
-    {{if .After}}
-    after: "{{.After}}"
-    {{end}}
-    {{if .UpdatedAfter}}
-    updatedAfter: "{{.UpdatedAfter}}"
-    {{end}}
-    {{if .UpdatedBefore}}
-    updatedBefore: "{{.UpdatedBefore}}"
-    {{end}}
-  ) {
+query Integrations($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  integrations(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
     items {
       accountEmail
       id

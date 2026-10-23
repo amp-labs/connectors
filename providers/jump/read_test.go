@@ -2,6 +2,7 @@ package jump
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -46,7 +47,7 @@ func TestRead(t *testing.T) {
 				Fields:     connectors.Fields("id", "title", "Assignee"),
 				PageSize:   2,
 			},
-			Server:     graphqlServer(tasksResponse, bodyContains(`first: 2`), bodyContains(`assignee {`)),
+			Server:     graphqlServer(tasksResponse, queryVariables(`{"first":2}`), bodyContains(`assignee {`)),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
@@ -91,7 +92,22 @@ func TestRead(t *testing.T) {
 				PageSize:   2,
 				NextPage:   tasksCursor,
 			},
-			Server:     graphqlServer(tasksPage2Response, bodyContains(`after: \"`+tasksCursor+`\"`)),
+			Server:     graphqlServer(tasksPage2Response, queryVariables(`{"first":2,"after":"`+tasksCursor+`"}`)),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     2,
+				NextPage: tasksPage2Cursor,
+				Done:     false,
+			},
+		},
+		{
+			Name: "Page token is sent unchanged as a GraphQL variable",
+			Input: common.ReadParams{
+				ObjectName: "tasks",
+				Fields:     connectors.Fields("id"),
+				NextPage:   `ab+c/d="e`,
+			},
+			Server:     graphqlServer(tasksPage2Response, queryVariables(`{"first":100,"after":"ab+c/d=\"e"}`)),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     2,
@@ -107,10 +123,11 @@ func TestRead(t *testing.T) {
 				Since:      time.Date(2026, time.June, 24, 0, 0, 0, 148609000, time.UTC),
 				Until:      time.Date(2026, time.July, 1, 0, 0, 0, 96167000, time.UTC),
 			},
-			Server: graphqlServer(tasksPage2Response,
-				bodyContains(`updatedAfter: \"2026-06-24T00:00:00.148609Z\"`),
-				bodyContains(`updatedBefore: \"2026-07-01T00:00:00.096167Z\"`),
-			),
+			Server: graphqlServer(tasksPage2Response, queryVariables(`{
+				"first":100,
+				"updatedAfter":"2026-06-24T00:00:00.148609Z",
+				"updatedBefore":"2026-07-01T00:00:00.096167Z"
+			}`)),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     2,
@@ -124,7 +141,7 @@ func TestRead(t *testing.T) {
 				ObjectName: "meetings",
 				Fields:     connectors.Fields("id", "status", "source", "startedAt"),
 			},
-			Server:     graphqlServer(meetingsResponse, bodyContains(`first: 27`)),
+			Server:     graphqlServer(meetingsResponse, queryVariables(`{"first":27}`)),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
@@ -192,7 +209,7 @@ func TestRead(t *testing.T) {
 				Fields:     connectors.Fields("id", "name"),
 				PageSize:   1,
 			},
-			Server:     graphqlServer(contactsResponse, bodyContains(`first: 1`)),
+			Server:     graphqlServer(contactsResponse, queryVariables(`{"first":1}`)),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -220,8 +237,7 @@ func TestRead(t *testing.T) {
 				NextPage:   contactsToken,
 			},
 			Server: graphqlServer(contactsPage2Response,
-				bodyContains(`first: 2`),
-				bodyContains(`insertedAfter: \"2026-06-27T23:02:18.773614Z\"`),
+				queryVariables(`{"first":100,"insertedAfter":"2026-06-27T23:02:18.773614Z"}`),
 			),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
@@ -246,12 +262,45 @@ func TestRead(t *testing.T) {
 				Fields:     connectors.Fields("id", "contactInfo", "integrationReferences"),
 				NextPage:   contactsToken,
 			},
-			Server:     graphqlServer(contactsPage2Response, bodyContains(`first: 58`)),
+			Server:     graphqlServer(contactsPage2Response, queryVariables(`{"first":58,"insertedAfter":"2026-06-27T23:02:18.773614Z"}`)),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Done: true,
 			},
+		},
+		{
+			Name: "Contacts next page is trimmed to the requested page size",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("id"),
+				PageSize:   1,
+				NextPage:   contactsToken,
+			},
+			Server: graphqlServer(contactsPage(false,
+				contact("con_db16c04d87d44df18c4", "2026-06-27T23:02:18.773614Z"),
+				contact("con_f1", "2026-06-27T23:02:18.773614Z"),
+				contact("con_f2", "2026-06-27T23:02:18.773614Z"),
+			)),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     1,
+				NextPage: `{"insertedAfter":"2026-06-27T23:02:18.773614Z","lastId":"con_f1"}`,
+				Done:     false,
+			},
+		},
+		{
+			Name: "Contacts pagination stops when a full page shares the boundary insertedAt",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("id"),
+				NextPage:   `{"insertedAfter":"2026-06-27T23:02:18.773614Z","lastId":"con_f2"}`,
+			},
+			Server: graphqlServer(contactsPage(true,
+				contact("con_f1", "2026-06-27T23:02:18.773614Z"),
+				contact("con_f2", "2026-06-27T23:02:18.773614Z"),
+			)),
+			ExpectedErrs: []error{common.ErrNextPageInvalid},
 		},
 	}
 
@@ -264,6 +313,20 @@ func TestRead(t *testing.T) {
 			})
 		})
 	}
+}
+
+// queryVariables matches requests whose GraphQL variables equal the given JSON object.
+func queryVariables(variables string) mockcond.Check {
+	return mockcond.Body(`{"variables":`+variables+`}`, mockcond.IgnoreBodyField("query"))
+}
+
+func contactsPage(hasNextPage bool, items ...string) []byte {
+	return []byte(fmt.Sprintf(`{"data":{"contacts":{"items":[%s],"pageInfo":{"hasNextPage":%t}}}}`,
+		strings.Join(items, ","), hasNextPage))
+}
+
+func contact(id, insertedAt string) string {
+	return fmt.Sprintf(`{"id":%q,"insertedAt":%q}`, id, insertedAt)
 }
 
 // Every list query is a POST to the single GraphQL endpoint.

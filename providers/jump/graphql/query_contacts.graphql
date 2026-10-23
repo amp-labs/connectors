@@ -1,19 +1,5 @@
-query Contacts {
-  contacts(
-    first: {{.First}}
-    {{if .After}}
-    after: "{{.After}}"
-    {{end}}
-    {{if .InsertedAfter}}
-    insertedAfter: "{{.InsertedAfter}}"
-    {{end}}
-    {{if .UpdatedAfter}}
-    updatedAfter: "{{.UpdatedAfter}}"
-    {{end}}
-    {{if .UpdatedBefore}}
-    updatedBefore: "{{.UpdatedBefore}}"
-    {{end}}
-  ) {
+query Contacts($first: Int, $after: String, $insertedAfter: DateTime, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  contacts(first: $first, after: $after, insertedAfter: $insertedAfter, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
     items {
       {{- if index .Fields "contactInfo"}}
       contactInfo {

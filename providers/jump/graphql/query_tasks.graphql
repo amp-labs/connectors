@@ -1,16 +1,5 @@
-query Tasks {
-  tasks(
-    first: {{.First}}
-    {{if .After}}
-    after: "{{.After}}"
-    {{end}}
-    {{if .UpdatedAfter}}
-    updatedAfter: "{{.UpdatedAfter}}"
-    {{end}}
-    {{if .UpdatedBefore}}
-    updatedBefore: "{{.UpdatedBefore}}"
-    {{end}}
-  ) {
+query Tasks($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  tasks(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
     items {
       {{- if index .Fields "assignee"}}
       assignee {

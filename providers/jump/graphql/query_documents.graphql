@@ -1,16 +1,5 @@
-query Documents {
-  documents(
-    first: {{.First}}
-    {{if .After}}
-    after: "{{.After}}"
-    {{end}}
-    {{if .UpdatedAfter}}
-    updatedAfter: "{{.UpdatedAfter}}"
-    {{end}}
-    {{if .UpdatedBefore}}
-    updatedBefore: "{{.UpdatedBefore}}"
-    {{end}}
-  ) {
+query Documents($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  documents(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
     items {
       contactId
       id
