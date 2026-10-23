@@ -619,3 +619,54 @@ func TestGetSalesforceRequestFlowNilSelectedFields(t *testing.T) {
 		t.Error("a nil map must not be invented into fields")
 	}
 }
+
+// TestGetSalesforceRequestFlowManualManagement verifies that a customer-managed flow installation
+// gets a manual request without consulting any resolver or needing a webhook URL, and that the
+// flag only counts when flow mode is enabled.
+func TestGetSalesforceRequestFlowManualManagement(t *testing.T) {
+	t.Parallel()
+
+	manualInstallation := func(useFlows, manual bool) *openapi.Installation {
+		inst := flowInstallation(useFlows)
+		inst.Config.Content.Subscribe.ProviderOptions.UseSalesforceFlows.ManualManagement = &manual
+
+		return inst
+	}
+
+	// No resolvers and no webhook URL: a managed flow install would fail on either.
+	got, err := getSalesforceRequest(
+		context.Background(), deps.Dependencies{}, manualInstallation(true, true), nil, nil, nil, "")
+	if err != nil {
+		t.Fatalf("getSalesforceRequest() error = %v", err)
+	}
+
+	req, ok := got.(*salesforce.SubscriptionRequest)
+	if !ok {
+		t.Fatalf("getSalesforceRequest() = %T, want *salesforce.SubscriptionRequest", got)
+	}
+
+	if !req.UseFlow || req.Flow == nil || !req.Flow.ManualManagement {
+		t.Fatalf("request = %+v, want a flow request marked manual", req)
+	}
+
+	if req.Flow.EndpointURL != "" || req.Flow.NamePrefix != "" || req.Flow.SelectedFields != nil {
+		t.Errorf("Flow = %+v, want nothing resolved for a manual request", req.Flow)
+	}
+
+	// manualManagement: false is a normal managed flow request.
+	dependencies := deps.Dependencies{
+		Project:        stubProjectResolver{appName: "My App"},
+		SalesforceFlow: stubSalesforceFlowResolver{},
+	}
+
+	got, err = getSalesforceRequest(
+		context.Background(), dependencies, manualInstallation(true, false),
+		nil, nil, nil, "https://subscribe-webhook.example.com/path")
+	if err != nil {
+		t.Fatalf("getSalesforceRequest() error = %v", err)
+	}
+
+	if req, ok := got.(*salesforce.SubscriptionRequest); !ok || req.Flow == nil || req.Flow.ManualManagement {
+		t.Errorf("request = %+v, want a managed flow request", got)
+	}
+}
