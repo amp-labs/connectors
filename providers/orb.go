@@ -14,7 +14,7 @@ func init() {
 				Name:        "Authorization",
 				ValuePrefix: "Bearer ",
 			},
-			DocsURL: "https://docs.withorb.com/tutorials/first-usage-event",
+			DocsURL: "https://docs.withorb.com/essentials/authentication",
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{

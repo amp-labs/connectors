@@ -53,8 +53,6 @@ func main() {
 
 	output.PrintUnusedRules("readObjects", readObjects)
 	goutils.MustBeNil(output.WriteMetadata(files.OutputDir, pipe))
-	goutils.MustBeNil(output.WriteQueryParamStats(files.OutputDir, pipe))
-	goutils.MustBeNil(output.WriteEndpoints(files.OutputDir, &pipe, nil, nil, nil))
 }
 
 // nullableField types a field by its schema. Most Orb properties are OpenAPI 3.1 nullable unions,
@@ -77,17 +75,24 @@ func nullableField(field spec.Field) spec.Field {
 
 	field.Type = schema.Type.Slice()[0]
 	field.ValueOptions = enumOptions(schema)
-
-	switch {
-	case field.Type == openapi3.TypeString && schema.Format == "date-time":
-		field.ValueType = common.ValueTypeDateTime
-	case field.Type == openapi3.TypeString && schema.Format == "date":
-		field.ValueType = common.ValueTypeDate
-	case field.Type == openapi3.TypeNumber:
-		field.ValueType = common.ValueTypeFloat
-	}
+	field.ValueType = valueType(field.Type, schema.Format)
 
 	return field
+}
+
+// valueType covers the types the output's default mapping doesn't tell apart: date-time and date
+// strings, and numbers. An empty result keeps that default (string, integer, boolean, enum, other).
+func valueType(typeName, format string) common.ValueType {
+	switch {
+	case typeName == openapi3.TypeString && format == "date-time":
+		return common.ValueTypeDateTime
+	case typeName == openapi3.TypeString && format == "date":
+		return common.ValueTypeDate
+	case typeName == openapi3.TypeNumber:
+		return common.ValueTypeFloat
+	default:
+		return ""
+	}
 }
 
 // nonNullOption returns the schema itself, or the only non-null option of its oneOf/anyOf union.

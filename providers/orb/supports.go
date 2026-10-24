@@ -15,7 +15,7 @@ var supportedObjects = []string{ // nolint:gochecknoglobals
 	"customers",
 	"subscriptions",
 	objectNameInvoices,
-	// Billable metrics, GET /v1/metrics.
+	// Billable metrics, GET /v1/metrics. The list includes archived metrics (status "archived").
 	"metrics",
 }
 
