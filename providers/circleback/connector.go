@@ -2,7 +2,6 @@ package circleback
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
@@ -29,12 +28,8 @@ func constructor(_ common.ConnectorParams, base *components.Connector) (*Connect
 		return nil, err
 	}
 
-	errorHandler := interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-	}.Handle
-
 	// Used by the transcript requests made through JSONHTTPClient while reading meetings.
-	connector.HTTPClient().ErrorHandler = errorHandler
+	connector.HTTPClient().ErrorHandler = handleError
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
@@ -43,7 +38,7 @@ func constructor(_ common.ConnectorParams, base *components.Connector) (*Connect
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
-			ErrorHandler:  errorHandler,
+			ErrorHandler:  handleError,
 		},
 	)
 
