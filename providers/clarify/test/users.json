@@ -1,0 +1,83 @@
+{
+  "data": [
+    {
+      "id": "user_01K0CTE7EWH9CRGQDF1SV7AXX6",
+      "type": "user",
+      "attributes": {
+        "_id": "user_01K0CTE7EWH9CRGQDF1SV7AXX6",
+        "name": {
+          "full_name": "Alex Rivera",
+          "last_name": "Rivera",
+          "first_name": "Alex"
+        },
+        "email": "alex.rivera@example.com",
+        "roles": {
+          "items": [
+            "admin"
+          ]
+        },
+        "_created_at": "2026-10-21T06:41:43.986Z",
+        "_updated_at": "2026-10-21T06:41:44.421Z",
+        "last_active_at": "2026-10-22T19:18:15.984Z",
+        "profile_picture": "https://example.com/avatars/alex.rivera.png",
+        "is_service_account": false
+      }
+    },
+    {
+      "id": "user_01M5JGPVZ05MAGKMAA32313712",
+      "type": "user",
+      "attributes": {
+        "_id": "user_01M5JGPVZ05MAGKMAA32313712",
+        "name": {
+          "full_name": "Sam Lee",
+          "last_name": "Lee",
+          "first_name": "Sam"
+        },
+        "email": "sam.lee@example.com",
+        "roles": {
+          "items": [
+            "member"
+          ]
+        },
+        "_created_at": "2026-10-22T19:19:16.278Z",
+        "_updated_at": "2026-10-22T19:19:16.898Z",
+        "last_active_at": "2026-10-22T19:19:18.205Z",
+        "profile_picture": "https://example.com/avatars/sam.lee.png",
+        "is_service_account": false
+      }
+    },
+    {
+      "id": "user_01M5JGTFZ74NN9TRQX0F65Y2V2",
+      "type": "user",
+      "attributes": {
+        "_id": "user_01M5JGTFZ74NN9TRQX0F65Y2V2",
+        "name": {
+          "full_name": "Jordan Kim",
+          "last_name": "Kim",
+          "first_name": "Jordan"
+        },
+        "email": "jordan.kim@example.com",
+        "roles": {
+          "items": [
+            "member"
+          ]
+        },
+        "_created_at": "2026-10-22T19:20:31.620Z",
+        "_updated_at": "2026-10-22T19:20:32.009Z",
+        "last_active_at": "2026-10-22T19:20:34.369Z",
+        "profile_picture": "https://example.com/avatars/jordan.kim.png",
+        "is_service_account": false
+      }
+    }
+  ],
+  "meta": {
+    "limit": 500,
+    "offset": 0,
+    "total_pages": 1,
+    "total_records": 3
+  },
+  "links": {
+    "next": null,
+    "prev": null
+  }
+}

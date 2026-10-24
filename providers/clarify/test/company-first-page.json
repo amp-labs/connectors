@@ -1,0 +1,127 @@
+{
+  "data": [
+    {
+      "id": "051cfd45-b10b-44e5-8e6d-8c4a25012d97",
+      "type": "company",
+      "attributes": {
+        "_id": "051cfd45-b10b-44e5-8e6d-8c4a25012d97",
+        "name": "Test Co 09",
+        "labels": null,
+        "_tam_id": null,
+        "domains": {
+          "items": [
+            "testco09.example.com"
+          ]
+        },
+        "twitter": null,
+        "facebook": null,
+        "linkedin": "aiforsales",
+        "logo_url": "https://zenprospect-production.s3.amazonaws.com/uploads/pictures/69608c10777abf00012262ad/picture",
+        "instagram": null,
+        "angel_list": null,
+        "categories": null,
+        "_created_at": "2026-10-22T06:40:59.128Z",
+        "_created_by": "root",
+        "_merged_ids": null,
+        "_updated_at": "2026-10-22T06:41:04.124Z",
+        "_updated_by": "system",
+        "description": "Fake company seeded for connector testing (connie-sample).",
+        "seed_source": "connie-sample",
+        "_enriched_at": "2026-10-22T06:41:04.013Z",
+        "estimated_arr": null,
+        "employee_range": "11-50",
+        "funding_raised": null,
+        "profile_colors": {
+          "primary": "#282a2b",
+          "tertiary": "#919191",
+          "secondary": "#e2e2e2"
+        },
+        "foundation_date": "2024-01-01",
+        "last_interaction": null,
+        "primary_location": {
+          "city": "Sunnyvale",
+          "state": "California",
+          "address": "5th Ave",
+          "country": "United States",
+          "zip_code": "94089"
+        },
+        "first_interaction": null,
+        "connection_strength": null,
+        "strongest_connection": null,
+        "last_email_interaction": null,
+        "first_email_interaction": null,
+        "last_calendar_interaction": null,
+        "next_calendar_interaction": null,
+        "first_calendar_interaction": null
+      },
+      "relationships": {}
+    },
+    {
+      "id": "0adf6280-c5d7-4b64-9de2-db7bc81ba0e5",
+      "type": "company",
+      "attributes": {
+        "_id": "0adf6280-c5d7-4b64-9de2-db7bc81ba0e5",
+        "name": "Ampersand",
+        "labels": null,
+        "_tam_id": "e20d89f7-a384-446a-860c-d71b8b66d697",
+        "domains": {
+          "items": [
+            "withampersand.com"
+          ]
+        },
+        "twitter": null,
+        "facebook": null,
+        "linkedin": "withampersand",
+        "logo_url": null,
+        "instagram": null,
+        "angel_list": null,
+        "categories": null,
+        "_created_at": "2026-10-21T06:41:44.560Z",
+        "_created_by": "system",
+        "_merged_ids": null,
+        "_updated_at": "2026-10-22T19:20:32.797Z",
+        "_updated_by": "system",
+        "description": "Deep, bidirectional integrations for your B2B and agentic apps.",
+        "seed_source": null,
+        "_enriched_at": "2026-10-21T06:41:44.829Z",
+        "estimated_arr": null,
+        "employee_range": "11-50",
+        "funding_raised": "4700000",
+        "profile_colors": {
+          "primary": null,
+          "tertiary": null,
+          "secondary": null
+        },
+        "foundation_date": "2022-01-01",
+        "last_interaction": null,
+        "primary_location": {
+          "city": "San Francisco",
+          "state": "California",
+          "address": null,
+          "country": "United States",
+          "zip_code": null
+        },
+        "first_interaction": null,
+        "connection_strength": null,
+        "strongest_connection": null,
+        "last_email_interaction": null,
+        "first_email_interaction": null,
+        "last_calendar_interaction": null,
+        "next_calendar_interaction": null,
+        "first_calendar_interaction": null
+      },
+      "relationships": {}
+    }
+  ],
+  "meta": {
+    "limit": 2,
+    "offset": 0,
+    "total_pages": 11,
+    "total_records": 21
+  },
+  "links": {
+    "next": "http://api.clarify.ai/v1/workspaces/test-integration-workspace/objects/company/resources?page%5Boffset%5D=2&page%5Blimit%5D=2",
+    "prev": null
+  },
+  "included": []
+}

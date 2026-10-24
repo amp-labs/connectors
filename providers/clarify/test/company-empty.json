@@ -1,0 +1,14 @@
+{
+  "data": [],
+  "meta": {
+    "limit": 500,
+    "offset": 0,
+    "total_pages": 0,
+    "total_records": 0
+  },
+  "links": {
+    "next": null,
+    "prev": null
+  },
+  "included": []
+}
