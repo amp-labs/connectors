@@ -27,7 +27,7 @@ const (
 	// Records carry `_updated_at` in milliseconds, but the filter compares whole seconds: live, a record at
 	// 19:20:32.797Z matched both `Is after 19:20:32.797Z` and `Is on or after 19:20:32.798Z`. So the request
 	// asks for everything from Since's whole second on, and parseReadResponse drops what falls outside
-	// (Since, Until] at millisecond precision.
+	// [Since, Until] at millisecond precision.
 	//
 	// Until is applied only by the connector. Pages are offsets over results ordered by `_id`
 	// (https://developer.clarify.ai/docs/api-basics/pagination#ordering); with an upper bound on

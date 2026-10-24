@@ -147,14 +147,14 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			Name: "Records are trimmed to (Since, Until] by millisecond in the connector",
+			Name: "Records are trimmed to [Since, Until] by millisecond in the connector",
 			Input: common.ReadParams{
 				ObjectName: "company",
 				Fields:     connectors.Fields("name"),
-				// Equal to the first record's _updated_at, which Since excludes.
+				// Equal to the first record's _updated_at, which the inclusive Since keeps.
 				Since: time.Date(2026, 10, 22, 6, 41, 4, 124_000_000, time.UTC),
-				// Equal to the second record's _updated_at, which Until includes.
-				Until: time.Date(2026, 10, 22, 19, 20, 32, 797_000_000, time.UTC),
+				// One millisecond before the second record's _updated_at, which Until drops.
+				Until: time.Date(2026, 10, 22, 19, 20, 32, 796_000_000, time.UTC),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -168,8 +168,8 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Expected: &common.ReadResult{
 				Rows: 1,
 				Data: []common.ReadResultRow{{
-					Id:     "0adf6280-c5d7-4b64-9de2-db7bc81ba0e5",
-					Fields: map[string]any{"name": "Ampersand"},
+					Id:     "051cfd45-b10b-44e5-8e6d-8c4a25012d97",
+					Fields: map[string]any{"name": "Test Co 09"},
 					Raw:    map[string]any{"type": "company"},
 				}},
 				// The page held 2 records, so the next page skips both, filtered or not.
@@ -183,7 +183,8 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Input: common.ReadParams{
 				ObjectName: "users",
 				Fields:     connectors.Fields("email", "name", "is_service_account"),
-				Since:      time.Date(2026, 10, 22, 19, 19, 16, 898_000_000, time.UTC),
+				// Equal to the second user's _updated_at, which the inclusive Since keeps.
+				Since: time.Date(2026, 10, 22, 19, 19, 16, 898_000_000, time.UTC),
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -196,8 +197,12 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 1,
+				Rows: 2,
 				Data: []common.ReadResultRow{{
+					Id:     "user_01M5JGPVZ05MAGKMAA32313712",
+					Fields: map[string]any{"email": "sam.lee@example.com"},
+					Raw:    map[string]any{"type": "user"},
+				}, {
 					Id: "user_01M5JGTFZ74NN9TRQX0F65Y2V2",
 					Fields: map[string]any{
 						"email": "jordan.kim@example.com",

@@ -47,13 +47,14 @@ func makeNextPageFunc(requestURL *url.URL) common.NextPageFunc {
 	}
 }
 
-// makeUpdatedAtFilter keeps records whose `_updated_at` falls within (Since, Until],
-// matching ReadParams: Since is exclusive and Until inclusive.
+// makeUpdatedAtFilter keeps records whose `_updated_at` falls within [Since, Until]. Since is inclusive so
+// a record stamped exactly at the previous read's Until is not skipped; re-reading it is harmless because
+// records match by id.
 // For records it trims the whole-second window the API filter returns (see updatedSinceParam).
 // For users it is the only filter: GET /users documents only page and sortOrder parameters, so every
 // page is read.
 func makeUpdatedAtFilter(nextPage common.NextPageFunc) common.RecordsFilterFunc {
-	boundary := readhelper.NewTimeBoundary(readhelper.ExcludeSince())
+	boundary := readhelper.NewTimeBoundary()
 
 	return func(params common.ReadParams, body *ajson.Node, records []*ajson.Node) ([]*ajson.Node, string, error) {
 		next, err := nextPage(body)
