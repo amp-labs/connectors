@@ -18,6 +18,8 @@ func init() {
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
+				// No separate dark-mode mark was chosen; the regular icon is reused.
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792814059/media/circleback_regular_icon.jpg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792814058/media/circleback_dark_logo.png",
 			},
 			Regular: &MediaTypeRegular{
