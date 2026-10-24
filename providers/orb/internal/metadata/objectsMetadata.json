@@ -1,0 +1,640 @@
+{
+  "customers": {
+    "path": "/customers",
+    "displayName": "Customers",
+    "fields": {
+      "accounting_sync_configuration": {
+        "displayName": "Accounting Sync Configuration",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "additional_emails": {
+        "displayName": "Additional Emails",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "auto_collection": {
+        "displayName": "Auto Collection",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "auto_issuance": {
+        "displayName": "Auto Issuance",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "automatic_tax_enabled": {
+        "displayName": "Automatic Tax Enabled",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "balance": {
+        "displayName": "Balance",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "billing_address": {
+        "displayName": "Billing Address",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "created_at": {
+        "displayName": "Created At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "currency": {
+        "displayName": "Currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "default_payment_method": {
+        "displayName": "Default Payment Method",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "email": {
+        "displayName": "Email",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "email_delivery": {
+        "displayName": "Email Delivery",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "exempt_from_automated_tax": {
+        "displayName": "Exempt From Automated Tax",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "external_customer_id": {
+        "displayName": "External Customer Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "hierarchy": {
+        "displayName": "Hierarchy",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "metadata": {
+        "displayName": "Metadata",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "payment_configuration": {
+        "displayName": "Payment Configuration",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "payment_provider": {
+        "displayName": "Payment Provider",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "quickbooks",
+            "displayValue": "quickbooks"
+          },
+          {
+            "value": "bill.com",
+            "displayValue": "bill.com"
+          },
+          {
+            "value": "stripe_charge",
+            "displayValue": "stripe_charge"
+          },
+          {
+            "value": "stripe_invoice",
+            "displayValue": "stripe_invoice"
+          },
+          {
+            "value": "netsuite",
+            "displayValue": "netsuite"
+          },
+          {
+            "value": "adyen",
+            "displayValue": "adyen"
+          }
+        ]
+      },
+      "payment_provider_id": {
+        "displayName": "Payment Provider Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "portal_url": {
+        "displayName": "Portal Url",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "reporting_configuration": {
+        "displayName": "Reporting Configuration",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "shipping_address": {
+        "displayName": "Shipping Address",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "tax_id": {
+        "displayName": "Tax Id",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "timezone": {
+        "displayName": "Timezone",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "invoices": {
+    "path": "/invoices",
+    "displayName": "Invoices",
+    "fields": {
+      "amount_due": {
+        "displayName": "Amount Due",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "auto_collection": {
+        "displayName": "Auto Collection",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "billing_address": {
+        "displayName": "Billing Address",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "created_at": {
+        "displayName": "Created At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "credit_notes": {
+        "displayName": "Credit Notes",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "currency": {
+        "displayName": "Currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "customer": {
+        "displayName": "Customer",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "customer_balance_transactions": {
+        "displayName": "Customer Balance Transactions",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "customer_tax_id": {
+        "displayName": "Customer Tax Id",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "discount": {
+        "displayName": "Discount",
+        "valueType": "other"
+      },
+      "discounts": {
+        "displayName": "Discounts",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "due_date": {
+        "displayName": "Due Date",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "eligible_to_issue_at": {
+        "displayName": "Eligible To Issue At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "hidden_line_item_count": {
+        "displayName": "Hidden Line Item Count",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "hosted_invoice_url": {
+        "displayName": "Hosted Invoice Url",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "invoice_date": {
+        "displayName": "Invoice Date",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "invoice_number": {
+        "displayName": "Invoice Number",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "invoice_pdf": {
+        "displayName": "Invoice Pdf",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "invoice_source": {
+        "displayName": "Invoice Source",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "subscription",
+            "displayValue": "subscription"
+          },
+          {
+            "value": "partial",
+            "displayValue": "partial"
+          },
+          {
+            "value": "one_off",
+            "displayValue": "one_off"
+          }
+        ]
+      },
+      "issue_failed_at": {
+        "displayName": "Issue Failed At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "issued_at": {
+        "displayName": "Issued At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "line_items": {
+        "displayName": "Line Items",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "maximum": {
+        "displayName": "Maximum",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "maximum_amount": {
+        "displayName": "Maximum Amount",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "memo": {
+        "displayName": "Memo",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "metadata": {
+        "displayName": "Metadata",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "minimum": {
+        "displayName": "Minimum",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "minimum_amount": {
+        "displayName": "Minimum Amount",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "paid_at": {
+        "displayName": "Paid At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "payment_attempts": {
+        "displayName": "Payment Attempts",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "payment_failed_at": {
+        "displayName": "Payment Failed At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "payment_received_at": {
+        "displayName": "Payment Received At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "payment_started_at": {
+        "displayName": "Payment Started At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "scheduled_issue_at": {
+        "displayName": "Scheduled Issue At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "shipping_address": {
+        "displayName": "Shipping Address",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "status": {
+        "displayName": "Status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "issued",
+            "displayValue": "issued"
+          },
+          {
+            "value": "paid",
+            "displayValue": "paid"
+          },
+          {
+            "value": "synced",
+            "displayValue": "synced"
+          },
+          {
+            "value": "void",
+            "displayValue": "void"
+          },
+          {
+            "value": "draft",
+            "displayValue": "draft"
+          }
+        ]
+      },
+      "subscription": {
+        "displayName": "Subscription",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "subtotal": {
+        "displayName": "Subtotal",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "sync_failed_at": {
+        "displayName": "Sync Failed At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "total": {
+        "displayName": "Total",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "voided_at": {
+        "displayName": "Voided At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "will_auto_issue": {
+        "displayName": "Will Auto Issue",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      }
+    }
+  },
+  "metrics": {
+    "path": "/metrics",
+    "displayName": "Metrics",
+    "fields": {
+      "description": {
+        "displayName": "Description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "item": {
+        "displayName": "Item",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "metadata": {
+        "displayName": "Metadata",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "parameter_definitions": {
+        "displayName": "Parameter Definitions",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "sql": {
+        "displayName": "Sql",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "status": {
+        "displayName": "Status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "active",
+            "displayValue": "active"
+          },
+          {
+            "value": "draft",
+            "displayValue": "draft"
+          },
+          {
+            "value": "archived",
+            "displayValue": "archived"
+          }
+        ]
+      }
+    }
+  },
+  "subscriptions": {
+    "path": "/subscriptions",
+    "displayName": "Subscriptions",
+    "fields": {
+      "active_plan_phase_order": {
+        "displayName": "Active Plan Phase Order",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "adjustment_intervals": {
+        "displayName": "Adjustment Intervals",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "auto_collection": {
+        "displayName": "Auto Collection",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "auto_issuance": {
+        "displayName": "Auto Issuance",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "billing_cycle_anchor_configuration": {
+        "displayName": "Billing Cycle Anchor Configuration",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "billing_cycle_day": {
+        "displayName": "Billing Cycle Day",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "created_at": {
+        "displayName": "Created At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "current_billing_period_end_date": {
+        "displayName": "Current Billing Period End Date",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "current_billing_period_start_date": {
+        "displayName": "Current Billing Period Start Date",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "customer": {
+        "displayName": "Customer",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "default_invoice_memo": {
+        "displayName": "Default Invoice Memo",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "discount_intervals": {
+        "displayName": "Discount Intervals",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "end_date": {
+        "displayName": "End Date",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "fixed_fee_quantity_schedule": {
+        "displayName": "Fixed Fee Quantity Schedule",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "invoicing_threshold": {
+        "displayName": "Invoicing Threshold",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "maximum_intervals": {
+        "displayName": "Maximum Intervals",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "metadata": {
+        "displayName": "Metadata",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "minimum_intervals": {
+        "displayName": "Minimum Intervals",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "net_terms": {
+        "displayName": "Net Terms",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "pending_subscription_change": {
+        "displayName": "Pending Subscription Change",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "plan": {
+        "displayName": "Plan",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "price_intervals": {
+        "displayName": "Price Intervals",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "redeemed_coupon": {
+        "displayName": "Redeemed Coupon",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "start_date": {
+        "displayName": "Start Date",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "status": {
+        "displayName": "Status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "active",
+            "displayValue": "active"
+          },
+          {
+            "value": "ended",
+            "displayValue": "ended"
+          },
+          {
+            "value": "upcoming",
+            "displayValue": "upcoming"
+          }
+        ]
+      },
+      "trial_info": {
+        "displayName": "Trial Info",
+        "valueType": "other",
+        "providerType": "object"
+      }
+    }
+  }
+}
