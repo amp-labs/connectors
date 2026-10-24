@@ -34,10 +34,14 @@ var builtInObjects = []string{ // nolint:gochecknoglobals
 	objectNameTask,
 }
 
-// SupportedReadObjects lists the objects this connector reads. Custom objects (`c_*`) are read as
-// well, but which ones exist depends on the workspace.
+// liveTestCustomObject is the custom object in Ampersand's Clarify test workspace. It is listed so the live
+// tests read one `c_*` object; any workspace's custom objects are read through the `c_*` registry entry.
+const liveTestCustomObject = "c_sample_contract"
+
+// SupportedReadObjects lists the objects the live tests read: the built-in objects, users, and one custom
+// object. Custom objects (`c_*`) are read in general, but which ones exist depends on the workspace.
 func SupportedReadObjects() []string {
-	return append(slices.Clone(builtInObjects), objectNameUsers)
+	return append(slices.Clone(builtInObjects), objectNameUsers, liveTestCustomObject)
 }
 
 func supportedOperations() components.EndpointRegistryInput {

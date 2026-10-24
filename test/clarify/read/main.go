@@ -21,7 +21,13 @@ func main() {
 
 	conn := connTest.GetClarifyConnector(ctx)
 
-	for _, objectName := range clarify.SupportedReadObjects() {
+	// Pass object names to read only those, e.g. a custom object of your workspace: go run . c_project
+	objectNames := os.Args[1:]
+	if len(objectNames) == 0 {
+		objectNames = clarify.SupportedReadObjects()
+	}
+
+	for _, objectName := range objectNames {
 		res, err := conn.Read(ctx, common.ReadParams{
 			ObjectName: objectName,
 			Fields:     connectors.Fields("id", "_created_at", "_updated_at"),
