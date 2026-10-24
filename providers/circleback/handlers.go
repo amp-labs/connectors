@@ -22,14 +22,13 @@ const (
 
 // fixedQuery widens the lists whose defaults hide records.
 // GET /meetings defaults to ownership=Mine; All is every meeting the key's user can access.
-// GET /action-items defaults to assigneeType=Me and to incomplete items only.
+// GET /action-items defaults to assigneeType=Me; its status filter is set per pass (see actionitems.go).
 var fixedQuery = map[string]map[string]string{ // nolint:gochecknoglobals
 	objectNameMeetings: {
 		"ownership": "All",
 	},
 	objectNameActionItems: {
 		"assigneeType": "Anyone",
-		"status":       "All",
 	},
 }
 
@@ -55,8 +54,20 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		readURL.WithQueryParam(pageSizeParam, strconv.Itoa(params.PageSize))
 	}
 
-	if params.NextPage != "" {
-		readURL.WithQueryParam(cursorParam, params.NextPage.String())
+	cursor := params.NextPage.String()
+
+	if params.ObjectName == objectNameActionItems {
+		page, err := parseActionItemsPage(params.NextPage)
+		if err != nil {
+			return nil, err
+		}
+
+		readURL.WithQueryParam(actionItemStatusParam, page.status)
+		cursor = page.cursor
+	}
+
+	if cursor != "" {
+		readURL.WithQueryParam(cursorParam, cursor)
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, readURL.String(), nil)
@@ -65,21 +76,26 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 // parseReadResponse reads the bare JSON array every list returns.
 //
 // No list endpoint accepts a time filter, so Since and Until are applied here, to meetings only,
-// on `updatedAt` (Since exclusive, Until inclusive). The meetings order is not documented, so every
-// page is read. Action items, tags, people and companies carry no update time and are read in full.
+// on `updatedAt`, both inclusive, so a meeting updated in the same millisecond as the previous
+// read's watermark is delivered again rather than dropped. The meetings order is not documented,
+// so every page is read. Action items, tags, people and companies carry no update time and are
+// read in full.
 func (c *Connector) parseReadResponse(
 	ctx context.Context,
 	params common.ReadParams,
-	_ *http.Request,
+	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
 	nextPage := makeNextPageFunc(response)
+	if params.ObjectName == objectNameActionItems {
+		nextPage = makeActionItemsNextPageFunc(request.URL, response)
+	}
 
 	filter := readhelper.MakeIdentityFilterFunc(nextPage)
 	if params.ObjectName == objectNameMeetings {
 		filter = readhelper.MakeTimeFilterFunc(
 			readhelper.Unordered,
-			readhelper.NewTimeBoundary(readhelper.ExcludeSince()),
+			readhelper.NewTimeBoundary(),
 			"updatedAt", time.RFC3339,
 			nextPage,
 		)
