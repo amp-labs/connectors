@@ -14,6 +14,8 @@ type Connector struct {
 	common.RequireAuthenticatedClient
 
 	components.Reader
+
+	pacer pacer
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -29,7 +31,7 @@ func constructor(_ common.ConnectorParams, base *components.Connector) (*Connect
 	}
 
 	// Used by the transcript requests made through JSONHTTPClient while reading meetings.
-	connector.HTTPClient().ErrorHandler = handleError
+	connector.HTTPClient().ErrorHandler = connector.handleError
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
@@ -38,7 +40,7 @@ func constructor(_ common.ConnectorParams, base *components.Connector) (*Connect
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
-			ErrorHandler:  handleError,
+			ErrorHandler:  connector.handleError,
 		},
 	)
 

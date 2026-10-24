@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"sync"
-	"time"
 
 	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
@@ -17,11 +17,11 @@ const (
 	// fieldTranscript is the meetings field holding the transcript, which the list does not return.
 	fieldTranscript = "transcript"
 
-	// The Free plan allows 3 requests per second per account.
+	// At most this many transcript requests are in flight: the Free plan's per-second limit.
 	// https://circleback.ai/docs/api#rate-limits
 	maxConcurrentTranscriptFetches = 3
 
-	// A rate-limited transcript request is retried after its Retry-After wait, up to this many tries.
+	// A rate-limited transcript request is tried this many times in all.
 	maxTranscriptAttempts = 3
 )
 
@@ -96,9 +96,9 @@ func (c *Connector) fetchTranscripts(
 // fetchTranscript returns a meeting's transcript segments, or errNoTranscript when Circleback has none.
 //
 // A meeting with no transcript (no recording, or still processing) must not fail the page, so a
-// 400 or 404 for one meeting reads as no transcript. A 429 is waited out for the seconds in its
-// Retry-After header and retried: on the Free plan (20 requests per minute) a page of 20 meetings
-// with their transcripts needs more requests than one minute allows.
+// 400 or 404 for one meeting reads as no transcript; every other failure is an error. Requests wait
+// while the account's rate-limit window is used up, and a 429 is retried once its Retry-After
+// has passed (see ratelimit.go).
 // https://circleback.ai/docs/api#rate-limits
 func (c *Connector) fetchTranscript(ctx context.Context, meetingID string) ([]any, error) {
 	if meetingID == "" {
@@ -111,8 +111,14 @@ func (c *Connector) fetchTranscript(ctx context.Context, meetingID string) ([]an
 	}
 
 	for attempt := 1; ; attempt++ {
+		if err := c.pacer.wait(ctx); err != nil {
+			return nil, err
+		}
+
 		response, err := c.JSONHTTPClient().Get(ctx, transcriptURL.String())
 		if err == nil {
+			c.pacer.observe(response.Headers)
+
 			segments, err := common.UnmarshalJSON[[]any](response)
 			if err != nil {
 				return nil, err
@@ -121,29 +127,26 @@ func (c *Connector) fetchTranscript(ctx context.Context, meetingID string) ([]an
 			return *segments, nil
 		}
 
-		if errors.Is(err, common.ErrBadRequest) {
-			return nil, errNoTranscript
-		}
-
-		var limited *rateLimitError
-		if !errors.As(err, &limited) || attempt == maxTranscriptAttempts {
-			return nil, err
-		}
-
-		if err := sleep(ctx, limited.retryAfter); err != nil {
+		if err = transcriptFailure(err, attempt); err != nil {
 			return nil, err
 		}
 	}
 }
 
-func sleep(ctx context.Context, duration time.Duration) error {
-	timer := time.NewTimer(duration)
-	defer timer.Stop()
+// transcriptFailure decides what a failed transcript request means: errNoTranscript for a 400 or
+// 404, nil when a 429 should be tried again, and the error itself otherwise.
+func transcriptFailure(err error, attempt int) error {
+	var httpErr *common.HTTPError
+	if !errors.As(err, &httpErr) {
+		return err
+	}
 
-	select {
-	case <-timer.C:
+	switch {
+	case httpErr.Status == http.StatusBadRequest || httpErr.Status == http.StatusNotFound:
+		return errNoTranscript
+	case httpErr.Status == http.StatusTooManyRequests && attempt < maxTranscriptAttempts:
 		return nil
-	case <-ctx.Done():
-		return ctx.Err()
+	default:
+		return err
 	}
 }

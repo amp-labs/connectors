@@ -86,6 +86,8 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	c.pacer.observe(response.Headers)
+
 	nextPage := makeNextPageFunc(response)
 	if params.ObjectName == objectNameActionItems {
 		nextPage = makeActionItemsNextPageFunc(request.URL, response)

@@ -3,10 +3,9 @@ package circleback
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
-	"time"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
@@ -19,37 +18,17 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	},
 )
 
-// handleError interprets Circleback's error envelope, and keeps the Retry-After of a 429 so a
-// rate-limited request can be retried when the window refills.
-// https://circleback.ai/docs/api#rate-limits
-func handleError(response *http.Response, body []byte) error {
+// handleError interprets Circleback's error envelope and keeps the response's status and headers
+// (common.HTTPError), so a caller can tell a missing transcript from other failures. Its
+// rate-limit headers also pace the requests that follow.
+func (c *Connector) handleError(response *http.Response, body []byte) error {
+	c.pacer.observe(response.Header)
+
 	err := interpreter.ErrorHandler{
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}.Handle(response, body)
 
-	if response.StatusCode != http.StatusTooManyRequests {
-		return err
-	}
-
-	seconds, convErr := strconv.Atoi(response.Header.Get("Retry-After"))
-	if convErr != nil || seconds < 0 {
-		return err
-	}
-
-	return &rateLimitError{err: err, retryAfter: time.Duration(seconds) * time.Second}
-}
-
-type rateLimitError struct {
-	err        error
-	retryAfter time.Duration
-}
-
-func (e *rateLimitError) Error() string {
-	return fmt.Sprintf("%v (retry after %v)", e.err, e.retryAfter)
-}
-
-func (e *rateLimitError) Unwrap() error {
-	return e.err
+	return common.NewHTTPError(response.StatusCode, body, common.GetResponseHeaders(response), err)
 }
 
 type ResponseError struct {

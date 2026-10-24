@@ -185,6 +185,25 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
+			Name: "A transcript request that times out fails the read rather than reading as no transcript",
+			Input: common.ReadParams{
+				ObjectName: "meetings",
+				Fields:     connectors.Fields("transcript"),
+				Since:      time.Date(2026, 10, 22, 6, 27, 43, 828000000, time.UTC),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/api/meetings"),
+					Then: mockserver.Response(http.StatusOK, responseMeetings),
+				}, {
+					If:   mockcond.Path("/api/meeting/IeS3Ok4ymVG3JfD2wYwli/transcript"),
+					Then: mockserver.Response(http.StatusRequestTimeout),
+				}},
+			}.Server(),
+			ExpectedErrs: []error{common.ErrBadRequest},
+		},
+		{
 			Name: "A rate-limited transcript is retried after its Retry-After",
 			Input: common.ReadParams{
 				ObjectName: "meetings",
@@ -376,15 +395,12 @@ func rateLimitedOnceServer(meetings, rateLimited, transcript []byte) *httptest.S
 
 		switch {
 		case r.URL.Path == "/api/meetings":
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write(meetings)
+			mockserver.Response(http.StatusOK, meetings)(w, r)
 		case strings.HasSuffix(r.URL.Path, "/transcript") && transcriptCalls.Add(1) == 1:
 			w.Header().Set("Retry-After", "0")
-			w.WriteHeader(http.StatusTooManyRequests)
-			_, _ = w.Write(rateLimited)
+			mockserver.Response(http.StatusTooManyRequests, rateLimited)(w, r)
 		default:
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write(transcript)
+			mockserver.Response(http.StatusOK, transcript)(w, r)
 		}
 	})
 }
