@@ -17,8 +17,12 @@ func init() {
 			DocsURL: "https://circleback.ai/docs/api#get-an-api-key",
 		},
 		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792814058/media/circleback_dark_logo.png",
+			},
 			Regular: &MediaTypeRegular{
-				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792743779/media/circleback_regular_logo.svg",
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792814059/media/circleback_regular_icon.jpg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792814060/media/circleback_regular_logo.svg",
 			},
 		},
 		Support: Support{
