@@ -12,11 +12,11 @@ import (
 
 // actionItemStatusParam is the completion filter of GET /action-items, which defaults to
 // incomplete items. The docs list no values for it, so action items are read once per status
-// an action item can have (DONE, then PENDING), as the action item's own `status` enum names them.
+// an action item can have (PENDING, then DONE), as the action item's own `status` enum names them.
 // https://circleback.ai/docs/api/action-items/list-action-items
 const actionItemStatusParam = "status"
 
-var actionItemStatuses = []string{"DONE", "PENDING"} // nolint:gochecknoglobals
+var actionItemStatuses = []string{"PENDING", "DONE"} // nolint:gochecknoglobals
 
 // actionItemsPage is where an action items read resumes: the status being read and the
 // provider's cursor within it. The next page token is "<status>:<cursor>"; an empty cursor
