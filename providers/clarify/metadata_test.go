@@ -51,7 +51,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 		},
 		{
 			Name:       "Fields, enums and to-one relationships come from the workspace schemas",
-			Input:      []string{"company", "deal", "users", "c_sample_contract"},
+			Input:      []string{"company", "deal", "meeting", "users", "c_sample_contract"},
 			Server:     schemasServer().Server(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
@@ -123,6 +123,18 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 								ValueType:    common.ValueTypeReference,
 								ProviderType: "string",
 								ReferenceTo:  []string{"users"},
+							},
+						},
+					},
+					"meeting": {
+						DisplayName: "Meetings",
+						Fields: map[string]common.FieldMetadata{
+							// Links to an entity the connector doesn't read keep the id's own type.
+							"recurrence_rule_id": {
+								DisplayName:  "Recurrence rule",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+								ReadOnly:     new(true),
 							},
 						},
 					},

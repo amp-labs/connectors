@@ -34,7 +34,7 @@ func (c *Connector) listObjectMetadata(
 
 	for _, objectName := range datautils.NewSetFromList(objectNames).List() {
 		entity, ok := schemas[entityForObject(objectName)]
-		if !ok || (!isRecordObject(objectName) && objectName != objectNameUsers) {
+		if !ok || !isReadableObject(objectName) {
 			result.AppendError(objectName, common.ErrObjectNotSupported)
 
 			continue
@@ -286,9 +286,13 @@ func (p schemaProperty) fieldMetadata(name string) common.FieldMetadata {
 		Values:       values,
 	}
 
+	// A link is a reference only when its target is an object this connector reads. Links to entities it
+	// doesn't read (meeting.recurrence_rule_id, meeting.public_link_id) keep the type of the id they hold.
 	if p.Relationship != nil {
-		field.ValueType = common.ValueTypeReference
-		field.ReferenceTo = []string{objectNameForEntity(p.Relationship.Entity)}
+		if target := objectNameForEntity(p.Relationship.Entity); isReadableObject(target) {
+			field.ValueType = common.ValueTypeReference
+			field.ReferenceTo = []string{target}
+		}
 	}
 
 	return field

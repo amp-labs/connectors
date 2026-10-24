@@ -55,6 +55,11 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 }
 
+// isRecordObject reports whether the object is read from /objects/{object}/resources.
 func isRecordObject(objectName string) bool {
 	return slices.Contains(builtInObjects, objectName) || strings.HasPrefix(objectName, customObjectPrefix)
+}
+
+func isReadableObject(objectName string) bool {
+	return isRecordObject(objectName) || objectName == objectNameUsers
 }

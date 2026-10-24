@@ -68,12 +68,11 @@ func makeUpdatedAtFilter(nextPage common.NextPageFunc) common.RecordsFilterFunc 
 		filtered := make([]*ajson.Node, 0, len(records))
 
 		for _, record := range records {
-			timestamp, err := lastModified(record)
-			if err != nil {
-				return nil, "", err
-			}
+			timestamp, ok := lastModified(record)
 
-			if boundary.Contains(params, timestamp) {
+			// A record whose update time can't be read is kept, rather than failing the whole read or
+			// silently dropping it.
+			if !ok || boundary.Contains(params, timestamp) {
 				filtered = append(filtered, record)
 			}
 		}
@@ -82,17 +81,19 @@ func makeUpdatedAtFilter(nextPage common.NextPageFunc) common.RecordsFilterFunc 
 	}
 }
 
-func lastModified(record *ajson.Node) (time.Time, error) {
+// lastModified reads attributes._updated_at, an RFC 3339 string with milliseconds in every live response.
+func lastModified(record *ajson.Node) (time.Time, bool) {
 	value, err := jsonquery.New(record, "attributes").StringOptional("_updated_at")
+	if err != nil || value == nil {
+		return time.Time{}, false
+	}
+
+	timestamp, err := time.Parse(time.RFC3339, *value)
 	if err != nil {
-		return time.Time{}, err
+		return time.Time{}, false
 	}
 
-	if value == nil {
-		return time.Time{}, fmt.Errorf("%w: attributes._updated_at", common.ErrMissingExpectedValues)
-	}
-
-	return time.Parse(time.RFC3339, *value)
+	return timestamp, true
 }
 
 // flattenRecord promotes a JSON:API resource's attributes to top-level fields:
