@@ -39,6 +39,7 @@ import (
 	"github.com/amp-labs/connectors/providers/chargeover"
 	"github.com/amp-labs/connectors/providers/chilipiper"
 	"github.com/amp-labs/connectors/providers/chorus"
+	"github.com/amp-labs/connectors/providers/circleback"
 	"github.com/amp-labs/connectors/providers/claricopilot"
 	"github.com/amp-labs/connectors/providers/clickup"
 	"github.com/amp-labs/connectors/providers/closecrm"
@@ -201,6 +202,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Chargebee:                         wrapper(newChargebeeConnector),
 	providers.ChiliPiper:                        wrapper(newChiliPiperConnector),
 	providers.Chorus:                            wrapper(newChorusConnector),
+	providers.Circleback:                        wrapper(newCirclebackConnector),
 	providers.ClariCopilot:                      wrapper(newClariCopilotConnector),
 	providers.ClickUp:                           wrapper(newClickUpConnector),
 	providers.Close:                             wrapper(newCloseConnector),
@@ -1235,6 +1237,12 @@ func newChorusConnector(
 	params common.ConnectorParams,
 ) (*chorus.Connector, error) {
 	return chorus.NewConnector(params)
+}
+
+func newCirclebackConnector(
+	params common.ConnectorParams,
+) (*circleback.Connector, error) {
+	return circleback.NewConnector(params)
 }
 
 func newWebexConnector(

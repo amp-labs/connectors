@@ -1,6 +1,7 @@
 # OpenAPI files that live under scripts/openapi/<name>/...
 scripts/openapi/bitbucket/swagger.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/chilipiper/docs.yaml filter=lfs diff=lfs merge=lfs -text
+scripts/openapi/circleback/internal/files/openapi.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/connectwise/internal/files/All.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/dixa/swagger.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/getresponse/swagger.json filter=lfs diff=lfs merge=lfs -text

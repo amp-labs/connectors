@@ -1,0 +1,4 @@
+{
+  "error": "Ratelimit exceeded for the Free plan.",
+  "code": "RATE_LIMITED"
+}
