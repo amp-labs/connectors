@@ -17,6 +17,8 @@ func TestRead(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	responseUnauthorized := testutils.DataFromFile(t, "error-unauthorized.json")
+	responseCustomersFirstPage := testutils.DataFromFile(t, "customers-first-page.json")
+	responseMetricsLastPage := testutils.DataFromFile(t, "metrics-last-page.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -49,8 +51,86 @@ func TestRead(t *testing.T) { //nolint:funlen
 				testutils.StringError("The Authorization header could not be verified. An invalid API key was provided."),
 			},
 		},
-		// No successful live response has been captured yet, so the request-shape cases below answer
-		// with the saved 401 only when the request matches, and anything else with 418.
+		{
+			Name: "First page of customers selects fields, keeps Raw and returns the next cursor",
+			Input: common.ReadParams{
+				ObjectName: "customers",
+				Fields:     connectors.Fields("external_customer_id", "timezone", "created_at"),
+				PageSize:   2,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/v1/customers"),
+					mockcond.QueryParam("limit", "2"),
+					mockcond.QueryParamsMissing("cursor", "status[]"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseCustomersFirstPage),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Id: "FLuAjuPp9mpNf4KB",
+					Fields: map[string]any{
+						"external_customer_id": "claude-cutover-20261022025820-S",
+						"timezone":             "Etc/UTC",
+						"created_at":           "2026-10-23T05:12:20+00:00",
+					},
+					Raw: map[string]any{
+						"id":       "FLuAjuPp9mpNf4KB",
+						"email":    "claude-cutover-20261022025820-S@example.com",
+						"balance":  "0.00",
+						"currency": "USD",
+					},
+				}, {
+					Id: "YXC37xHiLeMy5JmP",
+					Fields: map[string]any{
+						"external_customer_id": "claude-cutover-20261022025820-R",
+						"timezone":             "Etc/UTC",
+						"created_at":           "2026-10-23T00:22:29+00:00",
+					},
+					Raw: map[string]any{
+						"id":   "YXC37xHiLeMy5JmP",
+						"name": "claude-cutover-20261022025820-R",
+					},
+				}},
+				NextPage: "AChpmtryoXT6jcMS",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Page without has_more is the last one, archived metrics included",
+			Input: common.ReadParams{
+				ObjectName: "metrics",
+				Fields:     connectors.Fields("name", "status"),
+				NextPage:   "DkDReuq48Q5oQgad",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v1/metrics"),
+					mockcond.QueryParam("cursor", "DkDReuq48Q5oQgad"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseMetricsLastPage),
+			}.Server(),
+			Comparator: func(serverURL string, actual, expected *common.ReadResult) *testutils.CompareResult {
+				result := testconn.ComparatorPagination(serverURL, actual, expected)
+				if len(actual.Data) == 0 {
+					return result.AddDiff("no records read")
+				}
+
+				last := actual.Data[len(actual.Data)-1]
+				result.Assert("last metric id", "iXBN7bcqDjG5B5bm", last.Id)
+				result.Assert("last metric status", "archived", last.Fields["status"])
+
+				return result
+			},
+			Expected: &common.ReadResult{Rows: 43, NextPage: "", Done: true},
+		},
+		// The request-shape cases below answer with the saved 401 only when the request matches,
+		// and anything else with 418.
 		{
 			Name: "Invoices request every status, including draft and void",
 			Input: common.ReadParams{
