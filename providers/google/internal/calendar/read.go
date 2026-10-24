@@ -310,17 +310,29 @@ func (a *Adapter) fetchEvent(
 		return common.ReadResultRow{}, common.ErrEmptyJSONHTTPResponse
 	}
 
+	// Raw and the selection input are converted separately: the shared field selector may
+	// write into the map it selects from when a parent and one of its children are both
+	// requested, and Raw must stay exactly as the provider returned it.
+	raw, err := jsonquery.Convertor.ObjectToMap(body)
+	if err != nil {
+		return common.ReadResultRow{}, err
+	}
+
 	record, err := jsonquery.Convertor.ObjectToMap(body)
 	if err != nil {
 		return common.ReadResultRow{}, err
 	}
 
-	rows, err := common.GetMarshaledData([]map[string]any{record}, fields.List())
+	identifier, err := jsonquery.New(body).StrWithDefault("id", "")
 	if err != nil {
 		return common.ReadResultRow{}, err
 	}
 
-	return rows[0], nil
+	return common.ReadResultRow{
+		Id:     identifier,
+		Fields: newEventFieldSelection(fields.List()).apply(record),
+		Raw:    raw,
+	}, nil
 }
 
 // buildEventsURLForCalendar builds the first-page events URL for the given calendar.

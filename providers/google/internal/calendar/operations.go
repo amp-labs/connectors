@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
@@ -131,12 +132,44 @@ func (a *Adapter) parseReadResponse(
 		return nil, err
 	}
 
+	if params.ObjectName == objectNameEvents {
+		// Events expose nested fields in JSONPath notation, resolved by the shared selector.
+		return common.ParseResult(resp,
+			func(node *ajson.Node) ([]*ajson.Node, error) {
+				return jsonquery.New(node).ArrayOptional(responseFieldName)
+			},
+			makeNextRecordsURL(url),
+			readhelper.MakeMarshaledSelectedDataFunc(makeEventFieldsSelector(params.Fields.List()), nil),
+			params.Fields,
+		)
+	}
+
 	return common.ParseResult(resp,
 		common.ExtractOptionalRecordsFromPath(responseFieldName),
 		makeNextRecordsURL(url),
 		common.GetMarshaledData,
 		params.Fields,
 	)
+}
+
+// makeEventFieldsSelector returns a selector that whitelists the requested fields of each
+// event node and reports its identifier. The field list is classified once, up front.
+func makeEventFieldsSelector(fields []string) readhelper.SelectedFieldsFunc {
+	selection := newEventFieldSelection(fields)
+
+	return func(node *ajson.Node, _ []string) (map[string]any, string, error) {
+		record, err := jsonquery.Convertor.ObjectToMap(node)
+		if err != nil {
+			return nil, "", err
+		}
+
+		identifier, err := jsonquery.New(node).StrWithDefault("id", "")
+		if err != nil {
+			return nil, "", err
+		}
+
+		return selection.apply(record), identifier, nil
+	}
 }
 
 func makeNextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
@@ -180,7 +213,21 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 		}
 	}
 
-	jsonData, err := json.Marshal(params.RecordData)
+	recordData, err := common.RecordDataToMap(params.RecordData)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.ObjectName == objectNameEvents {
+		// JSONPath field names from the metadata schema (e.g. "$['start']['dateTime']")
+		// are turned into the nested objects the provider expects.
+		recordData, err = nestRecordData(recordData)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	jsonData, err := json.Marshal(recordData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal record data: %w", err)
 	}

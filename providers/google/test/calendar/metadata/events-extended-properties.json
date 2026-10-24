@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "extendedProperties": {
+        "private": {
+          "crmId": "42",
+          "com.acme.dealStage": "negotiation"
+        },
+        "shared": {
+          "team": "sales"
+        }
+      }
+    },
+    {},
+    {
+      "extendedProperties": {
+        "private": {
+          "crmId": "43"
+        }
+      }
+    }
+  ]
+}

@@ -143,6 +143,56 @@
           "path": "/calendars/{calendarId}/events",
           "responseKey": "items",
           "fields": {
+            "$['end']['date']": {
+              "displayName": "End Date",
+              "valueType": "date",
+              "providerType": "string"
+            },
+            "$['end']['dateTime']": {
+              "displayName": "End Date Time",
+              "valueType": "datetime",
+              "providerType": "string"
+            },
+            "$['end']['timeZone']": {
+              "displayName": "End Time Zone",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['extendedProperties']['private']": {
+              "displayName": "Extended Properties Private",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "$['extendedProperties']['shared']": {
+              "displayName": "Extended Properties Shared",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "$['source']['title']": {
+              "displayName": "Source Title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['source']['url']": {
+              "displayName": "Source Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['start']['date']": {
+              "displayName": "Start Date",
+              "valueType": "date",
+              "providerType": "string"
+            },
+            "$['start']['dateTime']": {
+              "displayName": "Start Date Time",
+              "valueType": "datetime",
+              "providerType": "string"
+            },
+            "$['start']['timeZone']": {
+              "displayName": "Start Time Zone",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "anyoneCanAddSelf": {
               "displayName": "Anyone Can Add Self",
               "valueType": "boolean",
