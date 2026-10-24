@@ -13,8 +13,6 @@ import (
 )
 
 const (
-	apiVersion = "v1"
-
 	// List endpoints accept page[limit] up to 500 and return 422 above it.
 	// https://developer.clarify.ai/docs/api-basics/pagination
 	maxPageSize = 500
@@ -22,15 +20,18 @@ const (
 	pageLimitParam  = "page[limit]"
 	pageOffsetParam = "page[offset]"
 
-	// Datetime filter operators.
+	// Datetime filter operator.
 	// https://developer.clarify.ai/docs/api-basics/filtering#operators-by-field-type
 	// Records carry `_updated_at` in milliseconds, but the filter compares whole seconds: live, a record at
-	// 19:20:32.797Z matched both `Is after 19:20:32.797Z` and `Is on or after 19:20:32.798Z`, and one at
-	// 06:41:04.124Z missed both `Is on or before 06:41:04.124Z` and `Is before 06:41:04.125Z`.
-	// So the request asks for every whole second the window touches, [floor(Since), floor(Until)+1s),
-	// and parseReadResponse drops what falls outside (Since, Until] at millisecond precision.
+	// 19:20:32.797Z matched both `Is after 19:20:32.797Z` and `Is on or after 19:20:32.798Z`. So the request
+	// asks for everything from Since's whole second on, and parseReadResponse drops what falls outside
+	// (Since, Until] at millisecond precision.
+	//
+	// Until is applied only by the connector. Pages are offsets over results ordered by `_id`
+	// (https://developer.clarify.ai/docs/api-basics/pagination#ordering); with an upper bound on
+	// `_updated_at`, a record edited during the read would leave the result set, shift later offsets, and
+	// the record after it would be skipped. A lower bound only lets records enter, never leave.
 	updatedSinceParam = "filter[_updated_at][Is on or after]"
-	updatedUntilParam = "filter[_updated_at][Is before]"
 )
 
 // Operator names contain spaces, which the docs encode as %20 rather than `+`.
@@ -38,8 +39,8 @@ const (
 var spaceEncoding = map[string]string{"+": "%20"} // nolint:gochecknoglobals
 
 // buildReadRequest lists records with page[limit]/page[offset]. Records (built-in and custom
-// objects) are narrowed on `_updated_at` by the API to whole seconds; parseReadResponse applies the
-// exact window to them and to users, whose endpoint (GET /users) accepts no filter.
+// objects) are narrowed by the API to `_updated_at` from Since's whole second on; parseReadResponse
+// applies the exact window to them and to users, whose endpoint (GET /users) accepts no filter.
 // https://developer.clarify.ai/docs/api-basics/pagination
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	readURL, err := c.readURL(params)
@@ -65,16 +66,9 @@ func (c *Connector) readURL(params common.ReadParams) (string, error) {
 		strconv.Itoa(min(readhelper.PageSizeWithDefault(params, maxPageSize), maxPageSize)))
 	readURL.WithQueryParam(pageOffsetParam, "0")
 
-	if isRecordObject(params.ObjectName) {
-		if !params.Since.IsZero() {
-			readURL.WithQueryParam(updatedSinceParam,
-				datautils.Time.FormatRFC3339inUTC(params.Since.Truncate(time.Second)))
-		}
-
-		if !params.Until.IsZero() {
-			readURL.WithQueryParam(updatedUntilParam,
-				datautils.Time.FormatRFC3339inUTC(params.Until.Truncate(time.Second).Add(time.Second)))
-		}
+	if isRecordObject(params.ObjectName) && !params.Since.IsZero() {
+		readURL.WithQueryParam(updatedSinceParam,
+			datautils.Time.FormatRFC3339inUTC(params.Since.Truncate(time.Second)))
 	}
 
 	readURL.AddEncodingExceptions(spaceEncoding)
@@ -90,8 +84,9 @@ func (c *Connector) listURL(objectName string) (*urlbuilder.URL, error) {
 	return c.workspaceURL("objects", objectName, "resources")
 }
 
+// workspaceURL appends path to the catalog BaseURL, which already ends in /v1/workspaces/{slug}.
 func (c *Connector) workspaceURL(path ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, append([]string{apiVersion, "workspaces", c.Workspace}, path...)...)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, path...)
 }
 
 func (c *Connector) parseReadResponse(

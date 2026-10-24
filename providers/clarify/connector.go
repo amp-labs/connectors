@@ -14,25 +14,20 @@ type Connector struct {
 	*components.Connector
 
 	common.RequireAuthenticatedClient
+	// The workspace slug templates the catalog BaseURL (/v1/workspaces/{{.workspace}}). The catalog's
+	// `workspace` metadata input reaches connectors as ConnectorParams.Workspace.
 	common.RequireWorkspace
 
 	components.SchemaProvider
 	components.Reader
-
-	// Workspace is the slug every API path is scoped to: /v1/workspaces/{slug}/...
-	// It is the catalog's `workspace` metadata input, which reaches connectors as ConnectorParams.Workspace.
-	Workspace string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	return components.Init(providers.Clarify, params, constructor)
 }
 
-func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
-	connector := &Connector{
-		Connector: base,
-		Workspace: params.Workspace,
-	}
+func constructor(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
+	connector := &Connector{Connector: base}
 
 	registry, err := components.NewEndpointRegistry(supportedOperations())
 	if err != nil {
