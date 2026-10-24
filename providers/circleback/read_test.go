@@ -2,6 +2,9 @@ package circleback
 
 import (
 	"net/http"
+	"net/http/httptest"
+	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -22,6 +25,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	responseActionItems := testutils.DataFromFile(t, "action-items.json")
 	responsePeople := testutils.DataFromFile(t, "people-first-page.json")
 	responseCompanies := testutils.DataFromFile(t, "companies.json")
+	responseActionItemsDone := testutils.DataFromFile(t, "action-items-done.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -94,7 +98,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			Name: "Meetings since a time keep only those updated after it, and the cursor is sent back",
+			Name: "Meetings keep those updated within Since and Until, both inclusive, and the cursor is sent back",
 			Input: common.ReadParams{
 				ObjectName: "meetings",
 				Fields:     connectors.Fields("name"),
@@ -113,18 +117,22 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 1,
+				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Id:     "wYpvAY2teOlEXx7pCAhlR",
 					Fields: map[string]any{"name": "Test Co 59 – Procurement sync (connie-sample)"},
 					Raw:    map[string]any{"updatedAt": "2026-10-22T06:27:42.389Z"},
+				}, {
+					Id:     "XKfLnBRa58nQK6AocVnpE",
+					Fields: map[string]any{"name": "Test Co 58 – Pilot check-in (connie-sample)"},
+					Raw:    map[string]any{"updatedAt": "2026-10-22T06:27:40.873Z"},
 				}},
 				NextPage: "",
 				Done:     true,
 			},
 		},
 		{
-			Name: "Selecting transcript fetches it per meeting",
+			Name: "Selecting transcript fetches it per meeting, and a meeting without one reads as nil",
 			Input: common.ReadParams{
 				ObjectName: "meetings",
 				Fields:     connectors.Fields("transcript"),
@@ -138,8 +146,52 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				}, {
 					If:   mockcond.Path("/api/meeting/IeS3Ok4ymVG3JfD2wYwli/transcript"),
 					Then: mockserver.Response(http.StatusOK, responseTranscript),
+				}, {
+					If:   mockcond.Path("/api/meeting/wYpvAY2teOlEXx7pCAhlR/transcript"),
+					Then: mockserver.Response(http.StatusNotFound),
 				}},
 			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Id: "IeS3Ok4ymVG3JfD2wYwli",
+					Fields: map[string]any{
+						"transcript": []any{
+							map[string]any{
+								"text":      "Thanks for joining the expansion discussion.",
+								"speaker":   "Alex Sample 60",
+								"timestamp": float64(2),
+							},
+							map[string]any{
+								"text":      "Happy to be here. This is sample data for testing.",
+								"speaker":   "Jordan Demo 60",
+								"timestamp": 9.5,
+							},
+							map[string]any{
+								"text":      "Great, let's walk through next steps.",
+								"speaker":   "Alex Sample 60",
+								"timestamp": 17.25,
+							},
+						},
+					},
+					Raw: map[string]any{"id": "IeS3Ok4ymVG3JfD2wYwli"},
+				}, {
+					Id:     "wYpvAY2teOlEXx7pCAhlR",
+					Fields: map[string]any{"transcript": nil},
+					Raw:    map[string]any{"id": "wYpvAY2teOlEXx7pCAhlR"},
+				}},
+				Done: true,
+			},
+		},
+		{
+			Name: "A rate-limited transcript is retried after its Retry-After",
+			Input: common.ReadParams{
+				ObjectName: "meetings",
+				Fields:     connectors.Fields("transcript"),
+				Since:      time.Date(2026, 10, 22, 6, 27, 43, 828000000, time.UTC),
+			},
+			Server:     rateLimitedOnceServer(responseMeetings, responseRateLimited, responseTranscript),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 1,
@@ -170,18 +222,23 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			Name: "Action items are read for every assignee and status, ignoring Since",
+			Name: "Action items start with pending items of every assignee, ignoring Since",
 			Input: common.ReadParams{
 				ObjectName: "action-items",
 				Fields:     connectors.Fields("title", "status"),
 				Since:      time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC),
 			},
 			Server: mockserver.Conditional{
-				Setup: mockserver.ContentJSON(),
+				Setup: mockserver.ResponseChainedFuncs(
+					mockserver.ContentJSON(),
+					mockserver.Header("Link",
+						`</api/action-items?assigneeType=Anyone&cursor=eyJwYWdlIjoxfQ&status=PENDING>; rel="next"`),
+				),
 				If: mockcond.And{
 					mockcond.Path("/api/action-items"),
 					mockcond.QueryParam("assigneeType", "Anyone"),
-					mockcond.QueryParam("status", "All"),
+					mockcond.QueryParam("status", "PENDING"),
+					mockcond.QueryParamsMissing("cursor"),
 				},
 				Then: mockserver.Response(http.StatusOK, responseActionItems),
 			}.Server(),
@@ -196,8 +253,54 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					},
 					Raw: map[string]any{"completedAt": nil},
 				}},
-				Done: true,
+				NextPage: "PENDING:eyJwYWdlIjoxfQ",
+				Done:     false,
 			},
+		},
+		{
+			Name: "The last page of pending action items moves on to done ones",
+			Input: common.ReadParams{
+				ObjectName: "action-items",
+				Fields:     connectors.Fields("title"),
+				NextPage:   "PENDING:eyJwYWdlIjoxfQ",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/action-items"),
+					mockcond.QueryParam("status", "PENDING"),
+					mockcond.QueryParam("cursor", "eyJwYWdlIjoxfQ"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseActionItems),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 25, NextPage: "DONE:", Done: false},
+		},
+		{
+			Name: "The last page of done action items ends the read",
+			Input: common.ReadParams{
+				ObjectName: "action-items",
+				Fields:     connectors.Fields("title"),
+				NextPage:   "DONE:",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/action-items"),
+					mockcond.QueryParam("assigneeType", "Anyone"),
+					mockcond.QueryParam("status", "DONE"),
+					mockcond.QueryParamsMissing("cursor"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseActionItemsDone),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 0, NextPage: "", Done: true},
+		},
+		{
+			Name:         "An unknown action items page token is rejected",
+			Input:        common.ReadParams{ObjectName: "action-items", Fields: connectors.Fields("id"), NextPage: "All:x"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrNextPageInvalid},
 		},
 		{
 			Name: "People send the page size as limit",
@@ -261,4 +364,27 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			})
 		})
 	}
+}
+
+// rateLimitedOnceServer serves the meetings page, and answers the first transcript request with a
+// 429 (Retry-After: 0) and every later one with the transcript.
+func rateLimitedOnceServer(meetings, rateLimited, transcript []byte) *httptest.Server {
+	var transcriptCalls atomic.Int32
+
+	return mockserver.NewServer(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		switch {
+		case r.URL.Path == "/api/meetings":
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(meetings)
+		case strings.HasSuffix(r.URL.Path, "/transcript") && transcriptCalls.Add(1) == 1:
+			w.Header().Set("Retry-After", "0")
+			w.WriteHeader(http.StatusTooManyRequests)
+			_, _ = w.Write(rateLimited)
+		default:
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(transcript)
+		}
+	})
 }
