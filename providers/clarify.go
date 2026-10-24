@@ -29,6 +29,16 @@ func init() {
 				},
 			},
 		},
+		Media: &Media{
+			DarkMode: &MediaTypeDarkMode{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792813349/media/clarify_dark_icon.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792813350/media/clarify_dark_logo.svg",
+			},
+			Regular: &MediaTypeRegular{
+				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792813352/media/clarify_regular_icon.svg",
+				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1792813354/media/clarify_regular_logo.svg",
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,
