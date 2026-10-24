@@ -92,7 +92,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 						Fields: map[string]common.FieldMetadata{
 							"companyId": {
 								DisplayName:  "Company Id",
-								ValueType:    common.ValueTypeFloat,
+								ValueType:    common.ValueTypeInt,
 								ProviderType: "number",
 							},
 						},

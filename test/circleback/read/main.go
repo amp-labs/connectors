@@ -44,6 +44,6 @@ func main() {
 
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "companies",
-		Fields:     connectors.Fields("id", "name", "domain"),
+		Fields:     connectors.Fields("name", "domain"),
 	})
 }

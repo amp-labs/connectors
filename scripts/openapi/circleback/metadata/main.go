@@ -2,6 +2,7 @@ package main
 
 import (
 	"slices"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
@@ -85,6 +86,9 @@ func typedScalar(field spec.Field, option *openapi3.Schema) spec.Field {
 	case option.Type.Is(openapi3.TypeString):
 		field.Type = openapi3.TypeString
 		field.ValueType, field.ValueOptions = stringValueType(option)
+	case option.Type.Is(openapi3.TypeNumber) && isIdentifier(field.Name):
+		field.Type = openapi3.TypeNumber
+		field.ValueType = common.ValueTypeInt
 	case option.Type.Is(openapi3.TypeNumber):
 		field.Type = openapi3.TypeNumber
 		field.ValueType = common.ValueTypeFloat
@@ -94,9 +98,18 @@ func typedScalar(field spec.Field, option *openapi3.Schema) spec.Field {
 	case option.Type.Is(openapi3.TypeBoolean):
 		field.Type = openapi3.TypeBoolean
 		field.ValueType = common.ValueTypeBoolean
+	case option.Type.Is(openapi3.TypeObject):
+		field.Type = openapi3.TypeObject
+		field.ValueType = common.ValueTypeOther
 	}
 
 	return field
+}
+
+// isIdentifier tells the ids the spec declares as `number` (`id`, `companyId`): they are whole
+// numbers, while other numbers such as a meeting's `duration` in seconds have fractions.
+func isIdentifier(name string) bool {
+	return name == "id" || strings.HasSuffix(name, "Id")
 }
 
 func stringValueType(option *openapi3.Schema) (common.ValueType, []string) {
