@@ -9,7 +9,10 @@ func init() {
 		// Every workspace endpoint is under /v1/workspaces/{slug}, e.g.
 		// https://api.clarify.ai/v1/workspaces/{slug}/objects/person/resources.
 		// https://developer.clarify.ai/docs/getting-started/key-concepts#workspace
-		BaseURL: "https://api.clarify.ai/v1/workspaces/{{.workspace}}",
+		// The slug follows the version segment, so it is not templated here: that would pin /v1 for proxy
+		// callers. The deep connector builds the path from the `workspace` metadata; proxy callers add
+		// /v1/workspaces/<slug> to their own path.
+		BaseURL: "https://api.clarify.ai",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{

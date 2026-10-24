@@ -13,6 +13,8 @@ import (
 )
 
 const (
+	apiVersion = "v1"
+
 	// List endpoints accept page[limit] up to 500 and return 422 above it.
 	// https://developer.clarify.ai/docs/api-basics/pagination
 	maxPageSize = 500
@@ -84,9 +86,9 @@ func (c *Connector) listURL(objectName string) (*urlbuilder.URL, error) {
 	return c.workspaceURL("objects", objectName, "resources")
 }
 
-// workspaceURL appends path to the catalog BaseURL, which already ends in /v1/workspaces/{slug}.
+// workspaceURL builds {BaseURL}/v1/workspaces/{slug}/{path...}.
 func (c *Connector) workspaceURL(path ...string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ProviderInfo().BaseURL, path...)
+	return urlbuilder.New(c.ProviderInfo().BaseURL, append([]string{apiVersion, "workspaces", c.Workspace}, path...)...)
 }
 
 func (c *Connector) parseReadResponse(
