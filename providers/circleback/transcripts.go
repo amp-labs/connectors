@@ -25,6 +25,8 @@ const (
 	maxTranscriptAttempts = 3
 )
 
+var errNoTranscript = errors.New("meeting has no transcript")
+
 // withTranscripts adds each meeting's transcript to its fields: the list of
 // {speaker, text, timestamp (seconds from the start)} segments, in chronological order.
 // The meetings list has no transcript, so it is fetched per meeting, for the meetings
@@ -64,15 +66,21 @@ func (c *Connector) fetchTranscripts(
 		meetingID := row.Id
 
 		jobs = append(jobs, func(ctx context.Context) error {
+			var transcript any
+
 			segments, err := c.fetchTranscript(ctx, meetingID)
-			if err != nil {
+
+			switch {
+			case err == nil:
+				transcript = segments
+			case !errors.Is(err, errNoTranscript):
 				return err
 			}
 
 			mutex.Lock()
 			defer mutex.Unlock()
 
-			transcripts[meetingID] = segments
+			transcripts[meetingID] = transcript
 
 			return nil
 		})
@@ -85,14 +93,14 @@ func (c *Connector) fetchTranscripts(
 	return transcripts, nil
 }
 
-// fetchTranscript returns a meeting's transcript segments, or nil when Circleback has none for it.
+// fetchTranscript returns a meeting's transcript segments, or errNoTranscript when Circleback has none.
 //
 // A meeting with no transcript (no recording, or still processing) must not fail the page, so a
 // 400 or 404 for one meeting reads as no transcript. A 429 is waited out for the seconds in its
 // Retry-After header and retried: on the Free plan (20 requests per minute) a page of 20 meetings
 // with their transcripts needs more requests than one minute allows.
 // https://circleback.ai/docs/api#rate-limits
-func (c *Connector) fetchTranscript(ctx context.Context, meetingID string) (any, error) {
+func (c *Connector) fetchTranscript(ctx context.Context, meetingID string) ([]any, error) {
 	if meetingID == "" {
 		return nil, fmt.Errorf("%w: meeting id", common.ErrMissingExpectedValues)
 	}
@@ -114,7 +122,7 @@ func (c *Connector) fetchTranscript(ctx context.Context, meetingID string) (any,
 		}
 
 		if errors.Is(err, common.ErrBadRequest) {
-			return nil, nil
+			return nil, errNoTranscript
 		}
 
 		var limited *rateLimitError
