@@ -1,0 +1,739 @@
+{
+  "data": [
+    {
+      "id": "fByfTAG4siVohjLx",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction = 'read'",
+      "item": {
+        "id": "AdqPmhqCxDNEnVkT",
+        "name": "claude-cutover-20261022025820 Read Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:21+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "Read (summary)",
+      "status": "active",
+      "metadata": {},
+      "description": "action_summary events (shared/temporal/usagebilling)",
+      "parameter_definitions": null
+    },
+    {
+      "id": "7fGBe2dfkiVLrwj3",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction = 'proxy'",
+      "item": {
+        "id": "6fxM5QkWyTvScf55",
+        "name": "claude-cutover-20261022025820 Proxy Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:21+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "Proxy (summary)",
+      "status": "active",
+      "metadata": {},
+      "description": "action_summary events (shared/temporal/usagebilling)",
+      "parameter_definitions": null
+    },
+    {
+      "id": "DkDReuq48Q5oQgad",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction = 'write'",
+      "item": {
+        "id": "dVxgedSTmkbd6j3r",
+        "name": "claude-cutover-20261022025820 Write Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:22+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "Write (summary)",
+      "status": "active",
+      "metadata": {},
+      "description": "action_summary events (shared/temporal/usagebilling)",
+      "parameter_definitions": null
+    },
+    {
+      "id": "hsmmP3pZVzodDzuu",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction = 'subscribe'",
+      "item": {
+        "id": "Te6BQiSWdp3VfoxE",
+        "name": "claude-cutover-20261022025820 Subscribe Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:22+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "Subscribe (summary)",
+      "status": "active",
+      "metadata": {},
+      "description": "action_summary events (shared/temporal/usagebilling)",
+      "parameter_definitions": null
+    },
+    {
+      "id": "9aBQUqmqPbu2kBSx",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction = 'search'",
+      "item": {
+        "id": "493PWbwA3tzTkrCo",
+        "name": "claude-cutover-20261022025820 Search Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:22+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "Search (summary)",
+      "status": "active",
+      "metadata": {},
+      "description": "action_summary events (shared/temporal/usagebilling)",
+      "parameter_definitions": null
+    },
+    {
+      "id": "3bWPyK4QJenJFq2u",
+      "sql": "SELECT SUM(byteSize) / (1000 * 1000 * 1000) FROM events WHERE event_name = 'action_summary'",
+      "item": {
+        "id": "iLs7R8LPCkjkZysh",
+        "name": "claude-cutover-20261022025820 GB Consumed",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:23+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "Usage GB (summary)",
+      "status": "active",
+      "metadata": {},
+      "description": "action_summary events (shared/temporal/usagebilling)",
+      "parameter_definitions": null
+    },
+    {
+      "id": "HciMaSKqADuDSZya",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction IN ('proxy', 'read', 'subscribe', 'write')",
+      "item": {
+        "id": "nSouMNvqn3sQsKtv",
+        "name": "claude-cutover-20261022025820 Actions",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:21+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-new-credits4",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "XFRy39RoVDq4Kv9d",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction IN ('proxy', 'read', 'subscribe', 'write', 'search')",
+      "item": {
+        "id": "nSouMNvqn3sQsKtv",
+        "name": "claude-cutover-20261022025820 Actions",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:21+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-new-credits5",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "aU5JHzJHyaA8hkVV",
+      "sql": "SELECT SUM(byteSize) / (1000 * 1000 * 1000) FROM events WHERE event_name = 'action_summary'",
+      "item": {
+        "id": "iLs7R8LPCkjkZysh",
+        "name": "claude-cutover-20261022025820 GB Consumed",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:23+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-new-gb",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "QJVaxV58KvwpbG8C",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction = 'search'",
+      "item": {
+        "id": "493PWbwA3tzTkrCo",
+        "name": "claude-cutover-20261022025820 Search Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:22+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-new-search",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "SwwfVcDgo4EjG7tF",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction = 'subscribe'",
+      "item": {
+        "id": "Te6BQiSWdp3VfoxE",
+        "name": "claude-cutover-20261022025820 Subscribe Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:22+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-new-subscribe",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "bmdpfzDwBfergW4g",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction = 'write'",
+      "item": {
+        "id": "dVxgedSTmkbd6j3r",
+        "name": "claude-cutover-20261022025820 Write Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:22+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-new-write",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "M3kegVZbLPUDZncN",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction = 'proxy'",
+      "item": {
+        "id": "6fxM5QkWyTvScf55",
+        "name": "claude-cutover-20261022025820 Proxy Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:21+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-new-proxy",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "DBkxZN25bofcM5Eo",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'action_summary' AND billedAction = 'read'",
+      "item": {
+        "id": "AdqPmhqCxDNEnVkT",
+        "name": "claude-cutover-20261022025820 Read Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:21+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-new-read",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "58B3AWm3gb4fyhtv",
+      "sql": "SELECT SUM(byteSize ) / (1000 * 1000 * 1000) FROM events WHERE (event_name = 'action_event')",
+      "item": {
+        "id": "iLs7R8LPCkjkZysh",
+        "name": "claude-cutover-20261022025820 GB Consumed",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:23+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-old-gb",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "iz2oSdAGQa8z7L7D",
+      "sql": "SELECT COUNT(event_name) as v FROM events WHERE (action = 'search')",
+      "item": {
+        "id": "493PWbwA3tzTkrCo",
+        "name": "claude-cutover-20261022025820 Search Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:22+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-old-search",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "WaEke6fRkQWT7pvP",
+      "sql": "SELECT COUNT(event_name) as v FROM events WHERE (action = 'subscribe')",
+      "item": {
+        "id": "Te6BQiSWdp3VfoxE",
+        "name": "claude-cutover-20261022025820 Subscribe Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:22+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-old-subscribe",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "5kg5LBEW2ZjeFEH3",
+      "sql": "SELECT COUNT(event_name) as v FROM events WHERE (action = 'write')",
+      "item": {
+        "id": "dVxgedSTmkbd6j3r",
+        "name": "claude-cutover-20261022025820 Write Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:22+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-old-write",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "4HgV8QbE7hRoB8jT",
+      "sql": "SELECT COUNT(event_name) as v FROM events WHERE (action = 'proxy')",
+      "item": {
+        "id": "6fxM5QkWyTvScf55",
+        "name": "claude-cutover-20261022025820 Proxy Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:21+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-old-proxy",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "T6xk32m6HRpqLLoa",
+      "sql": "SELECT COUNT(event_name) as v FROM events WHERE (action = 'read')",
+      "item": {
+        "id": "AdqPmhqCxDNEnVkT",
+        "name": "claude-cutover-20261022025820 Read Action",
+        "metadata": {},
+        "created_at": "2026-10-22T02:58:21+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-cutover-20261022025820-old-read",
+      "status": "active",
+      "metadata": {},
+      "description": "cutover rehearsal",
+      "parameter_definitions": null
+    },
+    {
+      "id": "bAmaK892xcz454Dc",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name = 'claude-billedaction-20261020193033-action_summary' AND billedAction = 'read'",
+      "item": {
+        "id": "i2nvG58ir57mGXCn",
+        "name": "claude-billedaction-20261020193033-item",
+        "metadata": {},
+        "created_at": "2026-10-20T19:30:33+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-billedaction-20261020193033-new-read",
+      "status": "active",
+      "metadata": {},
+      "description": "test: summed events only",
+      "parameter_definitions": null
+    },
+    {
+      "id": "A5sERPAZdnwG6F5i",
+      "sql": "SELECT COUNT(event_name) FROM events WHERE action = 'read' AND event_name IN ('claude-billedaction-20261020193033-action_event', 'claude-billedaction-20261020193033-action_summary')",
+      "item": {
+        "id": "i2nvG58ir57mGXCn",
+        "name": "claude-billedaction-20261020193033-item",
+        "metadata": {},
+        "created_at": "2026-10-20T19:30:33+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-billedaction-20261020193033-old-read",
+      "status": "active",
+      "metadata": {},
+      "description": "test: todays shape",
+      "parameter_definitions": null
+    },
+    {
+      "id": "GqTrZww7U8K7PR86",
+      "sql": "SELECT SUM(eventCount) FROM events WHERE event_name IN ('claude-summary-20261020181156-action_event', 'claude-summary-20261020181156-action_summary') AND action = 'read'",
+      "item": {
+        "id": "FLNYjwKb4UYSY4YX",
+        "name": "claude-summary-20261020181156-item",
+        "metadata": {},
+        "created_at": "2026-10-20T18:11:56+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "claude-summary-20261020181156-read",
+      "status": "active",
+      "metadata": {},
+      "description": "test: sum eventCount over two event names",
+      "parameter_definitions": null
+    },
+    {
+      "id": "6dMEC7k4v6sqXLKa",
+      "sql": "SELECT SUM(credits) FROM events WHERE event_name = 'claude-grouppool-cr-20261014221700-usage'",
+      "item": {
+        "id": "QAhcSngCq7Z4YdAw",
+        "name": "claude-grouppool-cr-20261014221700-item",
+        "metadata": {},
+        "created_at": "2026-10-14T22:17:01+00:00",
+        "archived_at": "2026-10-14T22:21:02+00:00",
+        "external_connections": []
+      },
+      "name": "claude-grouppool-cr-20261014221700-credits",
+      "status": "active",
+      "metadata": {},
+      "description": "test",
+      "parameter_definitions": null
+    },
+    {
+      "id": "8WFpRtQZKmpJpRy3",
+      "sql": "SELECT SUM(credits) FROM events WHERE event_name = 'claude-grouppool-cr-20261014221650-usage'",
+      "item": {
+        "id": "6DGVHzasyVGJQs5K",
+        "name": "claude-grouppool-cr-20261014221650-item",
+        "metadata": {},
+        "created_at": "2026-10-14T22:16:50+00:00",
+        "archived_at": "2026-10-14T22:21:02+00:00",
+        "external_connections": []
+      },
+      "name": "claude-grouppool-cr-20261014221650-credits",
+      "status": "active",
+      "metadata": {},
+      "description": "test",
+      "parameter_definitions": null
+    },
+    {
+      "id": "hxTMNMXs6bLvG2rz",
+      "sql": "SELECT SUM(credits) FROM events WHERE event_name = 'claude-grouppool-wo-20261014214429-usage'",
+      "item": {
+        "id": "8HJbXEQ8NixZLxHx",
+        "name": "claude-grouppool-wo-20261014214429-item",
+        "metadata": {},
+        "created_at": "2026-10-14T21:44:30+00:00",
+        "archived_at": "2026-10-14T22:21:03+00:00",
+        "external_connections": []
+      },
+      "name": "claude-grouppool-wo-20261014214429-credits",
+      "status": "active",
+      "metadata": {},
+      "description": "test",
+      "parameter_definitions": null
+    },
+    {
+      "id": "eg4Mw4RdUjZP6tj4",
+      "sql": "SELECT SUM(credits) FROM events WHERE event_name = 'claude-grouppool-20261014214331-usage'",
+      "item": {
+        "id": "WNCc2Q5TJentgPBY",
+        "name": "claude-grouppool-20261014214331-item",
+        "metadata": {},
+        "created_at": "2026-10-14T21:43:32+00:00",
+        "archived_at": "2026-10-14T22:21:03+00:00",
+        "external_connections": []
+      },
+      "name": "claude-grouppool-20261014214331-credits",
+      "status": "active",
+      "metadata": {},
+      "description": "test",
+      "parameter_definitions": null
+    },
+    {
+      "id": "kUYTrcXZxBbUKHeS",
+      "sql": "SELECT SUM(credits) FROM events WHERE event_name = 'claude-grouppool-20261014214324-usage'",
+      "item": {
+        "id": "c2m2M5jEQrw5ndJi",
+        "name": "claude-grouppool-20261014214324-item",
+        "metadata": {},
+        "created_at": "2026-10-14T21:43:25+00:00",
+        "archived_at": "2026-10-14T22:21:03+00:00",
+        "external_connections": []
+      },
+      "name": "claude-grouppool-20261014214324-credits",
+      "status": "active",
+      "metadata": {},
+      "description": "test",
+      "parameter_definitions": null
+    },
+    {
+      "id": "bPEETKWifyobdfqK",
+      "sql": "SELECT SUM(credits) FROM events WHERE event_name = 'claude-grouppool-20261014214316-usage'",
+      "item": {
+        "id": "PEeEMiz5RbMZmrzd",
+        "name": "claude-grouppool-20261014214316-item",
+        "metadata": {},
+        "created_at": "2026-10-14T21:43:16+00:00",
+        "archived_at": "2026-10-14T22:21:04+00:00",
+        "external_connections": []
+      },
+      "name": "claude-grouppool-20261014214316-credits",
+      "status": "active",
+      "metadata": {},
+      "description": "test",
+      "parameter_definitions": null
+    },
+    {
+      "id": "ErDceqn7udTGBRtd",
+      "sql": "SELECT SUM(credits) FROM events WHERE event_name = 'claude-grouppool-20261014214253-usage'",
+      "item": {
+        "id": "Tkbo4D7JrUGCwZuf",
+        "name": "claude-grouppool-20261014214253-item",
+        "metadata": {},
+        "created_at": "2026-10-14T21:42:53+00:00",
+        "archived_at": "2026-10-14T22:21:04+00:00",
+        "external_connections": []
+      },
+      "name": "claude-grouppool-20261014214253-credits",
+      "status": "active",
+      "metadata": {},
+      "description": "test",
+      "parameter_definitions": null
+    },
+    {
+      "id": "XxV7usQh4aWtmGXa",
+      "sql": "SELECT SUM(credits) FROM events WHERE event_name = 'claude-grouppool-20261014214240-usage'",
+      "item": {
+        "id": "B5teGANGLbZCLXRe",
+        "name": "claude-grouppool-20261014214240-item",
+        "metadata": {},
+        "created_at": "2026-10-14T21:42:41+00:00",
+        "archived_at": "2026-10-14T22:21:04+00:00",
+        "external_connections": []
+      },
+      "name": "claude-grouppool-20261014214240-credits",
+      "status": "active",
+      "metadata": {},
+      "description": "test",
+      "parameter_definitions": null
+    },
+    {
+      "id": "nDC3HSBQUyPqcCcD",
+      "sql": "SELECT MAX(groups) FROM events WHERE event_name = 'total_groups'",
+      "item": {
+        "id": "nY8im8EFzG23rPev",
+        "name": "groups-peak-test-groups-20261013230810",
+        "metadata": {},
+        "created_at": "2026-10-13T23:08:11+00:00",
+        "archived_at": "2026-10-13T23:10:06+00:00",
+        "external_connections": []
+      },
+      "name": "groups-peak-test-metric-20261013230810",
+      "status": "active",
+      "metadata": {},
+      "description": "Peak total_groups in the billing period",
+      "parameter_definitions": null
+    },
+    {
+      "id": "S4YdZvq9ZFqHZBBn",
+      "sql": "SELECT MAX(groups) FROM events WHERE event_name = 'total_groups'",
+      "item": {
+        "id": "KGgXuNbDLNUYANfL",
+        "name": "groups-peak-test-groups-20261013230214",
+        "metadata": {},
+        "created_at": "2026-10-13T23:02:14+00:00",
+        "archived_at": "2026-10-13T23:07:50+00:00",
+        "external_connections": []
+      },
+      "name": "groups-peak-test-metric-20261013230214",
+      "status": "active",
+      "metadata": {},
+      "description": "Peak total_groups in the billing period",
+      "parameter_definitions": null
+    },
+    {
+      "id": "SyMbzNxtxdGnVAtr",
+      "sql": "SELECT MAX(groups) FROM events WHERE event_name = 'total_groups'",
+      "item": {
+        "id": "SpY6MwAX8DWb5fLF",
+        "name": "groups-peak-test-groups-20261013224613",
+        "metadata": {},
+        "created_at": "2026-10-13T22:46:14+00:00",
+        "archived_at": "2026-10-13T23:01:32+00:00",
+        "external_connections": []
+      },
+      "name": "groups-peak-test-metric-20261013224613",
+      "status": "active",
+      "metadata": {},
+      "description": "Peak total_groups in the billing period",
+      "parameter_definitions": null
+    },
+    {
+      "id": "QGR3Ct7aeAo3voF7",
+      "sql": "SELECT MAX(groups) FROM events WHERE event_name = 'total_groups'",
+      "item": {
+        "id": "kbtPHrRiJjeXx79x",
+        "name": "groups-peak-test-item-20261013221048",
+        "metadata": {},
+        "created_at": "2026-10-13T22:10:48+00:00",
+        "archived_at": "2026-10-13T22:13:55+00:00",
+        "external_connections": []
+      },
+      "name": "groups-peak-test-metric-20261013221048",
+      "status": "active",
+      "metadata": {},
+      "description": "Peak total_groups in the billing period",
+      "parameter_definitions": null
+    },
+    {
+      "id": "d7TdVnv3exTUjtny",
+      "sql": "SELECT MAX(groups) FROM events WHERE event_name = 'total_groups'",
+      "item": {
+        "id": "nvBm7fNuSmWLw4FQ",
+        "name": "groups-peak-test-item-20261013220936",
+        "metadata": {},
+        "created_at": "2026-10-13T22:09:37+00:00",
+        "archived_at": "2026-10-13T22:13:55+00:00",
+        "external_connections": []
+      },
+      "name": "groups-peak-test-metric-20261013220936",
+      "status": "active",
+      "metadata": {},
+      "description": "Peak total_groups in the billing period",
+      "parameter_definitions": null
+    },
+    {
+      "id": "XTBA4qjXZAfyYthY",
+      "sql": "SELECT COUNT(event_name) as v FROM events WHERE ((action_type = 'read') AND (action_type = 'write'))",
+      "item": {
+        "id": "XRn4t2Lox2dvQs78",
+        "name": "Action credits",
+        "metadata": {},
+        "created_at": "2026-03-02T16:22:01+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "Action credits",
+      "status": "active",
+      "metadata": {},
+      "description": "",
+      "parameter_definitions": null
+    },
+    {
+      "id": "Ui6ZD5em2zwRpy5i",
+      "sql": "SELECT COUNT(event_name) as v FROM events WHERE (action_type = 'write')",
+      "item": {
+        "id": "Mjo7wxkxgmKoiCAU",
+        "name": "Write action",
+        "metadata": {},
+        "created_at": "2026-03-02T16:10:00+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "Write",
+      "status": "active",
+      "metadata": {},
+      "description": "",
+      "parameter_definitions": null
+    },
+    {
+      "id": "HthC44ysU8dvdHkD",
+      "sql": "SELECT COUNT(event_name) as v FROM events WHERE (action_type = 'read')",
+      "item": {
+        "id": "4dzwqpZ8vNqQnpR4",
+        "name": "Read action",
+        "metadata": {},
+        "created_at": "2026-03-02T16:09:56+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "Read",
+      "status": "active",
+      "metadata": {},
+      "description": "",
+      "parameter_definitions": null
+    },
+    {
+      "id": "RiUNhaztBXsGi5tv",
+      "sql": "SELECT SUM(__orb_upload_property_quantity) FROM events WHERE event_name = 'RFMrLvRJKrjN8tbA'",
+      "item": {
+        "id": "ju9DntmHg9Lq8Erg",
+        "name": "Data Storage",
+        "metadata": {},
+        "created_at": "2025-09-25T15:38:58+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "Data Storage",
+      "status": "active",
+      "metadata": {},
+      "description": "",
+      "parameter_definitions": null
+    },
+    {
+      "id": "DoYg4nuMY4nJXhjk",
+      "sql": "SELECT SUM(__orb_upload_property_quantity) FROM events WHERE event_name = 'gtCuWt7xDeGL4aMq'",
+      "item": {
+        "id": "Bq6UUTGgJzfuvqFY",
+        "name": "API Calls",
+        "metadata": {},
+        "created_at": "2025-09-25T15:39:03+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "API Calls",
+      "status": "active",
+      "metadata": {},
+      "description": "",
+      "parameter_definitions": null
+    },
+    {
+      "id": "oFYuQehhkprZzFpK",
+      "sql": "SELECT (1 * SUM(gb_used)) as v FROM events WHERE (event_name = 'data_used')",
+      "item": {
+        "id": "c6NZVR2k6gALW54v",
+        "name": "GB Used",
+        "metadata": {},
+        "created_at": "2025-09-24T13:51:41+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "GB Used",
+      "status": "active",
+      "metadata": {},
+      "description": "",
+      "parameter_definitions": null
+    },
+    {
+      "id": "iXBN7bcqDjG5B5bm",
+      "sql": "SELECT (1 * SUM(gb_used)) as v FROM events WHERE (event_name = 'gb_used')",
+      "item": {
+        "id": "c6NZVR2k6gALW54v",
+        "name": "GB Used",
+        "metadata": {},
+        "created_at": "2025-09-24T13:51:41+00:00",
+        "archived_at": null,
+        "external_connections": []
+      },
+      "name": "GB Used",
+      "status": "archived",
+      "metadata": {},
+      "description": "",
+      "parameter_definitions": null
+    }
+  ],
+  "pagination_metadata": {
+    "has_more": false,
+    "next_cursor": null
+  }
+}

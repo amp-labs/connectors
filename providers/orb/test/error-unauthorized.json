@@ -1,0 +1,6 @@
+{
+  "type": "https://docs.withorb.com/reference/error-responses#401-authentication-error",
+  "title": "The Authorization header could not be verified.",
+  "detail": "An invalid API key was provided.",
+  "status": 401
+}
