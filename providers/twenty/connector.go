@@ -3,6 +3,8 @@ package twenty
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/operations"
+	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -16,6 +18,7 @@ type Connector struct {
 	common.RequireWorkspace
 
 	components.SchemaProvider
+	components.Reader
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -29,6 +32,22 @@ func constructor(_ common.ConnectorParams, base *components.Connector) (*Connect
 	connector.HTTPClient().ErrorHandler = errorHandler
 
 	connector.SchemaProvider = schema.NewDelegateSchemaProvider(connector.listObjectMetadata)
+
+	// Every object is allowed through: which objects exist is the workspace's schema, custom objects
+	// included. An object Twenty does not know is answered 400 ("object 'invoices' not found"), which
+	// errorHandler maps to ErrBadRequest, so it is never retried.
+	registry := components.NewEmptyEndpointRegistry()
+
+	connector.Reader = reader.NewHTTPReader(
+		connector.HTTPClient().Client,
+		registry,
+		connector.ProviderContext.Module(),
+		operations.ReadHandlers{
+			BuildRequest:  connector.buildReadRequest,
+			ParseResponse: connector.parseReadResponse,
+			ErrorHandler:  errorHandler,
+		},
+	)
 
 	return connector, nil
 }

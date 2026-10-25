@@ -207,6 +207,33 @@ func (o objectMetadata) hasRecordKey(name string) bool {
 	return false
 }
 
+// keyIndex indexes the keys a record can carry (see recordKey), as given and in lowercase, with the field each
+// one is. Inactive fields are kept: Twenty still returns them in records, accepts them in writes and selects
+// them with `fields` (seen live on v2.50.0).
+type keyIndex struct {
+	exact       map[string]fieldMetadata
+	byLowercase map[string][]string
+}
+
+func (o objectMetadata) keyIndex() keyIndex {
+	index := keyIndex{
+		exact:       make(map[string]fieldMetadata, len(o.Fields)),
+		byLowercase: make(map[string][]string, len(o.Fields)),
+	}
+
+	for _, field := range o.Fields {
+		key, ok := field.recordKey()
+		if !ok {
+			continue
+		}
+
+		index.exact[key] = field
+		index.byLowercase[lowercase(key)] = append(index.byLowercase[lowercase(key)], key)
+	}
+
+	return index
+}
+
 func lowercase(name string) string {
 	return strings.ToLower(name)
 }
