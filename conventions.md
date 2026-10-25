@@ -446,7 +446,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
             case http.StatusNotFound:
                 return nil, common.ErrObjectNotFound
             case http.StatusTooManyRequests:
-                return nil, common.ErrRateLimited
+                return nil, common.ErrLimitExceeded
             }
         }
         return nil, err
@@ -457,7 +457,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 **Critical error types:**
 - `common.ErrAccessToken` — signals token-manager to refresh the token
-- `common.ErrRateLimited` — triggers Ampersand's backoff/retry logic
+- `common.ErrLimitExceeded` — triggers Ampersand's backoff/retry logic
 - `common.ErrObjectNotFound` — object type not supported by this connector
 - `common.ErrForbidden` — permission issue (different from auth failure)
 
@@ -471,9 +471,10 @@ If an API call fails, return the error. Do not return empty results on failure �
 
 Ampersand has its own rate limiting layer (Gubernator, per-provider, per-customer). As a connector author, your job is:
 
-1. **Return `common.ErrRateLimited`** when the provider returns a 429. Ampersand handles the backoff.
+1. **Return `common.ErrLimitExceeded`** when the provider returns a 429. Ampersand handles the backoff.
 2. **Read `Retry-After` headers** if the provider includes them and propagate that information if the error type supports it.
 3. **Do not implement your own retry loop** inside a connector — that's Ampersand's job at the Temporal layer.
+4. **Do not pace, sleep or retry** a read either. What a connector does instead, and where published limits are recorded, is in the `server-owns-limits` skill (`.agents/skills/server-owns-limits/SKILL.md`).
 
 ---
 
@@ -650,7 +651,7 @@ Use this before submitting a PR for a new connector.
 - [ ] Declare `lastModifiedField` for each object that supports incremental sync
 - [ ] Implement `Write` if the provider supports it
 - [ ] Map HTTP error codes to `common.Err*` types
-- [ ] Return `common.ErrRateLimited` on 429 responses
+- [ ] Return `common.ErrLimitExceeded` on 429 responses
 
 ### Testing phase
 - [ ] `constructTestConnector` passes the FULL URL (with scheme) to `WithWorkspace`
