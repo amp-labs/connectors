@@ -1,0 +1,251 @@
+{
+  "action-items": {
+    "path": "/action-items",
+    "displayName": "Action Items",
+    "fields": {
+      "assignee": {
+        "displayName": "Assignee",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "canEditActionItem": {
+        "displayName": "Can Edit Action Item",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "completedAt": {
+        "displayName": "Completed At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "description": {
+        "displayName": "Description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "int",
+        "providerType": "number"
+      },
+      "meetingIds": {
+        "displayName": "Meeting Ids",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "meetings": {
+        "displayName": "Meetings",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "status": {
+        "displayName": "Status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "PENDING",
+            "displayValue": "PENDING"
+          },
+          {
+            "value": "DONE",
+            "displayValue": "DONE"
+          }
+        ]
+      },
+      "title": {
+        "displayName": "Title",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "companies": {
+    "path": "/companies",
+    "displayName": "Companies",
+    "fields": {
+      "avatarUrl": {
+        "displayName": "Avatar Url",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "domain": {
+        "displayName": "Domain",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "meetings": {
+    "path": "/meetings",
+    "displayName": "Meetings",
+    "fields": {
+      "actionItems": {
+        "displayName": "Action Items",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "attendees": {
+        "displayName": "Attendees",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "calendarEvent": {
+        "displayName": "Calendar Event",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "createdAt": {
+        "displayName": "Created At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "duration": {
+        "displayName": "Duration",
+        "valueType": "float",
+        "providerType": "number"
+      },
+      "icalUid": {
+        "displayName": "Ical Uid",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "insights": {
+        "displayName": "Insights",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "linkAccess": {
+        "displayName": "Link Access",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "Editor",
+            "displayValue": "Editor"
+          },
+          {
+            "value": "Viewer",
+            "displayValue": "Viewer"
+          },
+          {
+            "value": "LimitedViewer",
+            "displayValue": "LimitedViewer"
+          }
+        ]
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "notes": {
+        "displayName": "Notes",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "privateNotes": {
+        "displayName": "Private Notes",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "recordingUrl": {
+        "displayName": "Recording Url",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "sharedWith": {
+        "displayName": "Shared With",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "tags": {
+        "displayName": "Tags",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "updatedAt": {
+        "displayName": "Updated At",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "url": {
+        "displayName": "Url",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "people": {
+    "path": "/people",
+    "displayName": "People",
+    "fields": {
+      "companyId": {
+        "displayName": "Company Id",
+        "valueType": "int",
+        "providerType": "number"
+      },
+      "companyName": {
+        "displayName": "Company Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "email": {
+        "displayName": "Email",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "firstName": {
+        "displayName": "First Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "int",
+        "providerType": "number"
+      },
+      "lastName": {
+        "displayName": "Last Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "title": {
+        "displayName": "Title",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "tag": {
+    "path": "/tag",
+    "displayName": "Tag",
+    "fields": {
+      "description": {
+        "displayName": "Description",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "int",
+        "providerType": "number"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  }
+}

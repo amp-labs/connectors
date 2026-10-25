@@ -1,0 +1,1022 @@
+[
+  {
+    "id": "IeS3Ok4ymVG3JfD2wYwli",
+    "url": null,
+    "name": "Test Co 60 – Expansion discussion (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample expansion discussion with Test Co 60. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 60\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 60",
+        "email": "alex.sample60@testco60.example.com",
+        "title": null,
+        "profileId": 63602480,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 60",
+        "email": "jordan.demo60@testco60.example.com",
+        "title": null,
+        "profileId": 63602481,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-31T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:43.828Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "wYpvAY2teOlEXx7pCAhlR",
+    "url": null,
+    "name": "Test Co 59 – Procurement sync (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample procurement sync with Test Co 59. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 59\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 59",
+        "email": "alex.sample59@testco59.example.com",
+        "title": null,
+        "profileId": 63602477,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 59",
+        "email": "jordan.demo59@testco59.example.com",
+        "title": null,
+        "profileId": 63602478,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-30T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:42.389Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "XKfLnBRa58nQK6AocVnpE",
+    "url": null,
+    "name": "Test Co 58 – Pilot check-in (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample pilot check-in with Test Co 58. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 58\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 58",
+        "email": "alex.sample58@testco58.example.com",
+        "title": null,
+        "profileId": 63602475,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 58",
+        "email": "jordan.demo58@testco58.example.com",
+        "title": null,
+        "profileId": 63602476,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-29T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:40.873Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "loyCoKYrkgOw4BUTbqf6u",
+    "url": null,
+    "name": "Test Co 57 – Technical deep dive (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample technical deep dive with Test Co 57. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 57\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 57",
+        "email": "alex.sample57@testco57.example.com",
+        "title": null,
+        "profileId": 63602473,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 57",
+        "email": "jordan.demo57@testco57.example.com",
+        "title": null,
+        "profileId": 63602474,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-28T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:39.458Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "rG2zZeqtyjVXwdYWlBh0X",
+    "url": null,
+    "name": "Test Co 56 – Renewal planning (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample renewal planning with Test Co 56. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 56\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 56",
+        "email": "alex.sample56@testco56.example.com",
+        "title": null,
+        "profileId": 63602471,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 56",
+        "email": "jordan.demo56@testco56.example.com",
+        "title": null,
+        "profileId": 63602472,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-27T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:38.014Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "GZlrvSavuJjrAOz0XA8Qt",
+    "url": null,
+    "name": "Test Co 55 – QBR (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample qbr with Test Co 55. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 55\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 55",
+        "email": "alex.sample55@testco55.example.com",
+        "title": null,
+        "profileId": 63602465,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 55",
+        "email": "jordan.demo55@testco55.example.com",
+        "title": null,
+        "profileId": 63602466,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-26T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:36.403Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "iCEiOhNdts9G3vdEQ8lsJ",
+    "url": null,
+    "name": "Test Co 54 – Onboarding kickoff (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample onboarding kickoff with Test Co 54. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 54\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 54",
+        "email": "alex.sample54@testco54.example.com",
+        "title": null,
+        "profileId": 63602463,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 54",
+        "email": "jordan.demo54@testco54.example.com",
+        "title": null,
+        "profileId": 63602464,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-25T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:34.704Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "r7ligWB4bjpNA1BlFdgQw",
+    "url": null,
+    "name": "Test Co 53 – Security questionnaire (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample security questionnaire with Test Co 53. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 53\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 53",
+        "email": "alex.sample53@testco53.example.com",
+        "title": null,
+        "profileId": 63602454,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 53",
+        "email": "jordan.demo53@testco53.example.com",
+        "title": null,
+        "profileId": 63602455,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-24T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:32.967Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "gNzQ3LpVAq1tTmvEhEGzU",
+    "url": null,
+    "name": "Test Co 52 – Pricing review (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample pricing review with Test Co 52. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 52\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 52",
+        "email": "alex.sample52@testco52.example.com",
+        "title": null,
+        "profileId": 63602430,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 52",
+        "email": "jordan.demo52@testco52.example.com",
+        "title": null,
+        "profileId": 63602431,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-23T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:31.410Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "vibuhUfz8kqzifvCwvKlw",
+    "url": null,
+    "name": "Test Co 51 – Discovery call (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample discovery call with Test Co 51. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 51\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 51",
+        "email": "alex.sample51@testco51.example.com",
+        "title": null,
+        "profileId": 63602424,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 51",
+        "email": "jordan.demo51@testco51.example.com",
+        "title": null,
+        "profileId": 63602425,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-22T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:29.883Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "q58H1JtK0Me4T7wPQqqs9",
+    "url": null,
+    "name": "Test Co 50 – Expansion discussion (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample expansion discussion with Test Co 50. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 50\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 50",
+        "email": "alex.sample50@testco50.example.com",
+        "title": null,
+        "profileId": 63602416,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 50",
+        "email": "jordan.demo50@testco50.example.com",
+        "title": null,
+        "profileId": 63602417,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-21T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:28.369Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "vksxg7WpjRbP5zK84KM9f",
+    "url": null,
+    "name": "Test Co 49 – Procurement sync (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample procurement sync with Test Co 49. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 49\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 49",
+        "email": "alex.sample49@testco49.example.com",
+        "title": null,
+        "profileId": 63602414,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 49",
+        "email": "jordan.demo49@testco49.example.com",
+        "title": null,
+        "profileId": 63602415,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-20T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:26.813Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "FngxPcviA1dAMxSLtqWbO",
+    "url": null,
+    "name": "Test Co 48 – Pilot check-in (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample pilot check-in with Test Co 48. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 48\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 48",
+        "email": "alex.sample48@testco48.example.com",
+        "title": null,
+        "profileId": 63602412,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 48",
+        "email": "jordan.demo48@testco48.example.com",
+        "title": null,
+        "profileId": 63602413,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-19T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:25.337Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "QhEP2qVPCivTJrtAxmXha",
+    "url": null,
+    "name": "Test Co 47 – Technical deep dive (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample technical deep dive with Test Co 47. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 47\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 47",
+        "email": "alex.sample47@testco47.example.com",
+        "title": null,
+        "profileId": 63602410,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 47",
+        "email": "jordan.demo47@testco47.example.com",
+        "title": null,
+        "profileId": 63602411,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-18T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:23.707Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "HQAawvGU3zrsX6RDkuPgp",
+    "url": null,
+    "name": "Test Co 46 – Renewal planning (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample renewal planning with Test Co 46. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 46\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 46",
+        "email": "alex.sample46@testco46.example.com",
+        "title": null,
+        "profileId": 63602408,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 46",
+        "email": "jordan.demo46@testco46.example.com",
+        "title": null,
+        "profileId": 63602409,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-17T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:22.121Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "01oF5JyLERo0PlEfej0pz",
+    "url": null,
+    "name": "Test Co 45 – QBR (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample qbr with Test Co 45. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 45\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 45",
+        "email": "alex.sample45@testco45.example.com",
+        "title": null,
+        "profileId": 63602406,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 45",
+        "email": "jordan.demo45@testco45.example.com",
+        "title": null,
+        "profileId": 63602407,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-16T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:20.141Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "ZUl8HHkE3OPm4m2IdzXzk",
+    "url": null,
+    "name": "Test Co 44 – Onboarding kickoff (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample onboarding kickoff with Test Co 44. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 44\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 44",
+        "email": "alex.sample44@testco44.example.com",
+        "title": null,
+        "profileId": 63602404,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 44",
+        "email": "jordan.demo44@testco44.example.com",
+        "title": null,
+        "profileId": 63602405,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-15T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:18.640Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "7gQNtw8VNJknV5UZT1OSL",
+    "url": null,
+    "name": "Test Co 43 – Security questionnaire (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample security questionnaire with Test Co 43. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 43\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 43",
+        "email": "alex.sample43@testco43.example.com",
+        "title": null,
+        "profileId": 63602402,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 43",
+        "email": "jordan.demo43@testco43.example.com",
+        "title": null,
+        "profileId": 63602403,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-14T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:17.081Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "7YV3jCSU5iTd8yy3BjhD5",
+    "url": null,
+    "name": "Test Co 42 – Pricing review (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample pricing review with Test Co 42. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 42\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 42",
+        "email": "alex.sample42@testco42.example.com",
+        "title": null,
+        "profileId": 63602400,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 42",
+        "email": "jordan.demo42@testco42.example.com",
+        "title": null,
+        "profileId": 63602401,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-13T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:15.453Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  },
+  {
+    "id": "D2ElbMCM5WK4PUjRYBxsV",
+    "url": null,
+    "name": "Test Co 41 – Discovery call (connie-sample)",
+    "tags": [
+      {
+        "id": 76939,
+        "name": "connie-sample",
+        "description": "Sample data seeded by Connie for live object checks. Safe to delete."
+      }
+    ],
+    "notes": "## Summary\nSample discovery call with Test Co 41. Fake data seeded for connector testing.\n\n## Next steps\n- Send follow-up deck to Alex Sample 41\n- Schedule next call",
+    "icalUid": null,
+    "duration": null,
+    "insights": {},
+    "attendees": [
+      {
+        "name": "Alex Sample 41",
+        "email": "alex.sample41@testco41.example.com",
+        "title": null,
+        "profileId": 63602383,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      },
+      {
+        "name": "Jordan Demo 41",
+        "email": "jordan.demo41@testco41.example.com",
+        "title": null,
+        "profileId": 63602384,
+        "companyName": null,
+        "isCalendarInvitee": true,
+        "isCalendarEventOrganizer": false
+      }
+    ],
+    "createdAt": "2026-10-12T15:00:00.000Z",
+    "updatedAt": "2026-10-22T06:27:13.836Z",
+    "linkAccess": null,
+    "sharedWith": [
+      {
+        "name": "Integration User",
+        "email": "integration.user@example.com",
+        "access": "Owner",
+        "profileId": 62486874
+      }
+    ],
+    "actionItems": [],
+    "privateNotes": "",
+    "recordingUrl": null,
+    "calendarEvent": null
+  }
+]
