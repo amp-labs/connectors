@@ -3,6 +3,7 @@ package twenty
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
+	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -13,6 +14,8 @@ type Connector struct {
 
 	common.RequireAuthenticatedClient
 	common.RequireWorkspace
+
+	components.SchemaProvider
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -20,5 +23,12 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 }
 
 func constructor(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
-	return &Connector{Connector: base}, nil
+	connector := &Connector{Connector: base}
+
+	// Used by the metadata requests made through JSONHTTPClient.
+	connector.HTTPClient().ErrorHandler = errorHandler
+
+	connector.SchemaProvider = schema.NewDelegateSchemaProvider(connector.listObjectMetadata)
+
+	return connector, nil
 }
