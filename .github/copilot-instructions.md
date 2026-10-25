@@ -49,7 +49,7 @@ Ampersand is a platform for building **connectors** to third-party SaaS APIs (e.
 
 ### Incremental Sync (Incremental Reads)
 - Wherever supported, implement **incremental read** capabilities. Incremental sync means the connector can retrieve only new or updated records since the last sync, rather than pulling all data every time. This sent as `ReadParams.Since` input to the connector's read method.
-- If the provider’s API offers a **“get changes since X”** (e.g., a `updated_after` query param or a sync token), utilize it to optimize data retrieval. The connector should always accept the `ReadParams.Since` parameter and map it to the particular methodology that the provider exposes to get newer records.
+- If the provider’s API offers a **“get changes since X”** (e.g., a `updated_after` query param or a sync token), utilize it to optimize data retrieval. The connector should always accept the `ReadParams.Since` parameter and map it to the particular methodology that the provider exposes to get newer records. How Since and Until map to the provider, and when Until stays in code, is in `.agents/skills/time-filters/SKILL.md`.
 - For connectors with incremental support, ensure that the logic properly updates the checkpoint/bookmark. For example, after reading incremental data up to a certain timestamp, set the ReadResult's NextPage and Done fields correctly.
 - Indicate clearly in code which objects support incremental sync and which do not. Also note if incremental sync has limitations (e.g., “endpoint only returns changes from last 30 days” or “requires a special permission”). If incremental sync isn’t possible, comment that too.
 - This only applies to read connectors.

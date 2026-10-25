@@ -1,6 +1,6 @@
 ---
 name: server-owns-limits
-description: "What belongs to Ampersand's server rather than a connector: rate limits, pacing, retries and backoff. Load when a provider documents rate limits, returns 429s, or a read makes extra requests per record, and when reviewing any of that."
+description: "What belongs to Ampersand's server rather than a connector: rate limits, pacing, retries and backoff, and what a connector does instead. Load when a provider documents rate limits, returns 429s, or a read makes extra requests per record, and when reviewing any of that."
 paths:
   - "providers/**"
 metadata:
@@ -9,26 +9,27 @@ metadata:
 
 # The server owns limits and retries
 
-A connector is a library the server calls once per request it decides to make. The server sees
-every installation's traffic to a provider, so only it can pace them against the provider's limit,
-retry at the right moment, and back off across all of them. A connector that paces or retries
-itself works against that: it holds a worker while it sleeps, retries what the server retries
-again, and enforces one plan's limit on every consumer. Only one connector paces its reads
-(circleback, `ratelimit.go`), and it is the departure, not the pattern.
+## Why
 
-So a connector:
-- returns the provider's error as it came. The default interpreter keeps a 429's status and
-  headers, `Retry-After` included, and it classes as rate limited (`common/errorclass.go`); a
-  provider that signals a limit another way maps it to `common.ErrLimitExceeded`, as
-  `providers/google/internal/core/errors.go` does;
-- never sleeps, paces, or retries a read;
-- has the provider's published limits recorded where the server reads them, the limiter defaults
-  in the server repo (`shared/limiter/defaults.go`), with the docs link.
+A connector is a library the server calls once for each request the server decides to make. The
+server sees every installation's traffic to a provider, so only it can pace that traffic against
+the provider's limit, retry at the right moment and back off across all of it. A connector that
+paces, sleeps or retries works against the server: it holds a worker while it waits, retries what
+the server will retry again, and applies one plan's limit to every consumer.
 
-When a read makes extra requests per record (a transcript per meeting), the cost of a page is a
-fact the team should know: say in the PR how many requests a page costs against the lowest plan's
-documented limit. Whether that object belongs in scope is the team's call; pacing it inside the
-connector isn't the answer.
+## What you can use
 
-A review that finds a pacer, a sleep or a retry loop in a read asks for it to be removed, with this
-reason, and never asks for one.
+- The error types in `common`: a 429 interpreted by the default handler keeps its status and
+  headers, `Retry-After` included, and classes as rate limited (`common/errorclass.go`);
+  `common.ErrLimitExceeded` is what a limit reported some other way maps to.
+- The server's limiter defaults (`shared/limiter/defaults.go` in the server repo), which is where
+  a provider's published limits are recorded, with the docs link.
+- The provider's docs on its limits and plans.
+
+## Working it out
+
+The connector's part is to tell the server the truth: return the provider's error as a limit when it
+is one, and record the published limits where the server reads them. When a read makes extra
+requests per record, a page's cost against the lowest plan's documented limit is a fact the team
+needs, so the PR says it; whether that object belongs in scope is the team's call. A pacer, sleep or
+retry loop in a connector is a defect to remove, whatever the provider's limits are.
