@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/contactmodel"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/core"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/customfields"
 )
@@ -76,8 +77,8 @@ func (c *Connector) makeWriteCreatePayload(ctx context.Context, params common.Wr
 
 	customfields.TransformCreatePayload(record)
 
-	if params.ObjectName == objectNameContacts {
-		if err = c.postPayloadWithCommunicationItems(ctx, record); err != nil {
+	if params.ObjectName == core.ObjectNameContacts {
+		if err = contactmodel.TransformCreatePayload(ctx, c.Base, record); err != nil {
 			return nil, "", err
 		}
 	}
@@ -101,8 +102,8 @@ func (c *Connector) makeWriteUpdatePayload(ctx context.Context, params common.Wr
 	if payload, ok := extractPatchPayload(params); ok {
 		data := customfields.TransformUpdatePayload(params.ObjectName, payload.Patch)
 
-		if params.ObjectName == objectNameContacts {
-			items, err := c.contactsPartialUpdatePayload(ctx, data, params.RecordId)
+		if params.ObjectName == core.ObjectNameContacts {
+			items, err := contactmodel.TransformPartialUpdatePayload(ctx, c.Base, data, params.RecordId)
 
 			return items, http.MethodPatch, err
 		}
@@ -118,9 +119,9 @@ func (c *Connector) makeWriteUpdatePayload(ctx context.Context, params common.Wr
 
 	customfields.TransformCreatePayload(record)
 
-	if params.ObjectName == objectNameContacts {
+	if params.ObjectName == core.ObjectNameContacts {
 		// For contacts, emulate full PUT via PATCH to avoid ConnectWise bugs.
-		items, err := c.contactsFullUpdatePayload(ctx, record, params.RecordId)
+		items, err := contactmodel.TransformFullUpdatePayload(ctx, c.Base, record, params.RecordId)
 
 		return items, http.MethodPatch, err
 	}
