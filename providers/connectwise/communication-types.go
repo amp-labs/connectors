@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/core"
 	"github.com/spyzhov/ajson"
 )
 
@@ -185,9 +186,9 @@ func (c *Connector) postPayloadWithCommunicationItems(ctx context.Context, recor
 func (c *Connector) contactsFullUpdatePayload(ctx context.Context, // nolint:cyclop,funlen
 	record common.Record,
 	contactId string,
-) ([]patchOperationPayload, error) {
+) ([]sortablePayload, error) {
 	// Start by clearing customFields; ConnectWise requires this for PATCH to work.
-	operations := []patchOperationPayload{
+	operations := []sortablePayload{
 		{
 			Op:    operationReplace,
 			Path:  "customFields",
@@ -231,7 +232,7 @@ func (c *Connector) contactsFullUpdatePayload(ctx context.Context, // nolint:cyc
 		}
 
 		// Remove all other fields; they will be replaced from the new record.
-		operations = append(operations, patchOperationPayload{
+		operations = append(operations, sortablePayload{
 			Op:   operationRemove,
 			Path: key,
 		})
@@ -247,7 +248,7 @@ func (c *Connector) contactsFullUpdatePayload(ctx context.Context, // nolint:cyc
 	sort.Strings(keys)
 
 	for _, key := range keys {
-		operations = append(operations, patchOperationPayload{
+		operations = append(operations, sortablePayload{
 			Op:    operationReplace,
 			Path:  key,
 			Value: record[key],
@@ -290,9 +291,9 @@ func (c *Connector) contactsFullUpdatePayload(ctx context.Context, // nolint:cyc
 	delete(registry, intent.DefaultPhoneId)
 	delete(registry, intent.DefaultFaxId)
 
-	opRemove := make([]patchOperationPayload, 0, len(registry))
+	opRemove := make([]sortablePayload, 0, len(registry))
 	for _, index := range registry {
-		opRemove = append(opRemove, patchOperationPayload{
+		opRemove = append(opRemove, sortablePayload{
 			Op:          operationRemove,
 			Path:        fmt.Sprintf("/communicationItems/%v", index),
 			removeIndex: index,
@@ -313,11 +314,11 @@ func makeOperationAddOrReplace(registry map[string]int,
 	identifier string,
 	value string,
 	communicationType string,
-) []patchOperationPayload {
+) []sortablePayload {
 	index, found := registry[identifier]
 	if !found {
 		// No existing item with this type ID; append a new one.
-		return []patchOperationPayload{{
+		return []sortablePayload{{
 			Op:   "add",
 			Path: fmt.Sprintf("/communicationItems/%v", len(registry)),
 			Value: createCommunicationItemPayload{
@@ -330,7 +331,7 @@ func makeOperationAddOrReplace(registry map[string]int,
 	}
 
 	// Existing item with this type ID; update its value.
-	return []patchOperationPayload{{
+	return []sortablePayload{{
 		Op:    "replace",
 		Path:  fmt.Sprintf("/communicationItems/%v/value", index),
 		Value: value,
@@ -390,9 +391,9 @@ func makeCommunicationItemsRegistry(value any) (map[string]int, error) {
 // This function is ConnectWise logic-specific because it relies on ConnectWise's
 // behavior around defaultFlag and array indexing when constructing patches.
 func (c *Connector) contactsPartialUpdatePayload(ctx context.Context, // nolint:cyclop
-	input []patchOperationPayload,
+	input []core.PatchOperationPayload,
 	contactId string,
-) ([]patchOperationPayload, error) {
+) ([]core.PatchOperationPayload, error) {
 	// Separate virtual-field ops from real ops and build the intent.
 	operations, intent, err := createCommunicationItemsIntentForPatch(input)
 	if err != nil {
@@ -464,10 +465,10 @@ func (c *Connector) contactsPartialUpdatePayload(ctx context.Context, // nolint:
 //   - intent: populated communicationItemsIntent describing desired changes.
 //   - err: any error encountered while parsing virtual field values.
 func createCommunicationItemsIntentForPatch( // nolint:cyclop
-	input []patchOperationPayload,
-) ([]patchOperationPayload, *communicationItemsIntent, error) {
+	input []core.PatchOperationPayload,
+) ([]core.PatchOperationPayload, *communicationItemsIntent, error) {
 	intent := &communicationItemsIntent{}
-	filtered := make([]patchOperationPayload, 0, len(input))
+	filtered := make([]core.PatchOperationPayload, 0, len(input))
 
 	var err error
 
@@ -603,7 +604,7 @@ func (c *Connector) fetchMissingCommunicationItemIds(ctx context.Context, //noli
 func allJsonPatchOperations(intent *communicationItemsIntent,
 	contact *readContactResponse,
 	itemsRegistry map[string]int,
-) (output []patchOperationPayload) {
+) []core.PatchOperationPayload {
 	// Generate operations for each communication type.
 	opEmail, removeEmail := makeJsonPatchOperations(intent.DefaultEmailId, intent.DefaultEmail,
 		intent.RemoveEmail, communicationTypeEmail, contact.Items, itemsRegistry)
@@ -620,11 +621,7 @@ func allJsonPatchOperations(intent *communicationItemsIntent,
 	//   - Specifying index 0 still causes the item to be appended to the end.
 	//   - However, DefaultFlag is not respected when index 0 is specified.
 	//   - Therefore, new items are explicitly added at the end of the array.
-	output = append(output, opEmail...)
-	output = append(output, opPhone...)
-	output = append(output, opFax...)
-
-	opRemove := make([]patchOperationPayload, 0,
+	opRemove := make([]sortablePayload, 0,
 		len(removeEmail)+len(removePhone)+len(removeFax))
 
 	opRemove = append(opRemove, removeEmail...)
@@ -633,9 +630,20 @@ func allJsonPatchOperations(intent *communicationItemsIntent,
 
 	sortRemovePayloads(opRemove)
 
+	output := make([]sortablePayload, 0,
+		len(opEmail)+len(opPhone)+len(opFax)+len(opRemove))
+
+	output = append(output, opEmail...)
+	output = append(output, opPhone...)
+	output = append(output, opFax...)
 	output = append(output, opRemove...)
 
-	return output
+	translated := make([]core.PatchOperationPayload, len(output))
+	for idx, value := range output {
+		translated[idx] = value.PatchOperationPayload
+	}
+
+	return translated
 }
 
 // makeJsonPatchOperations generates JSON Patch operations for a single
@@ -674,7 +682,7 @@ func makeJsonPatchOperations(identifier string,
 	communicationType string,
 	items []readCommunicationItem,
 	itemsRegistry map[string]int,
-) ([]patchOperationPayload, []patchOperationPayload) {
+) ([]sortablePayload, []sortablePayload) {
 	if identifier == "" {
 		// identifier must be set by this point.
 		//
@@ -696,7 +704,7 @@ func makeJsonPatchOperations(identifier string,
 
 		// Create a new communication item by appending to the end of the array.
 		// This is required for ConnectWise to honor DefaultFlag.
-		return []patchOperationPayload{{
+		return []sortablePayload{{
 			Op:   operationAdd,
 			Path: fmt.Sprintf("/communicationItems/%v", len(items)),
 			Value: createCommunicationItemPayload{
@@ -713,7 +721,7 @@ func makeJsonPatchOperations(identifier string,
 	// Existing item found; decide between remove or update.
 	if isRemove {
 		// Remove the entire communication item at this index.
-		return nil, []patchOperationPayload{{
+		return nil, []sortablePayload{{
 			Op:          operationRemove,
 			Path:        fmt.Sprintf("/communicationItems/%v", index),
 			removeIndex: index,
@@ -721,7 +729,7 @@ func makeJsonPatchOperations(identifier string,
 	}
 
 	// Update existing item.
-	output := []patchOperationPayload{{
+	output := []sortablePayload{{
 		Op:    operationReplace,
 		Path:  fmt.Sprintf("/communicationItems/%v/value", index),
 		Value: value,
@@ -729,7 +737,7 @@ func makeJsonPatchOperations(identifier string,
 
 	if !items[index].DefaultFlag {
 		// Mark this item as the default for its type.
-		output = append(output, patchOperationPayload{
+		output = append(output, sortablePayload{
 			Op:    operationReplace,
 			Path:  fmt.Sprintf("/communicationItems/%v/defaultFlag", index),
 			Value: true,
@@ -939,4 +947,20 @@ type communicationItemTypePayload struct {
 	// Id is sent as a string in write payloads.
 	// Read responses may return it as an int.
 	Id string `json:"id"`
+}
+
+type sortablePayload struct {
+	core.PatchOperationPayload
+
+	removeIndex int
+}
+
+func sortRemovePayloads(payloads []sortablePayload) {
+	// Remove from the highest index to the lowest. Removing a later item
+	// shifts only indexes after it, so it cannot change the index of an
+	// earlier item that is still scheduled for removal. Removing in the
+	// opposite order would shift all subsequent removeIndex values.
+	sort.Slice(payloads, func(i, j int) bool {
+		return payloads[i].removeIndex > payloads[j].removeIndex
+	})
 }
