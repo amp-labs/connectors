@@ -8,6 +8,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/batch"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/reader"
 )
 
 // GetRecordsByIds scoped reading of records given their ids.
@@ -29,7 +30,7 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 	}
 
 	marshaler := readhelper.MakeMarshaledDataFuncWithId(
-		recordTransformer(objectName),
+		reader.RecordTransformer(objectName),
 		readhelper.IdFieldQuery{Field: "id"},
 	)
 	uniqueFields := datautils.NewSetFromList(fields).List()
