@@ -7,6 +7,7 @@ import (
 	"maps"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -77,7 +78,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		}
 	}
 
-	recordData := prepareRecordData(params)
+	recordData, err := c.prepareRecordData(ctx, params)
+	if err != nil {
+		return nil, err
+	}
 
 	jsonData, err := json.Marshal(recordData)
 	if err != nil {
@@ -87,60 +91,45 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
 }
 
-// prepareRecordData lets a ReadResult round-trip into a WriteRequest for
-// contacts. Read returns customFields entries as {"key": "<definition id>",
-// "value": ...}, while the write endpoints identify a field by "id" (or
-// "name") — "key" is not accepted. Entries carrying only a key are rewritten
-// to the id form; anything else passes through untouched.
+// prepareRecordData lets a ReadResult round-trip into a WriteRequest. Read
+// returns custom fields in two shapes: the provider's customFields entries
+// ({"key": "<definition id>", "value": ...}) and one top-level field per
+// definition named by its title. Neither is what every write endpoint accepts,
+// so both are rewritten into the entry form the endpoint takes (see
+// referencesByKey); anything else passes through untouched.
 // https://docs.reply.io/api-reference/contacts/update-a-contact
-func prepareRecordData(params common.WriteParams) any {
-	if params.ObjectName != objectCustomFieldsOwner {
-		return params.RecordData
+func (c *Connector) prepareRecordData(ctx context.Context, params common.WriteParams) (any, error) {
+	if !usesCustomFields(params.ObjectName) {
+		return params.RecordData, nil
 	}
 
 	record, isMap := params.RecordData.(map[string]any)
 	if !isMap {
-		return params.RecordData
+		return params.RecordData, nil
 	}
 
 	// ReadResult.Fields lowercases keys, so a round-tripped payload carries
 	// "customfields" while a hand-written one carries "customFields".
-	fieldsKey := "customFields"
+	fieldsKey := customFieldsKey
 
 	if _, found := record[fieldsKey]; !found {
-		fieldsKey = "customfields"
+		fieldsKey = strings.ToLower(customFieldsKey)
 	}
 
-	fields, ok := record[fieldsKey].([]any)
-	if !ok {
-		return params.RecordData
+	byKey := referencesByKey(params)
+
+	entries, hasEntries := record[fieldsKey].([]any)
+	if hasEntries {
+		entries = normalizedEntries(entries, byKey)
 	}
 
-	converted := make([]any, len(fields))
+	flattened, err := c.flattenedCustomFields(ctx, params.ObjectName, record)
+	if err != nil {
+		return nil, err
+	}
 
-	for index, field := range fields {
-		entry, ok := field.(map[string]any)
-		if !ok {
-			converted[index] = field
-
-			continue
-		}
-
-		key, hasKey := entry["key"].(string)
-		if !hasKey {
-			converted[index] = entry
-
-			continue
-		}
-
-		id, err := strconv.Atoi(key)
-		if err != nil {
-			converted[index] = entry
-
-			continue
-		}
-
-		converted[index] = map[string]any{"id": id, "value": entry["value"]}
+	if !hasEntries && len(flattened) == 0 {
+		return params.RecordData, nil
 	}
 
 	// Shallow copy so the caller's payload is not mutated.
@@ -148,9 +137,42 @@ func prepareRecordData(params common.WriteParams) any {
 	maps.Copy(result, record)
 
 	delete(result, fieldsKey)
-	result["customFields"] = converted
 
-	return result
+	overridden := make(map[int]bool, len(flattened))
+
+	for _, field := range flattened {
+		delete(result, field.key)
+
+		overridden[field.id] = true
+	}
+
+	entries = withoutOverridden(entries, overridden)
+
+	for _, field := range flattened {
+		entries = append(entries, customFieldEntry(field.id, field.value, byKey))
+	}
+
+	result[customFieldsKey] = entries
+
+	return result, nil
+}
+
+// referencesByKey reports how the write endpoint wants a custom field named.
+// Creating a contact takes {"key": ...}, where Reply silently drops an entry
+// that carries "id" or "name" instead. Updating a contact and writing an
+// account take {"id": ...} (or "name") and reject "key" with a 400.
+// Verified live against POST/PATCH /v3/contacts and POST/PUT /v3/contact-accounts.
+func referencesByKey(params common.WriteParams) bool {
+	return params.ObjectName == "contacts" && !params.IsUpdate()
+}
+
+// customFieldEntry builds one customFields entry referencing a definition by id.
+func customFieldEntry(id int, value any, byKey bool) map[string]any {
+	if byKey {
+		return map[string]any{"key": strconv.Itoa(id), "value": stringifyValue(value)}
+	}
+
+	return map[string]any{"id": id, "value": stringifyValue(value)}
 }
 
 func (c *Connector) parseWriteResponse(

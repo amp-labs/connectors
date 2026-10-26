@@ -1,0 +1,24 @@
+[
+  {
+    "id": 150697,
+    "title": "Deal Stage",
+    "fieldType": "text",
+    "entityType": "contact",
+    "metadata": null,
+    "orgWide": false,
+    "fieldSource": "regular",
+    "aiDefinition": null,
+    "promptActions": []
+  },
+  {
+    "id": 150698,
+    "title": "Industry",
+    "fieldType": "text",
+    "entityType": "contact",
+    "metadata": null,
+    "orgWide": false,
+    "fieldSource": "regular",
+    "aiDefinition": null,
+    "promptActions": []
+  }
+]

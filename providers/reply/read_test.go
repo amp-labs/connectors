@@ -19,7 +19,11 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	responseContactsFirstPage := testutils.DataFromFile(t, "read/contacts-first-page.json")
 	responseContactsLastPage := testutils.DataFromFile(t, "read/contacts.json")
-	responseCustomFields := testutils.DataFromFile(t, "read/custom-fields.json")
+	responseCustomFields := testutils.DataFromFile(t, "read/custom-fields/definitions.json")
+	responseCollidingCustomFields := testutils.DataFromFile(t, "read/custom-fields/definitions-colliding.json")
+	responseAccountCustomFields := testutils.DataFromFile(t, "read/custom-fields/definitions-accounts.json")
+	responseAccounts := testutils.DataFromFile(t, "read/custom-fields/accounts-list.json")
+	responseContactsColliding := testutils.DataFromFile(t, "read/custom-fields/contacts-colliding.json")
 	responseSchedules := testutils.DataFromFile(t, "read/schedules.json")
 	responseSequences := testutils.DataFromFile(t, "read/sequences.json")
 	errorValidation := testutils.DataFromFile(t, "read/err-validation.json")
@@ -99,8 +103,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Contacts last page resolves custom field titles and finishes",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				Fields:     connectors.Fields("email", "Deal Stage"),
-				NextPage:   common.NextPageToken(testconn.URLTestServer + "/v3/contacts?skip=100&top=100"),
+				// Deal Stage is a custom field.
+				Fields:   connectors.Fields("email", "Deal Stage"),
+				NextPage: common.NextPageToken(testconn.URLTestServer + "/v3/contacts?skip=100&top=100"),
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -121,7 +126,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Data: []common.ReadResultRow{{
 					Id: "759458702",
 					Fields: map[string]any{
-						"email":      "jane.doe@example.com",
+						"email": "jane.doe@example.com",
+						// Custom field value, resolved from customFields by its title.
 						"deal stage": "probe",
 					},
 					// Raw keeps the provider's key/value shape untouched.
@@ -135,6 +141,141 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				Done: true,
 			},
 			ExpectedErrs: nil,
+		},
+		{
+			Name: "Contact accounts resolve account custom field titles",
+			Input: common.ReadParams{
+				ObjectName: "contact-accounts",
+				// Renewal Date and Seats are custom account fields.
+				Fields: connectors.Fields("name", "Renewal Date", "Seats"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.Path("/v3/custom-fields"),
+						mockcond.QueryParam("entityType", "account"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseAccountCustomFields),
+				}, {
+					If:   mockcond.Path("/v3/contact-accounts"),
+					Then: mockserver.Response(http.StatusOK, responseAccounts),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id: "88001",
+					Fields: map[string]any{
+						"name": "Acme",
+						// Renewal date and seats are custom fields, resolved by title.
+						"renewal date": "2027-01-01",
+						"seats":        "25",
+					},
+					// Raw keeps the provider's key/value shape untouched.
+					Raw: map[string]any{
+						"customFields": []any{
+							map[string]any{"key": "154800", "value": "2027-01-01"},
+							map[string]any{"key": "154801", "value": "25"},
+						},
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Team without account custom fields can still read Contact accounts",
+			Input: common.ReadParams{
+				ObjectName: "contact-accounts",
+				Fields:     connectors.Fields("name"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If:   mockcond.Path("/v3/custom-fields"),
+					Then: mockserver.Response(http.StatusForbidden, nil),
+				}, {
+					If:   mockcond.Path("/v3/contact-accounts"),
+					Then: mockserver.Response(http.StatusOK, responseAccounts),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id:     "88001",
+					Fields: map[string]any{"name": "Acme"},
+					// Raw keeps customFields even though no definition could be resolved.
+					Raw: map[string]any{
+						"domainName": "acme.example",
+						"customFields": []any{
+							map[string]any{"key": "154800", "value": "2027-01-01"},
+							map[string]any{"key": "154801", "value": "25"},
+						},
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Custom field titled like a built-in field does not overwrite its value",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				// Deal Stage is a custom field; industry is a built-in.
+				Fields: connectors.Fields("industry", "Deal Stage"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If:   mockcond.Path("/v3/custom-fields"),
+					Then: mockserver.Response(http.StatusOK, responseCollidingCustomFields),
+				}, {
+					If:   mockcond.Path("/v3/contacts"),
+					Then: mockserver.Response(http.StatusOK, responseContactsColliding),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id: "761575999",
+					Fields: map[string]any{
+						"industry": "Software",
+						// Deal Stage is a custom field.
+						"deal stage": "won",
+					},
+					// Raw still carries the colliding custom value, unrenamed.
+					Raw: map[string]any{
+						"customFields": []any{
+							map[string]any{"key": "150698", "value": "Overridden"},
+							map[string]any{"key": "150697", "value": "won"},
+						},
+					},
+				}},
+				Done: true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Custom field definitions failure fails the read",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("email"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If:   mockcond.Path("/v3/custom-fields"),
+					Then: mockserver.Response(http.StatusInternalServerError, nil),
+				}, {
+					If:   mockcond.Path("/v3/contacts"),
+					Then: mockserver.Response(http.StatusOK, responseContactsLastPage),
+				}},
+			}.Server(),
+			ExpectedErrs: []error{common.ErrResolvingCustomFields, common.ErrServer},
 		},
 		{
 			Name: "Schedules is a single root-level array page",
