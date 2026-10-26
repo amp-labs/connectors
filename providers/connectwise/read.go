@@ -12,6 +12,8 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/contactmodel"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/core"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/customfields"
 	"github.com/spyzhov/ajson"
 )
@@ -105,8 +107,8 @@ func recordTransformer(objectName string) common.RecordTransformer {
 			return nil, err
 		}
 
-		if objectName == objectNameContacts {
-			if err = attachCommunicationItems(node, root); err != nil {
+		if objectName == core.ObjectNameContacts {
+			if err = contactmodel.EnhanceReadRecord(node, root); err != nil {
 				return nil, err
 			}
 		}
