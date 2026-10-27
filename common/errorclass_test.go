@@ -32,6 +32,7 @@ func TestClassOf_Sentinels(t *testing.T) {
 		{ErrResultsLimitExceeded, ErrorClassRateLimited},
 		{ErrBadRequest, ErrorClassBadRequest},
 		{ErrCaller, ErrorClassBadRequest},
+		{ErrFieldNotFound, ErrorClassSchemaDriftField},
 		{ErrServer, ErrorClassProvider5xx},
 		{ErrRetryable, ErrorClassRetryable},
 	}
@@ -248,6 +249,7 @@ func TestSentinelErrorsIsStillWorks(t *testing.T) {
 		{"ErrLimitExceeded", ErrLimitExceeded},
 		{"ErrBadRequest", ErrBadRequest},
 		{"ErrCaller", ErrCaller},
+		{"ErrFieldNotFound", ErrFieldNotFound},
 		{"ErrServer", ErrServer},
 		{"ErrRetryable", ErrRetryable},
 		{"ErrInvalidGrant", ErrInvalidGrant},

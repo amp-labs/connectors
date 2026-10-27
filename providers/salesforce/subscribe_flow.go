@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"slices"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
@@ -335,11 +336,24 @@ func (c *Connector) deployFlowMetadataZip(
 	}
 
 	if !deployResult.Success {
-		return "", fmt.Errorf("%w: %s: %s",
-			errFlowDeployFailed, entity, formatDeployFailureDetails(deployResult))
+		return "", flowDeployError(entity, deployResult)
 	}
 
 	return deployID, nil
+}
+
+// flowDeployError reports a failed flow deploy. A failure naming a field the org doesn't have also
+// wraps common.ErrFieldNotFound; Salesforce sends no error code for it, only the problem text.
+func flowDeployError(entity string, result *DeployResult) error {
+	details := formatDeployFailureDetails(result)
+
+	for _, failure := range result.ComponentFailures {
+		if strings.Contains(failure.Problem, "no CustomField named") {
+			return fmt.Errorf("%w: %w: %s: %s", errFlowDeployFailed, common.ErrFieldNotFound, entity, details)
+		}
+	}
+
+	return fmt.Errorf("%w: %s: %s", errFlowDeployFailed, entity, details)
 }
 
 // buildFlowSubscription builds the flow and outbound-message pairs to deploy (one per event type)

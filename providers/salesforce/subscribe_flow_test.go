@@ -642,3 +642,24 @@ func TestUpdateSubscriptionRejectsFlowManagementSwitch(t *testing.T) {
 		t.Errorf("expected no Salesforce requests, got %d", got)
 	}
 }
+
+func TestFlowDeployError(t *testing.T) {
+	t.Parallel()
+
+	failed := func(problem string) *DeployResult {
+		return &DeployResult{Status: "Failed", ComponentFailures: []metadata.ComponentFailure{{
+			ComponentType: "WorkflowOutboundMessage", FullName: "account.x_Create",
+			Problem: problem, ProblemType: "Error",
+		}}}
+	}
+
+	missing := flowDeployError("account",
+		failed("In field: field - no CustomField named Account.country found"))
+	if !errors.Is(missing, errFlowDeployFailed) || !errors.Is(missing, common.ErrFieldNotFound) {
+		t.Errorf("missing field: want errFlowDeployFailed and ErrFieldNotFound, got %v", missing)
+	}
+
+	if got := common.ClassOf(missing); got != common.ErrorClassSchemaDriftField {
+		t.Errorf("missing field: ClassOf = %q, want %q", got, common.ErrorClassSchemaDriftField)
+	}
+}
