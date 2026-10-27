@@ -64,6 +64,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 
 	// Jump compares timestamps with microsecond precision, so the fraction of a second must be kept.
 	// Dropping it would exclude records updated within the last second before Until.
+	// https://my.jumpapp.com/enterprise/documentation/reference?tab=queries
 	if !params.Since.IsZero() {
 		queryParams.UpdatedAfter = params.Since.UTC().Format(time.RFC3339Nano)
 	}
