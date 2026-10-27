@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/core"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/search"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/subscriber"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/webhook"
 )
@@ -23,7 +24,14 @@ type (
 	SubscriptionResource       = subscriber.SubscriptionResource
 )
 
-type subscribeStrategy = subscriber.Strategy
+// SearchRawTypeFilterConditions is the type of raw filter search.
+// This statement is an Export. Do not remove.
+const SearchRawTypeFilterConditions = search.RawTypeFilterConditions
+
+type (
+	subscribeStrategy = subscriber.Strategy
+	searchStrategy    = search.Strategy
+)
 
 var (
 	_ connectors.ObjectMetadataConnector    = (*Connector)(nil)
@@ -33,6 +41,7 @@ var (
 	_ connectors.BatchRecordReaderConnector = (*Connector)(nil)
 	_ connectors.WebhookVerifierConnector   = (*Connector)(nil)
 	_ connectors.SubscribeConnector         = (*Connector)(nil)
+	_ connectors.SearchConnector            = (*Connector)(nil)
 )
 
 type Connector struct {
@@ -44,6 +53,7 @@ type Connector struct {
 	// TODO must use webhook.Verifier instead of webhook.NoopVerifier
 	*webhook.NoopVerifier
 	*subscribeStrategy
+	*searchStrategy
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
@@ -91,6 +101,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 
 	connector.NoopVerifier = webhook.NewVerifier(base)
 	connector.subscribeStrategy = subscriber.NewStrategy(base)
+	connector.searchStrategy = search.NewStrategy(base)
 
 	return connector, nil
 }

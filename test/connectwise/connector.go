@@ -16,14 +16,21 @@ var clientIdField = credscanning.Field{
 	SuffixENV: "CLIENT_ID",
 }
 
+var regionField = credscanning.Field{
+	Name:      "region",
+	PathJSON:  "metadata.region",
+	SuffixENV: "REGION",
+}
+
 func GetConnectWiseConnector(ctx context.Context) *connectwise.Connector {
 	filePath := credscanning.LoadPath(providers.ConnectWise)
-	reader := utils.MustCreateProvCredJSON(filePath, false, clientIdField)
+	reader := utils.MustCreateProvCredJSON(filePath, false, clientIdField, regionField)
 
 	conn, err := connectwise.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: utils.NewBasicAuthClient(ctx, reader),
 		Metadata: map[string]string{
 			"clientId": reader.Get(clientIdField),
+			"region":   reader.Get(regionField),
 		},
 	})
 	if err != nil {
