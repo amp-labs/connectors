@@ -1,4 +1,4 @@
-package connectwise
+package customfields
 
 import (
 	"context"
@@ -12,10 +12,74 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/batch"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/core"
 	"github.com/spyzhov/ajson"
 )
 
-func attachCustomFields(node *ajson.Node, root map[string]any) error {
+func EnhanceObjectMetadata(ctx context.Context,
+	base *core.Base,
+	objectName string,
+	objectMetadata *common.ObjectMetadata,
+) error {
+	fields, err := requestCustomFields(ctx, base, objectName)
+	if err != nil {
+		return err
+	}
+
+	for _, field := range fields {
+		fieldMetadata := common.FieldMetadata{
+			DisplayName:  field.Caption,
+			ValueType:    field.getValueType(),
+			ProviderType: field.getProviderType(),
+			ReadOnly:     new(field.ReadOnlyFlag),
+			IsCustom:     new(true),
+			IsRequired:   new(field.RequiredFlag),
+			Values:       field.getValues(),
+		}
+
+		objectMetadata.AddFieldMetadata(field.makeFieldName(), fieldMetadata)
+	}
+
+	return nil
+}
+
+// requestCustomFields fetches custom field definitions for objectName.
+// It samples one record to collect custom field IDs, then loads the matching
+// definitions and returns them indexed by ID.
+func requestCustomFields(ctx context.Context,
+	base *core.Base,
+	objectName string,
+) (map[string]modelCustomField, error) {
+	if !supportedObjects.Has(objectName) {
+		// This object cannot have custom fields, we are done.
+		return map[string]modelCustomField{}, nil
+	}
+
+	customFieldIds, err := getCustomFieldIdsFromSampleRecord(ctx, base, objectName)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(customFieldIds) == 0 {
+		// This object does not have custom fields, we are done.
+		return map[string]modelCustomField{}, nil
+	}
+
+	customFieldDefinitions, err := batch.Read[modelCustomField](
+		ctx, base, "userDefinedFields", customFieldIds)
+	if err != nil {
+		return nil, err
+	}
+
+	fields := make(map[string]modelCustomField)
+	for _, def := range customFieldDefinitions {
+		fields[strconv.Itoa(def.Id)] = def
+	}
+
+	return fields, nil
+}
+
+func EnhanceReadRecord(node *ajson.Node, root map[string]any) error {
 	customFields, err := jsonquery.New(node).ArrayOptional("customFields")
 	if err != nil {
 		return err
@@ -44,42 +108,75 @@ func attachCustomFields(node *ajson.Node, root map[string]any) error {
 	return nil
 }
 
-// requestCustomFields fetches custom field definitions for objectName.
-// It samples one record to collect custom field IDs, then loads the matching
-// definitions and returns them indexed by ID.
-func (c *Connector) requestCustomFields(
-	ctx context.Context, objectName string,
-) (map[string]modelCustomField, error) {
-	if !objectsSupportingCustomFields.Has(objectName) {
-		// This object cannot have custom fields, we are done.
-		return map[string]modelCustomField{}, nil
+// TransformUpdatePayload normalizes JSON Patch payloads for objects that
+// support custom fields.
+//
+// ConnectWise requires that PATCH requests for such objects include a
+// `/customFields` replace operation; otherwise the API may return 400 Bad
+// Request, even if custom fields are not being modified.
+//
+// This function:
+//   - Leaves payloads unchanged for objects that do not support custom fields.
+//   - For supported objects:
+//   - Extracts individual patch operations targeting custom field paths
+//     (e.g. `/customField1`, `/customField2`) and converts them into entries
+//     in a `/customFields` array of the form [{id, value}, ...].
+//   - Preserves all non-custom-field operations as-is.
+//   - Appends a single `/customFields` replace operation with the constructed
+//     array.
+//
+// Notes:
+//   - Only explicitly mentioned custom fields are included in the array.
+//   - Omitting a custom field from the array does not clear its value.
+//   - Sending an empty `customFields` array does not clear existing values.
+func TransformUpdatePayload(objectName string,
+	payloads []core.PatchOperationPayload,
+) []core.PatchOperationPayload {
+	if !supportedObjects.Has(objectName) {
+		// Object does not support custom fields; return payload unchanged.
+		return payloads
 	}
 
-	customFieldIds, err := c.getCustomFieldIdsFromSampleRecord(ctx, objectName)
-	if err != nil {
-		return nil, err
+	customFields := make([]map[string]any, 0)
+	result := make([]core.PatchOperationPayload, 0)
+
+	for _, payload := range payloads {
+		// Normalize path by stripping leading slash.
+		path, _ := strings.CutPrefix(payload.Path, "/")
+
+		fieldIdStr, ok := strings.CutPrefix(path, "customField")
+		if !ok {
+			// Not a custom field operation; preserve as-is.
+			result = append(result, payload)
+
+			continue
+		}
+
+		fieldId, err := strconv.Atoi(fieldIdStr)
+		if err != nil {
+			// Malformed custom field ID; preserve operation as-is.
+			result = append(result, payload)
+
+			continue
+		}
+
+		customFields = append(customFields, map[string]any{
+			"id":    fieldId,
+			"value": payload.Value,
+		})
 	}
 
-	if len(customFieldIds) == 0 {
-		// This object does not have custom fields, we are done.
-		return map[string]modelCustomField{}, nil
-	}
+	// Always emit a /customFields replace operation for supported objects.
+	result = append(result, core.PatchOperationPayload{
+		Op:    "replace",
+		Path:  "/customFields",
+		Value: customFields,
+	})
 
-	customFieldDefinitions, err := batch.Read[modelCustomField](
-		ctx, c.Base, "userDefinedFields", customFieldIds)
-	if err != nil {
-		return nil, err
-	}
-
-	fields := make(map[string]modelCustomField)
-	for _, def := range customFieldDefinitions {
-		fields[strconv.Itoa(def.Id)] = def
-	}
-
-	return fields, nil
+	return result
 }
 
-func payloadWithCustomFields(record common.Record) {
+func TransformCreatePayload(record common.Record) {
 	if record == nil {
 		// No-op. Nothing to modify.
 		return
@@ -113,12 +210,12 @@ func payloadWithCustomFields(record common.Record) {
 	}
 }
 
-// objectsSupportingCustomFields lists ConnectWise object names that can include customFields in read responses.
+// supportedObjects lists ConnectWise object names that can include customFields in read responses.
 // From the ConnectWise documentation:
 // > Wondering if an endpoint supports custom fields?
 // > Supported endpoints will have customFields(CustomFieldValue[])
 // > listed at the end of the documentation.
-var objectsSupportingCustomFields = datautils.NewSet( // nolint:gochecknoglobals
+var supportedObjects = datautils.NewSet( // nolint:gochecknoglobals
 	"activities",
 	"adjustments",
 	"agreements",
@@ -147,15 +244,15 @@ var objectsSupportingCustomFields = datautils.NewSet( // nolint:gochecknoglobals
 // getCustomFieldIdsFromSampleRecord reads one record for objectName and returns
 // the IDs of the custom fields present in that response.
 // It is guaranteed that all custom fields will be returned even if they are empty and set to null.
-func (c *Connector) getCustomFieldIdsFromSampleRecord(ctx context.Context, objectName string) ([]string, error) {
-	url, err := c.GetUrl(objectName)
+func getCustomFieldIdsFromSampleRecord(ctx context.Context, base *core.Base, objectName string) ([]string, error) {
+	url, err := base.GetUrl(objectName)
 	if err != nil {
 		return nil, err
 	}
 
 	url.WithQueryParam("pageSize", "1")
 
-	res, err := c.JSONHTTPClient().Get(ctx, url.String(), c.ClientIdHeader())
+	res, err := base.JSONHTTPClient().Get(ctx, url.String(), base.ClientIdHeader())
 	if err != nil {
 		return nil, err
 	}

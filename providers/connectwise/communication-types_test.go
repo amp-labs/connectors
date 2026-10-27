@@ -7,6 +7,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/core"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testutils"
@@ -378,12 +379,12 @@ func TestContactsFullUpdatePayload(t *testing.T) {
 		payload                common.Record
 		respContact            string
 		respCommunicationItems string
-		expected               []patchOperationPayload
+		expected               []sortablePayload
 	}{
 		{
 			name:    "Nil record",
 			payload: nil,
-			expected: []patchOperationPayload{
+			expected: []sortablePayload{
 				{Op: "replace", Path: "customFields", Value: []any{}},
 			},
 		},
@@ -395,7 +396,7 @@ func TestContactsFullUpdatePayload(t *testing.T) {
 				"firstName": "John",
 				"lastName": "Doe"
 			}`,
-			expected: []patchOperationPayload{
+			expected: []sortablePayload{
 				{Op: "replace", Path: "customFields", Value: []any{}},
 				{Op: "remove", Path: "lastName"},
 			},
@@ -412,7 +413,7 @@ func TestContactsFullUpdatePayload(t *testing.T) {
 				"lastName": "Doe",
 				"department": "Sales"
 			}`,
-			expected: []patchOperationPayload{
+			expected: []sortablePayload{
 				{Op: "replace", Path: "customFields", Value: []any{}},
 				{Op: "remove", Path: "department"},
 				{Op: "remove", Path: "lastName"},
@@ -433,7 +434,7 @@ func TestContactsFullUpdatePayload(t *testing.T) {
 					{"id": 53, "value": "Old value"}
 				]
 			}`,
-			expected: []patchOperationPayload{
+			expected: []sortablePayload{
 				{Op: "replace", Path: "customFields", Value: []any{}},
 				{Op: "replace", Path: "customField83", Value: "Skiing"},
 				{Op: "replace", Path: "firstName", Value: "Fred"},
@@ -466,7 +467,7 @@ func TestContactsFullUpdatePayload(t *testing.T) {
 					}
 				]
 			}`,
-			expected: []patchOperationPayload{
+			expected: []sortablePayload{
 				{Op: "replace", Path: "customFields", Value: []any{}},
 				{Op: "replace", Path: "firstName", Value: "Johny"},
 				{Op: "replace", Path: "/communicationItems/0/value", Value: "new@example.com"},
@@ -496,7 +497,7 @@ func TestContactsFullUpdatePayload(t *testing.T) {
 			respCommunicationItems: `[
 				{"id": 5, "emailFlag": true, "defaultFlag": true}
 			]`,
-			expected: []patchOperationPayload{
+			expected: []sortablePayload{
 				{Op: "replace", Path: "customFields", Value: []any{}},
 				{Op: "replace", Path: "firstName", Value: "Johny"},
 				{
@@ -529,7 +530,7 @@ func TestContactsFullUpdatePayload(t *testing.T) {
 					{"id": 30, "communicationType": "Fax", "value": "555-2", "defaultFlag": true, "type": {"id": 4}}
 				]
 			}`,
-			expected: []patchOperationPayload{
+			expected: []sortablePayload{
 				{Op: "replace", Path: "customFields", Value: []any{}},
 				{Op: "replace", Path: "firstName", Value: "Multiple"},
 				{
@@ -601,23 +602,23 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 
 	tests := []struct {
 		name                   string
-		input                  []patchOperationPayload
+		input                  []core.PatchOperationPayload
 		respContact            string
 		respCommunicationItems string
-		expected               []patchOperationPayload
+		expected               []core.PatchOperationPayload
 	}{
 		{
 			name: "Non-communication operations only",
-			input: []patchOperationPayload{
+			input: []core.PatchOperationPayload{
 				{Op: "replace", Path: "/firstName", Value: "Jane"},
 			},
-			expected: []patchOperationPayload{
+			expected: []core.PatchOperationPayload{
 				{Op: "replace", Path: "/firstName", Value: "Jane"},
 			},
 		},
 		{
 			name: "Virtual communication field update (replace)",
-			input: []patchOperationPayload{
+			input: []core.PatchOperationPayload{
 				{Op: "replace", Path: "AMPERSAND-defaultEmail", Value: "new@example.com"},
 			},
 			respContact: `{
@@ -632,13 +633,13 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 					}
 				]
 			}`,
-			expected: []patchOperationPayload{
+			expected: []core.PatchOperationPayload{
 				{Op: "replace", Path: "/communicationItems/0/value", Value: "new@example.com"},
 			},
 		},
 		{
 			name: "Virtual communication field update (add new type)",
-			input: []patchOperationPayload{
+			input: []core.PatchOperationPayload{
 				{Op: "replace", Path: "AMPERSAND-defaultPhone", Value: "555-1234"},
 				{Op: "replace", Path: "AMPERSAND-defaultPhoneId", Value: "2"},
 			},
@@ -646,7 +647,7 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 				"id": 123,
 				"communicationItems": []
 			}`,
-			expected: []patchOperationPayload{
+			expected: []core.PatchOperationPayload{
 				{
 					Op:   "add",
 					Path: "/communicationItems/0",
@@ -661,7 +662,7 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 		},
 		{
 			name: "Virtual communication field removal",
-			input: []patchOperationPayload{
+			input: []core.PatchOperationPayload{
 				{Op: "remove", Path: "AMPERSAND-defaultEmail"},
 			},
 			respContact: `{
@@ -676,13 +677,13 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 					}
 				]
 			}`,
-			expected: []patchOperationPayload{
+			expected: []core.PatchOperationPayload{
 				{Op: "remove", Path: "/communicationItems/0"},
 			},
 		},
 		{
 			name: "Fetch missing IDs for partial update",
-			input: []patchOperationPayload{
+			input: []core.PatchOperationPayload{
 				{Op: "replace", Path: "AMPERSAND-defaultEmail", Value: "fetch@example.com"},
 			},
 			respContact: `{
@@ -692,7 +693,7 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 			respCommunicationItems: `[
 				{"id": 5, "emailFlag": true, "defaultFlag": true}
 			]`,
-			expected: []patchOperationPayload{
+			expected: []core.PatchOperationPayload{
 				{
 					Op:   "add",
 					Path: "/communicationItems/0",
@@ -707,7 +708,7 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 		},
 		{
 			name: "Mixed real and virtual fields",
-			input: []patchOperationPayload{
+			input: []core.PatchOperationPayload{
 				{Op: "replace", Path: "/lastName", Value: "Smith"},
 				{Op: "replace", Path: "AMPERSAND-defaultEmail", Value: "smith@example.com"},
 			},
@@ -723,14 +724,14 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 					}
 				]
 			}`,
-			expected: []patchOperationPayload{
+			expected: []core.PatchOperationPayload{
 				{Op: "replace", Path: "/lastName", Value: "Smith"},
 				{Op: "replace", Path: "/communicationItems/0/value", Value: "smith@example.com"},
 			},
 		},
 		{
 			name: "Remove multiple virtual fields in one PATCH",
-			input: []patchOperationPayload{
+			input: []core.PatchOperationPayload{
 				{Op: "remove", Path: "AMPERSAND-defaultEmail"},
 				{Op: "remove", Path: "AMPERSAND-defaultFax"},
 			},
@@ -742,14 +743,14 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 					{"id": 30, "communicationType": "Fax", "value": "555-2", "defaultFlag": true, "type": {"id": 3}}
 				]
 			}`,
-			expected: []patchOperationPayload{
+			expected: []core.PatchOperationPayload{
 				{Op: "remove", Path: "/communicationItems/2"},
 				{Op: "remove", Path: "/communicationItems/0"},
 			},
 		},
 		{
 			name: "Change default type ID set to a new value",
-			input: []patchOperationPayload{
+			input: []core.PatchOperationPayload{
 				{Op: "replace", Path: "AMPERSAND-defaultEmail", Value: "new.default@test.com"},
 				{Op: "replace", Path: "AMPERSAND-defaultEmailId", Value: "15"},
 			},
@@ -759,7 +760,7 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 					{"id": 10, "communicationType": "Email", "value": "old.default@test.com", "defaultFlag": true, "type": {"id": 8}}
 				]
 			}`,
-			expected: []patchOperationPayload{
+			expected: []core.PatchOperationPayload{
 				{
 					Op:   "add",
 					Path: "/communicationItems/1",
@@ -774,7 +775,7 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 		},
 		{
 			name: "Only default communication item is updated",
-			input: []patchOperationPayload{
+			input: []core.PatchOperationPayload{
 				{Op: "replace", Path: "AMPERSAND-defaultEmail", Value: "updated.default@test.com"},
 			},
 			respContact: `{
@@ -784,7 +785,7 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 					{"id": 11, "communicationType": "Email", "value": "other@test.com", "defaultFlag": true, "type": {"id": 1}}
 				]
 			}`,
-			expected: []patchOperationPayload{
+			expected: []core.PatchOperationPayload{
 				{Op: "replace", Path: "/communicationItems/1/value", Value: "updated.default@test.com"},
 			},
 		},
@@ -837,8 +838,8 @@ func TestMakeJsonPatchOperations(t *testing.T) {
 		communicationType string
 		items             []readCommunicationItem
 		itemsRegistry     map[string]int
-		expectedOps       []patchOperationPayload
-		expectedRemoves   []patchOperationPayload
+		expectedOps       []sortablePayload
+		expectedRemoves   []sortablePayload
 	}{
 		{
 			name:            "Empty identifier",
@@ -855,7 +856,7 @@ func TestMakeJsonPatchOperations(t *testing.T) {
 			communicationType: "Email",
 			items:             []readCommunicationItem{},
 			itemsRegistry:     map[string]int{},
-			expectedOps: []patchOperationPayload{
+			expectedOps: []sortablePayload{
 				{
 					Op:   "add",
 					Path: "/communicationItems/0",
@@ -882,7 +883,7 @@ func TestMakeJsonPatchOperations(t *testing.T) {
 			},
 			itemsRegistry: map[string]int{"1": 0},
 			expectedOps:   nil,
-			expectedRemoves: []patchOperationPayload{
+			expectedRemoves: []sortablePayload{
 				{
 					Op:          "remove",
 					Path:        "/communicationItems/0",
@@ -904,7 +905,7 @@ func TestMakeJsonPatchOperations(t *testing.T) {
 				},
 			},
 			itemsRegistry: map[string]int{"1": 0},
-			expectedOps: []patchOperationPayload{
+			expectedOps: []sortablePayload{
 				{
 					Op:    "replace",
 					Path:  "/communicationItems/0/value",
@@ -927,7 +928,7 @@ func TestMakeJsonPatchOperations(t *testing.T) {
 				},
 			},
 			itemsRegistry: map[string]int{"1": 0},
-			expectedOps: []patchOperationPayload{
+			expectedOps: []sortablePayload{
 				{
 					Op:    "replace",
 					Path:  "/communicationItems/0/value",

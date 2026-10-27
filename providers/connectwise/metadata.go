@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/customfields"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/metadata"
 )
 
@@ -34,7 +35,7 @@ func (c *Connector) ListObjectMetadata(
 			continue
 		}
 
-		if err = c.attachCustomFields(ctx, objectName, &objectMetadata); err != nil {
+		if err = customfields.EnhanceObjectMetadata(ctx, c.Base, objectName, &objectMetadata); err != nil {
 			metadataResult.Errors[objectName] = err
 
 			continue
@@ -49,32 +50,6 @@ func (c *Connector) ListObjectMetadata(
 	}
 
 	return metadataResult, nil
-}
-
-func (c *Connector) attachCustomFields(ctx context.Context,
-	objectName string,
-	objectMetadata *common.ObjectMetadata,
-) error {
-	fields, err := c.requestCustomFields(ctx, objectName)
-	if err != nil {
-		return err
-	}
-
-	for _, field := range fields {
-		fieldMetadata := common.FieldMetadata{
-			DisplayName:  field.Caption,
-			ValueType:    field.getValueType(),
-			ProviderType: field.getProviderType(),
-			ReadOnly:     new(field.ReadOnlyFlag),
-			IsCustom:     new(true),
-			IsRequired:   new(field.RequiredFlag),
-			Values:       field.getValues(),
-		}
-
-		objectMetadata.AddFieldMetadata(field.makeFieldName(), fieldMetadata)
-	}
-
-	return nil
 }
 
 func (c *Connector) attachContactFields(objectMetadata *common.ObjectMetadata) {
