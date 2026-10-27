@@ -133,6 +133,8 @@ func searchCondition(operator common.FilterOperator) (string, error) {
 	switch operator {
 	case common.FilterOperatorEQ:
 		return conditionEquals, nil
+	case common.FilterOperatorIn:
+		fallthrough
 	default:
 		return "", fmt.Errorf("%w: %q", ErrUnsupportedSearchOperator, operator)
 	}
