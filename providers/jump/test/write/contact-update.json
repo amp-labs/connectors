@@ -1,15 +1,38 @@
 {
   "data": {
     "updateContact": {
-      "id": "con_7c1e2f0a9b3d4e5f6a7",
-      "type": "INDIVIDUAL",
+      "contactInfo": [
+        {
+          "kind": "EMAIL",
+          "source": "JUMP_NATIVE",
+          "value": {
+            "address": "amp-test-write-20261027135509-updated@example.com",
+            "kind": null,
+            "principal": true
+          }
+        },
+        {
+          "kind": "NAME",
+          "source": "JUMP_NATIVE",
+          "value": {
+            "family": "Write 20261027135509 Updated",
+            "given": "amp-test",
+            "maiden_name": null,
+            "middle": null,
+            "nickname": null,
+            "prefix": null,
+            "suffix": null
+          }
+        }
+      ],
+      "email": "amp-test-write-20261027135509-updated@example.com",
+      "id": "con_2feda6a76d294253be5",
+      "insertedAt": "2026-10-27T13:55:10.408651Z",
+      "integrationReferences": [],
+      "name": "amp-test Write 20261027135509 Updated",
       "status": "CONFIRMED",
-      "insertedAt": "2026-10-12T10:15:30.123456Z",
-      "updatedAt": "2026-10-12T10:20:05.654321Z",
-      "name": "amp-test Updated",
-      "email": "amp-test-001@example.com",
-      "contactInfo": [],
-      "integrationReferences": []
+      "type": "INDIVIDUAL",
+      "updatedAt": "2026-10-27T13:55:10.408651Z"
     }
   }
 }

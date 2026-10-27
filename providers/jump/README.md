@@ -55,4 +55,6 @@ The per-record costs were measured against the live API and must be updated if q
   `insertedAt` order, so subsequent pages are requested with the inclusive `insertedAfter` argument and
   records already returned are dropped by id. If more contacts than fit on a page share the same `insertedAt`,
   pagination stops with an error instead of looping.
+- **`updateContact` does not change `updatedAt`**: a contact updated through the API keeps its previous
+  `updatedAt`, so incremental reads of `contacts` do not return it.
 - **`users` requires an account-scoped API key**: OAuth tokens cannot query users.

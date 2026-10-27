@@ -34,19 +34,19 @@ func TestDelete(t *testing.T) {
 		},
 		{
 			Name:     "Successfully delete a contact for the connection user",
-			Input:    common.DeleteParams{ObjectName: "contacts", RecordId: "con_7c1e2f0a9b3d4e5f6a7"},
+			Input:    common.DeleteParams{ObjectName: "contacts", RecordId: "con_3a83c2f8749541379e9"},
 			Server:   graphqlServer(deleteResponse, mockcond.BodyBytes(deleteRequest)),
 			Expected: &common.DeleteResult{Success: true},
 		},
 		{
 			Name:         "Delete reported as unsuccessful",
-			Input:        common.DeleteParams{ObjectName: "contacts", RecordId: "con_7c1e2f0a9b3d4e5f6a7"},
+			Input:        common.DeleteParams{ObjectName: "contacts", RecordId: "con_3a83c2f8749541379e9"},
 			Server:       graphqlServer(unsuccessfulResponse),
 			ExpectedErrs: []error{common.ErrRequestFailed},
 		},
 		{
 			Name:   "Unknown contact returned with 200 status",
-			Input:  common.DeleteParams{ObjectName: "contacts", RecordId: "con_7c1e2f0a9b3d4e5f6a7"},
+			Input:  common.DeleteParams{ObjectName: "contacts", RecordId: "con_3a83c2f8749541379e9"},
 			Server: graphqlServer(notFoundResponse),
 			ExpectedErrs: []error{
 				common.ErrNotFound,

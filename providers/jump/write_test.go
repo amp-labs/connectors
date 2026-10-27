@@ -41,19 +41,19 @@ func TestWrite(t *testing.T) {
 				ObjectName: "contacts",
 				RecordData: map[string]any{
 					"firstName": "amp-test",
-					"lastName":  "Contact",
-					"email":     "amp-test-001@example.com",
+					"lastName":  "Write 20261027135509",
+					"email":     "amp-test-write-20261027135509@example.com",
 				},
 			},
 			Server:     graphqlServer(createResponse, mockcond.BodyBytes(createRequest)),
 			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "con_7c1e2f0a9b3d4e5f6a7",
+				RecordId: "con_2feda6a76d294253be5",
 				Data: map[string]any{
-					"id":    "con_7c1e2f0a9b3d4e5f6a7",
-					"name":  "amp-test Contact",
-					"email": "amp-test-001@example.com",
+					"id":    "con_2feda6a76d294253be5",
+					"name":  "amp-test Write 20261027135509",
+					"email": "amp-test-write-20261027135509@example.com",
 				},
 			},
 		},
@@ -61,19 +61,20 @@ func TestWrite(t *testing.T) {
 			Name: "Update sends only the provided fields",
 			Input: common.WriteParams{
 				ObjectName: "contacts",
-				RecordId:   "con_7c1e2f0a9b3d4e5f6a7",
+				RecordId:   "con_2feda6a76d294253be5",
 				RecordData: map[string]any{
-					"lastName": "Updated",
+					"lastName": "Write 20261027135509 Updated",
+					"email":    "amp-test-write-20261027135509-updated@example.com",
 				},
 			},
 			Server:     graphqlServer(updateResponse, mockcond.BodyBytes(updateRequest)),
 			Comparator: testconn.ComparatorSubsetWrite,
 			Expected: &common.WriteResult{
 				Success:  true,
-				RecordId: "con_7c1e2f0a9b3d4e5f6a7",
+				RecordId: "con_2feda6a76d294253be5",
 				Data: map[string]any{
-					"name":      "amp-test Updated",
-					"updatedAt": "2026-10-12T10:20:05.654321Z",
+					"name":  "amp-test Write 20261027135509 Updated",
+					"email": "amp-test-write-20261027135509-updated@example.com",
 				},
 			},
 		},
@@ -90,7 +91,7 @@ func TestWrite(t *testing.T) {
 			Server: graphqlServer(validationErrorResponse),
 			ExpectedErrs: []error{
 				common.ErrBadRequest,
-				testutils.StringError("Email has invalid format"),
+				testutils.StringError("Validation failed"),
 			},
 		},
 	}

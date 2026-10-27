@@ -1,17 +1,21 @@
 {
-  "data": {
-    "createContact": null
-  },
+  "data": null,
   "errors": [
     {
-      "message": "Email has invalid format",
+      "message": "Validation failed",
       "path": ["createContact"],
       "extensions": {
         "code": "VALIDATION_FAILED",
         "details": {
-          "email": ["has invalid format"]
+          "fields": [
+            {
+              "message": "is invalid",
+              "field": "primary_email"
+            }
+          ]
         }
-      }
+      },
+      "locations": [{"line": 1, "column": 85}]
     }
   ]
 }
