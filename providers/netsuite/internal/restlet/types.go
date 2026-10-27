@@ -13,6 +13,8 @@ func lookupFilterOperator(op common.FilterOperator) (string, bool) {
 	switch op {
 	case common.FilterOperatorEQ:
 		return "is", true
+	case common.FilterOperatorIn:
+		fallthrough
 	default:
 		return "", false
 	}
