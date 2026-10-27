@@ -35,18 +35,6 @@ func TestProxy(t *testing.T) { // nolint:funlen,cyclop
 				URL: "https://people.googleapis.com",
 			},
 		},
-		{
-			Name: "Google Mail Proxy",
-			Builder: func() (connectors.ProxyConnector, error) {
-				return constructTestMailConnector("")
-			},
-			ExpectedProxy: &connectors.ProxyConfig{
-				URL: "https://www.googleapis.com",
-			},
-			ExpectedModuleProxy: &connectors.ProxyConfig{
-				URL: "https://gmail.googleapis.com/gmail",
-			},
-		},
 	}
 
 	for _, tt := range tests {

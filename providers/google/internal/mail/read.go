@@ -14,21 +14,44 @@ import (
 const (
 	defaultPageSize = "500"
 
+	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list
 	objectNameMessages = "messages"
-	objectNameDrafts   = "drafts"
+	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/list
+	objectNameDrafts = "drafts"
+	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.threads/list
+	objectNameThreads = "threads"
+
+	virtualObjectSentMessages  = "AMPERSAND-sentMessages" // based on "messages"
+	virtualObjectInboxMessages = "AMPERSAND-messages"     // based on "messages"
+	conditionIsSentLabel       = "in:SENT"
+	conditionIsInboxLabel      = "in:INBOX"
 )
 
-// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/list
-// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list
-// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.threads/list
-var paginatedObjects = datautils.NewSet(objectNameDrafts, objectNameMessages, "threads") // nolint:gochecknoglobals
+// nolint:gochecknoglobals
+var (
+	// objectGroupTypeMessages groups all message-based objects: the core "messages" resource
+	// and virtual views like "sentMessages" and "inboxMessages". These virtual objects are
+	// the same underlying Gmail messages, just requested with different filters (labels).
+	// They share the same schema and fields; only the query differs.
+	objectGroupTypeMessages = datautils.NewSet(
+		objectNameMessages, virtualObjectSentMessages, virtualObjectInboxMessages,
+	)
+	paginatedObjects = datautils.NewSet(
+		objectNameDrafts, objectNameMessages, objectNameThreads,
+		virtualObjectSentMessages, virtualObjectInboxMessages,
+	)
+	incrementalObjects = datautils.NewSet(
+		objectNameDrafts, objectNameMessages, objectNameThreads,
+		virtualObjectSentMessages, virtualObjectInboxMessages,
+	)
+)
 
 func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if err := params.ValidateParams(true); err != nil {
 		return nil, err
 	}
 
-	url, err := a.getReadURL(params.ObjectName)
+	url, err := a.getReadUrl(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -61,15 +84,23 @@ func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams
 	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list
 	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.drafts/list
 	// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.threads/list
-	if datautils.NewSet(objectNameDrafts, objectNameMessages, "threads").Has(params.ObjectName) {
-		query := newTimeQuery().
+	query := newSearchBoxQuery()
+	if incrementalObjects.Has(params.ObjectName) {
+		query = query.
 			WithSince(params.Since).
-			WithUntil(params.Until).
-			String()
+			WithUntil(params.Until)
+	}
 
-		if query != "" {
-			url.WithQueryParam("q", query)
-		}
+	switch params.ObjectName {
+	case virtualObjectSentMessages:
+		query = query.WithCondition(conditionIsSentLabel)
+	case virtualObjectInboxMessages:
+		query = query.WithCondition(conditionIsInboxLabel)
+	}
+
+	queryStr := query.String()
+	if queryStr != "" {
+		url.WithQueryParam("q", queryStr)
 	}
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -81,31 +112,62 @@ func (a *Adapter) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	marshaller := common.MakeMarshaledDataFunc(nil)
+	nativeObjectName := params.ObjectName
+	if objectGroupTypeMessages.Has(params.ObjectName) {
+		nativeObjectName = objectNameMessages
+	}
 
-	// Messages and Drafts objects with extra fields require fetching the full message.
-	// See Gmail API: https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list#response-body
-	if (params.ObjectName == objectNameMessages || params.ObjectName == objectNameDrafts) &&
-		params.Fields.HasExtra(datautils.NewSet("id", "threadId")) {
-		messages, err := a.fetchMessages(ctx, params.ObjectName, resp)
+	responseFieldName := Schemas.LookupArrayFieldName(a.Module(), nativeObjectName)
+	identifierLocator := readhelper.NewNestedIdField([]string{responseFieldName}, "id")
+	marshaller := readhelper.MakeMarshaledDataFuncWithId(nil, identifierLocator)
+
+	// Gmail list endpoints (messages, drafts, threads) return only a minimal envelope:
+	//   - messages: { id, threadId }
+	//   - drafts:   { id, message: { id, threadId } }
+	//   - threads:  { id, historyId, ... }
+	//
+	// If the caller requests any field beyond id/threadId on an object that “owns” a full
+	// Gmail message (real messages, virtual message views, or drafts), we must fetch the
+	// full message bodies and embed them into the list response.
+	//
+	// Object categories:
+	//   1. Core messages:          "messages"
+	//   2. Virtual message views:  "AMPERSAND-sentMessages", "AMPERSAND-messages"
+	//      (same underlying message object, just filtered by label)
+	//   3. Drafts:                 "drafts"
+	//      (different top-level object that contains a message)
+	//
+	// From the caller’s perspective, fields are agnostic to these categories: they just
+	// ask for fields on "messages", "sentMessages", "inboxMessages", or "drafts".
+	// This function decides when to aggregate full messages into the list response.
+	needsFullMessageFields := params.Fields.HasExtra(datautils.NewSet("id", "threadId"))
+	isMessageBasedObject := nativeObjectName == objectNameMessages || nativeObjectName == objectNameDrafts
+
+	if needsFullMessageFields && isMessageBasedObject {
+		// Fetch full Gmail messages to enrich the minimal list response.
+		// For messages and virtual message views, the list items are messages.
+		// For drafts, each list item wraps a message in a different structure.
+		messages, err := a.fetchMessages(ctx, nativeObjectName, resp)
 		if err != nil {
 			return nil, err
 		}
 
-		if params.ObjectName == objectNameMessages {
-			marshaller = readhelper.MakeMarshaledSelectedDataFunc(
-				messagesEmbedMessageFields(messages),
-				messagesEmbedMessageRaw(messages),
-			)
-		} else {
+		if nativeObjectName == objectNameDrafts {
+			// Drafts have a different envelope: { id, message: {...} }.
+			// We embed the fetched full message into that draft-shaped response.
 			marshaller = readhelper.MakeMarshaledSelectedDataFunc(
 				draftsEmbedMessageFields(messages),
 				draftsEmbedMessageRaw(messages),
 			)
+		} else {
+			// For core messages and virtual message views, the list items are already messages.
+			// We just enrich them with the full message payload.
+			marshaller = readhelper.MakeMarshaledSelectedDataFunc(
+				messagesEmbedMessageFields(messages),
+				messagesEmbedMessageRaw(messages),
+			)
 		}
 	}
-
-	responseFieldName := Schemas.LookupArrayFieldName(a.Module(), params.ObjectName)
 
 	return common.ParseResult(resp,
 		func(node *ajson.Node) ([]*ajson.Node, error) {
