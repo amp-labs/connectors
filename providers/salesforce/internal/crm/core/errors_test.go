@@ -39,6 +39,20 @@ func TestInterpretJSONError_WrapsHTTPErrorForKnownCodes(t *testing.T) {
 			wantBaseErr: common.ErrForbidden,
 		},
 		{
+			name: "INSUFFICIENT_ACCESS (missing Metadata API permission) returns HTTPError wrapping ErrForbidden",
+			body: []byte(`[{"message":"use of the Metadata API requires a user with the ModifyAllData or ` +
+				`ModifyMetadata permissions","errorCode":"INSUFFICIENT_ACCESS"}]`),
+			status:      http.StatusBadRequest,
+			wantBaseErr: common.ErrForbidden,
+		},
+		{
+			name: "INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY returns HTTPError wrapping ErrForbidden",
+			body: []byte(`[{"message":"insufficient access rights on cross-reference id",` +
+				`"errorCode":"INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY","fields":[]}]`),
+			status:      http.StatusBadRequest,
+			wantBaseErr: common.ErrForbidden,
+		},
+		{
 			name:        "REQUEST_LIMIT_EXCEEDED returns HTTPError wrapping ErrLimitExceeded with body",
 			body:        []byte(`[{"message":"daily api request limit exceeded","errorCode":"REQUEST_LIMIT_EXCEEDED"}]`),
 			status:      http.StatusForbidden,
@@ -102,6 +116,28 @@ func TestInterpretJSONError_FieldNotFoundStaysBare(t *testing.T) {
 	// ErrFieldNotFound comes first in Unwrap, so its class wins over ErrBadRequest's.
 	if got := common.ClassOf(err); got != common.ErrorClassSchemaDriftField {
 		t.Errorf("ClassOf = %q, want %q", got, common.ErrorClassSchemaDriftField)
+	}
+}
+
+func TestInterpretXMLError_RequestLimitIsLimitExceeded(t *testing.T) {
+	t.Parallel()
+
+	body := []byte(`<?xml version="1.0" encoding="UTF-8"?>` +
+		`<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ` +
+		`xmlns:sf="http://soap.sforce.com/2006/04/metadata"><soapenv:Body><soapenv:Fault>` +
+		`<faultcode>sf:REQUEST_LIMIT_EXCEEDED</faultcode>` +
+		`<faultstring>REQUEST_LIMIT_EXCEEDED: TotalRequests Limit exceeded.</faultstring>` +
+		`</soapenv:Fault></soapenv:Body></soapenv:Envelope>`)
+
+	res := &http.Response{StatusCode: http.StatusInternalServerError, Header: http.Header{}}
+
+	err := interpretXMLError(res, body)
+	if !errors.Is(err, common.ErrLimitExceeded) {
+		t.Errorf("expected ErrLimitExceeded, got %v", err)
+	}
+
+	if errors.Is(err, common.ErrServer) {
+		t.Errorf("did not expect ErrServer for a request limit, got %v", err)
 	}
 }
 
