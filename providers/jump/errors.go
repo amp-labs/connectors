@@ -88,10 +88,6 @@ func (r ResponseError) CombineErr(base error) error {
 	messages := make([]string, len(r.Errors))
 	for i, obj := range r.Errors {
 		messages[i] = obj.Message
-
-		if obj.Extensions.Code == "INVALID_PAGINATION" {
-			base = fmt.Errorf("%w: %w", base, common.ErrInvalidPaginationCursor)
-		}
 	}
 
 	return fmt.Errorf("%w: %v", base, strings.Join(messages, ", "))
@@ -146,9 +142,7 @@ func graphqlStatusCode(details ErrorDetails) int {
 		return http.StatusNotFound
 	case code == "INTERNAL_ERROR":
 		return http.StatusInternalServerError
-	case code == "RATE_LIMITED":
-		return http.StatusTooManyRequests
-	case code == "ACCESS_DENIED", details.Message == "Unauthorized":
+	case details.Message == "Unauthorized":
 		return http.StatusForbidden
 	default:
 		return http.StatusBadRequest

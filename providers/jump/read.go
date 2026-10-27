@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -255,7 +256,8 @@ func recordComplexity(params common.ReadParams) int {
 
 type contactsPageToken struct {
 	InsertedAfter string `json:"insertedAfter"`
-	LastID        string `json:"lastId"`
+	// IDs are the contacts already returned whose insertedAt equals InsertedAfter.
+	IDs []string `json:"ids"`
 }
 
 func newContactsPageToken(token common.NextPageToken) (*contactsPageToken, error) {
@@ -281,14 +283,15 @@ func (t contactsPageToken) String() (string, error) {
 }
 
 // seen reports whether a record was returned on an earlier page.
-// The previous page's last record is always returned again because "insertedAfter" is inclusive.
+// Records at the boundary insertedAt are returned again because "insertedAfter" is inclusive.
+// They are matched by id, as Jump does not document the order of records sharing one insertedAt.
 func (t contactsPageToken) seen(insertedAt time.Time, id string) bool {
 	boundary, err := time.Parse(time.RFC3339Nano, t.InsertedAfter)
 	if err != nil {
 		return false
 	}
 
-	return insertedAt.Before(boundary) || (insertedAt.Equal(boundary) && id <= t.LastID)
+	return insertedAt.Before(boundary) || (insertedAt.Equal(boundary) && slices.Contains(t.IDs, id))
 }
 
 // filterContacts drops records already returned on earlier pages, trims the page to the requested size
@@ -334,7 +337,7 @@ func filterContacts(
 		return nil, "", fmt.Errorf("%w: contacts pagination cannot advance", common.ErrNextPageInvalid)
 	}
 
-	next, err := nextContactsPageToken(filtered[len(filtered)-1])
+	next, err := nextContactsPageToken(filtered, previous)
 	if err != nil {
 		return nil, "", err
 	}
@@ -363,20 +366,42 @@ func dropSeenContacts(records []*ajson.Node, previous *contactsPageToken) ([]*aj
 	return filtered, nil
 }
 
-func nextContactsPageToken(lastRecord *ajson.Node) (string, error) {
-	insertedAt, err := jsonquery.New(lastRecord).StringRequired("insertedAt")
+// nextContactsPageToken starts the next window at the last returned insertedAt and lists every contact
+// returned at that instant, including those from earlier pages when the boundary has not moved.
+func nextContactsPageToken(records []*ajson.Node, previous *contactsPageToken) (string, error) {
+	insertedAfter, err := jsonquery.New(records[len(records)-1]).StringRequired("insertedAt")
 	if err != nil {
 		return "", err
 	}
 
-	id, err := jsonquery.New(lastRecord).StringRequired("id")
+	boundary, err := time.Parse(time.RFC3339Nano, insertedAfter)
 	if err != nil {
 		return "", err
+	}
+
+	var ids []string
+
+	if previous != nil {
+		if previousBoundary, err := time.Parse(time.RFC3339Nano, previous.InsertedAfter); err == nil &&
+			previousBoundary.Equal(boundary) {
+			ids = append(ids, previous.IDs...)
+		}
+	}
+
+	for _, record := range records {
+		insertedAt, id, err := contactPosition(record)
+		if err != nil {
+			return "", err
+		}
+
+		if insertedAt.Equal(boundary) {
+			ids = append(ids, id)
+		}
 	}
 
 	return contactsPageToken{
-		InsertedAfter: insertedAt,
-		LastID:        id,
+		InsertedAfter: insertedAfter,
+		IDs:           ids,
 	}.String()
 }
 

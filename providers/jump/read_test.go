@@ -21,7 +21,7 @@ import (
 const (
 	tasksCursor      = "g3QAAAACdwJpZG0AAAAXdHNrX2JkZTFjOGIzMTRlODQ1OTg5M2V3C2luc2VydGVkX2F0dAAAAA13C21pY3Jvc2Vjb25kaAJiAAJEgWEGdwZzZWNvbmRhCXcIY2FsZW5kYXJ3E0VsaXhpci5DYWxlbmRhci5JU093BW1vbnRoYQZ3Cl9fc3RydWN0X193D0VsaXhpci5EYXRlVGltZXcKdXRjX29mZnNldGEAdwpzdGRfb2Zmc2V0YQB3BHllYXJiAAAH6ncEaG91cmEXdwNkYXlhF3cJem9uZV9hYmJybQAAAANVVEN3Bm1pbnV0ZWESdwl0aW1lX3pvbmVtAAAAB0V0Yy9VVEM=" //nolint:lll
 	tasksPage2Cursor = "g3QAAAACdwJpZG0AAAAXdHNrX2NmMmVjZjg0Yzc4MzQzNDlhZjF3C2luc2VydGVkX2F0dAAAAA13C21pY3Jvc2Vjb25kaAJiAAI5oGEGdwZzZWNvbmRhCXcIY2FsZW5kYXJ3E0VsaXhpci5DYWxlbmRhci5JU093BW1vbnRoYQZ3Cl9fc3RydWN0X193D0VsaXhpci5EYXRlVGltZXcKdXRjX29mZnNldGEAdwpzdGRfb2Zmc2V0YQB3BHllYXJiAAAH6ncEaG91cmEXdwNkYXlhF3cJem9uZV9hYmJybQAAAANVVEN3Bm1pbnV0ZWESdwl0aW1lX3pvbmVtAAAAB0V0Yy9VVEM=" //nolint:lll
-	contactsToken    = `{"insertedAfter":"2026-06-27T23:02:18.773614Z","lastId":"con_db16c04d87d44df18c4"}`
+	contactsToken    = `{"insertedAfter":"2026-06-27T23:02:18.773614Z","ids":["con_db16c04d87d44df18c4"]}`
 )
 
 func TestRead(t *testing.T) {
@@ -33,12 +33,25 @@ func TestRead(t *testing.T) {
 	contactsResponse := testutils.DataFromFile(t, "read/contacts.json")
 	contactsPage2Response := testutils.DataFromFile(t, "read/contacts-page2.json")
 	complexityErrorResponse := testutils.DataFromFile(t, "read/error-complexity.json")
+	internalErrorResponse := testutils.DataFromFile(t, "read/error-internal.json")
 
 	tests := []testconn.TestCaseRead{
 		{
 			Name:         "Read object must be included",
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingObjects},
+		},
+		{
+			Name:         "At least one field is requested",
+			Input:        common.ReadParams{ObjectName: "tasks"},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrMissingFields},
+		},
+		{
+			Name:         "Unknown object is not supported",
+			Input:        common.ReadParams{ObjectName: "unknown", Fields: connectors.Fields("id")},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
 			Name: "Successfully read tasks with assignee",
@@ -203,6 +216,19 @@ func TestRead(t *testing.T) {
 			},
 		},
 		{
+			Name: "Invalid page token is returned as server error",
+			Input: common.ReadParams{
+				ObjectName: "tasks",
+				Fields:     connectors.Fields("id"),
+				NextPage:   "invalid",
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusInternalServerError, internalErrorResponse),
+			}.Server(),
+			ExpectedErrs: []error{common.ErrServer},
+		},
+		{
 			Name: "Contacts first page produces an insertedAfter page token",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
@@ -285,8 +311,30 @@ func TestRead(t *testing.T) {
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows:     1,
-				NextPage: `{"insertedAfter":"2026-06-27T23:02:18.773614Z","lastId":"con_f1"}`,
+				NextPage: `{"insertedAfter":"2026-06-27T23:02:18.773614Z","ids":["con_db16c04d87d44df18c4","con_f1"]}`,
 				Done:     false,
+			},
+		},
+		{
+			Name: "Contacts sharing the boundary insertedAt are matched by id in any order",
+			Input: common.ReadParams{
+				ObjectName: "contacts",
+				Fields:     connectors.Fields("id"),
+				NextPage:   `{"insertedAfter":"2026-06-27T23:02:18.773614Z","ids":["con_f2"]}`,
+			},
+			Server: graphqlServer(contactsPage(false,
+				contact("con_f2", "2026-06-27T23:02:18.773614Z"),
+				contact("con_f1", "2026-06-27T23:02:18.773614Z"),
+			)),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"id": "con_f1"},
+					Raw:    map[string]any{"id": "con_f1"},
+					Id:     "con_f1",
+				}},
+				Done: true,
 			},
 		},
 		{
@@ -294,7 +342,7 @@ func TestRead(t *testing.T) {
 			Input: common.ReadParams{
 				ObjectName: "contacts",
 				Fields:     connectors.Fields("id"),
-				NextPage:   `{"insertedAfter":"2026-06-27T23:02:18.773614Z","lastId":"con_f2"}`,
+				NextPage:   `{"insertedAfter":"2026-06-27T23:02:18.773614Z","ids":["con_f1","con_f2"]}`,
 			},
 			Server: graphqlServer(contactsPage(true,
 				contact("con_f1", "2026-06-27T23:02:18.773614Z"),
@@ -339,7 +387,6 @@ func graphqlServer(response []byte, conditions ...mockcond.Condition) *httptest.
 }
 
 // bodyContains matches requests whose raw body contains the substring.
-// GraphQL queries arrive JSON-encoded, so quotes appear escaped (\").
 func bodyContains(substring string) mockcond.Check {
 	return func(w http.ResponseWriter, r *http.Request) bool {
 		return strings.Contains(readBody(r), substring)

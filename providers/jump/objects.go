@@ -2,7 +2,7 @@ package jump
 
 // The contacts query rejects every "after" cursor with INVALID_PAGINATION, including the endCursor
 // it returned itself, so cursor pagination can only ever read the first page.
-// Contacts are returned ordered by insertedAt and then id, ascending. Subsequent pages are therefore
+// Contacts are returned in ascending insertedAt order. Subsequent pages are therefore
 // requested with the inclusive "insertedAfter" filter, and records returned on earlier pages are dropped.
 const contactsObjectName = "contacts"
 
