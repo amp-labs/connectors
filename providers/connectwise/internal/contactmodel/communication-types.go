@@ -1,4 +1,4 @@
-package connectwise
+package contactmodel
 
 import (
 	"context"
@@ -17,6 +17,15 @@ import (
 )
 
 const (
+	VirtualFieldEmail   = "AMPERSAND-defaultEmail"
+	VirtualFieldEmailId = "AMPERSAND-defaultEmailId"
+	VirtualFieldFax     = "AMPERSAND-defaultFax"
+	VirtualFieldFaxId   = "AMPERSAND-defaultFaxId"
+	VirtualFieldPhone   = "AMPERSAND-defaultPhone"
+	VirtualFieldPhoneId = "AMPERSAND-defaultPhoneId"
+)
+
+const (
 	communicationTypeEmail = "Email"
 	communicationTypePhone = "Phone"
 	communicationTypeFax   = "Fax"
@@ -26,7 +35,63 @@ const (
 	operationRemove  = "remove"
 )
 
-// attachCommunicationItems attaches default communication items from a contact's
+func EnhanceObjectMetadata(objectMetadata *common.ObjectMetadata) {
+	// Email fields.
+	objectMetadata.AddFieldMetadata(VirtualFieldEmail, common.FieldMetadata{
+		DisplayName:  "Default Email",
+		ValueType:    common.ValueTypeString,
+		ProviderType: "string",
+		ReadOnly:     new(false),
+		IsCustom:     new(false),
+		IsRequired:   new(false),
+	})
+	objectMetadata.AddFieldMetadata(VirtualFieldEmailId, common.FieldMetadata{
+		DisplayName:  "Default Email Type Id",
+		ValueType:    common.ValueTypeString,
+		ProviderType: "string",
+		ReadOnly:     new(false),
+		IsCustom:     new(false),
+		IsRequired:   new(false),
+	})
+
+	// Fax fields.
+	objectMetadata.AddFieldMetadata(VirtualFieldFax, common.FieldMetadata{
+		DisplayName:  "Default Fax",
+		ValueType:    common.ValueTypeString,
+		ProviderType: "string",
+		ReadOnly:     new(false),
+		IsCustom:     new(false),
+		IsRequired:   new(false),
+	})
+	objectMetadata.AddFieldMetadata(VirtualFieldFaxId, common.FieldMetadata{
+		DisplayName:  "Default Fax Type Id",
+		ValueType:    common.ValueTypeString,
+		ProviderType: "string",
+		ReadOnly:     new(false),
+		IsCustom:     new(false),
+		IsRequired:   new(false),
+	})
+
+	// Phone fields.
+	objectMetadata.AddFieldMetadata(VirtualFieldPhone, common.FieldMetadata{
+		DisplayName:  "Default Phone",
+		ValueType:    common.ValueTypeString,
+		ProviderType: "string",
+		ReadOnly:     new(false),
+		IsCustom:     new(false),
+		IsRequired:   new(false),
+	})
+	objectMetadata.AddFieldMetadata(VirtualFieldPhoneId, common.FieldMetadata{
+		DisplayName:  "Default Phone Type Id",
+		ValueType:    common.ValueTypeString,
+		ProviderType: "string",
+		ReadOnly:     new(false),
+		IsCustom:     new(false),
+		IsRequired:   new(false),
+	})
+}
+
+// EnhanceReadRecord attaches default communication items from a contact's
 // `communicationItems` array to the top-level `root` map as virtual fields.
 //
 // It:
@@ -39,7 +104,7 @@ const (
 // type is exposed via the connector's Read/Metadata surfaces.
 //
 // If `communicationItems` is missing or empty, no fields are added and no error is returned.
-func attachCommunicationItems(node *ajson.Node, root map[string]any) error { // nolint:cyclop
+func EnhanceReadRecord(node *ajson.Node, root map[string]any) error { // nolint:cyclop
 	communicationItems, err := jsonquery.New(node).ArrayOptional("communicationItems")
 	if err != nil {
 		return err
@@ -65,14 +130,14 @@ func attachCommunicationItems(node *ajson.Node, root map[string]any) error { // 
 
 		switch item.CommunicationType {
 		case communicationTypeEmail:
-			fields[virtualFieldContactEmail] = item.Value
-			fields[virtualFieldContactEmailId] = item.Type.Id.String()
+			fields[VirtualFieldEmail] = item.Value
+			fields[VirtualFieldEmailId] = item.Type.Id.String()
 		case communicationTypeFax:
-			fields[virtualFieldContactFax] = item.Value
-			fields[virtualFieldContactFaxId] = item.Type.Id.String()
+			fields[VirtualFieldFax] = item.Value
+			fields[VirtualFieldFaxId] = item.Type.Id.String()
 		case communicationTypePhone:
-			fields[virtualFieldContactPhone] = item.Value
-			fields[virtualFieldContactPhoneId] = item.Type.Id.String()
+			fields[VirtualFieldPhone] = item.Value
+			fields[VirtualFieldPhoneId] = item.Type.Id.String()
 		}
 	}
 
@@ -82,7 +147,7 @@ func attachCommunicationItems(node *ajson.Node, root map[string]any) error { // 
 	return nil
 }
 
-// postPayloadWithCommunicationItems rewrites the write payload for a contact record
+// TransformCreatePayload rewrites the write payload for a contact record
 // so that virtual communication-item fields are translated into a proper
 // `communicationItems` array for ConnectWise.
 //
@@ -95,7 +160,7 @@ func attachCommunicationItems(node *ajson.Node, root map[string]any) error { // 
 //
 // If the record is nil or the intent is empty (no communication fields set),
 // the function returns without modifying the record.
-func (c *Connector) postPayloadWithCommunicationItems(ctx context.Context, record common.Record) error {
+func TransformCreatePayload(ctx context.Context, base *core.Base, record common.Record) error {
 	if record == nil {
 		// No record to modify; nothing to do.
 		return nil
@@ -112,7 +177,7 @@ func (c *Connector) postPayloadWithCommunicationItems(ctx context.Context, recor
 	}
 
 	if intent.needIds() {
-		if err = c.fetchMissingCommunicationItemIds(ctx, intent); err != nil {
+		if err = fetchMissingCommunicationItemIds(ctx, base, intent); err != nil {
 			return err
 		}
 	}
@@ -151,7 +216,7 @@ func (c *Connector) postPayloadWithCommunicationItems(ctx context.Context, recor
 	return nil
 }
 
-// contactsFullUpdatePayload builds a JSON Patch payload that emulates a full
+// TransformFullUpdatePayload builds a JSON Patch payload that emulates a full
 // PUT for a contact record, while avoiding ConnectWise's known issues with
 // native PUT.
 //
@@ -183,7 +248,8 @@ func (c *Connector) postPayloadWithCommunicationItems(ctx context.Context, recor
 // The resulting patch sequence provides callers with simple "PUT-like"
 // semantics while sidestepping ConnectWise's bugs and limitations around
 // contact updates.
-func (c *Connector) contactsFullUpdatePayload(ctx context.Context, // nolint:cyclop,funlen
+func TransformFullUpdatePayload(ctx context.Context, // nolint:cyclop,funlen
+	base *core.Base,
 	record common.Record,
 	contactId string,
 ) ([]sortablePayload, error) {
@@ -200,7 +266,7 @@ func (c *Connector) contactsFullUpdatePayload(ctx context.Context, // nolint:cyc
 		return operations, nil
 	}
 
-	contact, err := fetchContact[map[string]any](ctx, c, contactId)
+	contact, err := fetchContact[map[string]any](ctx, base, contactId)
 	if err != nil {
 		return nil, err
 	}
@@ -261,7 +327,7 @@ func (c *Connector) contactsFullUpdatePayload(ctx context.Context, // nolint:cyc
 	}
 
 	if intent.needIds() {
-		if err = c.fetchMissingCommunicationItemIds(ctx, intent); err != nil {
+		if err = fetchMissingCommunicationItemIds(ctx, base, intent); err != nil {
 			return nil, err
 		}
 	}
@@ -368,7 +434,7 @@ func makeCommunicationItemsRegistry(value any) (map[string]int, error) {
 	return registry, nil
 }
 
-// contactsPartialUpdatePayload transforms a list of JSON Patch operations
+// TransformPartialUpdatePayload transforms a list of JSON Patch operations
 // that may include virtual communication-item fields into a list of operations
 // that target ConnectWise's actual `communicationItems` array.
 //
@@ -390,7 +456,8 @@ func makeCommunicationItemsRegistry(value any) (map[string]int, error) {
 //
 // This function is ConnectWise logic-specific because it relies on ConnectWise's
 // behavior around defaultFlag and array indexing when constructing patches.
-func (c *Connector) contactsPartialUpdatePayload(ctx context.Context, // nolint:cyclop
+func TransformPartialUpdatePayload(ctx context.Context, // nolint:cyclop
+	base *core.Base,
 	input []core.PatchOperationPayload,
 	contactId string,
 ) ([]core.PatchOperationPayload, error) {
@@ -405,7 +472,7 @@ func (c *Connector) contactsPartialUpdatePayload(ctx context.Context, // nolint:
 		return operations, nil
 	}
 
-	contact, err := fetchContact[readContactResponse](ctx, c, contactId)
+	contact, err := fetchContact[readContactResponse](ctx, base, contactId)
 	if err != nil {
 		return nil, err
 	}
@@ -438,7 +505,7 @@ func (c *Connector) contactsPartialUpdatePayload(ctx context.Context, // nolint:
 
 	// Fetch any still-missing communication type IDs from /company/communicationTypes.
 	if intent.needIds() {
-		if err = c.fetchMissingCommunicationItemIds(ctx, intent); err != nil {
+		if err = fetchMissingCommunicationItemIds(ctx, base, intent); err != nil {
 			return nil, err
 		}
 	}
@@ -475,26 +542,26 @@ func createCommunicationItemsIntentForPatch( // nolint:cyclop
 	for _, item := range input {
 		path, _ := strings.CutPrefix(item.Path, "/")
 		switch path {
-		case virtualFieldContactEmail:
+		case VirtualFieldEmail:
 			intent.DefaultEmail, err = virtualFieldStringValue(item.Value, path)
 			if item.Op == operationRemove {
 				intent.RemoveEmail = true
 			}
-		case virtualFieldContactEmailId:
+		case VirtualFieldEmailId:
 			intent.DefaultEmailId, err = virtualFieldStringValue(item.Value, path)
-		case virtualFieldContactFax:
+		case VirtualFieldFax:
 			intent.DefaultFax, err = virtualFieldStringValue(item.Value, path)
 			if item.Op == operationRemove {
 				intent.RemoveFax = true
 			}
-		case virtualFieldContactFaxId:
+		case VirtualFieldFaxId:
 			intent.DefaultFaxId, err = virtualFieldStringValue(item.Value, path)
-		case virtualFieldContactPhone:
+		case VirtualFieldPhone:
 			intent.DefaultPhone, err = virtualFieldStringValue(item.Value, path)
 			if item.Op == operationRemove {
 				intent.RemovePhone = true
 			}
-		case virtualFieldContactPhoneId:
+		case VirtualFieldPhoneId:
 			intent.DefaultPhoneId, err = virtualFieldStringValue(item.Value, path)
 		default:
 			filtered = append(filtered, item)
@@ -509,15 +576,15 @@ func createCommunicationItemsIntentForPatch( // nolint:cyclop
 }
 
 // fetchContact retrieves a single contact record from ConnectWise by ID.
-func fetchContact[T any](ctx context.Context, connector *Connector, contactId string) (*T, error) {
-	url, err := connector.GetUrl(objectNameContacts)
+func fetchContact[T any](ctx context.Context, base *core.Base, contactId string) (*T, error) {
+	url, err := base.GetUrl(core.ObjectNameContacts)
 	if err != nil {
 		return nil, err
 	}
 
 	url.AddPath(contactId)
 
-	res, err := connector.JSONHTTPClient().Get(ctx, url.String(), connector.ClientIdHeader())
+	res, err := base.JSONHTTPClient().Get(ctx, url.String(), base.ClientIdHeader())
 	if err != nil {
 		return nil, err
 	}
@@ -536,17 +603,18 @@ func fetchContact[T any](ctx context.Context, connector *Connector, contactId st
 //
 // This is used when the caller provides only the value (e.g. email address)
 // but not the ConnectWise-specific type ID.
-func (c *Connector) fetchMissingCommunicationItemIds(ctx context.Context, //nolint:cyclop
+func fetchMissingCommunicationItemIds(ctx context.Context, //nolint:cyclop
+	base *core.Base,
 	intent *communicationItemsIntent,
 ) error {
-	url, err := c.GetCommunicationTypesUrl()
+	url, err := base.GetCommunicationTypesUrl()
 	if err != nil {
 		return err
 	}
 
 	url.WithQueryParam("conditions", "defaultFlag=true")
 
-	resp, err := c.JSONHTTPClient().Get(ctx, url.String(), c.ClientIdHeader())
+	resp, err := base.JSONHTTPClient().Get(ctx, url.String(), base.ClientIdHeader())
 	if err != nil {
 		return err
 	}
@@ -783,32 +851,32 @@ func createCommunicationItemsIntent(record common.Record) (*communicationItemsIn
 	// Extract default communication fields and their IDs.
 	var err error
 
-	intent.DefaultEmail, err = extractAndRemoveVirtualField(record, virtualFieldContactEmail)
+	intent.DefaultEmail, err = extractAndRemoveVirtualField(record, VirtualFieldEmail)
 	if err != nil {
 		return nil, err
 	}
 
-	intent.DefaultEmailId, err = extractAndRemoveVirtualField(record, virtualFieldContactEmailId)
+	intent.DefaultEmailId, err = extractAndRemoveVirtualField(record, VirtualFieldEmailId)
 	if err != nil {
 		return nil, err
 	}
 
-	intent.DefaultPhone, err = extractAndRemoveVirtualField(record, virtualFieldContactPhone)
+	intent.DefaultPhone, err = extractAndRemoveVirtualField(record, VirtualFieldPhone)
 	if err != nil {
 		return nil, err
 	}
 
-	intent.DefaultPhoneId, err = extractAndRemoveVirtualField(record, virtualFieldContactPhoneId)
+	intent.DefaultPhoneId, err = extractAndRemoveVirtualField(record, VirtualFieldPhoneId)
 	if err != nil {
 		return nil, err
 	}
 
-	intent.DefaultFax, err = extractAndRemoveVirtualField(record, virtualFieldContactFax)
+	intent.DefaultFax, err = extractAndRemoveVirtualField(record, VirtualFieldFax)
 	if err != nil {
 		return nil, err
 	}
 
-	intent.DefaultFaxId, err = extractAndRemoveVirtualField(record, virtualFieldContactFaxId)
+	intent.DefaultFaxId, err = extractAndRemoveVirtualField(record, VirtualFieldFaxId)
 	if err != nil {
 		return nil, err
 	}

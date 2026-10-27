@@ -1,4 +1,4 @@
-package connectwise
+package contactmodel
 
 import (
 	"net/http"
@@ -13,9 +13,9 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-// TestAttachCommunicationItems verifies that Read of a contact
+// TestEnhanceReadRecord verifies that Read of a contact
 // correctly expose virtual fields (Email, Phone, Fax) from communication items.
-func TestAttachCommunicationItems(t *testing.T) {
+func TestEnhanceReadRecord(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -187,9 +187,9 @@ func TestAttachCommunicationItems(t *testing.T) {
 				t.Fatalf("failed to convert map to node: %v", err)
 			}
 
-			err = attachCommunicationItems(node, tt.input)
+			err = EnhanceReadRecord(node, tt.input)
 			if err != nil {
-				t.Fatalf("attachCommunicationItems failed: %v", err)
+				t.Fatalf("EnhanceReadRecord failed: %v", err)
 			}
 
 			res := testutils.NewCompareResult()
@@ -199,9 +199,9 @@ func TestAttachCommunicationItems(t *testing.T) {
 	}
 }
 
-// TestPostPayloadWithCommunicationItems verifies that creating a contact with virtual communication fields
+// TestTransformCreatePayload verifies that creating a contact with virtual communication fields
 // correctly transforms them into the expected communicationItems structure.
-func TestPostPayloadWithCommunicationItems(t *testing.T) {
+func TestTransformCreatePayload(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -354,12 +354,12 @@ func TestPostPayloadWithCommunicationItems(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			connector, err := constructTestConnector(tt.server)
+			base, err := constructProviderBase(tt.server)
 			if err != nil {
-				t.Fatalf("failed to construct connector: %v", err)
+				t.Fatalf("failed to construct provider base: %v", err)
 			}
 
-			err = connector.postPayloadWithCommunicationItems(t.Context(), tt.record)
+			err = TransformCreatePayload(t.Context(), base, tt.record)
 
 			res := testutils.NewCompareResult()
 			res.AssertErr("error", tt.expectedErr, err)
@@ -369,9 +369,9 @@ func TestPostPayloadWithCommunicationItems(t *testing.T) {
 	}
 }
 
-// TestContactsFullUpdatePayload verifies that a full contact update (PUT-like) correctly wipes
+// TestTransformFullUpdatePayload verifies that a full contact update (PUT-like) correctly wipes
 // omitted fields and synchronizes communication items by adding, updating, or removing them.
-func TestContactsFullUpdatePayload(t *testing.T) {
+func TestTransformFullUpdatePayload(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -578,14 +578,14 @@ func TestContactsFullUpdatePayload(t *testing.T) {
 			}.Server()
 			defer server.Close()
 
-			connector, err := constructTestConnector(server)
+			base, err := constructProviderBase(server)
 			if err != nil {
-				t.Fatalf("failed to construct connector: %v", err)
+				t.Fatalf("failed to construct provider base: %v", err)
 			}
 
-			ops, err := connector.contactsFullUpdatePayload(t.Context(), tt.payload, "123")
+			ops, err := TransformFullUpdatePayload(t.Context(), base, tt.payload, "123")
 			if err != nil {
-				t.Fatalf("contactsFullUpdatePayload failed: %v", err)
+				t.Fatalf("TransformFullUpdatePayload failed: %v", err)
 			}
 
 			res := testutils.NewCompareResult()
@@ -595,9 +595,9 @@ func TestContactsFullUpdatePayload(t *testing.T) {
 	}
 }
 
-// TestContactsPartialUpdatePayload verifies that partial contact updates (PATCH) correctly
+// TestTransformPartialUpdatePayload verifies that partial contact updates (PATCH) correctly
 // translate virtual communication field operations into concrete ConnectWise JSON Patch operations.
-func TestContactsPartialUpdatePayload(t *testing.T) {
+func TestTransformPartialUpdatePayload(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -808,14 +808,14 @@ func TestContactsPartialUpdatePayload(t *testing.T) {
 			}.Server()
 			defer server.Close()
 
-			connector, err := constructTestConnector(server)
+			base, err := constructProviderBase(server)
 			if err != nil {
-				t.Fatalf("failed to construct connector: %v", err)
+				t.Fatalf("failed to construct provider base: %v", err)
 			}
 
-			ops, err := connector.contactsPartialUpdatePayload(t.Context(), tt.input, "123")
+			ops, err := TransformPartialUpdatePayload(t.Context(), base, tt.input, "123")
 			if err != nil {
-				t.Fatalf("contactsPartialUpdatePayload failed: %v", err)
+				t.Fatalf("TransformPartialUpdatePayload failed: %v", err)
 			}
 
 			res := testutils.NewCompareResult()
@@ -968,4 +968,20 @@ func TestMakeJsonPatchOperations(t *testing.T) {
 			res.Validate(t, tt.name)
 		})
 	}
+}
+
+func constructProviderBase(server *httptest.Server) (*core.Base, error) {
+	base, err := core.NewBase(common.ConnectorParams{
+		AuthenticatedClient: server.Client(),
+		Metadata: map[string]string{
+			"clientId": "dummy-client-id",
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	base.SetUnitTestMockServerBaseUrl(server.URL)
+
+	return base, nil
 }
