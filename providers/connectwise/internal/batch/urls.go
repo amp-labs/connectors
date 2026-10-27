@@ -8,6 +8,12 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
+// ConnectWise docs state that there must be a limit for the URL length.
+// In practice, exceeding the URL size results in "414 Request URI Too Long".
+// > We recommend keeping the URL length of each request to a maximum of 2000 characters.
+// > This will ensure there are no compatibility issues with various servers and configurations.
+const maxUrlSize = 1950
+
 // ErrURLNotEnoughSpace is returned when the base URL is already too long to accommodate
 // any identifiers in the 'conditions' query parameter.
 var ErrURLNotEnoughSpace = errors.New("URL is too long to add any identifiers in the 'conditions' query")

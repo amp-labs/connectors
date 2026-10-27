@@ -1,22 +1,18 @@
 package connectwise
 
 import (
+	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/connectwise/internal/batch"
-	"github.com/amp-labs/connectors/providers/connectwise/internal/metadata"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/core"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/subscriber"
 	"github.com/amp-labs/connectors/providers/connectwise/internal/webhook"
 )
-
-const apiVersion = "v4_6_release/apis/3.0"
 
 // Type Exports.
 type (
@@ -29,40 +25,36 @@ type (
 
 type subscribeStrategy = subscriber.Strategy
 
-type Connector struct {
-	*components.Connector
-	common.RequireAuthenticatedClient
-	common.RequireMetadata
+var (
+	_ connectors.ObjectMetadataConnector    = (*Connector)(nil)
+	_ connectors.ReadConnector              = (*Connector)(nil)
+	_ connectors.WriteConnector             = (*Connector)(nil)
+	_ connectors.DeleteConnector            = (*Connector)(nil)
+	_ connectors.BatchRecordReaderConnector = (*Connector)(nil)
+	_ connectors.WebhookVerifierConnector   = (*Connector)(nil)
+	_ connectors.SubscribeConnector         = (*Connector)(nil)
+)
 
-	components.SchemaProvider
+type Connector struct {
+	*core.Base
+
 	components.Reader
 	components.Writer
 	components.Deleter
 	// TODO must use webhook.Verifier instead of webhook.NoopVerifier
 	*webhook.NoopVerifier
 	*subscribeStrategy
-
-	batchAdapter *batch.Adapter // used for connectors.BatchRecordReaderConnector capabilities.
-
-	clientID string
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Init(providers.ConnectWise, params, constructor)
-}
-
-func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
-	clientID := params.Metadata["clientId"]
-	connector := &Connector{
-		Connector:            base,
-		ExpectedMetadataKeys: []string{"clientId"},
-		clientID:             clientID,
+	base, err := core.NewBase(params)
+	if err != nil {
+		return nil, err
 	}
 
-	errorHandler := interpreter.ErrorHandler{
-		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
-	}.Handle
-	connector.SetErrorHandler(errorHandler)
+	connector := &Connector{
+		Base: base,
+	}
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
@@ -71,35 +63,34 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
-			ErrorHandler:  errorHandler,
+			ErrorHandler:  base.ErrorHandler,
 		},
 	)
 
 	connector.Writer = writer.NewHTTPWriter(
 		connector.HTTPClient().Client,
 		components.NewEmptyEndpointRegistry(),
-		connector.ProviderContext.Module(),
+		common.ModuleRoot,
 		operations.WriteHandlers{
 			BuildRequest:  connector.buildWriteRequest,
 			ParseResponse: connector.parseWriteResponse,
-			ErrorHandler:  errorHandler,
+			ErrorHandler:  base.ErrorHandler,
 		},
 	)
 
 	connector.Deleter = deleter.NewHTTPDeleter(
 		connector.HTTPClient().Client,
 		components.NewEmptyEndpointRegistry(),
-		connector.ProviderContext.Module(),
+		common.ModuleRoot,
 		operations.DeleteHandlers{
 			BuildRequest:  connector.buildDeleteRequest,
 			ParseResponse: connector.parseDeleteResponse,
-			ErrorHandler:  errorHandler,
+			ErrorHandler:  base.ErrorHandler,
 		},
 	)
 
-	connector.batchAdapter = batch.NewAdapter(connector.JSONHTTPClient(), connector.ProviderInfo(), clientID)
-	connector.NoopVerifier = webhook.NewVerifier(connector.JSONHTTPClient(), connector.ProviderInfo(), clientID)
-	connector.subscribeStrategy = subscriber.NewStrategy(connector.JSONHTTPClient(), connector.ProviderInfo(), clientID)
+	connector.NoopVerifier = webhook.NewVerifier(base)
+	connector.subscribeStrategy = subscriber.NewStrategy(base)
 
 	return connector, nil
 }
@@ -115,29 +106,9 @@ func (c *Connector) Provider() providers.Provider {
 // String returns a human-readable identifier for this connector. Declared for the same reason as
 // Provider: the zero-value verifier connector has no base to delegate to.
 func (c *Connector) String() string {
-	if c == nil || c.Connector == nil {
+	if c == nil || c.Base == nil {
 		return c.Provider() + ".Connector"
 	}
 
-	return c.Connector.String()
-}
-
-func (c *Connector) getURL(objectName string) (*urlbuilder.URL, error) {
-	objectPath, err := metadata.Schemas.FindURLPath(common.ModuleRoot, objectName)
-	if err != nil {
-		return nil, err
-	}
-
-	return urlbuilder.New(c.ModuleInfo().BaseURL, apiVersion, objectPath)
-}
-
-func (c *Connector) getCommunicationTypesURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(c.ModuleInfo().BaseURL, apiVersion, "company/communicationTypes")
-}
-
-func (c *Connector) clientIdHeader() common.Header {
-	return common.Header{
-		Key:   "ClientId",
-		Value: c.clientID,
-	}
+	return c.Base.String()
 }

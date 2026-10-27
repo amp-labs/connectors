@@ -47,14 +47,14 @@ func (s Strategy) removeSubscriptionsByIDs(
 	tasks := make([]parallelfetch.Task[int, any], len(identifiers))
 	for index, identifier := range identifiers {
 		tasks[index] = func(ctx context.Context) (taskID int, data *any, err error) {
-			url, err := s.getSubscriptionURL()
+			url, err := s.base.GetSubscriptionUrl()
 			if err != nil {
 				return identifier, nil, err
 			}
 
 			url.AddPath(strconv.Itoa(identifier))
 
-			resp, err := s.client.Delete(ctx, url.String(), s.clientIdHeader())
+			resp, err := s.base.JSONHTTPClient().Delete(ctx, url.String(), s.base.ClientIdHeader())
 			if err != nil {
 				return identifier, nil, err
 			}

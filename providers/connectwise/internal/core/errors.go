@@ -1,4 +1,4 @@
-package connectwise
+package core
 
 import (
 	"fmt"

@@ -34,7 +34,7 @@ func (s Strategy) createSubscription(ctx context.Context,
 	request *Request,
 	subscriptionEvents datautils.Map[common.ObjectName, common.ObjectEvents],
 ) (*common.SubscriptionResult, error) {
-	url, err := s.getSubscriptionURL()
+	url, err := s.base.GetSubscriptionUrl()
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +182,7 @@ func (s Strategy) newTaskCreateSubscription(objectName common.ObjectName,
 			PayloadVersion: messageVersion,
 		}
 
-		resp, err := s.client.Post(ctx, url, body, s.clientIdHeader())
+		resp, err := s.base.JSONHTTPClient().Post(ctx, url, body, s.base.ClientIdHeader())
 		if err != nil {
 			return objectName, nil, err
 		}

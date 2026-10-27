@@ -8,8 +8,7 @@ import (
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/core"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
@@ -249,16 +248,15 @@ func compareResult(expectedResult, actualResult *Result) *testutils.CompareResul
 }
 
 func constructTestStrategy(server *httptest.Server) (*Strategy, error) {
-	transport, err := components.NewTransport(providers.ConnectWise, common.ConnectorParams{
+	base, err := core.NewBase(common.ConnectorParams{
 		AuthenticatedClient: server.Client(),
+		Metadata:            map[string]string{"clientId": "test-client-id"},
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	transport.SetUnitTestMockServerBaseUrl(server.URL)
+	base.SetUnitTestMockServerBaseUrl(server.URL)
 
-	strategy := NewStrategy(transport.JSONHTTPClient(), transport.ProviderInfo(), "test-client-id")
-
-	return strategy, nil
+	return NewStrategy(base), nil
 }

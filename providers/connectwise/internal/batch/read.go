@@ -7,6 +7,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/parallelfetch"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/core"
 )
 
 // maxConcurrency is the number of goroutines that can be spawned to run multiple requests in parallel.
@@ -15,16 +16,16 @@ const maxConcurrency = 3
 
 // Read performs a batch read for the requested object type and identifiers.
 func Read[B any](ctx context.Context,
-	adapter *Adapter,
+	base *core.Base,
 	objectName string,
 	identifiers []string,
 ) ([]B, error) {
-	baseURL, err := adapter.getURL(objectName)
+	baseURL, err := base.GetUrl(objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	urls, err := withIdentifiers(baseURL, identifiers, maxURLSize)
+	urls, err := withIdentifiers(baseURL, identifiers, maxUrlSize)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +38,7 @@ func Read[B any](ctx context.Context,
 
 			// Paginated read until no `next` links is present in the header.
 			for url != "" {
-				res, err := adapter.client.Get(ctx, url, adapter.clientIdHeader())
+				res, err := base.JSONHTTPClient().Get(ctx, url, base.ClientIdHeader())
 				if err != nil {
 					return index, nil, err
 				}

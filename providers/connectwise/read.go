@@ -28,7 +28,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	c.clientIdHeader().ApplyToRequest(req)
+	c.ClientIdHeader().ApplyToRequest(req)
 
 	return req, nil
 }
@@ -38,7 +38,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	url, err := c.getURL(params.ObjectName)
+	url, err := c.GetUrl(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}

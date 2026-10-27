@@ -509,14 +509,14 @@ func createCommunicationItemsIntentForPatch( // nolint:cyclop
 
 // fetchContact retrieves a single contact record from ConnectWise by ID.
 func fetchContact[T any](ctx context.Context, connector *Connector, contactId string) (*T, error) {
-	url, err := connector.getURL(objectNameContacts)
+	url, err := connector.GetUrl(objectNameContacts)
 	if err != nil {
 		return nil, err
 	}
 
 	url.AddPath(contactId)
 
-	res, err := connector.JSONHTTPClient().Get(ctx, url.String(), connector.clientIdHeader())
+	res, err := connector.JSONHTTPClient().Get(ctx, url.String(), connector.ClientIdHeader())
 	if err != nil {
 		return nil, err
 	}
@@ -538,14 +538,14 @@ func fetchContact[T any](ctx context.Context, connector *Connector, contactId st
 func (c *Connector) fetchMissingCommunicationItemIds(ctx context.Context, //nolint:cyclop
 	intent *communicationItemsIntent,
 ) error {
-	url, err := c.getCommunicationTypesURL()
+	url, err := c.GetCommunicationTypesUrl()
 	if err != nil {
 		return err
 	}
 
 	url.WithQueryParam("conditions", "defaultFlag=true")
 
-	resp, err := c.JSONHTTPClient().Get(ctx, url.String(), c.clientIdHeader())
+	resp, err := c.JSONHTTPClient().Get(ctx, url.String(), c.ClientIdHeader())
 	if err != nil {
 		return err
 	}
