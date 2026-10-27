@@ -617,7 +617,7 @@ func (c *Connector) deleteDeactivatedFlows(ctx context.Context, sfRes *Subscribe
 		for _, pair := range flowSub.FlowPairs() {
 			flowName := pair.Flow.Name
 
-			definitionID, err := c.findToolingEntityIDByDeveloperName(ctx, "FlowDefinition", flowName)
+			definitionID, err := c.findToolingEntityIDByField(ctx, "FlowDefinition", "DeveloperName", flowName)
 			if err != nil {
 				logging.Logger(ctx).WarnContext(ctx,
 					"failed to delete deactivated flow versions during subscription update",
@@ -696,6 +696,20 @@ func (c *Connector) deleteFlowPair(ctx context.Context, objName common.ObjectNam
 
 	if err := c.deleteFlow(ctx, objName, pair); err != nil {
 		return abort(err)
+	}
+
+	// If the OM is already gone, skip the deletion.
+	_, err := c.findToolingEntityIDByField(ctx, "WorkflowOutboundMessage", "Name", pair.OutboundMessage.Name)
+	if err != nil {
+		if errors.Is(err, errToolingEntityNotFound) {
+			logging.Logger(ctx).InfoContext(ctx, "outbound message already absent, skipping deletion",
+				"outboundMessage", pair.OutboundMessage.Name,
+			)
+
+			return nil
+		}
+
+		return abort(fmt.Errorf("failed to look up outbound message %s: %w", pair.OutboundMessage.Name, err))
 	}
 
 	omZipData, err := metadata.ConstructDestructiveOutboundMessage(string(objName), pair.OutboundMessage.Name)
@@ -800,7 +814,7 @@ func (c *Connector) deleteFlow(ctx context.Context, objName common.ObjectName, p
 // Fallback: redeploy the flow as Draft via the Metadata API, regenerated from
 // the stored FlowSubscription components.
 func (c *Connector) deactivateFlow(ctx context.Context, objName common.ObjectName, pair *FlowPair) (string, error) {
-	definitionID, err := c.findToolingEntityIDByDeveloperName(ctx, "FlowDefinition", pair.Flow.Name)
+	definitionID, err := c.findToolingEntityIDByField(ctx, "FlowDefinition", "DeveloperName", pair.Flow.Name)
 	if err != nil {
 		if errors.Is(err, errToolingEntityNotFound) {
 			logging.Logger(ctx).InfoContext(ctx, "flow already absent, skipping deactivation and deletion",

@@ -663,3 +663,42 @@ func TestFlowDeployError(t *testing.T) {
 		t.Errorf("missing field: ClassOf = %q, want %q", got, common.ErrorClassSchemaDriftField)
 	}
 }
+
+// TestDeleteFlowPairSkipsMissingOutboundMessage checks that teardown succeeds without a
+// destructive deploy when the flow and outbound message are already gone from Salesforce.
+func TestDeleteFlowPairSkipsMissingOutboundMessage(t *testing.T) {
+	t.Parallel()
+
+	var deploys atomic.Int64
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			deploys.Add(1)
+			w.WriteHeader(http.StatusInternalServerError)
+
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"records":[]}`))
+	}))
+	defer server.Close()
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	pair := &FlowPair{
+		OutboundMessage: &OutboundMessageMetadata{Name: "acme_Account_Create"},
+		Flow:            &FlowMetadata{Name: "acme_Account_Create", RecordTriggerType: "Create"},
+	}
+
+	if err := conn.deleteFlowPair(t.Context(), "Account", pair); err != nil {
+		t.Fatalf("deleteFlowPair: unexpected error: %v", err)
+	}
+
+	if got := deploys.Load(); got != 0 {
+		t.Errorf("expected no deploy requests, got %d", got)
+	}
+}

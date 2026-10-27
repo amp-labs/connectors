@@ -698,7 +698,7 @@ func recoverDuplicateByDeveloperName[T any](
 	logging.Logger(ctx).Info("create returned duplicate, fetching existing record",
 		"objectType", objectType, "developerName", developerName)
 
-	id, err := conn.findToolingEntityIDByDeveloperName(ctx, objectType, developerName)
+	id, err := conn.findToolingEntityIDByField(ctx, objectType, "DeveloperName", developerName)
 	if err != nil {
 		return nil, fmt.Errorf("%s duplicate detected, but SOQL lookup failed: %w",
 			objectType, err)
@@ -713,18 +713,18 @@ func recoverDuplicateByDeveloperName[T any](
 	return existing, nil
 }
 
-// findToolingEntityIDByDeveloperName runs a Tooling API SOQL query to find
-// the Id of the given object type by DeveloperName.
-func (c *Connector) findToolingEntityIDByDeveloperName(
-	ctx context.Context, objectType, developerName string,
+// findToolingEntityIDByField runs a Tooling API SOQL query to find the Id of
+// the given object type by an exact match on field.
+func (c *Connector) findToolingEntityIDByField(
+	ctx context.Context, objectType, field, value string,
 ) (string, error) {
 	location, err := c.getRestApiURL("tooling/query")
 	if err != nil {
 		return "", err
 	}
 
-	soql := fmt.Sprintf("SELECT Id FROM %s WHERE DeveloperName = '%s'",
-		objectType, escapeSOQLString(developerName))
+	soql := fmt.Sprintf("SELECT Id FROM %s WHERE %s = '%s'",
+		objectType, field, escapeSOQLString(value))
 	location.WithQueryParam("q", soql)
 
 	resp, err := c.Client.Get(ctx, location.String())
@@ -753,7 +753,7 @@ func (c *Connector) findToolingEntityIDByDeveloperName(
 	}
 
 	if len(records) == 0 {
-		return "", fmt.Errorf("%w: objectType=%s, developerName=%s", errToolingEntityNotFound, objectType, developerName)
+		return "", fmt.Errorf("%w: objectType=%s, %s=%s", errToolingEntityNotFound, objectType, field, value)
 	}
 
 	rec, err := records[0].GetObject()
