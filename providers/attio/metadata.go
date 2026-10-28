@@ -35,9 +35,8 @@ type Data struct {
 	CreatedAt             time.Time `json:"created_at"`               //nolint:tagliatelle
 }
 
-// Attio allows 100 reads/s and the HTTP client doesn't retry 429s, so the fan-out is capped.
-// The caps assume ~0.5s per call (5 objects x 10 option calls = 50 requests in flight);
-// switch to a real rate limiter if Attio gets faster and 429s show up.
+// Attio allows 100 reads/s and the HTTP client doesn't retry 429s.
+// At ~0.5s per call, 50 requests in flight (5 objects x 10 option calls) is already ~100 reads/s.
 const (
 	maxConcurrentObjects     = 5
 	maxConcurrentOptionCalls = 10
