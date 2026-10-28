@@ -1,24 +1,12 @@
 package zoom
 
 import (
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/zoom/internal/core"
 	"github.com/amp-labs/connectors/providers/zoom/internal/metadata"
 )
 
 var supportedObjectsByRead = metadata.Catalog.Objects.KeySet() // nolint: gochecknoglobals
-
-var (
-	ObjectNameContactGroup  = "contacts_groups" // nolint: gochecknoglobals
-	ObjectNameUser          = "users"           // nolint: gochecknoglobals
-	ObjectNameGroup         = "groups"          // nolint: gochecknoglobals
-	objectNameTrackingField = "tracking_fields" // nolint: gochecknoglobals
-	objectNameDevice        = "devices"         // nolint: gochecknoglobals
-	objectNameH322Device    = "h323_devices"    // nolint: gochecknoglobals
-	objectNameMeeting       = "meetings"        // nolint: gochecknoglobals
-	objectNameTsp           = "tsp"             // nolint: gochecknoglobals
-	objectNameWebinar       = "webinars"        // nolint: gochecknoglobals
-)
 
 var incrementalObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"recordings",
@@ -48,18 +36,16 @@ var mandatoryDateObjects = datautils.NewSet( //nolint:gochecknoglobals
 	"recordings",
 )
 
-var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint: gochecknoglobals
-	common.ModuleRoot: datautils.NewSet(
-		ObjectNameContactGroup,
-		ObjectNameUser,
-		ObjectNameGroup,
-		objectNameTrackingField,
-		objectNameDevice,
-		objectNameH322Device,
-		objectNameTsp,
-		objectNameWebinar,
-	),
-}
+var supportedObjectsByWrite = datautils.NewSet( // nolint: gochecknoglobals
+	core.ObjectNameContactGroup,
+	core.ObjectNameUser,
+	core.ObjectNameGroup,
+	core.ObjectNameTrackingField,
+	core.ObjectNameDevice,
+	core.ObjectNameH322Device,
+	core.ObjectNameTsp,
+	core.ObjectNameWebinar,
+)
 
 var objectNameToResponseField = map[string]string{ // nolint: gochecknoglobals
 	"activities_report":         "activity_logs",
@@ -89,34 +75,32 @@ var objectNameToResponseField = map[string]string{ // nolint: gochecknoglobals
 	"webinars":                  "webinars",
 }
 
-var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint: gochecknoglobals
-	ObjectNameContactGroup:  "/contacts/groups",
-	ObjectNameUser:          "/users",
-	ObjectNameGroup:         "/groups",
-	objectNameTrackingField: "/tracking_fields",
-	objectNameDevice:        "/devices",
-	objectNameH322Device:    "/h323/devices",
-	objectNameMeeting:       "/users/me/meetings",
-	objectNameTsp:           "/users/me/tsp",
-	objectNameWebinar:       "/users/me/webinars",
-}, func(objectName string) (path string) {
-	return objectName
-},
-)
+var objectNameToReadResponseIdentifier = datautils.NewDefaultMap(map[string]string{ // nolint: gochecknoglobals
+	"activities_report":         "ip_address",
+	"contacts_groups":           "group_id",
+	"devices":                   "device_id",
+	"devices_groups":            "name",
+	"meeting_activities_report": "activity_time",
+	"meeting_summaries":         "meeting_id",
+	"operation_logs_report":     "time",
+	"phones":                    "phone_id",
+	"recordings_report":         "date",
+	"telephone_report":          "phone_number",
+}, func(objectName string) string {
+	return "id"
+})
 
 // Each object has different fields that represent the record id.
 // This map is used to get the record id field for each object.
-var objectNameToWriteResponseIdentifier = common.ModuleObjectNameToFieldName{ // nolint: gochecknoglobals
-	common.ModuleRoot: datautils.NewDefaultMap(map[string]string{
-		objectNameTrackingField: "id",
-		objectNameDevice:        "",
-		objectNameH322Device:    "id",
-		ObjectNameContactGroup:  "group_id",
-		ObjectNameUser:          "id",
-		ObjectNameGroup:         "",
+var objectNameToWriteResponseIdentifier = datautils.NewDefaultMap(map[string]string{ // nolint: gochecknoglobals
+	core.ObjectNameTrackingField: "id",
+	core.ObjectNameDevice:        "",
+	core.ObjectNameH322Device:    "id",
+	core.ObjectNameContactGroup:  "group_id",
+	core.ObjectNameUser:          "id",
+	core.ObjectNameGroup:         "",
+},
+	func(objectName string) (fieldName string) {
+		return "id"
 	},
-		func(objectName string) (fieldName string) {
-			return "id"
-		},
-	),
-}
+)
