@@ -21,7 +21,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	workspacemembersResponse := testutils.DataFromFile(t, "workspace_members.json")
 	tasksResponse := testutils.DataFromFile(t, "tasks.json")
 	companiesResponse := testutils.DataFromFile(t, "companies.json")
-	optionsTeamAttributeResponse := testutils.DataFromFile(t, "option_team_attribute.json")
 	companiesObjectResponse := []byte(`{"data": {"plural_noun": "Companies"}}`)
 	usersResponse := testutils.DataFromFile(t, "users.json")
 	optionsResponse := testutils.DataFromFile(t, "options.json")
@@ -66,9 +65,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					}, {
 						If:   mockcond.Path("/v2/objects/ffbca575-69c4-4080-bf98-91d79aeea4b1/attributes/89c07285-4d31-4fa7-9cbf-779c5f4debf1/options"),
 						Then: mockserver.Response(http.StatusOK, optionsResponse),
-					}, {
-						If:   mockcond.Path("/v2/objects/1a4b88cf-520e-4394-886b-941c07c78854/records/query"),
-						Then: mockserver.Response(http.StatusOK, optionsTeamAttributeResponse),
 					},
 				},
 			}.Server(),
@@ -220,12 +216,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 								ProviderType: "record-reference",
 								ReadOnly:     new(false),
 								FieldId:      new("6ae72bca-9421-4fa8-bae2-19ced262607a"),
-								Values: common.FieldValues{
-									{
-										Value:        "d0be3734-3b4d-4094-9925-9dd906941197",
-										DisplayValue: "d0be3734-3b4d-4094-9925-9dd906941197",
-									},
-								},
+								Values:       nil, // record-reference values are not fetched
 							},
 							"created_at": {
 								DisplayName:  "created_at",
@@ -293,6 +284,54 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				Errors: nil,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "One failing object does not stop the others",
+			Input: []string{"companies", "users"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If:   mockcond.Path("/v2/objects/companies/attributes"),
+						Then: mockserver.Response(http.StatusBadRequest),
+					}, {
+						If:   mockcond.Path("/v2/objects/users/attributes"),
+						Then: mockserver.Response(http.StatusOK, usersResponse),
+					}, {
+						If:   mockcond.Path("/v2/objects/users"),
+						Then: mockserver.Response(http.StatusOK, usersObjectResponse),
+					}, {
+						If:   mockcond.Path("/v2/objects/ffbca575-69c4-4080-bf98-91d79aeea4b1/attributes/89c07285-4d31-4fa7-9cbf-779c5f4debf1/options"),
+						Then: mockserver.Response(http.StatusOK, optionsResponse),
+					},
+				},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"users": {
+						DisplayName: "Users",
+						Fields: map[string]common.FieldMetadata{
+							"education": {
+								DisplayName:  "education",
+								ValueType:    "multiSelect",
+								ProviderType: "select",
+								ReadOnly:     new(false),
+								FieldId:      new("89c07285-4d31-4fa7-9cbf-779c5f4debf1"),
+								Values: common.FieldValues{
+									{Value: "UG", DisplayValue: "UG"},
+									{Value: "PG", DisplayValue: "PG"},
+									{Value: "Diploma", DisplayValue: "Diploma"},
+								},
+							},
+						},
+					},
+				},
+				Errors: map[string]error{
+					"companies": mockutils.ExpectedSubsetErrors{common.ErrCaller},
+				},
 			},
 			ExpectedErrs: nil,
 		},
