@@ -793,9 +793,7 @@ func newStripeConnector(
 func newZoomConnector(
 	params common.ConnectorParams,
 ) (*zoom.Connector, error) {
-	return zoom.NewConnector(
-		zoom.WithAuthenticatedClient(params.AuthenticatedClient),
-	)
+	return zoom.NewConnector(params)
 }
 
 func newBrevoConnector(

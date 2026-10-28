@@ -1,10 +1,10 @@
 package zoom
 
 import (
+	"net/http/httptest"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
 )
@@ -114,21 +114,21 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
-	connector, err := NewConnector(
-		WithAuthenticatedClient(mockutils.NewClient()),
-	)
+func constructTestConnector(server *httptest.Server) (*Connector, error) {
+	connector, err := NewConnector(common.ConnectorParams{
+		AuthenticatedClient: server.Client(),
+	})
 	if err != nil {
 		return nil, err
 	}
-	// for testing we want to redirect calls to our mock server.
-	connector.setBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
+
+	connector.SetUnitTestMockServerBaseUrl(server.URL)
 
 	return connector, nil
 }

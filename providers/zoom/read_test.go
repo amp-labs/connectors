@@ -16,6 +16,7 @@ import (
 func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
+	errorBadRequest := testutils.DataFromFile(t, "bad-request.json")
 	responseUsersFirstPage := testutils.DataFromFile(t, "read-users-first-page.json")
 	responseUsersSecondPage := testutils.DataFromFile(t, "read-users-second-page.json")
 	responseArchiveFilesFirstPage := testutils.DataFromFile(t, "archive-files-first-page.json")
@@ -40,6 +41,19 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Input:        common.ReadParams{ObjectName: "tiger", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
+		},
+		{
+			Name:  "Error response is understood",
+			Input: common.ReadParams{ObjectName: "users", Fields: connectors.Fields("id")},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusBadRequest, errorBadRequest),
+			}.Server(),
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+				testutils.StringError("error code (4711): " +
+					"Invalid access token, does not contain scopes:[device:read:list_zdm_devices:admin"),
+			},
 		},
 		{
 			Name: "Read Users first page",
@@ -347,7 +361,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (testconn.TestableReader, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}
