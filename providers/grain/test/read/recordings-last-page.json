@@ -1,0 +1,34 @@
+{
+  "cursor": null,
+  "recordings": [
+    {
+      "id": "0470708a-df31-4386-9a66-f8b2ae480f70",
+      "title": "Ampersand proxy test",
+      "source": "upload",
+      "url": "https://grain.com/note/0470708a-df31-4386-9a66-f8b2ae480f70/share-token",
+      "media_type": "transcript",
+      "tags": [],
+      "start_datetime": "2026-10-01T14:04:29Z",
+      "sensitivity": "not_classified",
+      "recorders": [
+        {
+          "id": "e4bac6b2-8272-4db0-a4ec-892e3010631f",
+          "name": "Integration User",
+          "email": "integration.user@example.com",
+          "participant_id": null
+        }
+      ],
+      "end_datetime": "2026-10-01T14:04:39Z",
+      "participants": [],
+      "teams": [],
+      "thumbnail_url": null,
+      "share_state": "public",
+      "sensitivity_source": null,
+      "duration_ms": 10000,
+      "meeting_type": null,
+      "workspace_shared": false,
+      "ai_summary": null,
+      "ai_template_sections": []
+    }
+  ]
+}
