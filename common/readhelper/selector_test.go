@@ -244,6 +244,183 @@ func TestSelectFields(t *testing.T) {
 				}
 			}`,
 		},
+		{
+			name: "unsupported terminal wildcard does not suppress its descendant",
+			record: `{
+				"items": [
+					{"label": "yes"}
+				]
+			}`,
+			fields: datautils.NewStringSet("$['items'][*]", "$['items'][*]['label']"),
+			expected: `{
+				"items": [
+					{"label": "yes"}
+				]
+			}`,
+		},
+		{
+			name: "unsupported nested terminal wildcard does not suppress its descendant",
+			record: `{
+				"items": [
+					{
+						"tags": [
+							{"label": "yes"}
+						]
+					}
+				]
+			}`,
+			fields: datautils.NewStringSet("$['items'][*]['tags'][*]", "$['items'][*]['tags'][*]['label']"),
+			expected: `{
+				"items": [
+					{
+						"tags": [
+							{"label": "yes"}
+						]
+					}
+				]
+			}`,
+		},
+		{
+			name: "missing first item keeps later matches at their original positions",
+			record: `{
+				"items": [
+					{"id": "a"},
+					{"id": "b", "label": "second"},
+					{"id": "c", "label": null}
+				]
+			}`,
+			fields: datautils.NewStringSet("$['items'][*]['id']", "$['items'][*]['label']"),
+			expected: `{
+				"items": [
+					{"id": "a"},
+					{"id": "b", "label": "second"},
+					{"id": "c", "label": null}
+				]
+			}`,
+		},
+		{
+			name: "missing middle and last items do not shift matched fields",
+			record: `{
+				"items": [
+					{"label": "first"},
+					{"other": true},
+					{"label": "third"},
+					{}
+				]
+			}`,
+			fields: datautils.NewStringSet("$['items'][*]['label']"),
+			expected: `{
+				"items": [
+					{"label": "first"},
+					{},
+					{"label": "third"},
+					{}
+				]
+			}`,
+		},
+		{
+			name: "nested sparse arrays preserve sibling alignment",
+			record: `{
+				"items": [
+					{
+						"id": "a",
+						"tags": [
+							{"value": "red"},
+							{}
+						]
+					},
+					{"id": "b"},
+					{
+						"id": "c",
+						"tags": [
+							{},
+							{"value": null}
+						]
+					}
+				]
+			}`,
+			fields: datautils.NewStringSet("$['items'][*]['id']", "$['items'][*]['tags'][*]['value']"),
+			expected: `{
+				"items": [
+					{
+						"id": "a",
+						"tags": [
+							{"value": "red"},
+							{}
+						]
+					},
+					{"id": "b"},
+					{
+						"id": "c",
+						"tags": [
+							{},
+							{"value": null}
+						]
+					}
+				]
+			}`,
+		},
+		{
+			name: "empty arrays stay empty alongside missing paths",
+			record: `{
+				"items": [
+					{},
+					{"tags": []}
+				]
+			}`,
+			fields: datautils.NewStringSet("$['items'][*]['tags'][*]['value']"),
+			expected: `{
+				"items": [
+					{},
+					{"tags": []}
+				]
+			}`,
+		},
+		{
+			name: "unselected null item keeps an empty projection slot",
+			record: `{
+				"items": [
+					null,
+					{"label": "yes"}
+				]
+			}`,
+			fields: datautils.NewStringSet("$['items'][*]['label']"),
+			expected: `{
+				"items": [
+					{},
+					{"label": "yes"}
+				]
+			}`,
+		},
+		{
+			name: "no matching item omits the selected field",
+			record: `{
+				"items": [
+					{},
+					{"other": true}
+				]
+			}`,
+			fields:   datautils.NewStringSet("$['items'][*]['label']"),
+			expected: `{}`,
+		},
+		{
+			name: "wrong type in one item does not discard other matches",
+			record: `{
+				"items": [
+					{"details": {"label": "first"}},
+					{"details": null},
+					{"details": "text"}
+				]
+			}`,
+			fields: datautils.NewStringSet("$['items'][*]['details']['label']"),
+			expected: `{
+				"items": [
+					{"details": {"label": "first"}},
+					{},
+					{}
+				]
+			}`,
+		},
 	}
 
 	for _, tt := range tests {
