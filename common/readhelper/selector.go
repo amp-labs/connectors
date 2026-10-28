@@ -2,6 +2,7 @@ package readhelper
 
 import (
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -82,11 +83,27 @@ func SelectFields(
 	fields datautils.StringSet,
 ) map[string]any {
 	output := make(map[string]any)
+	paths := make([][]string, 0, len(fields))
 
 	for field := range fields {
-		path := ParseJSONPath(field)
+		paths = append(paths, ParseJSONPath(field))
+	}
+
+	// A selected parent already contains every descendant. Resolve parents first
+	// so redundant paths cannot modify aliased maps or arrays in the source.
+	slices.SortFunc(paths, slices.Compare[[]string])
+
+	var previous []string
+
+	for _, path := range paths {
+		if len(previous) != 0 && len(previous) <= len(path) &&
+			slices.Equal(previous, path[:len(previous)]) {
+			continue
+		}
+
 		if value, ok := getNestedValue(record, path); ok {
 			setNestedValue(output, path, value)
+			previous = path
 		}
 	}
 
@@ -133,6 +150,15 @@ func ParseJSONPath(path string) []string {
 	return keys
 }
 
+/* Nested field projection helpers. */
+
+// selectedArrayValue keeps missing paths distinct from explicit nulls so sibling
+// field projections can be merged without shifting array positions.
+type selectedArrayValue struct {
+	value  any
+	exists bool
+}
+
 // getNestedValue retrieves a value from a nested structure using the supplied path.
 //
 // The input may contain nested maps and arrays. A path token of "*" is treated as
@@ -144,8 +170,8 @@ func ParseJSONPath(path string) []string {
 //	["payload", "body", "data"]       -> map traversal only
 //	["items", "*", "currency"]        -> collect currency from each array item
 //
-// The function returns false if any path segment is missing, has the wrong type,
-// or if the path cannot be resolved.
+// The function returns false if no path can be resolved. Within a wildcard,
+// unresolved items retain their positions without discarding other matches.
 func getNestedValue(root any, path []string) (any, bool) { // nolint:lll,cyclop
 	if len(path) == 0 {
 		return root, true
@@ -171,17 +197,16 @@ func getNestedValue(root any, path []string) (any, bool) { // nolint:lll,cyclop
 				return nil, false
 			}
 
-			result := make([]any, 0, len(arr))
-			for _, item := range arr {
-				v, ok := getNestedValue(item, path[2:])
-				if !ok {
-					return nil, false
-				}
+			result := make([]selectedArrayValue, len(arr))
+			found := len(arr) == 0
 
-				result = append(result, v)
+			for index, item := range arr {
+				value, exists := getNestedValue(item, path[2:])
+				result[index] = selectedArrayValue{value: value, exists: exists}
+				found = found || exists
 			}
 
-			return result, true
+			return result, found
 		}
 
 		return getNestedValue(child, path[1:])
@@ -196,9 +221,8 @@ func getNestedValue(root any, path []string) (any, bool) { // nolint:lll,cyclop
 
 // setNestedValue inserts a value into a nested map at the specified path.
 //
-// Intermediate maps and arrays are created as needed. Array paths use "*"
-// as the wildcard token, and the value must be a []any when writing through
-// an array segment.
+// Intermediate maps and arrays are created as needed. Wildcard values carry
+// per-item presence so missing paths do not overwrite existing array slots.
 func setNestedValue(root map[string]any, path []string, value any) {
 	setNode(root, path, value)
 }
@@ -231,7 +255,7 @@ func setNode(current any, path []string, value any) any { // nolint:cyclop
 		return current
 
 	case []any:
-		vals, ok := value.([]any)
+		vals, ok := value.([]selectedArrayValue)
 		if !ok {
 			return current
 		}
@@ -239,15 +263,26 @@ func setNode(current any, path []string, value any) any { // nolint:cyclop
 		if len(node) < len(vals) {
 			tmp := make([]any, len(vals))
 			copy(tmp, node)
+
+			// Existing null slots may belong to a selected source array.
+			// Only newly allocated projection slots need empty objects.
+			for i := len(node); i < len(tmp); i++ {
+				tmp[i] = make(map[string]any)
+			}
+
 			node = tmp
 		}
 
 		for i := range vals {
+			if !vals[i].exists {
+				continue
+			}
+
 			if node[i] == nil {
 				node[i] = make(map[string]any)
 			}
 
-			node[i] = setNode(node[i], path[1:], vals[i])
+			node[i] = setNode(node[i], path[1:], vals[i].value)
 		}
 
 		return node
@@ -264,3 +299,5 @@ func makeContainer(next string) any {
 		return make(map[string]any)
 	}
 }
+
+/* End nested field projection helpers. */
