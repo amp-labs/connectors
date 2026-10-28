@@ -1,0 +1,13 @@
+{
+  "object": "list",
+  "results": [
+    {
+      "object": "user",
+      "id": "user-2",
+      "name": "Bot",
+      "type": "bot"
+    }
+  ],
+  "next_cursor": null,
+  "has_more": false
+}

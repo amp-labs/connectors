@@ -222,8 +222,9 @@ func fieldsFromSchema(schema *openapi3.Schema) metadatadef.Fields {
 // are unioned. The first non-null type is kept. Nested object properties are
 // not expanded.
 //
-// Notion often has no enum array. Each oneOf or anyOf branch is one option,
-// and that option is a const on the branch.
+// The shared list extractor copies an enum array into ValueOptions and does not
+// walk oneOf. Notion often has no enum array; each oneOf or anyOf branch is one
+// option, and that option is a const on the branch.
 //
 // userObjectResponse:
 //
