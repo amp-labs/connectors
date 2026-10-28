@@ -20,6 +20,8 @@ func TestListObjectMetadata(t *testing.T) {
 				"file_requests",
 				"shared_links",
 				"shared_folders",
+				"mountable_shared_folders",
+				"received_files",
 			},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
@@ -80,6 +82,26 @@ func TestListObjectMetadata(t *testing.T) {
 						Fields: map[string]common.FieldMetadata{
 							"shared_folder_id": {
 								DisplayName:  "Shared Folder Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"mountable_shared_folders": {
+						DisplayName: "Mountable Shared Folders",
+						Fields: map[string]common.FieldMetadata{
+							"shared_folder_id": {
+								DisplayName:  "Shared Folder Id",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+					"received_files": {
+						DisplayName: "Received Files",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "Id",
 								ValueType:    "string",
 								ProviderType: "string",
 							},
