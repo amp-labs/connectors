@@ -354,6 +354,117 @@
               "providerType": "array"
             }
           }
+        },
+        "mountable_shared_folders": {
+          "displayName": "Mountable Shared Folders",
+          "path": "/2/sharing/list_mountable_folders",
+          "responseKey": "entries",
+          "docs": "https://docs.dropboxapi.com/dropbox-api/api-reference/user-endpoints/sharing/list-mountable-folders",
+          "fields": {
+            "shared_folder_id": {
+              "displayName": "Shared Folder Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "is_inside_team_folder": {
+              "displayName": "Is Inside Team Folder",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "is_team_folder": {
+              "displayName": "Is Team Folder",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "preview_url": {
+              "displayName": "Preview Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time_invited": {
+              "displayName": "Time Invited",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "path_lower": {
+              "displayName": "Path Lower",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "path_display": {
+              "displayName": "Path Display",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "access_type": {
+              "displayName": "Access Type",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "policy": {
+              "displayName": "Policy",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "permissions": {
+              "displayName": "Permissions",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "received_files": {
+          "displayName": "Received Files",
+          "path": "/2/sharing/list_received_files",
+          "responseKey": "entries",
+          "docs": "https://docs.dropboxapi.com/dropbox-api/api-reference/user-endpoints/sharing/list-received-files",
+          "fields": {
+            "id": {
+              "displayName": "Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "Name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "path_lower": {
+              "displayName": "Path Lower",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "preview_url": {
+              "displayName": "Preview Url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "time_invited": {
+              "displayName": "Time Invited",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "owner_display_names": {
+              "displayName": "Owner Display Names",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "permissions": {
+              "displayName": "Permissions",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "policy": {
+              "displayName": "Policy",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
         }
       }
     }
