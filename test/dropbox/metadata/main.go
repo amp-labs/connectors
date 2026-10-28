@@ -23,6 +23,8 @@ func main() {
 		"file_requests",
 		"shared_links",
 		"shared_folders",
+		"mountable_shared_folders",
+		"received_files",
 	})
 	if err != nil {
 		utils.Fail("error listing Dropbox metadata", "error", err)
