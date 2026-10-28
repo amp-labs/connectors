@@ -36,7 +36,7 @@ type Data struct {
 }
 
 // Attio allows 100 reads/s and the HTTP client doesn't retry 429s, so the fan-out is capped.
-// ponytail: fixed caps assume ~0.5s per call (5 objects x 10 option calls = 50 in flight);
+// The caps assume ~0.5s per call (5 objects x 10 option calls = 50 requests in flight);
 // switch to a real rate limiter if Attio gets faster and 429s show up.
 const (
 	maxConcurrentObjects     = 5
