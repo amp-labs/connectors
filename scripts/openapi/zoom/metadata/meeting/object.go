@@ -1,14 +1,22 @@
 package meeting
 
 import (
+	"strings"
+
 	"github.com/amp-labs/connectors/internal/goutils"
-	"github.com/amp-labs/connectors/internal/metadatadef"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/filters"
+	mapping "github.com/amp-labs/connectors/scripts/openapi/internal/api/map"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/output"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/pipeline"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/reducers"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/spec"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/core"
 	"github.com/amp-labs/connectors/scripts/openapi/zoom/internal/files"
-	"github.com/amp-labs/connectors/tools/fileconv/api3"
 )
 
 var (
-	allowedEndpoints = []string{ // nolint:gochecknoglobals
+	allowedEndpoints = filters.NewRules( // nolint:gochecknoglobals
 		"/archive_files",
 		"/devices/groups",
 		"/devices",
@@ -31,11 +39,10 @@ var (
 		"/report/meeting_activities",
 		"/report/telephone",
 		"/report/upcoming_events",
-	}
+	)
 
-	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
+	objectEndpoints = core.NewTrackedMap(map[string]string{ // nolint:gochecknoglobals
 		"/devices/groups":                 "devices_groups",
-		"/archive_files":                  "archive_files",
 		"/meetings/meeting_summaries":     "meeting_summaries",
 		"/report/billing":                 "billing_report",
 		"/report/activities":              "activities_report",
@@ -47,42 +54,49 @@ var (
 		"/report/meeting_activities":      "meeting_activities_report",
 		"/report/telephone":               "telephone_report",
 		"/report/upcoming_events":         "upcoming_events_report",
-	}
+	})
 
-	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
-		"/report/billing":                 "Billing Report",
-		"devices/groups":                  "Devices Groups",
-		"h323/devices":                    "H.323/SIP Devices",
-		"/report/users/{userId}/meetings": "Meetings Report",
-		"/report/users":                   "Users Report",
-		"/report/cloud_recording":         "Recordings Report",
-		"/report/operationlogs":           "Operation Logs Report",
-		"/report/meeting_activities":      "Meeting Activities Report",
-		"/report/telephone":               "Telephone Report",
-		"/report/upcoming_events":         "Upcoming Events Report",
-		"/report/activities":              "Activities Report",
-	}
+	displayNameOverride = core.NewTrackedMap(map[string]string{ // nolint:gochecknoglobals
+		"/h323/devices": "H.323/SIP Devices",
+	})
 )
 
-func Objects() []metadatadef.Schema {
-	explorer, err := files.MeetingFileManager.GetExplorer(
-		api3.WithDisplayNamePostProcessors(
-			api3.CamelCaseToSpaceSeparated,
-			api3.CapitalizeFirstLetterEveryWord,
-		),
-		api3.WithArrayItemAutoSelection(),
-	)
-
+func Objects() pipeline.Pipeline[spec.Schema] {
+	extractor, err := files.MeetingFile.Extractor()
 	goutils.MustBeNil(err)
 
-	objects, err := explorer.ReadObjects(
-		"GET",
-		api3.NewAllowPathStrategy(allowedEndpoints),
-		objectEndpoints, displayNameOverride,
-		nil,
+	getSchemas, err := extractor.ExtractListSchemas(api.GET,
+		api.List.WithAutoSelectArrayItems(),
 	)
-
 	goutils.MustBeNil(err)
 
-	return objects
+	pipe := pipeline.NewSchemaPipe(getSchemas).
+		Filter(filters.KeepWithPath(
+			filters.NewAllowPathStrategy(allowedEndpoints),
+		)).
+		Map(mapping.ObjectNameOverride(objectEndpoints)).
+		Reduce(reducers.ShortestNameFromUrl).
+		Reduce(endpointsWithRequiredUserId).
+		Map(mapping.DisplayNameFromObjectName).
+		Map(mapping.DisplayNameFormat(
+			mapping.CamelCaseToSpaceSeparated,
+			mapping.CapitalizeFirstLetterEveryWord,
+		)).
+		Map(mapping.DisplayNameOverride(displayNameOverride))
+
+	output.PrintUnusedRules("meeting/allowedEndpoints", allowedEndpoints)
+	output.PrintRedundantKeys("meeting/objectEndpoints", objectEndpoints)
+	output.PrintRedundantKeys("meeting/displayNameOverride", displayNameOverride)
+
+	return pipe
+}
+
+func endpointsWithRequiredUserId(schemas []spec.Schema) []spec.Schema {
+	result := make([]spec.Schema, len(schemas))
+	for idx, schema := range schemas {
+		schema.UrlPath = strings.ReplaceAll(schema.UrlPath, "{userId}", "me")
+		result[idx] = schema
+	}
+
+	return result
 }

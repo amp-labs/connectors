@@ -2,43 +2,52 @@ package user
 
 import (
 	"github.com/amp-labs/connectors/internal/goutils"
-	"github.com/amp-labs/connectors/internal/metadatadef"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/filters"
+	mapping "github.com/amp-labs/connectors/scripts/openapi/internal/api/map"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/output"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/pipeline"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/reducers"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/spec"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/core"
 	"github.com/amp-labs/connectors/scripts/openapi/zoom/internal/files"
-	"github.com/amp-labs/connectors/tools/fileconv/api3"
 )
 
 var (
-	allowedEndpoints = []string{ // nolint:gochecknoglobals
+	allowedEndpoints = filters.NewRules( // nolint:gochecknoglobals
 		"/groups",
 		"/users",
 		"/contacts/groups",
-	}
+	)
 
-	displayNameOverride = map[string]string{ // nolint:gochecknoglobals
-		"contacts/groups": "Contact Groups",
-	}
-
-	objectEndpoints = map[string]string{ // nolint:gochecknoglobals
+	objectEndpoints = core.NewTrackedMap(map[string]string{ // nolint:gochecknoglobals
 		"/contacts/groups": "contacts_groups",
-	}
+	})
 )
 
-func Objects() []metadatadef.Schema {
-	explorer, err := files.UsersFileManager.GetExplorer(
-		api3.WithDisplayNamePostProcessors(
-			api3.CamelCaseToSpaceSeparated,
-			api3.CapitalizeFirstLetterEveryWord,
-		),
-		api3.WithArrayItemAutoSelection(),
+func Objects() pipeline.Pipeline[spec.Schema] {
+	extractor, err := files.UsersFile.Extractor()
+	goutils.MustBeNil(err)
+
+	getSchemas, err := extractor.ExtractListSchemas(api.GET,
+		api.List.WithAutoSelectArrayItems(),
 	)
 	goutils.MustBeNil(err)
 
-	objects, err := explorer.ReadObjectsGet(
-		api3.NewAllowPathStrategy(allowedEndpoints),
-		objectEndpoints, displayNameOverride, nil,
-	)
+	pipe := pipeline.NewSchemaPipe(getSchemas).
+		Filter(filters.KeepWithPath(
+			filters.NewAllowPathStrategy(allowedEndpoints),
+		)).
+		Map(mapping.ObjectNameOverride(objectEndpoints)).
+		Reduce(reducers.ShortestNameFromUrl).
+		Map(mapping.DisplayNameFromObjectName).
+		Map(mapping.DisplayNameFormat(
+			mapping.CamelCaseToSpaceSeparated,
+			mapping.CapitalizeFirstLetterEveryWord,
+		))
 
-	goutils.MustBeNil(err)
+	output.PrintUnusedRules("user/allowedEndpoints", allowedEndpoints)
+	output.PrintRedundantKeys("user/objectEndpoints", objectEndpoints)
 
-	return objects
+	return pipe
 }

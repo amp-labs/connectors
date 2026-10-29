@@ -7,7 +7,6 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/providers/zoom/metadata"
 )
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
@@ -15,7 +14,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	if !supportedObjectsByRead[common.ModuleRoot].Has(config.ObjectName) {
+	if !supportedObjectsByRead.Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
@@ -29,7 +28,7 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	responseFieldName := metadata.Schemas.LookupArrayFieldName(common.ModuleRoot, config.ObjectName)
+	responseFieldName := objectNameToResponseField[config.ObjectName]
 
 	return common.ParseResult(
 		rsp,
