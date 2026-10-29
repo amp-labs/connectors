@@ -2,7 +2,6 @@ package reply
 
 import (
 	"context"
-	"slices"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/reply/metadata"
@@ -22,10 +21,6 @@ func (c *Connector) ListObjectMetadata(
 	result, err := metadata.Schemas.Select(common.ModuleRoot, objectNames)
 	if err != nil {
 		return nil, err
-	}
-
-	if !slices.ContainsFunc(objectNames, usesCustomFields) {
-		return result, nil
 	}
 
 	for _, objectName := range objectNames {
