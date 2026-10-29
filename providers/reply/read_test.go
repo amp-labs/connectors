@@ -224,8 +224,8 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			Name: "Custom field titled like a built-in field does not overwrite its value",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
-				// Deal Stage is a custom field; industry is a built-in.
-				Fields: connectors.Fields("industry", "Deal Stage"),
+				// Deal Stage is a custom field; industry and stage are built-ins.
+				Fields: connectors.Fields("industry", "stage", "Deal Stage"),
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -244,6 +244,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Id: "761575999",
 					Fields: map[string]any{
 						"industry": "Software",
+						"stage":    "Qualified",
 						// Deal Stage is a custom field.
 						"deal stage": "won",
 					},
@@ -252,6 +253,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 						"customFields": []any{
 							map[string]any{"key": "150698", "value": "Overridden"},
 							map[string]any{"key": "150697", "value": "won"},
+							map[string]any{"key": "150699", "value": "Overridden"},
 						},
 					},
 				}},

@@ -210,7 +210,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 				Then:  mockserver.Response(http.StatusOK, responseCollidingCustomFields),
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetMetadataWithMissingFields(map[string][]string{
-				"contacts": {"Industry"},
+				"contacts": {"Industry", "Stage"},
 			}),
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
@@ -219,6 +219,11 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 						Fields: map[string]common.FieldMetadata{
 							"industry": {
 								DisplayName:  "industry",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"stage": {
+								DisplayName:  "stage",
 								ValueType:    "string",
 								ProviderType: "string",
 							},

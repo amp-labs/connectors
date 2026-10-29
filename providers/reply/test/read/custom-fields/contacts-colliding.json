@@ -4,6 +4,7 @@
       "id": 761575999,
       "email": "casey.moe@example.com",
       "industry": "Software",
+      "stage": "Qualified",
       "customFields": [
         {
           "key": "150698",
@@ -12,6 +13,10 @@
         {
           "key": "150697",
           "value": "won"
+        },
+        {
+          "key": "150699",
+          "value": "Overridden"
         }
       ]
     }

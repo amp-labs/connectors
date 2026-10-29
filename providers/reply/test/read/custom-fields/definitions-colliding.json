@@ -20,5 +20,16 @@
     "fieldSource": "regular",
     "aiDefinition": null,
     "promptActions": []
+  },
+  {
+    "id": 150699,
+    "title": "Stage",
+    "fieldType": "text",
+    "entityType": "contact",
+    "metadata": null,
+    "orgWide": false,
+    "fieldSource": "regular",
+    "aiDefinition": null,
+    "promptActions": []
   }
 ]

@@ -441,6 +441,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 				RecordData: map[string]any{
 					"firstName": "Jane",
 					"Industry":  "Software",
+					"stage":     "Qualified",
 					// Deal Stage is a custom field, named by its title.
 					"Deal Stage": "won",
 				},
@@ -454,7 +455,7 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 					If: mockcond.And{
 						mockcond.MethodPOST(),
 						mockcond.Path("/v3/contacts"),
-						mockcond.Body(`{"firstName":"Jane","Industry":"Software",` +
+						mockcond.Body(`{"firstName":"Jane","Industry":"Software","stage":"Qualified",` +
 							`"customFields":[{"key":"150697","value":"won"}]}`),
 					},
 					Then: mockserver.Response(http.StatusCreated, responseContactCreate),
