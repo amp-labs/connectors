@@ -119,6 +119,61 @@ func TestCalendarWrite(t *testing.T) { // nolint:funlen,cyclop
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Create event with JSONPath fields nests them for the provider",
+			Input: common.WriteParams{
+				ObjectName: "events",
+				RecordData: map[string]any{
+					"summary":                "Monthly team meeting",
+					"$['start']['dateTime']": "2025-08-07T15:30:00-07:00",
+					"$['start']['timeZone']": "America/Los_Angeles",
+					"$['end']['dateTime']":   "2025-08-07T17:22:11-07:00",
+					"$['end']['timeZone']":   "America/Los_Angeles",
+					"$['source']['title']":   "CRM",
+					"$['source']['url']":     "https://crm.example.com/deals/42",
+					// Google allows dots inside extendedProperties keys; bracket notation keeps them whole.
+					"$['extendedProperties']['private']['com.acme.dealId']": "42",
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/calendar/v3/calendars/primary/events"),
+					mockcond.Body(`{
+						"summary": "Monthly team meeting",
+						"start": {"dateTime": "2025-08-07T15:30:00-07:00", "timeZone": "America/Los_Angeles"},
+						"end": {"dateTime": "2025-08-07T17:22:11-07:00", "timeZone": "America/Los_Angeles"},
+						"source": {"title": "CRM", "url": "https://crm.example.com/deals/42"},
+						"extendedProperties": {"private": {"com.acme.dealId": "42"}}
+					}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseEvent),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "std4ien2l4fovmbup80ov20tp8",
+				Errors:   nil,
+				Data: map[string]any{
+					"status":  "confirmed",
+					"summary": "Monthly team meeting",
+				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Create event with overlapping plain and JSONPath fields is rejected",
+			Input: common.WriteParams{
+				ObjectName: "events",
+				RecordData: map[string]any{
+					"start":                  "2025-08-07T15:30:00-07:00",
+					"$['start']['dateTime']": "2025-08-07T15:30:00-07:00",
+				},
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{testutils.StringError("conflicting fields in record data")},
+		},
 	}
 
 	for _, tt := range tests {
