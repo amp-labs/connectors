@@ -88,6 +88,11 @@
               "valueType": "string",
               "providerType": "string"
             },
+            "customFields": {
+              "displayName": "customFields",
+              "valueType": "other",
+              "providerType": "array"
+            },
             "description": {
               "displayName": "description",
               "valueType": "string",
@@ -391,6 +396,11 @@
                 }
               ]
             },
+            "stage": {
+              "displayName": "stage",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "state": {
               "displayName": "state",
               "valueType": "string",
@@ -413,6 +423,44 @@
           "path": "/custom-fields",
           "responseKey": "",
           "fields": {
+            "aiDefinition": {
+              "displayName": "aiDefinition",
+              "valueType": "other"
+            },
+            "entityType": {
+              "displayName": "entityType",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "contact",
+                  "displayValue": "contact"
+                },
+                {
+                  "value": "account",
+                  "displayValue": "account"
+                }
+              ]
+            },
+            "fieldSource": {
+              "displayName": "fieldSource",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "regular",
+                  "displayValue": "regular"
+                },
+                {
+                  "value": "ai",
+                  "displayValue": "ai"
+                },
+                {
+                  "value": "promptAction",
+                  "displayValue": "promptAction"
+                }
+              ]
+            },
             "fieldType": {
               "displayName": "fieldType",
               "valueType": "singleSelect",
@@ -442,6 +490,11 @@
               "displayName": "orgWide",
               "valueType": "boolean",
               "providerType": "boolean"
+            },
+            "promptActions": {
+              "displayName": "promptActions",
+              "valueType": "other",
+              "providerType": "array"
             },
             "title": {
               "displayName": "title",
