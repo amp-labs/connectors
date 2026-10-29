@@ -1,5 +1,5 @@
 # Metadata
 
-`schemas.json` is maintained manually from the [Dropbox API reference](https://docs.dropboxapi.com/dropbox-api/api-reference/all-endpoints). Fields come from endpoint docs (union types merged where one list returns multiple shapes).
+`schemas.json` is maintained manually from the [Dropbox API reference](https://docs.dropboxapi.com/dropbox-api/api-reference/all-endpoints).
 
-The catalog base URL is `https://api.dropboxapi.com`. Object paths are RPC routes (for example `POST /2/files/list_folder` is stored as `/2/files/list_folder`).
+The catalog base URL is `https://api.dropboxapi.com`. The **API version** (`/2`) is the module path on `root`, not part of each object path (same convention as stripping `/v1` on BambooHR or Notion). Example: RPC `POST /2/files/list_folder` is stored as module `/2` + object `/files/list_folder`.
