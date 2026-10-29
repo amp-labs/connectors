@@ -300,6 +300,9 @@ func TestSelectFields(t *testing.T) {
 		},
 		{
 			name: "missing middle and last items do not shift matched fields",
+			// COMMENT the order could be important, should we return empty intermediate objects?
+			// This new solution preserves indexes, you can recover original object position.
+			// Not sure of the use cases.
 			record: `{
 				"items": [
 					{"label": "first"},
@@ -362,6 +365,8 @@ func TestSelectFields(t *testing.T) {
 		},
 		{
 			name: "empty arrays stay empty alongside missing paths",
+			// COMMENT: I think nothing should be returned here.
+			// Unless user explicitly asks for $['items'][*] or $['items'][*]['tags'][*]
 			record: `{
 				"items": [
 					{},
@@ -420,6 +425,18 @@ func TestSelectFields(t *testing.T) {
 					{}
 				]
 			}`,
+		},
+		{
+			name:     "null array item stays null",
+			record:   `{"items":[null,{"label":"yes"}]}`,
+			fields:   datautils.NewStringSet("$['items']", "$['items'][*]['label']"),
+			expected: `{"items":[null,{"label":"yes"}]}`,
+		},
+		{
+			name:     "mixed case matched item keeps its original keys",
+			record:   `{"items":[{},{"Name":"yes"}]}`,
+			fields:   datautils.NewStringSet("$['items']", "$['items'][*]['Name']"),
+			expected: `{"items":[{},{"name":"yes"}]}`,
 		},
 	}
 

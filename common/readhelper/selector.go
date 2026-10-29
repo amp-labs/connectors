@@ -152,9 +152,9 @@ func ParseJSONPath(path string) []string {
 
 /* Nested field projection helpers. */
 
-// selectedArrayValue keeps missing paths distinct from explicit nulls so sibling
-// field projections can be merged without shifting array positions.
-type selectedArrayValue struct {
+// arrayItem keeps missing paths distinct from explicit nulls so sibling
+// field projections can be merged without shifting arrayItem positions.
+type arrayItem struct {
 	value  any
 	exists bool
 }
@@ -162,8 +162,8 @@ type selectedArrayValue struct {
 // getNestedValue retrieves a value from a nested structure using the supplied path.
 //
 // The input may contain nested maps and arrays. A path token of "*" is treated as
-// an array wildcard, meaning the next path segment is applied to every element
-// of the array.
+// an arrayItem wildcard, meaning the next path segment is applied to every element
+// of the arrayItem.
 //
 // Examples:
 //
@@ -197,12 +197,12 @@ func getNestedValue(root any, path []string) (any, bool) { // nolint:lll,cyclop
 				return nil, false
 			}
 
-			result := make([]selectedArrayValue, len(arr))
+			result := make([]arrayItem, len(arr))
 			found := len(arr) == 0
 
 			for index, item := range arr {
 				value, exists := getNestedValue(item, path[2:])
-				result[index] = selectedArrayValue{value: value, exists: exists}
+				result[index] = arrayItem{value: value, exists: exists}
 				found = found || exists
 			}
 
@@ -222,7 +222,7 @@ func getNestedValue(root any, path []string) (any, bool) { // nolint:lll,cyclop
 // setNestedValue inserts a value into a nested map at the specified path.
 //
 // Intermediate maps and arrays are created as needed. Wildcard values carry
-// per-item presence so missing paths do not overwrite existing array slots.
+// per-item presence so missing paths do not overwrite existing arrayItem slots.
 func setNestedValue(root map[string]any, path []string, value any) {
 	setNode(root, path, value)
 }
@@ -255,7 +255,7 @@ func setNode(current any, path []string, value any) any { // nolint:cyclop
 		return current
 
 	case []any:
-		vals, ok := value.([]selectedArrayValue)
+		vals, ok := value.([]arrayItem)
 		if !ok {
 			return current
 		}
