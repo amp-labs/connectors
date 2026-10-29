@@ -197,11 +197,13 @@ func getNestedValue(root any, path []string) (any, bool) { // nolint:lll,cyclop
 				return nil, false
 			}
 
+			remainingPath := path[2:]
+
 			result := make([]selectedArrayValue, len(arr))
 			found := len(arr) == 0
 
 			for index, item := range arr {
-				value, exists := getNestedValue(item, path[2:])
+				value, exists := getNestedValue(item, remainingPath)
 				result[index] = selectedArrayValue{value: value, exists: exists}
 				found = found || exists
 			}
