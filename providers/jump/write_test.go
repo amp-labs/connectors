@@ -36,6 +36,19 @@ func TestWrite(t *testing.T) {
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
+			Name: "Fields the mutation does not declare are rejected",
+			Input: common.WriteParams{
+				ObjectName: "contacts",
+				RecordId:   "con_2feda6a76d294253be5",
+				RecordData: map[string]any{"name": "amp-test Contact"},
+			},
+			Server: mockserver.Dummy(),
+			ExpectedErrs: []error{
+				common.ErrBadRequest,
+				testutils.StringError("name is not writable for contacts"),
+			},
+		},
+		{
 			Name: "Successfully create a contact for the connection user",
 			Input: common.WriteParams{
 				ObjectName: "contacts",

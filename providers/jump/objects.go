@@ -71,10 +71,13 @@ var optionalFieldComplexity = map[string]map[string]int{
 }
 
 // objectMutations names the mutations that create, update and delete records of an object.
+// Fields are the record keys the create and update mutations declare as variables,
+// GraphQL ignores undeclared variables so any other key would be dropped silently.
 type objectMutations struct {
 	create string
 	update string
 	delete string
+	fields []string
 }
 
 // writeMutations lists the objects Jump can write. Only contacts have create, update and delete mutations,
@@ -87,5 +90,6 @@ var writeMutations = map[string]objectMutations{
 		create: "createContact",
 		update: "updateContact",
 		delete: "deleteContact",
+		fields: []string{"firstName", "lastName", "email"},
 	},
 }

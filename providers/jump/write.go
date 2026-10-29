@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"maps"
 	"net/http"
+	"slices"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -27,6 +28,12 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	record, err := params.GetRecord()
 	if err != nil {
 		return nil, err
+	}
+
+	for _, key := range slices.Sorted(maps.Keys(record)) {
+		if !slices.Contains(mutations.fields, key) {
+			return nil, fmt.Errorf("%w: %s is not writable for %s", common.ErrBadRequest, key, params.ObjectName)
+		}
 	}
 
 	variables := maps.Clone(record)
