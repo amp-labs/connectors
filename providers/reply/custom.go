@@ -162,6 +162,14 @@ func (c *Connector) exposedCustomFields(
 		return nil, err
 	}
 
+	return c.exposedOutside(ctx, objectName, builtIn)
+}
+
+// exposedOutside is exposedCustomFields for a caller that already holds the
+// built-in field names of the object.
+func (c *Connector) exposedOutside(
+	ctx context.Context, objectName string, builtIn map[string]bool,
+) ([]customFieldDefinition, error) {
 	definitions, err := c.fetchCustomFieldDefinitions(ctx, customFieldEntityByObject[objectName])
 	if err != nil {
 		return nil, err
@@ -368,12 +376,17 @@ type flattenedField struct {
 func (c *Connector) flattenedCustomFields(
 	ctx context.Context, objectName string, record map[string]any,
 ) ([]flattenedField, error) {
-	candidates, err := customFieldCandidates(objectName, record)
-	if err != nil || len(candidates) == 0 {
+	builtIn, err := builtInFieldNames(objectName)
+	if err != nil {
 		return nil, err
 	}
 
-	definitions, err := c.exposedCustomFields(ctx, objectName)
+	candidates := customFieldCandidates(objectName, record, builtIn)
+	if len(candidates) == 0 {
+		return []flattenedField{}, nil
+	}
+
+	definitions, err := c.exposedOutside(ctx, objectName, builtIn)
 	if err != nil {
 		return nil, err
 	}
@@ -397,12 +410,7 @@ func (c *Connector) flattenedCustomFields(
 // customFieldCandidates returns the sorted keys of the record that could name a
 // custom field: everything that is neither a built-in field, a write-only
 // property nor the customFields container itself.
-func customFieldCandidates(objectName string, record map[string]any) ([]string, error) {
-	builtIn, err := builtInFieldNames(objectName)
-	if err != nil {
-		return nil, err
-	}
-
+func customFieldCandidates(objectName string, record map[string]any, builtIn map[string]bool) []string {
 	candidates := make([]string, 0)
 
 	for key := range record {
@@ -417,7 +425,7 @@ func customFieldCandidates(objectName string, record map[string]any) ([]string, 
 	// Map iteration order is random; a stable order keeps the request body deterministic.
 	slices.Sort(candidates)
 
-	return candidates, nil
+	return candidates
 }
 
 // stringifyValue renders a custom field value the way Reply expects it: every
