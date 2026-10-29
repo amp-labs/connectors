@@ -32,7 +32,7 @@ func TestSelectFields(t *testing.T) {
 			record: `{
 				"id": "msg1",
 				"payload": {
-					"body": {
+					"Body": {
 						"data": "hello",
 						"size": 100
 					},
@@ -40,7 +40,7 @@ func TestSelectFields(t *testing.T) {
 					"labels": ["a"]
 				}
 			}`,
-			fields: datautils.NewStringSet("$['payload']['body']['data']", "$['payload']['mimeType']"),
+			fields: datautils.NewStringSet("$['payload']['Body']['data']", "$['payload']['mimeType']"),
 			expected: `{
 				"payload": {
 					"body": {
@@ -427,16 +427,53 @@ func TestSelectFields(t *testing.T) {
 			}`,
 		},
 		{
-			name:     "null array item stays null",
-			record:   `{"items":[null,{"label":"yes"}]}`,
-			fields:   datautils.NewStringSet("$['items']", "$['items'][*]['label']"),
-			expected: `{"items":[null,{"label":"yes"}]}`,
+			name: "null array item stays null",
+			record: `{
+				"items": [
+					null,
+					{"label": "yes"}
+				]
+			}`,
+			fields: datautils.NewStringSet("$['items']", "$['items'][*]['label']"),
+			expected: `{
+				"items": [
+					null,
+					{"label": "yes"}
+				]
+			}`,
 		},
 		{
-			name:     "mixed case matched item keeps its original keys",
-			record:   `{"items":[{},{"Name":"yes"}]}`,
-			fields:   datautils.NewStringSet("$['items']", "$['items'][*]['Name']"),
-			expected: `{"items":[{},{"name":"yes"}]}`,
+			name: "mixed case matched item keeps its original keys",
+			record: `{
+				"items": [
+					{},
+					{"Name": "yes"}
+				]
+			}`,
+			fields: datautils.NewStringSet("$['items']", "$['items'][*]['Name']"),
+			expected: `{
+				"items": [
+					{},
+					{"name": "yes"}
+				]
+			}`,
+		},
+		// NEW UNIT TEST.
+		{
+			name: "all keys within arrays and objects are lower case",
+			record: `{
+				"items": [
+					{},
+					{"Orders": [{"Product": [{"Name": "running shoes"}]}]}
+				]
+			}`,
+			fields: datautils.NewStringSet("$['items']", "$['items'][*]['Orders'][*]['Product'][*]['Name']"),
+			expected: `{
+				"items": [
+					{},
+					{"orders": [{"product": [{"name": "running shoes"}]}]}
+				]
+			}`,
 		},
 	}
 
