@@ -106,8 +106,8 @@ github.com/felixge/httpsnoop v1.1.0 h1:3YtUj32ZZkqZtt3sZZsClsymw/QDuVfpNhoA31zeO
 github.com/felixge/httpsnoop v1.1.0/go.mod h1:Zqxgdd+1Rkcz8euOqdr7lqgCRJztwr5hp9vDSi5UZCE=
 github.com/gertd/go-pluralize v0.2.1 h1:M3uASbVjMnTsPb0PNqg+E/24Vwigyo/tvyMTtAlLgiA=
 github.com/gertd/go-pluralize v0.2.1/go.mod h1:rbYaKDbsXxmRfr8uygAEKhOWsjyrrqrkHVpZvoOp8zk=
-github.com/getkin/kin-openapi v0.151.0 h1:p8NIstL53h620DnlO9R4pR4QRkEzJ3jbw9flb4kc1hg=
-github.com/getkin/kin-openapi v0.151.0/go.mod h1:1+BHDzstro+P5CKtPy1X4PfofnFgmRe6uvMy9+r9fKY=
+github.com/getkin/kin-openapi v0.152.0 h1:XRVo77lMRyOGMHf1paMu9lxX3wzuQDZeprssZJnz/x8=
+github.com/getkin/kin-openapi v0.152.0/go.mod h1:1+BHDzstro+P5CKtPy1X4PfofnFgmRe6uvMy9+r9fKY=
 github.com/go-jose/go-jose/v4 v4.1.4 h1:moDMcTHmvE6Groj34emNPLs/qtYXRVcd6S7NHbHz3kA=
 github.com/go-jose/go-jose/v4 v4.1.4/go.mod h1:x4oUasVrzR7071A4TnHLGSPpNOm2a21K9Kf04k1rs08=
 github.com/go-json-experiment/json v0.0.0-20260623181947-01eb4420fa68 h1:KZaTBSyshWX3MP5jukJcNSuXDQTO+rNpt0J564dX/eg=
