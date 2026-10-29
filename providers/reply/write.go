@@ -138,15 +138,11 @@ func (c *Connector) prepareRecordData(ctx context.Context, params common.WritePa
 
 	delete(result, fieldsKey)
 
-	overridden := make(map[int]bool, len(flattened))
-
 	for _, field := range flattened {
 		delete(result, field.key)
-
-		overridden[field.id] = true
 	}
 
-	entries = withoutOverridden(entries, overridden)
+	entries = withoutOverridden(entries, flattened)
 
 	for _, field := range flattened {
 		entries = append(entries, customFieldEntry(field.id, field.value, byKey))

@@ -318,15 +318,24 @@ func referenceFrom(value any) (fieldReference, bool) {
 	}
 }
 
-// withoutOverridden drops the entries pointing at a field id that is also set
-// by a flattened title-named property. A ReadResult can carry both forms of
-// the same value; the title-named one is what a caller edits, so it wins.
-func withoutOverridden(entries []any, overridden map[int]bool) []any {
+// withoutOverridden drops the entries pointing at a field that is also set by a
+// flattened title-named property, whether the entry names it by id or by title
+// (ignoring case). A ReadResult can carry both forms of the same value; the
+// title-named one is what a caller edits, so it wins.
+func withoutOverridden(entries []any, flattened []flattenedField) []any {
+	ids := make(map[int]bool, len(flattened))
+	titles := make(map[string]bool, len(flattened))
+
+	for _, field := range flattened {
+		ids[field.id] = true
+		titles[strings.ToLower(field.key)] = true
+	}
+
 	kept := make([]any, 0, len(entries))
 
 	for _, field := range entries {
 		if entry, isMap := field.(map[string]any); isMap {
-			if reference, found := entryReference(entry); found && overridden[reference.id] {
+			if reference, found := entryReference(entry); found && reference.overriddenBy(ids, titles) {
 				continue
 			}
 		}
@@ -335,6 +344,15 @@ func withoutOverridden(entries []any, overridden map[int]bool) []any {
 	}
 
 	return kept
+}
+
+// overriddenBy reports whether the reference points at one of the fields, by id or by title.
+func (r fieldReference) overriddenBy(ids map[int]bool, titles map[string]bool) bool {
+	if r.byID() {
+		return ids[r.id]
+	}
+
+	return titles[strings.ToLower(r.name)]
 }
 
 // flattenedField is a top-level record property that names a custom field.

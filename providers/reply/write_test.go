@@ -246,6 +246,39 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Title-named value wins over a customFields entry that names the field by title",
+			Input: common.WriteParams{
+				ObjectName: "contacts",
+				RecordId:   "759458702",
+				RecordData: map[string]any{
+					"customFields": []any{map[string]any{"name": "Deal Stage", "value": "old"}},
+					// Deal Stage is a custom field; it wins over the customFields entry above.
+					"deal stage": "new",
+				},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If:   mockcond.Path("/v3/custom-fields"),
+					Then: mockserver.Response(http.StatusOK, responseCustomFields),
+				}, {
+					If: mockcond.And{
+						mockcond.MethodPATCH(),
+						mockcond.Path("/v3/contacts/759458702"),
+						mockcond.Body(`{"customFields":[{"id":150697,"value":"new"}]}`),
+					},
+					Then: mockserver.Response(http.StatusOK, responseContactUpdate),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "761575530",
+				Data:     map[string]any{"email": "probe.write@example.com"},
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name: "Create contact sends custom fields by key, the only form Reply keeps on create",
 			Input: common.WriteParams{
 				ObjectName: "contacts",
