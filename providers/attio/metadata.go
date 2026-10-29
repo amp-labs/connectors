@@ -1,13 +1,13 @@
 package attio
 
 import (
-	"bytes"
 	"context"
+	"sync"
 	"time"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 // This struct is used for when the response data having slice of data.
@@ -33,16 +33,16 @@ type Data struct {
 	IsMultiselect         bool      `json:"is_multiselect"`           //nolint:tagliatelle
 	IsDefaultValueEnabled bool      `json:"is_default_value_enabled"` //nolint:tagliatelle
 	CreatedAt             time.Time `json:"created_at"`               //nolint:tagliatelle
-	Config                struct {
-		RecordReference struct {
-			AllowedObjectIDs []string `json:"allowed_object_ids"` //nolint:tagliatelle
-		} `json:"record_reference"`
-	} `json:"config"`
 }
 
+// Attio allows 100 reads/s and the HTTP client doesn't retry 429s.
+// At ~0.5s per call, 50 requests in flight (5 objects x 10 option calls) is already ~100 reads/s.
+const (
+	maxConcurrentObjects     = 5
+	maxConcurrentOptionCalls = 10
+)
+
 // ListObjectMetadata creates metadata of object via reading objects using Attio API.
-//
-//nolint:funlen
 func (c *Connector) ListObjectMetadata(ctx context.Context,
 	objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
@@ -50,37 +50,59 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		return nil, common.ErrMissingObjects
 	}
 
+	var mutex sync.Mutex
+
 	metadataResult := common.NewListObjectMetadataResult()
 
+	callbacks := make([]simultaneously.Job, 0, len(objectNames))
+
 	for _, obj := range objectNames {
-		metadata, isCustom, err := c.getObjectAttributes(ctx, obj)
-		if err != nil {
-			metadataResult.Errors[obj] = err
+		callbacks = append(callbacks, func(ctx context.Context) error {
+			metadata, err := c.getMetadata(ctx, obj)
 
-			continue
-		}
+			mutex.Lock()
+			defer mutex.Unlock()
 
-		displayName := obj
-
-		if isCustom {
-			name, err := c.getObjectDisplayName(ctx, obj)
 			if err != nil {
 				metadataResult.Errors[obj] = err
 
-				continue
+				return nil //nolint:nilerr // intentionally collecting errors in map, not failing fast
 			}
 
-			if name != "" {
-				displayName = name
-			}
-		}
+			metadataResult.Result[obj] = *metadata
 
-		metadataResult.Result[obj] = *common.NewObjectMetadata(
-			displayName, metadata,
-		)
+			return nil
+		})
+	}
+
+	// This will block until all callbacks are done.
+	if err := simultaneously.DoCtx(ctx, maxConcurrentObjects, callbacks...); err != nil {
+		return nil, err
 	}
 
 	return metadataResult, nil
+}
+
+func (c *Connector) getMetadata(ctx context.Context, obj string) (*common.ObjectMetadata, error) {
+	metadata, isCustom, err := c.getObjectAttributes(ctx, obj)
+	if err != nil {
+		return nil, err
+	}
+
+	displayName := obj
+
+	if isCustom {
+		name, err := c.getObjectDisplayName(ctx, obj)
+		if err != nil {
+			return nil, err
+		}
+
+		if name != "" {
+			displayName = name
+		}
+	}
+
+	return common.NewObjectMetadata(displayName, metadata), nil
 }
 
 func (c *Connector) getObjectAttributes(
@@ -150,8 +172,6 @@ func (c *Connector) parseMetadataFromResponse(ctx context.Context, resp *common.
 func (c *Connector) parseStandardOrCustomMetadata(
 	ctx context.Context, resp *common.JSONHTTPResponse,
 ) (map[string]common.FieldMetadata, error) {
-	metadata := make(map[string]common.FieldMetadata)
-
 	response, err := common.UnmarshalJSON[objectAttribute](resp)
 	if err != nil {
 		return nil, err
@@ -161,32 +181,38 @@ func (c *Connector) parseStandardOrCustomMetadata(
 		return nil, common.ErrMissingExpectedValues
 	}
 
-	for _, value := range response.Data {
-		apiSlug := value.APISlug
+	// Attio has no bulk endpoint for select options, so each select attribute needs its own call.
+	// Every callback writes only its own index, so no lock is needed.
+	defaultValues := make([][]common.FieldValue, len(response.Data))
+	callbacks := make([]simultaneously.Job, 0, len(response.Data))
 
-		var defaultValues []common.FieldValue
-
-		if value.Type == "select" {
-			defaultValues, err = c.getDefaultValues(ctx, value)
-			if err != nil {
-				return nil, err
-			}
+	for idx, value := range response.Data {
+		if value.Type != "select" {
+			continue
 		}
 
-		if value.Type == "record-reference" || value.Type == "domain" {
-			defaultValues, err = c.getOptionValuesForRecordReferenceType(ctx, value)
-			if err != nil {
-				return nil, err
-			}
-		}
+		callbacks = append(callbacks, func(ctx context.Context) error {
+			values, err := c.getDefaultValues(ctx, value)
+			defaultValues[idx] = values
 
-		metadata[apiSlug] = common.FieldMetadata{
-			DisplayName:  apiSlug,
+			return err
+		})
+	}
+
+	if err := simultaneously.DoCtx(ctx, maxConcurrentOptionCalls, callbacks...); err != nil {
+		return nil, err
+	}
+
+	metadata := make(map[string]common.FieldMetadata, len(response.Data))
+
+	for idx, value := range response.Data {
+		metadata[value.APISlug] = common.FieldMetadata{
+			DisplayName:  value.APISlug,
 			ValueType:    getFieldValueType(value.Type, value.IsMultiselect),
 			ProviderType: value.Type,
 			ReadOnly:     new(!value.IsWritable),
 			FieldId:      new(value.ID.AttributeID),
-			Values:       defaultValues,
+			Values:       defaultValues[idx],
 		}
 	}
 
@@ -280,65 +306,6 @@ func (c *Connector) getDefaultValues(ctx context.Context, o Data) (fields []comm
 			Value:        title.Title,
 			DisplayValue: title.Title,
 		})
-	}
-
-	return fields, nil
-}
-
-// getOptionValuesForRecordReferenceType retrieves the default option values for a
-// record-reference (relationship) attribute type.
-// For such attributes, the available options are usually linked to standard objects like
-// People, Companies, Deals, Users, or Workspace.
-// The function fetches each object ID listed in Config.RecordReference.AllowedObjectIDs and retrieves
-// its corresponding record_id to populate the field values with both Value and DisplayValue.
-func (c *Connector) getOptionValuesForRecordReferenceType(
-	ctx context.Context,
-	data Data,
-) (fields []common.FieldValue, err error) {
-	objectsIDs := data.Config.RecordReference.AllowedObjectIDs
-
-	for _, v := range objectsIDs {
-		url, err := c.getObjectReadURL(v)
-		if err != nil {
-			return nil, err
-		}
-
-		rsp, err := c.Client.Post(ctx, url.String(), bytes.NewReader([]byte(nil)))
-		if err != nil {
-			return nil, err
-		}
-
-		body, ok := rsp.Body()
-		if !ok {
-			return nil, common.ErrEmptyJSONHTTPResponse
-		}
-
-		values, err := jsonquery.New(body).ArrayRequired("data")
-		if err != nil {
-			return nil, err
-		}
-
-		if len(values) == 0 {
-			return nil, nil
-		}
-
-		defaultValues := []string{}
-
-		for _, v := range values {
-			recordID, err := jsonquery.New(v, "id").StringRequired("record_id")
-			if err != nil {
-				return nil, err
-			}
-
-			defaultValues = append(defaultValues, recordID)
-		}
-
-		for _, identifier := range defaultValues {
-			fields = append(fields, common.FieldValue{
-				Value:        identifier,
-				DisplayValue: identifier,
-			})
-		}
 	}
 
 	return fields, nil
