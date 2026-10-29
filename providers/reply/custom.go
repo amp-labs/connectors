@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"slices"
 	"strconv"
 	"strings"
@@ -314,7 +315,7 @@ func referenceFrom(value any) (fieldReference, bool) {
 	case int:
 		return fieldReference{id: typed}, typed > 0
 	case float64:
-		return fieldReference{id: int(typed)}, typed > 0
+		return fieldReference{id: int(typed)}, typed > 0 && typed == math.Trunc(typed)
 	case string:
 		if id, err := strconv.Atoi(typed); err == nil {
 			return fieldReference{id: id}, id > 0

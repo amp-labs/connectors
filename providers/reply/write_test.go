@@ -578,6 +578,32 @@ func TestWrite(t *testing.T) { // nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Entry with a non-integer id is not truncated to another field",
+			Input: common.WriteParams{
+				ObjectName: "contacts",
+				RecordId:   "759458702",
+				RecordData: map[string]any{
+					"customFields": []any{map[string]any{"id": 1.5, "value": "won"}},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPATCH(),
+					mockcond.Path("/v3/contacts/759458702"),
+					mockcond.Body(`{"customFields":[{"id":1.5,"value":"won"}]}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseContactUpdate),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetWrite,
+			Expected: &common.WriteResult{
+				Success:  true,
+				RecordId: "761575530",
+				Data:     map[string]any{"email": "probe.write@example.com"},
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name:  "Create sequence folder returns a GUID record id",
 			Input: common.WriteParams{ObjectName: "sequence-folders", RecordData: "dummy"},
 			Server: mockserver.Conditional{
