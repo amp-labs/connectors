@@ -1,0 +1,6 @@
+{
+  "code": "contact.notFound",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Contact with ID 999999999 not found."
+}
