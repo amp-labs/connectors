@@ -5,6 +5,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
+	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -13,6 +14,7 @@ type Connector struct {
 
 	common.RequireAuthenticatedClient
 
+	components.SchemaProvider
 	components.Reader
 
 	pacer pacer
@@ -32,6 +34,8 @@ func constructor(_ common.ConnectorParams, base *components.Connector) (*Connect
 
 	// Used by the transcript requests made through JSONHTTPClient while reading meetings.
 	connector.HTTPClient().ErrorHandler = connector.handleError
+
+	connector.SchemaProvider = schema.NewDelegateSchemaProvider(connector.listObjectMetadata)
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
