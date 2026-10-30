@@ -146,6 +146,10 @@ deploy.zip
 destructive.zip
 output/
 
+# Output directory for OpenAPI tool is the name of the package not literal output.
+# This is added because of the `output/` directive used for Salesforce.
+!scripts/openapi/internal/api/output/
+
 # Salesforce test binaries
 /apex
 test/salesforce/apex/apex

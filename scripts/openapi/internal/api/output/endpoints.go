@@ -3,6 +3,7 @@ package output
 import (
 	"path/filepath"
 
+	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/scripts/openapi/internal/api/pipeline"
 	"github.com/amp-labs/connectors/scripts/openapi/internal/api/spec"
 )
@@ -52,6 +53,7 @@ func extractEndpoints(pipelines map[string]*pipeline.Pipeline[spec.Schema]) any 
 				URL:         object.UrlPath,
 				Operation:   object.Operation,
 				ResponseKey: object.ResponseKey,
+				PathIds:     httpkit.ExtractPathIds(object.UrlPath),
 			}
 
 			switch action {
@@ -78,7 +80,8 @@ type Actions struct {
 }
 
 type Endpoint struct {
-	URL         string `json:"url,omitempty"`
-	Operation   string `json:"operation,omitempty"`
-	ResponseKey string `json:"responseKey,omitempty"`
+	URL         string   `json:"url,omitempty"`
+	Operation   string   `json:"operation,omitempty"`
+	ResponseKey string   `json:"responseKey,omitempty"`
+	PathIds     []string `json:"pathIds,omitempty"`
 }

@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/httpkit"
 )
 
 type Rule struct {
@@ -190,17 +191,22 @@ func (NoIdPath) IsPathMatching(path string) bool {
 	return !strings.Contains(path, "{")
 }
 
-// NoNestedIdPath allows exactly one ID in URL.
-type NoNestedIdPath struct{}
+// OnlyAllowedIdsPath matches URLs that contain no Ids other than those specified.
+func OnlyAllowedIdsPath(ids ...string) CustomPathMatcher {
+	return func(path string) bool {
+		allowed := make(datautils.Set[string])
+		for _, id := range ids {
+			allowed.AddOne(strings.ToLower(id))
+		}
 
-func (NoNestedIdPath) IsPathMatching(path string) bool {
-	// Remove the last URL part.
-	parts := strings.Split(path, "/")
-	parts = parts[:len(parts)-1]
-	path = strings.Join(parts, "/")
+		for _, id := range httpkit.ExtractPathIds(path) {
+			if !allowed.Has(strings.ToLower(id)) {
+				return false
+			}
+		}
 
-	// We get the large prefix which may have variate parts. It shouldn't.
-	return !strings.Contains(path, "{")
+		return true
+	}
 }
 
 type CustomPathMatcher func(path string) bool
