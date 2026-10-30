@@ -129,7 +129,7 @@ func QueryEndpoint(includeDeletedAndArchived bool) string {
 	return "query"
 }
 
-// buildSOQLEqCondition builds a SOQL equality condition for a field and value.
+// BuildSOQLEqCondition builds a SOQL equality condition for a field and value.
 // String values are single-quoted and escaped to prevent SOQL injection.
 func BuildSOQLEqCondition(fieldName string, value any) string {
 	switch v := value.(type) {
