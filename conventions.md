@@ -340,7 +340,9 @@ Search is the newest capability and has limited provider support. If the provide
 
 ## Pagination Patterns
 
-Almost all provider APIs paginate. Ampersand uses a cursor-based abstraction.
+Almost all provider APIs paginate. Ampersand uses a cursor-based abstraction. When a read is
+done, page size, and multi-pass reads are in the `connector-conventions` skill; Since and Until
+under paging are in the `time-filters` skill (both in `.agents/skills/`).
 
 ### Token-based pagination (most common)
 
@@ -429,37 +431,12 @@ func (c *Connector) ListObjectMetadata(ctx context.Context, objectNames []string
 
 ### HTTP error mapping
 
-Use the common error types:
-
-```go
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-    resp, err := c.Client.Get(ctx, url, nil)
-    if err != nil {
-        // common.HTTPStatusError wraps provider errors with status codes
-        var httpErr *common.HTTPStatusError
-        if errors.As(err, &httpErr) {
-            switch httpErr.Status {
-            case http.StatusUnauthorized:
-                return nil, common.ErrAccessToken
-            case http.StatusForbidden:
-                return nil, common.ErrForbidden
-            case http.StatusNotFound:
-                return nil, common.ErrObjectNotFound
-            case http.StatusTooManyRequests:
-                return nil, common.ErrRateLimited
-            }
-        }
-        return nil, err
-    }
-    // ...
-}
-```
-
-**Critical error types:**
-- `common.ErrAccessToken` — signals token-manager to refresh the token
-- `common.ErrRateLimited` — triggers Ampersand's backoff/retry logic
-- `common.ErrObjectNotFound` — object type not supported by this connector
-- `common.ErrForbidden` — permission issue (different from auth failure)
+The constructor sets an error handler that turns a failed response into a `common` error:
+`common.InterpretError`, which keeps the status, body and headers, or `interpreter.ErrorHandler`
+with a `FormatSwitch` when the provider's error envelope needs parsing (usually in `errors.go`).
+The error a response becomes decides what Ampersand does (stop the read, retry it, or refresh the
+token). What each error does, and when a mapping is wrong, is in the `connector-conventions` skill
+(`.agents/skills/connector-conventions/SKILL.md`).
 
 ### Never swallow errors silently
 
@@ -469,11 +446,9 @@ If an API call fails, return the error. Do not return empty results on failure �
 
 ## Rate Limiting
 
-Ampersand has its own rate limiting layer (Gubernator, per-provider, per-customer). As a connector author, your job is:
-
-1. **Return `common.ErrRateLimited`** when the provider returns a 429. Ampersand handles the backoff.
-2. **Read `Retry-After` headers** if the provider includes them and propagate that information if the error type supports it.
-3. **Do not implement your own retry loop** inside a connector — that's Ampersand's job at the Temporal layer.
+Ampersand's server owns rate limits, pacing, retries and backoff across every installation. A
+connector returns the provider's error and never paces, sleeps or retries; why, and what it does
+instead, is in the `server-owns-limits` skill (`.agents/skills/server-owns-limits/SKILL.md`).
 
 ---
 
@@ -520,6 +495,10 @@ func TestRead(t *testing.T) {
     assert.False(t, result.Done)  // more pages available
 }
 ```
+
+New tests build responses with the `mockserver` helpers and match requests with `mockcond`
+(`test/utils/mockutils/`) rather than writing to the `ResponseWriter` as above; what a read's tests
+cover is in the `connector-conventions` skill.
 
 ### Mock response fixtures
 
@@ -650,7 +629,7 @@ Use this before submitting a PR for a new connector.
 - [ ] Declare `lastModifiedField` for each object that supports incremental sync
 - [ ] Implement `Write` if the provider supports it
 - [ ] Map HTTP error codes to `common.Err*` types
-- [ ] Return `common.ErrRateLimited` on 429 responses
+- [ ] Rate limits reach the server as errors; no pacing, sleeps or retries in the connector (`server-owns-limits` skill)
 
 ### Testing phase
 - [ ] `constructTestConnector` passes the FULL URL (with scheme) to `WithWorkspace`
