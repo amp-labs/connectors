@@ -128,3 +128,19 @@ func QueryEndpoint(includeDeletedAndArchived bool) string {
 
 	return "query"
 }
+
+// buildSOQLEqCondition builds a SOQL equality condition for a field and value.
+// String values are single-quoted and escaped to prevent SOQL injection.
+func BuildSOQLEqCondition(fieldName string, value any) string {
+	switch v := value.(type) {
+	case string:
+		escaped := strings.ReplaceAll(v, `\`, `\\`)
+		escaped = strings.ReplaceAll(escaped, "'", `\'`)
+
+		return fmt.Sprintf("%s = '%s'", fieldName, escaped)
+	case bool:
+		return fmt.Sprintf("%s = %t", fieldName, v)
+	default:
+		return fmt.Sprintf("%s = %v", fieldName, v)
+	}
+}
