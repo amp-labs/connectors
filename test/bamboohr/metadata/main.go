@@ -16,13 +16,13 @@ func main() {
 	conn := bamboohr.GetBambooHRConnector(ctx)
 
 	objects := []string{
-		"employees_directory",
-		"meta_users",
+		"employees/directory",
+		"meta/users",
 		"employees",
-		"time_off_requests",
-		"whos_out",
-		"applicant_tracking_jobs",
-		"meta_fields",
+		"time-off/requests",
+		"whos-out",
+		"applicant_tracking/jobs",
+		"meta/fields",
 		"webhooks",
 	}
 
