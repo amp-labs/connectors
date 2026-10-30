@@ -41,10 +41,17 @@ Study how recent human-written connectors look today and give this one the same 
 situation, so it reads like one a person contributed this month. For correctness, understand what
 each pattern below is for, then decide what this provider needs.
 
-**Metadata.** `ListObjectMetadata` comes from a schema provider set in the constructor, and the
-right one depends on where the truth about fields lives: a static file generated from the
-provider's spec when fields are fixed (`schema.NewOpenAPISchemaProvider`, or the newer
-`internal/objectcatalog` format; use the one current human connectors use), a describe endpoint at
+**Capabilities.** A connector built on `internal/components` declares what it can do by embedding
+the interface (`components.SchemaProvider`, `components.Reader`, `components.Writer`,
+`components.Deleter`) and assigning it in `constructor`, so a reader sees its capabilities in the
+struct and the server reaches each one the same way. A capability served by a method written
+straight on `Connector` works at run time but hides it from that reading.
+
+**Metadata.** `ListObjectMetadata` comes from the `components.SchemaProvider` set in the
+constructor, and the right one depends on where the truth about fields lives: a static file
+generated from the provider's spec when fields are fixed (`schema.NewOpenAPISchemaProvider`, or the
+newer `internal/objectcatalog` format served through a schema provider such as
+`schema.NewDelegateSchemaProvider`; use the one current human connectors use), a describe endpoint at
 run time when the account defines fields (`schema.NewObjectSchemaProvider`), or both
 (`schema.NewCompositeSchemaProvider`). Inferring fields from the first record of a list is wrong
 whenever the account is empty, a field is missing or null on that record, or types matter; it is a
