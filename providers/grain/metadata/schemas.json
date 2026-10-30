@@ -1,0 +1,471 @@
+{
+  "modules": {
+    "root": {
+      "id": "root",
+      "path": "/v2",
+      "objects": {
+        "recordings": {
+          "displayName": "Recordings",
+          "path": "/recordings",
+          "responseKey": "recordings",
+          "docs": "https://developers.grain.com/endpoints.html#list-recordings",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "start_datetime": {
+              "displayName": "start_datetime",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "end_datetime": {
+              "displayName": "end_datetime",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "duration_ms": {
+              "displayName": "duration_ms",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "media_type": {
+              "displayName": "media_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "video",
+                  "displayValue": "video"
+                },
+                {
+                  "value": "audio",
+                  "displayValue": "audio"
+                },
+                {
+                  "value": "transcript",
+                  "displayValue": "transcript"
+                }
+              ]
+            },
+            "source": {
+              "displayName": "source",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "aircall",
+                  "displayValue": "aircall"
+                },
+                {
+                  "value": "local_capture",
+                  "displayValue": "local_capture"
+                },
+                {
+                  "value": "meet",
+                  "displayValue": "meet"
+                },
+                {
+                  "value": "teams",
+                  "displayValue": "teams"
+                },
+                {
+                  "value": "upload",
+                  "displayValue": "upload"
+                },
+                {
+                  "value": "webex",
+                  "displayValue": "webex"
+                },
+                {
+                  "value": "zoom",
+                  "displayValue": "zoom"
+                },
+                {
+                  "value": "other",
+                  "displayValue": "other"
+                }
+              ]
+            },
+            "share_state": {
+              "displayName": "share_state",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "public",
+                  "displayValue": "public"
+                },
+                {
+                  "value": "workspace",
+                  "displayValue": "workspace"
+                },
+                {
+                  "value": "restricted",
+                  "displayValue": "restricted"
+                }
+              ]
+            },
+            "sensitivity": {
+              "displayName": "sensitivity",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sensitivity_source": {
+              "displayName": "sensitivity_source",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "url": {
+              "displayName": "url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "thumbnail_url": {
+              "displayName": "thumbnail_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "highlights": {
+              "displayName": "highlights",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "tags": {
+              "displayName": "tags",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "teams": {
+              "displayName": "teams",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "workspace_shared": {
+              "displayName": "workspace_shared",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "recorders": {
+              "displayName": "recorders",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "meeting_type": {
+              "displayName": "meeting_type",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "ai_template_sections": {
+              "displayName": "ai_template_sections",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "ai_action_items": {
+              "displayName": "ai_action_items",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "ai_summary": {
+              "displayName": "ai_summary",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "calendar_event": {
+              "displayName": "calendar_event",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "hubspot": {
+              "displayName": "hubspot",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "participants": {
+              "displayName": "participants",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "private_notes": {
+              "displayName": "private_notes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "screenshares": {
+              "displayName": "screenshares",
+              "valueType": "other",
+              "providerType": "array"
+            }
+          }
+        },
+        "uploads": {
+          "displayName": "Uploads",
+          "path": "/uploads",
+          "responseKey": "uploads",
+          "docs": "https://developers.grain.com/endpoints.html#list-uploads",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "media_type": {
+              "displayName": "media_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "video",
+                  "displayValue": "video"
+                },
+                {
+                  "value": "audio",
+                  "displayValue": "audio"
+                },
+                {
+                  "value": "transcript",
+                  "displayValue": "transcript"
+                }
+              ]
+            },
+            "title": {
+              "displayName": "title",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "status": {
+              "displayName": "status",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "awaiting",
+                  "displayValue": "awaiting"
+                },
+                {
+                  "value": "processing",
+                  "displayValue": "processing"
+                },
+                {
+                  "value": "staged",
+                  "displayValue": "staged"
+                },
+                {
+                  "value": "promoting",
+                  "displayValue": "promoting"
+                },
+                {
+                  "value": "success",
+                  "displayValue": "success"
+                },
+                {
+                  "value": "failure",
+                  "displayValue": "failure"
+                }
+              ]
+            },
+            "auto_promote": {
+              "displayName": "auto_promote",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "recording_id": {
+              "displayName": "recording_id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "created_datetime": {
+              "displayName": "created_datetime",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "updated_datetime": {
+              "displayName": "updated_datetime",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            },
+            "attributes": {
+              "displayName": "attributes",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "media": {
+              "displayName": "media",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "failure": {
+              "displayName": "failure",
+              "valueType": "other",
+              "providerType": "object"
+            }
+          }
+        },
+        "hooks": {
+          "displayName": "Hooks",
+          "path": "/hooks",
+          "responseKey": "hooks",
+          "docs": "https://developers.grain.com/endpoints.html#list-hooks",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "enabled": {
+              "displayName": "enabled",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "hook_url": {
+              "displayName": "hook_url",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "hook_type": {
+              "displayName": "hook_type",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "recording_added",
+                  "displayValue": "recording_added"
+                },
+                {
+                  "value": "recording_updated",
+                  "displayValue": "recording_updated"
+                },
+                {
+                  "value": "recording_deleted",
+                  "displayValue": "recording_deleted"
+                },
+                {
+                  "value": "highlight_added",
+                  "displayValue": "highlight_added"
+                },
+                {
+                  "value": "highlight_updated",
+                  "displayValue": "highlight_updated"
+                },
+                {
+                  "value": "highlight_deleted",
+                  "displayValue": "highlight_deleted"
+                },
+                {
+                  "value": "story_added",
+                  "displayValue": "story_added"
+                },
+                {
+                  "value": "story_updated",
+                  "displayValue": "story_updated"
+                },
+                {
+                  "value": "story_deleted",
+                  "displayValue": "story_deleted"
+                },
+                {
+                  "value": "upload_added",
+                  "displayValue": "upload_added"
+                },
+                {
+                  "value": "upload_updated",
+                  "displayValue": "upload_updated"
+                }
+              ]
+            },
+            "include": {
+              "displayName": "include",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "inserted_at": {
+              "displayName": "inserted_at",
+              "valueType": "datetime",
+              "providerType": "datetime"
+            }
+          }
+        },
+        "users": {
+          "displayName": "Users",
+          "path": "/users",
+          "responseKey": "users",
+          "docs": "https://developers.grain.com/endpoints.html#list-users",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "teams": {
+          "displayName": "Teams",
+          "path": "/teams",
+          "responseKey": "teams",
+          "docs": "https://developers.grain.com/endpoints.html#list-teams",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          }
+        },
+        "meeting_types": {
+          "displayName": "Meeting Types",
+          "path": "/meeting_types",
+          "responseKey": "meeting_types",
+          "docs": "https://developers.grain.com/endpoints.html#list-meeting-types",
+          "fields": {
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "scope": {
+              "displayName": "scope",
+              "valueType": "singleSelect",
+              "providerType": "string",
+              "values": [
+                {
+                  "value": "internal",
+                  "displayValue": "internal"
+                },
+                {
+                  "value": "external",
+                  "displayValue": "external"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

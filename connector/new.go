@@ -71,6 +71,7 @@ import (
 	"github.com/amp-labs/connectors/providers/google"
 	"github.com/amp-labs/connectors/providers/gorgias"
 	gotoconn "github.com/amp-labs/connectors/providers/goto"
+	"github.com/amp-labs/connectors/providers/grain"
 	"github.com/amp-labs/connectors/providers/granola"
 	"github.com/amp-labs/connectors/providers/groove"
 	"github.com/amp-labs/connectors/providers/gusto"
@@ -238,6 +239,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.GoogleWorkspaceDelegation:         wrapper(newGoogleWorkspaceDelegationConnector),
 	providers.Gorgias:                           wrapper(newGorgiasConnector),
 	providers.GoTo:                              wrapper(newGoToConnector),
+	providers.Grain:                             wrapper(newGrainConnector),
 	providers.Granola:                           wrapper(newGranolaConnector),
 	providers.Groove:                            wrapper(newGrooveConnector),
 	providers.Gusto:                             wrapper(newGustoConnector),
@@ -975,6 +977,12 @@ func newGorgiasConnector(
 	params common.ConnectorParams,
 ) (*gorgias.Connector, error) {
 	return gorgias.NewConnector(params)
+}
+
+func newGrainConnector(
+	params common.ConnectorParams,
+) (*grain.Connector, error) {
+	return grain.NewConnector(params)
 }
 
 func newZendeskChatConnector(
