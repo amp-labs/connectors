@@ -4,6 +4,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/fileregistry"
+	"github.com/amp-labs/connectors/internal/httpkit"
 )
 
 // Catalog contains the canonical object metadata loaded from a static source.
@@ -51,6 +52,16 @@ func (c Catalog) ReadPath(objectName string) (string, error) {
 	}
 
 	return object.Path, nil
+}
+
+// ReadPathWithIds returns the URL path with its identifier variables resolved.
+func (c Catalog) ReadPathWithIds(objectName string, ids ...httpkit.PathIdentifier) (string, error) {
+	object, ok := c.Objects[objectName]
+	if !ok {
+		return "", common.ErrResolvingURLPathForObject
+	}
+
+	return httpkit.ResolveUrlPathTemplate(object.Path, ids...)
 }
 
 // Select creates an intermediate Selection data structure which allows enriching the object metadata
