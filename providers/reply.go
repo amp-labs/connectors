@@ -54,5 +54,10 @@ func init() {
 			Subscribe: false,
 			Write:     true,
 		},
+		SubscribeRequirements: &SubscribeRequirements{
+			// Reply supports creating webhook subscriptions via API.
+			// https://docs.reply.io/api-reference/webhooks/create-a-webhook-subscription
+			SubscribeByAPI: new(true),
+		},
 	})
 }
