@@ -73,11 +73,13 @@ func main() {
 	slog.Info("Deleted event", "id", deleteID)
 
 	// Step 6: fetch the window and classify.
-	rows, err := conn.GetRecordsByIds(ctx, "events", []string{checkpoint},
+	batchRes, err := conn.GetRecordsByIds(ctx, "events", []string{checkpoint},
 		[]string{"id", "summary", "status", "created", "updated"}, nil)
 	if err != nil {
 		utils.Fail("error fetching records by updatedMin", "error", err)
 	}
+
+	rows := batchRes.Rows
 
 	slog.Info("Fetched changed events", "count", len(rows))
 

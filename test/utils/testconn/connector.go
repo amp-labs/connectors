@@ -72,7 +72,7 @@ type TestableBatchReader interface {
 		recordIds []string,
 		fields []string,
 		associations []string,
-	) ([]common.ReadResultRow, error)
+	) (*common.BatchReadResult, error)
 }
 
 // TestableBatchWriter is the minimal interface for a connector that can batch write records.

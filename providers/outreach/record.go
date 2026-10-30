@@ -20,7 +20,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	ids []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	// Sanitize method arguments.
 	config := common.ReadParams{
 		ObjectName:        objectName,
@@ -63,7 +63,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 		return nil, err
 	}
 
-	return readResult.Data, nil
+	return common.NewBatchReadResult(readResult.Data), nil
 }
 
 // buildReadByIDsURL constructs a URL for fetching multiple records by their IDs.

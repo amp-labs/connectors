@@ -271,7 +271,12 @@ func TestGetRecordByIds(t *testing.T) {
 				t.Context(), tt.Input.ObjectName, tt.Input.Ids, tt.Input.Fields, tt.Input.Associations,
 			)
 
-			tt.Validate(t, err, result)
+			var rows []common.ReadResultRow
+			if result != nil {
+				rows = result.Rows
+			}
+
+			tt.Validate(t, err, rows)
 		})
 	}
 }

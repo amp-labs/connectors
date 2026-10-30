@@ -32,5 +32,12 @@ func (r TestCaseGetRecordsByIds) Run(t *testing.T, builder ConnectorBuilder[Test
 		input.ObjectName, input.RecordIds,
 		input.Fields, input.Associations,
 	)
-	readByIdsType(r).Validate(t, err, output)
+
+	// Compares fetched rows only.
+	var rows []common.ReadResultRow
+	if output != nil {
+		rows = output.Rows
+	}
+
+	readByIdsType(r).Validate(t, err, rows)
 }

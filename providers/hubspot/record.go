@@ -37,7 +37,7 @@ func (c *Connector) GetRecordsByIds(
 	ids []string,
 	fields []string,
 	associationsList []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
 	objectName = strings.ToLower(objectName)
@@ -85,7 +85,12 @@ func (c *Connector) GetRecordsByIds(
 		ctx, c.associationsFiller, objectName, associationsList,
 	)
 
-	return marshaller(records, fields)
+	rows, err := marshaller(records, fields)
+	if err != nil {
+		return nil, err
+	}
+
+	return common.NewBatchReadResult(rows), nil
 }
 
 func (c *Connector) buildBatchRecordsURL(objectName string, associations []string) (string, error) {

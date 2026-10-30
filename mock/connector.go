@@ -59,7 +59,7 @@ func NewConnector(opts ...Option) (conn *Connector, outErr error) { //nolint:fun
 			recordIds []string,
 			fields []string,
 			associations []string,
-		) ([]common.ReadResultRow, error) {
+		) (*common.BatchReadResult, error) {
 			return nil, fmt.Errorf("%w: %s", ErrNotImplemented, "getRecordsByIds")
 		}),
 		WithVerifyWebhookMessage(
@@ -188,7 +188,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	recordIds []string, //nolint:revive
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	return c.params.getRecordsByIds(ctx, objectName, recordIds, fields, associations)
 }
 

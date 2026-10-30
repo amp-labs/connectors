@@ -108,11 +108,13 @@ func readAppointmentsWithAssociations(ctx context.Context, conn *acculynx.Connec
 func hydrateUsersWithMissing(ctx context.Context, conn *acculynx.Connector) error {
 	ids := []string{realUserID, companyCalendarID}
 
-	rows, err := conn.GetRecordsByIds(ctx, "users", ids,
+	batchRes, err := conn.GetRecordsByIds(ctx, "users", ids,
 		[]string{"id", "displayName", "role"}, nil)
 	if err != nil {
 		return fmt.Errorf("GetRecordsByIds(users) errored — skip-on-404 is broken: %w", err)
 	}
+
+	rows := batchRes.Rows
 
 	slog.Info("users hydrated",
 		"requested", len(ids),
@@ -125,11 +127,13 @@ func hydrateUsersWithMissing(ctx context.Context, conn *acculynx.Connector) erro
 }
 
 func hydrateJob(ctx context.Context, conn *acculynx.Connector) error {
-	rows, err := conn.GetRecordsByIds(ctx, "jobs", []string{realJobID},
+	batchRes, err := conn.GetRecordsByIds(ctx, "jobs", []string{realJobID},
 		[]string{"id", "jobName"}, nil)
 	if err != nil {
 		return fmt.Errorf("GetRecordsByIds(jobs): %w", err)
 	}
+
+	rows := batchRes.Rows
 
 	slog.Info("job hydrated", "returned", len(rows))
 	utils.DumpJSON(rows, os.Stdout)
