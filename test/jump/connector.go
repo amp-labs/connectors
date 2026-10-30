@@ -10,14 +10,24 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
+// nolint:gochecknoglobals
+var fieldUserID = credscanning.Field{
+	Name:      "userId",
+	PathJSON:  "metadata.userId",
+	SuffixENV: "USER_ID",
+}
+
 func GetJumpConnector(ctx context.Context) *jump.Connector {
 	filePath := credscanning.LoadPath(providers.Jump)
-	reader := utils.MustCreateProvCredJSON(filePath, false)
+	reader := utils.MustCreateProvCredJSON(filePath, false, fieldUserID)
 
 	client := utils.NewAPIKeyClient(ctx, reader, providers.Jump)
 
 	conn, err := jump.NewConnector(common.ConnectorParams{
 		AuthenticatedClient: client,
+		Metadata: map[string]string{
+			"userId": reader.Get(fieldUserID),
+		},
 	})
 	if err != nil {
 		utils.Fail("error creating Jump connector", "error", err)

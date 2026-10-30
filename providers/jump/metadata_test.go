@@ -75,6 +75,9 @@ func TestListObjectMetadata(t *testing.T) {
 func constructTestConnector(serverURL string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
+		Metadata: map[string]string{
+			"userId": testUserID,
+		},
 	})
 	if err != nil {
 		return nil, err

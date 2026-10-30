@@ -138,7 +138,7 @@ func graphqlStatusCode(details ErrorDetails) int {
 	code := details.Extensions.Code
 
 	switch {
-	case strings.HasSuffix(code, "_NOT_FOUND"):
+	case code == "NOT_FOUND", strings.HasSuffix(code, "_NOT_FOUND"):
 		return http.StatusNotFound
 	case code == "INTERNAL_ERROR":
 		return http.StatusInternalServerError

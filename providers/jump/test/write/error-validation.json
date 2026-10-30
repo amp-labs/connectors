@@ -1,0 +1,21 @@
+{
+  "data": null,
+  "errors": [
+    {
+      "message": "Validation failed",
+      "path": ["createContact"],
+      "extensions": {
+        "code": "VALIDATION_FAILED",
+        "details": {
+          "fields": [
+            {
+              "message": "is invalid",
+              "field": "primary_email"
+            }
+          ]
+        }
+      },
+      "locations": [{"line": 1, "column": 85}]
+    }
+  ]
+}
