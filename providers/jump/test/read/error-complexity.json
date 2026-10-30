@@ -1,0 +1,22 @@
+{
+  "errors": [
+    {
+      "message": "Field meetings is too complex: complexity is 3700 and maximum is 1000",
+      "locations": [
+        {
+          "line": 2,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "message": "Operation Meetings is too complex: complexity is 3700 and maximum is 1000",
+      "locations": [
+        {
+          "line": 1,
+          "column": 1
+        }
+      ]
+    }
+  ]
+}

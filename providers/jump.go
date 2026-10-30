@@ -26,6 +26,17 @@ func init() {
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1782351024/media/jumpapp.com_1782351023.svg",
 			},
 		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "userId",
+					DisplayName: "User ID",
+					DocsURL:     "https://my.jumpapp.com/enterprise/documentation/reference?tab=queries#query-users",
+					Prompt: "The ID of the Jump user that contacts are created, updated and deleted for. " +
+						"Copy the user `id` (for example `usr_...`) from the `users` query.",
+				},
+			},
+		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
 				Insert: false,

@@ -1,0 +1,32 @@
+query Scorecards($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  scorecards(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
+    items {
+      calcType
+      calcValue
+      {{- if index .Fields "criteria"}}
+      criteria {
+        description
+        gradingFactors
+        gradingMethod
+        id
+        name
+        numericUpperScore
+        order
+      }
+      {{- end}}
+      description
+      format
+      id
+      insertedAt
+      meetingTypes
+      name
+      showCumulative
+      updatedAt
+      viewable
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

@@ -1,0 +1,25 @@
+query Tasks($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  tasks(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
+    items {
+      {{- if index .Fields "assignee"}}
+      assignee {
+        email
+        name
+        source
+      }
+      {{- end}}
+      description
+      due
+      id
+      insertedAt
+      meetingId
+      status
+      title
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

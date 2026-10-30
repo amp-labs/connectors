@@ -1,0 +1,18 @@
+query SignalDefinitions($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  signalDefinitions(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
+    items {
+      createdById
+      id
+      insertedAt
+      key
+      modelVersion
+      name
+      prompt
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

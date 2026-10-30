@@ -1,0 +1,21 @@
+query Documents($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  documents(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
+    items {
+      contactId
+      id
+      insertedAt
+      name
+      {{- if index .Fields "parsedResult"}}
+      parsedResult
+      {{- end}}
+      parsedText
+      processingState
+      updatedAt
+      userId
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

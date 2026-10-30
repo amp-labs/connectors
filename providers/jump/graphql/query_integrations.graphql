@@ -1,0 +1,16 @@
+query Integrations($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  integrations(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
+    items {
+      accountEmail
+      id
+      insertedAt
+      kind
+      service
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

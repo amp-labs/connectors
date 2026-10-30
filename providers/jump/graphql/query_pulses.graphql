@@ -1,0 +1,24 @@
+query Pulses($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  pulses(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
+    items {
+      description
+      id
+      insertedAt
+      meetingTypes
+      name
+      {{- if index .Fields "questions"}}
+      questions {
+        analysisType
+        id
+        order
+        question
+      }
+      {{- end}}
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

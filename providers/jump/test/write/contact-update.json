@@ -1,0 +1,38 @@
+{
+  "data": {
+    "updateContact": {
+      "contactInfo": [
+        {
+          "kind": "EMAIL",
+          "source": "JUMP_NATIVE",
+          "value": {
+            "address": "amp-test-write-20261027135509-updated@example.com",
+            "kind": null,
+            "principal": true
+          }
+        },
+        {
+          "kind": "NAME",
+          "source": "JUMP_NATIVE",
+          "value": {
+            "family": "Write 20261027135509 Updated",
+            "given": "amp-test",
+            "maiden_name": null,
+            "middle": null,
+            "nickname": null,
+            "prefix": null,
+            "suffix": null
+          }
+        }
+      ],
+      "email": "amp-test-write-20261027135509-updated@example.com",
+      "id": "con_2feda6a76d294253be5",
+      "insertedAt": "2026-10-27T13:55:10.408651Z",
+      "integrationReferences": [],
+      "name": "amp-test Write 20261027135509 Updated",
+      "status": "CONFIRMED",
+      "type": "INDIVIDUAL",
+      "updatedAt": "2026-10-27T13:55:10.408651Z"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+mutation UpdateContact($id: ID!, $firstName: String, $lastName: String, $email: String, $userId: ID) {
+  updateContact(id: $id, firstName: $firstName, lastName: $lastName, email: $email, userId: $userId) {
+    id
+    type
+    status
+    insertedAt
+    updatedAt
+    name
+    email
+    contactInfo {
+      kind
+      source
+      value
+    }
+    integrationReferences {
+      crmUrl
+      recordId
+      recordType
+      service
+    }
+  }
+}

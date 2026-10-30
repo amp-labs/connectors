@@ -1,0 +1,29 @@
+query MeetingPreps($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  meetingPreps(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
+    items {
+      {{- if index .Fields "answers"}}
+      answers {
+        answer
+        question
+      }
+      {{- end}}
+      contactId
+      id
+      insertedAt
+      {{- if index .Fields "prepContents"}}
+      prepContents {
+        content
+        insertedAt
+        name
+        updatedAt
+      }
+      {{- end}}
+      updatedAt
+      userId
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

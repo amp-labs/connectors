@@ -1,0 +1,32 @@
+query Users($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  users(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
+    items {
+      deactivatedAt
+      email
+      firstName
+      fullName
+      id
+      insertedAt
+      lastName
+      owner
+      {{- if index .Fields "scimMetadata"}}
+      scimMetadata {
+        costCenter
+        department
+        division
+        employeeNumber
+        managerExternalId
+        organization
+        title
+        userType
+      }
+      {{- end}}
+      scimUnmappedAttributes
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

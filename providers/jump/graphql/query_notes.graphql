@@ -1,0 +1,16 @@
+query Notes($first: Int, $after: String, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  notes(first: $first, after: $after, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
+    items {
+      id
+      insertedAt
+      meetingId
+      note
+      subject
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

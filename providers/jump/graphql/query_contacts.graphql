@@ -1,0 +1,32 @@
+query Contacts($first: Int, $after: String, $insertedAfter: DateTime, $updatedAfter: DateTime, $updatedBefore: DateTime) {
+  contacts(first: $first, after: $after, insertedAfter: $insertedAfter, updatedAfter: $updatedAfter, updatedBefore: $updatedBefore) {
+    items {
+      {{- if index .Fields "contactInfo"}}
+      contactInfo {
+        kind
+        source
+        value
+      }
+      {{- end}}
+      email
+      id
+      insertedAt
+      {{- if index .Fields "integrationReferences"}}
+      integrationReferences {
+        crmUrl
+        recordId
+        recordType
+        service
+      }
+      {{- end}}
+      name
+      status
+      type
+      updatedAt
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
