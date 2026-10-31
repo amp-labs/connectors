@@ -153,6 +153,7 @@ import (
 	"github.com/amp-labs/connectors/providers/talkdesk"
 	"github.com/amp-labs/connectors/providers/teamleader"
 	"github.com/amp-labs/connectors/providers/teamwork"
+	"github.com/amp-labs/connectors/providers/twenty"
 	"github.com/amp-labs/connectors/providers/webex"
 	"github.com/amp-labs/connectors/providers/webflow"
 	"github.com/amp-labs/connectors/providers/xero"
@@ -336,6 +337,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Talkdesk:                          wrapper(newTalkdeskConnector),
 	providers.Teamleader:                        wrapper(newTeamleaderConnector),
 	providers.Teamwork:                          wrapper(newTeamworkConnector),
+	providers.Twenty:                            wrapper(newTwentyConnector),
 	providers.Webex:                             wrapper(newWebexConnector),
 	providers.Webflow:                           wrapper(newWebflowConnector),
 	providers.Xero:                              wrapper(newXeroConnector),
@@ -1079,6 +1081,12 @@ func newClarifyConnector(
 	params common.ConnectorParams,
 ) (*clarify.Connector, error) {
 	return clarify.NewConnector(params)
+}
+
+func newTwentyConnector(
+	params common.ConnectorParams,
+) (*twenty.Connector, error) {
+	return twenty.NewConnector(params)
 }
 
 func newBraintreeConnector(
