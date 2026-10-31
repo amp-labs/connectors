@@ -44,7 +44,15 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 				Result: map[string]common.ObjectMetadata{
 					"status": {
 						DisplayName: "Status",
-						Fields:      map[string]common.FieldMetadata{},
+						Fields: map[string]common.FieldMetadata{
+							"type":         {DisplayName: "type"},
+							"id":           {DisplayName: "id"},
+							"name":         {DisplayName: "name"},
+							"order":        {DisplayName: "order"},
+							"color":        {DisplayName: "color"},
+							"success_rate": {DisplayName: "success_rate"},
+							"id_space":     {DisplayName: "id_space"},
+						},
 						FieldsMap: map[string]string{
 							"type":         "type",
 							"id":           "id",
@@ -57,7 +65,19 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop,mai
 					},
 					"leads": {
 						DisplayName: "Leads",
-						Fields:      map[string]common.FieldMetadata{},
+						Fields: map[string]common.FieldMetadata{
+							"id":                   {DisplayName: "id"},
+							"email":                {DisplayName: "email"},
+							"company":              {DisplayName: "company"},
+							"phone":                {DisplayName: "phone"},
+							"linkedin_url":         {DisplayName: "linkedin_url"},
+							"linkedin_company_url": {DisplayName: "linkedin_company_url"},
+							"facebook_username":    {DisplayName: "facebook_username"},
+							"youtube_username":     {DisplayName: "youtube_username"},
+							"instagram_username":   {DisplayName: "instagram_username"},
+							"telegram_username":    {DisplayName: "telegram_username"},
+							"first_name":           {DisplayName: "first_name"},
+						},
 						FieldsMap: map[string]string{
 							"id":                   "id",
 							"email":                "email",

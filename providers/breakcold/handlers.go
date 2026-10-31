@@ -37,10 +37,10 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	objectMetadata := common.ObjectMetadata{
-		FieldsMap:   make(map[string]string),
-		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
-	}
+	objectMetadata := common.NewObjectMetadata(
+		naming.CapitalizeFirstLetterEveryWord(objectName),
+		make(common.FieldsMetadata),
+	)
 
 	body, ok := response.Body()
 	if !ok {
@@ -72,11 +72,12 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	}
 
 	for field := range record[0] {
-		// TODO fix deprecated
-		objectMetadata.FieldsMap[field] = field // nolint:staticcheck
+		objectMetadata.AddFieldMetadata(field, common.FieldMetadata{
+			DisplayName: field,
+		})
 	}
 
-	return &objectMetadata, nil
+	return objectMetadata, nil
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
