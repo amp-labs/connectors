@@ -106,6 +106,30 @@ func NewBatchReadResult(rows []ReadResultRow) *BatchReadResult {
 	return &BatchReadResult{Rows: rows}
 }
 
+// ReportMissingIds adds a not-found failure for each requested id missing from Rows.
+func (r *BatchReadResult) ReportMissingIds(requestedIds []string) {
+	if r == nil {
+		return
+	}
+
+	returned := make(map[string]bool, len(r.Rows))
+	for _, row := range r.Rows {
+		returned[row.Id] = true
+	}
+
+	reported := make(map[string]bool, len(requestedIds))
+
+	for _, id := range requestedIds {
+		if returned[id] || reported[id] {
+			continue
+		}
+
+		reported[id] = true
+
+		r.AddFailure(id, fmt.Errorf("%w: %s not returned by the batch request", ErrNotFound, id))
+	}
+}
+
 // AddFailure adds a failed id to the result.
 func (r *BatchReadResult) AddFailure(recordId string, err error) {
 	r.Failures = append(r.Failures, NewRecordFailure(recordId, err))
