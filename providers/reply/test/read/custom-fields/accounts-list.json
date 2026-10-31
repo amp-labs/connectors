@@ -1,0 +1,21 @@
+{
+  "items": [
+    {
+      "id": 88001,
+      "name": "Acme",
+      "domainName": "acme.example",
+      "industry": "Robotics",
+      "customFields": [
+        {
+          "key": "154800",
+          "value": "2027-01-01"
+        },
+        {
+          "key": "154801",
+          "value": "25"
+        }
+      ]
+    }
+  ],
+  "hasMore": false
+}

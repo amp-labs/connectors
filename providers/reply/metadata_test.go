@@ -15,7 +15,9 @@ import (
 func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 	t.Parallel()
 
-	responseCustomFields := testutils.DataFromFile(t, "read/custom-fields.json")
+	responseCustomFields := testutils.DataFromFile(t, "read/custom-fields/definitions.json")
+	responseCollidingCustomFields := testutils.DataFromFile(t, "read/custom-fields/definitions-colliding.json")
+	responseAccountCustomFields := testutils.DataFromFile(t, "read/custom-fields/definitions-accounts.json")
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
@@ -88,10 +90,12 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 								ValueType:    "string",
 								ProviderType: "string",
 							},
+							// Deal Stage is a custom field: it comes from /v3/custom-fields, not from the static schema.
 							"Deal Stage": {
 								DisplayName:  "Deal Stage",
 								ValueType:    "string",
 								ProviderType: "text",
+								IsCustom:     new(true),
 							},
 						},
 					},
@@ -101,6 +105,179 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 			ExpectedErrs: nil,
 		},
 		{
+			Name:  "Account custom fields are merged into Contact Accounts metadata by title",
+			Input: []string{"contact-accounts"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v3/custom-fields"),
+					mockcond.QueryParam("entityType", "account"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseAccountCustomFields),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contact-accounts": {
+						DisplayName: "Contact Accounts",
+						Fields: map[string]common.FieldMetadata{
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							// Renewal Date is a custom account field.
+							"Renewal Date": {
+								DisplayName:  "Renewal Date",
+								ValueType:    "string",
+								ProviderType: "text",
+								IsCustom:     new(true),
+							},
+							// Seats is a custom account field of type number.
+							"Seats": {
+								DisplayName:  "Seats",
+								ValueType:    "float",
+								ProviderType: "number",
+								IsCustom:     new(true),
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Contacts and Contact Accounts each load the definitions of their own entity type",
+			Input: []string{"contacts", "contact-accounts"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.Path("/v3/custom-fields"),
+						mockcond.QueryParam("entityType", "contact"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseCustomFields),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/v3/custom-fields"),
+						mockcond.QueryParam("entityType", "account"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseAccountCustomFields),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadataWithMissingFields(map[string][]string{
+				"contacts":         {"Renewal Date", "Seats"},
+				"contact-accounts": {"Deal Stage"},
+			}),
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "Contacts",
+						Fields: map[string]common.FieldMetadata{
+							// Deal Stage is a custom field: it comes from /v3/custom-fields, not from the static schema.
+							"Deal Stage": {
+								DisplayName:  "Deal Stage",
+								ValueType:    "string",
+								ProviderType: "text",
+								IsCustom:     new(true),
+							},
+						},
+					},
+					"contact-accounts": {
+						DisplayName: "Contact Accounts",
+						Fields: map[string]common.FieldMetadata{
+							// Renewal Date is a custom account field.
+							"Renewal Date": {
+								DisplayName:  "Renewal Date",
+								ValueType:    "string",
+								ProviderType: "text",
+								IsCustom:     new(true),
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Custom field titled like a built-in field does not replace it",
+			Input: []string{"contacts"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v3/custom-fields"),
+				Then:  mockserver.Response(http.StatusOK, responseCollidingCustomFields),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadataWithMissingFields(map[string][]string{
+				"contacts": {"Industry", "Stage"},
+			}),
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contacts": {
+						DisplayName: "Contacts",
+						Fields: map[string]common.FieldMetadata{
+							"industry": {
+								DisplayName:  "industry",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							"stage": {
+								DisplayName:  "stage",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+							// Deal Stage is a custom field: it comes from /v3/custom-fields, not from the static schema.
+							"Deal Stage": {
+								DisplayName:  "Deal Stage",
+								ValueType:    "string",
+								ProviderType: "text",
+								IsCustom:     new(true),
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Team without account custom fields still gets Contact Accounts metadata",
+			Input: []string{"contact-accounts"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v3/custom-fields"),
+				Then:  mockserver.Response(http.StatusForbidden, nil),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"contact-accounts": {
+						DisplayName: "Contact Accounts",
+						Fields: map[string]common.FieldMetadata{
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Forbidden contact custom fields fail Contacts metadata",
+			Input: []string{"contacts"},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Path("/v3/custom-fields"),
+				Then:  mockserver.Response(http.StatusForbidden, nil),
+			}.Server(),
+			ExpectedErrs: []error{common.ErrResolvingCustomFields, common.ErrForbidden},
+		},
+		{
 			Name:  "Custom field endpoint failure fails Contacts metadata",
 			Input: []string{"contacts"},
 			Server: mockserver.Conditional{
@@ -108,7 +285,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 				If:    mockcond.Path("/v3/custom-fields"),
 				Then:  mockserver.Response(http.StatusInternalServerError, nil),
 			}.Server(),
-			ExpectedErrs: []error{common.ErrServer},
+			ExpectedErrs: []error{common.ErrResolvingCustomFields, common.ErrServer},
 		},
 		{
 			Name:       "Unknown object is reported in the errors map",
