@@ -29,8 +29,10 @@ const (
 )
 
 var (
-	errNoRecordIDs     = errors.New("no record ids provided")
-	errInvalidRecordID = errors.New(`invalid zoho mail record id, expected "<folderId>/<messageId>"`)
+	errNoRecordIDs = errors.New("no record ids provided")
+	// errInvalidRecordID marks a malformed record id.
+	errInvalidRecordID = fmt.Errorf(
+		`%w: invalid zoho mail record id, expected "<folderId>/<messageId>"`, common.ErrBadRequest)
 )
 
 // GetRecordsByIds fetches full records for the given record ids.
@@ -85,9 +87,6 @@ func (a *Adapter) GetRecordsByIds(
 
 	// Fetches every id, even when some fail.
 	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
-	if len(result.Errors) != 0 {
-		return nil, errors.Join(result.Errors.Values()...)
-	}
 
 	rows := make([]common.ReadResultRow, 0, len(recordIds))
 	for i := range recordIds {
@@ -96,7 +95,14 @@ func (a *Adapter) GetRecordsByIds(
 		}
 	}
 
-	return common.NewBatchReadResult(rows), nil
+	batch := common.NewBatchReadResult(rows)
+
+	// Not-found ids become failures; any other error fails the call.
+	if err := batch.ReportFetchErrors(recordIds, result.Errors); err != nil {
+		return nil, err
+	}
+
+	return batch, nil
 }
 
 // getMessageByID fetches a single email's metadata. The folderId is mandatory,

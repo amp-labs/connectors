@@ -28,7 +28,8 @@ var errBatchReadEmptyResponse = errors.New("acculynx: empty response body for re
 // single-record GET. Users were added for the appointment->user association:
 // an appointment's calendar id equals its user id, so the server hydrates the
 // user directly. Not every calendar is a user (company/crew calendars 404), so
-// GetRecordsByIds skips ids that are not found — see isNotFound below.
+// GetRecordsByIds reports ids that are not found as not-found failures instead
+// of failing the call.
 // jobs/representatives hydrates the per-job company-representative singleton:
 // the record id is the job id (matching write/delete for representatives), and
 // the fetch routes to /jobs/{jobId}/representatives/company — see
@@ -79,19 +80,6 @@ func (c *Connector) GetRecordsByIds(
 	// Fetches every id, even when some fail.
 	result := parallelfetch.Execute(ctx, tasks, maxConcurrentChildFetch)
 
-	// Skips not-found ids. Any other failure fails the call.
-	realErrs := make([]error, 0, len(result.Errors))
-
-	for _, err := range result.Errors {
-		if !isNotFound(err) {
-			realErrs = append(realErrs, err)
-		}
-	}
-
-	if len(realErrs) != 0 {
-		return nil, errors.Join(realErrs...)
-	}
-
 	out := compactFound(result.Records, len(recordIds))
 
 	// The embedded payload requested above still has to be lifted into
@@ -101,7 +89,14 @@ func (c *Connector) GetRecordsByIds(
 		extractJobContacts(out)
 	}
 
-	return common.NewBatchReadResult(out), nil
+	batch := common.NewBatchReadResult(out)
+
+	// Not-found ids become failures; any other error fails the call.
+	if err := batch.ReportFetchErrors(recordIds, result.Errors); err != nil {
+		return nil, err
+	}
+
+	return batch, nil
 }
 
 // isNotFound reports whether err represents a 404 from AccuLynx. The base JSON

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"testing"
 )
 
@@ -144,5 +145,67 @@ func TestBatchReadResult_HasFailuresNil(t *testing.T) {
 
 	if result.HasFailures() {
 		t.Error("nil result must report no failures")
+	}
+}
+
+// Not-found errors become failures in request order; every other error is returned, joined in
+// request order and naming its id.
+func TestBatchReadResult_ReportFetchErrors(t *testing.T) {
+	t.Parallel()
+
+	ids := []string{"a", "b", "c", "d", "e"}
+	serverErr := NewHTTPError(http.StatusInternalServerError, nil, nil, ErrServer)
+
+	result := NewBatchReadResult(nil)
+
+	err := result.ReportFetchErrors(ids, map[int]error{
+		4: NewHTTPError(http.StatusNotFound, nil, nil, ErrRetryable),
+		3: ErrLimitExceeded,
+		1: fmt.Errorf("wrapped: %w", ErrNotFound),
+		0: serverErr,
+	})
+
+	got := make([]string, 0, len(result.Failures))
+	for _, failure := range result.Failures {
+		got = append(got, failure.RecordId)
+
+		if failure.Reason != FailureReasonNotFound {
+			t.Errorf("failure for %q: reason %q, want %q", failure.RecordId, failure.Reason, FailureReasonNotFound)
+		}
+	}
+
+	if want := []string{"b", "e"}; !slices.Equal(got, want) {
+		t.Errorf("failures %v, want %v", got, want)
+	}
+
+	if !errors.Is(err, ErrServer) || !errors.Is(err, ErrLimitExceeded) {
+		t.Fatalf("error %v must wrap every non-not-found error", err)
+	}
+
+	if errors.Is(err, ErrNotFound) {
+		t.Errorf("error %v must not include the not-found errors", err)
+	}
+
+	if want := "record a: " + serverErr.Error() + "\nrecord d: " + ErrLimitExceeded.Error(); err.Error() != want {
+		t.Errorf("error %q, want %q", err.Error(), want)
+	}
+}
+
+// No errors, or only not-found errors, leave the call successful.
+func TestBatchReadResult_ReportFetchErrorsNoError(t *testing.T) {
+	t.Parallel()
+
+	result := NewBatchReadResult(nil)
+
+	if err := result.ReportFetchErrors([]string{"a"}, nil); err != nil {
+		t.Errorf("no errors: got %v", err)
+	}
+
+	if err := result.ReportFetchErrors([]string{"a"}, map[int]error{0: ErrNotFound}); err != nil {
+		t.Errorf("only not-found: got %v", err)
+	}
+
+	if len(result.Failures) != 1 {
+		t.Errorf("expected one not-found failure, got %d", len(result.Failures))
 	}
 }

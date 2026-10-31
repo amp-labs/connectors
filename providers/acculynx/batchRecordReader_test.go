@@ -189,11 +189,10 @@ func TestGetRecordsByIds_NotFoundIsSkippedNotErrored(t *testing.T) {
 	assert.Equal(t, rows[0].Fields["jobName"], "First")
 }
 
-func TestGetRecordsByIds_NonNotFoundStillErrors(t *testing.T) {
+func TestGetRecordsByIds_NonNotFoundFailsTheCall(t *testing.T) {
 	t.Parallel()
 
-	// A non-404 failure (e.g. 500) must still fail the batch — only genuine
-	// not-found ids are skipped.
+	// A 500 for one id fails the call, so the server retries or nacks it.
 	srv := mockserver.Conditional{
 		Setup: mockserver.ContentJSON(),
 		If: mockcond.And{
@@ -206,10 +205,51 @@ func TestGetRecordsByIds_NonNotFoundStillErrors(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	_, err = conn.GetRecordsByIds(context.Background(), objectJobs,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
 		[]string{"boom-job"}, []string{"id"}, nil)
 
-	assert.Assert(t, err != nil, "a 500 from upstream should still surface as an error")
+	assert.ErrorIs(t, err, common.ErrServer)
+	assert.ErrorContains(t, err, "record boom-job")
+	assert.Assert(t, batchRes == nil)
+}
+
+func TestGetRecordsByIds_NotFoundIsReportedAsFailure(t *testing.T) {
+	t.Parallel()
+
+	// A missing id is reported as a not-found failure alongside the found rows.
+	srv := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/v2/jobs/job-1"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"id":"job-1","jobName":"First"}`),
+			},
+			{
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/v2/jobs/missing-job"),
+				},
+				Then: mockserver.ResponseString(http.StatusNotFound, `{"detail":"NotFound"}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+
+	conn, err := constructTestReadConnector(srv.URL)
+	assert.NilError(t, err)
+
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
+		[]string{"job-1", "missing-job"}, []string{"id", "jobName"}, nil)
+
+	assert.NilError(t, err)
+	assert.Equal(t, len(batchRes.Rows), 1)
+	assert.Equal(t, batchRes.Rows[0].Id, "job-1")
+	assert.Equal(t, len(batchRes.Failures), 1)
+	assert.Equal(t, batchRes.Failures[0].RecordId, "missing-job")
+	assert.Equal(t, batchRes.Failures[0].Reason, common.FailureReasonNotFound)
 }
 
 func TestGetRecordsByIds_HydratesUsers(t *testing.T) {

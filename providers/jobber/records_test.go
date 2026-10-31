@@ -98,8 +98,15 @@ func TestGetRecordsByIds_RecordNotFound(t *testing.T) {
 	conn, err := constructTestConnector(srv.URL)
 	assert.NilError(t, err)
 
-	_, err = conn.GetRecordsByIds(context.Background(), "clients", []string{"MQ=="}, nil, nil)
-	assert.Assert(t, errors.Is(err, errRecordFetchNotFound))
+	batchRes, err := conn.GetRecordsByIds(context.Background(), "clients", []string{"MQ=="}, nil, nil)
+
+	// A missing record is reported as a not-found failure for its id.
+	assert.NilError(t, err)
+	assert.Equal(t, len(batchRes.Rows), 0)
+	assert.Equal(t, len(batchRes.Failures), 1)
+	assert.Equal(t, batchRes.Failures[0].RecordId, "MQ==")
+	assert.Equal(t, batchRes.Failures[0].Reason, common.FailureReasonNotFound)
+	assert.Assert(t, errors.Is(batchRes.Failures[0].Err, errRecordFetchNotFound))
 }
 
 func TestGetRecordsByIds_GraphQLErrorSurfaces(t *testing.T) {
@@ -109,13 +116,17 @@ func TestGetRecordsByIds_GraphQLErrorSurfaces(t *testing.T) {
 		Setup: mockserver.ContentJSON(),
 		If:    mockcond.MethodPOST(),
 		Then: mockserver.ResponseString(http.StatusOK,
-			`{"errors": [{"message": "Visit not found"}], "data": null}`),
+			`{"errors": [{"message": "Internal server error"}], "data": null}`),
 	}.Server()
 	defer srv.Close()
 
 	conn, err := constructTestConnector(srv.URL)
 	assert.NilError(t, err)
 
-	_, err = conn.GetRecordsByIds(context.Background(), "visits", []string{"MQ=="}, nil, nil)
-	assert.Assert(t, errors.Is(err, errRecordFetchFailed))
+	batchRes, err := conn.GetRecordsByIds(context.Background(), "visits", []string{"MQ=="}, nil, nil)
+
+	// A GraphQL error fails the call, so the server retries or nacks it.
+	assert.ErrorIs(t, err, errRecordFetchFailed)
+	assert.ErrorContains(t, err, "record MQ==")
+	assert.Assert(t, batchRes == nil)
 }
