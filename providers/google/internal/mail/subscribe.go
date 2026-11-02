@@ -23,20 +23,27 @@ var (
 )
 
 // Supported subscribe object names. These correspond to object names
-// that can be subscribed to via the Gmail API. Each maps to a Gmail label ID
-// used to filter which mailbox changes trigger push notifications.
+// that can be subscribed to via the Gmail API. Each maps to the Gmail label ID
+// (if any) used to filter which mailbox changes trigger push notifications.
 const (
 	messagesObject common.ObjectName = "messages"
 	draftsObject   common.ObjectName = "drafts"
 )
 
+// noLabelFilter marks an object whose watch must cover the whole mailbox rather than a single label.
+const noLabelFilter = ""
+
 // objectLabelIDs maps supported subscribe objects to their Gmail label IDs.
 // The Gmail watch API uses label IDs to filter which mailbox changes trigger
-// push notifications. Each object corresponds to a specific label.
+// push notifications.
+//
+// "messages" is not filtered by label: received mail that skips the inbox (archived by a
+// filter, sent to spam) and sent mail never carry the INBOX label, so an INBOX filter would
+// never push for them.
 //
 //nolint:gochecknoglobals
 var objectLabelIDs = map[common.ObjectName]string{
-	messagesObject: "INBOX",
+	messagesObject: noLabelFilter,
 	draftsObject:   "DRAFT",
 }
 
@@ -51,11 +58,13 @@ var (
 // populated by mapping each requested object to its corresponding Gmail label.
 type WatchRequest struct {
 	// LabelIDs restricts which mailbox changes trigger push notifications.
-	// Built from the subscribed objects (e.g. "messages" → "INBOX", "drafts" → "DRAFT").
-	LabelIDs []string `json:"labelIds"`
+	// Built from the subscribed objects (e.g. "drafts" → "DRAFT"). Empty means every
+	// mailbox change is pushed, which is what "messages" needs.
+	LabelIDs []string `json:"labelIds,omitempty"`
 
 	// LabelFilterBehavior controls how LabelIDs are applied (include vs. exclude).
-	LabelFilterBehavior string `json:"labelFilterBehavior"`
+	// Only meaningful when LabelIDs is set.
+	LabelFilterBehavior string `json:"labelFilterBehavior,omitempty"`
 
 	// TopicName is the fully qualified Google Cloud Pub/Sub topic to publish events to.
 	TopicName string `json:"topicName"`
@@ -87,8 +96,12 @@ func validateRequest(params common.SubscribeParams) (*WatchRequest, error) {
 
 // buildLabelIDs iterates over the requested subscription objects and returns
 // the corresponding Gmail label IDs. Returns an error if any object is unsupported.
+//
+// If any object needs the whole mailbox (see noLabelFilter), the result is empty:
+// an unfiltered watch already covers every label, so adding labels would only narrow it.
 func buildLabelIDs(events map[common.ObjectName]common.ObjectEvents) ([]string, error) {
 	labels := make([]string, 0, len(events))
+	watchAll := false
 
 	for obj := range events {
 		label, ok := objectLabelIDs[obj]
@@ -96,7 +109,17 @@ func buildLabelIDs(events map[common.ObjectName]common.ObjectEvents) ([]string, 
 			return nil, fmt.Errorf("%w: %q", errUnsupportedSubscribeObject, obj)
 		}
 
+		if label == noLabelFilter {
+			watchAll = true
+
+			continue
+		}
+
 		labels = append(labels, label)
+	}
+
+	if watchAll {
+		return nil, nil
 	}
 
 	return labels, nil
@@ -124,9 +147,11 @@ func (a *Adapter) EmptySubscriptionResult() *common.SubscriptionResult {
 // that filter which mailbox changes produce push notifications. This method:
 //
 //  1. Validates that all requested objects are supported ("messages", "drafts").
-//  2. Maps each object to its Gmail label ID ("messages" → "INBOX", "drafts" → "DRAFT").
+//  2. Maps each object to its Gmail label ID ("drafts" → "DRAFT"). "messages" has no
+//     label, so subscribing to it watches the whole mailbox.
 //  3. Extracts the WatchRequest from params, applying default label IDs and filter
-//     behavior ("include") if the caller did not provide explicit overrides.
+//     behavior ("include", only when there are labels) if the caller did not provide
+//     explicit overrides.
 //  4. Issues a single POST to the Gmail watch endpoint.
 //  5. On success, returns SubscriptionStatusSuccess with the WatchResponse (containing
 //     the historyId and expiration) and the subscribed ObjectEvents.
@@ -165,7 +190,7 @@ func (a *Adapter) Subscribe(
 		watchReq.LabelIDs = labels
 	}
 
-	if watchReq.LabelFilterBehavior == "" {
+	if len(watchReq.LabelIDs) > 0 && watchReq.LabelFilterBehavior == "" {
 		watchReq.LabelFilterBehavior = "include"
 	}
 
