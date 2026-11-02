@@ -23,28 +23,19 @@ var (
 )
 
 // Supported subscribe object names. These correspond to object names
-// that can be subscribed to via the Gmail API. Each maps to the Gmail label ID
-// (if any) used to filter which mailbox changes trigger push notifications.
+// that can be subscribed to via the Gmail API.
 const (
 	messagesObject common.ObjectName = "messages"
 	draftsObject   common.ObjectName = "drafts"
 )
 
-// noLabelFilter marks an object whose watch must cover the whole mailbox rather than a single label.
-const noLabelFilter = ""
-
-// objectLabelIDs maps supported subscribe objects to their Gmail label IDs.
+// objectLabelIDs maps label-filtered subscribe objects to their Gmail label IDs.
 // The Gmail watch API uses label IDs to filter which mailbox changes trigger
-// push notifications.
-//
-// "messages" is not filtered by label: received mail that skips the inbox (archived by a
-// filter, sent to spam) and sent mail never carry the INBOX label, so an INBOX filter would
-// never push for them.
+// push notifications. "messages" is not listed: it watches the whole mailbox (see buildLabelIDs).
 //
 //nolint:gochecknoglobals
 var objectLabelIDs = map[common.ObjectName]string{
-	messagesObject: noLabelFilter,
-	draftsObject:   "DRAFT",
+	draftsObject: "DRAFT",
 }
 
 // Compile-time interface conformance checks.
@@ -97,28 +88,27 @@ func validateRequest(params common.SubscribeParams) (*WatchRequest, error) {
 // buildLabelIDs iterates over the requested subscription objects and returns
 // the corresponding Gmail label IDs. Returns an error if any object is unsupported.
 //
-// If any object needs the whole mailbox (see noLabelFilter), the result is empty:
-// an unfiltered watch already covers every label, so adding labels would only narrow it.
+// "messages" watches the whole mailbox, so when it is subscribed the result is empty:
+// sent mail and received mail that skips the inbox (archived by a filter, sent to spam)
+// never carry the INBOX label, so an INBOX filter would never push for them. An unfiltered
+// watch already covers every label, so adding labels for other objects would only narrow it.
 func buildLabelIDs(events map[common.ObjectName]common.ObjectEvents) ([]string, error) {
 	labels := make([]string, 0, len(events))
-	watchAll := false
 
 	for obj := range events {
+		if obj == messagesObject {
+			continue
+		}
+
 		label, ok := objectLabelIDs[obj]
 		if !ok {
 			return nil, fmt.Errorf("%w: %q", errUnsupportedSubscribeObject, obj)
 		}
 
-		if label == noLabelFilter {
-			watchAll = true
-
-			continue
-		}
-
 		labels = append(labels, label)
 	}
 
-	if watchAll {
+	if _, ok := events[messagesObject]; ok {
 		return nil, nil
 	}
 

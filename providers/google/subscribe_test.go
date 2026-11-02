@@ -70,6 +70,15 @@ func TestMailSubscribeWatchRequest(t *testing.T) { //nolint:funlen
 			request:   &GmailSubscribeRequest{TopicName: topic},
 			expectErr: true,
 		},
+		{
+			name: "unsupported object is rejected alongside messages",
+			objects: map[common.ObjectName]common.ObjectEvents{
+				"messages": createOnly,
+				"threads":  createOnly,
+			},
+			request:   &GmailSubscribeRequest{TopicName: topic},
+			expectErr: true,
+		},
 	}
 
 	for _, tt := range tests {
