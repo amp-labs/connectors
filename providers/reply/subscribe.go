@@ -24,6 +24,12 @@ var _ connectors.SubscribeConnector = &Connector{}
 // Every event is an activity, never a create, update or delete of a record, so events are
 // requested by their Reply name through ObjectEvents.PassThroughEvents (see eventRoutes).
 //
+// Reply accepts a second subscription for the same event and URL, so a Subscribe retried after
+// the first one's result was lost (a crash between Reply creating the subscriptions and the
+// caller storing the result) subscribes twice and every event is delivered twice. Like the
+// other providers that track subscriptions only in the stored result, this does not list the
+// subscriptions Reply already holds to find them.
+//
 // https://docs.reply.io/api-reference/webhooks/create-a-webhook-subscription
 
 const (
@@ -47,8 +53,8 @@ var (
 // SubscriptionRequest is the provider-specific input the caller passes in
 // common.SubscribeParams.Request.
 type SubscriptionRequest struct {
-	// WebhookURL is the endpoint Reply will POST every event to.
-	WebhookURL string `json:"webhookUrl" validate:"required,url"`
+	// WebhookURL is the endpoint Reply will POST every event to. Reply takes up to 1024 characters.
+	WebhookURL string `json:"webhookUrl" validate:"required,url,max=1024"`
 }
 
 // SubscriptionResult is the persistent connector state: every Reply subscription that exists

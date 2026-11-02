@@ -1,8 +1,10 @@
 package reply
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -10,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
+	"gotest.tools/v3/assert"
 )
 
 var (
@@ -111,6 +114,17 @@ func TestSubscribe(t *testing.T) { //nolint:funlen
 			Input: common.SubscribeParams{
 				Request:            &SubscriptionRequest{WebhookURL: "not a url"},
 				SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{"contacts": passThrough("contact_replied")},
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{errInvalidSubscribeRequest},
+		},
+		{
+			Name: "Webhook URL longer than Reply takes is rejected",
+			Input: common.SubscribeParams{
+				Request: &SubscriptionRequest{WebhookURL: "https://hooks.example.com/" + strings.Repeat("a", 1024)},
+				SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
+					"contacts": passThrough("contact_replied"),
+				},
 			},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{errInvalidSubscribeRequest},
@@ -412,4 +426,41 @@ func TestDeleteSubscription(t *testing.T) {
 			})
 		})
 	}
+}
+
+// The caller stores the request and the result as JSON and reads them back into what the
+// Empty methods return, so those must hold pointers to types that survive the round trip.
+func TestSubscriptionTypesRoundTrip(t *testing.T) {
+	t.Parallel()
+
+	conn := &Connector{}
+
+	t.Run("Request", func(t *testing.T) {
+		t.Parallel()
+
+		empty, ok := conn.EmptySubscriptionParams().Request.(*SubscriptionRequest)
+		assert.Assert(t, ok, "Request must hold a pointer to SubscriptionRequest")
+
+		stored, err := json.Marshal(&SubscriptionRequest{WebhookURL: hookURL})
+		assert.NilError(t, err)
+		assert.NilError(t, json.Unmarshal(stored, empty))
+		assert.Equal(t, empty.WebhookURL, hookURL)
+	})
+
+	t.Run("Result", func(t *testing.T) {
+		t.Parallel()
+
+		empty, ok := conn.EmptySubscriptionResult().Result.(*SubscriptionResult)
+		assert.Assert(t, ok, "Result must hold a pointer to SubscriptionResult")
+
+		original := &SubscriptionResult{Subscriptions: []WebhookSubscription{
+			hook(101, "contact_opted_out", hookURL),
+			hook(103, "autopilot_stopped", hookURL),
+		}}
+
+		stored, err := json.Marshal(original)
+		assert.NilError(t, err)
+		assert.NilError(t, json.Unmarshal(stored, empty))
+		assert.DeepEqual(t, empty, original)
+	})
 }
