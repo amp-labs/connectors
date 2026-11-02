@@ -1,0 +1,39 @@
+{
+  "event": {
+    "date": "2026-11-02T09:43:23.4820194Z",
+    "id": "21e97425-5671-462f-9b57-d3f4b7f2aa8a",
+    "type": "contact_opted_out",
+    "user_id": 1234,
+    "team_id": 100,
+    "subscription_id": 24950
+  },
+  "opt_out_date": "2026-11-02T09:43:23.4779612Z",
+  "contact_fields": {
+    "id": 12345,
+    "email": "test-prospect@example.com",
+    "first_name": "Test",
+    "last_name": "Prospect",
+    "full_name": "Test Prospect",
+    "title": "Test Title",
+    "company": "Test Company",
+    "linkedin_profile_url": "https://linkedin.com/in/test",
+    "city": "Test City",
+    "state": "Test State",
+    "country": "Test Country",
+    "time_zone_id": "America/Los_Angeles",
+    "phone": "+1234567890",
+    "domain": "example.com",
+    "company_size": "51-200 employees",
+    "industry": "Software",
+    "linkedin_sales_navigator": "https://www.linkedin.com/sales/people/test",
+    "linkedin_recruiter": "https://www.linkedin.com/recruiter/people/test"
+  },
+  "contact_custom_fields": {
+    "Custom Field 1": "Custom Value 1"
+  },
+  "sequence_fields": {
+    "id": 200,
+    "step_number": 1,
+    "name": "Test Sequence"
+  }
+}

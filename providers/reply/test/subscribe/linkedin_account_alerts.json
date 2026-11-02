@@ -1,0 +1,17 @@
+{
+  "event": {
+    "date": "2026-11-02T09:43:34.6646556Z",
+    "id": "94203e9a-2d19-4a6a-baf5-6b39874d205b",
+    "type": "linkedin_account_alerts",
+    "user_id": 1234,
+    "team_id": 100,
+    "subscription_id": 24953
+  },
+  "team_name": "Test Workspace",
+  "linkedin_owner_name": "Test LinkedIn Owner",
+  "linkedin_owner_email": "test-li-owner@example.com",
+  "linkedin_id": 50,
+  "linkedin_name": "Test LinkedIn Account",
+  "linkedin_account_alert": "Sales Navigator is disconnected. Please reconnect your LinkedIn account to continue sending InMail steps.",
+  "sequence_fields": {}
+}

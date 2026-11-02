@@ -1,6 +1,7 @@
 package reply
 
 import (
+	"encoding/json"
 	"net/http"
 	"slices"
 	"testing"
@@ -210,6 +211,50 @@ func TestSubscriptionEvent(t *testing.T) { //nolint:funlen
 			t.Parallel()
 
 			tt.Run(t)
+		})
+	}
+}
+
+// TestCapturedDeliveries parses deliveries as Reply sent them: each file is the body of a real
+// POST /v3/webhooks/{id}/test delivery captured at the receiving end (only the user id is replaced).
+func TestCapturedDeliveries(t *testing.T) {
+	t.Parallel()
+
+	for _, tt := range []struct {
+		eventType string
+		object    string
+		recordID  string
+	}{
+		{"contact_opted_out", "contacts", "12345"},
+		{"email_replied", "contacts", "12345"},
+		{"email_account_error", "email-accounts", "1"},
+		{"linkedin_account_alerts", "linkedin-accounts", "50"},
+		{"autopilot_stopped", "sequences", "200"},
+	} {
+		t.Run(tt.eventType, func(t *testing.T) {
+			t.Parallel()
+
+			var delivery map[string]any
+
+			err := json.Unmarshal(testutils.DataFromFile(t, "subscribe/"+tt.eventType+".json"), &delivery)
+			assert.NilError(t, err)
+
+			occurred, err := time.Parse(time.RFC3339Nano, delivery["event"].(map[string]any)["date"].(string))
+			assert.NilError(t, err)
+
+			testconn.TestCaseSubscriptionEvent{
+				Name:  tt.eventType,
+				Input: CollapsedSubscriptionEvent(delivery),
+				Expected: []testconn.SubscriptionEventExpected{{
+					Data: testconn.SubscriptionEventExpectedData{
+						EventType:          common.SubscriptionEventTypeOther,
+						RawEventName:       tt.eventType,
+						ObjectName:         tt.object,
+						RecordId:           tt.recordID,
+						EventTimeStampNano: occurred.UnixNano(),
+					},
+				}},
+			}.Run(t)
 		})
 	}
 }
