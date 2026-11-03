@@ -92,17 +92,9 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return nil, err
 	}
 
-	endpointURL.WithQueryParam(pageSizeKey, pageSize(params))
+	endpointURL.WithQueryParam(pageSizeKey, readhelper.PageSizeWithDefaultStr(params, strconv.Itoa(maxPageSize)))
 
 	return endpointURL, nil
-}
-
-func pageSize(params common.ReadParams) string {
-	if params.PageSize <= 0 || params.PageSize > maxPageSize {
-		return strconv.Itoa(maxPageSize)
-	}
-
-	return strconv.Itoa(params.PageSize)
 }
 
 func (c *Connector) parseReadResponse(
