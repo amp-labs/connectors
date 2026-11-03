@@ -5,9 +5,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
-	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/notion/metadata"
 )
 
 type Connector struct {
@@ -15,7 +13,6 @@ type Connector struct {
 
 	common.RequireAuthenticatedClient
 
-	components.SchemaProvider
 	components.Reader
 }
 
@@ -25,11 +22,6 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 
 func constructor(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
-
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
-		connector.ProviderContext.Module(),
-		metadata.Schemas,
-	)
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,

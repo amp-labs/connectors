@@ -68,7 +68,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		return urlbuilder.New(params.NextPage.String())
 	}
 
-	path, err := metadata.Schemas.FindURLPath(c.ProviderContext.Module(), params.ObjectName)
+	path, err := metadata.Catalog.ReadPath(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -102,15 +102,10 @@ func (c *Connector) parseReadResponse(
 		return nil, err
 	}
 
-	responseKey := metadata.Schemas.LookupArrayFieldName(c.ProviderContext.Module(), params.ObjectName)
-	if responseKey == "" {
-		responseKey = resultsKey
-	}
-
 	return common.ParseResultFiltered(
 		params,
 		resp,
-		common.MakeRecordsFunc(responseKey),
+		common.MakeRecordsFunc(resultsKey),
 		makeFilterFunc(params, reqURL),
 		readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id")),
 		params.Fields,
