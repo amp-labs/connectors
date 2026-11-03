@@ -1,0 +1,4 @@
+{
+  "error": "bad_request",
+  "data": "Invalid input arguments:\nSchema does not allow additional properties. At path: #/share_state. Value was: \"public\"\n"
+}
