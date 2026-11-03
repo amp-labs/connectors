@@ -23,17 +23,6 @@ func main() {
 	conn := connTest.GetZoomConnector(ctx)
 
 	res, err := conn.Read(ctx, common.ReadParams{
-		ObjectName: "users",
-		Fields:     connectors.Fields("email"),
-	})
-	if err != nil {
-		utils.Fail("error reading from Zoom", "error", err)
-	}
-
-	fmt.Println("Reading users..")
-	utils.DumpJSON(res, os.Stdout)
-
-	res, err = conn.Read(ctx, common.ReadParams{
 		ObjectName: "devices",
 		Fields:     connectors.Fields("app_version"),
 	})

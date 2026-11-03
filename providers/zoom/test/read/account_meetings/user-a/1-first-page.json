@@ -1,0 +1,31 @@
+{
+  "page_size": 300,
+  "total_records": 2,
+  "next_page_token": "",
+  "meetings": [
+    {
+      "uuid": "5IMhzHenSKmR7OFghUFeVg==",
+      "id": 86381714576,
+      "host_id": "KDcuGIm1QgePTO8WbOqwIQ",
+      "topic": "Q4 Departmental Alignment & Sync",
+      "type": 2,
+      "start_time": "2027-06-30T21:00:00Z",
+      "duration": 40,
+      "timezone": "Asia/Calcutta",
+      "created_at": "2026-10-30T20:11:05Z",
+      "join_url": "https://us05web.zoom.us/j/86381714576?pwd=aye5wv0jiQbL7E8paIldvHIcnQHwas.1"
+    },
+    {
+      "uuid": "lsj/yEpvSiWraKYlU6HQRg==",
+      "id": 87414255009,
+      "host_id": "KDcuGIm1QgePTO8WbOqwIQ",
+      "topic": "Quick sync",
+      "type": 2,
+      "start_time": "2027-07-01T21:00:00Z",
+      "duration": 40,
+      "timezone": "Asia/Calcutta",
+      "created_at": "2026-10-30T20:11:45Z",
+      "join_url": "https://us05web.zoom.us/j/87414255009?pwd=s1NmHn6q8U7EIaGcBm5NH14gaMGM7D.1"
+    }
+  ]
+}
