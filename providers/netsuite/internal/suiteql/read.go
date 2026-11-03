@@ -11,6 +11,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/netsuite/internal/shared"
 )
 
@@ -24,17 +25,13 @@ const (
 )
 
 // tablesWithoutLastModifiedDate are SuiteQL tables that have no lastModifiedDate column, so
-// a time-bounded (incremental) read can't filter them: SuiteQL rejects the query with
-// "Unknown identifier 'lastModifiedDate'". These are small reference tables, so they are
-// read in full every time instead. Verified with SuiteQL on a NetSuite sandbox (td2972271,
-// 2026-11-02); account, location, department, classification, subsidiary, currency,
-// salestaxitem and paymentmethod do have the column.
-var tablesWithoutLastModifiedDate = map[string]bool{ //nolint:gochecknoglobals
-	"nexus":           true,
-	"subsidiarynexus": true,
-	"taxgroup":        true,
-	"taxgrouptaxitem": true,
-}
+// incremental reads can't filter them by time. They are read in full instead.
+var tablesWithoutLastModifiedDate = datautils.NewStringSet( //nolint:gochecknoglobals
+	"nexus",
+	"subsidiarynexus",
+	"taxgroup",
+	"taxgrouptaxitem",
+)
 
 // buildReadRequest builds the HTTP request for SuiteQL queries.
 // SuiteQL uses SQL-like queries instead of REST endpoints.
@@ -95,7 +92,7 @@ func makeSuiteQLBody(params common.ReadParams) suiteQLQueryBody {
 		Query: "SELECT * FROM " + params.ObjectName, //nolint:unqueryvet
 	}
 
-	if tablesWithoutLastModifiedDate[strings.ToLower(params.ObjectName)] {
+	if tablesWithoutLastModifiedDate.Has(strings.ToLower(params.ObjectName)) {
 		return body
 	}
 
