@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/grain/metadata"
+	"github.com/amp-labs/connectors/providers/grain/internal/metadata"
 )
 
 // Connector is the Grain connector.
@@ -29,10 +29,7 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
-	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
-		connector.ProviderContext.Module(),
-		metadata.Schemas,
-	)
+	connector.SchemaProvider = schema.NewCatalogSchemaProvider(metadata.Catalog)
 
 	return connector, nil
 }

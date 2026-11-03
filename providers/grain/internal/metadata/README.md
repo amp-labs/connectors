@@ -1,7 +1,7 @@
 # Metadata
 
 Grain does not provide an OpenAPI specification or a schema discovery endpoint.
-The static file `schemas.json` was created manually from the "Common Response Objects"
+The static file `objectsMetadata.json` was created manually from the "Common Response Objects"
 section of the [Grain API documentation](https://developers.grain.com/endpoints.html)
 (API version `2026-10-01`) and is embedded by `metadata.go`.
 
