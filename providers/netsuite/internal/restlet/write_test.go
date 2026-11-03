@@ -94,6 +94,56 @@ func TestParseWriteResponse_Data(t *testing.T) {
 	}
 }
 
+// TestParseWriteResponse_ScriptVersion ensures the RESTlet's version, which arrives in the
+// response header, reaches callers in WriteResult.Data under either header field name.
+func TestParseWriteResponse_ScriptVersion(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name        string
+		body        string
+		wantVersion any
+	}{
+		{
+			name:        "scriptVersion header (2.4.2 and later)",
+			body:        `{"header":{"status":"SUCCESS","scriptVersion":"1.2.0"},"body":{"recordId":"42","type":"invoice"}}`,
+			wantVersion: "1.2.0",
+		},
+		{
+			name:        "version header (before 2.4.2)",
+			body:        `{"header":{"status":"SUCCESS","version":"2.3.8"},"body":{"recordId":"42","type":"invoice"}}`,
+			wantVersion: "2.3.8",
+		},
+		{
+			name:        "no recordId, as for ping",
+			body:        `{"header":{"status":"SUCCESS","scriptVersion":"1.2.0"},"body":{"message":"pong"}}`,
+			wantVersion: "1.2.0",
+		},
+		{
+			name:        "no version header",
+			body:        `{"header":{"status":"SUCCESS"},"body":{"recordId":"42"}}`,
+			wantVersion: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			resp := newJSONResponse(t, tt.body)
+
+			result, err := (&Adapter{}).parseWriteResponse(context.Background(), common.WriteParams{}, nil, resp)
+			if err != nil {
+				t.Fatalf("parseWriteResponse() unexpected error: %v", err)
+			}
+
+			if got := result.Data[restletVersionKey]; got != tt.wantVersion {
+				t.Errorf("Data[%q] = %v, want %v", restletVersionKey, got, tt.wantVersion)
+			}
+		})
+	}
+}
+
 func keys(m map[string]any) []string {
 	ks := make([]string, 0, len(m))
 	for k := range m {

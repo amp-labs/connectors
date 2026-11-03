@@ -32,7 +32,18 @@ type responseHeader struct {
 	TotalResults int64  `json:"totalResults"`
 	TotalPages   int    `json:"totalPages"`
 	PageSize     int    `json:"pageSize"`
-	Version      string `json:"version"`
+	// ScriptVersion is the RESTlet's version. RESTlets before 2.4.2 send it as Version.
+	ScriptVersion string `json:"scriptVersion"`
+	Version       string `json:"version"`
+}
+
+// restletVersion returns the version the RESTlet reported, whichever header field it used.
+func (h responseHeader) restletVersion() string {
+	if h.ScriptVersion != "" {
+		return h.ScriptVersion
+	}
+
+	return h.Version
 }
 
 // restletErrorBody is the body when header.status == "ERROR".

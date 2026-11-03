@@ -81,7 +81,7 @@ func (a *Adapter) parseWriteResponse(
 	rawID, err := jsonquery.New(node).TextWithDefault("recordId", "")
 	if err != nil {
 		//nolint:nilerr
-		return &common.WriteResult{Success: true}, nil
+		return withRestletVersion(&common.WriteResult{Success: true}, fullResp.Header), nil
 	}
 
 	result := &common.WriteResult{
@@ -93,5 +93,25 @@ func (a *Adapter) parseWriteResponse(
 		result.Data = data
 	}
 
-	return result, nil
+	return withRestletVersion(result, fullResp.Header), nil
+}
+
+// restletVersionKey is where the RESTlet's version goes in WriteResult.Data, so callers can tell
+// which bundle release each NetSuite account runs. The RESTlet sends it in the response header,
+// which the write result doesn't otherwise carry.
+const restletVersionKey = "_scriptVersion"
+
+func withRestletVersion(result *common.WriteResult, header responseHeader) *common.WriteResult {
+	version := header.restletVersion()
+	if version == "" {
+		return result
+	}
+
+	if result.Data == nil {
+		result.Data = map[string]any{}
+	}
+
+	result.Data[restletVersionKey] = version
+
+	return result
 }
