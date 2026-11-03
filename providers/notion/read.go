@@ -27,12 +27,26 @@ const (
 	uploadTimeField = "last_edited_time"
 )
 
+// Read is limited to workspace-scoped GET lists with no required parent id or
+// scope query param. Users and file uploads match that model.
+//
 // List users has no timestamp, so Since and Until cannot be applied.
 // List file uploads has no time query param. Those rows are filtered on
 // last_edited_time after the response. Later pages are not stopped early
 // because the list order is not documented.
 // https://developers.notion.com/reference/get-users
 // https://developers.notion.com/reference/list-file-uploads
+//
+// Other Notion list endpoints:
+//   - custom_emojis: same pagination shape (`results`); parent-free. Not in Read
+//     yet; easy to add to metadata and this set when product wants it.
+//   - views: GET list but requires database_id or data_source_id; not parent-free.
+//     https://developers.notion.com/reference/list-views
+//
+// Databases, data sources, and pages are central to Notion but have no
+// parent-free list for Read. POST /v1/search can discover them without a time
+// window, so it is a poor fit for incremental Read. Subscribe (webhooks) may
+// cover those objects even when Read cannot, depending on Notion's event surface.
 var readSupportedObjects = datautils.NewStringSet( //nolint:gochecknoglobals
 	objectUsers,
 	objectUploads,

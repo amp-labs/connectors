@@ -20,11 +20,13 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
-// Workspace collections with a GET list and no parent id.
+// Workspace collections with a GET list and no parent id (same bar as Read today).
+// custom_emojis (/v1/custom_emojis) qualifies but is omitted until Read supports it.
+// Views (/v1/views) are a GET list but require database_id or data_source_id.
 // Pages and data sources come only from POST /v1/search, which cannot take a time window.
 // Blocks are listed at GET /v1/blocks/{block_id}/children, which needs a parent id.
-// Comments and views need a parent id. Search is an action.
-// None of those are connector objects.
+// Comments need a parent id. Search is an action.
+// Databases/data sources/pages may be better suited to Subscribe than Read.
 //
 //nolint:gochecknoglobals
 var readObjects = filters.NewRules(
