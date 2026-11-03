@@ -23,6 +23,19 @@ const (
 	maxRecordsPerPage = 1000
 )
 
+// tablesWithoutLastModifiedDate are SuiteQL tables that have no lastModifiedDate column, so
+// a time-bounded (incremental) read can't filter them: SuiteQL rejects the query with
+// "Unknown identifier 'lastModifiedDate'". These are small reference tables, so they are
+// read in full every time instead. Verified with SuiteQL on a NetSuite sandbox (td2972271,
+// 2026-11-02); account, location, department, classification, subsidiary, currency,
+// salestaxitem and paymentmethod do have the column.
+var tablesWithoutLastModifiedDate = map[string]bool{ //nolint:gochecknoglobals
+	"nexus":           true,
+	"subsidiarynexus": true,
+	"taxgroup":        true,
+	"taxgrouptaxitem": true,
+}
+
 // buildReadRequest builds the HTTP request for SuiteQL queries.
 // SuiteQL uses SQL-like queries instead of REST endpoints.
 func (a *Adapter) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -80,6 +93,10 @@ func makeSuiteQLBody(params common.ReadParams) suiteQLQueryBody {
 		// unqueryvet: ObjectName is an arbitrary NetSuite record type, so the
 		// connector cannot know its columns ahead of time.
 		Query: "SELECT * FROM " + params.ObjectName, //nolint:unqueryvet
+	}
+
+	if tablesWithoutLastModifiedDate[strings.ToLower(params.ObjectName)] {
+		return body
 	}
 
 	dateColumn := "lastModifiedDate"
