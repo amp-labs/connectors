@@ -1,0 +1,83 @@
+{
+  "cursor": null,
+  "uploads": [
+    {
+      "attributes": {
+        "title": "Ampersand schema validation (staged, updated)",
+        "start_datetime": "2026-10-28T11:37:44.405272Z",
+        "participants": [
+          {
+            "name": "Speaker One",
+            "speaker_key": "s1"
+          }
+        ],
+        "transcript": {
+          "segments": [
+            {
+              "start": 0,
+              "text": "Schema validation.",
+              "end": 1200,
+              "speaker_key": "s1"
+            }
+          ],
+          "language": "en",
+          "anonymous_speakers": []
+        },
+        "team_id": null,
+        "recorder_ids": [
+          "e4bac6b2-8272-4db0-a4ec-892e3010631f"
+        ]
+      },
+      "id": "0efac057-7d26-4d82-afc7-771fc081aa51",
+      "status": "staged",
+      "title": "Ampersand schema validation (staged, updated)",
+      "media_type": "transcript",
+      "recording_id": null,
+      "auto_promote": false,
+      "created_datetime": "2026-10-28T11:37:44Z",
+      "updated_datetime": "2026-10-28T11:37:48Z"
+    },
+    {
+      "attributes": {
+        "title": "Ampersand proxy test",
+        "start_datetime": "2026-10-01T14:04:29.104664Z",
+        "participants": [],
+        "transcript": {
+          "segments": [
+            {
+              "start": 0,
+              "text": "Hello, this is a proxy test.",
+              "end": 4999,
+              "speaker_key": "a"
+            },
+            {
+              "start": 5000,
+              "text": "Testing the Ampersand Grain connector.",
+              "end": 10000,
+              "speaker_key": "a"
+            }
+          ],
+          "language": "en",
+          "anonymous_speakers": [
+            {
+              "name": "Unknown Speaker 1",
+              "speaker_key": "a"
+            }
+          ]
+        },
+        "team_id": null,
+        "recorder_ids": [
+          "e4bac6b2-8272-4db0-a4ec-892e3010631f"
+        ]
+      },
+      "id": "662256a9-083b-4a9a-adbf-d1d257e498b6",
+      "status": "success",
+      "title": "Ampersand proxy test",
+      "media_type": "transcript",
+      "recording_id": "0470708a-df31-4386-9a66-f8b2ae480f70",
+      "auto_promote": true,
+      "created_datetime": "2026-10-01T14:04:29Z",
+      "updated_datetime": "2026-10-01T14:04:29Z"
+    }
+  ]
+}

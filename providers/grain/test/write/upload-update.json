@@ -1,0 +1,24 @@
+{
+  "attributes": {
+    "title": "Ampersand schema validation (staged, updated)",
+    "start_datetime": "2026-10-28T11:37:44.405272Z",
+    "participants": [
+      {
+        "name": "Speaker One",
+        "speaker_key": "s1"
+      }
+    ],
+    "team_id": null,
+    "recorder_ids": [
+      "e4bac6b2-8272-4db0-a4ec-892e3010631f"
+    ]
+  },
+  "id": "0efac057-7d26-4d82-afc7-771fc081aa51",
+  "status": "staged",
+  "title": "Ampersand schema validation (staged, updated)",
+  "media_type": "transcript",
+  "recording_id": null,
+  "auto_promote": false,
+  "created_datetime": "2026-10-28T11:37:44Z",
+  "updated_datetime": "2026-10-28T11:37:48Z"
+}
