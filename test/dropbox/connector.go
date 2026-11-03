@@ -2,7 +2,6 @@ package dropbox
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
@@ -16,17 +15,8 @@ func GetDropboxConnector(ctx context.Context) *dropbox.Connector {
 	filePath := credscanning.LoadPath(providers.Dropbox)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
-	client, err := common.NewOAuthHTTPClient(ctx,
-		common.WithOAuthClient(http.DefaultClient),
-		common.WithOAuthConfig(getConfig(reader)),
-		common.WithOAuthToken(reader.GetOauthToken()),
-	)
-	if err != nil {
-		utils.Fail("error creating Dropbox OAuth client", "error", err)
-	}
-
 	conn, err := dropbox.NewConnector(common.ConnectorParams{
-		AuthenticatedClient: client,
+		AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
 	})
 	if err != nil {
 		utils.Fail("error creating Dropbox connector", "error", err)
