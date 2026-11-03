@@ -102,7 +102,9 @@ type OAuthApp struct {
 	SSLKey          string
 	CodeVerifier    *string
 	PasswordParams  *providers.BasicParams
-	WriteCreds      bool
+	// TokenParams are the provider's extra token request parameters (password grant only).
+	TokenParams map[string]string
+	WriteCreds  bool
 }
 
 // ServeHTTP implements the http.Handler interface.
@@ -213,7 +215,8 @@ func (a *OAuthApp) Run() error {
 
 		return nil
 	} else if a.GrantType == providers.Password {
-		tok, err := a.Config.PasswordCredentialsToken(context.Background(), a.PasswordParams.User, a.PasswordParams.Pass)
+		tok, err := passwordGrantToken(context.Background(), a.Config, a.TokenParams,
+			a.PasswordParams.User, a.PasswordParams.Pass)
 		if err != nil {
 			return err
 		}
@@ -317,8 +320,7 @@ func setup() *OAuthApp {
 	}
 
 	// Get the OAuth scopes from the flag.
-	clientId := registry.MustString(credscanning.Fields.ClientId.Name)
-	clientSecret := registry.MustString(credscanning.Fields.ClientSecret.Name)
+	clientId, clientSecret := readClientCredentials(providerInfo.Oauth2Opts.GrantType)
 
 	scopes, err := registry.GetString(credscanning.Fields.Scopes.Name)
 	if err != nil {
@@ -455,14 +457,10 @@ func setup() *OAuthApp {
 				User: username,
 				Pass: password,
 			},
+			TokenParams: providerInfo.Oauth2Opts.TokenParams,
 		}
 		if state != "" {
 			app.State = state
-		}
-
-		if providerInfo.Oauth2Opts.Audience != nil {
-			aud := providerInfo.Oauth2Opts.Audience
-			app.ClientCredsConfig.EndpointParams = url.Values{"audience": aud}
 		}
 
 		return app
@@ -487,4 +485,19 @@ func main() {
 
 		os.Exit(1)
 	}
+}
+
+// readClientCredentials reads the client ID and secret from the creds file. They are
+// required, except for the password grant: a password grant provider may need no client,
+// or supply a default one through its token parameters (SugarAI does).
+func readClientCredentials(grantType providers.Oauth2OptsGrantType) (string, string) {
+	if grantType != providers.Password {
+		return registry.MustString(credscanning.Fields.ClientId.Name),
+			registry.MustString(credscanning.Fields.ClientSecret.Name)
+	}
+
+	clientId, _ := registry.GetString(credscanning.Fields.ClientId.Name)
+	clientSecret, _ := registry.GetString(credscanning.Fields.ClientSecret.Name)
+
+	return clientId, clientSecret
 }
