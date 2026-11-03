@@ -81,7 +81,7 @@ func (a *Adapter) parseWriteResponse(
 	rawID, err := jsonquery.New(node).TextWithDefault("recordId", "")
 	if err != nil {
 		//nolint:nilerr
-		return &common.WriteResult{Success: true}, nil
+		return withResponseHeader(&common.WriteResult{Success: true}, resp), nil
 	}
 
 	result := &common.WriteResult{
@@ -93,5 +93,28 @@ func (a *Adapter) parseWriteResponse(
 		result.Data = data
 	}
 
-	return result, nil
+	return withResponseHeader(result, resp), nil
+}
+
+// responseHeaderKey is where the RESTlet's response header goes in WriteResult.Data. The header
+// carries metadata such as the RESTlet's version that callers can't otherwise see, because Data
+// is built from the response body.
+const responseHeaderKey = "header"
+
+// withResponseHeader adds the RESTlet's response header, unchanged, to the write result's Data.
+func withResponseHeader(result *common.WriteResult, resp *common.JSONHTTPResponse) *common.WriteResult {
+	envelope, err := common.UnmarshalJSON[struct {
+		Header map[string]any `json:"header"`
+	}](resp)
+	if err != nil || len(envelope.Header) == 0 {
+		return result
+	}
+
+	if result.Data == nil {
+		result.Data = map[string]any{}
+	}
+
+	result.Data[responseHeaderKey] = envelope.Header
+
+	return result
 }
