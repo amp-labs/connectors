@@ -2,6 +2,7 @@ package spec
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -39,6 +40,9 @@ type Schema struct {
 	Problem error
 	// Origin exposes the underlying OpenAPI schema for advanced use-cases.
 	Origin SchemaOrigin
+	// Tags contains markers used to identify a schema at one stage of a
+	// transformation and can be referenced at a later stage.
+	Tags datautils.Set[string]
 }
 
 type SchemaOrigin struct {
@@ -54,6 +58,26 @@ func (s Schema) String() string {
 	}
 
 	return fmt.Sprintf("%v=[%v]", s.UrlPath, strings.Join(s.Fields.Keys(), ","))
+}
+
+func (s Schema) Clone() Schema {
+	fields := make(datautils.Map[string, Field])
+	for key, value := range s.Fields {
+		fields[key] = value.Clone()
+	}
+
+	return Schema{
+		ObjectName:  s.ObjectName,
+		UrlPath:     s.UrlPath,
+		Operation:   s.Operation,
+		DisplayName: s.DisplayName,
+		ResponseKey: s.ResponseKey,
+		Fields:      fields,
+		QueryParams: slices.Clone(s.QueryParams),
+		Problem:     s.Problem,
+		Origin:      s.Origin,
+		Tags:        datautils.NewSetFromList(s.Tags.List()),
+	}
 }
 
 type Field struct {
@@ -75,6 +99,19 @@ type Field struct {
 	ReferenceTo []string
 	// Origin exposes the underlying OpenAPI schema for advanced use-cases.
 	Origin FieldOrigin
+}
+
+func (f Field) Clone() Field {
+	return Field{
+		URLPath:      f.URLPath,
+		Name:         f.Name,
+		DisplayName:  f.DisplayName,
+		Type:         f.Type,
+		ValueType:    f.ValueType,
+		ValueOptions: slices.Clone(f.ValueOptions),
+		ReferenceTo:  slices.Clone(f.ReferenceTo),
+		Origin:       f.Origin,
+	}
 }
 
 type Fields = datautils.Map[string, Field]
