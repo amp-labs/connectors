@@ -19,14 +19,14 @@ func TestDelete(t *testing.T) {
 		},
 		{
 			Name:         "Record id is required",
-			Input:        common.DeleteParams{ObjectName: objectUploads},
+			Input:        common.DeleteParams{ObjectName: "file_uploads"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordID},
 		},
 		{
 			Name: "Users cannot be deleted",
 			Input: common.DeleteParams{
-				ObjectName: objectUsers,
+				ObjectName: "users",
 				RecordId:   "user-1",
 			},
 			Server:       mockserver.Dummy(),
@@ -35,7 +35,7 @@ func TestDelete(t *testing.T) {
 		{
 			Name: "File uploads cannot be deleted",
 			Input: common.DeleteParams{
-				ObjectName: objectUploads,
+				ObjectName: "file_uploads",
 				RecordId:   "file-1",
 			},
 			Server:       mockserver.Dummy(),

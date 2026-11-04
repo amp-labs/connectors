@@ -23,14 +23,14 @@ func TestWrite(t *testing.T) {
 		},
 		{
 			Name:         "RecordData is required",
-			Input:        common.WriteParams{ObjectName: objectUploads},
+			Input:        common.WriteParams{ObjectName: "file_uploads"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingRecordData},
 		},
 		{
 			Name: "Users are not writable",
 			Input: common.WriteParams{
-				ObjectName: objectUsers,
+				ObjectName: "users",
 				RecordData: map[string]any{"name": "Ada"},
 			},
 			Server:       mockserver.Dummy(),
@@ -39,7 +39,7 @@ func TestWrite(t *testing.T) {
 		{
 			Name: "File uploads do not support update",
 			Input: common.WriteParams{
-				ObjectName: objectUploads,
+				ObjectName: "file_uploads",
 				RecordId:   "file-1",
 				RecordData: map[string]any{"filename": "notes.txt"},
 			},
@@ -49,7 +49,7 @@ func TestWrite(t *testing.T) {
 		{
 			Name: "Create file upload",
 			Input: common.WriteParams{
-				ObjectName: objectUploads,
+				ObjectName: "file_uploads",
 				RecordData: map[string]any{
 					"mode":         "single_part",
 					"filename":     "notes.txt",

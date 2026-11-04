@@ -1,20 +1,18 @@
 package notion
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/notion/metadata"
-	"github.com/spyzhov/ajson"
 )
 
-// Create a file upload: https://developers.notion.com/reference/create-file
-// Users have no create or update endpoint. File uploads have no update endpoint.
+// buildWriteRequest creates a file upload. Users have no create or update endpoint.
+// File uploads have no update endpoint.
+// https://developers.notion.com/reference/create-file
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
 	if err := params.ValidateParams(); err != nil {
 		return nil, err
@@ -24,12 +22,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	record, err := common.RecordDataToMap(params.RecordData)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := json.Marshal(record)
+	body, err := params.GetRecordReader()
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +37,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpointURL.String(), bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpointURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -70,6 +63,11 @@ func (c *Connector) parseWriteResponse(
 		}, nil
 	}
 
+	recordID, err := jsonquery.New(body).TextWithDefault("id", params.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
 	data, err := jsonquery.Convertor.ObjectToMap(body)
 	if err != nil {
 		return nil, err
@@ -77,16 +75,7 @@ func (c *Connector) parseWriteResponse(
 
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: recordID(body, params.RecordId),
+		RecordId: recordID,
 		Data:     data,
 	}, nil
-}
-
-func recordID(body *ajson.Node, fallback string) string {
-	id, err := jsonquery.New(body).StringOptional("id")
-	if err != nil || id == nil || *id == "" {
-		return fallback
-	}
-
-	return *id
 }

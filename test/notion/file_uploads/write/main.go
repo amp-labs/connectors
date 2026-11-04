@@ -2,14 +2,15 @@ package main
 
 import (
 	"context"
-	"log/slog"
-	"os"
+	"fmt"
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/datautils"
 	connTest "github.com/amp-labs/connectors/test/notion"
 	"github.com/amp-labs/connectors/test/utils"
+	"github.com/amp-labs/connectors/test/utils/testscenario"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 func main() {
@@ -20,19 +21,22 @@ func main() {
 
 	conn := connTest.GetNotionConnector(ctx)
 
-	slog.Info("=== Creating file upload ===")
+	filename := fmt.Sprintf("ampersand-test-%s.txt", gofakeit.UUID())
 
-	res, err := conn.Write(ctx, common.WriteParams{
-		ObjectName: "file_uploads",
-		RecordData: map[string]any{
+	// Notion has create for file_uploads only; no update or delete API — ValidateCreate, not CRUD.
+	testscenario.ValidateCreate(ctx, conn, "file_uploads",
+		map[string]any{
 			"mode":         "single_part",
-			"filename":     "ampersand-test.txt",
+			"filename":     filename,
 			"content_type": "text/plain",
 		},
-	})
-	if err != nil {
-		utils.Fail("error creating Notion file upload", "error", err)
-	}
-
-	utils.DumpJSON(res, os.Stdout)
+		testscenario.CRDTestSuite{
+			ReadFields:          datautils.NewSet("id", "filename", "status"),
+			RecordIdentifierKey: "id",
+			SearchBy: testscenario.Property{
+				Key:   "filename",
+				Value: filename,
+			},
+		},
+	)
 }
