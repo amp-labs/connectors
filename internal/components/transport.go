@@ -3,7 +3,6 @@ package components
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/test/utils/mockutils"
 )
 
 // Transport
@@ -60,16 +59,6 @@ func (t *Transport) SetUnitTestBaseURL(newURL string) {
 	t.ProviderContext.providerInfo.BaseURL = newURL
 	t.ProviderContext.moduleInfo.BaseURL = newURL
 	t.json.HTTPClient.Base = newURL
-}
-
-// SetUnitTestMockServerBaseUrl replaces the URL Origin with mock server URL Origin.
-// This allows to reroute all requests to mock server used in unit tests and preserve all URI parts if any.
-func (t *Transport) SetUnitTestMockServerBaseUrl(testServerURL string) {
-	providerURL := t.ProviderContext.providerInfo.BaseURL
-	t.ProviderContext.providerInfo.BaseURL = mockutils.ReplaceURLOrigin(providerURL, testServerURL)
-	moduleURL := t.ProviderContext.moduleInfo.BaseURL
-	t.ProviderContext.moduleInfo.BaseURL = mockutils.ReplaceURLOrigin(moduleURL, testServerURL)
-	t.json.HTTPClient.Base = testServerURL
 }
 
 func (t *Transport) SetErrorHandler(handler common.ErrorHandler) {
