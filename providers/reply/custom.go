@@ -79,6 +79,12 @@ type customFieldDefinition struct {
 // Reply has only text and number custom fields, no enum or select types. The
 // definition's "metadata" is free-form text Reply doesn't validate, so no
 // Values are offered.
+//
+// The value type names what the field is, not how Reply transports it: Reply
+// sends every custom field value as a string, number fields included ("7"), so
+// Read returns a string for them. They are still reported as float, as other
+// providers do for numbers sent as text (HubSpot, Capsule, AccuLynx), and
+// ProviderType keeps Reply's own "number".
 func (d customFieldDefinition) valueType() common.ValueType {
 	switch d.FieldType {
 	case "number":
