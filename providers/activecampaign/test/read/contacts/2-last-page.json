@@ -1,0 +1,67 @@
+{
+  "scoreValues": [],
+  "contacts": [
+    {
+      "cdate": "2024-10-02T08:22:51-05:00",
+      "email": "adamsmith@example.com",
+      "phone": "",
+      "firstName": "Adam",
+      "lastName": "Smith",
+      "orgid": "0",
+      "orgname": "",
+      "segmentio_id": "",
+      "bounced_hard": "0",
+      "bounced_soft": "0",
+      "bounced_date": null,
+      "ip": "0",
+      "ua": null,
+      "hash": "1119146b50af1ed5f9cb40c7465a0c26",
+      "socialdata_lastcheck": null,
+      "email_local": "",
+      "email_domain": "",
+      "sentcnt": "0",
+      "rating_tstamp": null,
+      "gravatar": "0",
+      "deleted": "0",
+      "anonymized": "0",
+      "adate": null,
+      "udate": "2024-10-02T08:22:51-05:00",
+      "edate": null,
+      "deleted_at": null,
+      "created_utc_timestamp": "2024-10-02 08:22:51",
+      "updated_utc_timestamp": "2024-10-02 08:22:51",
+      "created_timestamp": "2024-10-02 08:22:51",
+      "updated_timestamp": "2024-10-02 08:22:51",
+      "created_by": "1",
+      "updated_by": "1",
+      "email_empty": false,
+      "mpp_tracking": "0",
+      "scoreValues": [],
+      "accountContacts": [],
+      "links": {
+        "bounceLogs": "https://exampleaccount.api-us1.com/api/3/contacts/3/bounceLogs",
+        "contactLists": "https://exampleaccount.api-us1.com/api/3/contacts/3/contactLists"
+      },
+      "id": "3",
+      "organization": null
+    }
+  ],
+  "meta": {
+    "total": "3",
+    "page_input": {
+      "segmentid": 0,
+      "formid": 0,
+      "listid": 0,
+      "tagid": 0,
+      "limit": 100,
+      "offset": 2,
+      "search": null,
+      "sort": null,
+      "seriesid": 0,
+      "waitid": 0,
+      "status": -1,
+      "forceQuery": 0,
+      "cacheid": "c5f2e675e35b0b3c1462275b5ce7b55c"
+    }
+  }
+}
