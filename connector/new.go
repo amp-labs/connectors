@@ -49,6 +49,7 @@ import (
 	"github.com/amp-labs/connectors/providers/constantcontact"
 	"github.com/amp-labs/connectors/providers/copper"
 	"github.com/amp-labs/connectors/providers/customerapp"
+	"github.com/amp-labs/connectors/providers/databricks"
 	"github.com/amp-labs/connectors/providers/devrev"
 	"github.com/amp-labs/connectors/providers/dixa"
 	"github.com/amp-labs/connectors/providers/docusign"
@@ -217,6 +218,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ConstantContact:                   wrapper(newConstantContactConnector),
 	providers.Copper:                            wrapper(newCopperConnector),
 	providers.CustomerJourneysApp:               wrapper(newCustomerJourneysAppConnector),
+	providers.Databricks:                        wrapper(newDatabricksConnector),
 	providers.DevRev:                            wrapper(newDevRevConnector),
 	providers.Dixa:                              wrapper(newDixaConnector),
 	providers.Docusign:                          wrapper(newDocusignConnector),
@@ -892,6 +894,12 @@ func newDixaConnector(
 	params common.ConnectorParams,
 ) (*dixa.Connector, error) {
 	return dixa.NewConnector(params)
+}
+
+func newDatabricksConnector(
+	params common.ConnectorParams,
+) (*databricks.Connector, error) {
+	return databricks.NewConnector(params)
 }
 
 func newFlatfileConnector(
