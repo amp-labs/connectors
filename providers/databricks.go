@@ -40,9 +40,10 @@ func init() {
 						"(e.g. `dbc-a1b2c3d4-e5f6.cloud.databricks.com` or `adb-1234567890123456.7.azuredatabricks.net`).",
 				},
 				{
-					Name:        "warehouseId",
-					DisplayName: "SQL Warehouse ID",
-					Prompt:      "The ID of the SQL warehouse that runs the queries, found in the warehouse's connection details.",
+					Name:        "httpPath",
+					DisplayName: "SQL Warehouse HTTP Path",
+					Prompt: "The HTTP path from the SQL warehouse's connection details " +
+						"(e.g. `/sql/1.0/warehouses/1a2b3c4d5e6f7a8b`).",
 				},
 				{
 					Name:        "catalog",

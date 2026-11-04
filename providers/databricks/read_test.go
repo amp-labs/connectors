@@ -247,7 +247,7 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 		AuthenticatedClient: mockutils.NewClient(),
 		Workspace:           "mock.example.com",
 		Metadata: map[string]string{
-			"warehouseId":     "wh-123",
+			"httpPath":        "/sql/1.0/warehouses/wh-123",
 			"catalog":         "main",
 			"schema":          "openworks",
 			"primaryKey":      "well_id",
@@ -261,4 +261,21 @@ func constructTestConnector(serverURL string) (*Connector, error) {
 	connector.SetBaseURL(mockutils.ReplaceURLOrigin(connector.HTTPClient().Base, serverURL))
 
 	return connector, nil
+}
+
+func TestWarehouseIDFromHTTPPath(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]string{
+		"/sql/1.0/warehouses/7c806f46d14e255f":   "7c806f46d14e255f",
+		"/sql/1.0/warehouses/7c806f46d14e255f;":  "7c806f46d14e255f",
+		"  /sql/1.0/warehouses/7c806f46d14e255f": "7c806f46d14e255f",
+		"7c806f46d14e255f":                       "7c806f46d14e255f",
+	}
+
+	for input, want := range tests {
+		if got := WarehouseIDFromHTTPPath(input); got != want {
+			t.Fatalf("WarehouseIDFromHTTPPath(%q) = %q, want %q", input, got, want)
+		}
+	}
 }

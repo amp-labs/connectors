@@ -2,6 +2,7 @@ package databricks
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
@@ -12,7 +13,7 @@ import (
 )
 
 const (
-	metadataKeyWarehouseID     = "warehouseId"
+	metadataKeyHTTPPath        = "httpPath"
 	metadataKeyCatalog         = "catalog"
 	metadataKeySchema          = "schema"
 	metadataKeyPrimaryKey      = "primaryKey"
@@ -21,7 +22,7 @@ const (
 
 var (
 	errStatementNotSucceeded = errors.New("databricks statement did not succeed")
-	errObjectNotFound        = errors.New("table not found or has no columns")
+	errObjectNotFound        = errors.New("table not found, has no columns, or is not visible to the service principal")
 	errInvalidNextPage       = errors.New("invalid NextPage, expected a numeric offset")
 	errTimestampRequired     = errors.New("timestampColumn is required to filter by Since or Until")
 )
@@ -38,7 +39,8 @@ var (
 // The workspace host (without scheme) is the connector's Workspace.
 //
 // Required metadata:
-//   - warehouseId: SQL warehouse that runs the statements.
+//   - httpPath: HTTP path of the SQL warehouse that runs the statements, as shown in its
+//     connection details (/sql/1.0/warehouses/<id>). The bare warehouse ID also works.
 //   - catalog, schema: where the tables live.
 //   - primaryKey: column that uniquely identifies a row.
 //   - timestampColumn: TIMESTAMP column that moves forward on every change.
@@ -68,14 +70,14 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 		Connector: base,
 		RequireMetadata: common.RequireMetadata{
 			ExpectedMetadataKeys: []string{
-				metadataKeyWarehouseID,
+				metadataKeyHTTPPath,
 				metadataKeyCatalog,
 				metadataKeySchema,
 				metadataKeyPrimaryKey,
 				metadataKeyTimestampColumn,
 			},
 		},
-		warehouseID:     params.Metadata[metadataKeyWarehouseID],
+		warehouseID:     WarehouseIDFromHTTPPath(params.Metadata[metadataKeyHTTPPath]),
 		catalog:         params.Metadata[metadataKeyCatalog],
 		schema:          params.Metadata[metadataKeySchema],
 		primaryKey:      params.Metadata[metadataKeyPrimaryKey],
@@ -96,4 +98,12 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Co
 	)
 
 	return connector, nil
+}
+
+// WarehouseIDFromHTTPPath returns the warehouse ID from the HTTP path shown in the warehouse's
+// connection details, e.g. /sql/1.0/warehouses/7c806f46d14e255f. A bare ID is returned as is.
+func WarehouseIDFromHTTPPath(httpPath string) string {
+	trimmed := strings.TrimRight(strings.TrimSpace(httpPath), "/;")
+
+	return trimmed[strings.LastIndex(trimmed, "/")+1:]
 }

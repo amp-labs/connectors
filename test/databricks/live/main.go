@@ -4,9 +4,9 @@
 //
 // The script explains where to find each value and prompts for it. Any value that
 // is already set as an environment variable becomes the prompt's default:
-// DATABRICKS_HOST, DATABRICKS_CLIENT_ID, DATABRICKS_CLIENT_SECRET,
-// DATABRICKS_WAREHOUSE_ID, DATABRICKS_CATALOG, DATABRICKS_SCHEMA, DATABRICKS_TABLE,
-// DATABRICKS_PRIMARY_KEY, DATABRICKS_TIMESTAMP_COLUMN.
+// DATABRICKS_HOST, DATABRICKS_CLIENT_ID, DATABRICKS_CLIENT_SECRET, DATABRICKS_HTTP_PATH,
+// DATABRICKS_CATALOG, DATABRICKS_SCHEMA, DATABRICKS_TABLE, DATABRICKS_PRIMARY_KEY,
+// DATABRICKS_TIMESTAMP_COLUMN.
 package main
 
 import (
@@ -48,11 +48,11 @@ secret. You need these from your Databricks workspace.
    If your workspace has no such menu, create the service principal in the account
    console (User management > Service principals) and add it to the workspace.
 
-3. SQL warehouse ID, and give the service principal access to it
-   Sidebar > SQL Warehouses > click the warehouse > Connection details tab. The
-   HTTP path looks like /sql/1.0/warehouses/1a2b3c4d5e6f7a8b; the ID is the last
-   part. Start the warehouse if it is stopped. Then Permissions (top right) > add
-   the service principal with "Can use".
+3. SQL warehouse HTTP path, and give the service principal access to it
+   Sidebar > SQL Warehouses > click the warehouse > Connection details tab. Copy
+   the "HTTP path", e.g. /sql/1.0/warehouses/1a2b3c4d5e6f7a8b. Then Permissions
+   (top right) > add the service principal with "Can use". A stopped warehouse is
+   started for you.
 
 4. Catalog and schema, and give the service principal access to the data
    Sidebar > Catalog shows the catalog name (often "workspace" or "main"). The seed
@@ -74,7 +74,7 @@ const warehouseScope = "all-apis"
 
 type settings struct {
 	host, clientID, clientSecret string
-	warehouseID                  string
+	httpPath                     string
 	catalog, schema, table       string
 	primaryKey, timestampColumn  string
 }
@@ -88,7 +88,7 @@ func main() {
 		host:            prompt(in, "Workspace host", "DATABRICKS_HOST", "", false),
 		clientID:        prompt(in, "Service principal client ID", "DATABRICKS_CLIENT_ID", "", false),
 		clientSecret:    prompt(in, "Service principal client secret", "DATABRICKS_CLIENT_SECRET", "", true),
-		warehouseID:     prompt(in, "SQL warehouse ID", "DATABRICKS_WAREHOUSE_ID", "", false),
+		httpPath:        prompt(in, "SQL warehouse HTTP path", "DATABRICKS_HTTP_PATH", "", false),
 		catalog:         prompt(in, "Catalog", "DATABRICKS_CATALOG", "workspace", false),
 		schema:          prompt(in, "Schema", "DATABRICKS_SCHEMA", "customer_a", false),
 		table:           prompt(in, "Table", "DATABRICKS_TABLE", "wells", false),
@@ -139,7 +139,7 @@ func run(cfg settings) {
 		AuthenticatedClient: oauthConfig.Client(ctx),
 		Workspace:           cfg.host,
 		Metadata: map[string]string{
-			"warehouseId":     cfg.warehouseID,
+			"httpPath":        cfg.httpPath,
 			"catalog":         cfg.catalog,
 			"schema":          cfg.schema,
 			"primaryKey":      cfg.primaryKey,
@@ -152,23 +152,7 @@ func run(cfg settings) {
 
 	step("Check the warehouse")
 
-	warehouse, err := conn.JSONHTTPClient().Get(ctx, "https://"+cfg.host+"/api/2.0/sql/warehouses/"+cfg.warehouseID)
-	if err != nil {
-		log.Fatalf("could not reach the warehouse (check the warehouse ID and its Can use permission): %v", err)
-	}
-
-	state := "unknown"
-	if body, ok := warehouse.Body(); ok {
-		if node, err := body.GetKey("state"); err == nil {
-			state, _ = node.GetString()
-		}
-	}
-
-	fmt.Printf("warehouse state: %s\n", state)
-
-	if state != "RUNNING" {
-		fmt.Println("the warehouse is not running; the first query can time out while it starts. Retry if it does.")
-	}
+	startWarehouse(ctx, conn, cfg)
 
 	step("ListObjectMetadata")
 
@@ -180,8 +164,11 @@ func run(cfg settings) {
 	printJSON(meta)
 
 	if failure, failed := meta.Errors[cfg.table]; failed {
-		log.Fatalf("describe %s.%s.%s (check the USE CATALOG, USE SCHEMA and SELECT grants): %v",
-			cfg.catalog, cfg.schema, cfg.table, failure)
+		log.Fatalf("describe %s.%s.%s: %v\n"+
+			"Databricks hides tables the service principal cannot access, so this usually means a missing grant. "+
+			"In the SQL editor run SHOW GRANTS ON SCHEMA %s.%s and check that the service principal's "+
+			"Application ID has USE SCHEMA and SELECT, and SHOW GRANTS ON CATALOG %s for USE CATALOG.",
+			cfg.catalog, cfg.schema, cfg.table, failure, cfg.catalog, cfg.schema, cfg.catalog)
 	}
 
 	columns := columnNames(meta.Result[cfg.table].Fields)
@@ -208,6 +195,63 @@ func run(cfg settings) {
 
 	fmt.Printf("%d rows at or after the last seen timestamp\n", result.Rows)
 	fmt.Println("\nNow update a row in Databricks (see the end of the seed script) and run this again.")
+}
+
+// startWarehouse wakes a stopped warehouse by running a trivial statement, which needs only
+// Can use, then waits for it to be running.
+func startWarehouse(ctx context.Context, conn *databricks.Connector, cfg settings) {
+	warehouseID := databricks.WarehouseIDFromHTTPPath(cfg.httpPath)
+	warehouseURL := "https://" + cfg.host + "/api/2.0/sql/warehouses/" + warehouseID
+
+	state := warehouseState(ctx, conn, warehouseURL)
+	fmt.Printf("warehouse %s state: %s\n", warehouseID, state)
+
+	if state == "RUNNING" {
+		return
+	}
+
+	wake := map[string]any{
+		"warehouse_id":    warehouseID,
+		"statement":       "SELECT 1",
+		"wait_timeout":    "0s",
+		"on_wait_timeout": "CONTINUE",
+	}
+
+	if _, err := conn.JSONHTTPClient().Post(ctx, "https://"+cfg.host+"/api/2.0/sql/statements", wake); err != nil {
+		log.Fatalf("could not start the warehouse (check the HTTP path and the service principal's Can use permission): %v", err)
+	}
+
+	for attempt := 0; attempt < 36 && state != "RUNNING"; attempt++ {
+		time.Sleep(5 * time.Second)
+
+		state = warehouseState(ctx, conn, warehouseURL)
+		fmt.Printf("  waiting for the warehouse to start: %s\n", state)
+	}
+
+	if state != "RUNNING" {
+		log.Fatalf("the warehouse is still %s; start it in the Databricks UI and run this again", state)
+	}
+}
+
+func warehouseState(ctx context.Context, conn *databricks.Connector, warehouseURL string) string {
+	response, err := conn.JSONHTTPClient().Get(ctx, warehouseURL)
+	if err != nil {
+		log.Fatalf("could not read the warehouse (check the HTTP path and the Can use permission): %v", err)
+	}
+
+	body, ok := response.Body()
+	if !ok {
+		return "unknown"
+	}
+
+	node, err := body.GetKey("state")
+	if err != nil {
+		return "unknown"
+	}
+
+	state, _ := node.GetString()
+
+	return state
 }
 
 func backfill(ctx context.Context, conn *databricks.Connector, cfg settings, columns []string) time.Time {
