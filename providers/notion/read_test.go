@@ -32,7 +32,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		},
 		{
 			Name:         "At least one field is requested",
-			Input:        common.ReadParams{ObjectName: objectUsers},
+			Input:        common.ReadParams{ObjectName: "users"},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrMissingFields},
 		},
@@ -45,7 +45,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		{
 			Name: "Read users first page",
 			Input: common.ReadParams{
-				ObjectName: objectUsers,
+				ObjectName: "users",
 				Fields:     connectors.Fields("name", "type"),
 				Since:      since,
 			},
@@ -84,7 +84,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		{
 			Name: "Read users last page",
 			Input: common.ReadParams{
-				ObjectName: objectUsers,
+				ObjectName: "users",
 				Fields:     connectors.Fields("name"),
 				NextPage:   testconn.URLTestServer + "/v1/users?page_size=100&start_cursor=cursor-2",
 			},
@@ -119,7 +119,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 		{
 			Name: "Read file uploads excludes records outside Since and Until",
 			Input: common.ReadParams{
-				ObjectName: objectUploads,
+				ObjectName: "file_uploads",
 				Fields:     connectors.Fields("status"),
 				Since:      since,
 				Until:      until,
