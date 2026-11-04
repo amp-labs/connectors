@@ -2,6 +2,7 @@ package providers
 
 const Databricks Provider = "databricks"
 
+//nolint:funlen
 func init() {
 	SetInfo(Databricks, ProviderInfo{
 		DisplayName: "Databricks",
