@@ -117,7 +117,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 			},
 		},
 		{
-			Name: "Read file uploads filters last_edited_time",
+			Name: "Read file uploads excludes records outside Since and Until",
 			Input: common.ReadParams{
 				ObjectName: objectUploads,
 				Fields:     connectors.Fields("status"),
