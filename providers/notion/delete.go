@@ -12,6 +12,9 @@ import (
 // Notion does not delete users or file uploads.
 // https://developers.notion.com/reference/get-users
 // https://developers.notion.com/reference/list-file-uploads
+//
+// Delete is rejected in supportedOperations() (no DeleteSupport); HTTPDeleter checks the
+// registry first, so the handlers below are not reached for catalog objects today.
 func (c *Connector) buildDeleteRequest(_ context.Context, params common.DeleteParams) (*http.Request, error) {
 	if err := params.ValidateParams(); err != nil {
 		return nil, err
