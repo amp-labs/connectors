@@ -55,6 +55,11 @@ func supportedOperations() components.EndpointRegistryInput {
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(supportedReadObjects, ",")),
 				Support:  components.ReadSupport,
 			},
+			{
+				// POST /v1/file_uploads create only; users have no write API.
+				Endpoint: objectUploads,
+				Support:  components.WriteSupport,
+			},
 		},
 	}
 }
