@@ -23,9 +23,14 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
+	registry, err := components.NewEndpointRegistry(supportedOperations())
+	if err != nil {
+		return nil, err
+	}
+
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
-		components.NewEmptyEndpointRegistry(),
+		registry,
 		connector.ProviderContext.Module(),
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,

@@ -9,7 +9,6 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
-	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers/notion/metadata"
 	"github.com/spyzhov/ajson"
@@ -21,9 +20,6 @@ const (
 	maxPageSize     = 100
 	pageSizeKey     = "page_size"
 	startCursorKey  = "start_cursor"
-	resultsKey      = "results"
-	objectUsers     = "users"
-	objectUploads   = "file_uploads"
 	uploadTimeField = "last_edited_time"
 )
 
@@ -39,7 +35,7 @@ const (
 //
 // Other Notion list endpoints:
 //   - custom_emojis: same pagination shape (`results`); parent-free. Not in Read
-//     yet; easy to add to metadata and this set when product wants it.
+//     yet; easy to add to metadata and readRegistry when product wants it.
 //   - views: GET list but requires database_id or data_source_id; not parent-free.
 //     https://developers.notion.com/reference/list-views
 //
@@ -47,10 +43,6 @@ const (
 // parent-free list for Read. POST /v1/search can discover them without a time
 // window, so it is a poor fit for incremental Read. Subscribe (webhooks) may
 // cover those objects even when Read cannot, depending on Notion's event surface.
-var readSupportedObjects = datautils.NewStringSet( //nolint:gochecknoglobals
-	objectUsers,
-	objectUploads,
-)
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if err := params.ValidateParams(true); err != nil {
@@ -103,6 +95,11 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	spec, err := readEndpointFor(params.ObjectName)
+	if err != nil {
+		return nil, err
+	}
+
 	reqURL, err := urlbuilder.FromRawURL(request.URL)
 	if err != nil {
 		return nil, err
@@ -111,24 +108,24 @@ func (c *Connector) parseReadResponse(
 	return common.ParseResultFiltered(
 		params,
 		resp,
-		common.MakeRecordsFunc(resultsKey),
-		makeFilterFunc(params, reqURL),
+		common.MakeRecordsFunc(spec.responseKey),
+		makeFilterFunc(spec, reqURL),
 		readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id")),
 		params.Fields,
 	)
 }
 
-func makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.URL) common.RecordsFilterFunc {
+func makeFilterFunc(spec readEndpoint, reqURL *urlbuilder.URL) common.RecordsFilterFunc {
 	nextPageFunc := makeNextRecordsURL(reqURL)
 
-	if params.ObjectName != objectUploads {
+	if spec.timeField == "" {
 		return readhelper.MakeIdentityFilterFunc(nextPageFunc)
 	}
 
 	return readhelper.MakeTimeFilterFunc(
 		readhelper.Unordered,
 		readhelper.NewTimeBoundary(),
-		uploadTimeField,
+		spec.timeField,
 		time.RFC3339,
 		nextPageFunc,
 	)

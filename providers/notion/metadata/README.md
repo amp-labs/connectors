@@ -1,10 +1,14 @@
 # Metadata
 
-`objectsMetadata.json` and `endpoints.json` are generated from the Notion OpenAPI spec at `scripts/openapi/notion/internal/files/openapi.json` ([Notion API reference](https://developers.notion.com/reference/intro)). The spec is stored with Git LFS. After clone, run `git lfs pull` before regenerating.
+`objectsMetadata.json` is generated from the Notion OpenAPI spec at `scripts/openapi/notion/internal/files/openapi.json` ([Notion API reference](https://developers.notion.com/reference/intro)). The spec is stored with Git LFS. After clone, run `git lfs pull` before regenerating.
 
 ```bash
 go run ./scripts/openapi/notion/metadata
 ```
+
+**`objectsMetadata.json`** — object and field schema for `ListObjectMetadata`, plus each object's read URL path (`path`). Consult this file for object schema only.
+
+**`endpoints.json`** — side-effect output from the same script (response array key, HTTP operation, etc.). It is gitignored and not loaded at runtime. When it changes, update `readRegistry` in `providers/notion/supports.go`.
 
 The catalog base URL is `https://api.notion.com`. Each object path is the resource only, without the `v1` version segment (`/v1/users` becomes `/users`).
 
