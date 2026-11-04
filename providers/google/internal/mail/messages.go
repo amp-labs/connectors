@@ -134,7 +134,7 @@ func (a *Adapter) fetchMessagesByIDs(ctx context.Context, messageIDs []string) (
 func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId string,
 ) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
-		url, err := a.getMessageURL(messageId)
+		url, err := a.getMessageUrl(messageId)
 		if err != nil {
 			return err
 		}
