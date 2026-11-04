@@ -5,16 +5,19 @@ const Databricks Provider = "databricks"
 func init() {
 	SetInfo(Databricks, ProviderInfo{
 		DisplayName: "Databricks",
-		AuthType:    ApiKey,
-		// e.g. dbc-a1b2c3d4-e5f6.cloud.databricks.com, adb-1234567890123456.7.azuredatabricks.net
+		AuthType:    Oauth2,
+		// The workspace is the full host, since the suffix depends on the cloud:
+		// dbc-a1b2c3d4-e5f6.cloud.databricks.com, adb-1234567890123456.7.azuredatabricks.net,
+		// 1234567890123456.7.gcp.databricks.com.
 		BaseURL: "https://{{.workspace}}",
-		ApiKeyOpts: &ApiKeyOpts{
-			AttachmentType: Header,
-			Header: &ApiKeyOptsHeader{
-				Name:        "Authorization",
-				ValuePrefix: "Bearer ",
-			},
-			DocsURL: "https://docs.databricks.com/aws/en/dev-tools/auth/pat",
+		Oauth2Opts: &Oauth2Opts{
+			// OAuth machine-to-machine: each customer supplies the client ID and secret of a
+			// service principal in their own workspace.
+			// https://docs.databricks.com/aws/en/dev-tools/auth/oauth-m2m
+			GrantType:                 ClientCredentials,
+			TokenURL:                  "https://{{.workspace}}/oidc/v1/token",
+			ExplicitScopesRequired:    true,
+			ExplicitWorkspaceRequired: true,
 		},
 		Support: Support{
 			BulkWrite: BulkWriteSupport{
@@ -33,7 +36,8 @@ func init() {
 				{
 					Name:        "workspace",
 					DisplayName: "Workspace Host",
-					Prompt:      "The workspace host without the scheme (e.g. `dbc-a1b2c3d4-e5f6.cloud.databricks.com`).",
+					Prompt: "The full workspace host without the scheme " +
+						"(e.g. `dbc-a1b2c3d4-e5f6.cloud.databricks.com` or `adb-1234567890123456.7.azuredatabricks.net`).",
 				},
 				{
 					Name:        "warehouseId",

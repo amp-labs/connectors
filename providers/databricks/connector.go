@@ -32,7 +32,8 @@ var (
 // a SELECT ordered by the timestamp and primary key columns, paged with LIMIT and
 // OFFSET. Since and Until become bounds on the timestamp column.
 //
-// The access token only needs SELECT on the tables and CAN USE on the SQL warehouse.
+// The service principal behind the OAuth client credentials only needs SELECT on the tables
+// (plus USE CATALOG and USE SCHEMA) and CAN USE on the SQL warehouse.
 //
 // The workspace host (without scheme) is the connector's Workspace.
 //

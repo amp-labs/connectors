@@ -4,9 +4,9 @@
 //
 // The script explains where to find each value and prompts for it. Any value that
 // is already set as an environment variable becomes the prompt's default:
-// DATABRICKS_HOST, DATABRICKS_TOKEN, DATABRICKS_WAREHOUSE_ID, DATABRICKS_CATALOG,
-// DATABRICKS_SCHEMA, DATABRICKS_TABLE, DATABRICKS_PRIMARY_KEY,
-// DATABRICKS_TIMESTAMP_COLUMN.
+// DATABRICKS_HOST, DATABRICKS_CLIENT_ID, DATABRICKS_CLIENT_SECRET,
+// DATABRICKS_WAREHOUSE_ID, DATABRICKS_CATALOG, DATABRICKS_SCHEMA, DATABRICKS_TABLE,
+// DATABRICKS_PRIMARY_KEY, DATABRICKS_TIMESTAMP_COLUMN.
 package main
 
 import (
@@ -24,45 +24,59 @@ import (
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/providers/databricks"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 const guide = `
 Databricks connector live check
 ===============================
 
-You need five things from your Databricks workspace.
+Authentication is OAuth machine-to-machine: a service principal's client ID and
+secret. You need these from your Databricks workspace.
 
 1. Workspace host
-   Open your workspace in the browser and copy the host from the address bar,
-   without "https://" and without any path.
-   Example: dbc-a1b2c3d4-e5f6.cloud.databricks.com
+   Open the workspace in the browser and copy the host from the address bar,
+   without "https://" and without any path. The suffix depends on the cloud.
+   Examples: dbc-a1b2c3d4-e5f6.cloud.databricks.com (AWS)
+             adb-1234567890123456.7.azuredatabricks.net (Azure)
 
-2. Personal access token
-   Click your name (top right) > Settings > Developer > Access tokens > Manage >
-   Generate new token. Copy it right away; it is shown once.
-   Example: dapi0123456789abcdef...
+2. Service principal, client ID and secret
+   Workspace > your name (top right) > Settings > Identity and access >
+   Service principals > Manage > Add service principal (or open an existing one).
+   - Client ID: the "Application ID" shown on the service principal's page.
+   - Secret: Secrets tab > Generate secret. Copy it right away; it is shown once.
+   If your workspace has no such menu, create the service principal in the account
+   console (User management > Service principals) and add it to the workspace.
 
-3. SQL warehouse ID
-   Sidebar > SQL Warehouses > click your warehouse > Connection details tab.
-   The HTTP path looks like /sql/1.0/warehouses/1a2b3c4d5e6f7a8b. The ID is the
-   last part. Make sure the warehouse is running (start it from the same page).
+3. SQL warehouse ID, and give the service principal access to it
+   Sidebar > SQL Warehouses > click the warehouse > Connection details tab. The
+   HTTP path looks like /sql/1.0/warehouses/1a2b3c4d5e6f7a8b; the ID is the last
+   part. Start the warehouse if it is stopped. Then Permissions (top right) > add
+   the service principal with "Can use".
 
-4. Catalog and schema
-   Sidebar > Catalog. The catalog is the top-level name (often "workspace" or
-   "main"). The seed script creates the schemas "customer_a" and "customer_b".
+4. Catalog and schema, and give the service principal access to the data
+   Sidebar > Catalog shows the catalog name (often "workspace" or "main"). The seed
+   script creates the schemas "customer_a" and "customer_b". In the SQL editor run,
+   with your service principal's Application ID:
+     GRANT USE CATALOG ON CATALOG workspace TO ` + "`<application-id>`" + `;
+     GRANT USE SCHEMA, SELECT ON SCHEMA workspace.customer_a TO ` + "`<application-id>`" + `;
+     GRANT USE SCHEMA, SELECT ON SCHEMA workspace.customer_b TO ` + "`<application-id>`" + `;
 
 5. Table
    The seed script creates "wells" in each schema. Its primary key is "well_id"
    and its timestamp column is "updated_at".
 
-Your token is not echoed or stored. If a menu differs in your workspace, see
-https://docs.databricks.com/aws/en/dev-tools/auth/pat
+The client secret is not echoed or stored. If a menu differs, see
+https://docs.databricks.com/aws/en/dev-tools/auth/oauth-m2m
 `
 
+const warehouseScope = "all-apis"
+
 type settings struct {
-	host, token, warehouseID    string
-	catalog, schema, table      string
-	primaryKey, timestampColumn string
+	host, clientID, clientSecret string
+	warehouseID                  string
+	catalog, schema, table       string
+	primaryKey, timestampColumn  string
 }
 
 func main() {
@@ -72,7 +86,8 @@ func main() {
 
 	cfg := settings{
 		host:            prompt(in, "Workspace host", "DATABRICKS_HOST", "", false),
-		token:           prompt(in, "Personal access token", "DATABRICKS_TOKEN", "", true),
+		clientID:        prompt(in, "Service principal client ID", "DATABRICKS_CLIENT_ID", "", false),
+		clientSecret:    prompt(in, "Service principal client secret", "DATABRICKS_CLIENT_SECRET", "", true),
 		warehouseID:     prompt(in, "SQL warehouse ID", "DATABRICKS_WAREHOUSE_ID", "", false),
 		catalog:         prompt(in, "Catalog", "DATABRICKS_CATALOG", "workspace", false),
 		schema:          prompt(in, "Schema", "DATABRICKS_SCHEMA", "customer_a", false),
@@ -90,13 +105,38 @@ func run(cfg settings) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
-	client, err := common.NewApiKeyHeaderAuthHTTPClient(ctx, "Authorization", "Bearer "+cfg.token)
+	step("Get an access token (OAuth client credentials)")
+
+	tokenURL := "https://" + cfg.host + "/oidc/v1/token"
+
+	oauthConfig := &clientcredentials.Config{
+		ClientID:     cfg.clientID,
+		ClientSecret: cfg.clientSecret,
+		TokenURL:     tokenURL,
+		Scopes:       []string{warehouseScope},
+	}
+
+	token, err := oauthConfig.Token(ctx)
 	if err != nil {
-		log.Fatalf("create auth client: %v", err)
+		log.Fatalf("token request with scope %q failed (check host, client ID and secret): %v", warehouseScope, err)
+	}
+
+	fmt.Printf("token with scope %q: ok, expires %s\n", warehouseScope, token.Expiry.Format(time.RFC3339))
+
+	withoutScope := &clientcredentials.Config{
+		ClientID:     cfg.clientID,
+		ClientSecret: cfg.clientSecret,
+		TokenURL:     tokenURL,
+	}
+
+	if _, err := withoutScope.Token(ctx); err != nil {
+		fmt.Printf("token without a scope: failed, so the scope is required (%v)\n", err)
+	} else {
+		fmt.Println("token without a scope: ok, so the scope is optional")
 	}
 
 	conn, err := databricks.NewConnector(common.ConnectorParams{
-		AuthenticatedClient: client,
+		AuthenticatedClient: oauthConfig.Client(ctx),
 		Workspace:           cfg.host,
 		Metadata: map[string]string{
 			"warehouseId":     cfg.warehouseID,
@@ -110,11 +150,11 @@ func run(cfg settings) {
 		log.Fatalf("create connector: %v", err)
 	}
 
-	step("Check token and warehouse")
+	step("Check the warehouse")
 
 	warehouse, err := conn.JSONHTTPClient().Get(ctx, "https://"+cfg.host+"/api/2.0/sql/warehouses/"+cfg.warehouseID)
 	if err != nil {
-		log.Fatalf("could not reach the warehouse (check host, token and warehouse ID): %v", err)
+		log.Fatalf("could not reach the warehouse (check the warehouse ID and its Can use permission): %v", err)
 	}
 
 	state := "unknown"
@@ -140,7 +180,8 @@ func run(cfg settings) {
 	printJSON(meta)
 
 	if failure, failed := meta.Errors[cfg.table]; failed {
-		log.Fatalf("describe %s.%s.%s: %v", cfg.catalog, cfg.schema, cfg.table, failure)
+		log.Fatalf("describe %s.%s.%s (check the USE CATALOG, USE SCHEMA and SELECT grants): %v",
+			cfg.catalog, cfg.schema, cfg.table, failure)
 	}
 
 	columns := columnNames(meta.Result[cfg.table].Fields)
