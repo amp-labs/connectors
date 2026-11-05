@@ -56,5 +56,8 @@ func (c *Connector) GetRecordsByIds(
 		return nil, err
 	}
 
-	return common.NewBatchReadResult(parsed.Data), nil
+	result := common.NewBatchReadResult(parsed.Data)
+	result.ReportMissingIds(recordIds)
+
+	return result, nil
 }
