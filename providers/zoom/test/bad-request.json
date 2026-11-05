@@ -1,0 +1,4 @@
+{
+  "code": 4711,
+  "message": "Invalid access token, does not contain scopes:[device:read:list_zdm_devices:admin]."
+}

@@ -137,7 +137,7 @@ func TestWrite(t *testing.T) { //nolint:funlen
 		t.Run(tt.Name, func(t *testing.T) {
 			t.Parallel()
 			tt.Run(t, func() (testconn.TestableWriter, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}
