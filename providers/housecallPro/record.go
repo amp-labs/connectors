@@ -25,7 +25,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	recordIDs []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	path, err := c.urlPathForRecordByID(objectName)
 	if err != nil {
 		return nil, err
@@ -68,5 +68,5 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 
 	extractAssociations(objectName, associations, out)
 
-	return out, nil
+	return common.NewBatchReadResult(out), nil
 }

@@ -262,13 +262,13 @@ func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 	recordIds []string, //nolint:revive
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	if objectName != objectNameMessages {
 		return nil, common.ErrGetRecordNotSupportedForObject
 	}
 
 	if len(recordIds) == 0 {
-		return []common.ReadResultRow{}, nil
+		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
 	messages, err := a.fetchMessagesByIDs(ctx, recordIds)
@@ -294,7 +294,7 @@ func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 		rows = append(rows, row)
 	}
 
-	return rows, nil
+	return common.NewBatchReadResult(rows), nil
 }
 
 // UpdateSubscription re-issues the watch call with the updated params.
