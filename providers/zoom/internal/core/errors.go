@@ -9,7 +9,7 @@ import (
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 	[]interpreter.FormatTemplate{
 		{
-			MustKeys: nil,
+			MustKeys: []string{"code"},
 			Template: func() interpreter.ErrorDescriptor { return &ResponseError{} },
 		},
 	}...,

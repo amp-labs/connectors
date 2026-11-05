@@ -29,6 +29,10 @@ type UserScopedObject struct {
 	All  string
 }
 
+func (o UserScopedObject) Equals(objectName string) bool {
+	return o.All == objectName || o.Self == objectName
+}
+
 // nolint:gochecknoglobals
 var (
 	ObjectNameMeetingTemplates = UserScopedObject{Self: "meeting_templates", All: "account_meeting_templates"}
