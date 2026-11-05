@@ -15,6 +15,11 @@ import (
 	"github.com/amp-labs/connectors/scripts/openapi/zoom/internal/files"
 )
 
+const (
+	tagSelfUser = "self-user"
+	tagAllUsers = "all-users"
+)
+
 var (
 	allowedEndpoints = filters.NewRules( // nolint:gochecknoglobals
 		"/archive_files",
@@ -82,7 +87,8 @@ func Objects() pipeline.Pipeline[spec.Schema] {
 			mapping.CamelCaseToSpaceSeparated,
 			mapping.CapitalizeFirstLetterEveryWord,
 		)).
-		Map(mapping.DisplayNameOverride(displayNameOverride))
+		Map(mapping.DisplayNameOverride(displayNameOverride)).
+		Map(displayNameForUserBasedSchema)
 
 	output.PrintUnusedRules("meeting/allowedEndpoints", allowedEndpoints)
 	output.PrintRedundantKeys("meeting/objectEndpoints", objectEndpoints)
@@ -92,11 +98,38 @@ func Objects() pipeline.Pipeline[spec.Schema] {
 }
 
 func endpointsWithRequiredUserId(schemas []spec.Schema) []spec.Schema {
-	result := make([]spec.Schema, len(schemas))
-	for idx, schema := range schemas {
-		schema.UrlPath = strings.ReplaceAll(schema.UrlPath, "{userId}", "me")
-		result[idx] = schema
+	result := make([]spec.Schema, 0, len(schemas))
+	for _, schema := range schemas {
+		if strings.Contains(schema.UrlPath, "{userId}") {
+			schemaForAccounts := schema.Clone()
+			schemaForSelf := schema.Clone()
+
+			schemaForSelf.UrlPath = strings.ReplaceAll(schemaForSelf.UrlPath, "{userId}", "me")
+			schemaForSelf.Tags.AddOne(tagSelfUser)
+
+			schemaForAccounts.ObjectName = "account_" + schemaForAccounts.ObjectName
+			schemaForAccounts.Tags.AddOne(tagAllUsers)
+
+			result = append(result, schemaForAccounts, schemaForSelf)
+		} else {
+			result = append(result, schema)
+		}
 	}
 
 	return result
+}
+
+func displayNameForUserBasedSchema(schema spec.Schema) spec.Schema {
+	if schema.Tags.Has(tagSelfUser) {
+		// Ex: "My Meetings"
+		schema.DisplayName = "My " + schema.DisplayName
+	}
+
+	if schema.Tags.Has(tagAllUsers) {
+		// Ex: "Account Meetings Report" becomes "All Meetings Report"
+		name, _ := strings.CutPrefix(schema.DisplayName, "Account ")
+		schema.DisplayName = "All " + name
+	}
+
+	return schema
 }
