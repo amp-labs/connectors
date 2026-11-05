@@ -2,7 +2,6 @@ package document
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/amp-labs/connectors/scripts/openapi/internal/api/spec"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -30,9 +29,8 @@ func (p PathItem) RetrieveListResponseSchema(httpOperation HTTPOperation,
 		return nil, false, nil
 	}
 
-	objectName, _ := strings.CutPrefix(p.urlPath, "/")
 	result := &spec.Schema{
-		ObjectName:  objectName,
+		ObjectName:  "", // Must be assigned in the scripts.
 		UrlPath:     p.urlPath,
 		Operation:   string(httpOperation),
 		QueryParams: getQueryParameters(operation),
