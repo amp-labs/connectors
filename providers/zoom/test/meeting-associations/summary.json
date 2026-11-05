@@ -1,0 +1,18 @@
+{
+  "meeting_host_id": "Yu+rlhZOT2i+3MLKAYNI6w==",
+  "meeting_host_email": "john@example.com",
+  "meeting_uuid": "H9sMhq4HSWyFitQv7808ZA==",
+  "meeting_id": 88033623689,
+  "meeting_topic": "Project Alpha: Weekly Status Update",
+  "meeting_start_time": "2019-07-15T23:24:52Z",
+  "meeting_end_time": "2020-07-15T23:30:19Z",
+  "summary_start_time": "2019-07-15T23:24:52Z",
+  "summary_end_time": "2020-07-15T23:30:19Z",
+  "summary_created_time": "2019-07-15T23:24:52Z",
+  "summary_last_modified_time": "2020-07-15T23:30:19Z",
+  "summary_last_modified_user_id": "Yu+rlhZOT2i+3MLKAYNI6w==",
+  "summary_last_modified_user_email": "user@example.com",
+  "summary_title": "Meeting summary for Project Alpha: Weekly Status Update",
+  "summary_content": "## Key takeaways\n- Mobile app performance issues are affecting user retention",
+  "summary_doc_url": "https://docs.zoom.us/doc/1aBcDeFgHiJkLmNoPqRsTu"
+}

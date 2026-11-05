@@ -1,6 +1,8 @@
 package core
 
 import (
+	"time"
+
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -11,7 +13,17 @@ import (
 	"github.com/amp-labs/connectors/providers/zoom/internal/metadata"
 )
 
-const apiVersion = "v2"
+const (
+	MaxReadConcurrency = 1
+	DefaultPageSize    = "300"
+
+	apiVersion = "v2"
+)
+
+func Wait() {
+	// TODO figure out the rate limiting.
+	time.Sleep(500 * time.Millisecond) // nolint:mnd
+}
 
 type Base struct {
 	// Basic connector
@@ -63,6 +75,21 @@ func (b Base) GetWriteURL(objectName string) (*urlbuilder.URL, error) {
 	path := objectNameToWritePath.Get(objectName)
 
 	return urlbuilder.New(b.ProviderInfo().BaseURL, apiVersion, path)
+}
+
+// GetMeetingParticipantUrl returns the URL for listing meeting participants.
+func (b Base) GetMeetingParticipantUrl(meetingId string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(b.ProviderInfo().BaseURL, apiVersion, "past_meetings", meetingId, "participants")
+}
+
+// GetMeetingTranscriptUrl returns the URL for retrieving a meeting transcript.
+func (b Base) GetMeetingTranscriptUrl(meetingId string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(b.ProviderInfo().BaseURL, apiVersion, "meetings", meetingId, "transcript")
+}
+
+// GetMeetingSummaryUrl returns the URL for retrieving a meeting summary.
+func (b Base) GetMeetingSummaryUrl(meetingId string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(b.ProviderInfo().BaseURL, apiVersion, "meetings", meetingId, "meeting_summary")
 }
 
 var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint: gochecknoglobals

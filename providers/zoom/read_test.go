@@ -26,6 +26,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseUser1MeetingsFirstPage := testutils.DataFromFile(t, "read/account_meetings/user-a/1-first-page.json")
 	responseUser2MeetingsFirstPage := testutils.DataFromFile(t, "read/account_meetings/user-b/1-first-page.json")
 	responseUser2MeetingsSecondPage := testutils.DataFromFile(t, "read/account_meetings/user-b/2-second-page.json")
+	meetingParticipants := testutils.DataFromFile(t, "meeting-associations/participants.json")
+	meetingTranscript := testutils.DataFromFile(t, "meeting-associations/transcript.json")
+	meetingSummary := testutils.DataFromFile(t, "meeting-associations/summary.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -475,6 +478,77 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Fields: map[string]any{"topic": "Project Alpha: Weekly Status Update"},
 					Id:     "88033623689",
 					Raw:    map[string]any{"created_at": "2026-10-30T20:06:17Z"},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read Account Meetings with associations",
+			Input: common.ReadParams{
+				ObjectName:        "account_meetings",
+				Fields:            connectors.Fields("id", "topic"),
+				AssociatedObjects: []string{"participants", "transcript", "summary"},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If:   mockcond.Path("/v2/users"),
+					Then: mockserver.Response(http.StatusOK, responseUsersSecondPage),
+				}, {
+					If:   mockcond.Path("/v2/users/KfDcuGIdfdlfdQgePTO8WbOqwIQ/meetings"),
+					Then: mockserver.Response(http.StatusOK, responseUser2MeetingsSecondPage),
+				}, {
+					If:   mockcond.Path("/v2/past_meetings/83625651564/participants"),
+					Then: mockserver.Response(http.StatusOK, meetingParticipants),
+				}, {
+					If:   mockcond.Path("/v2/past_meetings/88033623689/participants"),
+					Then: mockserver.ResponseString(http.StatusOK, `{}`),
+				}, {
+					If:   mockcond.Path("/v2/meetings/83625651564/transcript"),
+					Then: mockserver.Response(http.StatusOK, meetingTranscript),
+				}, {
+					If:   mockcond.Path("/v2/meetings/88033623689/transcript"),
+					Then: mockserver.ResponseString(http.StatusOK, `{}`),
+				}, {
+					If:   mockcond.Path("/v2/meetings/83625651564/meeting_summary"),
+					Then: mockserver.ResponseString(http.StatusOK, `{}`),
+				}, {
+					If:   mockcond.Path("/v2/meetings/88033623689/meeting_summary"),
+					Then: mockserver.Response(http.StatusOK, meetingSummary),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetReadSorted,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"topic": "Database Migration & Architecture Sync"},
+					Id:     "83625651564",
+					Raw:    map[string]any{"created_at": "2026-10-30T20:06:17Z"},
+					Associations: map[string][]common.Association{
+						"participants": {{
+							ObjectId: "30R7kT7bTIKSNUFEuH_Qlg",
+							Raw:      map[string]any{"name": "Jill Chill"},
+						}},
+						"transcript": {{
+							ObjectId: "uaFkQyFCSwya8iNYtkAw3A==",
+							Raw:      map[string]any{"transcript_created_time": "2025-06-27T13:48:24Z"},
+						}},
+						"summary": {},
+					},
+				}, {
+					Fields: map[string]any{"topic": "Project Alpha: Weekly Status Update"},
+					Id:     "88033623689",
+					Raw:    map[string]any{"created_at": "2026-10-30T20:06:17Z"},
+					Associations: map[string][]common.Association{
+						"participants": {},
+						"transcript":   {},
+						"summary": {{
+							ObjectId: "88033623689",
+							Raw:      map[string]any{"summary_start_time": "2019-07-15T23:24:52Z"},
+						}},
+					},
 				}},
 				NextPage: "",
 				Done:     true,
