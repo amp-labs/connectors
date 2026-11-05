@@ -3,6 +3,7 @@ package stripe
 import (
 	"net/http"
 	"reflect"
+	"sync"
 	"testing"
 	"time"
 
@@ -356,5 +357,65 @@ func TestGetRecordsByIds_NotFoundSkippedKeepsOrder(t *testing.T) {
 
 	if rows[0].Id != "pi_first" || rows[1].Id != "pi_last" {
 		t.Fatalf("surviving rows out of order: got %q, %q", rows[0].Id, rows[1].Id)
+	}
+}
+
+// A failing id does not stop the remaining ids from being fetched.
+func TestGetRecordsByIds_AttemptsEveryIdDespiteFailure(t *testing.T) {
+	t.Parallel()
+
+	var (
+		mu      sync.Mutex
+		visited = map[string]bool{}
+	)
+
+	record := func(path string) {
+		mu.Lock()
+		defer mu.Unlock()
+
+		visited[path] = true
+	}
+
+	// More ids than maxConcurrentRecordFetch, so some are queued behind the failure.
+	ids := []string{"pi_1", "pi_boom", "pi_2", "pi_3", "pi_4", "pi_5", "pi_6", "pi_7"}
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.Path("/v1/payment_intents/pi_boom"),
+				Then: func(w http.ResponseWriter, r *http.Request) {
+					record(r.URL.Path)
+					// Fails before the other ids finish.
+					w.WriteHeader(http.StatusInternalServerError)
+					_, _ = w.Write([]byte(`{"error":{"message":"boom"}}`))
+				},
+			},
+		},
+		Default: func(w http.ResponseWriter, r *http.Request) {
+			record(r.URL.Path)
+			time.Sleep(30 * time.Millisecond)
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"id":"ok","amount":100}`))
+		},
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := conn.GetRecordsByIds(t.Context(), "payment_intents", ids, []string{"id"}, nil); err == nil {
+		t.Fatal("expected the batch to fail")
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+
+	for _, id := range ids {
+		if !visited["/v1/payment_intents/"+id] {
+			t.Errorf("id %q was never requested — a failure still cancels its siblings", id)
+		}
 	}
 }

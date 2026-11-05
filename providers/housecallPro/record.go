@@ -2,12 +2,13 @@ package housecallpro
 
 import (
 	"context"
+	"errors"
 
-	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/amp-labs/connectors/providers/housecallPro/metadata"
 )
 
@@ -38,31 +39,34 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	marshal := readhelper.MakeGetMarshaledDataWithId(readIDFieldByObject.Get(objectName))
 
 	// Fetches each id concurrently, keeping rows in requested order.
-	fetched := make([][]common.ReadResultRow, len(recordIDs))
-	jobs := make([]simultaneously.Job, len(recordIDs))
+	// Keyed by position so rows keep requested order.
+	tasks := make([]parallelfetch.Task[int, []common.ReadResultRow], len(recordIDs))
 
 	for i, recordID := range recordIDs {
 		idx, currentID := i, recordID
 
-		jobs[idx] = func(ctx context.Context) error {
+		tasks[idx] = func(ctx context.Context) (int, *[]common.ReadResultRow, error) {
 			rows, err := c.fetchSingleRecord(ctx, path, currentID, fields, marshal)
 			if err != nil {
-				return err
+				return idx, nil, err
 			}
 
-			fetched[idx] = rows
-
-			return nil
+			return idx, &rows, nil
 		}
 	}
 
-	if err := simultaneously.DoCtx(ctx, maxConcurrentRecordFetch, jobs...); err != nil {
-		return nil, err
+	// Fetches every id, even when some fail.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+	if len(result.Errors) != 0 {
+		return nil, errors.Join(result.Errors.Values()...)
 	}
 
 	out := make([]common.ReadResultRow, 0, len(recordIDs))
-	for _, rows := range fetched {
-		out = append(out, rows...)
+
+	for i := range recordIDs {
+		if rows, ok := result.Records[i]; ok {
+			out = append(out, rows...)
+		}
 	}
 
 	extractAssociations(objectName, associations, out)
