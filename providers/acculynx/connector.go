@@ -55,7 +55,7 @@ func constructor(base *components.Connector) (*Connector, error) {
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,
 			ParseResponse: connector.parseReadResponse,
-			ErrorHandler:  common.InterpretError,
+			ErrorHandler:  interpretReadError,
 		},
 	)
 

@@ -76,7 +76,7 @@ func stackFrames(raw json.RawMessage) []string {
 	var frames []string
 
 	for _, part := range parts {
-		for _, line := range strings.Split(part, "\n") {
+		for line := range strings.SplitSeq(part, "\n") {
 			line = strings.TrimSpace(line)
 			if !strings.HasPrefix(line, "at ") {
 				continue

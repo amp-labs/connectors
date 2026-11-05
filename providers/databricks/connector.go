@@ -68,14 +68,12 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{
 		Connector: base,
-		RequireMetadata: common.RequireMetadata{
-			ExpectedMetadataKeys: []string{
-				metadataKeyHTTPPath,
-				metadataKeyCatalog,
-				metadataKeySchema,
-				metadataKeyPrimaryKey,
-				metadataKeyTimestampColumn,
-			},
+		ExpectedMetadataKeys: []string{
+			metadataKeyHTTPPath,
+			metadataKeyCatalog,
+			metadataKeySchema,
+			metadataKeyPrimaryKey,
+			metadataKeyTimestampColumn,
 		},
 		warehouseID:     WarehouseIDFromHTTPPath(params.Metadata[metadataKeyHTTPPath]),
 		catalog:         params.Metadata[metadataKeyCatalog],
