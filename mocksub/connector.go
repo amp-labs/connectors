@@ -23,6 +23,7 @@ type Connector struct {
 	client              *common.JSONHTTPClient
 	store               *Store
 	objectNameFromEvent ObjectNameFromEventFunc
+	reportMissingIds    bool
 }
 
 var (
@@ -47,6 +48,15 @@ func WithStore(store *Store) Option {
 func WithObjectNameFromEvent(fn ObjectNameFromEventFunc) Option {
 	return func(c *Connector) {
 		c.objectNameFromEvent = fn
+	}
+}
+
+// WithMissingIdsReported makes GetRecordsByIds report each id with no stored record as a not_found
+// failure. Declared for mock providers mimicking a provider whose real connector reports the ids
+// it could not fetch; without it, those ids are only omitted from the rows.
+func WithMissingIdsReported() Option {
+	return func(c *Connector) {
+		c.reportMissingIds = true
 	}
 }
 
@@ -85,10 +95,11 @@ func (c *Connector) Provider() providers.Provider {
 	return c.provider
 }
 
-// GetRecordsByIds serves records from the canned store with real-connector semantics: ids with
-// no stored record are silently omitted (providers omit unknown ids from batch reads), and rows
-// are built by common.GetMarshaledData — the same helper real connectors use — so Raw carries
-// the full record, Fields the lowercased requested subset, and Id the record's "id" value.
+// GetRecordsByIds serves records from the canned store with real-connector semantics: an id with
+// no stored record is omitted from the rows, and also reported as a not_found failure when the
+// mock provider declares WithMissingIdsReported. Rows are built by common.GetMarshaledData — the
+// same helper real connectors use — so Raw carries the full record, Fields the lowercased
+// requested subset, and Id the record's "id" value.
 //
 //nolint:revive // recordIds parameter name matches the connectors interface.
 func (c *Connector) GetRecordsByIds(
@@ -111,7 +122,12 @@ func (c *Connector) GetRecordsByIds(
 		return nil, err
 	}
 
-	return common.NewBatchReadResult(rows), nil
+	result := common.NewBatchReadResult(rows)
+	if c.reportMissingIds {
+		result.ReportMissingIds(recordIds)
+	}
+
+	return result, nil
 }
 
 // VerifyWebhookMessage reports every message as valid. Mock providers declare verification

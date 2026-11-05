@@ -489,14 +489,14 @@ func newSalesloftConnector(
 // mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned
 // records from the provider's process-wide mocksub store.
 func newMockSalesloftConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
-	return mocksub.NewConnector(providers.MockSalesloft), nil
+	return mocksub.NewConnector(providers.MockSalesloft, mocksub.WithMissingIdsReported()), nil
 }
 
 // newMockHubspotConnector constructs the mockhubspot subscribe-testing connector (see the
 // mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned
 // records from the provider's process-wide mocksub store.
 func newMockHubspotConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
-	return mocksub.NewConnector(providers.MockHubspot), nil
+	return mocksub.NewConnector(providers.MockHubspot, mocksub.WithMissingIdsReported()), nil
 }
 
 // newMockAttioConnector constructs the mockattio subscribe-testing connector (see the mocksub
@@ -510,6 +510,7 @@ func newMockAttioConnector(_ common.ConnectorParams) (*mocksub.Connector, error)
 	return mocksub.NewConnector(
 		providers.MockAttio,
 		mocksub.WithObjectNameFromEvent(mocksub.ObjectIDIndexResolver(store)),
+		mocksub.WithMissingIdsReported(),
 	), nil
 }
 
@@ -517,12 +518,13 @@ func newMockAttioConnector(_ common.ConnectorParams) (*mocksub.Connector, error)
 // mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned
 // records from the provider's process-wide mocksub store.
 func newMockSalesforceConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
-	return mocksub.NewConnector(providers.MockSalesforce), nil
+	return mocksub.NewConnector(providers.MockSalesforce, mocksub.WithMissingIdsReported()), nil
 }
 
 // newMockConnectWiseConnector constructs the mockconnectwise subscribe-testing connector (see
 // the mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves
-// canned records from the provider's process-wide mocksub store.
+// canned records from the provider's process-wide mocksub store. It does not report missing ids
+// as failures, because the real ConnectWise connector does not.
 func newMockConnectWiseConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
 	return mocksub.NewConnector(providers.MockConnectWise), nil
 }
@@ -531,7 +533,7 @@ func newMockConnectWiseConnector(_ common.ConnectorParams) (*mocksub.Connector, 
 // package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned records
 // from the provider's process-wide mocksub store.
 func newMockGmailConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
-	return mocksub.NewConnector(providers.MockGmail), nil
+	return mocksub.NewConnector(providers.MockGmail, mocksub.WithMissingIdsReported()), nil
 }
 
 func newDynamicsCRMConnector(
