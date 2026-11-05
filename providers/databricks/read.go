@@ -95,7 +95,7 @@ func (c *Connector) buildReadStatement(params common.ReadParams) (statementReque
 
 	statement.WriteString(" ORDER BY ")
 	statement.WriteString(c.orderBy())
-	fmt.Fprintf(&statement, " LIMIT %d OFFSET %d", limit, offset)
+	statement.WriteString(fmt.Sprintf(" LIMIT %d OFFSET %d", limit, offset))
 
 	return c.newStatementRequest(statement.String(), parameters...), nil
 }
