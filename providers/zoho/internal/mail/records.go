@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
@@ -22,6 +23,9 @@ const (
 	// and consumed by GetRecordsByIds. All parts are numeric, so none contains a
 	// slash.
 	recordIDSeparator = "/"
+
+	// maxConcurrentRecordFetch caps concurrent per-id fetches.
+	maxConcurrentRecordFetch = 4
 )
 
 var (
@@ -52,25 +56,37 @@ func (a *Adapter) GetRecordsByIds(
 		return nil, errNoRecordIDs
 	}
 
-	rows := make([]common.ReadResultRow, 0, len(recordIds))
+	// Fetches each id concurrently, keeping rows in requested order.
+	rows := make([]common.ReadResultRow, len(recordIds))
+	jobs := make([]simultaneously.Job, len(recordIds))
 
-	for _, recordID := range recordIds {
-		var (
-			row common.ReadResultRow
-			err error
-		)
+	for i, recordID := range recordIds {
+		idx, currentID := i, recordID
 
-		if objectName == objectNameTasks {
-			row, err = a.getTaskByID(ctx, recordID, fields)
-		} else {
-			row, err = a.getMessageByID(ctx, recordID, fields)
+		jobs[idx] = func(ctx context.Context) error {
+			var (
+				row common.ReadResultRow
+				err error
+			)
+
+			if objectName == objectNameTasks {
+				row, err = a.getTaskByID(ctx, currentID, fields)
+			} else {
+				row, err = a.getMessageByID(ctx, currentID, fields)
+			}
+
+			if err != nil {
+				return err
+			}
+
+			rows[idx] = row
+
+			return nil
 		}
+	}
 
-		if err != nil {
-			return nil, err
-		}
-
-		rows = append(rows, row)
+	if err := simultaneously.DoCtx(ctx, maxConcurrentRecordFetch, jobs...); err != nil {
+		return nil, err
 	}
 
 	return common.NewBatchReadResult(rows), nil
