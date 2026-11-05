@@ -3,7 +3,7 @@ package meeting
 import (
 	"github.com/amp-labs/connectors/internal/goutils"
 	"github.com/amp-labs/connectors/internal/metadatadef"
-	"github.com/amp-labs/connectors/providers/zoom/metadata/openapi"
+	"github.com/amp-labs/connectors/scripts/openapi/zoom/internal/files"
 	"github.com/amp-labs/connectors/tools/fileconv/api3"
 )
 
@@ -65,7 +65,7 @@ var (
 )
 
 func Objects() []metadatadef.Schema {
-	explorer, err := openapi.MeetingFileManager.GetExplorer(
+	explorer, err := files.MeetingFileManager.GetExplorer(
 		api3.WithDisplayNamePostProcessors(
 			api3.CamelCaseToSpaceSeparated,
 			api3.CapitalizeFirstLetterEveryWord,
