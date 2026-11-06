@@ -1,9 +1,7 @@
 package reply
 
 import (
-	"cmp"
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -29,9 +27,6 @@ var recordObjects = datautils.NewStringSet(
 	objectEmailAccounts,
 	objectLinkedInAccount,
 )
-
-// errFetchNotRun marks an id whose fetch never ran.
-var errFetchNotRun = errors.New("record fetch did not run")
 
 // maxConcurrentRecordFetch caps concurrent per-id fetches. Reply allows 100 requests per minute and
 // each id is one request, so ids refused with a 429 are reported as rate_limited failures.
@@ -85,14 +80,6 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	for i := range recordIds {
 		if rows, ok := result.Records[i]; ok {
 			out = append(out, rows...)
-
-			continue
-		}
-
-		// A cancelled context leaves tasks unrun, with neither a record nor an error. Report
-		// those ids rather than dropping them.
-		if _, failed := result.Errors[i]; !failed {
-			result.Errors[i] = cmp.Or(ctx.Err(), errFetchNotRun)
 		}
 	}
 
