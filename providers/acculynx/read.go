@@ -171,6 +171,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if params.NextPage != "" {
+		// This continues an earlier read: the caller saved this next-page URL
+		// from an earlier response. It already has all its query params (page,
+		// page size, dates), so we do not add them again. The one change: a jobs
+		// URL past the 100000 limit is fixed first (see nextPageURL).
 		nextPage, err := c.nextPageURL(params)
 		if err != nil {
 			return nil, err
