@@ -296,10 +296,10 @@ func newestModifiedDate(root *ajson.Node, recordsKey string) (time.Time, error) 
 	var newest time.Time
 
 	// The URL already asks for this order (hasJobsOrdering checks it), and
-	// AccuLynx returns 400 for bad sort values. We still check the order
-	// here because the URL only shows what we asked for, not what we got.
-	// If a page ever comes back in another order, moving the start date
-	// forward would skip jobs with no error. This check costs little (a page
+	// AccuLynx returns 400 for bad sort values. This loop still checks the
+	// order because the URL only shows what we asked for, not what we got.
+	// If a page ever came back in another order, moving the start date
+	// forward would skip jobs with no error. The loop costs little (a page
 	// has at most 25 jobs) and turns that silent loss into an error.
 	for _, record := range records {
 		raw, err := jsonquery.New(record).StringRequired(jobsModifiedDateField)
