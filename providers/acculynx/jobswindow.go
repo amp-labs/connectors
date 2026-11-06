@@ -306,6 +306,12 @@ func newestModifiedDate(root *ajson.Node, recordsKey string) (time.Time, error) 
 			return time.Time{}, fmt.Errorf("acculynx: job %s %q: %w", jobsModifiedDateField, raw, err)
 		}
 
+		// The URL already asks for this order (hasJobsOrdering checks it), and
+		// AccuLynx returns 400 for bad sort values. We still check the order
+		// here because the URL only shows what we asked for, not what we got.
+		// If a page ever comes back in another order, moving the start date
+		// forward would skip jobs with no error. This check costs little (a page
+		// has at most 25 jobs) and turns that silent loss into an error.
 		if modified.Before(newest) {
 			return time.Time{}, errJobsNotOrdered
 		}
