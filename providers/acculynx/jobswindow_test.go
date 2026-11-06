@@ -65,7 +65,7 @@ func (f *fakeJobsAPI) server(t *testing.T) *httptest.Server {
 
 		switch r.URL.Path {
 		case "/api/v2/company-settings/custom-fields":
-			_, _ = w.Write(customFieldDefinitionsEmptyResponse)
+			_, _ = w.Write(customFieldDefinitionsEmptyResponse) // nosemgrep: go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter
 		case "/api/v2/jobs":
 			f.serveJobs(w, r.URL.Query())
 		default:
@@ -79,7 +79,7 @@ func (f *fakeJobsAPI) server(t *testing.T) *httptest.Server {
 
 func writeFakeError(w http.ResponseWriter, message string) {
 	w.WriteHeader(http.StatusBadRequest)
-	_, _ = fmt.Fprintf(w, `{"message":%q}`, message)
+	_ = json.NewEncoder(w).Encode(map[string]string{"message": message})
 }
 
 func (f *fakeJobsAPI) serveJobs(w http.ResponseWriter, query url.Values) {
