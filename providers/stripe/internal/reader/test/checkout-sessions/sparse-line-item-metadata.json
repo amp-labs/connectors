@@ -1,0 +1,40 @@
+{
+  "object": "list",
+  "has_more": false,
+  "data": [
+    {
+      "id": "cs_sparse_metadata",
+      "object": "checkout.session",
+      "line_items": {
+        "object": "list",
+        "data": [
+          {
+            "id": "li_first",
+            "currency": "usd",
+            "price": {
+              "metadata": {}
+            }
+          },
+          {
+            "id": "li_second",
+            "currency": "eur",
+            "price": {
+              "metadata": {
+                "department": "research"
+              }
+            }
+          },
+          {
+            "id": "li_third",
+            "currency": "cad",
+            "price": {
+              "metadata": {
+                "other": "preserved in raw"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
