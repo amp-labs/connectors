@@ -676,6 +676,183 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
+			// AccuLynx rejects a page that ends past position 100000, so a list
+			// with more matches must be read sorted by modifiedDate.
+			Name: "Read jobs with more than 100000 matches restarts the list sorted by modifiedDate",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 11, 6, 0, 0, 0, 0, time.UTC),
+			},
+			Server: jobsServer(map[string]string{"startDate": "2026-01-01", "pageStartIndex": "0"},
+				jobsPage(150000, 0, 25, "2026-03-01T10:00:00Z", "2026-02-01T10:00:00Z")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 25,
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06&includes=initialAppointment" +
+					"&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-01-01"),
+			},
+		},
+		{
+			// The default order (by created date) does not move when a job is
+			// edited during the read, so it is kept whenever it can reach the end.
+			Name: "Read jobs with 100000 matches or fewer keeps the default order",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 11, 6, 0, 0, 0, 0, time.UTC),
+			},
+			Server: jobsServer(map[string]string{"startDate": "2026-01-01", "pageStartIndex": "0"},
+				jobsPage(247, 0, 25, "2026-03-01T10:00:00Z", "2026-02-01T10:00:00Z")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 25,
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06&includes=initialAppointment" +
+					"&pageSize=25&pageStartIndex=25&startDate=2026-01-01"),
+			},
+		},
+		{
+			Name: "Read jobs at the 100000 limit moves startDate to the day before the newest job",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 11, 6, 0, 0, 0, 0, time.UTC),
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06" +
+					"&includes=initialAppointment&pageSize=25&pageStartIndex=99975" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-01-01"),
+			},
+			Server: jobsServer(map[string]string{"pageStartIndex": "99975"},
+				jobsPage(150000, 99975, 25, "2026-07-14T08:00:00Z", "2026-07-14T09:30:00Z")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 25,
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06&includes=initialAppointment" +
+					"&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-07-13"),
+			},
+		},
+		{
+			// 99999 is under 100000, but 99999 + 3 is not: the limit is on where
+			// the page ends, not where it starts.
+			Name: "Read jobs with pageSize 3 moves startDate before a page that would end past 100000",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 11, 6, 0, 0, 0, 0, time.UTC),
+				PageSize:   3,
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06" +
+					"&includes=initialAppointment&pageSize=3&pageStartIndex=99996" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-01-01"),
+			},
+			Server: jobsServer(map[string]string{"pageStartIndex": "99996"},
+				jobsPage(150000, 99996, 3, "2026-07-14T08:00:00Z", "2026-07-14T09:30:00Z")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06&includes=initialAppointment" +
+					"&pageSize=3&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-07-13"),
+			},
+		},
+		{
+			// A cursor saved before this fix points at 100000 and only ever gets
+			// a 400. It must not be sent as is: the server below answers only
+			// the sorted restart.
+			Name: "Read jobs from a saved cursor past the limit restarts its list sorted",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 11, 6, 0, 0, 0, 0, time.UTC),
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06" +
+					"&includes=initialAppointment&pageSize=25&pageStartIndex=100000&startDate=2026-01-01"),
+			},
+			Server: jobsServer(
+				map[string]string{"sortBy": "ModifiedDate", "sortOrder": "Ascending", "pageStartIndex": "0"},
+				jobsPage(150000, 0, 25, "2026-01-02T10:00:00Z", "2026-01-03T10:00:00Z")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 25,
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06&includes=initialAppointment" +
+					"&pageSize=25&pageStartIndex=25&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-01-01"),
+			},
+		},
+		{
+			// With no Since/Until the URL has no endDate yet, so today is used.
+			Name: "Read jobs without Since/Until adds a date filter at the 100000 limit",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				NextPage: jobsURL("includes=initialAppointment&pageSize=25" +
+					"&pageStartIndex=99975&sortBy=ModifiedDate&sortOrder=Ascending"),
+			},
+			Server: jobsServer(map[string]string{"pageStartIndex": "99975"},
+				jobsPage(150000, 99975, 25, "2026-07-14T08:00:00Z", "2026-07-14T09:30:00Z")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 25,
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=" + time.Now().UTC().Format(time.DateOnly) +
+					"&includes=initialAppointment&pageSize=25&pageStartIndex=0" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-07-13"),
+			},
+		},
+		{
+			// The new startDate (07-13) is not after the current one (07-13):
+			// more than 100000 jobs were modified within two days.
+			Name: "Read jobs past the limit with too many jobs in two days returns an error",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 11, 6, 0, 0, 0, 0, time.UTC),
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06" +
+					"&includes=initialAppointment&pageSize=25&pageStartIndex=99975" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-07-13"),
+			},
+			Server: jobsServer(map[string]string{"pageStartIndex": "99975"},
+				jobsPage(150000, 99975, 25, "2026-07-14T08:00:00Z", "2026-07-14T09:30:00Z")),
+			ExpectedErrs: []error{errJobsWindowStalled},
+		},
+		{
+			Name: "Read jobs at the limit with an unsorted page returns an error",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 11, 6, 0, 0, 0, 0, time.UTC),
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06" +
+					"&includes=initialAppointment&pageSize=25&pageStartIndex=99975" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-01-01"),
+			},
+			Server: jobsServer(map[string]string{"pageStartIndex": "99975"},
+				jobsPage(150000, 99975, 25, "2026-07-14T09:30:00Z", "2026-03-02T10:00:00Z")),
+			ExpectedErrs: []error{errJobsNotOrdered},
+		},
+		{
+			// The unassigned jobs are a new list: they start from the read's own
+			// dates in the default order, not from where the assigned list ended.
+			Name: "Jobs unassigned sweep restores the read's dates and default order",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 11, 6, 0, 0, 0, 0, time.UTC),
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06" +
+					"&includes=initialAppointment&pageSize=25&pageStartIndex=50" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-07-13"),
+			},
+			Server: jobsServer(map[string]string{"pageStartIndex": "50"},
+				jobsPage(75, 50, 25, "2026-08-01T10:00:00Z", "2026-08-02T10:00:00Z")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 25,
+				NextPage: jobsURL("assignment=unassigned&dateFilterType=ModifiedDate&endDate=2026-11-06" +
+					"&includes=initialAppointment&pageSize=25&pageStartIndex=0&startDate=2026-01-01"),
+			},
+		},
+		{
 			// An unassigned job has no representatives and its leaf answers
 			// 404; the fan-out must treat that parent as having no child
 			// records rather than failing the read.
@@ -1525,6 +1702,50 @@ func constructTestReadConnector(serverURL string) (*Connector, error) {
 	connector.SetUnitTestBaseURL(serverURL)
 
 	return connector, nil
+}
+
+// jobsServer serves the empty custom-field definitions plus one /jobs request
+// that must carry every given query param. Any other request gets a 500.
+func jobsServer(query map[string]string, then http.HandlerFunc) *httptest.Server {
+	jobs := mockcond.And{mockcond.MethodGET(), mockcond.Path("/api/v2/jobs")}
+	for key, value := range query {
+		jobs = append(jobs, mockcond.QueryParam(key, value))
+	}
+
+	return mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{If: jobs, Then: then},
+			{
+				If:   mockcond.Path("/api/v2/company-settings/custom-fields"),
+				Then: mockserver.Response(http.StatusOK, customFieldDefinitionsEmptyResponse),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+}
+
+// jobsPage answers with one /jobs page of size jobs, at position start of a
+// list holding count jobs. Every job is modified at first except the last one,
+// which is modified at last.
+func jobsPage(count, start, size int, first, last string) http.HandlerFunc {
+	items := make([]string, size)
+	for i := range items {
+		modified := first
+		if i == size-1 {
+			modified = last
+		}
+
+		items[i] = fmt.Sprintf(`{"id": "job-%d", "modifiedDate": %q}`, start+i, modified)
+	}
+
+	return mockserver.ResponseString(http.StatusOK, fmt.Sprintf(
+		`{"count": %d, "pageSize": %d, "pageStartIndex": %d, "items": [%s]}`,
+		count, size, start, strings.Join(items, ",")))
+}
+
+func jobsURL(query string) common.NextPageToken {
+	return common.NextPageToken(testconn.URLTestServer + "/api/v2/jobs?" + query)
 }
 
 // appointmentsServer serves the one-calendar list (cal-001) plus the given

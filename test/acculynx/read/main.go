@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
@@ -102,6 +103,96 @@ func main() {
 		if err := testBackfillShapeRead(ctx, conn, obj); err != nil {
 			slog.Error(err.Error())
 		}
+	}
+
+	slog.Info("Testing jobs read from a saved cursor past the 100000 pageStartIndex limit")
+
+	if err := testJobsCursorPastLimit(ctx, conn); err != nil {
+		slog.Error(err.Error())
+	}
+}
+
+// testJobsCursorPastLimit starts a jobs read from a saved next-page URL at
+// pageStartIndex=100000, like the one a customer's backfill got stuck on.
+// AccuLynx answers that URL with 400 "Requested pageStartIndex is out of
+// range.", so the connector must restart the list sorted by modifiedDate and
+// still return every job a normal read returns.
+func testJobsCursorPastLimit(ctx context.Context, conn *acculynx.Connector) error {
+	params := common.ReadParams{
+		ObjectName: "jobs",
+		Fields:     connectors.Fields("id"),
+		Since:      time.Now().AddDate(-10, 0, 0),
+	}
+
+	first, err := conn.Read(ctx, params)
+	if err != nil {
+		return fmt.Errorf("error reading jobs page 1: %w", err)
+	}
+
+	if first.NextPage == "" {
+		slog.Warn("Only one page of jobs, so there is no next-page URL to test with")
+
+		return nil
+	}
+
+	cursor, err := url.Parse(first.NextPage.String())
+	if err != nil {
+		return err
+	}
+
+	query := cursor.Query()
+	query.Set("pageStartIndex", "100000")
+	cursor.RawQuery = query.Encode()
+
+	want, err := readJobIDs(ctx, conn, params)
+	if err != nil {
+		return fmt.Errorf("error reading jobs: %w", err)
+	}
+
+	stuck := params
+	stuck.NextPage = common.NextPageToken(cursor.String())
+
+	got, err := readJobIDs(ctx, conn, stuck)
+	if err != nil {
+		return fmt.Errorf("error reading jobs from %s: %w", cursor, err)
+	}
+
+	missing := 0
+
+	for id := range want {
+		if !got[id] {
+			missing++
+		}
+	}
+
+	if missing > 0 {
+		return fmt.Errorf("read from the saved cursor missed %d of %d jobs", missing, len(want)) //nolint:err113
+	}
+
+	slog.Info("Saved cursor past the limit read every job", "jobs", len(want))
+
+	return nil
+}
+
+// readJobIDs reads every page and returns the IDs of the jobs it got.
+func readJobIDs(ctx context.Context, conn *acculynx.Connector, params common.ReadParams) (map[string]bool, error) {
+	ids := map[string]bool{}
+
+	for {
+		res, err := conn.Read(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, row := range res.Data {
+			ids[fmt.Sprint(row.Fields["id"])] = true
+		}
+
+		if res.Done || res.NextPage == "" {
+			return ids, nil
+		}
+
+		params.NextPage = res.NextPage
 	}
 }
 
