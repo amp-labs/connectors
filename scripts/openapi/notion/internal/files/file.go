@@ -14,7 +14,7 @@ var (
 	//go:embed openapi.json
 	apiFile []byte
 
-	OpenApiFile = api.NewFile(apiFile)           // nolint:gochecknoglobals
+	OpenApiFile = api.NewFile(apiFile)        // nolint:gochecknoglobals
 	OutputDir   = "providers/notion/metadata" // nolint:gochecknoglobals
 )
 

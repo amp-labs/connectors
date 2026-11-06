@@ -12,6 +12,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/httpkit"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/customfields"
 	"github.com/spyzhov/ajson"
 )
 
@@ -100,7 +101,7 @@ func recordTransformer(objectName string) common.RecordTransformer {
 			return nil, err
 		}
 
-		if err = attachCustomFields(node, root); err != nil {
+		if err = customfields.EnhanceReadRecord(node, root); err != nil {
 			return nil, err
 		}
 
