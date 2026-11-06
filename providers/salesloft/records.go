@@ -12,7 +12,7 @@ import (
 //nolint:revive, godoclint
 func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string,
 	recordIds []string, fields []string, _ []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	// Sanitize method arguments.
 	config := common.ReadParams{
 		ObjectName: objectName,
@@ -45,5 +45,8 @@ func (c *Connector) GetRecordsByIds(ctx context.Context, objectName string,
 		return nil, err
 	}
 
-	return parsed.Data, nil
+	result := common.NewBatchReadResult(parsed.Data)
+	result.ReportMissingIds(recordIds)
+
+	return result, nil
 }

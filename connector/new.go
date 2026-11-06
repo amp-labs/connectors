@@ -49,10 +49,12 @@ import (
 	"github.com/amp-labs/connectors/providers/constantcontact"
 	"github.com/amp-labs/connectors/providers/copper"
 	"github.com/amp-labs/connectors/providers/customerapp"
+	"github.com/amp-labs/connectors/providers/databricks"
 	"github.com/amp-labs/connectors/providers/devrev"
 	"github.com/amp-labs/connectors/providers/dixa"
 	"github.com/amp-labs/connectors/providers/docusign"
 	"github.com/amp-labs/connectors/providers/drift"
+	"github.com/amp-labs/connectors/providers/dropbox"
 	"github.com/amp-labs/connectors/providers/dropboxsign"
 	"github.com/amp-labs/connectors/providers/dynamicsbusiness"
 	"github.com/amp-labs/connectors/providers/dynamicscrm"
@@ -71,6 +73,7 @@ import (
 	"github.com/amp-labs/connectors/providers/google"
 	"github.com/amp-labs/connectors/providers/gorgias"
 	gotoconn "github.com/amp-labs/connectors/providers/goto"
+	"github.com/amp-labs/connectors/providers/grain"
 	"github.com/amp-labs/connectors/providers/granola"
 	"github.com/amp-labs/connectors/providers/groove"
 	"github.com/amp-labs/connectors/providers/gusto"
@@ -216,10 +219,12 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.ConstantContact:                   wrapper(newConstantContactConnector),
 	providers.Copper:                            wrapper(newCopperConnector),
 	providers.CustomerJourneysApp:               wrapper(newCustomerJourneysAppConnector),
+	providers.Databricks:                        wrapper(newDatabricksConnector),
 	providers.DevRev:                            wrapper(newDevRevConnector),
 	providers.Dixa:                              wrapper(newDixaConnector),
 	providers.Docusign:                          wrapper(newDocusignConnector),
 	providers.Drift:                             wrapper(newDriftConnector),
+	providers.Dropbox:                           wrapper(newDropboxConnector),
 	providers.DropboxSign:                       wrapper(newDropboxSignConnector),
 	providers.DynamicsBusinessCentral:           wrapper(newDynamicsBusinessCentral),
 	providers.DynamicsCRM:                       wrapper(newDynamicsCRMConnector),
@@ -239,6 +244,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.GoogleWorkspaceDelegation:         wrapper(newGoogleWorkspaceDelegationConnector),
 	providers.Gorgias:                           wrapper(newGorgiasConnector),
 	providers.GoTo:                              wrapper(newGoToConnector),
+	providers.Grain:                             wrapper(newGrainConnector),
 	providers.Granola:                           wrapper(newGranolaConnector),
 	providers.Groove:                            wrapper(newGrooveConnector),
 	providers.Gusto:                             wrapper(newGustoConnector),
@@ -483,14 +489,14 @@ func newSalesloftConnector(
 // mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned
 // records from the provider's process-wide mocksub store.
 func newMockSalesloftConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
-	return mocksub.NewConnector(providers.MockSalesloft), nil
+	return mocksub.NewConnector(providers.MockSalesloft, mocksub.WithMissingIdsReported()), nil
 }
 
 // newMockHubspotConnector constructs the mockhubspot subscribe-testing connector (see the
 // mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned
 // records from the provider's process-wide mocksub store.
 func newMockHubspotConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
-	return mocksub.NewConnector(providers.MockHubspot), nil
+	return mocksub.NewConnector(providers.MockHubspot, mocksub.WithMissingIdsReported()), nil
 }
 
 // newMockAttioConnector constructs the mockattio subscribe-testing connector (see the mocksub
@@ -504,6 +510,7 @@ func newMockAttioConnector(_ common.ConnectorParams) (*mocksub.Connector, error)
 	return mocksub.NewConnector(
 		providers.MockAttio,
 		mocksub.WithObjectNameFromEvent(mocksub.ObjectIDIndexResolver(store)),
+		mocksub.WithMissingIdsReported(),
 	), nil
 }
 
@@ -511,12 +518,13 @@ func newMockAttioConnector(_ common.ConnectorParams) (*mocksub.Connector, error)
 // mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned
 // records from the provider's process-wide mocksub store.
 func newMockSalesforceConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
-	return mocksub.NewConnector(providers.MockSalesforce), nil
+	return mocksub.NewConnector(providers.MockSalesforce, mocksub.WithMissingIdsReported()), nil
 }
 
 // newMockConnectWiseConnector constructs the mockconnectwise subscribe-testing connector (see
 // the mocksub package). ConnectorParams is ignored: the mock talks to no HTTP API and serves
-// canned records from the provider's process-wide mocksub store.
+// canned records from the provider's process-wide mocksub store. It does not report missing ids
+// as failures, because the real ConnectWise connector does not.
 func newMockConnectWiseConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
 	return mocksub.NewConnector(providers.MockConnectWise), nil
 }
@@ -525,7 +533,7 @@ func newMockConnectWiseConnector(_ common.ConnectorParams) (*mocksub.Connector, 
 // package). ConnectorParams is ignored: the mock talks to no HTTP API and serves canned records
 // from the provider's process-wide mocksub store.
 func newMockGmailConnector(_ common.ConnectorParams) (*mocksub.Connector, error) {
-	return mocksub.NewConnector(providers.MockGmail), nil
+	return mocksub.NewConnector(providers.MockGmail, mocksub.WithMissingIdsReported()), nil
 }
 
 func newDynamicsCRMConnector(
@@ -892,6 +900,12 @@ func newDixaConnector(
 	return dixa.NewConnector(params)
 }
 
+func newDatabricksConnector(
+	params common.ConnectorParams,
+) (*databricks.Connector, error) {
+	return databricks.NewConnector(params)
+}
+
 func newFlatfileConnector(
 	params common.ConnectorParams,
 ) (*flatfile.Connector, error) {
@@ -977,6 +991,12 @@ func newGorgiasConnector(
 	params common.ConnectorParams,
 ) (*gorgias.Connector, error) {
 	return gorgias.NewConnector(params)
+}
+
+func newGrainConnector(
+	params common.ConnectorParams,
+) (*grain.Connector, error) {
+	return grain.NewConnector(params)
 }
 
 func newZendeskChatConnector(
@@ -1399,6 +1419,10 @@ func newQuickbooksConnector(params common.ConnectorParams) (*quickbooks.Connecto
 
 func newQuickbooksSandboxConnector(params common.ConnectorParams) (*quickbooks.Connector, error) {
 	return quickbooks.NewSandboxConnector(params)
+}
+
+func newDropboxConnector(params common.ConnectorParams) (*dropbox.Connector, error) {
+	return dropbox.NewConnector(params)
 }
 
 func newDropboxSignConnector(params common.ConnectorParams) (*dropboxsign.Connector, error) {

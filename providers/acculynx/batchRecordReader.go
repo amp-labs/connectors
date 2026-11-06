@@ -9,10 +9,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 )
 
 // AccuLynx has no batch read endpoint; GetRecordsByIds fans out per id
@@ -28,7 +28,8 @@ var errBatchReadEmptyResponse = errors.New("acculynx: empty response body for re
 // single-record GET. Users were added for the appointment->user association:
 // an appointment's calendar id equals its user id, so the server hydrates the
 // user directly. Not every calendar is a user (company/crew calendars 404), so
-// GetRecordsByIds skips ids that are not found — see isNotFound below.
+// GetRecordsByIds reports ids that are not found as not-found failures instead
+// of failing the call.
 // jobs/representatives hydrates the per-job company-representative singleton:
 // the record id is the job id (matching write/delete for representatives), and
 // the fetch routes to /jobs/{jobId}/representatives/company — see
@@ -46,7 +47,7 @@ func (c *Connector) GetRecordsByIds(
 	recordIds []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	objectName = strings.ToLower(objectName)
 
 	if !batchReadableObjects.Has(objectName) {
@@ -55,45 +56,31 @@ func (c *Connector) GetRecordsByIds(
 	}
 
 	if len(recordIds) == 0 {
-		return []common.ReadResultRow{}, nil
+		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
 	fieldSet := datautils.NewSetFromList(fields)
 
-	rows := make([]common.ReadResultRow, len(recordIds))
-	found := make([]bool, len(recordIds))
-	jobs := make([]simultaneously.Job, len(recordIds))
+	// Keyed by position so rows keep requested order.
+	tasks := make([]parallelfetch.Task[int, common.ReadResultRow], len(recordIds))
 
 	for i, recordID := range recordIds {
 		idx, currentID := i, recordID
 
-		jobs[idx] = func(ctx context.Context) error {
+		tasks[idx] = func(ctx context.Context) (int, *common.ReadResultRow, error) {
 			row, err := c.fetchSingleRecord(ctx, objectName, currentID, fieldSet, associations)
 			if err != nil {
-				// A record that no longer exists — or, for the appointment->user
-				// edge, a calendar id that is not a user — must not sink the whole
-				// batch. Skip the missing id and let the caller receive the ids
-				// that do resolve, matching the "missing ids simply don't come
-				// back" semantics of the bulk-by-id connectors.
-				if isNotFound(err) {
-					return nil
-				}
-
-				return fmt.Errorf("fetch %s/%s: %w", objectName, currentID, err)
+				return idx, nil, fmt.Errorf("fetch %s/%s: %w", objectName, currentID, err)
 			}
 
-			rows[idx] = row
-			found[idx] = true
-
-			return nil
+			return idx, &row, nil
 		}
 	}
 
-	if err := simultaneously.DoCtx(ctx, maxConcurrentChildFetch, jobs...); err != nil {
-		return nil, err
-	}
+	// Fetches every id, even when some fail.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentChildFetch)
 
-	out := compactFound(rows, found)
+	out := compactFound(result.Records, len(recordIds))
 
 	// The embedded payload requested above still has to be lifted into
 	// Associations; without this the caller receives a full record and an empty
@@ -102,7 +89,10 @@ func (c *Connector) GetRecordsByIds(
 		extractJobContacts(out)
 	}
 
-	return out, nil
+	batch := common.NewBatchReadResult(out)
+
+	// Every per-id error is a failure; the error joins the ones that are not not-found.
+	return batch, batch.ReportFetchErrors(recordIds, result.Errors)
 }
 
 // isNotFound reports whether err represents a 404 from AccuLynx. The base JSON
@@ -121,13 +111,13 @@ func isNotFound(err error) bool {
 	return false
 }
 
-// compactFound returns only the rows whose id resolved, preserving input order.
-func compactFound(rows []common.ReadResultRow, found []bool) []common.ReadResultRow {
-	out := make([]common.ReadResultRow, 0, len(rows))
+// compactFound returns the found records in requested order.
+func compactFound(records map[int]common.ReadResultRow, total int) []common.ReadResultRow {
+	out := make([]common.ReadResultRow, 0, total)
 
-	for i, ok := range found {
-		if ok {
-			out = append(out, rows[i])
+	for i := range total {
+		if row, ok := records[i]; ok {
+			out = append(out, row)
 		}
 	}
 

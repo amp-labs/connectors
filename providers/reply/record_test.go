@@ -1,8 +1,11 @@
 package reply
 
 import (
+	"errors"
 	"net/http"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -110,7 +113,7 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 			}},
 		},
 		{
-			Name: "Server error fails the batch",
+			Name: "Server error is returned as the error",
 			Input: testconn.ReadByIdsParams{
 				ObjectName: "contacts",
 				RecordIds:  []string{"761575999"},
@@ -120,6 +123,7 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 				If:    mockcond.Path("/v3/contacts/761575999"),
 				Then:  mockserver.Response(http.StatusInternalServerError, nil),
 			}.Server(),
+			Expected:     []common.ReadResultRow{},
 			ExpectedErrs: []error{common.ErrServer},
 		},
 	}
@@ -132,5 +136,164 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
+	}
+}
+
+// Rows come back in requested order even when an earlier id responds slower.
+func TestGetRecordsByIdsPreservesRequestedOrder(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: mockserver.Cases{{
+			If: mockcond.Path("/v3/contacts/1"),
+			Then: func(w http.ResponseWriter, _ *http.Request) {
+				time.Sleep(50 * time.Millisecond)
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte(`{"id":1,"email":"first@example.com"}`))
+			},
+		}, {
+			If:   mockcond.Path("/v3/contacts/2"),
+			Then: mockserver.ResponseString(http.StatusOK, `{"id":2,"email":"second@example.com"}`),
+		}},
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	result, err := conn.GetRecordsByIds(t.Context(), "contacts", []string{"1", "2"}, []string{"email"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testconn.RequireRowIds(t, result, "1", "2")
+	testconn.RequireNoFailures(t, result)
+}
+
+// A deleted id is reported as a not-found failure without an error, and the other rows keep their order.
+func TestGetRecordsByIdsReportsNotFound(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: mockserver.Cases{{
+			If:   mockcond.Path("/v3/contacts/1"),
+			Then: mockserver.ResponseString(http.StatusOK, `{"id":1,"email":"first@example.com"}`),
+		}, {
+			If:   mockcond.Path("/v3/contacts/404"),
+			Then: mockserver.ResponseString(http.StatusNotFound, `{"errors":[{"message":"Contact not found"}]}`),
+		}, {
+			If:   mockcond.Path("/v3/contacts/3"),
+			Then: mockserver.ResponseString(http.StatusOK, `{"id":3,"email":"third@example.com"}`),
+		}},
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	result, err := conn.GetRecordsByIds(t.Context(), "contacts", []string{"1", "404", "3"}, []string{"email"}, nil)
+	if err != nil {
+		t.Fatalf("a not-found id must not produce an error, got %v", err)
+	}
+
+	testconn.RequireRowIds(t, result, "1", "3")
+
+	// Reply's 404 does not wrap common.ErrNotFound, so the reason is asserted rather than the sentinel.
+	if len(result.Failures) != 1 || result.Failures[0].RecordId != "404" ||
+		result.Failures[0].Reason != common.FailureReasonNotFound {
+		t.Errorf("failures = %+v, want one not_found failure for id 404", result.Failures)
+	}
+}
+
+// A non-404 failure is reported and returned as the error alongside the rows that did resolve.
+func TestGetRecordsByIdsReturnsRowsWithServerError(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: mockserver.Cases{{
+			If:   mockcond.Path("/v3/contacts/1"),
+			Then: mockserver.ResponseString(http.StatusOK, `{"id":1,"email":"first@example.com"}`),
+		}, {
+			If:   mockcond.Path("/v3/contacts/500"),
+			Then: mockserver.Response(http.StatusInternalServerError, nil),
+		}},
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	result, err := conn.GetRecordsByIds(t.Context(), "contacts", []string{"500", "1"}, []string{"email"}, nil)
+	if !errors.Is(err, common.ErrServer) {
+		t.Fatalf("error = %v, want one wrapping common.ErrServer", err)
+	}
+
+	testconn.RequireRowIds(t, result, "1")
+
+	if len(result.Failures) != 1 || result.Failures[0].RecordId != "500" ||
+		result.Failures[0].Reason != common.FailureReasonTransient {
+		t.Errorf("failures = %+v, want one transient failure for id 500", result.Failures)
+	}
+}
+
+// A failing id does not stop the remaining ids from being fetched.
+func TestGetRecordsByIdsAttemptsEveryIdDespiteFailure(t *testing.T) {
+	t.Parallel()
+
+	var (
+		mutex   sync.Mutex
+		visited = map[string]bool{}
+	)
+
+	// More ids than maxConcurrentRecordFetch, so some are queued behind the failure.
+	ids := []string{"500", "1", "2", "3", "4", "5", "6", "7"}
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: mockserver.Cases{{
+			If: mockcond.Path("/v3/contacts/500"),
+			Then: func(w http.ResponseWriter, r *http.Request) {
+				mutex.Lock()
+				visited[r.URL.Path] = true
+				mutex.Unlock()
+
+				w.WriteHeader(http.StatusInternalServerError)
+			},
+		}},
+		Default: func(w http.ResponseWriter, r *http.Request) {
+			mutex.Lock()
+			visited[r.URL.Path] = true
+			mutex.Unlock()
+
+			time.Sleep(20 * time.Millisecond)
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"id":1,"email":"x@example.com"}`))
+		},
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := conn.GetRecordsByIds(t.Context(), "contacts", ids, []string{"email"}, nil); err == nil {
+		t.Fatal("expected the server error to be returned")
+	}
+
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	if len(visited) != len(ids) {
+		t.Errorf("fetched %d of %d ids; a failure must not stop the rest", len(visited), len(ids))
 	}
 }

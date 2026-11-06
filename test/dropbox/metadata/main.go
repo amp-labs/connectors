@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/amp-labs/connectors/test/notion"
+	"github.com/amp-labs/connectors/test/dropbox"
 	"github.com/amp-labs/connectors/test/utils"
 )
 
@@ -16,14 +16,18 @@ func main() {
 
 	utils.SetupLogging()
 
-	conn := notion.GetNotionConnector(ctx)
+	conn := dropbox.GetDropboxConnector(ctx)
 
 	result, err := conn.ListObjectMetadata(ctx, []string{
-		"users",
-		"file_uploads",
+		"files",
+		"file_requests",
+		"shared_links",
+		"shared_folders",
+		"mountable_shared_folders",
+		"received_files",
 	})
 	if err != nil {
-		utils.Fail("error listing Notion metadata", "error", err)
+		utils.Fail("error listing Dropbox metadata", "error", err)
 	}
 
 	utils.DumpJSON(result, os.Stdout)

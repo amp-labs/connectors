@@ -1,189 +1,136 @@
 // Extracts Notion object schemas from the OpenAPI spec and writes
-// providers/notion/metadata/schemas.json.
+// providers/notion/metadata/objectsMetadata.json and endpoints.json.
 package main
 
 import (
-	"log/slog"
 	"slices"
 	"strings"
 
-	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/goutils"
-	"github.com/amp-labs/connectors/internal/metadatadef"
-	"github.com/amp-labs/connectors/internal/staticschema"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/filters"
+	mapping "github.com/amp-labs/connectors/scripts/openapi/internal/api/map"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/map/mappingfields"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/output"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/pipeline"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api/spec"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/core"
 	"github.com/amp-labs/connectors/scripts/openapi/notion/internal/files"
-	utilsopenapi "github.com/amp-labs/connectors/scripts/openapi/utils"
-	"github.com/amp-labs/connectors/tools/fileconv"
-	"github.com/amp-labs/connectors/tools/fileconv/api3"
-	"github.com/amp-labs/connectors/tools/scrapper"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
-//nolint:gochecknoglobals
-var outputMetadata = scrapper.NewWriter[staticschema.FieldMetadataMapV2](
-	fileconv.NewPath("providers/notion/metadata"),
-)
-
-// Workspace collections with a GET list and no parent id.
+// Workspace collections with a GET list and no parent id (same bar as Read today).
+// custom_emojis (/v1/custom_emojis) qualifies but is omitted until Read supports it.
+// Views (/v1/views) are a GET list but require database_id or data_source_id.
 // Pages and data sources come only from POST /v1/search, which cannot take a time window.
 // Blocks are listed at GET /v1/blocks/{block_id}/children, which needs a parent id.
-// Comments and views need a parent id. Search is an action.
-// None of those are connector objects.
+// Comments need a parent id. Search is an action.
+// Databases/data sources/pages may be better suited to Subscribe than Read.
 //
 //nolint:gochecknoglobals
-var supportedObjects = map[string]string{
+var readObjects = filters.NewRules(
+	"/v1/users",
+	"/v1/file_uploads",
+)
+
+//nolint:gochecknoglobals
+var displayNameOverride = core.NewTrackedMap(map[string]string{
+	"/users":        "Users",
+	"/file_uploads": "File Uploads",
+})
+
+//nolint:gochecknoglobals
+var objectNameByPath = map[string]string{
 	"/v1/users":        "users",
 	"/v1/file_uploads": "file_uploads",
 }
-
-//nolint:gochecknoglobals
-var displayNameOverrides = map[string]string{
-	"users":        "Users",
-	"file_uploads": "File Uploads",
-}
-
-//nolint:gochecknoglobals
-var objectNameToResponseField = datautils.NewDefaultMap(map[string]string{
-	"users":        "results",
-	"file_uploads": "results",
-},
-	func(string) string {
-		return ""
-	},
-)
 
 // Component overlays for the list objects above.
 // The list extractor leaves oneOf properties without a type and does not collect const.
 //
 //nolint:gochecknoglobals
-var resourceObjects = []resourceObject{
-	{name: "users", displayName: "Users", component: "userObjectResponse", path: "/users"},
-	{name: "file_uploads", displayName: "File Uploads", component: "fileUploadObjectResponse", path: "/file_uploads"},
-}
-
-type resourceObject struct {
-	name        string
-	displayName string
-	component   string
-	path        string
+var componentByObject = map[string]string{
+	"users":        "userObjectResponse",
+	"file_uploads": "fileUploadObjectResponse",
 }
 
 func main() {
-	schemas, registry := schemasFromLists()
+	extractor, err := files.OpenApiFile.Extractor()
+	goutils.MustBeNil(err)
 
 	doc, err := files.Document()
 	goutils.MustBeNil(err)
 
-	addResourceObjects(schemas, doc)
-
-	goutils.MustBeNil(outputMetadata.FlushSchemas(schemas))
-	goutils.MustBeNil(outputMetadata.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
-
-	slog.Info("Completed.", "listObjects", len(supportedObjects), "resourceObjects", len(resourceObjects))
-}
-
-func schemasFromLists() (
-	*staticschema.Metadata[staticschema.FieldMetadataMapV2, any],
-	datautils.NamedLists[string],
-) {
-	explorer, err := files.FileManager.GetExplorer(
-		api3.WithDisplayNamePostProcessors(
-			api3.SlashesToSpaceSeparated,
-			api3.CapitalizeFirstLetterEveryWord,
-		),
-		api3.WithArrayItemAutoSelection(),
+	getSchemas, err := extractor.ExtractListSchemas(api.GET,
+		api.List.WithArrayLocator(func(_, fieldName string) bool {
+			return fieldName == "results"
+		}),
 	)
 	goutils.MustBeNil(err)
 
-	allowPaths := make([]string, 0, len(supportedObjects))
-	for path := range supportedObjects {
-		allowPaths = append(allowPaths, path)
-	}
+	pipe := pipeline.NewSchemaPipe(getSchemas).
+		Filter(filters.KeepWithPath(filters.AndPathMatcher{
+			filters.NoIdPath{}, filters.NewAllowPathStrategy(readObjects),
+		})).
+		Map(setObjectName).
+		Map(pathWithoutVersion).
+		Map(mapping.DisplayNameOverride(displayNameOverride)).
+		Map(applyComponentFields(doc)).
+		Map(mapping.Fields(
+			mappingfields.DisplayNameFormat(func(_, name string) string {
+				return name
+			}),
+		))
 
-	objects, err := explorer.ReadObjectsGet(
-		api3.NewAllowPathStrategy(allowPaths),
-		supportedObjects,
-		displayNameOverrides,
-		api3.CustomMappingObjectCheck(objectNameToResponseField),
-	)
-	goutils.MustBeNil(err)
+	output.PrintUnusedRules("readObjects", readObjects)
+	output.PrintRedundantKeys("displayNameOverride", displayNameOverride)
 
-	schemas := staticschema.NewMetadata[staticschema.FieldMetadataMapV2]()
-	registry := datautils.NamedLists[string]{}
-
-	for _, object := range objects {
-		if object.Problem != nil {
-			slog.Error("schema not extracted",
-				"objectName", object.ObjectName,
-				"error", object.Problem,
-			)
-
-			continue
-		}
-
-		addObject(
-			schemas,
-			object.ObjectName,
-			object.DisplayName,
-			pathWithoutVersion(object.URLPath),
-			object.ResponseKey,
-			object.Fields,
-		)
-
-		for _, queryParam := range object.QueryParams {
-			registry.Add(queryParam, object.ObjectName)
-		}
-	}
-
-	return schemas, registry
+	goutils.MustBeNil(output.WriteMetadata(files.OutputDir, pipe))
+	goutils.MustBeNil(output.WriteQueryParamStats(files.OutputDir, pipe))
+	goutils.MustBeNil(output.WriteEndpoints(files.OutputDir, &pipe, nil, nil, nil))
 }
 
-func addResourceObjects(
-	schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any],
-	doc *openapi3.T,
-) {
-	for _, resource := range resourceObjects {
-		component := doc.Components.Schemas[resource.component]
-		if component == nil || component.Value == nil {
-			slog.Error("component schema missing", "component", resource.component)
-
-			continue
-		}
-
-		addObject(
-			schemas,
-			resource.name,
-			resource.displayName,
-			resource.path,
-			"results",
-			fieldsFromSchema(component.Value),
-		)
+func setObjectName(schema spec.Schema) spec.Schema {
+	if name, ok := objectNameByPath[schema.UrlPath]; ok {
+		schema.ObjectName = name
 	}
+
+	return schema
 }
 
 // pathWithoutVersion drops the API version. Object paths are the resource only,
 // for example OpenAPI /v1/users becomes /users.
-func pathWithoutVersion(path string) string {
-	trimmed, ok := strings.CutPrefix(path, "/v1")
+func pathWithoutVersion(schema spec.Schema) spec.Schema {
+	trimmed, ok := strings.CutPrefix(schema.UrlPath, "/v1")
 	if !ok || trimmed == "" {
-		return path
+		return schema
 	}
 
 	if !strings.HasPrefix(trimmed, "/") {
-		return "/" + trimmed
+		trimmed = "/" + trimmed
 	}
 
-	return trimmed
+	schema.UrlPath = trimmed
+
+	return schema
 }
 
-func addObject(
-	schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any],
-	name, displayName, path, responseKey string,
-	fields metadatadef.Fields,
-) {
-	for _, field := range fields {
-		schemas.Add("", name, displayName, path, responseKey,
-			utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, nil)
+func applyComponentFields(doc *openapi3.T) func(spec.Schema) spec.Schema {
+	return func(schema spec.Schema) spec.Schema {
+		componentName, ok := componentByObject[schema.ObjectName]
+		if !ok {
+			return schema
+		}
+
+		component := doc.Components.Schemas[componentName]
+		if component == nil || component.Value == nil {
+			return schema
+		}
+
+		schema.Fields = fieldsFromComponent(component.Value)
+
+		return schema
 	}
 }
 
@@ -192,11 +139,11 @@ type collectedField struct {
 	enums map[string]struct{}
 }
 
-func fieldsFromSchema(schema *openapi3.Schema) metadatadef.Fields {
+func fieldsFromComponent(schema *openapi3.Schema) spec.Fields {
 	collected := map[string]*collectedField{}
 	walkSchema(schema, collected)
 
-	fields := make(metadatadef.Fields, len(collected))
+	fields := make(spec.Fields, len(collected))
 
 	for name, field := range collected {
 		options := make([]string, 0, len(field.enums))
@@ -206,14 +153,37 @@ func fieldsFromSchema(schema *openapi3.Schema) metadatadef.Fields {
 
 		slices.Sort(options)
 
-		fields[name] = metadatadef.Field{
+		specField := spec.Field{
 			Name:         name,
+			DisplayName:  name,
 			Type:         field.typ,
 			ValueOptions: options,
 		}
+		specField.ValueType = valueTypeForField(specField)
+
+		fields[name] = specField
 	}
 
 	return fields
+}
+
+func valueTypeForField(field spec.Field) common.ValueType {
+	switch field.Type {
+	case openapi3.TypeBoolean:
+		return common.ValueTypeBoolean
+	case openapi3.TypeInteger:
+		return common.ValueTypeInt
+	case openapi3.TypeNumber:
+		return common.ValueTypeFloat
+	case openapi3.TypeString:
+		if len(field.ValueOptions) != 0 {
+			return common.ValueTypeSingleSelect
+		}
+
+		return common.ValueTypeString
+	default:
+		return common.ValueTypeOther
+	}
 }
 
 // walkSchema flattens a component into one field map.
@@ -222,25 +192,9 @@ func fieldsFromSchema(schema *openapi3.Schema) metadatadef.Fields {
 // are unioned. The first non-null type is kept. Nested object properties are
 // not expanded.
 //
-// Notion often has no enum array. Each oneOf or anyOf branch is one option,
-// and that option is a const on the branch.
-//
-// userObjectResponse:
-//
-//	allOf:
-//	  userObjectResponseCommon
-//	    object: const "user"
-//	  oneOf:
-//	    personUserObjectResponse
-//	      type: const "person"
-//	    botUserObjectResponse
-//	      type: const "bot"
-//
-// Collected fields: object ["user"], type ["bot", "person"].
-//
-// A real enum is collected from the property itself.
-// fileUploadObjectResponse.status is enum ["pending", "uploaded", "expired", "failed"].
-// filename is oneOf [string, null], so the collected type is string and there are no options.
+// The shared list extractor copies an enum array into ValueOptions and does not
+// walk oneOf. Notion often has no enum array; each oneOf or anyOf branch is one
+// option, and that option is a const on the branch.
 func walkSchema(schema *openapi3.Schema, collected map[string]*collectedField) {
 	if schema == nil {
 		return

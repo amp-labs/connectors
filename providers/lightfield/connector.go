@@ -6,6 +6,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
+	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/providers"
 )
 
@@ -14,6 +15,7 @@ type Connector struct {
 
 	common.RequireAuthenticatedClient
 
+	components.SchemaProvider
 	components.Reader
 }
 
@@ -35,6 +37,8 @@ func constructor(_ common.ConnectorParams, base *components.Connector) (*Connect
 
 	// Used by the definitions requests made through JSONHTTPClient in ListObjectMetadata.
 	connector.HTTPClient().ErrorHandler = errorHandler
+
+	connector.SchemaProvider = schema.NewDelegateSchemaProvider(connector.listObjectMetadata)
 
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
