@@ -394,6 +394,45 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
+			Name: "Read with next page past the end of the list (400) reports invalid pagination cursor",
+			Input: common.ReadParams{
+				ObjectName: "users",
+				Fields:     connectors.Fields("id"),
+				NextPage:   testconn.URLTestServer + "/api/v2/users?pageSize=25&pageStartIndex=93100",
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusBadRequest, pageOutOfRangeBody),
+			}.Server(),
+			ExpectedErrs: []error{common.ErrInvalidPaginationCursor},
+		},
+		{
+			Name: "Read with next page past the end of the list (416) reports invalid pagination cursor",
+			Input: common.ReadParams{
+				ObjectName: "users",
+				Fields:     connectors.Fields("id"),
+				NextPage:   testconn.URLTestServer + "/api/v2/users?pageSize=25&pageStartIndex=50",
+			},
+			Server: mockserver.Fixed{
+				Setup: mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusRequestedRangeNotSatisfiable,
+					`{"title":"The requested pagination range falls outside the available data.","status":416}`),
+			}.Server(),
+			ExpectedErrs: []error{common.ErrInvalidPaginationCursor},
+		},
+		{
+			Name: "Read first page out of range stays a caller error",
+			Input: common.ReadParams{
+				ObjectName: "users",
+				Fields:     connectors.Fields("id"),
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.ResponseString(http.StatusBadRequest, pageOutOfRangeBody),
+			}.Server(),
+			ExpectedErrs: []error{common.ErrCaller},
+		},
+		{
 			Name: "Read jobs with Since adds provider-side ModifiedDate filter",
 			Input: common.ReadParams{
 				ObjectName: "jobs",
