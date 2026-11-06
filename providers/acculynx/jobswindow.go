@@ -68,26 +68,16 @@ const (
 // read. Everything we need is stored in the URL itself.
 
 // fitJobsCursorUnderCap changes a jobs next-page URL so AccuLynx will accept it.
-//
-// previousResponse is the response we got just before this URL. It is nil when we do
-// not have one, for example for a URL saved from an earlier read. From it we
-// learn how many jobs the list has and the newest modified date we have read.
-//
-// The rules:
-//   - Default order: leave the URL alone if the list fits under 100000. If it
-//     does not, start again from position 0, sorted by modified date.
-//   - Sorted by modified date: if the next page would go past 100000, start a
-//     new list from the newest date we have read. If previousResponse is nil we do not
-//     know that date, so we start this same list again from position 0. When
-//     paging reaches 100000 again, the date moves forward as usual.
+// previousResponse is the response we got just before this URL, or nil when we
+// do not have one (for example, a URL saved from an earlier read).
 func (c *Connector) fitJobsCursorUnderCap(
 	cursor *urlbuilder.URL,
 	previousResponse *ajson.Node,
 	params common.ReadParams,
 ) error {
-	// In the default order (by created date) we cannot move the start date
-	// forward, so the only way past 100000 is to sort by modified date and start
-	// again from 0. We only do this when the list is too big, because the
+	// Default order (by created date). We cannot move the start date forward in
+	// this order, so the only way past 100000 is to sort by modified date and
+	// start again from 0. We only do this when the list is too big, because the
 	// default order is safer when someone edits a job while we read.
 	if !hasJobsOrdering(cursor) {
 		if listingPastOffsetCap(previousResponse, cursor) {
@@ -97,16 +87,21 @@ func (c *Connector) fitJobsCursorUnderCap(
 		return nil
 	}
 
+	// Sorted by modified date, and the next page still fits under 100000.
 	if !pastOffsetCap(cursor) {
 		return nil
 	}
 
+	// No previous response, so we do not know the newest date we have read.
+	// Start this same list again from 0. When paging reaches 100000 again we
+	// will have a response, and the date moves forward as usual.
 	if previousResponse == nil {
 		restartJobsWindowOrdered(cursor)
 
 		return nil
 	}
 
+	// Start a new list from the newest date we have read.
 	return advanceJobsWindow(cursor, previousResponse, c.arrayFieldName(objectJobs), params)
 }
 
@@ -119,9 +114,7 @@ func pastOffsetCap(url *urlbuilder.URL) bool {
 	return start+size > maxPageStartIndex
 }
 
-// listingPastOffsetCap says whether paging cannot reach the end of the list:
-// either this page already goes past 100000, or the previous response said the
-// list has more than 100000 jobs.
+// listingPastOffsetCap says whether paging cannot reach the end of the list.
 func listingPastOffsetCap(previousResponse *ajson.Node, cursor *urlbuilder.URL) bool {
 	// This is one way to know the list is too big: the next page would go past 100000.
 	if pastOffsetCap(cursor) {
@@ -163,10 +156,6 @@ func hasJobsOrdering(url *urlbuilder.URL) bool {
 
 // makeJobsNextPage builds the next-page URL for jobs and passes it through
 // fitJobsCursorUnderCap.
-//
-// When the assigned jobs are done and the unassigned jobs start, that is a new
-// list. So we put back the read's own dates and the default order, and we do
-// not pass the previous response: its job count belongs to the assigned list.
 func (c *Connector) makeJobsNextPage(
 	params common.ReadParams,
 	reqURL *urlbuilder.URL,
@@ -185,6 +174,9 @@ func (c *Connector) makeJobsNextPage(
 
 		previousResponse := root
 
+		// The assigned jobs are done and the unassigned jobs start. That is a new
+		// list, so put back the read's own dates and the default order. Do not
+		// pass the previous response: its job count belongs to the assigned list.
 		if startsUnassignedSweep(reqURL, nextURL) {
 			restoreJobsWindowStart(nextURL, params)
 
@@ -207,12 +199,13 @@ func startsUnassignedSweep(reqURL, nextURL *urlbuilder.URL) bool {
 }
 
 // restoreJobsWindowStart puts the read's own dates and the default order back
-// on the URL. If the read had no Since/Until, any date filter we added to get
-// past 100000 is removed.
+// on the URL.
 func restoreJobsWindowStart(url *urlbuilder.URL, params common.ReadParams) {
 	url.RemoveQueryParam(sortByParam)
 	url.RemoveQueryParam(sortOrderParam)
 
+	// The read had no Since/Until, so remove any date filter we added to get
+	// past 100000.
 	if params.Since.IsZero() && params.Until.IsZero() {
 		url.RemoveQueryParam(dateFilterTypeParam)
 		url.RemoveQueryParam(startDateParam)
@@ -228,10 +221,7 @@ func restoreJobsWindowStart(url *urlbuilder.URL, params common.ReadParams) {
 }
 
 // advanceJobsWindow changes a URL that would go past 100000 into the first page
-// of a new, shorter list. The new list starts the day before the newest
-// modified date on previousResponse. We go one day back because AccuLynx filters by
-// whole days and its day may not be in UTC. A few jobs come twice, but none
-// are missed.
+// of a new, shorter list that starts from the newest job we have read.
 func advanceJobsWindow(
 	cursor *urlbuilder.URL,
 	previousResponse *ajson.Node,
@@ -243,6 +233,9 @@ func advanceJobsWindow(
 		return err
 	}
 
+	// End date: keep the one already on the URL. A read without Since/Until has
+	// none the first time it reaches 100000, so use the read's Until, or today.
+	// AccuLynx needs both startDate and endDate.
 	end := pairedUntilDate(params)
 
 	if raw, ok := cursor.GetFirstQueryParam(endDateParam); ok {
@@ -251,12 +244,16 @@ func advanceJobsWindow(
 		}
 	}
 
+	// Start date: the day before the newest job we have read. We go one day back
+	// because AccuLynx filters by whole days and its day may not be in UTC. A
+	// few jobs come twice, but none are missed.
 	start := newest.UTC().Truncate(24*time.Hour).AddDate(0, 0, -1) //nolint:mnd
 	// AccuLynx requires startDate to be earlier than endDate.
 	if !start.Before(end) {
 		start = end.AddDate(0, 0, -1)
 	}
 
+	// The start date of the list we are reading now.
 	current := time.Unix(0, 0).UTC()
 
 	if raw, ok := cursor.GetFirstQueryParam(startDateParam); ok {
@@ -265,10 +262,14 @@ func advanceJobsWindow(
 		}
 	}
 
+	// The start date did not move forward: more than 100000 jobs were modified
+	// within two days. Stop with an error instead of reading the same list
+	// forever.
 	if !start.After(current) {
 		return fmt.Errorf("%w (startDate %s)", errJobsWindowStalled, current.Format(time.DateOnly))
 	}
 
+	// Ask for the new list, starting from position 0.
 	cursor.WithQueryParam(dateFilterTypeParam, modifiedDateValue)
 	cursor.WithQueryParam(startDateParam, start.Format(time.DateOnly))
 	cursor.WithQueryParam(endDateParam, end.Format(time.DateOnly))
@@ -277,16 +278,15 @@ func advanceJobsWindow(
 	return nil
 }
 
+// pairedUntilDate returns the read's Until, or today if there is none.
 func pairedUntilDate(params common.ReadParams) time.Time {
 	_, until := pairedDateWindow(params.Since, params.Until)
 
+	// Cut off the time of day, so advanceJobsWindow compares whole days.
 	return until.UTC().Truncate(24 * time.Hour) //nolint:mnd
 }
 
 // newestModifiedDate returns the modified date of the last job on the page.
-// It also checks that the page really is sorted oldest first. If AccuLynx
-// ignored our sort, moving the date forward could skip jobs, so we return an
-// error instead.
 func newestModifiedDate(root *ajson.Node, recordsKey string) (time.Time, error) {
 	records, err := common.MakeRecordsFunc(recordsKey)(root)
 	if err != nil {
@@ -319,6 +319,7 @@ func newestModifiedDate(root *ajson.Node, recordsKey string) (time.Time, error) 
 		newest = modified
 	}
 
+	// No jobs on the page, so there is no date to move forward from.
 	if newest.IsZero() {
 		return time.Time{}, errJobsNotOrdered
 	}
