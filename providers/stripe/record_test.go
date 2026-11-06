@@ -3,7 +3,10 @@ package stripe
 import (
 	"net/http"
 	"reflect"
+	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils"
@@ -250,4 +253,214 @@ func TestExtractAssociationsDotPath(t *testing.T) {
 	result.Assert("customer.missing association absent", false, found)
 
 	result.Validate(t, "extract associations by dot-separated path")
+}
+
+// Rows come back in requested order even when an earlier id responds slower.
+func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/v1/payment_intents/pi_first"),
+				},
+				Then: func(w http.ResponseWriter, _ *http.Request) {
+					time.Sleep(50 * time.Millisecond)
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write([]byte(`{"id":"pi_first","amount":100}`))
+				},
+			},
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/v1/payment_intents/pi_second"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"id":"pi_second","amount":200}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "payment_intents",
+		[]string{"pi_first", "pi_second"}, []string{"id"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rows := batchRes.Rows
+	if len(rows) != 2 {
+		t.Fatalf("expected 2 rows, got %d", len(rows))
+	}
+
+	if rows[0].Id != "pi_first" || rows[1].Id != "pi_second" {
+		t.Fatalf("rows out of requested order: got %q, %q", rows[0].Id, rows[1].Id)
+	}
+}
+
+// A not-found id is skipped without shifting the other rows.
+func TestGetRecordsByIds_NotFoundSkippedKeepsOrder(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/v1/payment_intents/pi_first"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"id":"pi_first","amount":100}`),
+			},
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/v1/payment_intents/pi_missing"),
+				},
+				Then: mockserver.ResponseString(http.StatusNotFound,
+					`{"error":{"type":"invalid_request_error","message":"No such payment_intent"}}`),
+			},
+			{
+				If: mockcond.And{
+					mockcond.Method(http.MethodGet),
+					mockcond.Path("/v1/payment_intents/pi_last"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"id":"pi_last","amount":300}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "payment_intents",
+		[]string{"pi_first", "pi_missing", "pi_last"}, []string{"id"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rows := batchRes.Rows
+	if len(rows) != 2 {
+		t.Fatalf("expected the missing id to be skipped, got %d rows", len(rows))
+	}
+
+	if rows[0].Id != "pi_first" || rows[1].Id != "pi_last" {
+		t.Fatalf("surviving rows out of order: got %q, %q", rows[0].Id, rows[1].Id)
+	}
+}
+
+// A failing id does not stop the remaining ids from being fetched.
+func TestGetRecordsByIds_AttemptsEveryIdDespiteFailure(t *testing.T) {
+	t.Parallel()
+
+	var (
+		mu      sync.Mutex
+		visited = map[string]bool{}
+	)
+
+	record := func(path string) {
+		mu.Lock()
+		defer mu.Unlock()
+
+		visited[path] = true
+	}
+
+	// More ids than maxConcurrentRecordFetch, so some are queued behind the failure.
+	ids := []string{"pi_1", "pi_gone", "pi_2", "pi_3", "pi_4", "pi_5", "pi_6", "pi_7"}
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.Path("/v1/payment_intents/pi_gone"),
+				Then: func(w http.ResponseWriter, r *http.Request) {
+					record(r.URL.Path)
+					// Fails before the other ids finish.
+					w.WriteHeader(http.StatusNotFound)
+					_, _ = w.Write([]byte(`{"error":{"message":"No such payment_intent"}}`))
+				},
+			},
+		},
+		Default: func(w http.ResponseWriter, r *http.Request) {
+			record(r.URL.Path)
+			time.Sleep(30 * time.Millisecond)
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"id":"ok","amount":100}`))
+		},
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "payment_intents", ids, []string{"id"}, nil)
+	if err != nil {
+		t.Fatalf("a not-found id must not fail the call as a whole: %v", err)
+	}
+
+	if len(batchRes.Failures) != 1 || batchRes.Failures[0].RecordId != "pi_gone" ||
+		batchRes.Failures[0].Reason != common.FailureReasonNotFound {
+		t.Fatalf("expected pi_gone reported as the only not-found failure, got %+v", batchRes.Failures)
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+
+	for _, id := range ids {
+		if !visited["/v1/payment_intents/"+id] {
+			t.Errorf("id %q was never requested — a failure still cancels its siblings", id)
+		}
+	}
+}
+
+// A non-not-found error for one id is reported as a failure and returned as the error, alongside
+// the rows that resolved.
+func TestGetRecordsByIds_ServerErrorIsReportedAndReturned(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If:   mockcond.Path("/v1/payment_intents/pi_boom"),
+				Then: mockserver.ResponseString(http.StatusInternalServerError, `{"error":{"message":"boom"}}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusOK, `{"id":"pi_1","amount":100}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "payment_intents",
+		[]string{"pi_1", "pi_boom"}, []string{"id"}, nil)
+	if err == nil || !strings.Contains(err.Error(), "record pi_boom") {
+		t.Fatalf("expected the call to fail naming pi_boom, got %v", err)
+	}
+
+	if len(batchRes.Rows) != 1 || batchRes.Rows[0].Id != "pi_1" {
+		t.Errorf("expected the pi_1 row, got %+v", batchRes.Rows)
+	}
+
+	if len(batchRes.Failures) != 1 || batchRes.Failures[0].RecordId != "pi_boom" ||
+		batchRes.Failures[0].Reason != common.FailureReasonTransient {
+		t.Errorf("expected pi_boom as the only transient failure, got %+v", batchRes.Failures)
+	}
 }

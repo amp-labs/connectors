@@ -13,7 +13,7 @@ import (
 	"context"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/core"
 )
 
 // var (
@@ -32,7 +32,7 @@ type NoopVerifier struct{}
 // NewVerifier therefore returns NoopVerifier.
 //
 // ==================================================================================.
-func NewVerifier(client *common.JSONHTTPClient, providerInfo *providers.ProviderInfo, clientID string) *NoopVerifier {
+func NewVerifier(base *core.Base) *NoopVerifier {
 	// At the moment the noop verifier is returned, this must be replaced with newVerifier.
 	return new(NoopVerifier)
 }
@@ -44,19 +44,13 @@ func (v NoopVerifier) VerifyWebhookMessage(
 }
 
 // type Verifier struct {
-//	client       *common.JSONHTTPClient
-//	providerInfo *providers.ProviderInfo
-//
-//	clientID string
+//	base *core.Base
 //}
 //
-// func newVerifier(client *common.JSONHTTPClient, providerInfo *providers.ProviderInfo, clientID string) *Verifier {
-//	return &Verifier{
-//		client:       client,
-//		providerInfo: providerInfo,
-//		clientID:     clientID,
-//	}
+// func newVerifier(base *core.Base) *Verifier {
+//	return &Verifier{base: base}
 //}
+//
 //
 //// VerifyWebhookMessage verifies a ConnectWise webhook callback using the
 //// x-content-signature header and the signing key referenced by the event's
@@ -105,7 +99,7 @@ func (v NoopVerifier) VerifyWebhookMessage(
 //}
 //
 // func (v Verifier) fetchSigningKey(ctx context.Context, url string) (string, error) {
-//	resp, body, err := v.client.HTTPClient.Get(ctx, url, v.clientIdHeader())
+//	resp, body, err := v.base.JSONHTTPClient().HTTPClient.Get(ctx, url, v.base.ClientIdHeader())
 //	if err != nil {
 //		return "", fmt.Errorf("%w: %w", ErrFetchSigningKey, err)
 //	}
@@ -133,13 +127,6 @@ func (v NoopVerifier) VerifyWebhookMessage(
 //// By invoking the GET "<key_url>" the response you get will be signingKeyResponse.
 // type signingKeyResponse struct {
 //	SigningKey string `json:"signing_key"`
-//}
-//
-// func (v Verifier) clientIdHeader() common.Header {
-//	return common.Header{
-//		Key:   "ClientId",
-//		Value: v.clientID,
-//	}
 //}
 //
 // func getHeaderValue(headers http.Header, name string) string {

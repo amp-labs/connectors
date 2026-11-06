@@ -7,9 +7,9 @@ import (
 	"github.com/amp-labs/connectors/providers/circleback/internal/metadata"
 )
 
-// ListObjectMetadata serves the catalog generated from Circleback's OpenAPI spec, plus the
+// listObjectMetadata serves the catalog generated from Circleback's OpenAPI spec, plus the
 // meetings `transcript` field, which Read fetches from GET /meeting/{meetingId}/transcript.
-func (c *Connector) ListObjectMetadata(
+func (c *Connector) listObjectMetadata(
 	ctx context.Context, objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {
 	selection, err := metadata.Catalog.Select(objectNames)

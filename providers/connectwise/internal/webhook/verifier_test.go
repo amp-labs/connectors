@@ -1,111 +1,110 @@
 package webhook
 
-//func TestVerifyWebhookMessage(t *testing.T) {
-//	t.Parallel()
+//	func TestVerifyWebhookMessage(t *testing.T) {
+//		t.Parallel()
 //
-//	const signingKey = "test-signing-key"
-//	eventMessage := testutils.DataFromFile(t, "contact-create.json")
+//		const signingKey = "test-signing-key"
+//		eventMessage := testutils.DataFromFile(t, "contact-create.json")
 //
-//	tests := []testconn.TestCaseWebhookMessageVerification{
-//		{
-//			Name: "Valid signature",
-//			Input: testconn.WebhookMessageVerificationParams{
-//				Request: &common.WebhookRequest{Body: eventMessage},
-//			},
-//			InputMutator: withSignatureHeader(signingKey),
-//			Server: mockserver.Conditional{
-//				Setup: mockserver.ContentText(),
-//				If: mockcond.And{
-//					mockcond.Path("/v2025_1//system/callbackkey/index.rails"),
-//					mockcond.QueryParam("companyName", "myCompany"),
-//					mockcond.QueryParam("id", "89966c04-9889-46ad-8d5e-421103aca922"),
-//					mockcond.Header(http.Header{"ClientId": []string{"test-client-id"}}),
+//		tests := []testconn.TestCaseWebhookMessageVerification{
+//			{
+//				Name: "Valid signature",
+//				Input: testconn.WebhookMessageVerificationParams{
+//					Request: &common.WebhookRequest{Body: eventMessage},
 //				},
-//				Then: mockserver.ResponseChainedFuncs(
-//					mockserver.ContentText(),
-//					mockserver.ResponseString(http.StatusOK, `{"signing_key": "test-signing-key"}`),
-//				),
-//			}.Server(),
-//			Expected: true,
-//		},
-//		{
-//			Name: "Invalid signature",
-//			Input: testconn.WebhookMessageVerificationParams{
-//				Request: &common.WebhookRequest{
-//					Headers: http.Header{"x-content-signature": []string{"mismatching-signature-from-provider"}},
-//					Body:    eventMessage,
-//				},
+//				InputMutator: withSignatureHeader(signingKey),
+//				Server: mockserver.Conditional{
+//					Setup: mockserver.ContentText(),
+//					If: mockcond.And{
+//						mockcond.Path("/v2025_1//system/callbackkey/index.rails"),
+//						mockcond.QueryParam("companyName", "myCompany"),
+//						mockcond.QueryParam("id", "89966c04-9889-46ad-8d5e-421103aca922"),
+//						mockcond.Header(http.Header{"ClientId": []string{"test-client-id"}}),
+//					},
+//					Then: mockserver.ResponseChainedFuncs(
+//						mockserver.ContentText(),
+//						mockserver.ResponseString(http.StatusOK, `{"signing_key": "test-signing-key"}`),
+//					),
+//				}.Server(),
+//				Expected: true,
 //			},
-//			InputMutator: replaceServerURLInBody,
-//			Server: mockserver.Conditional{
-//				Setup: mockserver.ContentText(),
-//				If: mockcond.And{
-//					mockcond.Path("/v2025_1//system/callbackkey/index.rails"),
-//					mockcond.QueryParam("companyName", "myCompany"),
-//					mockcond.QueryParam("id", "89966c04-9889-46ad-8d5e-421103aca922"),
-//					mockcond.Header(http.Header{"ClientId": []string{"test-client-id"}}),
+//			{
+//				Name: "Invalid signature",
+//				Input: testconn.WebhookMessageVerificationParams{
+//					Request: &common.WebhookRequest{
+//						Headers: http.Header{"x-content-signature": []string{"mismatching-signature-from-provider"}},
+//						Body:    eventMessage,
+//					},
 //				},
-//				Then: mockserver.ResponseChainedFuncs(
-//					mockserver.ContentText(),
-//					mockserver.ResponseString(http.StatusOK, `{"signing_key": "test-signing-key"}`),
-//				),
-//			}.Server(),
-//			Expected: false,
-//		},
-//		{
-//			Name: "Missing signature header in input",
-//			Input: testconn.WebhookMessageVerificationParams{
-//				Request: &common.WebhookRequest{Body: eventMessage},
+//				InputMutator: replaceServerURLInBody,
+//				Server: mockserver.Conditional{
+//					Setup: mockserver.ContentText(),
+//					If: mockcond.And{
+//						mockcond.Path("/v2025_1//system/callbackkey/index.rails"),
+//						mockcond.QueryParam("companyName", "myCompany"),
+//						mockcond.QueryParam("id", "89966c04-9889-46ad-8d5e-421103aca922"),
+//						mockcond.Header(http.Header{"ClientId": []string{"test-client-id"}}),
+//					},
+//					Then: mockserver.ResponseChainedFuncs(
+//						mockserver.ContentText(),
+//						mockserver.ResponseString(http.StatusOK, `{"signing_key": "test-signing-key"}`),
+//					),
+//				}.Server(),
+//				Expected: false,
 //			},
-//			InputMutator: replaceServerURLInBody,
-//			Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-//				_ = json.NewEncoder(w).Encode(signingKeyResponse{
-//					SigningKey: signingKey,
+//			{
+//				Name: "Missing signature header in input",
+//				Input: testconn.WebhookMessageVerificationParams{
+//					Request: &common.WebhookRequest{Body: eventMessage},
+//				},
+//				InputMutator: replaceServerURLInBody,
+//				Server: httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//					_ = json.NewEncoder(w).Encode(signingKeyResponse{
+//						SigningKey: signingKey,
+//					})
+//				})),
+//				Expected:     false,
+//				ExpectedErrs: []error{testutils.StringError("missing x-content-signature header")},
+//			},
+//			{
+//				Name: "Fetch signing key fails",
+//				Input: testconn.WebhookMessageVerificationParams{
+//					Request: &common.WebhookRequest{Body: eventMessage},
+//				},
+//				InputMutator: withSignatureHeader(signingKey),
+//				Server: mockserver.Fixed{
+//					Setup:  mockserver.ContentText(),
+//					Always: mockserver.Response(http.StatusInternalServerError),
+//				}.Server(),
+//				Expected:     false,
+//				ExpectedErrs: []error{ErrFetchSigningKey},
+//			},
+//		}
+//
+//		for _, tt := range tests {
+//			t.Run(tt.Name, func(t *testing.T) {
+//				t.Parallel()
+//
+//				tt.Run(t, func() (testconn.TestableWebhookMessageVerifier, error) {
+//					return constructTestVerifier(tt.Server)
 //				})
-//			})),
-//			Expected:     false,
-//			ExpectedErrs: []error{testutils.StringError("missing x-content-signature header")},
-//		},
-//		{
-//			Name: "Fetch signing key fails",
-//			Input: testconn.WebhookMessageVerificationParams{
-//				Request: &common.WebhookRequest{Body: eventMessage},
-//			},
-//			InputMutator: withSignatureHeader(signingKey),
-//			Server: mockserver.Fixed{
-//				Setup:  mockserver.ContentText(),
-//				Always: mockserver.Response(http.StatusInternalServerError),
-//			}.Server(),
-//			Expected:     false,
-//			ExpectedErrs: []error{ErrFetchSigningKey},
-//		},
-//	}
-//
-//	for _, tt := range tests {
-//		t.Run(tt.Name, func(t *testing.T) {
-//			t.Parallel()
-//
-//			tt.Run(t, func() (testconn.TestableWebhookMessageVerifier, error) {
-//				return constructTestVerifier(tt.Server)
 //			})
-//		})
+//		}
 //	}
-//}
-//
 //func constructTestVerifier(server *httptest.Server) (*Verifier, error) {
-//	transport, err := components.NewTransport(providers.ConnectWise, common.ConnectorParams{
-//		AuthenticatedClient: server.Client(),
+//	base, err := core.NewBase(common.ConnectorParams{
+//		AuthenticatedClient:       server.Client(),
+//		Metadata:                  map[string]string{"clientId": "test-client-id"},
 //	})
 //	if err != nil {
 //		return nil, err
 //	}
 //
-//	transport.SetUnitTestMockServerBaseURL(server.URL)
+//	base.SetUnitTestMockServerBaseUrl(server.URL)
 //
-//	verifier := NewVerifier(transport.JSONHTTPClient(), transport.ProviderInfo(), "test-client-id")
-//
-//	return verifier, nil
+//	return newVerifier(base), nil
 //}
+//
 //
 //func replaceServerURLInBody(
 //	server *httptest.Server, input testconn.WebhookMessageVerificationParams,

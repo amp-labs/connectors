@@ -23,10 +23,29 @@ The catalog is the starting point for the connector's `ListObjectMetadata` imple
 
 ### Implementing `ListObjectMetadata`
 
-In most connectors, the metadata loaded from `objectsMetadata.json` is complete and can be returned directly:
+A connector built on `internal/components` declares each capability as an embedded interface
+assigned in `constructor`, so metadata comes through `components.SchemaProvider`.
+In most connectors the metadata loaded from `objectsMetadata.json` is complete,
+and the schema provider returns the catalog's selection directly:
 
 ```go
-func (c *Connector) ListObjectMetadata(
+type Connector struct {
+    *components.Connector
+
+    components.SchemaProvider
+    components.Reader
+}
+
+func constructor(params common.ConnectorParams, base *components.Connector) (*Connector, error) {
+    connector := &Connector{Connector: base}
+
+    connector.SchemaProvider = schema.NewDelegateSchemaProvider(connector.listObjectMetadata)
+    // ...
+
+    return connector, nil
+}
+
+func (c *Connector) listObjectMetadata(
     ctx context.Context,
     objectNames []string,
 ) (*common.ListObjectMetadataResult, error) {

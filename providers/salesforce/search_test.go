@@ -89,6 +89,29 @@ func TestSearch(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Filter value with quotes is escaped and cannot change the query logic",
+			Input: common.SearchParams{
+				ObjectName: "contact",
+				Fields:     connectors.Fields("Id"),
+				Filter:     connectors.SearchFilter{}.FilterBy("email", common.FilterOperatorEQ, "x' OR email != 'x"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/services/data/v60.0/query"),
+					mockcond.QueryParam("q", `SELECT Id FROM contact WHERE email = 'x\' OR email != \'x'`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseLeadsFirstPage),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     8,
+				NextPage: "/services/data/v60.0/query/01g3A00007lZwLKQA0-2000",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name: "Successful search with chosen fields",
 			Input: common.SearchParams{
 				ObjectName: "contacts",

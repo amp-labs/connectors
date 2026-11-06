@@ -2,7 +2,6 @@ package stripe
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"maps"
 	"strings"
@@ -13,9 +12,13 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 )
 
 var _ connectors.BatchRecordReaderConnector = &Connector{}
+
+// maxConcurrentRecordFetch caps concurrent per-id fetches.
+const maxConcurrentRecordFetch = 4
 
 // GetRecordsByIds fetches full records from Stripe for a specific set of IDs.
 // Since Stripe doesn't support batch fetching, this method makes individual
@@ -29,7 +32,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	ids []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	// Sanitize method arguments.
 	config := common.ReadParams{
 		ObjectName:        objectName,
@@ -42,25 +45,45 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	}
 
 	if len(ids) == 0 {
-		return []common.ReadResultRow{}, nil
+		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
-	results := make([]common.ReadResultRow, 0, len(ids))
+	// Keyed by position so rows keep requested order.
+	tasks := make([]parallelfetch.Task[int, common.ReadResultRow], len(ids))
 
-	for _, recordID := range ids {
-		row, err := c.fetchSingleRecord(ctx, objectName, recordID, fields, associations)
-		if err != nil {
-			if errors.Is(err, common.ErrNotFound) {
-				continue
+	for i, recordID := range ids {
+		idx, currentID := i, recordID
+
+		tasks[idx] = func(ctx context.Context) (int, *common.ReadResultRow, error) {
+			row, err := c.fetchSingleRecord(ctx, objectName, currentID, fields, associations)
+			if err != nil {
+				return idx, nil, err
 			}
 
-			return nil, err
+			return idx, row, nil
 		}
-
-		results = append(results, *row)
 	}
 
-	return results, nil
+	// Fetches every id, even when some fail.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+
+	batch := common.NewBatchReadResult(rowsInRequestedOrder(result.Records, len(ids)))
+
+	// Every per-id error is a failure; the error joins the ones that are not not-found.
+	return batch, batch.ReportFetchErrors(ids, result.Errors)
+}
+
+// rowsInRequestedOrder returns the fetched records in requested order.
+func rowsInRequestedOrder(records map[int]common.ReadResultRow, total int) []common.ReadResultRow {
+	out := make([]common.ReadResultRow, 0, total)
+
+	for i := range total {
+		if row, ok := records[i]; ok {
+			out = append(out, row)
+		}
+	}
+
+	return out
 }
 
 // fetchSingleRecord fetches and processes a single record by ID.
