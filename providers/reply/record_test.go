@@ -90,7 +90,7 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 			}},
 		},
 		{
-			Name: "An id that no longer exists is skipped instead of failing the batch",
+			Name: "An id that no longer exists is reported as a failure and does not fail the batch",
 			Input: testconn.ReadByIdsParams{
 				ObjectName: "contacts",
 				RecordIds:  []string{"999999999", "761575999"},
@@ -141,7 +141,7 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 }
 
 // Rows come back in requested order even when an earlier id responds slower.
-func TestGetRecordsByIdsPreservesRequestedOrder(t *testing.T) {
+func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
 	t.Parallel()
 
 	server := mockserver.Switch{
@@ -175,7 +175,7 @@ func TestGetRecordsByIdsPreservesRequestedOrder(t *testing.T) {
 }
 
 // A deleted id is reported as a not-found failure without an error, and the other rows keep their order.
-func TestGetRecordsByIdsReportsNotFound(t *testing.T) {
+func TestGetRecordsByIds_ReportsNotFound(t *testing.T) {
 	t.Parallel()
 
 	server := mockserver.Switch{
@@ -213,7 +213,7 @@ func TestGetRecordsByIdsReportsNotFound(t *testing.T) {
 }
 
 // A non-404 failure is reported and returned as the error alongside the rows that did resolve.
-func TestGetRecordsByIdsReturnsRowsWithServerError(t *testing.T) {
+func TestGetRecordsByIds_ReturnsRowsWithServerError(t *testing.T) {
 	t.Parallel()
 
 	server := mockserver.Switch{
@@ -247,7 +247,7 @@ func TestGetRecordsByIdsReturnsRowsWithServerError(t *testing.T) {
 }
 
 // A failing id does not stop the remaining ids from being fetched.
-func TestGetRecordsByIdsAttemptsEveryIdDespiteFailure(t *testing.T) {
+func TestGetRecordsByIds_AttemptsEveryIdDespiteFailure(t *testing.T) {
 	t.Parallel()
 
 	var (
@@ -300,7 +300,7 @@ func TestGetRecordsByIdsAttemptsEveryIdDespiteFailure(t *testing.T) {
 }
 
 // A cancelled context must not make ids disappear: every requested id is reported as a failure.
-func TestGetRecordsByIdsReportsIdsWhenContextCancelled(t *testing.T) {
+func TestGetRecordsByIds_ReportsIdsWhenContextCancelled(t *testing.T) {
 	t.Parallel()
 
 	conn, err := constructTestConnector(mockserver.Dummy().URL)
