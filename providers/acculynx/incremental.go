@@ -81,6 +81,9 @@ var objectReadSpecs = datautils.NewDefaultMap(map[string]objectReadSpec{
 // connector-side time filter using the object's modifiedDate field.
 func (c *Connector) makeFilterFunc(params common.ReadParams, reqURL *urlbuilder.URL) common.RecordsFilterFunc {
 	nextPage := c.makeNextPage(params.ObjectName, reqURL)
+	if params.ObjectName == objectJobs {
+		nextPage = c.makeJobsNextPage(params, reqURL, nextPage)
+	}
 
 	spec := objectReadSpecs.Get(params.ObjectName)
 	if spec.timeFilterField == "" {
