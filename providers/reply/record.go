@@ -2,9 +2,7 @@ package reply
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/amp-labs/connectors"
@@ -12,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/spyzhov/ajson"
 )
 
@@ -29,19 +28,24 @@ var recordObjects = datautils.NewStringSet(
 	objectLinkedInAccount,
 )
 
-// GetRecordsByIds fetches full records from Reply for a specific set of IDs. Reply has no
-// batch endpoint, so it makes one GET per id, in order, which also keeps a burst of webhook
-// events within the rate limit (100 requests per minute).
+// maxConcurrentRecordFetch caps concurrent per-id fetches, keeping a burst of webhook events well
+// inside Reply's rate limit (100 requests per minute).
+const maxConcurrentRecordFetch = 4
+
+// GetRecordsByIds fetches full records from Reply for a specific set of IDs. Reply has no batch
+// endpoint, so it makes one GET per id, concurrently, and always fetches every id.
 //
-// An id that no longer exists is skipped rather than failing the batch, so the caller
-// receives the records that do resolve. Each row is built the way Read builds it.
+// An id that could not be fetched is reported in the result's Failures with its reason, and the
+// rows that did resolve are still returned, in requested order. An id that no longer exists is a
+// not-found failure and does not produce an error; any other failure is also returned, joined, as
+// the error. Each row is built the way Read builds it.
 func (c *Connector) GetRecordsByIds( //nolint:revive
 	ctx context.Context,
 	objectName string,
 	recordIds []string,
 	fields []string,
 	_ []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	objectName = strings.ToLower(objectName)
 
 	if !recordObjects.Has(objectName) {
@@ -49,28 +53,60 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	}
 
 	if len(recordIds) == 0 {
-		return []common.ReadResultRow{}, nil
+		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
-	marshal := readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id"))
-	rows := make([]common.ReadResultRow, 0, len(recordIds))
+	// Keyed by position so rows keep requested order.
+	tasks := make([]parallelfetch.Task[int, []common.ReadResultRow], len(recordIds))
 
-	for _, recordID := range recordIds {
-		record, err := c.fetchRecord(ctx, objectName, recordID)
-		if err != nil {
-			if isNotFound(err) {
-				continue
+	for i, recordID := range recordIds {
+		idx, currentID := i, recordID
+
+		tasks[idx] = func(ctx context.Context) (int, *[]common.ReadResultRow, error) {
+			rows, err := c.fetchRows(ctx, objectName, currentID, fields)
+			if err != nil {
+				return idx, nil, err
 			}
 
-			return nil, fmt.Errorf("fetch %s/%s: %w", objectName, recordID, err)
+			return idx, &rows, nil
 		}
+	}
 
-		marshaled, err := marshal([]*ajson.Node{record}, fields)
-		if err != nil {
-			return nil, fmt.Errorf("parse %s/%s: %w", objectName, recordID, err)
+	// Fetches every id, even when some fail.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+
+	out := make([]common.ReadResultRow, 0, len(recordIds))
+
+	for i := range recordIds {
+		if rows, ok := result.Records[i]; ok {
+			out = append(out, rows...)
 		}
+	}
 
-		rows = append(rows, marshaled...)
+	batch := common.NewBatchReadResult(out)
+
+	// Every per-id error is a failure; the error joins the ones that are not not-found.
+	return batch, batch.ReportFetchErrors(recordIds, result.Errors)
+}
+
+// fetchRows fetches one record by id and builds its rows.
+func (c *Connector) fetchRows(
+	ctx context.Context,
+	objectName, recordID string,
+	fields []string,
+) ([]common.ReadResultRow, error) {
+	record, err := c.fetchRecord(ctx, objectName, recordID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Built per fetch: the marshal function lazily assigns captured state on first use, so one
+	// instance must not be shared between the concurrent fetches.
+	marshal := readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField("id"))
+
+	rows, err := marshal([]*ajson.Node{record}, fields)
+	if err != nil {
+		return nil, fmt.Errorf("parse %s/%s: %w", objectName, recordID, err)
 	}
 
 	return rows, nil
@@ -93,18 +129,4 @@ func (c *Connector) fetchRecord(ctx context.Context, objectName, recordID string
 	}
 
 	return body, nil
-}
-
-// isNotFound reports whether err is a 404 from Reply. The base JSON HTTP client does not
-// always map a 404 to common.ErrNotFound, so the HTTP status is inspected as well.
-func isNotFound(err error) bool {
-	if errors.Is(err, common.ErrNotFound) {
-		return true
-	}
-
-	if httpErr, ok := errors.AsType[*common.HTTPError](err); ok {
-		return httpErr.Status == http.StatusNotFound
-	}
-
-	return false
 }
