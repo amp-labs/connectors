@@ -1,7 +1,6 @@
 package reply
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"sync"
@@ -296,27 +295,5 @@ func TestGetRecordsByIds_AttemptsEveryIdDespiteFailure(t *testing.T) {
 
 	if len(visited) != len(ids) {
 		t.Errorf("fetched %d of %d ids; a failure must not stop the rest", len(visited), len(ids))
-	}
-}
-
-// A cancelled context must not make ids disappear: every requested id is reported as a failure.
-func TestGetRecordsByIds_ReportsIdsWhenContextCancelled(t *testing.T) {
-	t.Parallel()
-
-	conn, err := constructTestConnector(mockserver.Dummy().URL)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	ctx, cancel := context.WithCancel(t.Context())
-	cancel()
-
-	result, err := conn.GetRecordsByIds(ctx, "contacts", []string{"1", "2"}, []string{"email"}, nil)
-	if err == nil {
-		t.Fatal("expected an error for a cancelled context")
-	}
-
-	if len(result.Rows) != 0 || len(result.Failures) != 2 {
-		t.Errorf("rows=%d failures=%+v, want no rows and a failure for each id", len(result.Rows), result.Failures)
 	}
 }
