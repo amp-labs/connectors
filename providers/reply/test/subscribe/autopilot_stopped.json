@@ -1,0 +1,19 @@
+{
+  "event": {
+    "date": "2026-11-02T09:43:38.1682106Z",
+    "id": "4940b345-6883-4a56-89c6-ae40fc81ac73",
+    "type": "autopilot_stopped",
+    "user_id": 1234,
+    "team_id": 100,
+    "subscription_id": 24954
+  },
+  "user_name": "Test User",
+  "user_email": "test-user@example.com",
+  "sequence_owner_name": "Test User",
+  "sequence_owner_email": "test-user@example.com",
+  "autopilot_error_message": "the active contacts limit has been reached",
+  "sequence_fields": {
+    "id": 200,
+    "name": "Test Sequence"
+  }
+}
