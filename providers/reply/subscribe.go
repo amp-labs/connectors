@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"slices"
 	"strconv"
 
@@ -395,4 +396,18 @@ func extractSubscriptionResult(result *common.SubscriptionResult) (*Subscription
 	}
 
 	return previous, nil
+}
+
+// isNotFound reports whether err is a 404 from Reply. The base JSON HTTP client does not
+// always map a 404 to common.ErrNotFound, so the HTTP status is inspected as well.
+func isNotFound(err error) bool {
+	if errors.Is(err, common.ErrNotFound) {
+		return true
+	}
+
+	if httpErr, ok := errors.AsType[*common.HTTPError](err); ok {
+		return httpErr.Status == http.StatusNotFound
+	}
+
+	return false
 }
