@@ -33,8 +33,8 @@ var recordObjects = datautils.NewStringSet(
 // errFetchNotRun marks an id whose fetch never ran.
 var errFetchNotRun = errors.New("record fetch did not run")
 
-// maxConcurrentRecordFetch caps concurrent per-id fetches, keeping a burst of webhook events well
-// inside Reply's rate limit (100 requests per minute).
+// maxConcurrentRecordFetch caps concurrent per-id fetches. Reply allows 100 requests per minute and
+// each id is one request, so ids refused with a 429 are reported as rate_limited failures.
 const maxConcurrentRecordFetch = 4
 
 // GetRecordsByIds fetches full records from Reply for a specific set of IDs. Reply has no batch
