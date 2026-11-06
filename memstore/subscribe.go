@@ -388,7 +388,7 @@ func (c *Connector) GetRecordsByIds(
 	recordIds []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	// First, collect all the records
 	records := make([]map[string]any, 0, len(recordIds))
 	results := make([]common.ReadResultRow, 0, len(recordIds))
@@ -467,5 +467,5 @@ func (c *Connector) GetRecordsByIds(
 		results = append(results, row)
 	}
 
-	return results, nil
+	return common.NewBatchReadResult(results), nil
 }

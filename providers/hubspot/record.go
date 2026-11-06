@@ -37,7 +37,7 @@ func (c *Connector) GetRecordsByIds(
 	ids []string,
 	fields []string,
 	associationsList []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	ctx = logging.With(ctx, "connector", "hubspot")
 
 	objectName = strings.ToLower(objectName)
@@ -85,7 +85,18 @@ func (c *Connector) GetRecordsByIds(
 		ctx, c.associationsFiller, objectName, associationsList,
 	)
 
-	return marshaller(records, fields)
+	rows, err := marshaller(records, fields)
+	if err != nil {
+		return nil, err
+	}
+
+	result := common.NewBatchReadResult(rows)
+
+	// TODO(ENG-4414): take failure reasons from the 207 response's errors array
+	// instead of reporting every missing id as not found.
+	result.ReportMissingIds(ids)
+
+	return result, nil
 }
 
 func (c *Connector) buildBatchRecordsURL(objectName string, associations []string) (string, error) {

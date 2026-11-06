@@ -49,8 +49,10 @@ func TestGetRecordsByIds_LowercasesObjectName(t *testing.T) {
 	assert.NilError(t, err)
 
 	// "CONTACTS" should be normalized to "contacts" and accepted (empty ids → empty slice, no error).
-	rows, err := conn.GetRecordsByIds(context.Background(), "CONTACTS", nil, nil, nil)
+	batchRes, err := conn.GetRecordsByIds(context.Background(), "CONTACTS", nil, nil, nil)
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 0)
 }
 
@@ -60,8 +62,10 @@ func TestGetRecordsByIds_EmptyIdsReturnsEmptySlice(t *testing.T) {
 	conn, err := constructTestReadConnector("http://unused")
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), objectContacts, nil, nil, nil)
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectContacts, nil, nil, nil)
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 0)
 }
 
@@ -94,10 +98,12 @@ func TestGetRecordsByIds_FetchesEachIdInOrder(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), objectJobs,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
 		[]string{"job-1", "job-2"}, []string{"id", "jobName"}, nil)
 
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 2)
 
 	assert.Equal(t, rows[0].Id, "job-1")
@@ -127,10 +133,12 @@ func TestGetRecordsByIds_RawPreservedUntouched(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), objectContacts,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectContacts,
 		[]string{"contact-1"}, []string{"id"}, nil)
 
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 
 	// Fields was filtered to just "id" — but Raw must keep every key the API returned.
@@ -170,20 +178,21 @@ func TestGetRecordsByIds_NotFoundIsSkippedNotErrored(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), objectJobs,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
 		[]string{"job-1", "missing-job"}, []string{"id", "jobName"}, nil)
 
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, rows[0].Id, "job-1")
 	assert.Equal(t, rows[0].Fields["jobName"], "First")
 }
 
-func TestGetRecordsByIds_NonNotFoundStillErrors(t *testing.T) {
+func TestGetRecordsByIds_NonNotFoundIsReportedAndReturned(t *testing.T) {
 	t.Parallel()
 
-	// A non-404 failure (e.g. 500) must still fail the batch — only genuine
-	// not-found ids are skipped.
+	// A 500 for one id is reported as a transient failure and returned as the error.
 	srv := mockserver.Conditional{
 		Setup: mockserver.ContentJSON(),
 		If: mockcond.And{
@@ -196,10 +205,54 @@ func TestGetRecordsByIds_NonNotFoundStillErrors(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	_, err = conn.GetRecordsByIds(context.Background(), objectJobs,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
 		[]string{"boom-job"}, []string{"id"}, nil)
 
-	assert.Assert(t, err != nil, "a 500 from upstream should still surface as an error")
+	assert.ErrorIs(t, err, common.ErrServer)
+	assert.ErrorContains(t, err, "record boom-job")
+	assert.Equal(t, len(batchRes.Rows), 0)
+	assert.Equal(t, len(batchRes.Failures), 1)
+	assert.Equal(t, batchRes.Failures[0].RecordId, "boom-job")
+	assert.Equal(t, batchRes.Failures[0].Reason, common.FailureReasonTransient)
+}
+
+func TestGetRecordsByIds_NotFoundIsReportedAsFailure(t *testing.T) {
+	t.Parallel()
+
+	// A missing id is reported as a not-found failure alongside the found rows.
+	srv := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/v2/jobs/job-1"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"id":"job-1","jobName":"First"}`),
+			},
+			{
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/v2/jobs/missing-job"),
+				},
+				Then: mockserver.ResponseString(http.StatusNotFound, `{"detail":"NotFound"}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+
+	conn, err := constructTestReadConnector(srv.URL)
+	assert.NilError(t, err)
+
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
+		[]string{"job-1", "missing-job"}, []string{"id", "jobName"}, nil)
+
+	assert.NilError(t, err)
+	assert.Equal(t, len(batchRes.Rows), 1)
+	assert.Equal(t, batchRes.Rows[0].Id, "job-1")
+	assert.Equal(t, len(batchRes.Failures), 1)
+	assert.Equal(t, batchRes.Failures[0].RecordId, "missing-job")
+	assert.Equal(t, batchRes.Failures[0].Reason, common.FailureReasonNotFound)
 }
 
 func TestGetRecordsByIds_HydratesUsers(t *testing.T) {
@@ -221,10 +274,12 @@ func TestGetRecordsByIds_HydratesUsers(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), objectUsers,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectUsers,
 		[]string{"794f06f5"}, []string{"id", "displayName", "role"}, nil)
 
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, rows[0].Id, "794f06f5")
 	assert.Equal(t, rows[0].Fields["displayName"], "Diane Hatch")
@@ -263,10 +318,12 @@ func TestGetRecordsByIds_HydratesJobsRepresentativesViaCompanyRole(t *testing.T)
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), "jobs/representatives",
+	batchRes, err := conn.GetRecordsByIds(context.Background(), "jobs/representatives",
 		[]string{"job-1", "no-rep-job"}, []string{"id", "type"}, nil)
 
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, rows[0].Id, "job-1")
 	assert.Equal(t, rows[0].Fields["type"], "CompanyRepresentative")
@@ -287,10 +344,12 @@ func TestGetRecordsByIds_AttachesJobContactsAssociation(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), objectJobs,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
 		[]string{"job-001"}, []string{"id", "jobName"}, []string{jobContactsAssociation})
 
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 
 	assocs := rows[0].Associations[jobContactsAssociation]
@@ -314,10 +373,12 @@ func TestGetRecordsByIds_NoAssociationsRequestedAttachesNone(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), objectJobs,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
 		[]string{"job-001"}, []string{"id"}, nil)
 
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, len(rows[0].Associations), 0)
 }
@@ -337,10 +398,12 @@ func TestGetRecordsByIds_AttachesEveryContactNotJustPrimary(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), objectJobs,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
 		[]string{"job-001"}, []string{"id"}, []string{jobContactsAssociation})
 
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 
 	assocs := rows[0].Associations[jobContactsAssociation]
 	assert.Equal(t, len(assocs), 3)
@@ -362,10 +425,12 @@ func TestGetRecordsByIds_EmptyContactsLeavesNoAssociationKey(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), objectJobs,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
 		[]string{"job-001"}, []string{"id"}, []string{jobContactsAssociation})
 
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, len(rows[0].Associations), 0)
 }
@@ -400,10 +465,12 @@ func TestGetRecordsByIds_AssociationsAttachPerRowAcrossBatch(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), objectJobs,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
 		[]string{"job-1", "job-2", "job-3"}, []string{"id"}, []string{jobContactsAssociation})
 
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 3)
 	assert.Equal(t, rows[0].Associations[jobContactsAssociation][0].ObjectId, "ctc-1")
 	assert.Equal(t, len(rows[1].Associations), 0)
@@ -422,10 +489,12 @@ func TestGetRecordsByIds_AssociationOnObjectWithoutOneIsIgnored(t *testing.T) {
 	conn, err := constructTestReadConnector(srv.URL)
 	assert.NilError(t, err)
 
-	rows, err := conn.GetRecordsByIds(context.Background(), objectContacts,
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectContacts,
 		[]string{"ctc-100"}, []string{"id"}, []string{jobContactsAssociation})
 
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, len(rows[0].Associations), 0)
 }

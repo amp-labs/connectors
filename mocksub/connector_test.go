@@ -49,9 +49,9 @@ func TestGetRecordsByIds(t *testing.T) {
 		"last_name":     "Osei",
 	})
 
-	conn := mocksub.NewConnector(providers.MockSalesloft, mocksub.WithStore(store))
+	conn := mocksub.NewConnector(providers.MockSalesloft, mocksub.WithStore(store), mocksub.WithMissingIdsReported())
 
-	rows, err := conn.GetRecordsByIds(
+	batchRes, err := conn.GetRecordsByIds(
 		context.Background(),
 		"people",
 		[]string{"436664215", "436664216", "999999999"}, // last id is not seeded
@@ -62,8 +62,18 @@ func TestGetRecordsByIds(t *testing.T) {
 		t.Fatalf("GetRecordsByIds: %v", err)
 	}
 
+	rows := batchRes.Rows
+
 	if len(rows) != 2 {
 		t.Fatalf("expected 2 rows (missing id skipped), got %d", len(rows))
+	}
+
+	if len(batchRes.Failures) != 1 {
+		t.Fatalf("expected 1 failure for the missing id, got %+v", batchRes.Failures)
+	}
+
+	if got := batchRes.Failures[0]; got.RecordId != "999999999" || got.Reason != common.FailureReasonNotFound {
+		t.Errorf("expected a not_found failure for 999999999, got %+v", got)
 	}
 
 	first := rows[0]
@@ -87,15 +97,38 @@ func TestGetRecordsByIds(t *testing.T) {
 func TestGetRecordsByIdsEmptyStore(t *testing.T) {
 	t.Parallel()
 
-	conn := mocksub.NewConnector(providers.MockSalesloft, mocksub.WithStore(mocksub.NewStore()))
+	conn := mocksub.NewConnector(providers.MockSalesloft, mocksub.WithStore(mocksub.NewStore()),
+		mocksub.WithMissingIdsReported())
 
-	rows, err := conn.GetRecordsByIds(context.Background(), "people", []string{"1"}, nil, nil)
+	batchRes, err := conn.GetRecordsByIds(context.Background(), "people", []string{"1"}, nil, nil)
 	if err != nil {
 		t.Fatalf("GetRecordsByIds: %v", err)
 	}
 
+	rows := batchRes.Rows
+
 	if len(rows) != 0 {
 		t.Fatalf("expected no rows from empty store, got %d", len(rows))
+	}
+
+	if len(batchRes.Failures) != 1 || batchRes.Failures[0].Reason != common.FailureReasonNotFound {
+		t.Errorf("expected one not_found failure, got %+v", batchRes.Failures)
+	}
+}
+
+// Without WithMissingIdsReported, a missing id is only omitted from the rows.
+func TestGetRecordsByIdsMissingIdsNotReported(t *testing.T) {
+	t.Parallel()
+
+	conn := mocksub.NewConnector(providers.MockConnectWise, mocksub.WithStore(mocksub.NewStore()))
+
+	batchRes, err := conn.GetRecordsByIds(context.Background(), "contacts", []string{"1"}, nil, nil)
+	if err != nil {
+		t.Fatalf("GetRecordsByIds: %v", err)
+	}
+
+	if len(batchRes.Rows) != 0 || batchRes.HasFailures() {
+		t.Errorf("expected no rows and no failures, got %+v", batchRes)
 	}
 }
 

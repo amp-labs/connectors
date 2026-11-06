@@ -16,7 +16,7 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 	ids []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	// Sanitize method arguments.
 	config := recordsByIDsParams{
 		ObjectName:        objectName,
@@ -50,7 +50,10 @@ func (c *Connector) GetRecordsByIds( // nolint:revive
 		return nil, err
 	}
 
-	return readResult.Data, nil
+	result := common.NewBatchReadResult(readResult.Data)
+	result.ReportMissingIds(ids)
+
+	return result, nil
 }
 
 type recordsByIDsParams struct {

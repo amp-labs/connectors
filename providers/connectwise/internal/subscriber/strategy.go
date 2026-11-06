@@ -2,15 +2,11 @@ package subscriber
 
 import (
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/components"
-	"github.com/amp-labs/connectors/providers"
+	"github.com/amp-labs/connectors/providers/connectwise/internal/core"
 )
 
-const (
-	apiVersion     = "v4_6_release/apis/3.0"
-	messageVersion = "3.0.0"
-)
+const messageVersion = "3.0.0"
 
 // Strategy implements subscription lifecycle operations.
 //
@@ -19,19 +15,12 @@ const (
 type Strategy struct {
 	components.SubscriptionInputOutput[Request, Result]
 
-	client       *common.JSONHTTPClient
-	providerInfo *providers.ProviderInfo
-
-	clientID string
+	base *core.Base
 }
 
 // NewStrategy constructs a Strategy with required dependencies.
-func NewStrategy(client *common.JSONHTTPClient, providerInfo *providers.ProviderInfo, clientID string) *Strategy {
-	return &Strategy{
-		client:       client,
-		providerInfo: providerInfo,
-		clientID:     clientID,
-	}
+func NewStrategy(base *core.Base) *Strategy {
+	return &Strategy{base: base}
 }
 
 // Request defines the subscription request payload for the webhook provider.
@@ -44,19 +33,4 @@ type Request struct {
 type Result struct {
 	// ObjectWebhooks maps object names to their associated webhook resources.
 	ObjectWebhooks map[common.ObjectName]SubscriptionResource
-}
-
-// getSubscriptionURL builds the Microsoft Graph endpoint for subscription operations.
-//
-// Docs:
-// https://learn.microsoft.com/en-us/graph/change-notifications-delivery-webhooks?tabs=http#subscription-request
-func (s Strategy) getSubscriptionURL() (*urlbuilder.URL, error) {
-	return urlbuilder.New(s.providerInfo.BaseURL, apiVersion, "system/callbacks")
-}
-
-func (s Strategy) clientIdHeader() common.Header {
-	return common.Header{
-		Key:   "ClientId",
-		Value: s.clientID,
-	}
 }

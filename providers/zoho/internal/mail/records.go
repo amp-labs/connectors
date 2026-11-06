@@ -8,6 +8,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/spyzhov/ajson"
 )
 
@@ -22,11 +23,16 @@ const (
 	// and consumed by GetRecordsByIds. All parts are numeric, so none contains a
 	// slash.
 	recordIDSeparator = "/"
+
+	// maxConcurrentRecordFetch caps concurrent per-id fetches.
+	maxConcurrentRecordFetch = 4
 )
 
 var (
-	errNoRecordIDs     = errors.New("no record ids provided")
-	errInvalidRecordID = errors.New(`invalid zoho mail record id, expected "<folderId>/<messageId>"`)
+	errNoRecordIDs = errors.New("no record ids provided")
+	// errInvalidRecordID marks a malformed record id.
+	errInvalidRecordID = fmt.Errorf(
+		`%w: invalid zoho mail record id, expected "<folderId>/<messageId>"`, common.ErrBadRequest)
 )
 
 // GetRecordsByIds fetches full records for the given record ids.
@@ -43,7 +49,7 @@ var (
 // https://www.zoho.com/mail/help/api/get-single-task.html
 func (a *Adapter) GetRecordsByIds(
 	ctx context.Context, objectName string, recordIds []string, fields []string, _ []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	if objectName != objectNameMessages && objectName != objectNameTasks {
 		return nil, fmt.Errorf("%w: %q", common.ErrGetRecordNotSupportedForObject, objectName)
 	}
@@ -52,28 +58,47 @@ func (a *Adapter) GetRecordsByIds(
 		return nil, errNoRecordIDs
 	}
 
-	rows := make([]common.ReadResultRow, 0, len(recordIds))
+	// Fetches each id concurrently, keeping rows in requested order.
+	// Keyed by position so rows keep requested order.
+	tasks := make([]parallelfetch.Task[int, common.ReadResultRow], len(recordIds))
 
-	for _, recordID := range recordIds {
-		var (
-			row common.ReadResultRow
-			err error
-		)
+	for i, recordID := range recordIds {
+		idx, currentID := i, recordID
 
-		if objectName == objectNameTasks {
-			row, err = a.getTaskByID(ctx, recordID, fields)
-		} else {
-			row, err = a.getMessageByID(ctx, recordID, fields)
+		tasks[idx] = func(ctx context.Context) (int, *common.ReadResultRow, error) {
+			var (
+				row common.ReadResultRow
+				err error
+			)
+
+			if objectName == objectNameTasks {
+				row, err = a.getTaskByID(ctx, currentID, fields)
+			} else {
+				row, err = a.getMessageByID(ctx, currentID, fields)
+			}
+
+			if err != nil {
+				return idx, nil, err
+			}
+
+			return idx, &row, nil
 		}
-
-		if err != nil {
-			return nil, err
-		}
-
-		rows = append(rows, row)
 	}
 
-	return rows, nil
+	// Fetches every id, even when some fail.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+
+	rows := make([]common.ReadResultRow, 0, len(recordIds))
+	for i := range recordIds {
+		if row, ok := result.Records[i]; ok {
+			rows = append(rows, row)
+		}
+	}
+
+	batch := common.NewBatchReadResult(rows)
+
+	// Every per-id error is a failure; the error joins the ones that are not not-found.
+	return batch, batch.ReportFetchErrors(recordIds, result.Errors)
 }
 
 // getMessageByID fetches a single email's metadata. The folderId is mandatory,

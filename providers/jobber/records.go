@@ -7,10 +7,10 @@ import (
 	"maps"
 	"strings"
 
-	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/graphql"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
 )
 
 // Jobber webhook payloads carry only record IDs, so subscription processing
@@ -21,7 +21,8 @@ import (
 const maxConcurrentRecordFetch = 4
 
 var (
-	errRecordFetchNotFound = errors.New("jobber: record not found")
+	// errRecordFetchNotFound marks a record that does not exist.
+	errRecordFetchNotFound = fmt.Errorf("jobber: record not found: %w", common.ErrNotFound)
 	errRecordFetchFailed   = errors.New("jobber: record fetch failed")
 )
 
@@ -48,41 +49,48 @@ func (c *Connector) GetRecordsByIds(
 	recordIds []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	if !batchReadableObjects.Has(objectName) {
 		return nil, fmt.Errorf("%w: %s", common.ErrGetRecordNotSupportedForObject, objectName)
 	}
 
 	if len(recordIds) == 0 {
-		return []common.ReadResultRow{}, nil
+		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
 	fieldSet := datautils.NewSetFromList(fields)
 	singular := getObjectName(objectName)
 
-	rows := make([]common.ReadResultRow, len(recordIds))
-	jobs := make([]simultaneously.Job, len(recordIds))
+	// Keyed by position so rows keep requested order.
+	tasks := make([]parallelfetch.Task[int, common.ReadResultRow], len(recordIds))
 
 	for i, recordID := range recordIds {
 		idx, id := i, recordID
 
-		jobs[idx] = func(ctx context.Context) error {
+		tasks[idx] = func(ctx context.Context) (int, *common.ReadResultRow, error) {
 			row, err := c.fetchSingleRecord(ctx, singular, id, fieldSet)
 			if err != nil {
-				return fmt.Errorf("fetch %s/%s: %w", objectName, id, err)
+				return idx, nil, fmt.Errorf("fetch %s/%s: %w", objectName, id, err)
 			}
 
-			rows[idx] = row
-
-			return nil
+			return idx, &row, nil
 		}
 	}
 
-	if err := simultaneously.DoCtx(ctx, maxConcurrentRecordFetch, jobs...); err != nil {
-		return nil, err
+	// Fetches every id, even when some fail.
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+
+	rows := make([]common.ReadResultRow, 0, len(recordIds))
+	for i := range recordIds {
+		if row, ok := result.Records[i]; ok {
+			rows = append(rows, row)
+		}
 	}
 
-	return rows, nil
+	batch := common.NewBatchReadResult(rows)
+
+	// Every per-id error is a failure; the error joins the ones that are not not-found.
+	return batch, batch.ReportFetchErrors(recordIds, result.Errors)
 }
 
 // fetchSingleRecord executes the singular getter query for one record id.
@@ -121,6 +129,8 @@ func (c *Connector) fetchSingleRecord(
 
 	// GraphQL reports failures with a 200 status; a missing record surfaces
 	// either as an "errors" array or as a null record node.
+	// TODO(ENG-4415): classify an "errors" entry that says the record does not exist as
+	// errRecordFetchNotFound instead of errRecordFetchFailed.
 	if errs, ok := body["errors"].([]any); ok && len(errs) > 0 {
 		return common.ReadResultRow{}, fmt.Errorf("%w: %s", errRecordFetchFailed, errorMessages(errs))
 	}
