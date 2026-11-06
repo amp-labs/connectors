@@ -37,7 +37,7 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 			Expected: []common.ReadResultRow{},
 		},
 		{
-			Name: "Contacts are fetched one by one with the row id set",
+			Name: "Contacts are fetched by id with the row id set",
 			Input: testconn.ReadByIdsParams{
 				ObjectName: "contacts",
 				RecordIds:  []string{"761575999", "761575998"},
