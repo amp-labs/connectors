@@ -18,7 +18,7 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 	ids []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	config := common.ReadParams{
 		ObjectName:        objectName,
 		Fields:            datautils.NewSetFromList(fields),
@@ -59,5 +59,8 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 		return nil, err
 	}
 
-	return parsed.Data, nil
+	result := common.NewBatchReadResult(parsed.Data)
+	result.ReportMissingIds(ids)
+
+	return result, nil
 }

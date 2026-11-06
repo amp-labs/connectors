@@ -1,0 +1,13 @@
+{
+  "object": "list",
+  "results": [
+    {
+      "object": "user",
+      "id": "user-1",
+      "name": "Ada",
+      "type": "person"
+    }
+  ],
+  "next_cursor": "cursor-2",
+  "has_more": true
+}

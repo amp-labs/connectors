@@ -3,14 +3,13 @@ package metadata
 import (
 	_ "embed"
 
-	"github.com/amp-labs/connectors/internal/staticschema"
-	"github.com/amp-labs/connectors/tools/scrapper"
+	"github.com/amp-labs/connectors/internal/objectcatalog"
 )
 
 //nolint:gochecknoglobals
 var (
-	//go:embed schemas.json
-	schemaContent []byte
+	//go:embed objectsMetadata.json
+	objectsMetadata []byte
 
-	Schemas = scrapper.NewReader[staticschema.FieldMetadataMapV2](schemaContent).MustLoadSchemas()
+	Catalog = objectcatalog.MustLoad(objectsMetadata)
 )

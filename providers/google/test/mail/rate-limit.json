@@ -1,0 +1,30 @@
+{
+  "error": {
+    "code": 403,
+    "message": "Quota exceeded for quota metric 'Queries' and limit 'Previous quota: Units per minute per user' of service 'gmail.googleapis.com' for consumer 'project_number:123456789012'.",
+    "errors": [
+      {
+        "message": "Quota exceeded for quota metric 'Queries' and limit 'Previous quota: Units per minute per user' of service 'gmail.googleapis.com' for consumer 'project_number:123456789012'.",
+        "domain": "usageLimits",
+        "reason": "rateLimitExceeded"
+      }
+    ],
+    "status": "PERMISSION_DENIED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "RATE_LIMIT_EXCEEDED",
+        "domain": "googleapis.com",
+        "metadata": {
+          "consumer": "projects/123456789012",
+          "quota_metric": "gmail.googleapis.com/default",
+          "quota_location": "global",
+          "service": "gmail.googleapis.com",
+          "quota_limit": "defaultPerMinutePerUser",
+          "quota_unit": "1/min/{project}/{user}",
+          "quota_limit_value": "15000"
+        }
+      }
+    ]
+  }
+}

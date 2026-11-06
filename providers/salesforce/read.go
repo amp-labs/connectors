@@ -217,7 +217,7 @@ func addWhereClauses(soql *core.SOQLBuilder, config common.ReadParams, timestamp
 				continue
 			}
 
-			soql.Where(buildSOQLEqCondition(ff.FieldName, ff.Value))
+			soql.Where(core.BuildSOQLEqCondition(ff.FieldName, ff.Value))
 		}
 	}
 
@@ -248,20 +248,4 @@ func (c *Connector) DeployApexTriggersForFilteredRead( //nolint:unused
 
 func (c *Connector) DefaultPageSize() int {
 	return defaultSOQLPageSize
-}
-
-// buildSOQLEqCondition builds a SOQL equality condition for a field and value.
-// String values are single-quoted and escaped to prevent SOQL injection.
-func buildSOQLEqCondition(fieldName string, value any) string {
-	switch v := value.(type) {
-	case string:
-		escaped := strings.ReplaceAll(v, `\`, `\\`)
-		escaped = strings.ReplaceAll(escaped, "'", `\'`)
-
-		return fmt.Sprintf("%s = '%s'", fieldName, escaped)
-	case bool:
-		return fmt.Sprintf("%s = %t", fieldName, v)
-	default:
-		return fmt.Sprintf("%s = %v", fieldName, v)
-	}
 }

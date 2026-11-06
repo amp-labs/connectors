@@ -11,6 +11,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/netsuite/internal/shared"
 )
 
@@ -21,6 +22,15 @@ const (
 	suiteQLTimestampFormat = "2006-01-02 15:04:05.000000000"
 
 	maxRecordsPerPage = 1000
+)
+
+// tablesWithoutLastModifiedDate are SuiteQL tables that have no lastModifiedDate column, so
+// incremental reads can't filter them by time. They are read in full instead.
+var tablesWithoutLastModifiedDate = datautils.NewStringSet( //nolint:gochecknoglobals
+	"nexus",
+	"subsidiarynexus",
+	"taxgroup",
+	"taxgrouptaxitem",
 )
 
 // buildReadRequest builds the HTTP request for SuiteQL queries.
@@ -80,6 +90,10 @@ func makeSuiteQLBody(params common.ReadParams) suiteQLQueryBody {
 		// unqueryvet: ObjectName is an arbitrary NetSuite record type, so the
 		// connector cannot know its columns ahead of time.
 		Query: "SELECT * FROM " + params.ObjectName, //nolint:unqueryvet
+	}
+
+	if tablesWithoutLastModifiedDate.Has(strings.ToLower(params.ObjectName)) {
+		return body
 	}
 
 	dateColumn := "lastModifiedDate"

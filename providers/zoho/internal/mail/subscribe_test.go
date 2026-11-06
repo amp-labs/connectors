@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -207,9 +208,11 @@ func TestGetRecordsByIds(t *testing.T) {
 
 	adapter := constructTestAdapter(t, server.URL, testAccountID)
 
-	rows, err := adapter.GetRecordsByIds(context.Background(), objectNameMessages,
+	batchRes, err := adapter.GetRecordsByIds(context.Background(), objectNameMessages,
 		[]string{folderID + "/" + messageID}, connectors.Fields("subject").List(), nil)
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, rows[0].Id, folderID+"/"+messageID)
 	assert.Equal(t, rows[0].Fields["subject"], "Marketing - Product pitch")
@@ -223,9 +226,15 @@ func TestGetRecordsByIds(t *testing.T) {
 	_, err = adapter.GetRecordsByIds(context.Background(), objectNameMessages, nil, nil, nil)
 	assert.ErrorIs(t, err, errNoRecordIDs)
 
-	// Malformed composite id (no folderId) is rejected for messages.
-	_, err = adapter.GetRecordsByIds(context.Background(), objectNameMessages, []string{"no-separator"}, nil, nil)
+	// A malformed id (no folderId) is reported as a permanent failure and returned as the error.
+	malformed, err := adapter.GetRecordsByIds(
+		context.Background(), objectNameMessages, []string{"no-separator"}, nil, nil)
 	assert.ErrorIs(t, err, errInvalidRecordID)
+	assert.ErrorContains(t, err, "record no-separator")
+	assert.Equal(t, len(malformed.Rows), 0)
+	assert.Equal(t, len(malformed.Failures), 1)
+	assert.Equal(t, malformed.Failures[0].RecordId, "no-separator")
+	assert.Equal(t, malformed.Failures[0].Reason, common.FailureReasonPermanent)
 }
 
 // taskWebhookBody is a Zoho Mail Task outgoing-webhook payload. entityId and
@@ -382,18 +391,77 @@ func TestGetTaskRecordsByIds(t *testing.T) {
 	adapter := constructTestAdapter(t, server.URL, testAccountID)
 
 	// Group task: composite "<groupId>/<taskId>".
-	rows, err := adapter.GetRecordsByIds(context.Background(), objectNameTasks,
+	batchRes, err := adapter.GetRecordsByIds(context.Background(), objectNameTasks,
 		[]string{groupID + "/" + taskID}, connectors.Fields("title").List(), nil)
 	assert.NilError(t, err)
+
+	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, rows[0].Id, groupID+"/"+taskID)
 	assert.Equal(t, rows[0].Fields["title"], "Prepare pitch deck")
 
 	// Personal task: bare "<taskId>".
-	rows, err = adapter.GetRecordsByIds(context.Background(), objectNameTasks,
+	batchRes, err = adapter.GetRecordsByIds(context.Background(), objectNameTasks,
 		[]string{taskID}, connectors.Fields("title").List(), nil)
 	assert.NilError(t, err)
+
+	rows = batchRes.Rows
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, rows[0].Id, taskID)
 	assert.Equal(t, rows[0].Fields["title"], "Personal task")
+}
+
+// Rows come back in requested order even when an earlier id responds slower.
+func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
+	t.Parallel()
+
+	const (
+		folderID   = "3881227000000013000"
+		firstMsgID = "1111111111111111111"
+		lastMsgID  = "2222222222222222222"
+	)
+
+	messagePath := func(messageID string) string {
+		return "/api/accounts/" + testAccountID + "/folders/" + folderID + "/messages/" + messageID + "/details"
+	}
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.Path(messagePath(firstMsgID)),
+				Then: func(w http.ResponseWriter, _ *http.Request) {
+					time.Sleep(50 * time.Millisecond)
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write([]byte(`{
+						"status": {"code": 200, "description": "success"},
+						"data": {"subject": "First"}
+					}`))
+				},
+			},
+			{
+				If: mockcond.Path(messagePath(lastMsgID)),
+				Then: mockserver.ResponseString(http.StatusOK, `{
+					"status": {"code": 200, "description": "success"},
+					"data": {"subject": "Last"}
+				}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	adapter := constructTestAdapter(t, server.URL, testAccountID)
+
+	batchRes, err := adapter.GetRecordsByIds(context.Background(), objectNameMessages,
+		[]string{folderID + "/" + firstMsgID, folderID + "/" + lastMsgID},
+		connectors.Fields("subject").List(), nil)
+	assert.NilError(t, err)
+
+	rows := batchRes.Rows
+	assert.Equal(t, len(rows), 2)
+	assert.Equal(t, rows[0].Id, folderID+"/"+firstMsgID)
+	assert.Equal(t, rows[0].Fields["subject"], "First")
+	assert.Equal(t, rows[1].Id, folderID+"/"+lastMsgID)
+	assert.Equal(t, rows[1].Fields["subject"], "Last")
 }

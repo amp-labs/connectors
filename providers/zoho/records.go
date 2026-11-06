@@ -18,7 +18,7 @@ func (c *Connector) GetRecordsByIds(
 	recordIds []string,
 	fields []string,
 	associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
 	// The Mail module fetches records through its own endpoints, addressed by
 	// composite ids ("<folderId>/<messageId>" for messages, "<groupId>/<taskId>"
 	// for group tasks), so delegate to the mail adapter.
@@ -56,5 +56,8 @@ func (c *Connector) GetRecordsByIds(
 		return nil, err
 	}
 
-	return parsed.Data, nil
+	result := common.NewBatchReadResult(parsed.Data)
+	result.ReportMissingIds(recordIds)
+
+	return result, nil
 }
