@@ -18,12 +18,9 @@ func main() {
 
 	conn := notion.GetNotionConnector(ctx)
 
-	result, err := conn.ListObjectMetadata(ctx, []string{
-		"users",
-		"file_uploads",
-	})
+	result, err := conn.ListObjectMetadata(ctx, []string{"file_uploads"})
 	if err != nil {
-		utils.Fail("error listing Notion metadata", "error", err)
+		utils.Fail("error listing Notion file upload metadata", "error", err)
 	}
 
 	utils.DumpJSON(result, os.Stdout)
