@@ -1,0 +1,24 @@
+[
+  {
+    "id": 154800,
+    "title": "Renewal Date",
+    "fieldType": "text",
+    "entityType": "account",
+    "metadata": null,
+    "orgWide": false,
+    "fieldSource": "regular",
+    "aiDefinition": null,
+    "promptActions": []
+  },
+  {
+    "id": 154801,
+    "title": "Seats",
+    "fieldType": "number",
+    "entityType": "account",
+    "metadata": null,
+    "orgWide": false,
+    "fieldSource": "regular",
+    "aiDefinition": null,
+    "promptActions": []
+  }
+]
