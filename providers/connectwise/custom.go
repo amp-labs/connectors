@@ -66,7 +66,7 @@ func (c *Connector) requestCustomFields(
 	}
 
 	customFieldDefinitions, err := batch.Read[modelCustomField](
-		ctx, c.batchAdapter, "userDefinedFields", customFieldIds)
+		ctx, c.Base, "userDefinedFields", customFieldIds)
 	if err != nil {
 		return nil, err
 	}
@@ -148,14 +148,14 @@ var objectsSupportingCustomFields = datautils.NewSet( // nolint:gochecknoglobals
 // the IDs of the custom fields present in that response.
 // It is guaranteed that all custom fields will be returned even if they are empty and set to null.
 func (c *Connector) getCustomFieldIdsFromSampleRecord(ctx context.Context, objectName string) ([]string, error) {
-	url, err := c.getURL(objectName)
+	url, err := c.GetUrl(objectName)
 	if err != nil {
 		return nil, err
 	}
 
 	url.WithQueryParam("pageSize", "1")
 
-	res, err := c.JSONHTTPClient().Get(ctx, url.String(), c.clientIdHeader())
+	res, err := c.JSONHTTPClient().Get(ctx, url.String(), c.ClientIdHeader())
 	if err != nil {
 		return nil, err
 	}

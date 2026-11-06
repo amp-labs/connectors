@@ -20,7 +20,7 @@ import (
 
 // buildWriteRequest constructs an HTTP request for a write operation (create or update) against a ConnectWise object.
 func (c *Connector) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	url, err := c.getURL(params.ObjectName)
+	url, err := c.GetUrl(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		return nil, err
 	}
 
-	c.clientIdHeader().ApplyToRequest(req)
+	c.ClientIdHeader().ApplyToRequest(req)
 
 	return req, nil
 }
