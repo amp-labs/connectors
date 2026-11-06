@@ -4,27 +4,39 @@ import "github.com/amp-labs/connectors/internal/datautils"
 
 // Object names for read routing (match schemas.json keys).
 const (
-	objectApplicantTrackingApplications = "applicant_tracking_applications"
-	objectApplicantTrackingHiringLeads  = "applicant_tracking_hiring_leads"
-	objectApplicantTrackingJobs         = "applicant_tracking_jobs"
-	objectApplicantTrackingLocations    = "applicant_tracking_locations"
-	objectApplicantTrackingStatuses     = "applicant_tracking_statuses"
-	objectCalendarEvents                = "calendar_events"
-	objectEmployees                     = "employees"
-	objectEmployeesDirectory            = "employees_directory"
-	objectHRISCustomFields              = "hris_custom_fields"
-	objectHRISCustomTables              = "hris_custom_tables"
-	objectHRISOrgLocations              = "hris_org_locations"
-	objectMetaFields                    = "meta_fields"
-	objectMetaLists                     = "meta_lists"
-	objectMetaTables                    = "meta_tables"
-	objectMetaTimeOffPolicies           = "meta_time_off_policies"
-	objectMetaUsers                     = "meta_users"
-	objectNewHirePackets                = "new_hire_packets"
-	objectTimeOffRequests               = "time_off_requests"
-	objectTimeTrackingProjects          = "time_tracking_projects"
-	objectWebhooks                      = "webhooks"
-	objectWhosOut                       = "whos_out"
+	objectApplicantTrackingApplications  = "applicant_tracking/applications"
+	objectApplicantTrackingHiringLeads   = "applicant_tracking/hiring_leads"
+	objectApplicantTrackingJobs          = "applicant_tracking/jobs"
+	objectApplicantTrackingLocations     = "applicant_tracking/locations"
+	objectApplicantTrackingStatuses      = "applicant_tracking/statuses"
+	objectCalendarEvents                 = "calendar-events"
+	objectEmployees                      = "employees"
+	objectEmployeesDirectory             = "employees/directory"
+	objectHRISCustomFields               = "hris/custom-fields"
+	objectHRISCustomTables               = "hris/custom-tables"
+	objectHRISOrgLocations               = "hris/org/locations"
+	objectMetaFields                     = "meta/fields"
+	objectMetaLists                      = "meta/lists"
+	objectMetaTables                     = "meta/tables"
+	objectMetaTimeOffPolicies            = "meta/time_off/policies"
+	objectMetaUsers                      = "meta/users"
+	objectNewHirePackets                 = "new-hire-packets"
+	objectTimeOffRequests                = "time-off/requests"
+	objectTimeTrackingProjects           = "time-tracking/projects"
+	objectWebhooks                       = "webhooks"
+	objectWhosOut                        = "whos-out"
+	objectHolidays                       = "holidays"
+	objectSchedulingSchedules            = "scheduling/schedules"
+	objectSchedulingShifts               = "scheduling/shifts"
+	objectTimeTrackingBreakPolicies      = "time-tracking/break-policies"
+	objectTimeTrackingClockEntries       = "time-tracking/clock-entries"
+	objectTimeTrackingConfigurations     = "time-tracking/configurations"
+	objectTimeTrackingHourEntries        = "time-tracking/hour-entries"
+	objectTimeTrackingShiftDifferentials = "time-tracking/shift-differentials"
+	objectTrainingCategory               = "training/category"
+	objectTrainingType                   = "training/type"
+	objectAlertConfigurations            = "alert-configurations"
+	objectCompensationPlanningCycles     = "compensation/planning_cycles"
 )
 
 //nolint:gochecknoglobals
@@ -50,6 +62,17 @@ var supportedReadObjects = datautils.NewStringSet(
 	objectTimeTrackingProjects,
 	objectWebhooks,
 	objectWhosOut,
+	objectHolidays,
+	objectSchedulingSchedules,
+	objectSchedulingShifts,
+	objectTimeTrackingBreakPolicies,
+	objectTimeTrackingClockEntries,
+	objectTimeTrackingConfigurations,
+	objectTimeTrackingHourEntries,
+	objectTimeTrackingShiftDifferentials,
+	objectTrainingCategory,
+	objectTrainingType,
+	objectAlertConfigurations,
 )
 
 //nolint:gochecknoglobals
@@ -63,6 +86,13 @@ var pageNumberReadObjects = datautils.NewStringSet(
 	objectTimeOffRequests,
 	objectTimeTrackingProjects,
 	objectWhosOut,
+	objectHolidays,
+	objectSchedulingSchedules,
+	objectSchedulingShifts,
+	objectTimeTrackingClockEntries,
+	objectTimeTrackingConfigurations,
+	objectTimeTrackingHourEntries,
+	objectTimeTrackingShiftDifferentials,
 )
 
 //nolint:gochecknoglobals
@@ -75,6 +105,13 @@ var pageSizeReadObjects = datautils.NewStringSet(
 	objectTimeOffRequests,
 	objectTimeTrackingProjects,
 	objectWhosOut,
+	objectHolidays,
+	objectSchedulingSchedules,
+	objectSchedulingShifts,
+	objectTimeTrackingClockEntries,
+	objectTimeTrackingConfigurations,
+	objectTimeTrackingHourEntries,
+	objectTimeTrackingShiftDifferentials,
 )
 
 //nolint:gochecknoglobals

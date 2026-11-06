@@ -33,7 +33,7 @@ const (
 // Incremental read is not supported: ReadParams.Since and ReadParams.Until are ignored.
 // BambooHR list endpoints do not offer a shared updated-since (or equivalent) query
 // parameter across the objects we read, and there is no consistent last-modified
-// timestamp field to apply connector-side time filtering. The whos_out object
+// timestamp field to apply connector-side time filtering. The whos-out object
 // requires start/end dates on the request; those come from the current date and a
 // fixed forward window (see addDefaultWhosOutDateRange), not from Since/Until.
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -130,7 +130,7 @@ func (c *Connector) parseReadResponse(
 }
 
 func nodeRecordsForRead(c *Connector, objectName string) common.NodeRecordsFunc {
-	if objectName == objectMetaUsers {
+	if keyedObjectRead(objectName) {
 		return keyedObjectRecordNodes()
 	}
 
@@ -141,9 +141,18 @@ func nodeRecordsForRead(c *Connector, objectName string) common.NodeRecordsFunc 
 	}
 }
 
+func keyedObjectRead(objectName string) bool {
+	switch objectName {
+	case objectMetaUsers, objectTrainingCategory, objectTrainingType:
+		return true
+	default:
+		return false
+	}
+}
+
 // keyedObjectRecordNodes returns a NodeRecordsFunc for read responses whose body is a
 // JSON object keyed by record id, not a wrapper with an array field. BambooHR uses this
-// shape for meta_users (see test/read/meta-users.json). Each object value becomes one
+// shape for meta/users and training category/type lists. Each object value becomes one
 // record node; iteration order is undefined.
 func keyedObjectRecordNodes() common.NodeRecordsFunc {
 	return func(node *ajson.Node) ([]*ajson.Node, error) {
