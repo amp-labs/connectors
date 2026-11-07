@@ -425,6 +425,67 @@ func TestUpdate(t *testing.T) { // nolint:funlen,cyclop
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			// =========================================================================
+			// TEST 5: Previous result without ObjectEvents refreshes the stored subscription
+			// =========================================================================
+			// The server builds the previous result from stored lookups and leaves ObjectEvents empty
+			// (scheduled maintenance, installation update). The subscribed events must be read from
+			// the stored subscriptions instead, so the existing subscription is refreshed rather than
+			// a second subscription being created for the same object.
+			// - Mock server only accepts the refresh request; a create request would fail the test.
+			Name: "Previous result without ObjectEvents refreshes the stored subscription",
+			Input: testconn.UpdateSubscriptionParams{
+				PreviousResult: &common.SubscriptionResult{
+					Result: &Result{
+						Subscriptions: map[string]SubscriptionResource{
+							idCalendarEvent: {
+								ID:         idCalendarEvent,
+								ObjectName: "me/events",
+								ChangeType: "created,deleted",
+								Resource:   "me/events",
+								WebhookURL: "https://test.com/webhook",
+							},
+						},
+					},
+					Status: common.SubscriptionStatusSuccess,
+				},
+				Params: common.SubscribeParams{
+					Request: &Request{WebhookURL: "https://test.com/webhook"},
+					SubscriptionEvents: map[common.ObjectName]common.ObjectEvents{
+						"me/events": {Events: events{createType, deleteType}},
+					},
+				},
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/v1.0/$batch"),
+					payloadBatchRequests(payloadCalendarEventsRefresh),
+				},
+				Then: mockserver.Response(http.StatusCreated, responseCalendarEventRefresh),
+			}.Server(),
+			Comparator: testconn.ComparatorSubscriptionWithResult(resultComparator),
+			Expected: &common.SubscriptionResult{
+				Result: &Result{
+					Subscriptions: map[string]SubscriptionResource{
+						idCalendarEvent: {
+							ID:         idCalendarEvent,
+							ObjectName: "me/events",
+							ChangeType: "created,deleted",
+							Resource:   "me/events",
+							WebhookURL: "https://test.com/webhook",
+						},
+					},
+				},
+				ObjectEvents: map[common.ObjectName]common.ObjectEvents{
+					"me/events": {Events: events{createType, deleteType}},
+				},
+				Status: common.SubscriptionStatusSuccess,
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests { // nolint:dupl

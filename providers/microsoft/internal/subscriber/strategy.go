@@ -60,6 +60,19 @@ func (s Strategy) getSubscriptionURL() (*urlbuilder.URL, error) {
 	return urlbuilder.New(s.providerInfo.BaseURL, apiVersion, "subscriptions")
 }
 
+// objectEvents returns the events each object is subscribed to, as recorded by the stored subscriptions.
+func (r Result) objectEvents() map[common.ObjectName]common.ObjectEvents {
+	objectEvents := make(map[common.ObjectName]common.ObjectEvents)
+
+	for _, sub := range r.Subscriptions {
+		objectEvents[sub.ObjectName] = common.ObjectEvents{
+			Events: sub.ChangeType.EventTypes(),
+		}
+	}
+
+	return objectEvents
+}
+
 func (r Result) extractSubscriptionsByIds(
 	ids []string,
 ) (map[string]SubscriptionResource, map[common.ObjectName]common.ObjectEvents) {

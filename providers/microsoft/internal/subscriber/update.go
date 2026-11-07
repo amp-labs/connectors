@@ -29,18 +29,6 @@ func (s Strategy) UpdateSubscription( // nolint:cyclop,funlen
 	params common.SubscribeParams,
 	previousResult *common.SubscriptionResult,
 ) (*common.SubscriptionResult, error) {
-	// Partition subscription events into ToCreate, ToKeep, ToUpdate, and ToRemove categories.
-	segmentEvents := subscriptionhelper.SegmentSubscriptionEvents(
-		previousResult.ObjectEvents, params.SubscriptionEvents,
-	)
-
-	// Microsoft Graph API does not support updating subscriptions.
-	// We simulate an update by creating a new subscription and removing the outdated one.
-	for name, events := range segmentEvents.ToUpdate {
-		segmentEvents.ToRemove[name] = common.ObjectEvents{}
-		segmentEvents.ToCreate[name] = events
-	}
-
 	subsReq, err := s.TypedSubscriptionRequest(params)
 	if err != nil {
 		return nil, err
@@ -49,6 +37,26 @@ func (s Strategy) UpdateSubscription( // nolint:cyclop,funlen
 	prevRes, err := s.TypedSubscriptionResult(*previousResult)
 	if err != nil {
 		return nil, err
+	}
+
+	// The server rebuilds previousResult from its stored lookups and does not set ObjectEvents.
+	// Without a fallback every object looks new, so a second subscription is created per object
+	// while the existing ones are neither refreshed nor deleted.
+	previousObjectEvents := previousResult.ObjectEvents
+	if len(previousObjectEvents) == 0 {
+		previousObjectEvents = prevRes.objectEvents()
+	}
+
+	// Partition subscription events into ToCreate, ToKeep, ToUpdate, and ToRemove categories.
+	segmentEvents := subscriptionhelper.SegmentSubscriptionEvents(
+		previousObjectEvents, params.SubscriptionEvents,
+	)
+
+	// Microsoft Graph API does not support updating subscriptions.
+	// We simulate an update by creating a new subscription and removing the outdated one.
+	for name, events := range segmentEvents.ToUpdate {
+		segmentEvents.ToRemove[name] = common.ObjectEvents{}
+		segmentEvents.ToCreate[name] = events
 	}
 
 	var (
