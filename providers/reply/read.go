@@ -79,9 +79,15 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	transform, err := c.makeRecordTransformer(ctx, params.ObjectName)
-	if err != nil {
-		return nil, err
+	var transformer common.RecordTransformer
+
+	if usesCustomFields(params.ObjectName) {
+		var err error
+
+		transformer, err = c.buildCustomFieldsTransformer(ctx, params.ObjectName)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return common.ParseResultFiltered(
@@ -89,7 +95,7 @@ func (c *Connector) parseReadResponse(
 		response,
 		makeGetRecords(params.ObjectName),
 		makeFilterFunc(params, request),
-		readhelper.MakeMarshaledDataFuncWithId(transform, readhelper.NewIdField("id")),
+		readhelper.MakeMarshaledDataFuncWithId(transformer, readhelper.NewIdField("id")),
 		params.Fields,
 	)
 }
@@ -181,51 +187,16 @@ func makeNextRecordsURL(request *http.Request) common.NextPageFunc {
 	}
 }
 
-// makeRecordTransformer resolves contact custom fields to human-readable
-// names: the record's customFields entries carry the numeric definition id as
-// their key, which is matched against the definition titles fetched once per
-// page. Raw is left untouched; the resolved fields are added alongside.
-func (c *Connector) makeRecordTransformer(
+// buildCustomFieldsTransformer fetches the custom field definitions once for the
+// page and returns the transformer that resolves the records' customFields to
+// titles. Caller must guarantee usesCustomFields(objectName) is true.
+func (c *Connector) buildCustomFieldsTransformer(
 	ctx context.Context, objectName string,
 ) (common.RecordTransformer, error) {
-	if objectName != objectCustomFieldsOwner {
-		return nil, nil // nolint:nilnil
-	}
-
-	definitions, err := c.fetchCustomFieldDefinitions(ctx)
+	definitions, err := c.exposedCustomFields(ctx, objectName)
 	if err != nil {
 		return nil, err
 	}
 
-	titleByID := make(map[string]string, len(definitions))
-	for _, definition := range definitions {
-		titleByID[strconv.Itoa(definition.ID)] = definition.Title
-	}
-
-	return func(node *ajson.Node) (map[string]any, error) {
-		record, err := jsonquery.Convertor.ObjectToMap(node)
-		if err != nil {
-			return nil, err
-		}
-
-		fields, ok := record["customFields"].([]any)
-		if !ok {
-			return record, nil
-		}
-
-		for _, field := range fields {
-			entry, ok := field.(map[string]any)
-			if !ok {
-				continue
-			}
-
-			key, _ := entry["key"].(string)
-
-			if title, found := titleByID[key]; found {
-				record[title] = entry["value"]
-			}
-		}
-
-		return record, nil
-	}, nil
+	return attachReadCustomFields(definitions), nil
 }
