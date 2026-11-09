@@ -13,6 +13,14 @@ func validate(pipe pipeline.Pipeline[spec.Schema]) error {
 	uniqueNames := datautils.IndexedLists[string, string]{}
 
 	for _, object := range pipe.List() {
+		if object.ObjectName == "" {
+			slog.Error("schema was not assigned an object name",
+				"url", object.UrlPath,
+			)
+
+			continue
+		}
+
 		if object.Problem != nil {
 			slog.Error("schema not extracted",
 				"objectName", object.ObjectName,

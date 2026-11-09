@@ -3,7 +3,7 @@ package files
 import (
 	_ "embed"
 
-	"github.com/amp-labs/connectors/tools/fileconv/api3"
+	"github.com/amp-labs/connectors/scripts/openapi/internal/api"
 )
 
 // Static file containing openapi spec.
@@ -16,6 +16,8 @@ var (
 	//go:embed meeting.json
 	meetingFile []byte
 
-	UsersFileManager   = api3.NewOpenapiFileManager[any](usersFile)   // nolint:gochecknoglobals
-	MeetingFileManager = api3.NewOpenapiFileManager[any](meetingFile) // nolint:gochecknoglobals
+	UsersFile   = api.NewFile(usersFile)   // nolint:gochecknoglobals
+	MeetingFile = api.NewFile(meetingFile) // nolint:gochecknoglobals
+
+	OutputDir = "providers/zoom/internal/metadata" // nolint:gochecknoglobals
 )

@@ -5,7 +5,7 @@ import (
 	"github.com/amp-labs/connectors/common/paramsbuilder"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/zoom/metadata"
+	"github.com/amp-labs/connectors/providers/zoom/internal/metadata"
 )
 
 const (
@@ -49,7 +49,7 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) getReadURL(objectName string) (*urlbuilder.URL, error) {
-	path, err := metadata.Schemas.LookupURLPath(common.ModuleRoot, objectName)
+	path, err := metadata.Catalog.ReadPath(objectName)
 	if err != nil {
 		return nil, err
 	}

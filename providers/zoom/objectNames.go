@@ -3,10 +3,10 @@ package zoom
 import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/providers/zoom/metadata"
+	"github.com/amp-labs/connectors/providers/zoom/internal/metadata"
 )
 
-var supportedObjectsByRead = metadata.Schemas.ObjectNames() // nolint: gochecknoglobals
+var supportedObjectsByRead = metadata.Catalog.Objects.KeySet() // nolint: gochecknoglobals
 
 var (
 	ObjectNameContactGroup  = "contacts_groups" // nolint: gochecknoglobals
@@ -59,6 +59,34 @@ var supportedObjectsByWrite = map[common.ModuleID]datautils.StringSet{ // nolint
 		objectNameTsp,
 		objectNameWebinar,
 	),
+}
+
+var objectNameToResponseField = map[string]string{ // nolint: gochecknoglobals
+	"activities_report":         "activity_logs",
+	"archive_files":             "meetings",
+	"billing_report":            "billing_reports",
+	"contacts_groups":           "groups",
+	"devices":                   "devices",
+	"devices_groups":            "groups",
+	"groups":                    "groups",
+	"h323_devices":              "devices",
+	"meeting_activities_report": "meeting_activity_logs",
+	"meeting_summaries":         "summaries",
+	"meeting_templates":         "templates",
+	"meetings":                  "meetings",
+	"meetings_report":           "meetings",
+	"operation_logs_report":     "operation_logs",
+	"phones":                    "phones",
+	"recordings":                "meetings",
+	"recordings_report":         "cloud_recording_storage",
+	"telephone_report":          "telephony_usage",
+	"tracking_fields":           "tracking_fields",
+	"tsp":                       "tsp_accounts",
+	"upcoming_events_report":    "upcoming_events",
+	"upcoming_meetings":         "meetings",
+	"users":                     "users",
+	"users_report":              "users",
+	"webinars":                  "webinars",
 }
 
 var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint: gochecknoglobals
