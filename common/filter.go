@@ -7,8 +7,9 @@ import (
 )
 
 var (
-	// ErrInvalidRawFilter is returned when a RawFilter has a type or filter the connector cannot accept.
-	ErrInvalidRawFilter = errors.New("invalid raw filter")
+	// ErrInvalidRawFilter is returned when a SearchParams.RawFilter has a type or filter
+	// the connector cannot accept.
+	ErrInvalidRawFilter = errors.New("SearchParams.RawFilter is invalid")
 
 	errFilterNotString = errors.New("must be a string")
 	errFilterEmpty     = errors.New("is empty")
