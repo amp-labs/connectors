@@ -133,6 +133,7 @@ var providerConfigs = map[providers.Provider]ProviderConfigRegistry{
 	providers.Microsoft:      {DefaultModuleConfig: &microsoftConfig},
 	providers.Attio:          {DefaultModuleConfig: &attioConfig},
 	providers.Stripe:         {DefaultModuleConfig: &stripeConfig},
+	providers.Reply:          {DefaultModuleConfig: &replyConfig},
 
 	// Subscribe-testing mock providers (see the mocksub package). Inert unless the mock
 	// provider is explicitly set up via providers.SetupMock*Provider() in a test.
