@@ -2,7 +2,6 @@ package clickup
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
@@ -16,23 +15,10 @@ func GetClickupConnector(ctx context.Context) *clickup.Connector {
 	filePath := credscanning.LoadPath(providers.ClickUp)
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
-	options := []common.OAuthOption{
-		common.WithOAuthClient(http.DefaultClient),
-		common.WithOAuthConfig(getConfig(reader)),
-		common.WithOAuthToken(&oauth2.Token{
-			AccessToken:  reader.Get(credscanning.Fields.AccessToken),
-			RefreshToken: reader.Get(credscanning.Fields.RefreshToken),
-		}),
-	}
-
-	client, err := common.NewOAuthHTTPClient(ctx, options...)
-	if err != nil {
-		utils.Fail(err.Error())
-	}
-
 	conn, err := clickup.NewConnector(
 		common.ConnectorParams{
-			AuthenticatedClient: client,
+			AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
+			Workspace:           reader.Get(credscanning.Fields.Workspace),
 		},
 	)
 	if err != nil {
