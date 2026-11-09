@@ -18,6 +18,7 @@ import (
 	"github.com/amp-labs/connectors/providers/ashby"
 	"github.com/amp-labs/connectors/providers/atlassian"
 	"github.com/amp-labs/connectors/providers/attio"
+	"github.com/amp-labs/connectors/providers/auphan"
 	"github.com/amp-labs/connectors/providers/avoma"
 	"github.com/amp-labs/connectors/providers/aws"
 	"github.com/amp-labs/connectors/providers/bamboohr"
@@ -189,6 +190,8 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Ashby:                             wrapper(newAshbyConnector),
 	providers.Atlassian:                         wrapper(newAtlassianConnector),
 	providers.Attio:                             wrapper(newAttioConnector),
+	providers.Auphan:                            wrapper(newAuphanConnector),
+	providers.AuphanSandbox:                     wrapper(newAuphanSandboxConnector),
 	providers.Avoma:                             wrapper(newAvomaConnector),
 	providers.Bentley:                           wrapper(newBentleyConnector),
 	providers.BigQuery:                          wrapper(newBigQueryConnector),
@@ -1051,6 +1054,18 @@ func newPinterestConnector(
 	params common.ConnectorParams,
 ) (*pinterest.Connector, error) {
 	return pinterest.NewConnector(params)
+}
+
+func newAuphanConnector(
+	params common.ConnectorParams,
+) (*auphan.Connector, error) {
+	return auphan.NewConnector(params)
+}
+
+func newAuphanSandboxConnector(
+	params common.ConnectorParams,
+) (*auphan.Connector, error) {
+	return auphan.NewSandboxConnector(params)
 }
 
 func newAvomaConnector(

@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid selection: ",
+    "details": {"field": "selection"}
+  }
+}
