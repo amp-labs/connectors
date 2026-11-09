@@ -6,8 +6,11 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
+
+const DefaultPageSize = 300
 
 func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
 	if err := config.ValidateParams(true); err != nil {
@@ -23,18 +26,19 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 		return nil, err
 	}
 
-	rsp, err := c.Client.Get(ctx, url.String())
+	rsp, err := c.Base.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
 
 	responseFieldName := objectNameToResponseField[config.ObjectName]
+	identifier := objectNameToReadResponseIdentifier.Get(config.ObjectName)
 
 	return common.ParseResult(
 		rsp,
 		common.ExtractRecordsFromPath(responseFieldName),
 		getNextRecordURL(url),
-		common.GetMarshaledData,
+		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField(identifier)),
 		config.Fields,
 	)
 }
@@ -46,7 +50,7 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	// First page
-	url, err := c.getReadURL(config.ObjectName)
+	url, err := c.GetReadURL(config.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -77,15 +81,15 @@ func addTimeFilterParams(config common.ReadParams, url *urlbuilder.URL) {
 				endDate = config.Until
 			}
 
-			url.WithQueryParam("from", startDate.UTC().Format(ZoomDateFormat))
-			url.WithQueryParam("to", endDate.UTC().Format(ZoomDateFormat))
+			url.WithQueryParam("from", startDate.UTC().Format(DateFormat))
+			url.WithQueryParam("to", endDate.UTC().Format(DateFormat))
 		} else {
 			if !config.Since.IsZero() {
-				url.WithQueryParam("from", config.Since.UTC().Format(ZoomDateFormat))
+				url.WithQueryParam("from", config.Since.UTC().Format(DateFormat))
 			}
 
 			if !config.Until.IsZero() {
-				url.WithQueryParam("to", config.Until.UTC().Format(ZoomDateFormat))
+				url.WithQueryParam("to", config.Until.UTC().Format(DateFormat))
 			}
 		}
 	}

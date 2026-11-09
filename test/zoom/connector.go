@@ -2,8 +2,8 @@ package zoom
 
 import (
 	"context"
-	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/scanning/credscanning"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/zoom"
@@ -13,10 +13,11 @@ import (
 
 func GetZoomConnector(ctx context.Context) *zoom.Connector {
 	filePath := credscanning.LoadPath(providers.Zoom)
-
 	reader := utils.MustCreateProvCredJSON(filePath, true)
 
-	conn, err := zoom.NewConnector(zoom.WithClient(ctx, http.DefaultClient, getConfig(reader), reader.GetOauthToken()))
+	conn, err := zoom.NewConnector(common.ConnectorParams{
+		AuthenticatedClient: utils.NewOauth2Client(ctx, reader, getConfig),
+	})
 	if err != nil {
 		utils.Fail("error creating zoom connector", "error", err)
 	}
