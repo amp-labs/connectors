@@ -1,0 +1,22 @@
+{
+  "data": {
+    "id": "2kxv6e49-572",
+    "parent": {
+      "id": "90122172553",
+      "type": 12
+    },
+    "creator": "308680077",
+    "visibility": "PUBLIC",
+    "name": "Collaboration",
+    "type": "CHANNEL",
+    "created_at": 1791865807343,
+    "updated_at": 1791865807343,
+    "workspace_id": "90122172553",
+    "is_canonical_channel": false,
+    "archived": false,
+    "links": {
+      "members": "/api/v3/workspaces/90122172553/chat/channels/2kxv6e49-572/members",
+      "followers": "/api/v3/workspaces/90122172553/chat/channels/2kxv6e49-572/followers"
+    }
+  }
+}
