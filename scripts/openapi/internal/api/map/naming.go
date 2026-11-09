@@ -68,6 +68,20 @@ func DisplayNameOverride(override core.TrackedMap[string, string]) pipeline.MapF
 	}
 }
 
+func ObjectNameFormat(processors ...TextProcessor) pipeline.MapFunc[spec.Schema, spec.Schema] {
+	return func(schema spec.Schema) spec.Schema {
+		objectName := schema.ObjectName
+
+		for _, processor := range processors {
+			objectName = processor(objectName)
+		}
+
+		schema.ObjectName = objectName
+
+		return schema
+	}
+}
+
 func DisplayNameFormat(processors ...TextProcessor) pipeline.MapFunc[spec.Schema, spec.Schema] {
 	return func(schema spec.Schema) spec.Schema {
 		displayName := schema.DisplayName
@@ -87,6 +101,11 @@ type TextProcessor func(name string) string
 // CapitalizeFirstLetterEveryWord makes all words start with capital except some prepositions.
 func CapitalizeFirstLetterEveryWord(displayName string) string {
 	return naming.CapitalizeFirstLetterEveryWord(displayName)
+}
+
+// Pluralize the word.
+func Pluralize(displayName string) string {
+	return naming.NewPluralString(displayName).String()
 }
 
 // CamelCaseToSpaceSeparated converts camel case into lower case space separated string.
