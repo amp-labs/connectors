@@ -171,7 +171,16 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	}
 
 	if params.NextPage != "" {
-		return http.NewRequestWithContext(ctx, http.MethodGet, params.NextPage.String(), nil)
+		// This continues an earlier read: the caller saved this next-page URL
+		// from an earlier response. It already has all its query params (page,
+		// page size, dates), so we do not add them again. The one change: a jobs
+		// URL past the 100000 limit is fixed first (see nextPageURL).
+		nextPage, err := c.nextPageURL(params)
+		if err != nil {
+			return nil, err
+		}
+
+		return http.NewRequestWithContext(ctx, http.MethodGet, nextPage, nil)
 	}
 
 	url, err := c.buildInitialURL(params)
@@ -182,6 +191,27 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	applyJobsIncrementalFilter(url, params)
 
 	return http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+}
+
+// nextPageURL returns the next-page URL the caller saved from an earlier read.
+// A URL that pages the /jobs list goes through fitJobsCursorUnderCap like every
+// other jobs URL. We have no previous response here, so we pass nil.
+func (c *Connector) nextPageURL(params common.ReadParams) (string, error) {
+	listParams, ok := jobsListParams(params)
+	if !ok {
+		return params.NextPage.String(), nil
+	}
+
+	cursor, err := urlbuilder.New(params.NextPage.String())
+	if err != nil {
+		return "", err
+	}
+
+	if err := c.fitJobsCursorUnderCap(cursor, nil, listParams); err != nil {
+		return "", err
+	}
+
+	return cursor.String(), nil
 }
 
 // buildInitialURL returns the first-page URL. For nested objects it returns
@@ -421,7 +451,14 @@ func (c *Connector) parseNestedResponse(
 		return nil, err
 	}
 
-	nextPage, err := c.makeNextPage(nested.parentObject, reqURL)(body)
+	nextPageFunc := c.makeNextPage(nested.parentObject, reqURL)
+
+	// A jobs/* object pages the /jobs list, so it has the same 100000 limit.
+	if listParams, ok := jobsListParams(params); ok {
+		nextPageFunc = c.makeJobsNextPage(listParams, reqURL, nextPageFunc)
+	}
+
+	nextPage, err := nextPageFunc(body)
 	if err != nil {
 		return nil, err
 	}
