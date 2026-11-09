@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os/signal"
 	"syscall"
 	"time"
@@ -74,31 +76,33 @@ func main() {
 				}
 				payload.Licenses = licenseStrings
 			},
-			ValidateUpdatedFields: func(record map[string]any) {
+			ValidateUpdatedFields: func(record map[string]any) error {
 				emails, ok := record["emails"].([]any)
 				if !ok || len(emails) == 0 {
-					utils.Fail("emails field not found or empty in verified person")
+					return errors.New("emails field not found or empty in verified person")
 				} else if emails[0] != updatedEmail {
-					utils.Fail("email mismatch", "expected", updatedEmail, "got", emails[0])
+					return fmt.Errorf("email mismatch expected(%v), got(%v)", updatedEmail, emails[0])
 				}
 
 				if displayName, ok := record["displayname"].(string); !ok {
-					utils.Fail("displayName field not found in verified person")
+					return errors.New("displayName field not found in verified person")
 				} else if displayName != "Example Person Updated" {
-					utils.Fail("displayName mismatch", "expected", "Example Person Updated", "got", displayName)
+					return fmt.Errorf("displayName mismatch expected(%v), got(%v)", "Example Person Updated", displayName)
 				}
 
 				if firstName, ok := record["firstname"].(string); !ok {
-					utils.Fail("firstName field not found in verified person")
+					return errors.New("firstName field not found in verified person")
 				} else if firstName != "Example" {
-					utils.Fail("firstName mismatch", "expected", "Example", "got", firstName)
+					return fmt.Errorf("firstName mismatch expected(%v), got(%v)", "Example", firstName)
 				}
 
 				if lastName, ok := record["lastname"].(string); !ok {
-					utils.Fail("lastName field not found in verified person")
+					return errors.New("lastName field not found in verified person")
 				} else if lastName != "Person" {
-					utils.Fail("lastName mismatch", "expected", "Person", "got", lastName)
+					return fmt.Errorf("lastName mismatch expected(%v), got(%v)", "Person", lastName)
 				}
+
+				return nil
 			},
 		},
 	)
