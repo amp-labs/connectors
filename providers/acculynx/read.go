@@ -194,10 +194,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 }
 
 // nextPageURL returns the next-page URL the caller saved from an earlier read.
-// A jobs URL goes through fitJobsCursorUnderCap like every other jobs URL. We
-// have no previous response here, so we pass nil.
+// A URL that pages the /jobs list goes through fitJobsCursorUnderCap like every
+// other jobs URL. We have no previous response here, so we pass nil.
 func (c *Connector) nextPageURL(params common.ReadParams) (string, error) {
-	if params.ObjectName != objectJobs {
+	listParams, ok := jobsListParams(params)
+	if !ok {
 		return params.NextPage.String(), nil
 	}
 
@@ -206,7 +207,7 @@ func (c *Connector) nextPageURL(params common.ReadParams) (string, error) {
 		return "", err
 	}
 
-	if err := c.fitJobsCursorUnderCap(cursor, nil, params); err != nil {
+	if err := c.fitJobsCursorUnderCap(cursor, nil, listParams); err != nil {
 		return "", err
 	}
 
@@ -450,7 +451,14 @@ func (c *Connector) parseNestedResponse(
 		return nil, err
 	}
 
-	nextPage, err := c.makeNextPage(nested.parentObject, reqURL)(body)
+	nextPageFunc := c.makeNextPage(nested.parentObject, reqURL)
+
+	// A jobs/* object pages the /jobs list, so it has the same 100000 limit.
+	if listParams, ok := jobsListParams(params); ok {
+		nextPageFunc = c.makeJobsNextPage(listParams, reqURL, nextPageFunc)
+	}
+
+	nextPage, err := nextPageFunc(body)
 	if err != nil {
 		return nil, err
 	}

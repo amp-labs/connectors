@@ -853,6 +853,57 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
+			// jobs/* objects page the /jobs list too, so they have the same limit.
+			Name: "Read jobs/representatives over more than 100000 jobs restarts the job list sorted",
+			Input: common.ReadParams{
+				ObjectName: "jobs/representatives",
+				Fields:     connectors.Fields("id"),
+			},
+			Server: jobsServer(map[string]string{"pageStartIndex": "0"},
+				jobsPage(150000, 0, 25, "2026-03-01T10:00:00Z", "2026-02-01T10:00:00Z")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				NextPage: jobsURL("includes=initialAppointment&pageSize=25&pageStartIndex=0" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending"),
+			},
+		},
+		{
+			// The server below answers only the sorted restart, not the saved URL.
+			Name: "Read jobs/representatives from a saved job-list cursor past the limit restarts it sorted",
+			Input: common.ReadParams{
+				ObjectName: "jobs/representatives",
+				Fields:     connectors.Fields("id"),
+				NextPage:   jobsURL("includes=initialAppointment&pageSize=25&pageStartIndex=100000"),
+			},
+			Server: jobsServer(
+				map[string]string{"sortBy": "ModifiedDate", "sortOrder": "Ascending", "pageStartIndex": "0"},
+				jobsPage(150000, 0, 25, "2026-01-02T10:00:00Z", "2026-01-03T10:00:00Z")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				NextPage: jobsURL("includes=initialAppointment&pageSize=25&pageStartIndex=25" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending"),
+			},
+		},
+		{
+			// A jobs/* read never sends its Since/Until on the /jobs list, so the
+			// unassigned list must start with no date filter, even when Since is set.
+			Name: "Read jobs/representatives with Since starts the unassigned job list with no date filter",
+			Input: common.ReadParams{
+				ObjectName: "jobs/representatives",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06" +
+					"&includes=initialAppointment&pageSize=25&pageStartIndex=50" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-07-13"),
+			},
+			Server: jobsServer(map[string]string{"pageStartIndex": "50"},
+				jobsPage(75, 50, 25, "2026-08-01T10:00:00Z", "2026-08-02T10:00:00Z")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				NextPage: jobsURL("assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0"),
+			},
+		},
+		{
 			// An unassigned job has no representatives and its leaf answers
 			// 404; the fan-out must treat that parent as having no child
 			// records rather than failing the read.
@@ -1705,7 +1756,9 @@ func constructTestReadConnector(serverURL string) (*Connector, error) {
 }
 
 // jobsServer serves the empty custom-field definitions plus one /jobs request
-// that must carry every given query param. Any other request gets a 500.
+// that must carry every given query param. For the jobs/representatives cases,
+// every /jobs/{id}/representatives request gets a 404, which the fan-out reads
+// as "no representatives". Any other request gets a 500.
 func jobsServer(query map[string]string, then http.HandlerFunc) *httptest.Server {
 	jobs := mockcond.And{mockcond.MethodGET(), mockcond.Path("/api/v2/jobs")}
 	for key, value := range query {
@@ -1719,6 +1772,12 @@ func jobsServer(query map[string]string, then http.HandlerFunc) *httptest.Server
 			{
 				If:   mockcond.Path("/api/v2/company-settings/custom-fields"),
 				Then: mockserver.Response(http.StatusOK, customFieldDefinitionsEmptyResponse),
+			},
+			{
+				If: mockcond.Check(func(_ http.ResponseWriter, r *http.Request) bool {
+					return strings.HasSuffix(r.URL.Path, "/representatives")
+				}),
+				Then: mockserver.ResponseString(http.StatusNotFound, `{"title":"Not Found","status":404}`),
 			},
 		},
 		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),

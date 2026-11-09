@@ -191,6 +191,22 @@ func (c *Connector) makeJobsNextPage(
 	}
 }
 
+// jobsListParams returns the params for the /jobs list that a read pages
+// through, or false if the read does not page that list. A jobs/* object (for
+// example jobs/history) pages the /jobs list too, but always the whole list:
+// its Since/Until are not sent on that list. So its list params have no dates.
+func jobsListParams(params common.ReadParams) (common.ReadParams, bool) {
+	if params.ObjectName == objectJobs {
+		return params, true
+	}
+
+	if nested, ok := nestedObjects[params.ObjectName]; ok && nested.parentObject == objectJobs {
+		return common.ReadParams{ObjectName: objectJobs}, true
+	}
+
+	return params, false
+}
+
 func startsUnassignedSweep(reqURL, nextURL *urlbuilder.URL) bool {
 	_, current := reqURL.GetFirstQueryParam(assignmentParam)
 	_, next := nextURL.GetFirstQueryParam(assignmentParam)
