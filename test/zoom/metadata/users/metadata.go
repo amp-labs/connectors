@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -20,11 +19,10 @@ func main() {
 
 	conn := connTest.GetZoomConnector(ctx)
 
-	metadata, err := conn.ListObjectMetadata(ctx, []string{"users", "groups"})
+	metadata, err := conn.ListObjectMetadata(ctx, []string{"users"})
 	if err != nil {
-		utils.Fail("error listing metadata for zoom", "error", err)
+		utils.Fail("error listing metadata", "error", err)
 	}
 
-	fmt.Println("zoom metadata...")
 	utils.DumpJSON(metadata, os.Stdout)
 }

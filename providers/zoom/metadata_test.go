@@ -31,40 +31,35 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 			},
 		},
 		{
-			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"users", "groups"},
+			Name: "Successfully describe multiple objects with metadata",
+			Input: []string{
+				"users", "groups",
+				"activities_report", "devices_groups",
+				"meetings", "account_meetings"},
 			Server:     mockserver.Dummy(),
 			Comparator: testconn.ComparatorSubsetMetadata,
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"users": {
 						DisplayName: "Users",
-						FieldsMap: map[string]string{
-							"display_name": "display_name",
-							"dept":         "dept",
-							"email":        "email",
-							"status":       "status",
+						Fields: map[string]common.FieldMetadata{
+							"email": {
+								DisplayName:  "email",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
 						},
 					},
 					"groups": {
 						DisplayName: "Groups",
-						FieldsMap: map[string]string{
-							"name": "name",
-							"id":   "id",
+						Fields: map[string]common.FieldMetadata{
+							"name": {
+								DisplayName:  "name",
+								ValueType:    "string",
+								ProviderType: "string",
+							},
 						},
 					},
-				},
-				Errors: nil,
-			},
-			ExpectedErrs: nil,
-		},
-		{
-			Name:       "Successfully describe multiple objects with metadata",
-			Input:      []string{"activities_report", "devices_groups"},
-			Server:     mockserver.Dummy(),
-			Comparator: testconn.ComparatorSubsetMetadata,
-			Expected: &common.ListObjectMetadataResult{
-				Result: map[string]common.ObjectMetadata{
 					"activities_report": {
 						DisplayName: "Activities Report",
 						Fields: map[string]common.FieldMetadata{
@@ -81,12 +76,6 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 								}},
 							},
 						},
-						FieldsMap: map[string]string{
-							"client_type": "client_type",
-							"type":        "type",
-							"email":       "email",
-							"version":     "version",
-						},
 					},
 					"devices_groups": {
 						DisplayName: "Devices Groups",
@@ -97,9 +86,25 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 								ProviderType: "string",
 							},
 						},
-						FieldsMap: map[string]string{
-							"name":        "name",
-							"description": "description",
+					},
+					"meetings": {
+						DisplayName: "My Meetings",
+						Fields: map[string]common.FieldMetadata{
+							"duration": {
+								DisplayName:  "duration",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
+						},
+					},
+					"account_meetings": {
+						DisplayName: "All Meetings",
+						Fields: map[string]common.FieldMetadata{
+							"duration": {
+								DisplayName:  "duration",
+								ValueType:    "int",
+								ProviderType: "integer",
+							},
 						},
 					},
 				},
