@@ -56,9 +56,13 @@ func (*Connector) ValidateRawFilter(filter common.RawFilter) error {
 	return err
 }
 
-// reportFilters builds a report's "filters": the date window, close_date selection, and any raw filters.
+// reportFilters builds a report's "filters": the date window, the report's date selection, and any raw filters.
 func reportFilters(params common.ReadParams, window *reportWindow) (map[string]any, error) {
-	filters := map[string]any{"selection": reportDateSelection}
+	filters := map[string]any{}
+
+	if selection := reportObjects[params.ObjectName]; selection != "" {
+		filters["selection"] = selection
+	}
 
 	if params.RawFilter != nil {
 		extra, err := common.RawFilterAs[ReportFilters](*params.RawFilter)

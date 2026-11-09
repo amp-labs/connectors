@@ -25,6 +25,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	responseInvalidToken := testutils.DataFromFile(t, "error-invalid-token.json")
 	responseStoresFirstPage := testutils.DataFromFile(t, "stores-page-1.json")
 	responseStoresLastPage := testutils.DataFromFile(t, "stores-page-2.json")
+	responsePettyCash := testutils.DataFromFile(t, "petty-cash.json")
 
 	// A day in a fixed zone that is not UTC: request times must keep it, unconverted.
 	zone := time.FixedZone("store", -5*60*60)
@@ -103,6 +104,45 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						"tips":         nil,
 						"count":        "21",
 					},
+				}},
+				Done: true,
+			},
+		},
+		{
+			Name: "Petty cash is read without a date selection, which that report rejects",
+			Input: common.ReadParams{
+				ObjectName: "petty_cash",
+				Fields:     connectors.Fields("petty_cash_type", "reason", "tracking_date", "amount"),
+				Since:      since,
+				Until:      until,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.Body(`{
+					"store_id": 73921,
+					"params": {
+						"type": "petty_cash",
+						"columns": ["amount", "petty_cash_type", "reason", "tracking_date"],
+						"filters": {"date_from": "2026-11-05 00:00:00", "date_to": "2026-11-05 23:59:59"}
+					}
+				}`),
+				Then: mockserver.Response(http.StatusOK, responsePettyCash),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{
+						"petty_cash_type": "Petty Cash Out",
+						"amount":          "-80.26",
+					},
+					Raw: map[string]any{"reason": "Alex tips"},
+				}, {
+					Fields: map[string]any{
+						"petty_cash_type": "Petty Cash In",
+						"amount":          "11.50",
+					},
+					Raw: map[string]any{"tracking_date": "Nov 05, 26 11:13 pm"},
 				}},
 				Done: true,
 			},

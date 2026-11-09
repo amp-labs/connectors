@@ -27,15 +27,19 @@ API reference: https://api1.auphansoftware.com/resources/
 |------------|-------------------------|------|-------------------------------------------------|
 | `payments` | `reports/execute`       | yes  | 30-day date windows                             |
 | `sales`    | `reports/execute`       | yes  | 30-day date windows                             |
+| `petty_cash` | `reports/execute`     | yes  | 30-day date windows                             |
 | `stores`   | `settings/stores.list`  | yes  | `data.pagination.page` / `total_pages`, 200 per page |
 
-To add another report type, add it to `reportObjects` in `support.go`.
+To add another report type, add it to `reportObjects` in `support.go` with its date selection
+(see `reports/types.get` for whether the report has a `selection` filter).
 
 ### Report reads
 
 - `ObjectName` is the report `type`. `Fields` become `columns`, sorted so the request is stable.
   Auphan requires at least one column.
-- `filters.selection` defaults to `close_date`.
+- `filters.selection` is `close_date` for `payments` and `sales`. `petty_cash` has no `selection`
+  filter and rejects one with `UNKNOWN_FILTER` (checked live), so none is sent. Its dates filter on
+  `tracking_date`.
 - **Date windows:** reports are read one 30-day window at a time, and `NextPage` carries the next
   window as `<start>/<end>` in RFC 3339.
   - Without `Since`, the read starts at 2000-01-01, following the bigquery connector's backfill.

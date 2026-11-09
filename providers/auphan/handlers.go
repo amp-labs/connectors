@@ -22,9 +22,6 @@ const (
 
 	// Auphan report dates are "YYYY-MM-DD HH:MM:SS" with no timezone.
 	reportTimeLayout = time.DateTime
-
-	// The date field reports filter on.
-	reportDateSelection = "close_date"
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -200,5 +197,5 @@ func (c *Connector) newRequest(ctx context.Context, endpoint string, params map[
 }
 
 func displayName(objectName string) string {
-	return strings.ToUpper(objectName[:1]) + objectName[1:]
+	return strings.ToUpper(objectName[:1]) + strings.ReplaceAll(objectName[1:], "_", " ")
 }
