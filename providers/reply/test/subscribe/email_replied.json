@@ -1,0 +1,52 @@
+{
+  "event": {
+    "date": "2026-11-02T09:43:27.3150219Z",
+    "id": "215799e8-0d95-4860-adf0-385898c108c5",
+    "type": "email_replied",
+    "user_id": 1234,
+    "team_id": 100,
+    "subscription_id": 24951
+  },
+  "reply_message_url": "https://example.com/test-email-blob",
+  "email_text": "<html><body>Test email content</body></html>",
+  "email_to": [
+    "test-account@example.com"
+  ],
+  "email_cc": [
+    "colleague@example.com"
+  ],
+  "email_from": "test-account@example.com",
+  "sent_email_variant_id": 5001,
+  "email_account_id": 1,
+  "sent_email_id": 999,
+  "reply_date": "2026-11-02T09:43:27.3145683Z",
+  "reply_message_id": "test-reply-msg-id",
+  "contact_fields": {
+    "id": 12345,
+    "email": "test-prospect@example.com",
+    "first_name": "Test",
+    "last_name": "Prospect",
+    "full_name": "Test Prospect",
+    "title": "Test Title",
+    "company": "Test Company",
+    "linkedin_profile_url": "https://linkedin.com/in/test",
+    "city": "Test City",
+    "state": "Test State",
+    "country": "Test Country",
+    "time_zone_id": "America/Los_Angeles",
+    "phone": "+1234567890",
+    "domain": "example.com",
+    "company_size": "51-200 employees",
+    "industry": "Software",
+    "linkedin_sales_navigator": "https://www.linkedin.com/sales/people/test",
+    "linkedin_recruiter": "https://www.linkedin.com/recruiter/people/test"
+  },
+  "contact_custom_fields": {
+    "Custom Field 1": "Custom Value 1"
+  },
+  "sequence_fields": {
+    "id": 200,
+    "name": "Test Sequence",
+    "step_number": 1
+  }
+}
