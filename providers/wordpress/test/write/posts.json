@@ -1,0 +1,51 @@
+{
+  "id": 17,
+  "date": "2026-10-22T03:23:24",
+  "date_gmt": "2026-10-22T00:23:24",
+  "guid": {
+    "rendered": "https://amp057.wordpress.com/?p=17",
+    "raw": "https://amp057.wordpress.com/?p=17"
+  },
+  "modified": "2026-10-22T03:23:24",
+  "modified_gmt": "2026-10-22T00:23:24",
+  "password": "",
+  "slug": "",
+  "status": "draft",
+  "type": "post",
+  "link": "https://amp057.wordpress.com/?p=17",
+  "title": {
+    "raw": "Created via Postman",
+    "rendered": "Created via Postman"
+  },
+  "content": {
+    "raw": "Information that comes from postman",
+    "rendered": "<p>Information that comes from postman</p>\n",
+    "protected": false,
+    "block_version": 0
+  },
+  "excerpt": {
+    "raw": "Information that comes from postman",
+    "rendered": "<p>Information that comes from postman</p>\n",
+    "protected": false
+  },
+  "author": 285633870,
+  "featured_media": 0,
+  "comment_status": "open",
+  "ping_status": "open",
+  "sticky": false,
+  "template": "",
+  "format": "standard",
+  "meta": {},
+  "categories": [],
+  "tags": [],
+  "permalink_template": "https://amp057.wordpress.com/2026/10/22/%postname%/",
+  "generated_slug": "created-via-curl",
+  "class_list": [],
+  "jetpack_featured_media_url": "",
+  "jetpack_shortlink": "https://wp.me/phsPz2-h",
+  "jetpack_sharing_enabled": true,
+  "jetpack_likes_enabled": true,
+  "jetpack-related-posts": [],
+  "jetpack_publicize_connections": [],
+  "_links": {}
+}

@@ -2,7 +2,9 @@ package wordpress
 
 import (
 	"fmt"
+	"net/http"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 )
 
@@ -14,6 +16,10 @@ var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
 		},
 	}...,
 )
+
+var statusCodeMapping = map[int]error{ // nolint:gochecknoglobals
+	http.StatusGone: common.ErrNotFound,
+}
 
 type ResponseError struct {
 	Code    string `json:"code"`
