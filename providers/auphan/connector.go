@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
+	_ "time/tzdata" // store timezones resolve on hosts without zoneinfo
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/components"
@@ -31,6 +33,10 @@ type Connector struct {
 	// A franchise HQ token can read several stores by changing store_id per request; for now one
 	// connection reads one store.
 	storeID int
+
+	// location is the store timezone from the "timezone" metadata. Report times are converted to it.
+	// Nil means times keep their own location: Auphan returns no timezone for a store.
+	location *time.Location
 }
 
 // NewConnector connects to a production store. The workspace is the store ID, which also picks the host.
@@ -53,6 +59,11 @@ func newConnector(provider providers.Provider, params common.ConnectorParams, st
 	conn.storeID, err = strconv.Atoi(storeID)
 	if err != nil {
 		return nil, fmt.Errorf("%w: store ID must be a number, got %q", errInvalidStoreID, storeID)
+	}
+
+	conn.location, err = loadLocation(params.Metadata["timezone"])
+	if err != nil {
+		return nil, err
 	}
 
 	return conn, nil

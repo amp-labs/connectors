@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"net/http"
 	"slices"
 	"strconv"
@@ -26,9 +26,6 @@ const (
 	// The date field reports filter on.
 	reportDateSelection = "close_date"
 )
-
-// errMissingSince: reports always need a date range, so Since is required instead of pulling all history.
-var errMissingSince = errors.New("auphan reports need a date range: Since is required")
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
 	if reportObjects.Has(objectName) {
@@ -107,6 +104,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return c.buildReportRequest(ctx, params)
 	}
 
+	if params.RawFilter != nil {
+		return nil, fmt.Errorf("%w: %w", common.ErrInvalidRawFilter, errFilterOnlyReports)
+	}
+
 	page := 1
 
 	if params.NextPage != "" {
@@ -122,28 +123,24 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 }
 
 func (c *Connector) buildReportRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	if params.Since.IsZero() {
-		return nil, errMissingSince
+	window, err := c.window(params)
+	if err != nil {
+		return nil, err
 	}
 
-	// Store timezone is unknown (Auphan returns null), so times are sent in their own location, unconverted.
-	until := params.Until
-	if until.IsZero() {
-		until = time.Now().In(params.Since.Location())
+	filters, err := reportFilters(params, window)
+	if err != nil {
+		return nil, err
 	}
 
 	// Fields is a set, so sort for a stable request. Auphan ids are lowercase.
 	columns := params.Fields.List()
 	slices.Sort(columns)
 
-	return c.newRequest(ctx, "reports/execute", map[string]any{
+	return c.newRequest(withNextPage(ctx, window.next), "reports/execute", map[string]any{
 		"type":    params.ObjectName,
 		"columns": columns,
-		"filters": map[string]any{
-			"selection": reportDateSelection,
-			"date_from": params.Since.Format(reportTimeLayout),
-			"date_to":   until.Format(reportTimeLayout),
-		},
+		"filters": filters,
 	})
 }
 
@@ -158,7 +155,13 @@ func (c *Connector) parseReadResponse(
 	}
 
 	if reportObjects.Has(params.ObjectName) {
-		return parseReport(response, params.Fields.List())
+		// The window was stored on this request by buildReportRequest.
+		next, err := nextPageFrom(request.Context()) //nolint:contextcheck
+		if err != nil {
+			return nil, err
+		}
+
+		return parseReport(response, params.Fields.List(), next)
 	}
 
 	return common.ParseResult(

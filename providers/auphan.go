@@ -39,6 +39,11 @@ func init() {
 					Name:        "workspace",
 					DisplayName: "Store ID",
 				},
+				{
+					Name:        "timezone",
+					DisplayName: "Store Timezone",
+					Prompt:      "IANA timezone of the store, e.g. America/Los_Angeles. Report dates are sent in this zone.",
+				},
 			},
 		},
 
@@ -88,6 +93,11 @@ func init() {
 				{
 					Name:        "storeId",
 					DisplayName: "Store ID",
+				},
+				{
+					Name:        "timezone",
+					DisplayName: "Store Timezone",
+					Prompt:      "IANA timezone of the store, e.g. America/Los_Angeles. Report dates are sent in this zone.",
 				},
 			},
 		},

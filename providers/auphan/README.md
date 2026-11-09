@@ -25,8 +25,8 @@ API reference: https://api1.auphansoftware.com/resources/
 
 | Object     | Endpoint                | Read | Pagination                                      |
 |------------|-------------------------|------|-------------------------------------------------|
-| `payments` | `reports/execute`       | yes  | none, one page                                  |
-| `sales`    | `reports/execute`       | yes  | none, one page                                  |
+| `payments` | `reports/execute`       | yes  | 30-day date windows                             |
+| `sales`    | `reports/execute`       | yes  | 30-day date windows                             |
 | `stores`   | `settings/stores.list`  | yes  | `data.pagination.page` / `total_pages`, 200 per page |
 
 To add another report type, add it to `reportObjects` in `support.go`.
@@ -35,14 +35,24 @@ To add another report type, add it to `reportObjects` in `support.go`.
 
 - `ObjectName` is the report `type`. `Fields` become `columns`, sorted so the request is stable.
   Auphan requires at least one column.
-- `filters.selection` is always `close_date`.
-- `Since` is required, and the read fails without it. A report needs a date range, and the
-  connector does not pull all history silently. `Until` defaults to now.
+- `filters.selection` defaults to `close_date`.
+- **Date windows:** reports are read one 30-day window at a time, and `NextPage` carries the next
+  window as `<start>/<end>` in RFC 3339.
+  - Without `Since`, the read starts at 2000-01-01, following the bigquery connector's backfill.
+  - Without `Until`, the read ends now.
+  - A one-day re-run stays a single call.
+  - A backfill never asks a live POS for years of data in one request.
+- **Timezone:** with the `timezone` metadata (an IANA name like `America/Los_Angeles`), times are
+  converted to the store's zone before sending. Without it, times keep their own location.
 - Dates go out as `YYYY-MM-DD HH:MM:SS`.
+- **Extra filters:** pass any other report filter as a raw filter of type `reportFilters`, for example
+  `{"status": [2], "net_cash_deducts_tips": 0}`. Valid ids come from `reports/types.get`. It can override
+  `selection`, but not `date_from`/`date_to`, which come from the window. `stores` takes no raw filter.
 - Values come back as strings (`"1411.96"`, `"36"`, `"Nov 05, 2026"`). They are returned as received
   and never converted to float, because this is accounting data.
-- Reports have no paging. A top-level `result_limit` or `page` is ignored, and `filters.result_limit`
-  is rejected with `UNKNOWN_FILTER` (checked live). Every read returns one page with `Done: true`.
+- Reports have no paging of their own. A top-level `result_limit` or `page` is ignored, and
+  `filters.result_limit` is rejected with `UNKNOWN_FILTER` (checked live). One call returns the whole
+  window.
 
 ### Paired rows in the summary layout
 
@@ -96,9 +106,8 @@ They only call read endpoints.
 
 ## Open questions
 
-- **Timezone.** Auphan returns `null` for the store timezone. `Since`/`Until` are formatted in the
-  location of the `time.Time` they come in, with no conversion to UTC. The caller has to pass
-  times in the store's local time. Someone needs to confirm with Auphan which zone `close_date`
-  uses.
+- **Timezone.** Auphan returns `null` for the store timezone, so the `timezone` input has no
+  default. Without it, the caller has to pass times in the store's local time. Someone needs to
+  confirm with Auphan which zone `close_date` uses.
 - **Presets.** Presets are not used. System presets have negative IDs, and `presets.get` rejects
   them.

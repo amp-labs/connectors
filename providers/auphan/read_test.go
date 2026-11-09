@@ -44,12 +44,6 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
-			Name:         "Report read needs Since",
-			Input:        common.ReadParams{ObjectName: "payments", Fields: connectors.Fields("payment")},
-			Server:       mockserver.Dummy(),
-			ExpectedErrs: []error{errMissingSince},
-		},
-		{
 			Name: "Payments summary rows are merged in pairs",
 			Input: common.ReadParams{
 				ObjectName: "payments",
@@ -143,6 +137,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				ObjectName: "payments",
 				Fields:     connectors.Fields("payment_type", "payment"),
 				Since:      since,
+				Until:      until,
 			},
 			Server: mockserver.Fixed{
 				Setup:  mockserver.ContentJSON(),
@@ -289,9 +284,14 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 }
 
 func constructTestConnector(serverURL string) (*Connector, error) {
+	return constructTestConnectorWithMetadata(serverURL, nil)
+}
+
+func constructTestConnectorWithMetadata(serverURL string, metadata map[string]string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
 		Workspace:           "73921",
+		Metadata:            metadata,
 	})
 	if err != nil {
 		return nil, err
