@@ -1,0 +1,14 @@
+{
+  "event": {
+    "date": "2026-11-02T09:43:30.8117425Z",
+    "id": "50b50a91-e2b4-428d-bbcf-1331d5cb4e17",
+    "type": "email_account_error",
+    "user_id": 1234,
+    "team_id": 100,
+    "subscription_id": 24952
+  },
+  "email_account_address": "test-account@example.com",
+  "email_account_id": 1,
+  "email_account_error": "Test error message",
+  "sequence_fields": {}
+}

@@ -14,6 +14,7 @@ import (
 	"github.com/amp-labs/connectors/providers/jobber"
 	"github.com/amp-labs/connectors/providers/microsoft"
 	"github.com/amp-labs/connectors/providers/outreach"
+	"github.com/amp-labs/connectors/providers/reply"
 	"github.com/amp-labs/connectors/providers/salesforce"
 	"github.com/amp-labs/connectors/providers/salesloft"
 	"github.com/amp-labs/connectors/providers/slack"
@@ -32,7 +33,7 @@ var (
 // messages. It handles provider-specific event formats and converts them to a standard
 // subscription event list.
 //
-//nolint:cyclop // a flat one-case-per-provider dispatch switch; complexity is nominal.
+//nolint:cyclop,funlen // a flat one-case-per-provider dispatch switch; complexity is nominal.
 func GetObjectTypeSubscribeEventsList(
 	provider providers.Provider,
 	rawEvent map[string]any,
@@ -76,6 +77,8 @@ func GetObjectTypeSubscribeEventsList(
 		collapsedEvents = attio.CollapsedSubscriptionEvent(rawEvent)
 	case providers.Stripe:
 		collapsedEvents = stripe.CollapsedSubscriptionEvent(rawEvent)
+	case providers.Reply:
+		collapsedEvents = reply.CollapsedSubscriptionEvent(rawEvent)
 	default:
 		return nil, fmt.Errorf("%w with non-array object webhook message: %s", errUnsupportedProvider, provider)
 	}
