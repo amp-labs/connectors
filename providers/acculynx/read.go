@@ -57,20 +57,12 @@ const (
 	// one Read call. 200 pages × 25 per page = 5000 records per parent,
 	// generous for any sane window. For unbounded reads on outlier datasets
 	// (e.g. jobs with hundreds of thousands of history entries), the cap fires
-	// with a clear error pointing the caller at Since/Until — see walkChildPages.
+	// with a clear error pointing the caller at Since/Until — see fetchChildPages.
 	maxChildPagesPerParent = 200
 
-	// /calendars/{calendarId}/appointments requires startDate/endDate. A
-	// missing Since reaches 30 days back and a missing Until 60 days ahead
-	// (see appointmentWindows), because appointments are scheduled events and
-	// callers need the upcoming ones, not only the past.
-	defaultAppointmentsWindow    = 30 * 24 * time.Hour
-	defaultAppointmentsLookahead = 60 * 24 * time.Hour
-
-	// The API rejects a range of 90 days or more between startDate and endDate
-	// (400 "Range between Start Date and End Date must be less than 90 days."),
-	// so longer ranges are read as consecutive windows of at most 89 days.
-	maxAppointmentsWindowDays = 89
+	// /calendars/{calendarId}/appointments requires startDate/endDate. When the
+	// caller supplies neither, default to a 30-day window ending now.
+	defaultAppointmentsWindow = 30 * 24 * time.Hour
 )
 
 const (
@@ -530,6 +522,12 @@ func (c *Connector) fetchChildrenForParents(
 	return data, nil
 }
 
+// fetchChildPages walks every page of one parent's nested collection.
+// AccuLynx server-side paginates these endpoints (jobs/invoices,
+// jobs/estimates, jobs/history, etc. — verified in the OpenAPI spec), so
+// the loop follows result.NextPage until the records-array length signals the
+// last page. Children configured as paginationNone exit after one iteration
+// because makeNextPage returns "" immediately.
 // buildChildURL constructs the first-page URL of one parent's leaf endpoint,
 // with the object's pagination, includes and date-window parameters applied.
 func (c *Connector) buildChildURL(
@@ -553,12 +551,13 @@ func (c *Connector) buildChildURL(
 	applyIncludes(reqURL, params.ObjectName, params)
 	applyHistoryDateWindow(reqURL, params)
 
+	if params.ObjectName == "calendars/appointments" {
+		applyAppointmentsDateWindow(reqURL, params)
+	}
+
 	return reqURL, nil
 }
 
-// fetchChildPages reads every record of one parent's nested collection.
-// calendars/appointments is read window by window (see appointmentWindows);
-// every other leaf is a single page walk.
 func (c *Connector) fetchChildPages(
 	ctx context.Context,
 	parentID string,
@@ -570,77 +569,6 @@ func (c *Connector) fetchChildPages(
 		return nil, err
 	}
 
-	if params.ObjectName == "calendars/appointments" {
-		return c.fetchAppointmentWindows(ctx, parentID, params, nested, reqURL)
-	}
-
-	return c.walkChildPages(ctx, parentID, params, nested, reqURL)
-}
-
-// fetchAppointmentWindows reads one calendar's appointments across every
-// window of appointmentWindows. AccuLynx matches the date range loosely at the
-// day boundary (an appointment can come back from the windows on both sides of
-// it), so rows already seen in an earlier window are dropped. The key is id
-// plus start, not id alone: a multi-day event (e.g. CrewLabor) is returned as
-// one row per day, all sharing the event id, and each day is a real booking.
-func (c *Connector) fetchAppointmentWindows(
-	ctx context.Context,
-	parentID string,
-	params common.ReadParams,
-	nested nestedSpec,
-	reqURL *urlbuilder.URL,
-) ([]common.ReadResultRow, error) {
-	var allRows []common.ReadResultRow
-
-	seen := make(map[string]struct{})
-
-	for _, window := range appointmentWindows(params, time.Now().UTC()) {
-		windowURL, err := cloneURL(reqURL)
-		if err != nil {
-			return nil, err
-		}
-
-		windowURL.WithQueryParam("startDate", window.start.Format(time.DateOnly))
-		windowURL.WithQueryParam("endDate", window.end.Format(time.DateOnly))
-
-		rows, err := c.walkChildPages(ctx, parentID, params, nested, windowURL)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, row := range rows {
-			id, _ := row.Raw["id"].(string)
-			start, _ := row.Raw["start"].(string)
-
-			if id != "" {
-				key := id + "|" + start
-				if _, dup := seen[key]; dup {
-					continue
-				}
-
-				seen[key] = struct{}{}
-			}
-
-			allRows = append(allRows, row)
-		}
-	}
-
-	return allRows, nil
-}
-
-// walkChildPages walks every page of one parent's nested collection, starting
-// at reqURL. AccuLynx server-side paginates these endpoints (jobs/invoices,
-// jobs/estimates, jobs/history, etc. — verified in the OpenAPI spec), so
-// the loop follows result.NextPage until the records-array length signals the
-// last page. Children configured as paginationNone exit after one iteration
-// because makeNextPage returns "" immediately.
-func (c *Connector) walkChildPages(
-	ctx context.Context,
-	parentID string,
-	params common.ReadParams,
-	nested nestedSpec,
-	reqURL *urlbuilder.URL,
-) ([]common.ReadResultRow, error) {
 	var allRows []common.ReadResultRow
 
 	for range maxChildPagesPerParent {
@@ -701,68 +629,22 @@ func parseNextPageURL(s string) (*urlbuilder.URL, error) {
 	return urlbuilder.FromRawURL(parsed)
 }
 
-type dateWindow struct {
-	start, end time.Time
-}
-
-// appointmentWindows returns the date windows that cover the appointments
-// read. /calendars/{id}/appointments requires startDate + endDate (YYYY-MM-DD)
-// and filters on the appointment's own start, not on a modified date
-// (appointments carry none). A missing bound defaults relative to the other
-// one, or to now, so the range is never reversed (the API answers 400 "End
-// Date is before Start Date."):
-//   - Until → 60 days after the later of now and Since
-//   - Since → 30 days before the earlier of now and Until
-//
-// The range is split into consecutive windows of at most
-// maxAppointmentsWindowDays, since the API rejects a range of 90 days or more.
-//
-// Reference: https://apidocs.acculynx.com/reference/getappointments
-func appointmentWindows(params common.ReadParams, now time.Time) []dateWindow {
-	since, until := params.Since, params.Until
-
+// applyAppointmentsDateWindow ensures /calendars/{id}/appointments always
+// receives startDate + endDate (the OpenAPI marks both as required). Defaults
+// to a 30-day window ending now when the caller supplies neither bound.
+func applyAppointmentsDateWindow(url *urlbuilder.URL, params common.ReadParams) {
+	until := params.Until
 	if until.IsZero() {
-		anchor := now
-		if since.After(anchor) {
-			anchor = since
-		}
-
-		until = anchor.Add(defaultAppointmentsLookahead)
+		until = time.Now().UTC()
 	}
 
+	since := params.Since
 	if since.IsZero() {
-		anchor := now
-		if until.Before(anchor) {
-			anchor = until
-		}
-
-		since = anchor.Add(-defaultAppointmentsWindow)
+		since = until.Add(-defaultAppointmentsWindow)
 	}
 
-	start := utcDate(since)
-	end := utcDate(until)
-
-	var windows []dateWindow
-
-	for start.Compare(end) <= 0 {
-		windowEnd := start.AddDate(0, 0, maxAppointmentsWindowDays)
-		if windowEnd.After(end) {
-			windowEnd = end
-		}
-
-		windows = append(windows, dateWindow{start: start, end: windowEnd})
-		start = windowEnd.AddDate(0, 0, 1)
-	}
-
-	return windows
-}
-
-// utcDate returns midnight UTC of t's UTC calendar day, the granularity of the
-// API's YYYY-MM-DD startDate/endDate.
-func utcDate(t time.Time) time.Time {
-	year, month, day := t.UTC().Date()
-
-	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
+	url.WithQueryParam("startDate", since.Format(time.DateOnly))
+	url.WithQueryParam("endDate", until.Format(time.DateOnly))
 }
 
 // makeNextPage returns a NextPageFunc tailored to the object's paginationStyle.
