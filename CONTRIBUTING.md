@@ -140,12 +140,5 @@ interfaces, types, and concepts in [SUBSCRIBE_REFERENCES.md](./SUBSCRIBE_REFEREN
 
 ## Getting Your Change to Production
 
-Merging to `main` doesn't deploy anything. Every merge opens a dependency update pull request in
-Ampersand's server, which merges on its own once its checks pass and is then deployed to the
-development environment. Staging and production get it at the next promotion.
-
-To have your change promoted as soon as it reaches the development environment, add the
-`request-to-promote` label to your pull request **before merging** (ask a reviewer to add it if you
-can't). The label is read when your pull request merges, so adding it afterwards does nothing. Once
-the server build that includes your change has deployed the development environment, Ampersand staff
-are asked to confirm promoting it to staging and production.
+To promote your change to production, add the `request-to-promote` label to your pull request before
+merging. It asks the Ampersand engineering team to promote the server build that includes your change.
