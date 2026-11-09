@@ -27,6 +27,8 @@ scripts/openapi/solarwinds/api.json filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/stripe/internal/files/spec3.yaml filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/teamwork/internal/files/projects-api-v3.oas2.yml filter=lfs diff=lfs merge=lfs -text
 scripts/openapi/webflow/internal/files/v2.yml filter=lfs diff=lfs merge=lfs -text
+scripts/openapi/zoom/internal/files/meeting.json filter=lfs diff=lfs merge=lfs -text
+scripts/openapi/zoom/internal/files/user.json filter=lfs diff=lfs merge=lfs -text
 
 # OpenAPI files that live under providers/<name>/...
 # NOTE: they should be moved under scripts/openapi repo.
@@ -69,5 +71,3 @@ providers/recurly/openapi/openapi.yaml filter=lfs diff=lfs merge=lfs -text
 providers/reply/metadata/openapi/api.reply.yaml filter=lfs diff=lfs merge=lfs -text
 providers/zendesksupport/openapi/help-center-api.yaml filter=lfs diff=lfs merge=lfs -text
 providers/zendesksupport/openapi/support-api.yaml filter=lfs diff=lfs merge=lfs -text
-providers/zoom/metadata/openapi/meeting.json filter=lfs diff=lfs merge=lfs -text
-providers/zoom/metadata/openapi/user.json filter=lfs diff=lfs merge=lfs -text
