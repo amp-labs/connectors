@@ -62,6 +62,9 @@ const (
 	ReadHeaderTimeoutSeconds = 3
 
 	MetadataFieldName = "Metadata"
+
+	// RedirectUrlFieldName is the field designated to specifying redirect URL which uses port forwarding.
+	RedirectUrlFieldName = "RedirectUrl"
 )
 
 // ================================
@@ -75,6 +78,11 @@ var readers = []scanning.Reader{
 		FilePath: DefaultCredsFile,
 		JSONPath: "$['metadata']",
 		KeyName:  MetadataFieldName,
+	},
+	&scanning.JSONReader{
+		FilePath: DefaultCredsFile,
+		JSONPath: "$['oauth2']['redirectUrl']",
+		KeyName:  RedirectUrlFieldName,
 	},
 	credscanning.Fields.Provider.GetJSONReader(DefaultCredsFile),
 	credscanning.Fields.ClientId.GetJSONReader(DefaultCredsFile),
@@ -342,8 +350,7 @@ func setup() *OAuthApp {
 		}
 
 		// Determine the OAuth redirect URL.
-		redirect := fmt.Sprintf("%s://localhost:%d%s", *proto, *port, *callback)
-		// redirect := "https://api.withampersand.com/callbacks/v1/oauth"
+		redirectUrl := createRedirectUrl(callback, port)
 
 		state, err := registry.GetString(credscanning.Fields.State.Name)
 		if err != nil {
@@ -362,7 +369,7 @@ func setup() *OAuthApp {
 			Config: &oauth2.Config{
 				ClientID:     clientId,
 				ClientSecret: clientSecret,
-				RedirectURL:  redirect,
+				RedirectURL:  redirectUrl,
 			},
 			AuthOptions:     make([]oauth2.AuthCodeOption, 0),
 			ExchangeOptions: make([]oauth2.AuthCodeOption, 0),
@@ -473,6 +480,16 @@ func setup() *OAuthApp {
 	}
 
 	return nil
+}
+
+func createRedirectUrl(callback *string, port *int) string {
+	redirect, _ := registry.GetString(RedirectUrlFieldName)
+	if redirect != "" {
+		return redirect
+	}
+
+	// No valid overwrite exists. Use localhost.
+	return fmt.Sprintf("http://localhost:%d%s", *port, *callback)
 }
 
 func main() {
