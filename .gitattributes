@@ -71,3 +71,6 @@ providers/recurly/openapi/openapi.yaml filter=lfs diff=lfs merge=lfs -text
 providers/reply/metadata/openapi/api.reply.yaml filter=lfs diff=lfs merge=lfs -text
 providers/zendesksupport/openapi/help-center-api.yaml filter=lfs diff=lfs merge=lfs -text
 providers/zendesksupport/openapi/support-api.yaml filter=lfs diff=lfs merge=lfs -text
+
+# Large files in Scraping scripts.
+scripts/scraper/wordpress/internal/files/combined-responses.json filter=lfs diff=lfs merge=lfs -text
