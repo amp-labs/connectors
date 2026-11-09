@@ -1,0 +1,17 @@
+{
+  "code": "rest_invalid_param",
+  "message": "Invalid parameter(s): page",
+  "data": {
+    "status": 400,
+    "params": {
+      "page": "page must be greater than or equal to 1"
+    },
+    "details": {
+      "page": {
+        "code": "rest_out_of_bounds",
+        "message": "page must be greater than or equal to 1",
+        "data": null
+      }
+    }
+  }
+}
