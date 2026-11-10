@@ -4,14 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"slices"
 	"strconv"
-	"strings"
-	"time"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
@@ -19,9 +17,6 @@ import (
 const (
 	// Max page size for list endpoints.
 	pageSize = 200
-
-	// Auphan report dates are "YYYY-MM-DD HH:MM:SS" with no timezone.
-	reportTimeLayout = time.DateTime
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -44,11 +39,13 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
-	if err := checkEnvelope(response); err != nil {
+	if err := validateResponseSuccess(response); err != nil {
 		return nil, err
 	}
 
-	metadata := common.NewObjectMetadata(displayName(objectName), common.FieldsMetadata{})
+	displayName := naming.CapitalizeFirstLetterEveryWord(naming.SeparateUnderscoreWords(objectName))
+
+	metadata := common.NewObjectMetadata(displayName, common.FieldsMetadata{})
 
 	if reportObjects.Has(objectName) {
 		reportType, err := common.UnmarshalJSON[reportTypeResponse](response)
@@ -101,10 +98,6 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return c.buildReportRequest(ctx, params)
 	}
 
-	if params.RawFilter != nil {
-		return nil, fmt.Errorf("%w: %w", common.ErrInvalidRawFilter, errFilterOnlyReports)
-	}
-
 	page := 1
 
 	if params.NextPage != "" {
@@ -120,21 +113,13 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 }
 
 func (c *Connector) buildReportRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	window, err := c.window(params)
-	if err != nil {
-		return nil, err
-	}
-
-	filters, err := reportFilters(params, window)
-	if err != nil {
-		return nil, err
-	}
+	filters := c.reportFilters(params, reportObjects[params.ObjectName])
 
 	// Fields is a set, so sort for a stable request. Auphan ids are lowercase.
 	columns := params.Fields.List()
 	slices.Sort(columns)
 
-	return c.newRequest(withNextPage(ctx, window.next), "reports/execute", map[string]any{
+	return c.newRequest(ctx, "reports/execute", map[string]any{
 		"type":    params.ObjectName,
 		"columns": columns,
 		"filters": filters,
@@ -147,18 +132,12 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	if err := checkEnvelope(response); err != nil {
+	if err := validateResponseSuccess(response); err != nil {
 		return nil, err
 	}
 
 	if reportObjects.Has(params.ObjectName) {
-		// The window was stored on this request by buildReportRequest.
-		next, err := nextPageFrom(request.Context()) //nolint:contextcheck
-		if err != nil {
-			return nil, err
-		}
-
-		return parseReport(response, params.Fields.List(), next)
+		return parseReport(response, params.Fields.List())
 	}
 
 	return common.ParseResult(
@@ -178,7 +157,7 @@ func (c *Connector) newRequest(ctx context.Context, endpoint string, params map[
 	}
 
 	body, err := json.Marshal(map[string]any{
-		"store_id": c.storeID,
+		"store_id": c.storeId,
 		"params":   params,
 	})
 	if err != nil {
@@ -194,8 +173,4 @@ func (c *Connector) newRequest(ctx context.Context, endpoint string, params map[
 	req.Header.Set("Accept", "application/json")
 
 	return req, nil
-}
-
-func displayName(objectName string) string {
-	return strings.ToUpper(objectName[:1]) + strings.ReplaceAll(objectName[1:], "_", " ")
 }

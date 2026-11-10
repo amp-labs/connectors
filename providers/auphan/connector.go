@@ -20,19 +20,16 @@ var errInvalidStoreID = errors.New("invalid store ID")
 type Connector struct {
 	// Basic connector
 	*components.Connector
-
-	// Require authenticated client
 	common.RequireAuthenticatedClient
 	common.RequireWorkspace
-
-	// Supported operations
+	common.RequireMetadata
 	components.SchemaProvider
 	components.Reader
 
 	// storeID goes into every request body as "store_id".
 	// A franchise HQ token can read several stores by changing store_id per request; for now one
 	// connection reads one store.
-	storeID int
+	storeId int
 
 	// location is the store timezone from the "timezone" metadata. Report times are converted to it.
 	// Nil means times keep their own location: Auphan returns no timezone for a store.
@@ -50,15 +47,15 @@ func NewSandboxConnector(params common.ConnectorParams) (*Connector, error) {
 	return newConnector(providers.AuphanSandbox, params, params.Metadata["storeId"])
 }
 
-func newConnector(provider providers.Provider, params common.ConnectorParams, storeID string) (*Connector, error) {
-	conn, err := components.Initialize(provider, params, constructor)
+func newConnector(provider providers.Provider, params common.ConnectorParams, storeId string) (*Connector, error) {
+	conn, err := components.Init(provider, params, constructor)
 	if err != nil {
 		return nil, err
 	}
 
-	conn.storeID, err = strconv.Atoi(storeID)
+	conn.storeId, err = strconv.Atoi(storeId)
 	if err != nil {
-		return nil, fmt.Errorf("%w: store ID must be a number, got %q", errInvalidStoreID, storeID)
+		return nil, fmt.Errorf("%w: store ID must be a number, got %q", errInvalidStoreID, storeId)
 	}
 
 	conn.location, err = loadLocation(params.Metadata["timezone"])
@@ -69,7 +66,7 @@ func newConnector(provider providers.Provider, params common.ConnectorParams, st
 	return conn, nil
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
 	connector.SchemaProvider = schema.NewObjectSchemaProvider(
@@ -82,14 +79,9 @@ func constructor(base *components.Connector) (*Connector, error) {
 		},
 	)
 
-	registry, err := components.NewEndpointRegistry(supportedOperations())
-	if err != nil {
-		return nil, err
-	}
-
 	connector.Reader = reader.NewHTTPReader(
 		connector.HTTPClient().Client,
-		registry,
+		components.NewEmptyEndpointRegistry(),
 		connector.ProviderContext.Module(),
 		operations.ReadHandlers{
 			BuildRequest:  connector.buildReadRequest,

@@ -1,42 +1,70 @@
 package auphan
 
 import (
-	"fmt"
-	"strings"
+	"time"
 
-	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/internal/components"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
-// reportObjects are read by running reports/execute with the object name as the report type.
-// The value is the report's "selection" (the date field it filters on), or "" for reports
-// without a selection filter, which reject it with UNKNOWN_FILTER (petty_cash filters on tracking_date).
-// To add a report-backed object, add its Auphan report type here.
-var reportObjects = datautils.Map[string, string]{ //nolint:gochecknoglobals
-	"payments":   "close_date",
-	"sales":      "close_date",
-	"petty_cash": "",
+// reportPayload describes what goes into the "filters" of a report's request body.
+// Every Auphan report is read with the same call, only the filters differ:
+//
+//	POST reports/execute
+//	{"type": "payments", "columns": [...], "filters": {"selection": "close_date",
+//	  "date_from": "2026-11-05 00:00:00", "date_to": "2026-11-05 23:59:59"}}
+type reportPayload struct {
+	// filters are always sent for this report. They are the filters Auphan insists on
+	// but won't fill in by itself, such as "selection" (which date field the report filters by).
+	// Leave a filter out if the report doesn't have it: Auphan rejects unknown filters.
+	filters map[string]any
+
+	// dateLayout is how date_from and date_to are written, e.g. "2026-11-05 00:00:00" or "2026-11-05".
+	// Leave it empty for a report with no date range: it is then read whole, in one call.
+	dateLayout string
+}
+
+// selection is the payload for a report that picks its date field with "selection".
+func selection(field string) reportPayload {
+	return reportPayload{filters: map[string]any{"selection": field}, dateLayout: time.DateTime}
+}
+
+// reportObjects lists every object read through the reports endpoint (reports/execute).
+// The key is both the object name and the Auphan report type.
+var reportObjects = datautils.Map[string, reportPayload]{ //nolint:gochecknoglobals
+	"adjustments":         {dateLayout: time.DateTime},
+	"attendance":          {filters: map[string]any{"status": []int{4}}, dateLayout: time.DateTime},
+	"bank_drop":           {dateLayout: time.DateTime},
+	"costs":               {dateLayout: time.DateTime},
+	"counts":              {dateLayout: time.DateTime},
+	"customer_tabs":       {dateLayout: time.DateTime},
+	"customers":           {dateLayout: time.DateTime},
+	"employees":           {dateLayout: time.DateTime},
+	"gfs_sku":             {},
+	"invoice_logs":        {dateLayout: time.DateTime},
+	"invoices":            selection("close_date"),
+	"message_actions":     {dateLayout: time.DateTime},
+	"modifiers":           selection("close_date"),
+	"payment_txns":        {dateLayout: time.DateTime},
+	"payments":            selection("close_date"),
+	"petty_cash":          {dateLayout: time.DateTime},
+	"price_change":        {dateLayout: time.DateTime},
+	"production":          {dateLayout: time.DateTime},
+	"purchases":           selection("purchase_date"),
+	"receiving":           {dateLayout: time.DateTime},
+	"sales":               selection("close_date"),
+	"sales_printer_stats": {dateLayout: time.DateTime},
+	"salerules":           {dateLayout: time.DateOnly},
+	"screen_stats":        selection("start_time"),
+	"shifts":              {dateLayout: time.DateTime},
+	"stock_usage":         {dateLayout: time.DateTime},
+	"tax":                 selection("close_date"),
+	"transfers":           {dateLayout: time.DateTime},
+	"usergroups":          {},
+	"waitlist":            selection("reservation_dt"),
+	"worked_hours":        selection("sales_date"),
 }
 
 // listObjects are read from a paginated list endpoint.
 var listObjects = map[string]string{ //nolint:gochecknoglobals
 	"stores": "settings/stores.list",
-}
-
-func supportedOperations() components.EndpointRegistryInput {
-	readSupport := reportObjects.Keys()
-
-	for objectName := range listObjects {
-		readSupport = append(readSupport, objectName)
-	}
-
-	return components.EndpointRegistryInput{
-		common.ModuleRoot: {
-			{
-				Endpoint: fmt.Sprintf("{%s}", strings.Join(readSupport, ",")),
-				Support:  components.ReadSupport,
-			},
-		},
-	}
 }

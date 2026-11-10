@@ -1,80 +1,37 @@
 package auphan
 
 import (
-	"errors"
-	"fmt"
 	"maps"
+	"time"
 
-	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 )
 
-// RawFilterTypeReportFilters is the raw filter type report reads accept: an object of extra Auphan
-// report filters, merged into the request's "filters". Valid ids per report come from reports/types.get,
-// e.g. {"status": [2], "net_cash_deducts_tips": 0, "selection": "open_date"}.
-// date_from and date_to are not allowed, because the connector sets them from Since and Until.
-const RawFilterTypeReportFilters = "reportFilters"
+// earliestReportDate is where a read without Since starts. Every dated report was read live from
+// this date to today in one call. It is a wall-clock date, so it is not converted to the store's zone.
+var earliestReportDate = time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC) //nolint:gochecknoglobals
 
-var (
-	errFilterNotObject   = errors.New("must be an object of Auphan report filters")
-	errFilterDateRange   = errors.New("must not set date_from or date_to, use Since and Until")
-	errFilterOnlyReports = errors.New("report filters only apply to report objects")
-)
-
-// ReportFilters is Auphan's raw filter: extra filters for reports/execute.
-type ReportFilters map[string]any
-
-// RawFilterType returns RawFilterTypeReportFilters.
-func (ReportFilters) RawFilterType() string {
-	return RawFilterTypeReportFilters
-}
-
-// FromFilter accepts a JSON object without date_from or date_to.
-func (ReportFilters) FromFilter(filter any) (ReportFilters, error) {
-	filters, ok := filter.(map[string]any)
-	if !ok {
-		return nil, fmt.Errorf("%w, got %T", errFilterNotObject, filter)
-	}
-
-	if _, ok := filters["date_from"]; ok {
-		return nil, errFilterDateRange
-	}
-
-	if _, ok := filters["date_to"]; ok {
-		return nil, errFilterDateRange
-	}
-
-	return filters, nil
-}
-
-var _ connectors.RawFilterConnector = (*Connector)(nil)
-
-// ValidateRawFilter accepts raw filters of type RawFilterTypeReportFilters.
-func (*Connector) ValidateRawFilter(filter common.RawFilter) error {
-	_, err := common.RawFilterAs[ReportFilters](filter)
-
-	return err
-}
-
-// reportFilters builds a report's "filters": the date window, the report's date selection, and any raw filters.
-func reportFilters(params common.ReadParams, window *reportWindow) (map[string]any, error) {
+// reportFilters builds the "filters" object of a report request: the report's always-sent filters,
+// then date_from and date_to.
+func (c *Connector) reportFilters(params common.ReadParams, report reportPayload) map[string]any {
 	filters := map[string]any{}
+	maps.Copy(filters, report.filters)
 
-	if selection := reportObjects[params.ObjectName]; selection != "" {
-		filters["selection"] = selection
+	// A report without a date range takes no dates at all.
+	if report.dateLayout == "" {
+		return filters
 	}
 
-	if params.RawFilter != nil {
-		extra, err := common.RawFilterAs[ReportFilters](*params.RawFilter)
-		if err != nil {
-			return nil, err
-		}
+	// By default, a report without a Since reads from the earliestReportDate to today.
+	// So if the user doesn't specify a Since, we read from earliestReportDate which is the same as reading from the beginning of time.
 
-		maps.Copy(filters, extra)
+	if !params.Since.IsZero() {
+		filters["date_from"] = c.storeTime(params.Since).Format(report.dateLayout)
 	}
 
-	filters["date_from"] = window.from.Format(reportTimeLayout)
-	filters["date_to"] = window.to.Format(reportTimeLayout)
+	if !params.Until.IsZero() {
+		filters["date_to"] = c.storeTime(params.Until).Format(report.dateLayout)
+	}
 
-	return filters, nil
+	return filters
 }

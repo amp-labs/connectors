@@ -32,9 +32,9 @@ type reportResponse struct {
 	} `json:"data"`
 }
 
-// parseReport reads one report window. Auphan has no paging inside a report, so one call returns
-// every row of the window; next is the following window, or empty when this was the last one.
-func parseReport(response *common.JSONHTTPResponse, fields []string, next string) (*common.ReadResult, error) {
+// parseReport reads a report response. Auphan has no paging inside a report, so one call returns
+// every row and the read is done.
+func parseReport(response *common.JSONHTTPResponse, fields []string) (*common.ReadResult, error) {
 	report, err := common.UnmarshalJSON[reportResponse](response)
 	if err != nil {
 		return nil, err
@@ -48,10 +48,9 @@ func parseReport(response *common.JSONHTTPResponse, fields []string, next string
 	}
 
 	return &common.ReadResult{
-		Rows:     int64(len(rows)),
-		Data:     rows,
-		NextPage: common.NextPageToken(next),
-		Done:     next == "",
+		Rows: int64(len(rows)),
+		Data: rows,
+		Done: true,
 	}, nil
 }
 

@@ -15,7 +15,7 @@ import (
 var errorFormats = interpreter.NewFormatSwitch( //nolint:gochecknoglobals
 	interpreter.FormatTemplate{
 		MustKeys: []string{"error"},
-		Template: func() interpreter.ErrorDescriptor { return &ResponseError{} },
+		Template: func() interpreter.ErrorDescriptor { return &responseEnvelope{} },
 	},
 )
 
@@ -23,7 +23,7 @@ var jsonErrorHandler = interpreter.ErrorHandler{ //nolint:gochecknoglobals
 	JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 }.Handle
 
-// interpretError handles non-2xx responses. Failures sent with HTTP 200 are caught by checkEnvelope.
+// interpretError handles non-2xx responses. Failures sent with HTTP 200 are caught by validateResponseSuccess.
 func interpretError(response *http.Response, body []byte) error {
 	// The gateway rejects an unknown token itself, with a plain-text "Forbidden" 403 (seen live),
 	// not the documented 401 INVALID_TOKEN. Store-level denials are JSON, so they stay ErrForbidden.
@@ -35,7 +35,10 @@ func interpretError(response *http.Response, body []byte) error {
 	return jsonErrorHandler(response, body)
 }
 
-type ResponseError struct {
+// responseEnvelope is the wrapper around every Auphan response, success or not:
+// {"success": true, "data": {...}} or {"success": false, "error": {...}}.
+// Only the parts needed to spot a failure are decoded.
+type responseEnvelope struct {
 	Success bool      `json:"success"`
 	Error   *apiError `json:"error"`
 }
@@ -46,7 +49,7 @@ type apiError struct {
 	Details any    `json:"details,omitempty"`
 }
 
-func (r ResponseError) CombineErr(base error) error {
+func (r responseEnvelope) CombineErr(base error) error {
 	if r.Error == nil {
 		return base
 	}
@@ -54,9 +57,10 @@ func (r ResponseError) CombineErr(base error) error {
 	return fmt.Errorf("%w: %s (%s)", base, r.Error.Message, r.Error.Code)
 }
 
-// checkEnvelope turns {"success": false} in a 2xx response into an error.
-func checkEnvelope(response *common.JSONHTTPResponse) error {
-	envelope, err := common.UnmarshalJSON[ResponseError](response)
+// validateResponseSuccess returns an error when Auphan answers with HTTP 200 but the body says
+// {"success": false, "error": {...}}. HTTP status alone can't be trusted to signal failure.
+func validateResponseSuccess(response *common.JSONHTTPResponse) error {
+	envelope, err := common.UnmarshalJSON[responseEnvelope](response)
 	if err != nil {
 		return err
 	}
