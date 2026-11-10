@@ -25,34 +25,61 @@ func TestValidateFlowParamsRejectsDelete(t *testing.T) {
 	}
 }
 
-func TestBuildWatchFieldsFilterFormula(t *testing.T) {
+func TestBuildWatchFieldsFilters(t *testing.T) {
 	t.Parallel()
 
 	params := validFlowParams()
-	params.RecordTriggerType = RecordTriggerTypeUpdate
-	params.WatchFields = []string{"Email"}
+	params.WatchFields = []string{"Email", "Description"}
 
-	if got := buildWatchFieldsFilterFormula(params); got != "ISCHANGED({!$Record.Email})" {
-		t.Errorf("single watch field formula = %q", got)
+	filters := buildWatchFieldsFilters(params)
+	if len(filters) != 2 {
+		t.Fatalf("got %d filters, want 2", len(filters))
 	}
 
-	params.WatchFields = []string{"Email", "Phone"}
-
-	expected := "OR(ISCHANGED({!$Record.Email}), ISCHANGED({!$Record.Phone}))"
-	if got := buildWatchFieldsFilterFormula(params); got != expected {
-		t.Errorf("multi watch field formula = %q, want %q", got, expected)
+	want := flowFilterXML{Field: "Description", Operator: "IsChanged", BooleanValue: true}
+	if filters[1] != want {
+		t.Errorf("filter = %+v, want %+v", filters[1], want)
 	}
 
 	params.RecordTriggerType = RecordTriggerTypeCreate
-	if got := buildWatchFieldsFilterFormula(params); got != "" {
-		t.Errorf("expected no formula for Create-only, got %q", got)
+	if filters := buildWatchFieldsFilters(params); filters != nil {
+		t.Errorf("Create flow must not carry filters, got %+v", filters)
 	}
 
 	params.RecordTriggerType = RecordTriggerTypeUpdate
 	params.WatchFields = nil
 
-	if got := buildWatchFieldsFilterFormula(params); got != "" {
-		t.Errorf("expected no formula without watch fields, got %q", got)
+	if filters := buildWatchFieldsFilters(params); filters != nil {
+		t.Errorf("expected no filters without watch fields, got %+v", filters)
+	}
+}
+
+func TestGenerateFlowXMLUpdateFilters(t *testing.T) {
+	t.Parallel()
+
+	params := validFlowParams()
+	params.WatchFields = []string{"Description"}
+
+	flow, err := GenerateFlowXML(params, "Active")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	want := `<filterLogic>or</filterLogic>
+        <filters>
+            <field>Description</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Account</object>`
+	if !strings.Contains(flow, want) {
+		t.Errorf("flow XML missing filters before <object>:\n%s", flow)
+	}
+
+	if strings.Contains(flow, "<filterFormula>") {
+		t.Errorf("Update flow must not carry a filter formula:\n%s", flow)
 	}
 }
 
@@ -107,8 +134,8 @@ func TestConstructDraftFlow(t *testing.T) {
 		}
 	}
 
-	if strings.Contains(flow, "<filterFormula>") {
-		t.Errorf("flow XML must not carry a filter formula without watch fields:\n%s", flow)
+	if strings.Contains(flow, "<filters>") || strings.Contains(flow, "<filterLogic>") {
+		t.Errorf("flow XML must not carry entry conditions without watch fields:\n%s", flow)
 	}
 }
 

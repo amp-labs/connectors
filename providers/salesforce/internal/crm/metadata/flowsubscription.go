@@ -4,7 +4,6 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/amp-labs/connectors/providers/salesforce/internal/crm/core"
 )
@@ -87,8 +86,8 @@ type FlowParams struct {
 	// RecordTriggerType selects when the flow fires (Create or Update).
 	RecordTriggerType RecordTriggerType
 
-	// WatchFields optionally narrows when the flow runs via an entry-condition
-	// formula.
+	// WatchFields optionally narrows when an Update flow runs via Is Changed
+	// entry conditions.
 	WatchFields []string
 }
 
@@ -134,10 +133,18 @@ type flowStartXML struct {
 	LocationX         int               `xml:"locationX"`
 	LocationY         int               `xml:"locationY"`
 	Connector         *flowConnectorXML `xml:"connector,omitempty"`
-	FilterFormula     string            `xml:"filterFormula,omitempty"`
+	FilterLogic       string            `xml:"filterLogic,omitempty"`
+	Filters           []flowFilterXML   `xml:"filters,omitempty"`
 	Object            string            `xml:"object"`
 	RecordTriggerType string            `xml:"recordTriggerType"`
 	TriggerType       string            `xml:"triggerType"`
+}
+
+// flowFilterXML is one entry condition on a flow's start element.
+type flowFilterXML struct {
+	Field        string `xml:"field"`
+	Operator     string `xml:"operator"`
+	BooleanValue bool   `xml:"value>booleanValue"`
 }
 
 type flowXML struct {
@@ -164,6 +171,13 @@ const flowSendActionName = "Send_Outbound_Message"
 func GenerateFlowXML(params FlowParams, status string) (string, error) {
 	omFullName := OutboundMessageFullName(params.ObjectName, params.OutboundMessageName)
 
+	filters := buildWatchFieldsFilters(params)
+
+	var filterLogic string
+	if len(filters) > 0 {
+		filterLogic = "or" // update flow triggered when any watch field changes
+	}
+
 	flow := flowXML{
 		Xmlns: metadataXmlns,
 		ActionCalls: flowActionCallXML{
@@ -187,7 +201,8 @@ func GenerateFlowXML(params FlowParams, status string) (string, error) {
 			LocationX:         50, //nolint:mnd
 			LocationY:         0,
 			Connector:         &flowConnectorXML{TargetReference: flowSendActionName},
-			FilterFormula:     buildWatchFieldsFilterFormula(params),
+			FilterLogic:       filterLogic,
+			Filters:           filters,
 			Object:            params.ObjectName,
 			RecordTriggerType: string(params.RecordTriggerType),
 			TriggerType:       "RecordAfterSave",
@@ -203,31 +218,24 @@ func GenerateFlowXML(params FlowParams, status string) (string, error) {
 	return xml.Header + string(out) + "\n", nil
 }
 
-// buildWatchFieldsFilterFormula returns the flow entry-condition formula that
-// applies WatchFields to an Update flow, or "" otherwise.
-//
-// Salesforce does not allow a bare ISCHANGED() entry condition on flows that
-// fire on create: there is no prior value, the Is Changed operator is
-// documented as update-only, and ISCHANGED() on create fails as working as
-// expected:
-//
-//	https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_start_object.htm
-//	https://help.salesforce.com/s/issue?id=a028c00000j5k7eAAA
-func buildWatchFieldsFilterFormula(params FlowParams) string {
+// buildWatchFieldsFilters builds custom condition logic for an Update flow to fire only when a
+// required watch field changes. It works like: trigger when "field A changed" OR "field B changed"
+// or "field C changed"...
+func buildWatchFieldsFilters(params FlowParams) []flowFilterXML {
 	if len(params.WatchFields) == 0 || params.RecordTriggerType != RecordTriggerTypeUpdate {
-		return ""
+		return nil
 	}
 
-	changed := make([]string, 0, len(params.WatchFields))
+	filters := make([]flowFilterXML, 0, len(params.WatchFields))
 	for _, field := range params.WatchFields {
-		changed = append(changed, fmt.Sprintf("ISCHANGED({!$Record.%s})", field))
+		filters = append(filters, flowFilterXML{
+			Field:        field,
+			Operator:     "IsChanged",
+			BooleanValue: true,
+		})
 	}
 
-	if len(changed) == 1 {
-		return changed[0]
-	}
-
-	return "OR(" + strings.Join(changed, ", ") + ")"
+	return filters
 }
 
 // ConstructDraftFlow builds an UPDATE zip with status Draft so the flow is

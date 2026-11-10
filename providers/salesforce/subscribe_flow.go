@@ -151,8 +151,8 @@ type FlowMetadata struct {
 	// so teardown can regenerate the flow XML for the deactivation fallback.
 	RecordTriggerType string `json:"recordTriggerType"`
 
-	// WatchFields are baked into the Update flow's ISCHANGED entry-condition
-	// formula. Empty means every update fires; Create flows ignore them.
+	// WatchFields become the Update flow's Is Changed entry conditions.
+	// Empty means every update fires; Create flows ignore them.
 	WatchFields []string `json:"watchFields,omitempty"`
 
 	// DeployID is the Metadata API deploy id that created the component.
@@ -395,7 +395,7 @@ func buildFlowSubscription(
 			}
 
 			// Watch fields only gate updates: a create has no prior values to compare.
-			// WatchFieldsAll means no ISCHANGED formula, so every update fires.
+			// WatchFieldsAll means no entry conditions, so every update fires.
 			var watchFields []string
 			if eventType == common.SubscriptionEventTypeUpdate && !objEvents.WatchFieldsAll {
 				watchFields = objEvents.WatchFields
