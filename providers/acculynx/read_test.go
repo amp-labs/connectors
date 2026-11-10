@@ -1238,41 +1238,103 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		},
 		{
 			// A multi-day CrewLabor event comes back as one row per day, all
-			// sharing the event id: every day is kept. The row for 03-31 is
-			// returned by both windows (the API matches the day boundary
-			// loosely) and is emitted once.
-			Name: "Read calendars/appointments keeps each day of a multi-day event and drops window repeats",
+			// sharing the event id, and the 03-31 row is returned by both
+			// windows. The read emits the event once, spanning its first start
+			// to its last end, so no two rows of one read share an id.
+			Name: "Read calendars/appointments returns a multi-day event as one row spanning its days",
 			Input: common.ReadParams{
 				ObjectName: "calendars/appointments",
-				Fields:     connectors.Fields("id", "start"),
+				Fields:     connectors.Fields("id", "start", "end"),
 				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 				Until:      time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
 			},
 			Server: appointmentsServer(
 				appointmentsWindowCase("2026-01-01", "2026-03-31",
-					appointmentsPage(`{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true}`)),
+					appointmentsPage(
+						`{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "end": "2026-04-01T04:00:00Z", "allDay": true}`,
+						`{"id": "appt-1", "start": "2026-03-15T14:00:00Z", "end": "2026-03-15T15:00:00Z"}`,
+					)),
 				appointmentsWindowCase("2026-04-01", "2026-04-30",
 					appointmentsPage(
-						`{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true}`,
-						`{"id": "crew-1", "start": "2026-04-01T04:00:00Z", "allDay": true}`,
-						`{"id": "crew-1", "start": "2026-04-02T04:00:00Z", "allDay": true}`,
+						`{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "end": "2026-04-01T04:00:00Z", "allDay": true}`,
+						`{"id": "crew-1", "start": "2026-04-02T04:00:00Z", "end": "2026-04-03T04:00:00Z", "allDay": true}`,
+						`{"id": "crew-1", "start": "2026-04-01T04:00:00Z", "end": "2026-04-02T04:00:00Z", "allDay": true}`,
 					)),
 			),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 3,
+				Rows: 2,
 				Data: []common.ReadResultRow{
 					{
-						Fields: map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z"},
-						Raw:    map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true},
+						Fields: map[string]any{
+							"id": "crew-1", "start": "2026-03-31T04:00:00Z", "end": "2026-04-03T04:00:00Z",
+						},
+						Raw: map[string]any{
+							"id": "crew-1", "start": "2026-03-31T04:00:00Z", "end": "2026-04-03T04:00:00Z", "allDay": true,
+						},
 					},
 					{
-						Fields: map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z"},
-						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z", "allDay": true},
+						Fields: map[string]any{
+							"id": "appt-1", "start": "2026-03-15T14:00:00Z", "end": "2026-03-15T15:00:00Z",
+						},
+						Raw: map[string]any{
+							"id": "appt-1", "start": "2026-03-15T14:00:00Z", "end": "2026-03-15T15:00:00Z",
+						},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			// The same appointment on two calendars (e.g. two assigned users)
+			// is one row carrying both users, and the job once.
+			Name: "Read calendars/appointments returns an appointment on two calendars once, with both users",
+			Input: common.ReadParams{
+				ObjectName:        "calendars/appointments",
+				Fields:            connectors.Fields("id"),
+				Since:             time.Date(2026, 4, 1, 0, 0, 0, 0, time.UTC),
+				Until:             time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
+				AssociatedObjects: []string{"jobs", "users"},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars"),
+						},
+						Then: mockserver.ResponseString(http.StatusOK, `{"count": 2, "pageSize": 25, "pageStartIndex": 0,
+							"items": [{"id": "cal-001"}, {"id": "cal-002"}]}`),
 					},
 					{
-						Fields: map[string]any{"id": "crew-1", "start": "2026-04-02T04:00:00Z"},
-						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-02T04:00:00Z", "allDay": true},
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars/cal-001/appointments"),
+						},
+						Then: appointmentsPage(`{"id": "appt-1", "start": "2026-04-15T14:00:00Z", "jobId": "job-777"}`),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars/cal-002/appointments"),
+						},
+						Then: appointmentsPage(`{"id": "appt-1", "start": "2026-04-15T14:00:00Z", "jobId": "job-777"}`),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": "appt-1"},
+						Raw:    map[string]any{"id": "appt-1", "jobId": "job-777"},
+						Associations: map[string][]common.Association{
+							"jobs":  {{ObjectId: "job-777"}},
+							"users": {{ObjectId: "cal-001"}, {ObjectId: "cal-002"}},
+						},
 					},
 				},
 				Done: true,
@@ -1946,6 +2008,115 @@ func TestAppointmentWindows(t *testing.T) { //nolint:funlen
 					t.Errorf("window %d spans %v, want 0..89 days", i, span)
 				}
 			}
+		})
+	}
+}
+
+// TestMergeAppointmentsByID pins how rows sharing an appointment id are folded
+// into one: first-seen order, earliest start, latest end, associations unioned,
+// and values that are not RFC 3339 times never replacing ones that are.
+func TestMergeAppointmentsByID(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	row := func(fields, raw map[string]any, associations map[string][]common.Association) common.ReadResultRow {
+		return common.ReadResultRow{Fields: fields, Raw: raw, Associations: associations}
+	}
+
+	tests := []struct {
+		name string
+		rows []common.ReadResultRow
+		want []common.ReadResultRow
+	}{
+		{
+			name: "distinct ids are kept as they are, in order",
+			rows: []common.ReadResultRow{
+				row(nil, map[string]any{"id": "b", "start": "2026-04-02T10:00:00Z"}, nil),
+				row(nil, map[string]any{"id": "a", "start": "2026-04-01T10:00:00Z"}, nil),
+			},
+			want: []common.ReadResultRow{
+				row(nil, map[string]any{"id": "b", "start": "2026-04-02T10:00:00Z"}, nil),
+				row(nil, map[string]any{"id": "a", "start": "2026-04-01T10:00:00Z"}, nil),
+			},
+		},
+		{
+			name: "days of one event become one row from the earliest start to the latest end",
+			rows: []common.ReadResultRow{
+				row(map[string]any{"id": "e", "start": "2026-04-02T04:00:00Z"},
+					map[string]any{"id": "e", "start": "2026-04-02T04:00:00Z", "end": "2026-04-03T04:00:00Z"}, nil),
+				row(map[string]any{"id": "x"}, map[string]any{"id": "x"}, nil),
+				row(map[string]any{"id": "e", "start": "2026-04-01T04:00:00Z"},
+					map[string]any{"id": "e", "start": "2026-04-01T04:00:00Z", "end": "2026-04-02T04:00:00Z"}, nil),
+				row(map[string]any{"id": "e", "start": "2026-04-03T04:00:00Z"},
+					map[string]any{"id": "e", "start": "2026-04-03T04:00:00Z", "end": "2026-04-04T04:00:00Z"}, nil),
+			},
+			want: []common.ReadResultRow{
+				// end was not requested, so it changes in Raw only.
+				row(map[string]any{"id": "e", "start": "2026-04-01T04:00:00Z"},
+					map[string]any{"id": "e", "start": "2026-04-01T04:00:00Z", "end": "2026-04-04T04:00:00Z"}, nil),
+				row(map[string]any{"id": "x"}, map[string]any{"id": "x"}, nil),
+			},
+		},
+		{
+			name: "a time that does not parse never replaces one that does, and loses to one that does",
+			rows: []common.ReadResultRow{
+				row(nil, map[string]any{"id": "e", "start": "2026-04-02T04:00:00Z", "end": "soon"}, nil),
+				row(nil, map[string]any{"id": "e", "start": "2026-04-01", "end": "2026-04-02T04:00:00Z"}, nil),
+			},
+			want: []common.ReadResultRow{
+				row(nil, map[string]any{"id": "e", "start": "2026-04-02T04:00:00Z", "end": "2026-04-02T04:00:00Z"}, nil),
+			},
+		},
+		{
+			name: "associations are unioned by object id",
+			rows: []common.ReadResultRow{
+				row(nil, map[string]any{"id": "e"}, map[string][]common.Association{
+					"jobs":  {{ObjectId: "job-1"}},
+					"users": {{ObjectId: "cal-1"}},
+				}),
+				row(nil, map[string]any{"id": "e"}, map[string][]common.Association{
+					"jobs":  {{ObjectId: "job-1"}},
+					"users": {{ObjectId: "cal-2"}},
+				}),
+			},
+			want: []common.ReadResultRow{
+				row(nil, map[string]any{"id": "e"}, map[string][]common.Association{
+					"jobs":  {{ObjectId: "job-1"}},
+					"users": {{ObjectId: "cal-1"}, {ObjectId: "cal-2"}},
+				}),
+			},
+		},
+		{
+			name: "a row without associations gains the other row's",
+			rows: []common.ReadResultRow{
+				row(nil, map[string]any{"id": "e"}, nil),
+				row(nil, map[string]any{"id": "e"}, map[string][]common.Association{
+					"users": {{ObjectId: "cal-2"}},
+				}),
+			},
+			want: []common.ReadResultRow{
+				row(nil, map[string]any{"id": "e"}, map[string][]common.Association{
+					"users": {{ObjectId: "cal-2"}},
+				}),
+			},
+		},
+		{
+			name: "rows without an id are all kept",
+			rows: []common.ReadResultRow{
+				row(nil, map[string]any{"title": "one"}, nil),
+				row(nil, map[string]any{"title": "two"}, nil),
+			},
+			want: []common.ReadResultRow{
+				row(nil, map[string]any{"title": "one"}, nil),
+				row(nil, map[string]any{"title": "two"}, nil),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			assert.DeepEqual(t, mergeAppointmentsByID(tt.rows), tt.want)
 		})
 	}
 }
