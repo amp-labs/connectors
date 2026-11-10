@@ -62,7 +62,7 @@ const (
 
 	// /calendars/{calendarId}/appointments requires startDate/endDate. A
 	// missing Since reaches 30 days back. A missing Until is now, or, for an
-	// occurrence read (see appointmentOccurrencesFlag), 60 days ahead (see
+	// occurrence or lookahead read (see appointmentReadMode), 60 days ahead (see
 	// appointmentWindows), so the upcoming appointments are included.
 	defaultAppointmentsWindow    = 30 * 24 * time.Hour
 	defaultAppointmentsLookahead = 60 * 24 * time.Hour
@@ -446,15 +446,15 @@ func (c *Connector) parseNestedResponse(
 	}
 
 	// Decided once per page, so every calendar of the page is read the same way
-	// even if the flag changes during the read.
-	occurrenceRead := readsAppointmentOccurrences(ctx, params)
+	// even if a flag changes during the read.
+	mode := appointmentReadModeFor(ctx, params)
 
-	rows, err := c.fetchChildrenForParents(ctx, parentNodes, params, nested, occurrenceRead)
+	rows, err := c.fetchChildrenForParents(ctx, parentNodes, params, nested, mode)
 	if err != nil {
 		return nil, err
 	}
 
-	if occurrenceRead {
+	if mode == appointmentReadOccurrences {
 		rows = appointmentOccurrences(rows)
 	}
 
@@ -503,14 +503,14 @@ func extractIDs(nodes []*ajson.Node) []string {
 }
 
 // fetchChildrenForParents fans out one request per parent ID concurrently and
-// preserves the parent order in the flattened result. occurrenceRead is passed
-// to fetchChildPages.
+// preserves the parent order in the flattened result. mode is passed to
+// fetchChildPages.
 func (c *Connector) fetchChildrenForParents(
 	ctx context.Context,
 	parents []*ajson.Node,
 	params common.ReadParams,
 	nested nestedSpec,
-	occurrenceRead bool,
+	mode appointmentReadMode,
 ) ([]common.ReadResultRow, error) {
 	ids := extractIDs(parents)
 	if len(ids) == 0 {
@@ -524,7 +524,7 @@ func (c *Connector) fetchChildrenForParents(
 		idx, id := i, parentID
 
 		jobs[idx] = func(ctx context.Context) error {
-			rows, fetchErr := c.fetchChildPages(ctx, id, params, nested, occurrenceRead)
+			rows, fetchErr := c.fetchChildPages(ctx, id, params, nested, mode)
 			if fetchErr != nil {
 				return fmt.Errorf("fetching %s for %s %s: %w",
 					nested.leafSuffix, nested.parentObject, id, fetchErr)
@@ -575,23 +575,27 @@ func (c *Connector) buildChildURL(
 }
 
 // fetchChildPages reads every record of one parent's nested collection. An
-// occurrence read of calendars/appointments (occurrenceRead, see
-// readsAppointmentOccurrences) is read window by window (see
-// appointmentWindows); every other leaf is a single page walk.
+// occurrence or lookahead read of calendars/appointments (see
+// appointmentReadMode) is read window by window (see appointmentWindows); every
+// other leaf, and a plain calendars/appointments read, is a single page walk.
 func (c *Connector) fetchChildPages(
 	ctx context.Context,
 	parentID string,
 	params common.ReadParams,
 	nested nestedSpec,
-	occurrenceRead bool,
+	mode appointmentReadMode,
 ) ([]common.ReadResultRow, error) {
 	reqURL, err := c.buildChildURL(parentID, params, nested)
 	if err != nil {
 		return nil, err
 	}
 
-	if occurrenceRead {
+	if mode == appointmentReadOccurrences {
 		return c.fetchAppointmentWindows(ctx, parentID, params, nested, reqURL)
+	}
+
+	if mode == appointmentReadLookahead {
+		return c.fetchAppointmentLookahead(ctx, parentID, params, nested, reqURL)
 	}
 
 	if params.ObjectName == "calendars/appointments" {
@@ -602,9 +606,10 @@ func (c *Connector) fetchChildPages(
 }
 
 // fetchAppointmentWindows reads one calendar's appointments across every
-// window of appointmentWindows. The rows can repeat an occurrence;
-// parseNestedResponse folds them with appointmentOccurrences once every
-// calendar is read.
+// window of appointmentWindows. A row can come back from two windows: an
+// occurrence read folds the repeats with appointmentOccurrences once every
+// calendar is read, and a lookahead read drops them per calendar (see
+// fetchAppointmentLookahead).
 func (c *Connector) fetchAppointmentWindows(
 	ctx context.Context,
 	parentID string,
@@ -839,9 +844,9 @@ func parseNextPageURL(s string) (*urlbuilder.URL, error) {
 	return urlbuilder.FromRawURL(parsed)
 }
 
-// applyAppointmentsDateWindow sets the single startDate + endDate of a
-// calendars/appointments read that is not an occurrence read (the OpenAPI marks
-// both as required): Since to Until, defaulting to a 30-day window ending now
+// applyAppointmentsDateWindow sets the single startDate + endDate of a plain
+// calendars/appointments read (appointmentReadPlain; the OpenAPI marks both as
+// required): Since to Until, defaulting to a 30-day window ending now
 // when the caller supplies neither bound.
 func applyAppointmentsDateWindow(url *urlbuilder.URL, params common.ReadParams) {
 	until := params.Until
@@ -862,12 +867,12 @@ type dateWindow struct {
 	start, end time.Time
 }
 
-// appointmentWindows returns the date windows that cover an occurrence read of
-// calendars/appointments. /calendars/{id}/appointments requires startDate +
-// endDate (YYYY-MM-DD) and filters on the appointment's own start, not on a
-// modified date (appointments carry none). A missing bound defaults relative
-// to the other one, or to now, so the range is never reversed (the API answers
-// 400 "End Date is before Start Date."):
+// appointmentWindows returns the date windows that cover an occurrence or
+// lookahead read of calendars/appointments. /calendars/{id}/appointments
+// requires startDate + endDate (YYYY-MM-DD) and filters on the appointment's
+// own start, not on a modified date (appointments carry none). A missing bound
+// defaults relative to the other one, or to now, so the range is never
+// reversed (the API answers 400 "End Date is before Start Date."):
 //   - Until → 60 days after the later of now and Since
 //   - Since → 30 days before the earlier of now and Until
 //
