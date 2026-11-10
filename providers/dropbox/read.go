@@ -108,7 +108,11 @@ func (c *Connector) parseReadResponse(
 // nextDropboxCursor returns the cursor for the next page when has_more is true.
 func nextDropboxCursor(node *ajson.Node) (string, error) {
 	hasMore, err := jsonquery.New(node).BoolWithDefault("has_more", false)
-	if err != nil || !hasMore {
+	if err != nil {
+		return "", err
+	}
+
+	if !hasMore {
 		return "", nil
 	}
 

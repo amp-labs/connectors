@@ -71,9 +71,6 @@ var readRegistry = datautils.Map[string, readEndpoint]{
 	},
 }
 
-//nolint:gochecknoglobals
-var readSupportedObjects = readRegistry.KeySet()
-
 var supportedReadObjects = readRegistry.Keys() //nolint:gochecknoglobals
 
 // SupportedReadObjects lists object names implemented by Read.
