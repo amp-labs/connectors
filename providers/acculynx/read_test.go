@@ -1079,7 +1079,9 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			Name: "Read calendars/appointments defaults a 30-day window",
+			// No Since/Until: the default window runs from 30 days back to 60
+			// days ahead (see TestAppointmentWindows for the exact dates).
+			Name: "Read calendars/appointments reads the default window",
 			Input: common.ReadParams{
 				ObjectName: "calendars/appointments",
 				Fields:     connectors.Fields("id", "title"),
@@ -1201,6 +1203,97 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				},
 				Done: true,
 			},
+		},
+		{
+			Name: "Read calendars/appointments sends Since/Until as one date window",
+			Input: common.ReadParams{
+				ObjectName: "calendars/appointments",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 4, 1, 8, 30, 0, 0, time.UTC),
+				Until:      time.Date(2026, 4, 30, 23, 59, 0, 0, time.UTC),
+			},
+			Server: appointmentsServer(appointmentsWindowCase("2026-04-01", "2026-04-30",
+				appointmentsPage(`{"id": "appt-1", "start": "2026-04-15T14:00:00Z"}`))),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 1, Done: true},
+		},
+		{
+			// AccuLynx rejects a range of 90 days or more, so a 120-day read is
+			// two requests: 89 days, then the remainder.
+			Name: "Read calendars/appointments splits a range of 90 days or more into windows",
+			Input: common.ReadParams{
+				ObjectName: "calendars/appointments",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
+			},
+			Server: appointmentsServer(
+				appointmentsWindowCase("2026-01-01", "2026-03-31",
+					appointmentsPage(`{"id": "appt-1", "start": "2026-02-10T14:00:00Z"}`)),
+				appointmentsWindowCase("2026-04-01", "2026-04-30",
+					appointmentsPage(`{"id": "appt-2", "start": "2026-04-20T14:00:00Z"}`)),
+			),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 2, Done: true},
+		},
+		{
+			// A multi-day CrewLabor event comes back as one row per day, all
+			// sharing the event id: every day is kept. The row for 03-31 is
+			// returned by both windows (the API matches the day boundary
+			// loosely) and is emitted once.
+			Name: "Read calendars/appointments keeps each day of a multi-day event and drops window repeats",
+			Input: common.ReadParams{
+				ObjectName: "calendars/appointments",
+				Fields:     connectors.Fields("id", "start"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
+			},
+			Server: appointmentsServer(
+				appointmentsWindowCase("2026-01-01", "2026-03-31",
+					appointmentsPage(`{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true}`)),
+				appointmentsWindowCase("2026-04-01", "2026-04-30",
+					appointmentsPage(
+						`{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true}`,
+						`{"id": "crew-1", "start": "2026-04-01T04:00:00Z", "allDay": true}`,
+						`{"id": "crew-1", "start": "2026-04-02T04:00:00Z", "allDay": true}`,
+					)),
+			),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z"},
+						Raw:    map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true},
+					},
+					{
+						Fields: map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z"},
+						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z", "allDay": true},
+					},
+					{
+						Fields: map[string]any{"id": "crew-1", "start": "2026-04-02T04:00:00Z"},
+						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-02T04:00:00Z", "allDay": true},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			Name: "Read calendars/appointments returns the API's date range error",
+			Input: common.ReadParams{
+				ObjectName: "calendars/appointments",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 4, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
+			},
+			Server: appointmentsServer(appointmentsWindowCase("2026-04-01", "2026-04-30",
+				mockserver.ResponseString(http.StatusBadRequest, `{
+					"type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+					"title": "Range between Start Date and End Date must be less than 90 days.",
+					"status": 400,
+					"detail": "BadRequest"
+				}`))),
+			ExpectedErrs: []error{common.ErrCaller},
 		},
 		{
 			Name: "Read jobs/representatives attaches the parent job association",
@@ -1712,6 +1805,149 @@ func jobsPage(count, start, size int, first, last string) http.HandlerFunc {
 
 func jobsURL(query string) common.NextPageToken {
 	return common.NextPageToken(testconn.URLTestServer + "/api/v2/jobs?" + query)
+}
+
+// appointmentsServer serves the one-calendar list (cal-001) plus the given
+// appointment window cases. A request for any other window falls through to
+// the 500 default, so every window the connector asks for must be listed.
+func appointmentsServer(windows ...mockserver.Case) *httptest.Server {
+	cases := append([]mockserver.Case{{
+		If: mockcond.And{
+			mockcond.MethodGET(),
+			mockcond.Path("/api/v2/calendars"),
+		},
+		Then: mockserver.Response(http.StatusOK, calendarsListResponse),
+	}}, windows...)
+
+	return mockserver.Switch{
+		Setup:   mockserver.ContentJSON(),
+		Cases:   cases,
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+}
+
+// appointmentsWindowCase matches cal-001's appointments request for exactly one
+// startDate/endDate window.
+func appointmentsWindowCase(startDate, endDate string, then http.HandlerFunc) mockserver.Case {
+	return mockserver.Case{
+		If: mockcond.And{
+			mockcond.MethodGET(),
+			mockcond.Path("/api/v2/calendars/cal-001/appointments"),
+			mockcond.QueryParam("startDate", startDate),
+			mockcond.QueryParam("endDate", endDate),
+		},
+		Then: then,
+	}
+}
+
+// appointmentsPage answers with a single, final page holding the given items.
+func appointmentsPage(items ...string) http.HandlerFunc {
+	return mockserver.ResponseString(http.StatusOK, fmt.Sprintf(
+		`{"count": %d, "pageSize": 25, "pageStartIndex": 0, "items": [%s]}`,
+		len(items), strings.Join(items, ",")))
+}
+
+// TestAppointmentWindows pins the date windows read for calendars/appointments
+// against a fixed clock: the defaults for a missing bound, and the split into
+// windows of at most 89 days, since the API answers 400 for a range of 90 days
+// or more (verified live).
+func TestAppointmentWindows(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
+	now := time.Date(2026, 11, 4, 10, 0, 0, 0, time.UTC)
+	day := func(year int, month time.Month, d int) time.Time {
+		return time.Date(year, month, d, 0, 0, 0, 0, time.UTC)
+	}
+
+	tests := []struct {
+		name         string
+		since, until time.Time
+		want         []dateWindow
+	}{
+		{
+			name:  "scheduled read: Since minutes ago, no Until, reads today to 60 days ahead",
+			since: now.Add(-5 * time.Minute),
+			want:  []dateWindow{{day(2026, 11, 4), day(2027, 1, 3)}},
+		},
+		{
+			name: "no bounds: 30 days back to 60 days ahead, split at the 90-day limit",
+			want: []dateWindow{
+				{day(2026, 10, 5), day(2027, 1, 2)},
+				{day(2027, 1, 3), day(2027, 1, 3)},
+			},
+		},
+		{
+			name:  "both bounds under the limit: one window, time of day dropped",
+			since: time.Date(2026, 4, 1, 8, 30, 0, 0, time.UTC),
+			until: time.Date(2026, 4, 30, 23, 59, 0, 0, time.UTC),
+			want:  []dateWindow{{day(2026, 4, 1), day(2026, 4, 30)}},
+		},
+		{
+			name:  "89-day range: one window",
+			since: day(2026, 1, 1),
+			until: day(2026, 3, 31),
+			want:  []dateWindow{{day(2026, 1, 1), day(2026, 3, 31)}},
+		},
+		{
+			name:  "90-day range: split",
+			since: day(2026, 1, 1),
+			until: day(2026, 4, 1),
+			want: []dateWindow{
+				{day(2026, 1, 1), day(2026, 3, 31)},
+				{day(2026, 4, 1), day(2026, 4, 1)},
+			},
+		},
+		{
+			name:  "a year: contiguous windows of 89 days and the remainder",
+			since: day(2026, 1, 1),
+			until: day(2026, 12, 31),
+			want: []dateWindow{
+				{day(2026, 1, 1), day(2026, 3, 31)},
+				{day(2026, 4, 1), day(2026, 6, 29)},
+				{day(2026, 6, 30), day(2026, 9, 27)},
+				{day(2026, 9, 28), day(2026, 12, 26)},
+				{day(2026, 12, 27), day(2026, 12, 31)},
+			},
+		},
+		{
+			name:  "only Until, in the past: Since defaults to 30 days before Until",
+			until: time.Date(2026, 3, 1, 12, 0, 0, 0, time.UTC),
+			want:  []dateWindow{{day(2026, 1, 30), day(2026, 3, 1)}},
+		},
+		{
+			name:  "only Since, beyond the lookahead: Until defaults to 60 days after Since",
+			since: day(2027, 6, 1),
+			want:  []dateWindow{{day(2027, 6, 1), day(2027, 7, 31)}},
+		},
+		{
+			name:  "non-UTC bounds are converted to UTC dates",
+			since: time.Date(2026, 4, 1, 22, 0, 0, 0, time.FixedZone("UTC-5", -5*60*60)),
+			until: day(2026, 4, 10),
+			want:  []dateWindow{{day(2026, 4, 2), day(2026, 4, 10)}},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := appointmentWindows(common.ReadParams{Since: tt.since, Until: tt.until}, now)
+
+			assert.Equal(t, len(got), len(tt.want), "window count")
+
+			for i, w := range got {
+				if !w.start.Equal(tt.want[i].start) || !w.end.Equal(tt.want[i].end) {
+					t.Errorf("window %d = %s..%s, want %s..%s", i,
+						w.start.Format(time.DateOnly), w.end.Format(time.DateOnly),
+						tt.want[i].start.Format(time.DateOnly), tt.want[i].end.Format(time.DateOnly))
+				}
+
+				if span := w.end.Sub(w.start); span < 0 || span > maxAppointmentsWindowDays*24*time.Hour {
+					t.Errorf("window %d spans %v, want 0..89 days", i, span)
+				}
+			}
+		})
+	}
 }
 
 // buildPaginationServer returns a server that answers every request with the
