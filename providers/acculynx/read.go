@@ -61,9 +61,9 @@ const (
 	maxChildPagesPerParent = 200
 
 	// /calendars/{calendarId}/appointments requires startDate/endDate. A
-	// missing Since reaches 30 days back and a missing Until 60 days ahead
-	// (see appointmentWindows), because appointments are scheduled events and
-	// callers need the upcoming ones, not only the past.
+	// missing Since reaches 30 days back. A missing Until is now, or, for an
+	// occurrence read (ReadParamsOpts.AppointmentOccurrences), 60 days ahead
+	// (see appointmentWindows), so the upcoming appointments are included.
 	defaultAppointmentsWindow    = 30 * 24 * time.Hour
 	defaultAppointmentsLookahead = 60 * 24 * time.Hour
 
@@ -93,6 +93,13 @@ type ReadParamsOpts struct {
 	// at the cost of one extra API call per record (up to pageSize per page).
 	// Off by default: plain estimates reads return the list stubs unchanged.
 	HydrateEstimates bool
+
+	// AppointmentOccurrences reads calendars/appointments as occurrences: the
+	// read reaches 60 days ahead when Until is unset, and each row is one
+	// occurrence with an id of its own (see appointmentOccurrences). Off by
+	// default: the read ends at Until or now, and rows are AccuLynx's as they
+	// come, where a multi-day or recurring appointment repeats its id.
+	AppointmentOccurrences bool
 }
 
 // shouldHydrateEstimates reports whether the caller opted into estimate
@@ -101,6 +108,15 @@ func shouldHydrateEstimates(params common.ReadParams) bool {
 	opts, ok := params.Opts.(ReadParamsOpts)
 
 	return ok && opts.HydrateEstimates
+}
+
+// shouldReadAppointmentOccurrences reports whether the caller opted into
+// occurrence reads of calendars/appointments. False when Opts is unset or
+// carries a different type.
+func shouldReadAppointmentOccurrences(params common.ReadParams) bool {
+	opts, ok := params.Opts.(ReadParamsOpts)
+
+	return ok && opts.AppointmentOccurrences
 }
 
 // includesByObject lists the AccuLynx ?includes= expansions applied
@@ -446,8 +462,8 @@ func (c *Connector) parseNestedResponse(
 		return nil, err
 	}
 
-	if params.ObjectName == "calendars/appointments" {
-		rows = mergeAppointmentsByID(rows)
+	if params.ObjectName == "calendars/appointments" && shouldReadAppointmentOccurrences(params) {
+		rows = appointmentOccurrences(rows)
 	}
 
 	reqURL, err := urlbuilder.FromRawURL(request.URL)
@@ -561,8 +577,8 @@ func (c *Connector) buildChildURL(
 }
 
 // fetchChildPages reads every record of one parent's nested collection.
-// calendars/appointments is read window by window (see appointmentWindows);
-// every other leaf is a single page walk.
+// An occurrence read of calendars/appointments is read window by window (see
+// appointmentWindows); every other leaf is a single page walk.
 func (c *Connector) fetchChildPages(
 	ctx context.Context,
 	parentID string,
@@ -575,15 +591,20 @@ func (c *Connector) fetchChildPages(
 	}
 
 	if params.ObjectName == "calendars/appointments" {
-		return c.fetchAppointmentWindows(ctx, parentID, params, nested, reqURL)
+		if shouldReadAppointmentOccurrences(params) {
+			return c.fetchAppointmentWindows(ctx, parentID, params, nested, reqURL)
+		}
+
+		applyAppointmentsDateWindow(reqURL, params)
 	}
 
 	return c.walkChildPages(ctx, parentID, params, nested, reqURL)
 }
 
 // fetchAppointmentWindows reads one calendar's appointments across every
-// window of appointmentWindows. The rows can repeat an id; parseNestedResponse
-// folds them with mergeAppointmentsByID once every calendar is read.
+// window of appointmentWindows. The rows can repeat an occurrence;
+// parseNestedResponse folds them with appointmentOccurrences once every
+// calendar is read.
 func (c *Connector) fetchAppointmentWindows(
 	ctx context.Context,
 	parentID string,
@@ -613,61 +634,66 @@ func (c *Connector) fetchAppointmentWindows(
 	return allRows, nil
 }
 
-// mergeAppointmentsByID returns one row per appointment id, in the order each
-// id first appears. AccuLynx returns a multi-day or recurring event as one row
-// per scheduled day, all under the event's id, and adjacent windows can return
-// the same day twice. Downstream every record is keyed on id, so several rows
-// with one id in a single read become concurrent writes to the same record.
+// appointmentOccurrences returns one row per appointment occurrence, each with
+// an id of its own. AccuLynx returns a multi-day or recurring appointment as
+// one row per scheduled day, all under the appointment's id, so that id names
+// the appointment, not the occurrence. Downstream every record is keyed on its
+// id, and rows sharing one in a single read become concurrent writes to the
+// same record.
 //
-// The rows of one id are folded into the first: it takes the earliest start and
-// the latest end, in Raw and in Fields, and gains the associations it lacks (an
-// appointment on two calendars has two users). Rows without an id are kept as
-// they are.
-func mergeAppointmentsByID(rows []common.ReadResultRow) []common.ReadResultRow {
-	merged := make([]common.ReadResultRow, 0, len(rows))
+// The occurrence id (see appointmentOccurrenceID) replaces the row's Id and its
+// "id" field when requested; Raw keeps AccuLynx's appointment id. The same
+// occurrence returned twice, by adjacent windows or by two calendars it is on,
+// is kept once with the associations of both, so an appointment on two
+// calendars carries both users. Rows without an id or a parsable start are
+// kept as they are.
+func appointmentOccurrences(rows []common.ReadResultRow) []common.ReadResultRow {
+	occurrences := make([]common.ReadResultRow, 0, len(rows))
 	indexByID := make(map[string]int, len(rows))
 
 	for _, row := range rows {
-		appointmentID, _ := row.Raw["id"].(string)
-		if appointmentID == "" {
-			merged = append(merged, row)
+		occurrenceID, ok := appointmentOccurrenceID(row)
+		if !ok {
+			occurrences = append(occurrences, row)
 
 			continue
 		}
 
-		if idx, seen := indexByID[appointmentID]; seen {
-			mergeAppointmentRow(&merged[idx], row)
+		if idx, seen := indexByID[occurrenceID]; seen {
+			mergeAssociations(&occurrences[idx], row.Associations)
 
 			continue
 		}
 
-		indexByID[appointmentID] = len(merged)
-		merged = append(merged, row)
+		row.Id = occurrenceID
+
+		if _, requested := row.Fields["id"]; requested {
+			row.Fields["id"] = occurrenceID
+		}
+
+		indexByID[occurrenceID] = len(occurrences)
+		occurrences = append(occurrences, row)
 	}
 
-	return merged
+	return occurrences
 }
 
-// mergeAppointmentRow widens dst to cover src: src's start replaces dst's when
-// it is earlier, src's end when it is later, and src's associations are added
-// unless dst already has the same object id under the same key. A start or end
-// that is not an RFC 3339 time never replaces one that is.
-func mergeAppointmentRow(dst *common.ReadResultRow, src common.ReadResultRow) {
-	if srcStart, ok := parseAppointmentTime(src.Raw["start"]); ok {
-		dstStart, dstOK := parseAppointmentTime(dst.Raw["start"])
-		if !dstOK || srcStart.Before(dstStart) {
-			setAppointmentValue(dst, "start", src.Raw["start"])
-		}
+// appointmentOccurrenceID returns "<appointment id>_<YYYY-MM-DD>", the date
+// being the UTC date of the occurrence's start. The date rather than the full
+// start keeps the id stable when an occurrence's time moves within its day.
+// It reports false when the row has no id or its start is not an RFC 3339 time.
+func appointmentOccurrenceID(row common.ReadResultRow) (string, bool) {
+	appointmentID, _ := row.Raw["id"].(string)
+	if appointmentID == "" {
+		return "", false
 	}
 
-	if srcEnd, ok := parseAppointmentTime(src.Raw["end"]); ok {
-		dstEnd, dstOK := parseAppointmentTime(dst.Raw["end"])
-		if !dstOK || srcEnd.After(dstEnd) {
-			setAppointmentValue(dst, "end", src.Raw["end"])
-		}
+	start, ok := parseAppointmentTime(row.Raw["start"])
+	if !ok {
+		return "", false
 	}
 
-	mergeAssociations(dst, src.Associations)
+	return appointmentID + "_" + start.UTC().Format(time.DateOnly), true
 }
 
 // mergeAssociations adds each of the given associations to the row unless the
@@ -685,20 +711,6 @@ func mergeAssociations(dst *common.ReadResultRow, src map[string][]common.Associ
 
 			dst.Associations[key] = append(dst.Associations[key], association)
 		}
-	}
-}
-
-// setAppointmentValue sets key in the row's Raw, and in its Fields when the
-// caller requested that field.
-func setAppointmentValue(row *common.ReadResultRow, key string, value any) {
-	if row.Raw == nil {
-		row.Raw = make(map[string]any)
-	}
-
-	row.Raw[key] = value
-
-	if _, requested := row.Fields[key]; requested {
-		row.Fields[key] = value
 	}
 }
 
@@ -795,16 +807,35 @@ func parseNextPageURL(s string) (*urlbuilder.URL, error) {
 	return urlbuilder.FromRawURL(parsed)
 }
 
+// applyAppointmentsDateWindow sets the single startDate + endDate of a
+// calendars/appointments read that is not an occurrence read (the OpenAPI marks
+// both as required): Since to Until, defaulting to a 30-day window ending now
+// when the caller supplies neither bound.
+func applyAppointmentsDateWindow(url *urlbuilder.URL, params common.ReadParams) {
+	until := params.Until
+	if until.IsZero() {
+		until = time.Now().UTC()
+	}
+
+	since := params.Since
+	if since.IsZero() {
+		since = until.Add(-defaultAppointmentsWindow)
+	}
+
+	url.WithQueryParam("startDate", since.Format(time.DateOnly))
+	url.WithQueryParam("endDate", until.Format(time.DateOnly))
+}
+
 type dateWindow struct {
 	start, end time.Time
 }
 
-// appointmentWindows returns the date windows that cover the appointments
-// read. /calendars/{id}/appointments requires startDate + endDate (YYYY-MM-DD)
-// and filters on the appointment's own start, not on a modified date
-// (appointments carry none). A missing bound defaults relative to the other
-// one, or to now, so the range is never reversed (the API answers 400 "End
-// Date is before Start Date."):
+// appointmentWindows returns the date windows that cover an occurrence read of
+// calendars/appointments. /calendars/{id}/appointments requires startDate +
+// endDate (YYYY-MM-DD) and filters on the appointment's own start, not on a
+// modified date (appointments carry none). A missing bound defaults relative
+// to the other one, or to now, so the range is never reversed (the API answers
+// 400 "End Date is before Start Date."):
 //   - Until → 60 days after the later of now and Since
 //   - Since → 30 days before the earlier of now and Until
 //
