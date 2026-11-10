@@ -30,3 +30,24 @@ var appointmentOccurrencesFlag = feature.Define("acculynx-appointment-occurrence
 func readsAppointmentOccurrences(ctx context.Context, params common.ReadParams) bool {
 	return params.ObjectName == "calendars/appointments" && appointmentOccurrencesFlag.Enabled(ctx)
 }
+
+// appointmentSpansFlag turns on appointment spans on calendars/appointments
+// rows (see addAppointmentSpans): every row carries appointmentstart and
+// appointmentend, the earliest start and latest end among the read's rows of
+// the same appointment. The rows themselves are unchanged. It is independent
+// of appointmentOccurrencesFlag.
+//
+// Off by default; an experiment. The fields are not in the object's metadata.
+var appointmentSpansFlag = feature.Define("acculynx-appointment-spans", //nolint:gochecknoglobals
+	feature.Off(),
+	feature.Description("AccuLynx calendars/appointments rows carry appointmentstart and appointmentend, "+
+		"the earliest start and latest end among the read's rows with the same appointment id "+
+		"(experiment; the fields are not in the object's metadata)"),
+	feature.Owner("Chris Eberle"))
+
+// readsAppointmentSpans reports whether a read of params adds appointment spans:
+// the object is calendars/appointments and appointmentSpansFlag is on for the
+// subject in ctx.
+func readsAppointmentSpans(ctx context.Context, params common.ReadParams) bool {
+	return params.ObjectName == "calendars/appointments" && appointmentSpansFlag.Enabled(ctx)
+}

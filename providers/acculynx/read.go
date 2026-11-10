@@ -458,6 +458,10 @@ func (c *Connector) parseNestedResponse(
 		rows = appointmentOccurrences(rows)
 	}
 
+	if readsAppointmentSpans(ctx, params) {
+		addAppointmentSpans(rows)
+	}
+
 	reqURL, err := urlbuilder.FromRawURL(request.URL)
 	if err != nil {
 		return nil, err
