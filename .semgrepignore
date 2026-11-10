@@ -12,3 +12,7 @@
 # Instead of fixing the OpenAPI files which have no real data, they are ignored here.
 /scripts/openapi/*/internal/files/*.yaml
 /scripts/openapi/*/internal/files/*.json
+
+# Go test files spin up mock HTTP servers and use canned data, which trip rules meant
+# for production code (e.g. writing directly to http.ResponseWriter).
+*_test.go

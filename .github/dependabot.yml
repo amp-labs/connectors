@@ -8,3 +8,13 @@ updates:
     # which helps avoid taking a version that was just published and may still be unstable or risky
     cooldown:
       default-days: 7
+  # Keeps the commit SHAs pinned in .github/workflows up to date. Actions are pinned to
+  # full commit SHAs (not mutable tags like @v4), so they never move on their own;
+  # Dependabot opens a PR bumping the SHA and its version comment when a new release appears.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # Same cooldown as gomod -- skip releases younger than 7 days.
+    cooldown:
+      default-days: 7
