@@ -17,6 +17,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"github.com/amp-labs/connectors/test/utils/testconn"
+	"github.com/spyzhov/ajson"
 	"gotest.tools/v3/assert"
 )
 
@@ -1218,11 +1219,12 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		},
 		{
 			// With appointmentOccurrencesFlag off, rows are AccuLynx's as they come: a
-			// multi-day appointment repeats its id, one row per day.
+			// multi-day appointment repeats its id, one row per day, and
+			// appointmentId equals id.
 			Name: "Read calendars/appointments with the occurrence flag off returns the rows as they come",
 			Input: common.ReadParams{
 				ObjectName: "calendars/appointments",
-				Fields:     connectors.Fields("id"),
+				Fields:     connectors.Fields("id", "appointmentId"),
 				Since:      time.Date(2026, 4, 1, 0, 0, 0, 0, time.UTC),
 				Until:      time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
 			},
@@ -1237,12 +1239,12 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Data: []common.ReadResultRow{
 					{
 						Id:     "crew-1",
-						Fields: map[string]any{"id": "crew-1"},
+						Fields: map[string]any{"id": "crew-1", "appointmentid": "crew-1"},
 						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z"},
 					},
 					{
 						Id:     "crew-1",
-						Fields: map[string]any{"id": "crew-1"},
+						Fields: map[string]any{"id": "crew-1", "appointmentid": "crew-1"},
 						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-02T04:00:00Z"},
 					},
 				},
@@ -1718,11 +1720,11 @@ func TestReadAppointmentOccurrences(t *testing.T) {
 			// A multi-day CrewLabor appointment comes back as one row per day,
 			// all under one id, and the 03-31 row is returned by both windows.
 			// Each day is its own occurrence with its own id, the repeat is
-			// dropped, and Raw keeps AccuLynx's appointment id.
+			// dropped, and Raw and appointmentId keep AccuLynx's appointment id.
 			Name: "Occurrence read of calendars/appointments gives each day of a multi-day appointment its own id",
 			Input: common.ReadParams{
 				ObjectName: "calendars/appointments",
-				Fields:     connectors.Fields("id", "start"),
+				Fields:     connectors.Fields("id", "start", "appointmentId"),
 				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 				Until:      time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
 			},
@@ -1745,22 +1747,22 @@ func TestReadAppointmentOccurrences(t *testing.T) {
 				Data: []common.ReadResultRow{
 					{
 						Id:     "crew-1_2026-03-31",
-						Fields: map[string]any{"id": "crew-1_2026-03-31", "start": "2026-03-31T04:00:00Z"},
+						Fields: map[string]any{"id": "crew-1_2026-03-31", "start": "2026-03-31T04:00:00Z", "appointmentid": "crew-1"},
 						Raw:    map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true},
 					},
 					{
 						Id:     "appt-1_2026-03-15",
-						Fields: map[string]any{"id": "appt-1_2026-03-15", "start": "2026-03-15T14:00:00Z"},
+						Fields: map[string]any{"id": "appt-1_2026-03-15", "start": "2026-03-15T14:00:00Z", "appointmentid": "appt-1"},
 						Raw:    map[string]any{"id": "appt-1", "start": "2026-03-15T14:00:00Z"},
 					},
 					{
 						Id:     "crew-1_2026-04-01",
-						Fields: map[string]any{"id": "crew-1_2026-04-01", "start": "2026-04-01T04:00:00Z"},
+						Fields: map[string]any{"id": "crew-1_2026-04-01", "start": "2026-04-01T04:00:00Z", "appointmentid": "crew-1"},
 						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z", "allDay": true},
 					},
 					{
 						Id:     "crew-1_2026-04-02",
-						Fields: map[string]any{"id": "crew-1_2026-04-02", "start": "2026-04-02T04:00:00Z"},
+						Fields: map[string]any{"id": "crew-1_2026-04-02", "start": "2026-04-02T04:00:00Z", "appointmentid": "crew-1"},
 						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-02T04:00:00Z", "allDay": true},
 					},
 				},
@@ -2087,6 +2089,27 @@ func TestAppointmentWindows(t *testing.T) { //nolint:funlen
 			}
 		})
 	}
+}
+
+// TestAppointmentRecord pins the appointmentId field of calendars/appointments
+// rows: requested, it carries AccuLynx's appointment id, a record without an id
+// gets none, and Raw stays the payload as AccuLynx returned it.
+func TestAppointmentRecord(t *testing.T) {
+	t.Parallel()
+
+	node, err := ajson.Unmarshal([]byte(
+		`[{"id": "crew-1", "start": "2026-04-01T04:00:00Z"}, {"title": "no id"}]`))
+	assert.NilError(t, err)
+
+	rows, err := common.MakeMarshaledDataFunc(appointmentRecord)(node.MustArray(), []string{"appointmentId"})
+	assert.NilError(t, err)
+	assert.Equal(t, len(rows), 2)
+
+	assert.DeepEqual(t, rows[0].Fields, map[string]any{"id": "crew-1", "appointmentid": "crew-1"})
+	assert.DeepEqual(t, rows[0].Raw, map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z"})
+
+	assert.DeepEqual(t, rows[1].Fields, map[string]any{})
+	assert.DeepEqual(t, rows[1].Raw, map[string]any{"title": "no id"})
 }
 
 // TestAppointmentOccurrences pins the occurrence rows of an occurrence read:

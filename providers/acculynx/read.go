@@ -71,6 +71,10 @@ const (
 	// (400 "Range between Start Date and End Date must be less than 90 days."),
 	// so longer ranges are read as consecutive windows of at most 89 days.
 	maxAppointmentsWindowDays = 89
+
+	// appointmentIDField is the field calendars/appointments rows carry
+	// AccuLynx's appointment id in (see appointmentRecord).
+	appointmentIDField = "appointmentId"
 )
 
 const (
@@ -634,7 +638,8 @@ func (c *Connector) fetchAppointmentWindows(
 // same record.
 //
 // The occurrence id (see appointmentOccurrenceID) replaces the row's Id and its
-// "id" field when requested; Raw keeps AccuLynx's appointment id. The same
+// "id" field when requested. Raw and the appointmentId field (see
+// appointmentRecord) keep AccuLynx's appointment id. The same
 // occurrence returned twice, by adjacent windows or by two calendars it is on,
 // is kept once with the associations of both, so an appointment on two
 // calendars carries both users. Rows without an id or a parsable start are
@@ -686,6 +691,37 @@ func appointmentOccurrenceID(row common.ReadResultRow) (string, bool) {
 	}
 
 	return appointmentID + "_" + start.UTC().Format(time.DateOnly), true
+}
+
+// childRecordTransformer returns the record transformer of a nested read:
+// appointmentRecord for calendars/appointments, and nil, the record as AccuLynx
+// returns it, for every other leaf.
+func childRecordTransformer(params common.ReadParams) common.RecordTransformer {
+	if params.ObjectName == "calendars/appointments" {
+		return appointmentRecord
+	}
+
+	return nil
+}
+
+// appointmentRecord returns an appointment record with an appointmentId field
+// added: AccuLynx's id for the appointment, the same on every occurrence of a
+// multi-day or recurring appointment. An occurrence read replaces the row's id
+// with an occurrence id (see appointmentOccurrences) and leaves appointmentId
+// alone, so appointmentId tells which occurrences are one appointment. Without
+// the occurrence flag it equals id. Raw is built separately and keeps
+// AccuLynx's payload as returned.
+func appointmentRecord(node *ajson.Node) (map[string]any, error) {
+	record, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
+	}
+
+	if appointmentID, ok := record["id"]; ok {
+		record[appointmentIDField] = appointmentID
+	}
+
+	return record, nil
 }
 
 // mergeAssociations adds each of the given associations to the row unless the
@@ -765,7 +801,7 @@ func (c *Connector) walkChildPages(
 			resp,
 			c.recordsFunc(params.ObjectName),
 			c.makeFilterFunc(params, reqURL),
-			common.MakeMarshaledDataFunc(nil),
+			common.MakeMarshaledDataFunc(childRecordTransformer(params)),
 			params.Fields,
 		)
 		if err != nil {
