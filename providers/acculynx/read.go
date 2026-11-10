@@ -62,8 +62,8 @@ const (
 
 	// /calendars/{calendarId}/appointments requires startDate/endDate. A
 	// missing Since reaches 30 days back. A missing Until is now, or, for an
-	// occurrence read (ReadParamsOpts.AppointmentOccurrences), 60 days ahead
-	// (see appointmentWindows), so the upcoming appointments are included.
+	// occurrence read (see appointmentOccurrencesFlag), 60 days ahead (see
+	// appointmentWindows), so the upcoming appointments are included.
 	defaultAppointmentsWindow    = 30 * 24 * time.Hour
 	defaultAppointmentsLookahead = 60 * 24 * time.Hour
 
@@ -93,13 +93,6 @@ type ReadParamsOpts struct {
 	// at the cost of one extra API call per record (up to pageSize per page).
 	// Off by default: plain estimates reads return the list stubs unchanged.
 	HydrateEstimates bool
-
-	// AppointmentOccurrences reads calendars/appointments as occurrences: the
-	// read reaches 60 days ahead when Until is unset, and each row is one
-	// occurrence with an id of its own (see appointmentOccurrences). Off by
-	// default: the read ends at Until or now, and rows are AccuLynx's as they
-	// come, where a multi-day or recurring appointment repeats its id.
-	AppointmentOccurrences bool
 }
 
 // shouldHydrateEstimates reports whether the caller opted into estimate
@@ -108,15 +101,6 @@ func shouldHydrateEstimates(params common.ReadParams) bool {
 	opts, ok := params.Opts.(ReadParamsOpts)
 
 	return ok && opts.HydrateEstimates
-}
-
-// shouldReadAppointmentOccurrences reports whether the caller opted into
-// occurrence reads of calendars/appointments. False when Opts is unset or
-// carries a different type.
-func shouldReadAppointmentOccurrences(params common.ReadParams) bool {
-	opts, ok := params.Opts.(ReadParamsOpts)
-
-	return ok && opts.AppointmentOccurrences
 }
 
 // includesByObject lists the AccuLynx ?includes= expansions applied
@@ -457,12 +441,16 @@ func (c *Connector) parseNestedResponse(
 		return nil, err
 	}
 
-	rows, err := c.fetchChildrenForParents(ctx, parentNodes, params, nested)
+	// Decided once per page, so every calendar of the page is read the same way
+	// even if the flag changes during the read.
+	occurrenceRead := readsAppointmentOccurrences(ctx, params)
+
+	rows, err := c.fetchChildrenForParents(ctx, parentNodes, params, nested, occurrenceRead)
 	if err != nil {
 		return nil, err
 	}
 
-	if params.ObjectName == "calendars/appointments" && shouldReadAppointmentOccurrences(params) {
+	if occurrenceRead {
 		rows = appointmentOccurrences(rows)
 	}
 
@@ -507,12 +495,14 @@ func extractIDs(nodes []*ajson.Node) []string {
 }
 
 // fetchChildrenForParents fans out one request per parent ID concurrently and
-// preserves the parent order in the flattened result.
+// preserves the parent order in the flattened result. occurrenceRead is passed
+// to fetchChildPages.
 func (c *Connector) fetchChildrenForParents(
 	ctx context.Context,
 	parents []*ajson.Node,
 	params common.ReadParams,
 	nested nestedSpec,
+	occurrenceRead bool,
 ) ([]common.ReadResultRow, error) {
 	ids := extractIDs(parents)
 	if len(ids) == 0 {
@@ -526,7 +516,7 @@ func (c *Connector) fetchChildrenForParents(
 		idx, id := i, parentID
 
 		jobs[idx] = func(ctx context.Context) error {
-			rows, fetchErr := c.fetchChildPages(ctx, id, params, nested)
+			rows, fetchErr := c.fetchChildPages(ctx, id, params, nested, occurrenceRead)
 			if fetchErr != nil {
 				return fmt.Errorf("fetching %s for %s %s: %w",
 					nested.leafSuffix, nested.parentObject, id, fetchErr)
@@ -576,25 +566,27 @@ func (c *Connector) buildChildURL(
 	return reqURL, nil
 }
 
-// fetchChildPages reads every record of one parent's nested collection.
-// An occurrence read of calendars/appointments is read window by window (see
+// fetchChildPages reads every record of one parent's nested collection. An
+// occurrence read of calendars/appointments (occurrenceRead, see
+// readsAppointmentOccurrences) is read window by window (see
 // appointmentWindows); every other leaf is a single page walk.
 func (c *Connector) fetchChildPages(
 	ctx context.Context,
 	parentID string,
 	params common.ReadParams,
 	nested nestedSpec,
+	occurrenceRead bool,
 ) ([]common.ReadResultRow, error) {
 	reqURL, err := c.buildChildURL(parentID, params, nested)
 	if err != nil {
 		return nil, err
 	}
 
-	if params.ObjectName == "calendars/appointments" {
-		if shouldReadAppointmentOccurrences(params) {
-			return c.fetchAppointmentWindows(ctx, parentID, params, nested, reqURL)
-		}
+	if occurrenceRead {
+		return c.fetchAppointmentWindows(ctx, parentID, params, nested, reqURL)
+	}
 
+	if params.ObjectName == "calendars/appointments" {
 		applyAppointmentsDateWindow(reqURL, params)
 	}
 

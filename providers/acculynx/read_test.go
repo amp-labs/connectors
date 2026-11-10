@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/amp-labs/amp-common/feature"
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
@@ -1216,9 +1217,9 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Expected:   &common.ReadResult{Rows: 1, Done: true},
 		},
 		{
-			// Without occurrence reads, rows are AccuLynx's as they come: a
+			// With appointmentOccurrencesFlag off, rows are AccuLynx's as they come: a
 			// multi-day appointment repeats its id, one row per day.
-			Name: "Read calendars/appointments without occurrence reads returns the rows as they come",
+			Name: "Read calendars/appointments with the occurrence flag off returns the rows as they come",
 			Input: common.ReadParams{
 				ObjectName: "calendars/appointments",
 				Fields:     connectors.Fields("id"),
@@ -1243,137 +1244,6 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						Id:     "crew-1",
 						Fields: map[string]any{"id": "crew-1"},
 						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-02T04:00:00Z"},
-					},
-				},
-				Done: true,
-			},
-		},
-		{
-			// AccuLynx rejects a range of 90 days or more, so a 120-day read is
-			// two requests: 89 days, then the remainder.
-			Name: "Occurrence read of calendars/appointments splits a range of 90 days or more into windows",
-			Input: common.ReadParams{
-				ObjectName: "calendars/appointments",
-				Fields:     connectors.Fields("id"),
-				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
-				Until:      time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
-				Opts:       ReadParamsOpts{AppointmentOccurrences: true},
-			},
-			Server: appointmentsServer(
-				appointmentsWindowCase("2026-01-01", "2026-03-31",
-					appointmentsPage(`{"id": "appt-1", "start": "2026-02-10T14:00:00Z"}`)),
-				appointmentsWindowCase("2026-04-01", "2026-04-30",
-					appointmentsPage(`{"id": "appt-2", "start": "2026-04-20T14:00:00Z"}`)),
-			),
-			Comparator: testconn.ComparatorPagination,
-			Expected:   &common.ReadResult{Rows: 2, Done: true},
-		},
-		{
-			// A multi-day CrewLabor appointment comes back as one row per day,
-			// all under one id, and the 03-31 row is returned by both windows.
-			// Each day is its own occurrence with its own id, the repeat is
-			// dropped, and Raw keeps AccuLynx's appointment id.
-			Name: "Occurrence read of calendars/appointments gives each day of a multi-day appointment its own id",
-			Input: common.ReadParams{
-				ObjectName: "calendars/appointments",
-				Fields:     connectors.Fields("id", "start"),
-				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
-				Until:      time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
-				Opts:       ReadParamsOpts{AppointmentOccurrences: true},
-			},
-			Server: appointmentsServer(
-				appointmentsWindowCase("2026-01-01", "2026-03-31",
-					appointmentsPage(
-						`{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true}`,
-						`{"id": "appt-1", "start": "2026-03-15T14:00:00Z"}`,
-					)),
-				appointmentsWindowCase("2026-04-01", "2026-04-30",
-					appointmentsPage(
-						`{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true}`,
-						`{"id": "crew-1", "start": "2026-04-01T04:00:00Z", "allDay": true}`,
-						`{"id": "crew-1", "start": "2026-04-02T04:00:00Z", "allDay": true}`,
-					)),
-			),
-			Comparator: testconn.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 4,
-				Data: []common.ReadResultRow{
-					{
-						Id:     "crew-1_2026-03-31",
-						Fields: map[string]any{"id": "crew-1_2026-03-31", "start": "2026-03-31T04:00:00Z"},
-						Raw:    map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true},
-					},
-					{
-						Id:     "appt-1_2026-03-15",
-						Fields: map[string]any{"id": "appt-1_2026-03-15", "start": "2026-03-15T14:00:00Z"},
-						Raw:    map[string]any{"id": "appt-1", "start": "2026-03-15T14:00:00Z"},
-					},
-					{
-						Id:     "crew-1_2026-04-01",
-						Fields: map[string]any{"id": "crew-1_2026-04-01", "start": "2026-04-01T04:00:00Z"},
-						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z", "allDay": true},
-					},
-					{
-						Id:     "crew-1_2026-04-02",
-						Fields: map[string]any{"id": "crew-1_2026-04-02", "start": "2026-04-02T04:00:00Z"},
-						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-02T04:00:00Z", "allDay": true},
-					},
-				},
-				Done: true,
-			},
-		},
-		{
-			// The same occurrence on two calendars (e.g. two assigned users) is
-			// one row carrying both users, and the job once.
-			Name: "Occurrence read of calendars/appointments returns an occurrence on two calendars once, with both users",
-			Input: common.ReadParams{
-				ObjectName:        "calendars/appointments",
-				Fields:            connectors.Fields("id"),
-				Since:             time.Date(2026, 4, 1, 0, 0, 0, 0, time.UTC),
-				Until:             time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
-				AssociatedObjects: []string{"jobs", "users"},
-				Opts:              ReadParamsOpts{AppointmentOccurrences: true},
-			},
-			Server: mockserver.Switch{
-				Setup: mockserver.ContentJSON(),
-				Cases: []mockserver.Case{
-					{
-						If: mockcond.And{
-							mockcond.MethodGET(),
-							mockcond.Path("/api/v2/calendars"),
-						},
-						Then: mockserver.ResponseString(http.StatusOK, `{"count": 2, "pageSize": 25, "pageStartIndex": 0,
-							"items": [{"id": "cal-001"}, {"id": "cal-002"}]}`),
-					},
-					{
-						If: mockcond.And{
-							mockcond.MethodGET(),
-							mockcond.Path("/api/v2/calendars/cal-001/appointments"),
-						},
-						Then: appointmentsPage(`{"id": "appt-1", "start": "2026-04-15T14:00:00Z", "jobId": "job-777"}`),
-					},
-					{
-						If: mockcond.And{
-							mockcond.MethodGET(),
-							mockcond.Path("/api/v2/calendars/cal-002/appointments"),
-						},
-						Then: appointmentsPage(`{"id": "appt-1", "start": "2026-04-15T14:00:00Z", "jobId": "job-777"}`),
-					},
-				},
-				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
-			}.Server(),
-			Comparator: testconn.ComparatorSubsetRead,
-			Expected: &common.ReadResult{
-				Rows: 1,
-				Data: []common.ReadResultRow{
-					{
-						Id:     "appt-1_2026-04-15",
-						Fields: map[string]any{"id": "appt-1_2026-04-15"},
-						Raw:    map[string]any{"id": "appt-1", "jobId": "job-777"},
-						Associations: map[string][]common.Association{
-							"jobs":  {{ObjectId: "job-777"}},
-							"users": {{ObjectId: "cal-001"}, {ObjectId: "cal-002"}},
-						},
 					},
 				},
 				Done: true,
@@ -1812,6 +1682,174 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			})
 		})
 	}
+}
+
+// TestReadAppointmentOccurrences covers calendars/appointments reads with
+// appointmentOccurrencesFlag on. It is not parallel because the flag is
+// process-global: TestRead's parallel cases, which read it off, resume only
+// after this test has returned and reset it.
+//
+//nolint:paralleltest,tparallel,funlen // flips the process-global appointmentOccurrencesFlag
+func TestReadAppointmentOccurrences(t *testing.T) {
+	assert.NilError(t, appointmentOccurrencesFlag.Set(feature.On()))
+	t.Cleanup(appointmentOccurrencesFlag.Reset)
+
+	tests := []testconn.TestCaseRead{
+		{
+			// AccuLynx rejects a range of 90 days or more, so a 120-day read is
+			// two requests: 89 days, then the remainder.
+			Name: "Occurrence read of calendars/appointments splits a range of 90 days or more into windows",
+			Input: common.ReadParams{
+				ObjectName: "calendars/appointments",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
+			},
+			Server: appointmentsServer(
+				appointmentsWindowCase("2026-01-01", "2026-03-31",
+					appointmentsPage(`{"id": "appt-1", "start": "2026-02-10T14:00:00Z"}`)),
+				appointmentsWindowCase("2026-04-01", "2026-04-30",
+					appointmentsPage(`{"id": "appt-2", "start": "2026-04-20T14:00:00Z"}`)),
+			),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 2, Done: true},
+		},
+		{
+			// A multi-day CrewLabor appointment comes back as one row per day,
+			// all under one id, and the 03-31 row is returned by both windows.
+			// Each day is its own occurrence with its own id, the repeat is
+			// dropped, and Raw keeps AccuLynx's appointment id.
+			Name: "Occurrence read of calendars/appointments gives each day of a multi-day appointment its own id",
+			Input: common.ReadParams{
+				ObjectName: "calendars/appointments",
+				Fields:     connectors.Fields("id", "start"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
+			},
+			Server: appointmentsServer(
+				appointmentsWindowCase("2026-01-01", "2026-03-31",
+					appointmentsPage(
+						`{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true}`,
+						`{"id": "appt-1", "start": "2026-03-15T14:00:00Z"}`,
+					)),
+				appointmentsWindowCase("2026-04-01", "2026-04-30",
+					appointmentsPage(
+						`{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true}`,
+						`{"id": "crew-1", "start": "2026-04-01T04:00:00Z", "allDay": true}`,
+						`{"id": "crew-1", "start": "2026-04-02T04:00:00Z", "allDay": true}`,
+					)),
+			),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 4,
+				Data: []common.ReadResultRow{
+					{
+						Id:     "crew-1_2026-03-31",
+						Fields: map[string]any{"id": "crew-1_2026-03-31", "start": "2026-03-31T04:00:00Z"},
+						Raw:    map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true},
+					},
+					{
+						Id:     "appt-1_2026-03-15",
+						Fields: map[string]any{"id": "appt-1_2026-03-15", "start": "2026-03-15T14:00:00Z"},
+						Raw:    map[string]any{"id": "appt-1", "start": "2026-03-15T14:00:00Z"},
+					},
+					{
+						Id:     "crew-1_2026-04-01",
+						Fields: map[string]any{"id": "crew-1_2026-04-01", "start": "2026-04-01T04:00:00Z"},
+						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z", "allDay": true},
+					},
+					{
+						Id:     "crew-1_2026-04-02",
+						Fields: map[string]any{"id": "crew-1_2026-04-02", "start": "2026-04-02T04:00:00Z"},
+						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-02T04:00:00Z", "allDay": true},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			// The same occurrence on two calendars (e.g. two assigned users) is
+			// one row carrying both users, and the job once.
+			Name: "Occurrence read of calendars/appointments returns an occurrence on two calendars once, with both users",
+			Input: common.ReadParams{
+				ObjectName:        "calendars/appointments",
+				Fields:            connectors.Fields("id"),
+				Since:             time.Date(2026, 4, 1, 0, 0, 0, 0, time.UTC),
+				Until:             time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
+				AssociatedObjects: []string{"jobs", "users"},
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars"),
+						},
+						Then: mockserver.ResponseString(http.StatusOK, `{"count": 2, "pageSize": 25, "pageStartIndex": 0,
+							"items": [{"id": "cal-001"}, {"id": "cal-002"}]}`),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars/cal-001/appointments"),
+						},
+						Then: appointmentsPage(`{"id": "appt-1", "start": "2026-04-15T14:00:00Z", "jobId": "job-777"}`),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars/cal-002/appointments"),
+						},
+						Then: appointmentsPage(`{"id": "appt-1", "start": "2026-04-15T14:00:00Z", "jobId": "job-777"}`),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Id:     "appt-1_2026-04-15",
+						Fields: map[string]any{"id": "appt-1_2026-04-15"},
+						Raw:    map[string]any{"id": "appt-1", "jobId": "job-777"},
+						Associations: map[string][]common.Association{
+							"jobs":  {{ObjectId: "job-777"}},
+							"users": {{ObjectId: "cal-001"}, {ObjectId: "cal-002"}},
+						},
+					},
+				},
+				Done: true,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			tt.Run(t, func() (testconn.TestableReader, error) {
+				return constructTestReadConnector(tt.Server.URL)
+			})
+		})
+	}
+}
+
+// TestReadsAppointmentOccurrences checks that only calendars/appointments reads
+// follow appointmentOccurrencesFlag.
+//
+//nolint:paralleltest // flips the process-global appointmentOccurrencesFlag
+func TestReadsAppointmentOccurrences(t *testing.T) {
+	t.Cleanup(appointmentOccurrencesFlag.Reset)
+
+	appointments := common.ReadParams{ObjectName: "calendars/appointments"}
+
+	assert.Assert(t, !readsAppointmentOccurrences(t.Context(), appointments), "off by default")
+
+	assert.NilError(t, appointmentOccurrencesFlag.Set(feature.On()))
+
+	assert.Assert(t, readsAppointmentOccurrences(t.Context(), appointments), "on for calendars/appointments")
+	assert.Assert(t, !readsAppointmentOccurrences(t.Context(), common.ReadParams{ObjectName: "calendars"}),
+		"other objects never read occurrences")
 }
 
 // TestBareArrayObjectsResolveToEmptyResponseKey guards the generator's
