@@ -3,6 +3,7 @@ package auphan
 import (
 	"bytes"
 	"encoding/json"
+	"maps"
 	"strconv"
 
 	"github.com/amp-labs/connectors/common"
@@ -56,26 +57,36 @@ func parseReport(response *common.JSONHTTPResponse, fields []string) (*common.Re
 
 // mergeReportRows turns report rows into records keyed by column id.
 //
-// The "summary" layout sends each group as two rows: a dimension row (every measure null)
-// followed by a measure row (every dimension null). Such a pair becomes one record.
+// The "summary" layout sends each group as a dimension row (every measure null) followed by
+// one or more measure rows (every dimension null). Usually there is one measure row, but some
+// columns split a group into detail rows (tax with tax_date sends one measure row per invoice).
+// Each measure row becomes one record carrying its group's dimensions.
 // Each row is checked on its own, so a layout that sends whole rows still works.
 func mergeReportRows(columns []reportColumn, rows [][]json.RawMessage) []map[string]any {
 	records := make([]map[string]any, 0, len(rows))
 
-	for i := 0; i < len(rows); i++ {
-		record := rowToRecord(columns, rows[i])
+	for row := 0; row < len(rows); row++ {
+		record := rowToRecord(columns, rows[row])
 
-		if i+1 < len(rows) && onlyKind(columns, rows[i], false) && onlyKind(columns, rows[i+1], true) {
-			for id, value := range rowToRecord(columns, rows[i+1]) {
+		next := row + 1
+		for isGroup := onlyKind(columns, rows[row], false); isGroup && next < len(rows) &&
+			onlyKind(columns, rows[next], true); next++ {
+			merged := maps.Clone(record)
+
+			for id, value := range rowToRecord(columns, rows[next]) {
 				if value != nil {
-					record[id] = value
+					merged[id] = value
 				}
 			}
 
-			i++
+			records = append(records, merged)
 		}
 
-		records = append(records, record)
+		if next == row+1 {
+			records = append(records, record)
+		}
+
+		row = next - 1
 	}
 
 	return records

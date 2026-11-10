@@ -22,9 +22,9 @@ func (c *Connector) reportFilters(params common.ReadParams, report reportPayload
 		return filters
 	}
 
-	// By default, a report without a Since reads from the earliestReportDate to today.
-	// So if the user doesn't specify a Since, we read from earliestReportDate which is the same as reading from the beginning of time.
-
+	// Auphan reads a missing date_from as the start of today, so without Since the read starts at
+	// earliestReportDate to get the whole history. Without Until, Auphan reads through today.
+	filters["date_from"] = earliestReportDate.Format(report.dateLayout)
 	if !params.Since.IsZero() {
 		filters["date_from"] = c.storeTime(params.Since).Format(report.dateLayout)
 	}

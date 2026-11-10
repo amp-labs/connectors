@@ -26,6 +26,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	responseStoresFirstPage := testutils.DataFromFile(t, "stores-page-1.json")
 	responseStoresLastPage := testutils.DataFromFile(t, "stores-page-2.json")
 	responsePettyCash := testutils.DataFromFile(t, "petty-cash.json")
+	responseTaxDetailRows := testutils.DataFromFile(t, "tax-detail-rows.json")
 
 	// A day in a fixed zone that is not UTC: request times must keep it, unconverted.
 	zone := time.FixedZone("store", -5*60*60)
@@ -144,6 +145,30 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					},
 					Raw: map[string]any{"tracking_date": "Nov 05, 26 11:13 pm"},
 				}},
+				Done: true,
+			},
+		},
+		{
+			Name: "Every measure row under a dimension row gets that group's dimensions",
+			Input: common.ReadParams{
+				ObjectName: "tax",
+				Fields:     connectors.Fields("name", "tax_date", "tax_total"),
+				Since:      since,
+				Until:      until,
+			},
+			Server: mockserver.Fixed{
+				Setup:  mockserver.ContentJSON(),
+				Always: mockserver.Response(http.StatusOK, responseTaxDetailRows),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 4,
+				Data: []common.ReadResultRow{
+					taxRow("Delivery Fee", "0.00"),
+					taxRow("Sales Tax", "1.46"),
+					taxRow("Sales Tax", "1.58"),
+					taxRow("Sales Tax", "5.12"),
+				},
 				Done: true,
 			},
 		},
@@ -404,4 +429,10 @@ func TestSandboxNeedsStoreID(t *testing.T) {
 	if !errors.Is(err, errInvalidStoreID) {
 		t.Fatalf("expected errInvalidStoreID, got %v", err)
 	}
+}
+
+func taxRow(name, total string) common.ReadResultRow {
+	fields := map[string]any{"name": name, "tax_date": "Nov 05, 2026", "tax_total": total}
+
+	return common.ReadResultRow{Fields: fields, Raw: fields}
 }
