@@ -98,6 +98,11 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return c.buildReportRequest(ctx, params)
 	}
 
+	endpoint, ok := listObjects[params.ObjectName]
+	if !ok {
+		return nil, common.ErrOperationNotSupportedForObject
+	}
+
 	page := 1
 
 	if params.NextPage != "" {
@@ -109,7 +114,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		}
 	}
 
-	return c.newRequest(ctx, listObjects[params.ObjectName], map[string]any{"page": page, "per_page": pageSize})
+	return c.newRequest(ctx, endpoint, map[string]any{"page": page, "per_page": pageSize})
 }
 
 func (c *Connector) buildReportRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
