@@ -14,22 +14,22 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-// TestReadAppointmentLookahead covers calendars/appointments reads with
-// appointmentLookaheadFlag on: the read cases of #3723, which this flag brings
-// back. It is not parallel because the flag is process-global: TestRead's
-// parallel cases, which read it off, resume only after this test has returned
-// and reset it.
+// TestReadAppointmentLookaheadRepeatedIDs covers calendars/appointments reads
+// with appointmentLookaheadRepeatedIDsFlag on: the read cases of #3723, which
+// this flag brings back. It is not parallel because the flag is
+// process-global: TestRead's parallel cases, which read it off, resume only
+// after this test has returned and reset it.
 //
-//nolint:paralleltest,tparallel,funlen // flips the process-global appointmentLookaheadFlag
-func TestReadAppointmentLookahead(t *testing.T) {
-	assert.NilError(t, appointmentLookaheadFlag.Set(feature.On()))
-	t.Cleanup(appointmentLookaheadFlag.Reset)
+//nolint:paralleltest,tparallel,funlen // flips the process-global appointment flags
+func TestReadAppointmentLookaheadRepeatedIDs(t *testing.T) {
+	assert.NilError(t, appointmentLookaheadRepeatedIDsFlag.Set(feature.On()))
+	t.Cleanup(appointmentLookaheadRepeatedIDsFlag.Reset)
 
 	tests := []testconn.TestCaseRead{
 		{
 			// AccuLynx rejects a range of 90 days or more, so a 120-day read is
 			// two requests: 89 days, then the remainder.
-			Name: "Lookahead read of calendars/appointments splits a range of 90 days or more into windows",
+			Name: "Repeated-id lookahead read splits a range of 90 days or more into windows",
 			Input: common.ReadParams{
 				ObjectName: "calendars/appointments",
 				Fields:     connectors.Fields("id"),
@@ -49,7 +49,7 @@ func TestReadAppointmentLookahead(t *testing.T) {
 			// A multi-day CrewLabor appointment comes back as one row per day, all
 			// under one id: every day is kept, and the id repeats. The 03-31 row
 			// is returned by both windows and is kept once.
-			Name: "Lookahead read of calendars/appointments keeps each day of a multi-day appointment and drops window repeats",
+			Name: "Repeated-id lookahead read keeps each day of a multi-day appointment and drops window repeats",
 			Input: common.ReadParams{
 				ObjectName: "calendars/appointments",
 				Fields:     connectors.Fields("id", "start"),
@@ -92,7 +92,7 @@ func TestReadAppointmentLookahead(t *testing.T) {
 		{
 			// Repeats are dropped per calendar only: the same appointment on two
 			// calendars is two rows, one per user.
-			Name: "Lookahead read of calendars/appointments returns an appointment on two calendars once per calendar",
+			Name: "Repeated-id lookahead read returns an appointment on two calendars once per calendar",
 			Input: common.ReadParams{
 				ObjectName:        "calendars/appointments",
 				Fields:            connectors.Fields("id"),
@@ -160,12 +160,12 @@ func TestReadAppointmentLookahead(t *testing.T) {
 }
 
 // TestAppointmentReadModeFor checks which flag decides a calendars/appointments
-// read: plain by default, the occurrence flag over the lookahead flag, and
-// every other object plain whatever the flags.
+// read: plain by default, the occurrence flag over the repeated-id lookahead
+// flag, and every other object plain whatever the flags.
 //
 //nolint:paralleltest // flips the process-global appointment flags
 func TestAppointmentReadModeFor(t *testing.T) {
-	t.Cleanup(appointmentLookaheadFlag.Reset)
+	t.Cleanup(appointmentLookaheadRepeatedIDsFlag.Reset)
 	t.Cleanup(appointmentOccurrencesFlag.Reset)
 
 	appointments := common.ReadParams{ObjectName: "calendars/appointments"}
@@ -173,8 +173,8 @@ func TestAppointmentReadModeFor(t *testing.T) {
 
 	assert.Equal(t, appointmentReadModeFor(t.Context(), appointments), appointmentReadPlain, "off by default")
 
-	assert.NilError(t, appointmentLookaheadFlag.Set(feature.On()))
-	assert.Equal(t, appointmentReadModeFor(t.Context(), appointments), appointmentReadLookahead, "lookahead on")
+	assert.NilError(t, appointmentLookaheadRepeatedIDsFlag.Set(feature.On()))
+	assert.Equal(t, appointmentReadModeFor(t.Context(), appointments), appointmentReadLookaheadRepeatedIDs, "lookahead on")
 
 	assert.NilError(t, appointmentOccurrencesFlag.Set(feature.On()))
 	assert.Equal(t, appointmentReadModeFor(t.Context(), appointments), appointmentReadOccurrences,
@@ -182,15 +182,15 @@ func TestAppointmentReadModeFor(t *testing.T) {
 	assert.Equal(t, appointmentReadModeFor(t.Context(), calendars), appointmentReadPlain,
 		"other objects are always plain")
 
-	appointmentLookaheadFlag.Reset()
+	appointmentLookaheadRepeatedIDsFlag.Reset()
 	assert.Equal(t, appointmentReadModeFor(t.Context(), appointments), appointmentReadOccurrences,
 		"occurrences on their own")
 }
 
-// TestDropRepeatedAppointmentRows pins the lookahead read's repeat rule: a row
-// is dropped only when an earlier row has the same id and start, so every day
-// of an appointment is kept, the order is kept, and rows without an id are
-// never dropped.
+// TestDropRepeatedAppointmentRows pins the repeated-id lookahead read's repeat
+// rule: a row is dropped only when an earlier row has the same id and start,
+// so every day of an appointment is kept, the order is kept, and rows without
+// an id are never dropped.
 func TestDropRepeatedAppointmentRows(t *testing.T) {
 	t.Parallel()
 

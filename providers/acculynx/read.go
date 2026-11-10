@@ -62,8 +62,9 @@ const (
 
 	// /calendars/{calendarId}/appointments requires startDate/endDate. A
 	// missing Since reaches 30 days back. A missing Until is now, or, for an
-	// occurrence or lookahead read (see appointmentReadMode), 60 days ahead (see
-	// appointmentWindows), so the upcoming appointments are included.
+	// occurrence read or a repeated-id lookahead read (see appointmentReadMode),
+	// 60 days ahead (see appointmentWindows), so the upcoming appointments are
+	// included.
 	defaultAppointmentsWindow    = 30 * 24 * time.Hour
 	defaultAppointmentsLookahead = 60 * 24 * time.Hour
 
@@ -575,9 +576,10 @@ func (c *Connector) buildChildURL(
 }
 
 // fetchChildPages reads every record of one parent's nested collection. An
-// occurrence or lookahead read of calendars/appointments (see
-// appointmentReadMode) is read window by window (see appointmentWindows); every
-// other leaf, and a plain calendars/appointments read, is a single page walk.
+// occurrence read or a repeated-id lookahead read of calendars/appointments
+// (see appointmentReadMode) is read window by window (see appointmentWindows);
+// every other leaf, and a plain calendars/appointments read, is a single page
+// walk.
 func (c *Connector) fetchChildPages(
 	ctx context.Context,
 	parentID string,
@@ -594,8 +596,8 @@ func (c *Connector) fetchChildPages(
 		return c.fetchAppointmentWindows(ctx, parentID, params, nested, reqURL)
 	}
 
-	if mode == appointmentReadLookahead {
-		return c.fetchAppointmentLookahead(ctx, parentID, params, nested, reqURL)
+	if mode == appointmentReadLookaheadRepeatedIDs {
+		return c.fetchAppointmentLookaheadRepeatedIDs(ctx, parentID, params, nested, reqURL)
 	}
 
 	if params.ObjectName == "calendars/appointments" {
@@ -608,8 +610,8 @@ func (c *Connector) fetchChildPages(
 // fetchAppointmentWindows reads one calendar's appointments across every
 // window of appointmentWindows. A row can come back from two windows: an
 // occurrence read folds the repeats with appointmentOccurrences once every
-// calendar is read, and a lookahead read drops them per calendar (see
-// fetchAppointmentLookahead).
+// calendar is read, and a repeated-id lookahead read drops them per calendar (see
+// fetchAppointmentLookaheadRepeatedIDs).
 func (c *Connector) fetchAppointmentWindows(
 	ctx context.Context,
 	parentID string,
@@ -867,8 +869,8 @@ type dateWindow struct {
 	start, end time.Time
 }
 
-// appointmentWindows returns the date windows that cover an occurrence or
-// lookahead read of calendars/appointments. /calendars/{id}/appointments
+// appointmentWindows returns the date windows that cover an occurrence read or
+// a repeated-id lookahead read of calendars/appointments. /calendars/{id}/appointments
 // requires startDate + endDate (YYYY-MM-DD) and filters on the appointment's
 // own start, not on a modified date (appointments carry none). A missing bound
 // defaults relative to the other one, or to now, so the range is never

@@ -7,12 +7,12 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
-// fetchAppointmentLookahead reads one calendar's appointments for a lookahead
-// read (see appointmentLookaheadFlag), the way #3723 did: every window of
-// appointmentWindows, with the rows that repeat an earlier row's id and start
-// dropped (see dropRepeatedAppointmentRows). It runs only when the read mode is
-// appointmentReadLookahead.
-func (c *Connector) fetchAppointmentLookahead(
+// fetchAppointmentLookaheadRepeatedIDs reads one calendar's appointments for a
+// repeated-id lookahead read (see appointmentLookaheadRepeatedIDsFlag), the way
+// #3723 did: it reads every window of appointmentWindows and drops the rows
+// that repeat an earlier row's id and start (see dropRepeatedAppointmentRows).
+// It runs only when the read mode is appointmentReadLookaheadRepeatedIDs.
+func (c *Connector) fetchAppointmentLookaheadRepeatedIDs(
 	ctx context.Context,
 	parentID string,
 	params common.ReadParams,
@@ -27,13 +27,13 @@ func (c *Connector) fetchAppointmentLookahead(
 	return dropRepeatedAppointmentRows(rows), nil
 }
 
-// dropRepeatedAppointmentRows returns one calendar's rows of a lookahead read
-// without the rows whose id and start repeat an earlier row's. AccuLynx matches
+// dropRepeatedAppointmentRows drops the rows of one calendar's repeated-id
+// lookahead read whose id and start repeat an earlier row's. AccuLynx matches
 // a window's date range loosely at the day boundary, so a row can come back
 // from the windows on both sides of it. The key is id plus start, as AccuLynx
 // wrote it, not id alone: a multi-day or recurring appointment comes back as
-// one row per day under one id, and a lookahead read keeps every day. Rows
-// without an id are kept.
+// one row per day under one id, and a repeated-id lookahead read keeps every
+// day. Rows without an id are kept.
 func dropRepeatedAppointmentRows(rows []common.ReadResultRow) []common.ReadResultRow {
 	kept := make([]common.ReadResultRow, 0, len(rows))
 	seen := make(map[string]struct{}, len(rows))

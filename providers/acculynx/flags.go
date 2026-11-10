@@ -54,28 +54,32 @@ func readsMergedAppointmentSpans(ctx context.Context, params common.ReadParams) 
 	return params.ObjectName == "calendars/appointments" && appointmentMergedSpansFlag.Enabled(ctx)
 }
 
-// appointmentLookaheadFlag turns on lookahead reads of calendars/appointments,
-// the behavior of #3723 before it was reverted: a read reaches 60 days ahead
-// when Until is unset, in windows of at most 89 days, and the rows keep
-// AccuLynx's id. A multi-day or recurring appointment comes back as one row per
-// day, all under its id, so a read repeats that id once per day; only a row
-// that two windows both return (same id and start) is dropped (see
-// fetchAppointmentLookahead). Off, the read ends at Until or now.
+// appointmentLookaheadRepeatedIDsFlag turns on repeated-id lookahead reads of
+// calendars/appointments, the behavior of #3723 before it was reverted: a read
+// reaches 60 days ahead when Until is unset, in windows of at most 89 days, and
+// keeps AccuLynx's ids. A multi-day or recurring appointment comes back as one
+// row per day, all under its id, so the read repeats that id once per day. It
+// drops only a row that two windows of one calendar both return (same id and
+// start; see fetchAppointmentLookaheadRepeatedIDs). Off, the read ends at Until
+// or now.
 //
-// Off by default; kept to compare with appointmentOccurrencesFlag, which takes
-// precedence when both are on (see appointmentReadModeFor).
-var appointmentLookaheadFlag = feature.Define("acculynx-appointment-lookahead", //nolint:gochecknoglobals
+// Off by default. appointmentOccurrencesFlag takes precedence when both are on
+// (see appointmentReadModeFor).
+//
+//nolint:gochecknoglobals
+var appointmentLookaheadRepeatedIDsFlag = feature.Define("acculynx-appointment-lookahead-repeated-ids",
 	feature.Off(),
-	feature.Description("AccuLynx calendars/appointments reads reach 60 days ahead and keep AccuLynx's ids, "+
-		"so a multi-day or recurring appointment repeats its id once per day in a read; "+
-		"acculynx-appointment-occurrences takes precedence when both are on"),
+	feature.Description("AccuLynx calendars/appointments reads reach 60 days ahead and repeat AccuLynx's id "+
+		"once per day of a multi-day or recurring appointment; acculynx-appointment-occurrences takes "+
+		"precedence when both are on"),
 	feature.Owner("Chris Eberle"))
 
-// readsAppointmentLookahead reports whether appointmentLookaheadFlag is on for a
-// calendars/appointments read of params and the subject in ctx. On its own it
-// does not decide the read; see appointmentReadModeFor.
-func readsAppointmentLookahead(ctx context.Context, params common.ReadParams) bool {
-	return params.ObjectName == "calendars/appointments" && appointmentLookaheadFlag.Enabled(ctx)
+// readsAppointmentLookaheadRepeatedIDs reports whether
+// appointmentLookaheadRepeatedIDsFlag is on for a calendars/appointments read
+// of params and the subject in ctx. On its own it does not decide the read; see
+// appointmentReadModeFor.
+func readsAppointmentLookaheadRepeatedIDs(ctx context.Context, params common.ReadParams) bool {
+	return params.ObjectName == "calendars/appointments" && appointmentLookaheadRepeatedIDsFlag.Enabled(ctx)
 }
 
 // appointmentReadMode is how a calendars/appointments read gets its rows.
@@ -86,22 +90,24 @@ const (
 	// returns the rows as AccuLynx returns them (see applyAppointmentsDateWindow).
 	// Every read of another object is plain too.
 	appointmentReadPlain appointmentReadMode = iota
-	// appointmentReadLookahead is a lookahead read (see appointmentLookaheadFlag).
-	appointmentReadLookahead
+	// appointmentReadLookaheadRepeatedIDs is a repeated-id lookahead read (see
+	// appointmentLookaheadRepeatedIDsFlag).
+	appointmentReadLookaheadRepeatedIDs
 	// appointmentReadOccurrences is an occurrence read (see
 	// appointmentOccurrencesFlag).
 	appointmentReadOccurrences
 )
 
 // appointmentReadModeFor returns the read mode of params for the subject in
-// ctx. appointmentOccurrencesFlag wins over appointmentLookaheadFlag: both read
-// 60 days ahead, and only an occurrence read keeps a read from repeating an id.
+// ctx. appointmentOccurrencesFlag wins over appointmentLookaheadRepeatedIDsFlag:
+// both read 60 days ahead, and only an occurrence read keeps a read from
+// repeating an id.
 func appointmentReadModeFor(ctx context.Context, params common.ReadParams) appointmentReadMode {
 	switch {
 	case readsAppointmentOccurrences(ctx, params):
 		return appointmentReadOccurrences
-	case readsAppointmentLookahead(ctx, params):
-		return appointmentReadLookahead
+	case readsAppointmentLookaheadRepeatedIDs(ctx, params):
+		return appointmentReadLookaheadRepeatedIDs
 	default:
 		return appointmentReadPlain
 	}
