@@ -82,7 +82,7 @@ func TestReadMergedAppointmentSpans(t *testing.T) {
 		},
 		{
 			// Occurrence flag on: each day keeps its occurrence id, the repeat
-			// returned by both windows is dropped, and the span covers the days
+			// returned by both windows is merged, and the span covers the days
 			// of both windows.
 			occurrences: true,
 			TestCaseRead: testconn.TestCaseRead{
@@ -109,18 +109,18 @@ func TestReadMergedAppointmentSpans(t *testing.T) {
 					Rows: 2,
 					Data: []common.ReadResultRow{
 						{
-							Id: "crew-1_2026-03-31",
+							Id: "crew-1_2026-03-31T13:00:00Z",
 							Fields: map[string]any{
-								"id":               "crew-1_2026-03-31",
+								"id":               "crew-1_2026-03-31T13:00:00Z",
 								"appointmentstart": "2026-03-31T13:00:00Z",
 								"appointmentend":   "2026-04-01T22:00:00Z",
 							},
 							Raw: map[string]any{"id": "crew-1", "start": "2026-03-31T13:00:00Z"},
 						},
 						{
-							Id: "crew-1_2026-04-01",
+							Id: "crew-1_2026-04-01T13:00:00Z",
 							Fields: map[string]any{
-								"id":               "crew-1_2026-04-01",
+								"id":               "crew-1_2026-04-01T13:00:00Z",
 								"appointmentstart": "2026-03-31T13:00:00Z",
 								"appointmentend":   "2026-04-01T22:00:00Z",
 							},

@@ -10,7 +10,8 @@ import (
 // appointmentOccurrencesFlag turns on occurrence reads of calendars/appointments.
 // AccuLynx returns a multi-day or recurring appointment as one row per scheduled
 // day, all under the appointment's id. An occurrence read reaches 60 days ahead
-// when Until is unset and gives each of those rows an id of its own (see
+// when Until is unset, merges the repeats of each occurrence across windows and
+// calendars, and gives each occurrence an id of its own (see
 // appointmentOccurrences), so a read never repeats an id. Off, the read ends at
 // Until or now and the rows are AccuLynx's as they come.
 //
@@ -20,7 +21,7 @@ import (
 var appointmentOccurrencesFlag = feature.Define("acculynx-appointment-occurrences", //nolint:gochecknoglobals
 	feature.Off(),
 	feature.Description("AccuLynx calendars/appointments reads reach 60 days ahead and return one row "+
-		"per occurrence, with id <appointment id>_<UTC start date>; off, they end at Until or now and "+
+		"per occurrence, with id <appointment id>_<UTC start time>; off, they end at Until or now and "+
 		"repeat the appointment id for each day of a multi-day or recurring appointment"),
 	feature.Owner("Chris Eberle"))
 
@@ -58,10 +59,10 @@ func readsMergedAppointmentSpans(ctx context.Context, params common.ReadParams) 
 // calendars/appointments, the behavior of #3723 before it was reverted: a read
 // reaches 60 days ahead when Until is unset, in windows of at most 89 days, and
 // keeps AccuLynx's ids. A multi-day or recurring appointment comes back as one
-// row per day, all under its id, so the read repeats that id once per day. It
-// drops only a row that two windows of one calendar both return (same id and
-// start; see fetchAppointmentLookaheadRepeatedIDs). Off, the read ends at Until
-// or now.
+// row per day, all under its id, so the read repeats that id once per day. Only
+// the repeats of one occurrence (same id and start), from two windows or two
+// calendars, are merged into one row with the associations of both (see
+// mergeRepeatedOccurrences). Off, the read ends at Until or now.
 //
 // Off by default. appointmentOccurrencesFlag takes precedence when both are on
 // (see appointmentReadModeFor).

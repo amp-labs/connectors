@@ -22,8 +22,9 @@ import (
 )
 
 var (
-	errChildPagesExceeded = errors.New("acculynx: nested fetch exceeded page cap")
-	errMissingCount       = errors.New("acculynx: list response omitted count, cannot determine when pagination ends")
+	errChildPagesExceeded  = errors.New("acculynx: nested fetch exceeded page cap")
+	errMissingCount        = errors.New("acculynx: list response omitted count, cannot determine when pagination ends")
+	errParentPagesExceeded = errors.New("acculynx: parent list exceeded page cap")
 )
 
 const (
@@ -446,26 +447,56 @@ func (c *Connector) parseNestedResponse(
 		return nil, err
 	}
 
-	// Decided once per page, so every calendar of the page is read the same way
+	nextPage, err := c.nestedNextPage(params, nested, request, body)
+	if err != nil {
+		return nil, err
+	}
+
+	// Decided once here, so every calendar this call reads is read the same way
 	// even if a flag changes during the read.
 	mode := appointmentReadModeFor(ctx, params)
+
+	// An occurrence read and a repeated-id lookahead read merge the repeats of an
+	// occurrence across calendars (see mergeRepeatedOccurrences), so they read
+	// the rest of the calendar list now and fan out over every calendar in this
+	// one call. Merging within one page of the list would let an occurrence on
+	// calendars of two pages come back twice.
+	if mode != appointmentReadPlain && nextPage != "" {
+		moreParents, err := c.readRemainingParents(ctx, nested.parentObject, nextPage)
+		if err != nil {
+			return nil, err
+		}
+
+		parentNodes = append(parentNodes, moreParents...)
+		nextPage = ""
+	}
 
 	rows, err := c.fetchChildrenForParents(ctx, parentNodes, params, nested, mode)
 	if err != nil {
 		return nil, err
 	}
 
-	if mode == appointmentReadOccurrences {
-		rows = appointmentOccurrences(rows)
-	}
+	rows = flaggedAppointmentRows(ctx, params, mode, rows)
 
-	if readsMergedAppointmentSpans(ctx, params) {
-		addMergedAppointmentSpans(rows)
-	}
+	return &common.ReadResult{
+		Rows:     int64(len(rows)),
+		Data:     rows,
+		NextPage: common.NextPageToken(nextPage),
+		Done:     nextPage == "",
+	}, nil
+}
 
+// nestedNextPage returns the next page of the parent list a nested read walks,
+// or "" after its last page.
+func (c *Connector) nestedNextPage(
+	params common.ReadParams,
+	nested nestedSpec,
+	request *http.Request,
+	body *ajson.Node,
+) (string, error) {
 	reqURL, err := urlbuilder.FromRawURL(request.URL)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	nextPageFunc := c.makeNextPage(nested.parentObject, reqURL)
@@ -475,17 +506,85 @@ func (c *Connector) parseNestedResponse(
 		nextPageFunc = c.makeJobsNextPage(listParams, reqURL, nextPageFunc)
 	}
 
-	nextPage, err := nextPageFunc(body)
-	if err != nil {
-		return nil, err
+	return nextPageFunc(body)
+}
+
+// flaggedAppointmentRows applies what the appointment flags turn on to the rows
+// of a calendars/appointments read, once every calendar is read: occurrence ids
+// (appointmentOccurrencesFlag), the merged repeats of a repeated-id lookahead
+// read (appointmentLookaheadRepeatedIDsFlag) and merged spans
+// (appointmentMergedSpansFlag). With every flag off, and for every other
+// object, it returns rows as they are.
+func flaggedAppointmentRows(
+	ctx context.Context,
+	params common.ReadParams,
+	mode appointmentReadMode,
+	rows []common.ReadResultRow,
+) []common.ReadResultRow {
+	if mode == appointmentReadOccurrences {
+		rows = appointmentOccurrences(rows)
 	}
 
-	return &common.ReadResult{
-		Rows:     int64(len(rows)),
-		Data:     rows,
-		NextPage: common.NextPageToken(nextPage),
-		Done:     nextPage == "",
-	}, nil
+	if mode == appointmentReadLookaheadRepeatedIDs {
+		rows = mergeRepeatedOccurrences(rows)
+	}
+
+	if readsMergedAppointmentSpans(ctx, params) {
+		addMergedAppointmentSpans(rows)
+	}
+
+	return rows
+}
+
+// readRemainingParents reads a parent list from nextPage to its end and returns
+// its records. Occurrence reads and repeated-id lookahead reads of
+// calendars/appointments use it to fan out over every calendar in one call
+// (see parseNestedResponse).
+func (c *Connector) readRemainingParents(
+	ctx context.Context,
+	parentObject string,
+	nextPage string,
+) ([]*ajson.Node, error) {
+	var parents []*ajson.Node
+
+	for range maxChildPagesPerParent {
+		if nextPage == "" {
+			return parents, nil
+		}
+
+		pageURL, err := parseNextPageURL(nextPage)
+		if err != nil {
+			return nil, err
+		}
+
+		resp, err := c.JSONHTTPClient().Get(ctx, pageURL.String())
+		if err != nil {
+			return nil, err
+		}
+
+		body, ok := resp.Body()
+		if !ok {
+			return parents, nil
+		}
+
+		nodes, err := c.recordsFunc(parentObject)(body)
+		if err != nil {
+			return nil, err
+		}
+
+		parents = append(parents, nodes...)
+
+		nextPage, err = c.makeNextPage(parentObject, pageURL)(body)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if nextPage == "" {
+		return parents, nil
+	}
+
+	return nil, fmt.Errorf("%w: %s after %d pages", errParentPagesExceeded, parentObject, maxChildPagesPerParent)
 }
 
 func extractIDs(nodes []*ajson.Node) []string {
@@ -592,12 +691,8 @@ func (c *Connector) fetchChildPages(
 		return nil, err
 	}
 
-	if mode == appointmentReadOccurrences {
+	if mode != appointmentReadPlain {
 		return c.fetchAppointmentWindows(ctx, parentID, params, nested, reqURL)
-	}
-
-	if mode == appointmentReadLookaheadRepeatedIDs {
-		return c.fetchAppointmentLookaheadRepeatedIDs(ctx, parentID, params, nested, reqURL)
 	}
 
 	if params.ObjectName == "calendars/appointments" {
@@ -608,10 +703,9 @@ func (c *Connector) fetchChildPages(
 }
 
 // fetchAppointmentWindows reads one calendar's appointments across every
-// window of appointmentWindows. A row can come back from two windows: an
-// occurrence read folds the repeats with appointmentOccurrences once every
-// calendar is read, and a repeated-id lookahead read drops them per calendar (see
-// fetchAppointmentLookaheadRepeatedIDs).
+// window of appointmentWindows. A row can come back from two windows;
+// parseNestedResponse merges the repeats (see mergeRepeatedOccurrences) once
+// every calendar is read.
 func (c *Connector) fetchAppointmentWindows(
 	ctx context.Context,
 	parentID string,
@@ -648,48 +742,93 @@ func (c *Connector) fetchAppointmentWindows(
 // id, and rows sharing one in a single read become concurrent writes to the
 // same record.
 //
-// The occurrence id (see appointmentOccurrenceID) replaces the row's Id and its
-// "id" field when requested. Raw and the appointmentId field (see
-// appointmentRecord) keep AccuLynx's appointment id. The same
-// occurrence returned twice, by adjacent windows or by two calendars it is on,
-// is kept once with the associations of both, so an appointment on two
-// calendars carries both users. Rows without an id or a parsable start are
-// kept as they are.
+// It merges the repeats of each occurrence (see mergeRepeatedOccurrences), then
+// replaces each row's Id, and its "id" field when requested, with the
+// occurrence id (see appointmentOccurrenceID). Raw and the appointmentId field
+// (see appointmentRecord) keep AccuLynx's appointment id. Rows without an id or
+// a parsable start are kept as they are.
 func appointmentOccurrences(rows []common.ReadResultRow) []common.ReadResultRow {
-	occurrences := make([]common.ReadResultRow, 0, len(rows))
-	indexByID := make(map[string]int, len(rows))
+	occurrences := mergeRepeatedOccurrences(rows)
 
-	for _, row := range rows {
-		occurrenceID, ok := appointmentOccurrenceID(row)
+	for idx := range occurrences {
+		occurrenceID, ok := appointmentOccurrenceID(occurrences[idx])
 		if !ok {
-			occurrences = append(occurrences, row)
-
 			continue
 		}
 
-		if idx, seen := indexByID[occurrenceID]; seen {
-			mergeAssociations(&occurrences[idx], row.Associations)
+		occurrences[idx].Id = occurrenceID
 
-			continue
+		if _, requested := occurrences[idx].Fields["id"]; requested {
+			occurrences[idx].Fields["id"] = occurrenceID
 		}
-
-		row.Id = occurrenceID
-
-		if _, requested := row.Fields["id"]; requested {
-			row.Fields["id"] = occurrenceID
-		}
-
-		indexByID[occurrenceID] = len(occurrences)
-		occurrences = append(occurrences, row)
 	}
 
 	return occurrences
 }
 
-// appointmentOccurrenceID returns "<appointment id>_<YYYY-MM-DD>", the date
-// being the UTC date of the occurrence's start. The date rather than the full
-// start keeps the id stable when an occurrence's time moves within its day.
-// It reports false when the row has no id or its start is not an RFC 3339 time.
+// mergeRepeatedOccurrences merges the rows that are the same occurrence: the
+// same AccuLynx appointment id and the same start instant (see
+// appointmentOccurrenceID). AccuLynx returns an occurrence once for each
+// calendar it is on, and a row can come back from two adjacent windows. The
+// first row is kept, in first-seen order, with the associations of every
+// repeat, so an occurrence on two calendars carries both users. Ids are not
+// changed. Rows without an id are kept as they are, and a row whose start does
+// not parse merges only with rows that have its id and the same start text
+// (see occurrenceMergeKey).
+//
+// Occurrence reads and repeated-id lookahead reads both use it, so neither
+// returns the same occurrence twice.
+func mergeRepeatedOccurrences(rows []common.ReadResultRow) []common.ReadResultRow {
+	merged := make([]common.ReadResultRow, 0, len(rows))
+	indexByKey := make(map[string]int, len(rows))
+
+	for _, row := range rows {
+		key, ok := occurrenceMergeKey(row)
+		if !ok {
+			merged = append(merged, row)
+
+			continue
+		}
+
+		if idx, seen := indexByKey[key]; seen {
+			mergeAssociations(&merged[idx], row.Associations)
+
+			continue
+		}
+
+		indexByKey[key] = len(merged)
+		merged = append(merged, row)
+	}
+
+	return merged
+}
+
+// occurrenceMergeKey returns the key mergeRepeatedOccurrences merges rows on:
+// the occurrence id (see appointmentOccurrenceID) when the row's start parses,
+// and otherwise the appointment id with the start as AccuLynx wrote it, or
+// with none, the key #3723 merged window repeats on. It reports false for a
+// row without an id.
+func occurrenceMergeKey(row common.ReadResultRow) (string, bool) {
+	if occurrenceID, ok := appointmentOccurrenceID(row); ok {
+		return occurrenceID, true
+	}
+
+	appointmentID, _ := row.Raw["id"].(string)
+	if appointmentID == "" {
+		return "", false
+	}
+
+	start, _ := row.Raw["start"].(string)
+
+	return appointmentID + "|" + start, true
+}
+
+// appointmentOccurrenceID returns "<appointment id>_<start>", the start being
+// the occurrence's start in UTC as RFC 3339, e.g.
+// "3fa85f64_2026-11-14T13:00:00Z". Two occurrences of one appointment never
+// share it, even on the same day, and the same instant written with different
+// offsets gives the same id. It changes when an occurrence is rescheduled. It
+// reports false when the row has no id or its start is not an RFC 3339 time.
 func appointmentOccurrenceID(row common.ReadResultRow) (string, bool) {
 	appointmentID, _ := row.Raw["id"].(string)
 	if appointmentID == "" {
@@ -701,7 +840,7 @@ func appointmentOccurrenceID(row common.ReadResultRow) (string, bool) {
 		return "", false
 	}
 
-	return appointmentID + "_" + start.UTC().Format(time.DateOnly), true
+	return appointmentID + "_" + start.UTC().Format(time.RFC3339), true
 }
 
 // childRecordTransformer returns the record transformer of a nested read:

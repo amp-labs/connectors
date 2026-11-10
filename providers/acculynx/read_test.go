@@ -1720,7 +1720,7 @@ func TestReadAppointmentOccurrences(t *testing.T) {
 			// A multi-day CrewLabor appointment comes back as one row per day,
 			// all under one id, and the 03-31 row is returned by both windows.
 			// Each day is its own occurrence with its own id, the repeat is
-			// dropped, and Raw and appointmentId keep AccuLynx's appointment id.
+			// merged, and Raw and appointmentId keep AccuLynx's appointment id.
 			Name: "Occurrence read of calendars/appointments gives each day of a multi-day appointment its own id",
 			Input: common.ReadParams{
 				ObjectName: "calendars/appointments",
@@ -1746,23 +1746,23 @@ func TestReadAppointmentOccurrences(t *testing.T) {
 				Rows: 4,
 				Data: []common.ReadResultRow{
 					{
-						Id:     "crew-1_2026-03-31",
-						Fields: map[string]any{"id": "crew-1_2026-03-31", "start": "2026-03-31T04:00:00Z", "appointmentid": "crew-1"},
+						Id:     "crew-1_2026-03-31T04:00:00Z",
+						Fields: map[string]any{"id": "crew-1_2026-03-31T04:00:00Z", "start": "2026-03-31T04:00:00Z", "appointmentid": "crew-1"},
 						Raw:    map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z", "allDay": true},
 					},
 					{
-						Id:     "appt-1_2026-03-15",
-						Fields: map[string]any{"id": "appt-1_2026-03-15", "start": "2026-03-15T14:00:00Z", "appointmentid": "appt-1"},
+						Id:     "appt-1_2026-03-15T14:00:00Z",
+						Fields: map[string]any{"id": "appt-1_2026-03-15T14:00:00Z", "start": "2026-03-15T14:00:00Z", "appointmentid": "appt-1"},
 						Raw:    map[string]any{"id": "appt-1", "start": "2026-03-15T14:00:00Z"},
 					},
 					{
-						Id:     "crew-1_2026-04-01",
-						Fields: map[string]any{"id": "crew-1_2026-04-01", "start": "2026-04-01T04:00:00Z", "appointmentid": "crew-1"},
+						Id:     "crew-1_2026-04-01T04:00:00Z",
+						Fields: map[string]any{"id": "crew-1_2026-04-01T04:00:00Z", "start": "2026-04-01T04:00:00Z", "appointmentid": "crew-1"},
 						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z", "allDay": true},
 					},
 					{
-						Id:     "crew-1_2026-04-02",
-						Fields: map[string]any{"id": "crew-1_2026-04-02", "start": "2026-04-02T04:00:00Z", "appointmentid": "crew-1"},
+						Id:     "crew-1_2026-04-02T04:00:00Z",
+						Fields: map[string]any{"id": "crew-1_2026-04-02T04:00:00Z", "start": "2026-04-02T04:00:00Z", "appointmentid": "crew-1"},
 						Raw:    map[string]any{"id": "crew-1", "start": "2026-04-02T04:00:00Z", "allDay": true},
 					},
 				},
@@ -1813,11 +1813,78 @@ func TestReadAppointmentOccurrences(t *testing.T) {
 				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Id:     "appt-1_2026-04-15",
-						Fields: map[string]any{"id": "appt-1_2026-04-15"},
+						Id:     "appt-1_2026-04-15T14:00:00Z",
+						Fields: map[string]any{"id": "appt-1_2026-04-15T14:00:00Z"},
 						Raw:    map[string]any{"id": "appt-1", "jobId": "job-777"},
 						Associations: map[string][]common.Association{
 							"jobs":  {{ObjectId: "job-777"}},
+							"users": {{ObjectId: "cal-001"}, {ObjectId: "cal-002"}},
+						},
+					},
+				},
+				Done: true,
+			},
+		},
+		{
+			// The calendar list has two pages (pageSize 1 here, 25 by default).
+			// The read takes both pages in this one call, so the occurrence on
+			// a calendar of each page is one row carrying both users, and the
+			// read is done.
+			Name: "Occurrence read of calendars/appointments merges an occurrence on calendars of two list pages",
+			Input: common.ReadParams{
+				ObjectName:        "calendars/appointments",
+				Fields:            connectors.Fields("id"),
+				Since:             time.Date(2026, 4, 1, 0, 0, 0, 0, time.UTC),
+				Until:             time.Date(2026, 4, 30, 0, 0, 0, 0, time.UTC),
+				AssociatedObjects: []string{"users"},
+				PageSize:          1,
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars"),
+							mockcond.QueryParam("pageStartIndex", "1"),
+						},
+						Then: mockserver.ResponseString(http.StatusOK, `{"count": 2, "pageSize": 1, "pageStartIndex": 1,
+							"items": [{"id": "cal-002"}]}`),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars"),
+						},
+						Then: mockserver.ResponseString(http.StatusOK, `{"count": 2, "pageSize": 1, "pageStartIndex": 0,
+							"items": [{"id": "cal-001"}]}`),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars/cal-001/appointments"),
+						},
+						Then: appointmentsPage(`{"id": "appt-1", "start": "2026-04-15T14:00:00Z"}`),
+					},
+					{
+						If: mockcond.And{
+							mockcond.MethodGET(),
+							mockcond.Path("/api/v2/calendars/cal-002/appointments"),
+						},
+						Then: appointmentsPage(`{"id": "appt-1", "start": "2026-04-15T14:00:00Z"}`),
+					},
+				},
+				Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{
+					{
+						Id:     "appt-1_2026-04-15T14:00:00Z",
+						Fields: map[string]any{"id": "appt-1_2026-04-15T14:00:00Z"},
+						Raw:    map[string]any{"id": "appt-1"},
+						Associations: map[string][]common.Association{
 							"users": {{ObjectId: "cal-001"}, {ObjectId: "cal-002"}},
 						},
 					},
@@ -2113,10 +2180,11 @@ func TestAppointmentRecord(t *testing.T) {
 }
 
 // TestAppointmentOccurrences pins the occurrence rows of an occurrence read:
-// "<appointment id>_<UTC start date>" ids in first-seen order, repeats of one
-// occurrence kept once with their associations unioned, and rows without an
-// id or a parsable start left as they are.
-func TestAppointmentOccurrences(t *testing.T) { //nolint:funlen
+// "<appointment id>_<UTC start time>" ids in first-seen order, two occurrences
+// on the same day kept apart, repeats of one occurrence (the same instant,
+// whatever its offset) merged with their associations unioned, and rows
+// without an id or a parsable start left as they are.
+func TestAppointmentOccurrences(t *testing.T) { //nolint:funlen,maintidx
 	t.Parallel()
 
 	row := func(fields, raw map[string]any, associations map[string][]common.Association) common.ReadResultRow {
@@ -2142,21 +2210,34 @@ func TestAppointmentOccurrences(t *testing.T) { //nolint:funlen
 				row(map[string]any{"id": "e"}, map[string]any{"id": "e", "start": "2026-04-01T04:00:00Z"}, nil),
 			},
 			want: []common.ReadResultRow{
-				withID("e_2026-04-02",
-					row(map[string]any{"id": "e_2026-04-02"}, map[string]any{"id": "e", "start": "2026-04-02T04:00:00Z"}, nil)),
-				withID("x_2026-04-01",
-					row(map[string]any{"id": "x_2026-04-01"}, map[string]any{"id": "x", "start": "2026-04-01T14:00:00Z"}, nil)),
-				withID("e_2026-04-01",
-					row(map[string]any{"id": "e_2026-04-01"}, map[string]any{"id": "e", "start": "2026-04-01T04:00:00Z"}, nil)),
+				withID("e_2026-04-02T04:00:00Z", row(map[string]any{"id": "e_2026-04-02T04:00:00Z"},
+					map[string]any{"id": "e", "start": "2026-04-02T04:00:00Z"}, nil)),
+				withID("x_2026-04-01T14:00:00Z", row(map[string]any{"id": "x_2026-04-01T14:00:00Z"},
+					map[string]any{"id": "x", "start": "2026-04-01T14:00:00Z"}, nil)),
+				withID("e_2026-04-01T04:00:00Z", row(map[string]any{"id": "e_2026-04-01T04:00:00Z"},
+					map[string]any{"id": "e", "start": "2026-04-01T04:00:00Z"}, nil)),
 			},
 		},
 		{
-			name: "the date is the UTC date of the start",
+			// 9pm Eastern on 04-01 is already 04-02 in UTC, the same UTC date as
+			// the next day's midnight Eastern start. Both are kept.
+			name: "two occurrences of an appointment on the same UTC date are kept apart",
+			rows: []common.ReadResultRow{
+				row(nil, map[string]any{"id": "e", "start": "2026-04-02T01:00:00Z"}, nil),
+				row(nil, map[string]any{"id": "e", "start": "2026-04-02T04:00:00Z"}, nil),
+			},
+			want: []common.ReadResultRow{
+				withID("e_2026-04-02T01:00:00Z", row(nil, map[string]any{"id": "e", "start": "2026-04-02T01:00:00Z"}, nil)),
+				withID("e_2026-04-02T04:00:00Z", row(nil, map[string]any{"id": "e", "start": "2026-04-02T04:00:00Z"}, nil)),
+			},
+		},
+		{
+			name: "the start in the id is in UTC",
 			rows: []common.ReadResultRow{
 				row(nil, map[string]any{"id": "e", "start": "2026-04-01T22:30:00-05:00"}, nil),
 			},
 			want: []common.ReadResultRow{
-				withID("e_2026-04-02", row(nil, map[string]any{"id": "e", "start": "2026-04-01T22:30:00-05:00"}, nil)),
+				withID("e_2026-04-02T03:30:00Z", row(nil, map[string]any{"id": "e", "start": "2026-04-01T22:30:00-05:00"}, nil)),
 			},
 		},
 		{
@@ -2166,7 +2247,7 @@ func TestAppointmentOccurrences(t *testing.T) { //nolint:funlen
 					map[string]any{"id": "e", "start": "2026-04-01T04:00:00Z"}, nil),
 			},
 			want: []common.ReadResultRow{
-				withID("e_2026-04-01", row(map[string]any{"start": "2026-04-01T04:00:00Z"},
+				withID("e_2026-04-01T04:00:00Z", row(map[string]any{"start": "2026-04-01T04:00:00Z"},
 					map[string]any{"id": "e", "start": "2026-04-01T04:00:00Z"}, nil)),
 			},
 		},
@@ -2177,13 +2258,13 @@ func TestAppointmentOccurrences(t *testing.T) { //nolint:funlen
 					"jobs":  {{ObjectId: "job-1"}},
 					"users": {{ObjectId: "cal-1"}},
 				}),
-				row(nil, map[string]any{"id": "e", "start": "2026-04-01T14:00:00Z"}, map[string][]common.Association{
+				row(nil, map[string]any{"id": "e", "start": "2026-04-01T09:00:00-05:00"}, map[string][]common.Association{
 					"jobs":  {{ObjectId: "job-1"}},
 					"users": {{ObjectId: "cal-2"}},
 				}),
 			},
 			want: []common.ReadResultRow{
-				withID("e_2026-04-01",
+				withID("e_2026-04-01T14:00:00Z",
 					row(nil, map[string]any{"id": "e", "start": "2026-04-01T14:00:00Z"}, map[string][]common.Association{
 						"jobs":  {{ObjectId: "job-1"}},
 						"users": {{ObjectId: "cal-1"}, {ObjectId: "cal-2"}},

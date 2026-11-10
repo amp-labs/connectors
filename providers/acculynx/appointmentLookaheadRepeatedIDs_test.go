@@ -16,7 +16,8 @@ import (
 
 // TestReadAppointmentLookaheadRepeatedIDs covers calendars/appointments reads
 // with appointmentLookaheadRepeatedIDsFlag on: the read cases of #3723, which
-// this flag brings back. It is not parallel because the flag is
+// this flag brings back, except that an occurrence on two calendars is now one
+// row. It is not parallel because the flag is
 // process-global: TestRead's parallel cases, which read it off, resume only
 // after this test has returned and reset it.
 //
@@ -48,7 +49,7 @@ func TestReadAppointmentLookaheadRepeatedIDs(t *testing.T) {
 		{
 			// A multi-day CrewLabor appointment comes back as one row per day, all
 			// under one id: every day is kept, and the id repeats. The 03-31 row
-			// is returned by both windows and is kept once.
+			// is returned by both windows and is merged into one.
 			Name: "Repeated-id lookahead read keeps each day of a multi-day appointment and drops window repeats",
 			Input: common.ReadParams{
 				ObjectName: "calendars/appointments",
@@ -90,9 +91,9 @@ func TestReadAppointmentLookaheadRepeatedIDs(t *testing.T) {
 			},
 		},
 		{
-			// Repeats are dropped per calendar only: the same appointment on two
-			// calendars is two rows, one per user.
-			Name: "Repeated-id lookahead read returns an appointment on two calendars once per calendar",
+			// The same occurrence on two calendars is merged into one row carrying
+			// both users, so an id-and-start key never repeats in a read.
+			Name: "Repeated-id lookahead read returns an occurrence on two calendars once, with both users",
 			Input: common.ReadParams{
 				ObjectName:        "calendars/appointments",
 				Fields:            connectors.Fields("id"),
@@ -130,19 +131,15 @@ func TestReadAppointmentLookaheadRepeatedIDs(t *testing.T) {
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
-				Rows: 2,
+				Rows: 1,
 				Data: []common.ReadResultRow{
 					{
-						Id:           "appt-1",
-						Fields:       map[string]any{"id": "appt-1"},
-						Raw:          map[string]any{"id": "appt-1"},
-						Associations: map[string][]common.Association{"users": {{ObjectId: "cal-001"}}},
-					},
-					{
-						Id:           "appt-1",
-						Fields:       map[string]any{"id": "appt-1"},
-						Raw:          map[string]any{"id": "appt-1"},
-						Associations: map[string][]common.Association{"users": {{ObjectId: "cal-002"}}},
+						Id:     "appt-1",
+						Fields: map[string]any{"id": "appt-1"},
+						Raw:    map[string]any{"id": "appt-1"},
+						Associations: map[string][]common.Association{
+							"users": {{ObjectId: "cal-001"}, {ObjectId: "cal-002"}},
+						},
 					},
 				},
 				Done: true,
@@ -187,31 +184,52 @@ func TestAppointmentReadModeFor(t *testing.T) {
 		"occurrences on their own")
 }
 
-// TestDropRepeatedAppointmentRows pins the repeated-id lookahead read's repeat
-// rule: a row is dropped only when an earlier row has the same id and start,
-// so every day of an appointment is kept, the order is kept, and rows without
-// an id are never dropped.
-func TestDropRepeatedAppointmentRows(t *testing.T) {
+// TestMergeRepeatedOccurrences pins the merge that both flagged reads use: rows
+// with the same appointment id and start instant become one row with the
+// associations of every repeat, ids unchanged and order kept, while every
+// other occurrence, even on the same day, and every row without an id is
+// kept. A row whose start does not parse merges only on its id and start text.
+func TestMergeRepeatedOccurrences(t *testing.T) {
 	t.Parallel()
 
-	row := func(raw map[string]any) common.ReadResultRow {
-		return common.ReadResultRow{Raw: raw}
+	row := func(raw map[string]any, users ...string) common.ReadResultRow {
+		result := common.ReadResultRow{Raw: raw}
+
+		if id, ok := raw["id"].(string); ok {
+			result.Id = id
+		}
+
+		for _, user := range users {
+			if result.Associations == nil {
+				result.Associations = map[string][]common.Association{}
+			}
+
+			result.Associations["users"] = append(result.Associations["users"], common.Association{ObjectId: user})
+		}
+
+		return result
 	}
 
 	rows := []common.ReadResultRow{
-		row(map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z"}),
+		row(map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z"}, "cal-1"),
 		row(map[string]any{"title": "no id"}),
-		row(map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z"}),
-		row(map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z"}),
+		row(map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z"}, "cal-1"),
+		row(map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z"}, "cal-2"),
+		row(map[string]any{"id": "crew-1", "start": "2026-03-30T23:00:00-05:00"}, "cal-1"),
+		row(map[string]any{"id": "crew-1", "start": "2026-04-01T01:00:00Z"}, "cal-1"),
 		row(map[string]any{"title": "no id"}),
-		row(map[string]any{"id": "appt-1", "start": "2026-03-31T04:00:00Z"}),
+		row(map[string]any{"id": "x"}, "cal-1"),
+		row(map[string]any{"id": "x", "start": "soon"}, "cal-1"),
+		row(map[string]any{"id": "x"}, "cal-2"),
 	}
 
-	assert.DeepEqual(t, dropRepeatedAppointmentRows(rows), []common.ReadResultRow{
-		row(map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z"}),
+	assert.DeepEqual(t, mergeRepeatedOccurrences(rows), []common.ReadResultRow{
+		row(map[string]any{"id": "crew-1", "start": "2026-03-31T04:00:00Z"}, "cal-1", "cal-2"),
 		row(map[string]any{"title": "no id"}),
-		row(map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z"}),
+		row(map[string]any{"id": "crew-1", "start": "2026-04-01T04:00:00Z"}, "cal-1"),
+		row(map[string]any{"id": "crew-1", "start": "2026-04-01T01:00:00Z"}, "cal-1"),
 		row(map[string]any{"title": "no id"}),
-		row(map[string]any{"id": "appt-1", "start": "2026-03-31T04:00:00Z"}),
+		row(map[string]any{"id": "x"}, "cal-1", "cal-2"),
+		row(map[string]any{"id": "x", "start": "soon"}, "cal-1"),
 	})
 }
