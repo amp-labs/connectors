@@ -11,16 +11,16 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-// TestReadAppointmentSpans covers calendars/appointments reads with
-// appointmentSpansFlag on, with appointmentOccurrencesFlag off and on. It is
-// not parallel because both flags are process-global: TestRead's parallel
+// TestReadMergedAppointmentSpans covers calendars/appointments reads with
+// appointmentMergedSpansFlag on, with appointmentOccurrencesFlag off and on. It
+// is not parallel because both flags are process-global: TestRead's parallel
 // cases, which read them off, resume only after this test has returned and
 // reset them.
 //
 //nolint:paralleltest,tparallel,funlen // flips the process-global appointment flags
-func TestReadAppointmentSpans(t *testing.T) {
-	assert.NilError(t, appointmentSpansFlag.Set(feature.On()))
-	t.Cleanup(appointmentSpansFlag.Reset)
+func TestReadMergedAppointmentSpans(t *testing.T) {
+	assert.NilError(t, appointmentMergedSpansFlag.Set(feature.On()))
+	t.Cleanup(appointmentMergedSpansFlag.Reset)
 	t.Cleanup(appointmentOccurrencesFlag.Reset)
 
 	tests := []struct {
@@ -31,7 +31,7 @@ func TestReadAppointmentSpans(t *testing.T) {
 			// Occurrence flag off: the rows and their ids are AccuLynx's as they
 			// come, and each row carries its appointment's span, unrequested.
 			TestCaseRead: testconn.TestCaseRead{
-				Name: "Span read of calendars/appointments adds the appointment's span to each row",
+				Name: "Merged-span read of calendars/appointments adds the appointment's span to each row",
 				Input: common.ReadParams{
 					ObjectName: "calendars/appointments",
 					Fields:     connectors.Fields("id"),
@@ -86,7 +86,7 @@ func TestReadAppointmentSpans(t *testing.T) {
 			// of both windows.
 			occurrences: true,
 			TestCaseRead: testconn.TestCaseRead{
-				Name: "Span read of calendars/appointments with occurrences spans the occurrences of every window",
+				Name: "Merged-span read of calendars/appointments with occurrences spans the occurrences of every window",
 				Input: common.ReadParams{
 					ObjectName: "calendars/appointments",
 					Fields:     connectors.Fields("id"),
@@ -148,29 +148,29 @@ func TestReadAppointmentSpans(t *testing.T) {
 	}
 }
 
-// TestReadsAppointmentSpans checks that only calendars/appointments reads follow
-// appointmentSpansFlag.
+// TestReadsMergedAppointmentSpans checks that only calendars/appointments reads
+// follow appointmentMergedSpansFlag.
 //
-//nolint:paralleltest // flips the process-global appointmentSpansFlag
-func TestReadsAppointmentSpans(t *testing.T) {
-	t.Cleanup(appointmentSpansFlag.Reset)
+//nolint:paralleltest // flips the process-global appointmentMergedSpansFlag
+func TestReadsMergedAppointmentSpans(t *testing.T) {
+	t.Cleanup(appointmentMergedSpansFlag.Reset)
 
 	appointments := common.ReadParams{ObjectName: "calendars/appointments"}
 
-	assert.Assert(t, !readsAppointmentSpans(t.Context(), appointments), "off by default")
+	assert.Assert(t, !readsMergedAppointmentSpans(t.Context(), appointments), "off by default")
 
-	assert.NilError(t, appointmentSpansFlag.Set(feature.On()))
+	assert.NilError(t, appointmentMergedSpansFlag.Set(feature.On()))
 
-	assert.Assert(t, readsAppointmentSpans(t.Context(), appointments), "on for calendars/appointments")
-	assert.Assert(t, !readsAppointmentSpans(t.Context(), common.ReadParams{ObjectName: "calendars"}),
+	assert.Assert(t, readsMergedAppointmentSpans(t.Context(), appointments), "on for calendars/appointments")
+	assert.Assert(t, !readsMergedAppointmentSpans(t.Context(), common.ReadParams{ObjectName: "calendars"}),
 		"other objects never add spans")
 }
 
-// TestAddAppointmentSpans pins the span of each appointment: times compared as
-// instants but kept as AccuLynx wrote them, a field left out when no row has a
-// usable value for it, rows without an id untouched, and the rows' order, ids
-// and Raw unchanged.
-func TestAddAppointmentSpans(t *testing.T) { //nolint:funlen
+// TestAddMergedAppointmentSpans pins the merged span of each appointment: times
+// compared as instants but kept as AccuLynx wrote them, a field left out when
+// no row has a usable value for it, rows without an id untouched, and the
+// rows' order, ids and Raw unchanged.
+func TestAddMergedAppointmentSpans(t *testing.T) { //nolint:funlen
 	t.Parallel()
 
 	rows := []common.ReadResultRow{
@@ -197,7 +197,7 @@ func TestAddAppointmentSpans(t *testing.T) { //nolint:funlen
 		},
 	}
 
-	addAppointmentSpans(rows)
+	addMergedAppointmentSpans(rows)
 
 	assert.DeepEqual(t, rows, []common.ReadResultRow{
 		{

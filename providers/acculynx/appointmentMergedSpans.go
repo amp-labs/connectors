@@ -6,8 +6,8 @@ import (
 	"github.com/amp-labs/connectors/common"
 )
 
-// The fields addAppointmentSpans sets, lowercase like every other field of a
-// row (see common.ExtractLowercaseFieldsFromRaw).
+// The fields addMergedAppointmentSpans sets, lowercase like every other field
+// of a row (see common.ExtractLowercaseFieldsFromRaw).
 const (
 	appointmentStartField = "appointmentstart"
 	appointmentEndField   = "appointmentend"
@@ -21,22 +21,25 @@ type appointmentSpan struct {
 	startText, endText string
 }
 
-// addAppointmentSpans sets appointmentstart and appointmentend on every row of
-// a calendars/appointments read: the earliest start and the latest end among
-// the rows that share the row's AccuLynx appointment id (Raw "id"). The rows
-// stay as they are, one per day or occurrence; only the two fields are added.
+// addMergedAppointmentSpans merges the rows of each appointment of a
+// calendars/appointments read into one span and sets it on every one of those
+// rows as appointmentstart and appointmentend: the earliest start and the
+// latest end among the rows that share the row's AccuLynx appointment id (Raw
+// "id"). The rows themselves are not merged and stay as they are, one per day
+// or occurrence; only the two fields are added.
 //
 // The span is the appointment's extent within this read, not its definition:
-// it is clipped to the read's date range, rows are only grouped within one page
+// it is clipped to the read's date range, rows are only merged within one page
 // of the calendar list, and for a recurring appointment it says nothing about
 // the repeat pattern.
 //
-// It runs only when appointmentSpansFlag is on (see readsAppointmentSpans). The
-// fields are not in the object's metadata, so they are set whether or not they
-// were requested. Rows without an id get neither field, and a field is left out
-// when no row of the appointment has an RFC 3339 value for it.
-func addAppointmentSpans(rows []common.ReadResultRow) {
-	spans := appointmentSpans(rows)
+// It runs only when appointmentMergedSpansFlag is on (see
+// readsMergedAppointmentSpans). The fields are not in the object's metadata,
+// so they are set whether or not they were requested. Rows without an id get
+// neither field, and a field is left out when no row of the appointment has an
+// RFC 3339 value for it.
+func addMergedAppointmentSpans(rows []common.ReadResultRow) {
+	spans := mergeAppointmentSpans(rows)
 
 	for idx := range rows {
 		appointmentID, _ := rows[idx].Raw["id"].(string)
@@ -60,8 +63,9 @@ func addAppointmentSpans(rows []common.ReadResultRow) {
 	}
 }
 
-// appointmentSpans returns the span of every appointment id among rows.
-func appointmentSpans(rows []common.ReadResultRow) map[string]appointmentSpan {
+// mergeAppointmentSpans merges the rows of each appointment id among rows into
+// one span.
+func mergeAppointmentSpans(rows []common.ReadResultRow) map[string]appointmentSpan {
 	spans := make(map[string]appointmentSpan)
 
 	for _, row := range rows {
