@@ -137,3 +137,8 @@ To add a **Subscribe Connector** (webhook subscriptions) to a provider, follow t
 [**Contributing a Subscribe Action**](./CONTRIBUTING_SUBSCRIBE_ACTION.md). It explains how to ship the
 work as a small stack of PRs (with a focused per-PR guide for each step), and links the shared
 interfaces, types, and concepts in [SUBSCRIBE_REFERENCES.md](./SUBSCRIBE_REFERENCES.md).
+
+## Getting Your Change to Production
+
+To promote your change to production, add the `request-to-promote` label to your pull request before
+merging. It asks the Ampersand engineering team to promote the server build that includes your change.
