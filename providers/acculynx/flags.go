@@ -22,7 +22,7 @@ var appointmentOccurrencesFlag = feature.Define("acculynx-appointment-occurrence
 	feature.Description("AccuLynx calendars/appointments reads reach 60 days ahead and return one row "+
 		"per occurrence, with id <appointment id>_<UTC start date>; off, they end at Until or now and "+
 		"repeat the appointment id for each day of a multi-day or recurring appointment"),
-	feature.Owner("connectors"))
+	feature.Owner("Chris Eberle"))
 
 // readsAppointmentOccurrences reports whether a read of params is an occurrence
 // read: the object is calendars/appointments and appointmentOccurrencesFlag is on
