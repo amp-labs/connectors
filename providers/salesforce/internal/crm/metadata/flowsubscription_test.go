@@ -10,7 +10,7 @@ func validFlowParams() FlowParams {
 		ObjectName:          "Account",
 		FlowName:            "acme_Account",
 		OutboundMessageName: "amp_Account",
-		RecordTriggerType:   RecordTriggerTypeCreateAndUpdate,
+		RecordTriggerType:   RecordTriggerTypeUpdate,
 	}
 }
 
@@ -41,13 +41,6 @@ func TestBuildWatchFieldsFilterFormula(t *testing.T) {
 	expected := "OR(ISCHANGED({!$Record.Email}), ISCHANGED({!$Record.Phone}))"
 	if got := buildWatchFieldsFilterFormula(params); got != expected {
 		t.Errorf("multi watch field formula = %q, want %q", got, expected)
-	}
-
-	// Create+update: ISNEW so creates still fire; ISCHANGED gates updates.
-	params.RecordTriggerType = RecordTriggerTypeCreateAndUpdate
-	wantCreateAndUpdate := "OR(ISNEW(), ISCHANGED({!$Record.Email}), ISCHANGED({!$Record.Phone}))"
-	if got := buildWatchFieldsFilterFormula(params); got != wantCreateAndUpdate {
-		t.Errorf("CreateAndUpdate formula = %q, want %q", got, wantCreateAndUpdate)
 	}
 
 	params.RecordTriggerType = RecordTriggerTypeCreate
@@ -104,7 +97,7 @@ func TestConstructDraftFlow(t *testing.T) {
 		"<actionName>Account.amp_Account</actionName>",
 		"<actionType>outboundMessage</actionType>",
 		"<object>Account</object>",
-		"<recordTriggerType>CreateAndUpdate</recordTriggerType>",
+		"<recordTriggerType>Update</recordTriggerType>",
 		"<triggerType>RecordAfterSave</triggerType>",
 		"<status>Draft</status>",
 		"<processType>AutoLaunchedFlow</processType>",
@@ -159,7 +152,7 @@ func subscriptionComponentFor(objectName string) FlowSubscriptionComponent {
 			ObjectName:          objectName,
 			FlowName:            flowName,
 			OutboundMessageName: omName,
-			RecordTriggerType:   RecordTriggerTypeCreateAndUpdate,
+			RecordTriggerType:   RecordTriggerTypeUpdate,
 		},
 	}
 }

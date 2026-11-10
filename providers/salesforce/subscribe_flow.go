@@ -121,9 +121,8 @@ func manualFlowSubscription(params common.SubscribeParams) (*common.Subscription
 	}, nil
 }
 
-// OutboundMessageMetadata is our record of a deployed OM, stored on a FlowPair
-// (or, for the legacy shape, SubscribeResult.Flows[object].OutboundMessage). Delete uses Name for the
-// destructive zip and as OutboundMessageName if the flow is Draft-redeployed.
+// OutboundMessageMetadata is our record of a deployed OM, stored on a FlowPair.
+// Delete uses Name for the destructive zip and as OutboundMessageName if the flow is Draft-redeployed.
 // Flow updates delete-then-recreate, so they only read this on that delete.
 // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_workflow.htm
 type OutboundMessageMetadata struct {
@@ -139,8 +138,8 @@ type OutboundMessageMetadata struct {
 	DeployID string `json:"deployId,omitempty"`
 }
 
-// FlowMetadata is our record of a deployed flow, stored on a FlowPair (or, for
-// the legacy shape, SubscribeResult.Flows[object].Flow). Delete uses Name plus RecordTriggerType
+// FlowMetadata is our record of a deployed flow, stored on a FlowPair.
+// Delete uses Name plus RecordTriggerType
 // and WatchFields to rebuild XML for the Draft deactivation fallback, then
 // deletes versions. Update only reads this on that delete half.
 // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm
@@ -148,14 +147,12 @@ type FlowMetadata struct {
 	// Name is the Flow API name (org-wide unique).
 	Name string `json:"name"`
 
-	// RecordTriggerType is the deployed flow's trigger (Create / Update /
-	// CreateAndUpdate). Kept so teardown can regenerate the exact flow XML for
-	// the deactivation fallback.
+	// RecordTriggerType is the deployed flow's trigger (Create or Update), kept
+	// so teardown can regenerate the flow XML for the deactivation fallback.
 	RecordTriggerType string `json:"recordTriggerType"`
 
-	// WatchFields are baked into the flow's ISCHANGED entry-condition formula
-	// (Update and CreateAndUpdate). Empty means no formula: any matching
-	// trigger fires. Create-only ignores them.
+	// WatchFields are baked into the Update flow's ISCHANGED entry-condition
+	// formula. Empty means every update fires; Create flows ignore them.
 	WatchFields []string `json:"watchFields,omitempty"`
 
 	// DeployID is the Metadata API deploy id that created the component.
@@ -178,12 +175,6 @@ type FlowPair struct {
 type FlowSubscription struct {
 	ObjectName common.ObjectName `json:"objectName"`
 
-	// Deprecated: OutboundMessage is the OM deployed in the same package as Flow (legacy shape).
-	OutboundMessage *OutboundMessageMetadata `json:"outboundMessage,omitempty"`
-
-	// Deprecated: Flow is the record-triggered flow deployed in the same package as the OM (legacy shape).
-	Flow *FlowMetadata `json:"flow,omitempty"`
-
 	// Pairs stores the flow + outbound message pair for each event type (create/updated) this config is subscribed to.
 	Pairs map[common.SubscriptionEventType]*FlowPair `json:"pairs,omitempty"`
 
@@ -198,15 +189,6 @@ func (f *FlowSubscription) FlowPairs() []*FlowPair {
 		return nil
 	}
 
-	// If the subscription contains an OM/Flow in the legacy shape, return the single pair.
-	if f.OutboundMessage != nil && f.Flow != nil {
-		return []*FlowPair{{
-			OutboundMessage: f.OutboundMessage,
-			Flow:            f.Flow,
-		}}
-	}
-
-	// Otherwise, look to see if the subscription contains a CreateEvent and/or UpdateEvent FlowPair.
 	pairs := make([]*FlowPair, 0, len(f.Pairs))
 
 	for _, eventType := range []common.SubscriptionEventType{

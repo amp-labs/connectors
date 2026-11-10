@@ -102,15 +102,12 @@ func TestBuildFlowSubscriptionPerEventPairs(t *testing.T) {
 		}
 	}
 
-	// The record is in the per-event shape only, with the same names as what is deployed.
+	// The record has the same names as what is deployed.
 	if len(subscriptions) != 1 {
 		t.Fatalf("expected 1 subscription record, got %d", len(subscriptions))
 	}
 
 	record := subscriptions[0]
-	if record.Flow != nil || record.OutboundMessage != nil {
-		t.Error("record has legacy fields set; new deploys must be recorded in the per-event shape only")
-	}
 
 	var names []string
 	for _, pair := range record.FlowPairs() {
@@ -146,8 +143,7 @@ func TestBuildFlowSubscriptionWatchFieldsAll(t *testing.T) {
 }
 
 // TestBuildFlowSubscriptionNames covers which names a redeploy uses. A recorded per-event pair keeps
-// its name, even after a prefix change, so the upsert replaces it in place. A legacy record's single
-// pair is not reused: the object moves to new per-event names, and reconcile deletes the legacy pair.
+// its name, even after a prefix change, so the upsert replaces it in place.
 func TestBuildFlowSubscriptionNames(t *testing.T) {
 	t.Parallel()
 
@@ -164,8 +160,6 @@ func TestBuildFlowSubscriptionNames(t *testing.T) {
 	}{
 		{"New subscription generates names", nil, []string{"acme_Account_Create", "acme_Account_Update"}},
 		{"Recorded per-event pairs keep their names", flowResult(recorded), []string{"amp_Account_create", "amp_Account_update"}},
-		{"Legacy record moves to per-event names", flowResult(legacyFlowSubscription("Account")),
-			[]string{"acme_Account_Create", "acme_Account_Update"}},
 	}
 
 	for _, tt := range tests {
@@ -186,26 +180,6 @@ func TestBuildFlowSubscriptionNames(t *testing.T) {
 				t.Errorf("names = %v, want %v", got, tt.want)
 			}
 		})
-	}
-}
-
-// TestFlowSubscriptionMigrationDropsLegacyPair ties the builder to reconcile: redeploying a legacy
-// record builds per-event pairs, so its legacy pair is reported for deletion.
-func TestFlowSubscriptionMigrationDropsLegacyPair(t *testing.T) {
-	t.Parallel()
-
-	prevState := flowResult(legacyFlowSubscription("Account"))
-
-	_, subscriptions, err := buildFlowSubscription(testSubscribeParams(map[common.ObjectName]common.ObjectEvents{
-		"Account": {Events: common.SubscriptionEventTypes{common.SubscriptionEventTypeCreate, common.SubscriptionEventTypeUpdate}},
-	}), testFlowRequest(), prevState)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	dropped := droppedFlowPairs(prevState, flowResult(subscriptions...))
-	if len(dropped["Account"]) != 1 || dropped["Account"][0].Flow.Name != "amp_Account" {
-		t.Errorf("droppedFlowPairs() = %v, want the legacy amp_Account pair", dropped)
 	}
 }
 
@@ -303,15 +277,6 @@ func TestSubscribeWithFlowRequiresFlowConfig(t *testing.T) {
 	}
 }
 
-// legacyFlowSubscription records an object in the legacy shape: one CreateAndUpdate pair.
-func legacyFlowSubscription(name string) *FlowSubscription {
-	return &FlowSubscription{
-		ObjectName:      common.ObjectName(name),
-		Flow:            &FlowMetadata{Name: "amp_" + name},
-		OutboundMessage: &OutboundMessageMetadata{Name: "amp_" + name},
-	}
-}
-
 // perEventFlowSubscription records an object in the per-event shape: one pair per event type.
 func perEventFlowSubscription(name string, eventTypes ...common.SubscriptionEventType) *FlowSubscription {
 	pairs := make(map[common.SubscriptionEventType]*FlowPair, len(eventTypes))
@@ -351,30 +316,30 @@ func TestDroppedFlowPairs(t *testing.T) {
 		want []string
 	}{{
 		name: "Unchanged object set removes nothing",
-		prev: flowResult(legacyFlowSubscription("Account"), legacyFlowSubscription("Contact")),
-		next: flowResult(legacyFlowSubscription("Account"), legacyFlowSubscription("Contact")),
+		prev: flowResult(perEventFlowSubscription("Account", update), perEventFlowSubscription("Contact", update)),
+		next: flowResult(perEventFlowSubscription("Account", update), perEventFlowSubscription("Contact", update)),
 		want: nil,
 	}, {
 		name: "Dropped objects are removed",
-		prev: flowResult(legacyFlowSubscription("Account"), legacyFlowSubscription("Contact"),
-			legacyFlowSubscription("Lead")),
-		next: flowResult(legacyFlowSubscription("Account")),
-		want: []string{"amp_Contact", "amp_Lead"},
+		prev: flowResult(perEventFlowSubscription("Account", update), perEventFlowSubscription("Contact", update),
+			perEventFlowSubscription("Lead", update)),
+		next: flowResult(perEventFlowSubscription("Account", update)),
+		want: []string{"amp_Contact_update", "amp_Lead_update"},
 	}, {
 		name: "Added objects remove nothing",
-		prev: flowResult(legacyFlowSubscription("Account")),
-		next: flowResult(legacyFlowSubscription("Account"), legacyFlowSubscription("Contact")),
+		prev: flowResult(perEventFlowSubscription("Account", update)),
+		next: flowResult(perEventFlowSubscription("Account", update), perEventFlowSubscription("Contact", update)),
 		want: nil,
 	}, {
 		name: "No previous state removes nothing",
 		prev: nil,
-		next: flowResult(legacyFlowSubscription("Account")),
+		next: flowResult(perEventFlowSubscription("Account", update)),
 		want: nil,
 	}, {
 		name: "Emptied subscription removes everything",
-		prev: flowResult(legacyFlowSubscription("Account"), legacyFlowSubscription("Contact")),
+		prev: flowResult(perEventFlowSubscription("Account", update), perEventFlowSubscription("Contact", update)),
 		next: &SubscribeResult{UseFlow: true},
-		want: []string{"amp_Account", "amp_Contact"},
+		want: []string{"amp_Account_update", "amp_Contact_update"},
 	}, {
 		name: "Unchanged per-event pairs remove nothing",
 		prev: flowResult(perEventFlowSubscription("Account", create, update)),
@@ -390,11 +355,6 @@ func TestDroppedFlowPairs(t *testing.T) {
 		prev: flowResult(perEventFlowSubscription("Account", create, update)),
 		next: &SubscribeResult{UseFlow: true},
 		want: []string{"amp_Account_create", "amp_Account_update"},
-	}, {
-		name: "Moving to per-event pairs removes the legacy pair",
-		prev: flowResult(legacyFlowSubscription("Account")),
-		next: flowResult(perEventFlowSubscription("Account", create, update)),
-		want: []string{"amp_Account"},
 	}}
 
 	for _, tt := range tests {
@@ -439,7 +399,7 @@ func TestDroppedFlowPairsSkipsUnrecordedArtifacts(t *testing.T) {
 					common.SubscriptionEventTypeUpdate: nil,
 				},
 			},
-			"Lead": legacyFlowSubscription("Lead"),
+			"Lead": perEventFlowSubscription("Lead", common.SubscriptionEventTypeUpdate),
 		},
 	}
 
@@ -460,8 +420,8 @@ func (f *FlowSubscription) hasFlow(name string) bool {
 	return false
 }
 
-// TestFlowPairs covers the one accessor every reader goes through: the legacy pair, or the per-event
-// pairs in create, update order, and nothing from a nil, empty or half-recorded record.
+// TestFlowPairs covers the one accessor every reader goes through: the per-event pairs in create,
+// update order, and nothing from a nil, empty or half-recorded record.
 func TestFlowPairs(t *testing.T) {
 	t.Parallel()
 
@@ -471,7 +431,6 @@ func TestFlowPairs(t *testing.T) {
 		want []string
 	}{
 		{"nil record", nil, nil},
-		{"legacy pair", legacyFlowSubscription("Account"), []string{"amp_Account"}},
 		{"per-event in create, update order", perEventFlowSubscription("Account",
 			common.SubscriptionEventTypeUpdate, common.SubscriptionEventTypeCreate),
 			[]string{"amp_Account_create", "amp_Account_update"}},

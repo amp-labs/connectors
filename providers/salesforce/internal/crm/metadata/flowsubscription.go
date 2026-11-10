@@ -21,7 +21,7 @@ var (
 	errFlowRequiredParams = errors.New(
 		"objectName, flowName, and outboundMessageName are required")
 	errFlowInvalidTriggerType = errors.New(
-		"recordTriggerType must be Create, Update, or CreateAndUpdate")
+		"recordTriggerType must be Create or Update")
 	errNoFlowComponents = errors.New(
 		"at least one flow subscription component is required")
 )
@@ -60,14 +60,13 @@ func validateFlowSubscriptionComponent(component FlowSubscriptionComponent) erro
 }
 
 // RecordTriggerType maps to Flow.start.recordTriggerType in the Metadata API
-// (Create, Update, CreateAndUpdate). We do not use Delete: record-triggered
+// (Create or Update; one flow per event). We do not use Delete: record-triggered
 // delete flows cannot invoke an outbound message.
 type RecordTriggerType string
 
 const (
-	RecordTriggerTypeCreate          RecordTriggerType = "Create"
-	RecordTriggerTypeUpdate          RecordTriggerType = "Update"
-	RecordTriggerTypeCreateAndUpdate RecordTriggerType = "CreateAndUpdate"
+	RecordTriggerTypeCreate RecordTriggerType = "Create"
+	RecordTriggerTypeUpdate RecordTriggerType = "Update"
 )
 
 // FlowParams contains the parameters for constructing the deploy package of
@@ -85,8 +84,7 @@ type FlowParams struct {
 	// of the outbound message the flow invokes.
 	OutboundMessageName string
 
-	// RecordTriggerType selects when the flow fires (Create / Update /
-	// CreateAndUpdate).
+	// RecordTriggerType selects when the flow fires (Create or Update).
 	RecordTriggerType RecordTriggerType
 
 	// WatchFields optionally narrows when the flow runs via an entry-condition
@@ -102,7 +100,7 @@ func ValidateFlowParams(params FlowParams) error {
 	}
 
 	switch params.RecordTriggerType {
-	case RecordTriggerTypeCreate, RecordTriggerTypeUpdate, RecordTriggerTypeCreateAndUpdate:
+	case RecordTriggerTypeCreate, RecordTriggerTypeUpdate:
 		return nil
 	default:
 		return fmt.Errorf("%w: got %q", errFlowInvalidTriggerType, params.RecordTriggerType)
@@ -206,8 +204,7 @@ func GenerateFlowXML(params FlowParams, status string) (string, error) {
 }
 
 // buildWatchFieldsFilterFormula returns the flow entry-condition formula that
-// applies WatchFields, or "" when none are configured or the trigger is
-// Create-only.
+// applies WatchFields to an Update flow, or "" otherwise.
 //
 // Salesforce does not allow a bare ISCHANGED() entry condition on flows that
 // fire on create: there is no prior value, the Is Changed operator is
@@ -216,23 +213,14 @@ func GenerateFlowXML(params FlowParams, status string) (string, error) {
 //
 //	https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_start_object.htm
 //	https://help.salesforce.com/s/issue?id=a028c00000j5k7eAAA
-//
-// For CreateAndUpdate, use OR with ISNEW() so creates still notify and updates
-// stay gated on watched fields — the documented pattern:
-//
-//	https://admin.salesforce.com/blog/2022/three-powerful-formula-functions-you-can-use-in-flow
 func buildWatchFieldsFilterFormula(params FlowParams) string {
-	if len(params.WatchFields) == 0 || params.RecordTriggerType == RecordTriggerTypeCreate {
+	if len(params.WatchFields) == 0 || params.RecordTriggerType != RecordTriggerTypeUpdate {
 		return ""
 	}
 
 	changed := make([]string, 0, len(params.WatchFields))
 	for _, field := range params.WatchFields {
 		changed = append(changed, fmt.Sprintf("ISCHANGED({!$Record.%s})", field))
-	}
-
-	if params.RecordTriggerType == RecordTriggerTypeCreateAndUpdate {
-		return "OR(ISNEW(), " + strings.Join(changed, ", ") + ")"
 	}
 
 	if len(changed) == 1 {
