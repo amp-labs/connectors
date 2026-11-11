@@ -13,7 +13,7 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/google/internal/core"
+	"github.com/amp-labs/connectors/providers/google/internal/shared"
 )
 
 // maxReadConcurrency bounds how many calendars we read events from at once.
@@ -43,7 +43,7 @@ func shouldReadEventsForAllCalendars(params common.ReadParams) bool {
 		return false
 	}
 
-	opts, ok := params.Opts.(core.ReadParamsOpts)
+	opts, ok := params.Opts.(shared.ReadParamsOpts)
 	if !ok {
 		return false
 	}
@@ -86,7 +86,7 @@ func (a *Adapter) readEventsAcrossCalendars(
 		return nil, err
 	}
 
-	opts, _ := params.Opts.(core.ReadParamsOpts)
+	opts, _ := params.Opts.(shared.ReadParamsOpts)
 	merged := mergeAndDedupeEvents(perCalendar, opts.SingleEvents)
 
 	return &common.ReadResult{
@@ -184,7 +184,7 @@ func (a *Adapter) readAllEventPages(
 func (a *Adapter) fetchSeriesMasters(
 	ctx context.Context, calendarID string, instances []common.ReadResultRow, params common.ReadParams,
 ) ([]common.ReadResultRow, error) {
-	opts, _ := params.Opts.(core.ReadParamsOpts)
+	opts, _ := params.Opts.(shared.ReadParamsOpts)
 	if !opts.FetchSeriesMasters {
 		return nil, nil
 	}

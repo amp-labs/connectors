@@ -9,8 +9,8 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/google/internal/calendar"
 	"github.com/amp-labs/connectors/providers/google/internal/contacts"
-	"github.com/amp-labs/connectors/providers/google/internal/core"
 	"github.com/amp-labs/connectors/providers/google/internal/mail"
+	"github.com/amp-labs/connectors/providers/google/internal/shared"
 )
 
 var (
@@ -23,7 +23,7 @@ var (
 //
 // It is defined in the shared internal/core package so individual Google modules
 // can consume it without importing this package (which would create a cycle).
-type ReadParamsOpts = core.ReadParamsOpts
+type ReadParamsOpts = shared.ReadParamsOpts
 
 // GmailSubscribeRequest is the request payload for Gmail watch subscriptions.
 type GmailSubscribeRequest = mail.WatchRequest
