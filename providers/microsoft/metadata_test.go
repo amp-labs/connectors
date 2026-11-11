@@ -74,7 +74,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 						},
 					},
 					"me/messages": {
-						DisplayName: "Messages",
+						DisplayName: "All Messages",
 						Fields: map[string]common.FieldMetadata{
 							"from": {
 								DisplayName: "from",

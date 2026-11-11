@@ -27405,7 +27405,7 @@
           }
         },
         "me/messages": {
-          "displayName": "Messages",
+          "displayName": "All Messages",
           "path": "/me/messages",
           "responseKey": "value",
           "fields": {
