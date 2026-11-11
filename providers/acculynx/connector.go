@@ -43,6 +43,10 @@ func NewConnector(params common.ConnectorParams) (*Connector, error) {
 func constructor(base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
+	// Wrap the client before the reader, writer and deleter take their own copies of it,
+	// so every request, including the per-record child fetches, gets the 429 retry.
+	connector.HTTPClient().Client = newRetryOn429Client(connector.HTTPClient().Client)
+
 	connector.SchemaProvider = schema.NewOpenAPISchemaProvider(
 		connector.ProviderContext.Module(),
 		metadata.Schemas,
