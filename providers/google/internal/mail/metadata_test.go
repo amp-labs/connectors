@@ -104,7 +104,7 @@ func constructTestAdapter(server *httptest.Server) (*Adapter, error) {
 		return nil, err
 	}
 
-	adapter.SetUnitTestMockServerBaseURL(server.URL)
+	adapter.SetUnitTestMockServerBaseUrl(server.URL)
 
 	return adapter, nil
 }

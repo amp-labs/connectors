@@ -1,4 +1,4 @@
-package google
+package mail
 
 import (
 	"net/http"
@@ -29,14 +29,14 @@ func TestMailSubscribeWatchRequest(t *testing.T) { //nolint:funlen
 	tests := []struct {
 		name         string
 		objects      map[common.ObjectName]common.ObjectEvents
-		request      *GmailSubscribeRequest
+		request      *WatchRequest
 		expectedBody string
 		expectErr    bool
 	}{
 		{
 			name:         "messages watches the whole mailbox",
 			objects:      map[common.ObjectName]common.ObjectEvents{"messages": createOnly},
-			request:      &GmailSubscribeRequest{TopicName: topic},
+			request:      &WatchRequest{TopicName: topic},
 			expectedBody: `{"topicName":"` + topic + `"}`,
 		},
 		{
@@ -45,19 +45,19 @@ func TestMailSubscribeWatchRequest(t *testing.T) { //nolint:funlen
 				"messages": createOnly,
 				"drafts":   createOnly,
 			},
-			request:      &GmailSubscribeRequest{TopicName: topic},
+			request:      &WatchRequest{TopicName: topic},
 			expectedBody: `{"topicName":"` + topic + `"}`,
 		},
 		{
 			name:         "drafts alone filters on the DRAFT label",
 			objects:      map[common.ObjectName]common.ObjectEvents{"drafts": createOnly},
-			request:      &GmailSubscribeRequest{TopicName: topic},
+			request:      &WatchRequest{TopicName: topic},
 			expectedBody: `{"topicName":"` + topic + `","labelIds":["DRAFT"],"labelFilterBehavior":"include"}`,
 		},
 		{
 			name:    "explicit label override is kept",
 			objects: map[common.ObjectName]common.ObjectEvents{"messages": createOnly},
-			request: &GmailSubscribeRequest{
+			request: &WatchRequest{
 				TopicName:           topic,
 				LabelIDs:            []string{"INBOX"},
 				LabelFilterBehavior: "include",
@@ -67,7 +67,7 @@ func TestMailSubscribeWatchRequest(t *testing.T) { //nolint:funlen
 		{
 			name:      "unsupported object is rejected",
 			objects:   map[common.ObjectName]common.ObjectEvents{"threads": createOnly},
-			request:   &GmailSubscribeRequest{TopicName: topic},
+			request:   &WatchRequest{TopicName: topic},
 			expectErr: true,
 		},
 		{
@@ -76,7 +76,7 @@ func TestMailSubscribeWatchRequest(t *testing.T) { //nolint:funlen
 				"messages": createOnly,
 				"threads":  createOnly,
 			},
-			request:   &GmailSubscribeRequest{TopicName: topic},
+			request:   &WatchRequest{TopicName: topic},
 			expectErr: true,
 		},
 	}
@@ -96,7 +96,7 @@ func TestMailSubscribeWatchRequest(t *testing.T) { //nolint:funlen
 			}.Server()
 			t.Cleanup(srv.Close)
 
-			conn, err := constructTestMailConnector(srv.URL)
+			conn, err := constructTestAdapter(srv)
 			if err != nil {
 				t.Fatalf("failed to construct test connector: %v", err)
 			}
