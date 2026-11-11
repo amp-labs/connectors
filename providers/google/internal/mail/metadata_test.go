@@ -25,7 +25,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Expected: &common.ListObjectMetadataResult{
 				Result: map[string]common.ObjectMetadata{
 					"messages": {
-						DisplayName: "Messages",
+						DisplayName: "All Messages",
 						Fields: map[string]common.FieldMetadata{
 							"threadId": {
 								DisplayName:  "Thread Id",
