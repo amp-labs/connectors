@@ -65,6 +65,9 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 							"columns": ["count", "payment", "payment_type", "tips"],
 							"filters": {
 								"selection": "close_date",
+								"status": [2],
+								"remove_cash_change": 1,
+								"net_cash_deducts_tips": 1,
 								"date_from": "2026-11-05 00:00:00",
 								"date_to": "2026-11-05 23:59:59"
 							}

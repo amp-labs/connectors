@@ -1,6 +1,7 @@
 package auphan
 
 import (
+	"strings"
 	"errors"
 	"net/http"
 	"testing"
@@ -16,7 +17,10 @@ import (
 )
 
 // reportBody is the reports/execute body for payments with one "payment" column.
+// reportBody is a payments request with the given filters, plus the defaults payments always sends.
 func reportBody(filters string) string {
+	filters = strings.Replace(filters, "{", `{"status": [2], "remove_cash_change": 1, "net_cash_deducts_tips": 1, `, 1)
+
 	return `{"store_id": 73921, "params": {"type": "payments", "columns": ["payment"], "filters": ` + filters + `}}`
 }
 
@@ -79,6 +83,20 @@ func TestReadReportFilters(t *testing.T) { //nolint:funlen
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.Body(`{"store_id": 73921, "params": {"type": "attendance", "columns": ["employee"],
 					"filters": {"status": [4], "date_from": "2000-03-15 00:00:00", "date_to": "2000-03-15 00:00:00"}}}`),
+				Then: mockserver.Response(http.StatusOK, responseEmpty),
+			}.Server(),
+			Expected: done,
+		}},
+		{TestCaseRead: testconn.TestCaseRead{
+			Name: "Sales sends the defaults Auphan does not apply by itself",
+			Input: common.ReadParams{
+				ObjectName: "sales", Fields: connectors.Fields("net_sales"), Since: marchMid, Until: marchMid,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.Body(`{"store_id": 73921, "params": {"type": "sales", "columns": ["net_sales"],
+					"filters": {"selection": "close_date", "status": [1], "item_type": [1],
+					"date_from": "2000-03-15 00:00:00", "date_to": "2000-03-15 00:00:00"}}}`),
 				Then: mockserver.Response(http.StatusOK, responseEmpty),
 			}.Server(),
 			Expected: done,

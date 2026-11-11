@@ -16,25 +16,36 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-// liveTestObjects are the objects The Stand's daily Sage Intacct journal is built from,
-// with the columns it uses. Reports need at least one column.
+// liveTestReads are the reads The Stand's daily Sage Intacct journals are built from, with the
+// columns each uses. Reports need at least one column. sales is read twice, grouped two ways.
 //
 //nolint:gochecknoglobals
-var liveTestObjects = map[string][]string{
-	// Sales journal: tenders and tips per payment type. Also AR (house accounts such as Kaiser).
-	"payments": {"date", "payment_type", "gl_code", "payment", "tips", "count"},
-	// Sales journal: net sales and discounts per report category.
-	"sales": {"date", "report_category", "gl_code_report_category", "net_sales", "total_discounts"},
-	// Sales journal: tax collected per tax.
-	"tax": {"tax_date", "name", "gl_code", "tax_total"},
-	// Sales journal: petty cash in and out.
-	"petty_cash": {"tracking_date", "petty_cash_type", "gl_code", "amount"},
-	// AR: house account customers.
-	"customers": {"customer_id", "company", "invoices", "sales"},
-	// Store list, one journal per store.
-	"stores": {"store_id", "name", "timezone"},
+var liveTestReads = []struct {
+	object string
+	fields []string
+}{
+	// Sales journal debits: receipts per payment type. Card payments include their tips.
+	// AR: house-account payment types (e.g. Kaiser), one row per order.
+	{"payments", []string{"payment_type", "gl_code", "customer_group", "order_id", "payment", "tips", "count"}},
+	// Sales journal credits: sales before discounts per report category (Food, Beer & Wine, ...).
+	// Sales journal debits: discounts and sale rules (coupons, loyalty, employee meals).
+	// Auphan groups by every dimension asked for, so rows are per category and discount; amounts add up.
+	{"sales", []string{
+		"report_category", "gl_code_report_category", "discount_name", "invoice_discount", "salerule_name",
+		"gross_sales", "net_sales", "taxes", "item_discounts", "invoice_discounts", "salerule_amount",
+	}},
+	// Sales journal credit: sales tax collected.
+	{"tax", []string{"name", "gl_code", "tax_total"}},
+	// Sales journal: petty cash in and out of the drawer.
+	{"petty_cash", []string{"petty_cash_type", "reason", "gl_code", "amount"}},
+	// DSS tie-out: the day's invoice totals.
+	{"invoices", []string{"gross_sales", "net_sales", "total_discounts", "taxes", "total", "tips", "count"}},
+	// One journal per store.
+	{"stores", []string{"store_id", "name", "timezone"}},
 }
 
+// Reads one business day, the shape of the daily journal run: 2026-11-05, or the date given
+// as the first argument (YYYY-MM-DD).
 func main() {
 	// Handle Ctrl-C gracefully.
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -44,14 +55,23 @@ func main() {
 
 	conn := auphan.GetAuphanConnector(ctx)
 
-	// One business day, the shape of the daily journal run.
 	since := time.Date(2026, 11, 5, 0, 0, 0, 0, time.UTC)
+
+	if len(os.Args) > 1 {
+		day, err := time.Parse(time.DateOnly, os.Args[1])
+		if err != nil {
+			utils.Fail("date must be YYYY-MM-DD", "error", err)
+		}
+
+		since = day
+	}
+
 	until := since.Add(24*time.Hour - time.Second)
 
-	for objectName, fields := range liveTestObjects {
-		slog.Info("Testing read", "object", objectName)
+	for _, read := range liveTestReads {
+		slog.Info("Testing read", "object", read.object, "fields", read.fields)
 
-		if err := testRead(ctx, conn, objectName, fields, since, until); err != nil {
+		if err := testRead(ctx, conn, read.object, read.fields, since, until); err != nil {
 			slog.Error(err.Error())
 		}
 	}
@@ -70,7 +90,7 @@ func testRead(ctx context.Context, conn *ap.Connector, objectName string, fields
 		return fmt.Errorf("error reading %s: %w", objectName, err)
 	}
 
-	slog.Info("Read result", "object", objectName, "rows", res.Rows, "done", res.Done)
+	slog.Info("Read result", "object", objectName, "fields", fields, "rows", res.Rows, "done", res.Done)
 	utils.DumpJSON(res, os.Stdout)
 
 	return nil

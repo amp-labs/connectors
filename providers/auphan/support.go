@@ -1,6 +1,7 @@
 package auphan
 
 import (
+	"maps"
 	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -28,30 +29,44 @@ func selection(field string) reportPayload {
 	return reportPayload{filters: map[string]any{"selection": field}, dateLayout: time.DateTime}
 }
 
+// with adds filters to a payload.
+func (p reportPayload) with(filters map[string]any) reportPayload {
+	merged := maps.Clone(p.filters)
+	maps.Copy(merged, filters)
+	p.filters = merged
+
+	return p
+}
+
 // reportObjects lists every object read through the reports endpoint (reports/execute).
 // The key is both the object name and the Auphan report type.
 var reportObjects = datautils.Map[string, reportPayload]{ //nolint:gochecknoglobals
-	"adjustments":         {dateLayout: time.DateTime},
-	"attendance":          {filters: map[string]any{"status": []int{4}}, dateLayout: time.DateTime},
-	"bank_drop":           {dateLayout: time.DateTime},
-	"costs":               {dateLayout: time.DateTime},
-	"counts":              {dateLayout: time.DateTime},
-	"customer_tabs":       {dateLayout: time.DateTime},
-	"customers":           {dateLayout: time.DateTime},
-	"employees":           {dateLayout: time.DateTime},
-	"gfs_sku":             {},
-	"invoice_logs":        {dateLayout: time.DateTime},
-	"invoices":            selection("close_date"),
-	"message_actions":     {dateLayout: time.DateTime},
-	"modifiers":           selection("close_date"),
-	"payment_txns":        {dateLayout: time.DateTime},
-	"payments":            selection("close_date"),
+	"adjustments":     {dateLayout: time.DateTime},
+	"attendance":      {filters: map[string]any{"status": []int{4}}, dateLayout: time.DateTime},
+	"bank_drop":       {dateLayout: time.DateTime},
+	"costs":           {dateLayout: time.DateTime},
+	"counts":          {dateLayout: time.DateTime},
+	"customer_tabs":   {dateLayout: time.DateTime},
+	"customers":       {dateLayout: time.DateTime},
+	"employees":       {dateLayout: time.DateTime},
+	"gfs_sku":         {},
+	"invoice_logs":    {dateLayout: time.DateTime},
+	"invoices":        selection("close_date"),
+	"message_actions": {dateLayout: time.DateTime},
+	"modifiers":       selection("close_date"),
+	"payment_txns":    {dateLayout: time.DateTime},
+	// payments and sales send defaults that Auphan lists in reports/types.get but does not apply
+	// when they are left out (checked live). Without them, payments counts the change given back
+	// on cash, and sales counts deleted and moved items and gift cards sold.
+	"payments": selection("close_date").with(map[string]any{
+		"status": []int{2}, "remove_cash_change": 1, "net_cash_deducts_tips": 1,
+	}),
 	"petty_cash":          {dateLayout: time.DateTime},
 	"price_change":        {dateLayout: time.DateTime},
 	"production":          {dateLayout: time.DateTime},
 	"purchases":           selection("purchase_date"),
 	"receiving":           {dateLayout: time.DateTime},
-	"sales":               selection("close_date"),
+	"sales":               selection("close_date").with(map[string]any{"status": []int{1}, "item_type": []int{1}}),
 	"sales_printer_stats": {dateLayout: time.DateTime},
 	"salerules":           {dateLayout: time.DateOnly},
 	"screen_stats":        selection("start_time"),
