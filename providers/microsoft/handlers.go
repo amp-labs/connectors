@@ -11,19 +11,12 @@ import (
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/core"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/metadata"
 	"github.com/spyzhov/ajson"
 )
 
-const (
-	DefaultPageSize = "100"
-
-	// https://learn.microsoft.com/en-us/graph/api/user-list-messages
-	objectNameMessages         = "me/messages"
-	virtualObjectDrafts        = "AMPERSAND-drafts"       // based on "/me/messages"
-	virtualObjectSentMessages  = "AMPERSAND-sentMessages" // based on "/me/messages"
-	virtualObjectInboxMessages = "AMPERSAND-messages"     // based on "/me/messages"
-)
+const DefaultPageSize = "100"
 
 func (c *Connector) ListObjectMetadata(
 	ctx context.Context,
@@ -38,18 +31,19 @@ func (c *Connector) ListObjectMetadata(
 	// Virtual message objects reuse the metadata of the messages object and override its display name.
 	for _, name := range objects {
 		nativeObjectName := name
-		if name == virtualObjectDrafts || name == virtualObjectSentMessages || name == virtualObjectInboxMessages {
-			nativeObjectName = objectNameMessages
+		if name == core.VirtualObjectDrafts ||
+			name == core.VirtualObjectSentMessages || name == core.VirtualObjectInboxMessages {
+			nativeObjectName = core.ObjectNameMessages
 		}
 
 		objectMetadata, err := metadata.Schemas.SelectOne(c.ProviderContext.Module(), nativeObjectName)
 		if err == nil {
 			switch name {
-			case virtualObjectDrafts:
+			case core.VirtualObjectDrafts:
 				objectMetadata.DisplayName = "Drafts"
-			case virtualObjectSentMessages:
+			case core.VirtualObjectSentMessages:
 				objectMetadata.DisplayName = "Sent Messages"
-			case virtualObjectInboxMessages:
+			case core.VirtualObjectInboxMessages:
 				objectMetadata.DisplayName = "Messages"
 			}
 
@@ -143,7 +137,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	if params.IsUpdate() {
 		method = http.MethodPatch
 
-		if params.ObjectName == virtualObjectInboxMessages {
+		if params.ObjectName == core.VirtualObjectInboxMessages {
 			// Cannot update sent message. This feature only makes sense for drafts.
 			return nil, common.ErrOperationNotSupportedForObject
 		}
@@ -152,7 +146,7 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	payload := params.RecordData
-	if params.ObjectName == virtualObjectInboxMessages {
+	if params.ObjectName == core.VirtualObjectInboxMessages {
 		record, err := params.GetRecord()
 		if err != nil {
 			return nil, err

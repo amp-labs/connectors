@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/batch"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/core"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/metadata"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/subscriber"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/webhook"
@@ -171,9 +172,9 @@ func (c *Connector) getCoreObjectReadUrl(objectName string) (*urlbuilder.URL, er
 // objects are mapped to the corresponding mail-folder messages endpoint because
 // they represent filtered views of the core message resource:
 //
-//   - virtualObjectDrafts maps to the Drafts folder.
-//   - virtualObjectSentMessages maps to the Sent Items folder.
-//   - virtualObjectInboxMessages maps to the Inbox folder.
+//   - core.VirtualObjectDrafts maps to the Drafts folder.
+//   - core.VirtualObjectSentMessages maps to the Sent Items folder.
+//   - core.VirtualObjectInboxMessages maps to the Inbox folder.
 //
 // The core messages object itself is resolved through getCoreObjectReadUrl.
 // Microsoft Graph documents listing messages in a mail folder at:
@@ -181,13 +182,13 @@ func (c *Connector) getCoreObjectReadUrl(objectName string) (*urlbuilder.URL, er
 // https://learn.microsoft.com/en-us/graph/api/mailfolder-list-messages
 func (c *Connector) getReadUrl(objectName string) (*urlbuilder.URL, error) {
 	switch objectName {
-	case virtualObjectDrafts:
+	case core.VirtualObjectDrafts:
 		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/mailFolders/drafts/messages")
-	case virtualObjectSentMessages:
+	case core.VirtualObjectSentMessages:
 		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/mailFolders/sentitems/messages")
-	case virtualObjectInboxMessages:
+	case core.VirtualObjectInboxMessages:
 		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/mailFolders/inbox/messages")
-	case objectNameMessages:
+	case core.ObjectNameMessages:
 		// https://learn.microsoft.com/en-us/graph/api/user-list-messages
 		fallthrough
 	default:
@@ -210,14 +211,14 @@ func (c *Connector) getReadUrl(objectName string) (*urlbuilder.URL, error) {
 // path is resolved through the metadata schema registry.
 func (c *Connector) getWriteUrl(objectName string) (*urlbuilder.URL, error) {
 	switch objectName {
-	case virtualObjectDrafts:
+	case core.VirtualObjectDrafts:
 		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/mailFolders/drafts/messages")
-	case virtualObjectSentMessages:
+	case core.VirtualObjectSentMessages:
 		return nil, common.ErrOperationNotSupportedForObject
-	case virtualObjectInboxMessages:
+	case core.VirtualObjectInboxMessages:
 		// https://learn.microsoft.com/en-us/graph/api/user-sendmail
 		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/sendMail")
-	case objectNameMessages:
+	case core.ObjectNameMessages:
 		return nil, common.ErrOperationNotSupportedForObject
 	default:
 		return c.getCoreObjectReadUrl(objectName)
@@ -234,13 +235,13 @@ func (c *Connector) getWriteUrl(objectName string) (*urlbuilder.URL, error) {
 // path is resolved through the metadata schema registry.
 func (c *Connector) getDeleteUrl(objectName string) (*urlbuilder.URL, error) {
 	switch objectName {
-	case virtualObjectDrafts:
+	case core.VirtualObjectDrafts:
 		return urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, "/me/messages")
-	case virtualObjectSentMessages:
+	case core.VirtualObjectSentMessages:
 		return nil, common.ErrOperationNotSupportedForObject
-	case virtualObjectInboxMessages:
+	case core.VirtualObjectInboxMessages:
 		return nil, common.ErrOperationNotSupportedForObject
-	case objectNameMessages:
+	case core.ObjectNameMessages:
 		return nil, common.ErrOperationNotSupportedForObject
 	default:
 		return c.getCoreObjectReadUrl(objectName)

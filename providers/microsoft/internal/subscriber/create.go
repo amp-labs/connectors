@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/batch"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/core"
 	"github.com/amp-labs/connectors/providers/microsoft/internal/webhook"
 )
 
@@ -235,7 +236,7 @@ func newPayloadCreateSubscription(
 	events common.ObjectEvents,
 	webhookURL string,
 ) SubscriptionResource {
-	resource := objectName.String()
+	resource := objectNameToUnderlyingResource(objectName)
 
 	sixHoursFromNow := time.Now().Add(subscriptionExpirationWindow)
 	body := SubscriptionResource{
@@ -248,6 +249,28 @@ func newPayloadCreateSubscription(
 	}
 
 	return body
+}
+
+// objectNameToUnderlyingResource maps a connector object name to the corresponding
+// Microsoft Graph resource path.
+//
+// Microsoft Graph accepts a resource path and resolves the underlying resource it
+// represents. Connector object names are closely aligned with the resource URLs used
+// for read operations, but may also refer to virtual objects that require an explicit
+// Graph path.
+//
+// This function bridges the connector’s object references and the Microsoft Graph API.
+func objectNameToUnderlyingResource(objectName common.ObjectName) string {
+	switch resource := objectName.String(); resource {
+	case core.VirtualObjectDrafts:
+		return "/me/mailFolders/drafts/messages"
+	case core.VirtualObjectInboxMessages:
+		return "/me/mailFolders('inbox')/messages"
+	case core.VirtualObjectSentMessages:
+		return "/me/mailFolders('sentitems')/messages"
+	default:
+		return resource
+	}
 }
 
 // Update is only relevant for extending the subscription expiration.
