@@ -245,8 +245,13 @@ func main() {
 			)
 		}
 
+		displayName := object.DisplayName
+		if object.ObjectName == "me/messages" {
+			displayName = "All Messages"
+		}
+
 		for _, field := range object.Fields {
-			schemas.Add(common.ModuleRoot, object.ObjectName, object.DisplayName, object.URLPath, object.ResponseKey,
+			schemas.Add(common.ModuleRoot, object.ObjectName, displayName, object.URLPath, object.ResponseKey,
 				utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, object.Custom)
 		}
 

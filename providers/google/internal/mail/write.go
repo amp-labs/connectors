@@ -12,7 +12,7 @@ import (
 )
 
 func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	url, err := a.getWriteURL(params.ObjectName)
+	url, err := a.getWriteUrl(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -21,6 +21,10 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 
 	if params.IsUpdate() {
 		url.AddPath(params.RecordId)
+
+		if params.ObjectName == virtualObjectInboxMessages {
+			return nil, common.ErrOperationNotSupportedForObject
+		}
 
 		method = http.MethodPut
 	}

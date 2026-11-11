@@ -171,7 +171,7 @@ func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId str
 
 // fetchMessageRecord fetches a single message by ID.
 func (a *Adapter) fetchMessageRecord(ctx context.Context, messageId string) (*MessageRecord, error) {
-	url, err := a.getMessageURL(messageId)
+	url, err := a.getMessageUrl(messageId)
 	if err != nil {
 		return nil, err
 	}

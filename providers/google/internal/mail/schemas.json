@@ -271,52 +271,62 @@
           }
         },
         "messages": {
-          "displayName": "Messages",
+          "displayName": "All Messages",
           "path": "/users/me/messages",
           "responseKey": "messages",
           "fields": {
             "$['payload']['body']": {
-              "displayName": "Message Body",
+              "displayName": "Payload Body",
               "valueType": "other",
               "providerType": "object"
             },
             "$['payload']['body']['data']": {
-              "displayName": "Message Data",
+              "displayName": "Payload Data",
               "valueType": "string",
               "providerType": "string"
             },
-            "$['payload']['classificationLabelValues']": {
-              "displayName": "Classification Label Values",
+            "$['payload']['filename']": {
+              "displayName": "Payload Filename",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['payload']['headers']": {
+              "displayName": "Payload Headers",
               "valueType": "other",
               "providerType": "array"
             },
-            "$['payload']['historyId']": {
-              "displayName": "History Id",
+            "$['payload']['mimeType']": {
+              "displayName": "Payload Mime Type",
               "valueType": "string",
               "providerType": "string"
             },
-            "$['payload']['internalDate']": {
+            "$['payload']['partId']": {
+              "displayName": "Payload Part Id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "$['payload']['parts']": {
+              "displayName": "Payload Parts",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "$internalDate": {
               "displayName": "Internal Date",
               "valueType": "string",
               "providerType": "string"
             },
-            "$['payload']['labelIds']": {
+            "$labelIds": {
               "displayName": "Label Ids",
               "valueType": "other",
               "providerType": "array"
             },
-            "$['payload']['raw']": {
-              "displayName": "Raw",
-              "valueType": "string",
-              "providerType": "string"
+            "classificationLabelValues": {
+              "displayName": "Classification Label Values",
+              "valueType": "other",
+              "providerType": "array"
             },
-            "$['payload']['sizeEstimate']": {
-              "displayName": "Size Estimate",
-              "valueType": "int",
-              "providerType": "integer"
-            },
-            "$['payload']['snippet']": {
-              "displayName": "Snippet",
+            "historyId": {
+              "displayName": "History Id",
               "valueType": "string",
               "providerType": "string"
             },
@@ -329,6 +339,21 @@
               "displayName": "Payload",
               "valueType": "other",
               "providerType": "object"
+            },
+            "raw": {
+              "displayName": "Raw",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "sizeEstimate": {
+              "displayName": "Size Estimate",
+              "valueType": "int",
+              "providerType": "integer"
+            },
+            "snippet": {
+              "displayName": "Snippet",
+              "valueType": "string",
+              "providerType": "string"
             },
             "threadId": {
               "displayName": "Thread Id",

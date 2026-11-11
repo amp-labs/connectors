@@ -60,7 +60,8 @@ func main() {
 
 		// The object messages is hard coded.
 		if objectName == objectNameMessages {
-			addFieldsForMessages(schemas, object.DisplayName, urlPath, object.ResponseKey)
+			name := "All Messages"
+			addFieldsForMessages(schemas, name, urlPath, object.ResponseKey)
 
 			continue
 		}

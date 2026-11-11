@@ -8,7 +8,6 @@ import (
 	"github.com/amp-labs/connectors/internal/components/deleter"
 	"github.com/amp-labs/connectors/internal/components/operations"
 	"github.com/amp-labs/connectors/internal/components/reader"
-	"github.com/amp-labs/connectors/internal/components/schema"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
 )
@@ -17,22 +16,19 @@ const apiVersion = "v1"
 
 type Adapter struct {
 	*components.Connector
-	components.SchemaProvider
 	components.Reader
 	components.Writer
 	components.Deleter
 }
 
 func NewAdapter(params common.ConnectorParams) (*Adapter, error) {
-	return components.Initialize(providers.Google, params, constructor)
+	return components.Init(providers.Google, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Adapter, error) {
+func constructor(_ common.ConnectorParams, base *components.Connector) (*Adapter, error) {
 	adapter := &Adapter{
 		Connector: base,
 	}
-
-	adapter.SchemaProvider = schema.NewOpenAPISchemaProvider(adapter.ProviderContext.Module(), Schemas)
 
 	errorHandler := interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: adapter.interpretJSONError},
@@ -75,7 +71,7 @@ func constructor(base *components.Connector) (*Adapter, error) {
 	return adapter, nil
 }
 
-func (a *Adapter) getReadURL(objectName string) (*urlbuilder.URL, error) {
+func (a *Adapter) getCoreObjectReadUrl(objectName string) (*urlbuilder.URL, error) {
 	path, err := Schemas.FindURLPath(a.Module(), objectName)
 	if err != nil {
 		return nil, err
@@ -84,11 +80,48 @@ func (a *Adapter) getReadURL(objectName string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.ModuleInfo().BaseURL, apiVersion, path)
 }
 
-func (a *Adapter) getWriteURL(objectName string) (*urlbuilder.URL, error) {
-	// Write/Delete share the same URLs as read.
-	return a.getReadURL(objectName)
+func (a *Adapter) getReadUrl(objectName string) (*urlbuilder.URL, error) {
+	switch objectName {
+	case virtualObjectSentMessages:
+		return urlbuilder.New(a.ModuleInfo().BaseURL, apiVersion, "/users/me/messages")
+	case virtualObjectInboxMessages:
+		return urlbuilder.New(a.ModuleInfo().BaseURL, apiVersion, "/users/me/messages")
+	case objectNameDrafts, objectNameMessages:
+		fallthrough // Core message objects have URLs in `schema.json`.
+	default:
+		return a.getCoreObjectReadUrl(objectName)
+	}
 }
 
-func (a *Adapter) getMessageURL(messageID string) (*urlbuilder.URL, error) {
+func (a *Adapter) getWriteUrl(objectName string) (*urlbuilder.URL, error) {
+	switch objectName {
+	case virtualObjectSentMessages:
+		return nil, common.ErrOperationNotSupportedForObject
+	case virtualObjectInboxMessages:
+		// https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/send
+		return urlbuilder.New(a.ModuleInfo().BaseURL, apiVersion, "/users/me/messages/send")
+	case objectNameMessages:
+		return nil, common.ErrOperationNotSupportedForObject
+	default:
+		// Write share the same URLs as read.
+		return a.getCoreObjectReadUrl(objectName)
+	}
+}
+
+func (a *Adapter) getDeleteUrl(objectName string) (*urlbuilder.URL, error) {
+	switch objectName {
+	case virtualObjectSentMessages:
+		return nil, common.ErrOperationNotSupportedForObject
+	case virtualObjectInboxMessages:
+		return nil, common.ErrOperationNotSupportedForObject
+	case objectNameMessages:
+		return nil, common.ErrOperationNotSupportedForObject
+	default:
+		// Delete share the same URLs as read.
+		return a.getCoreObjectReadUrl(objectName)
+	}
+}
+
+func (a *Adapter) getMessageUrl(messageID string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(a.ModuleInfo().BaseURL, apiVersion, "users/me/messages", messageID)
 }
