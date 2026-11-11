@@ -10,6 +10,7 @@ import (
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
 	"gotest.tools/v3/assert"
 )
 
@@ -29,8 +30,7 @@ func throttledServer(t *testing.T, throttled int32, retryAfter string, next http
 				w.Header().Set("Retry-After", retryAfter)
 			}
 
-			w.WriteHeader(http.StatusTooManyRequests)
-			_, _ = w.Write([]byte("Too Many Requests"))
+			mockserver.ResponseString(http.StatusTooManyRequests, "Too Many Requests")(w, r)
 
 			return
 		}
@@ -43,10 +43,7 @@ func throttledServer(t *testing.T, throttled int32, retryAfter string, next http
 }
 
 func okHandler(body string) http.HandlerFunc {
-	return func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(body))
-	}
+	return mockserver.ResponseChainedFuncs(mockserver.ContentJSON(), mockserver.ResponseString(http.StatusOK, body))
 }
 
 func doRequest(t *testing.T, ctx context.Context, client common.AuthenticatedHTTPClient, method, url string) (
@@ -169,15 +166,15 @@ func TestRead_RetriesListCallAfter429(t *testing.T) {
 	t.Parallel()
 
 	srv, hits := throttledServer(t, 1, "0", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
+		mockserver.ContentJSON()(w, r)
 
 		if r.URL.Path == "/api/v2/company-settings/custom-fields" {
-			_, _ = w.Write(customFieldDefinitionsEmptyResponse)
+			mockserver.Response(http.StatusOK, customFieldDefinitionsEmptyResponse)(w, r)
 
 			return
 		}
 
-		_, _ = w.Write(contactsIncludesResponse)
+		mockserver.Response(http.StatusOK, contactsIncludesResponse)(w, r)
 	})
 
 	conn, err := constructTestReadConnector(srv.URL)
