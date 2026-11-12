@@ -1,0 +1,54 @@
+{
+  "requestId": "11f18#1a1cf286b5f",
+  "result": [
+    {
+      "name": "Company",
+      "description": "Map for API company fields",
+      "createdAt": "2024-03-10T09:22:51Z",
+      "updatedAt": "2024-03-10T09:22:51Z",
+      "idField": "id",
+      "dedupeFields": ["externalCompanyId"],
+      "searchableFields": [["externalCompanyId"], ["id"], ["externalSalesPersonId"], ["company"]],
+      "fields": [
+        {
+          "name": "createdAt",
+          "displayName": "Created At",
+          "dataType": "datetime",
+          "updateable": false,
+          "crmManaged": false
+        },
+        {
+          "name": "externalCompanyId",
+          "displayName": "External Company Id",
+          "dataType": "string",
+          "length": 50,
+          "updateable": false,
+          "crmManaged": false
+        },
+        {
+          "name": "id",
+          "displayName": "Id",
+          "dataType": "integer",
+          "updateable": false,
+          "crmManaged": false
+        },
+        {
+          "name": "annualRevenue",
+          "displayName": "Annual Revenue",
+          "dataType": "currency",
+          "updateable": true,
+          "crmManaged": false
+        },
+        {
+          "name": "billingCity",
+          "displayName": "Billing City",
+          "dataType": "string",
+          "length": 255,
+          "updateable": true,
+          "crmManaged": false
+        }
+      ]
+    }
+  ],
+  "success": true
+}
