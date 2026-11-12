@@ -711,6 +711,12 @@ func (c *crmObjectSchema[T]) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
+// maxConcurrentCampaignContactFetches caps the per-campaign report calls in flight.
+// A page of 100 campaigns needs 300 calls, while an OAuth app gets 110 calls per 10 seconds
+// per account (X-HubSpot-RateLimit-Max). At ~0.5s per call, 5 in flight is ~100 calls per 10s.
+// https://developers.hubspot.com/docs/api/usage-details
+const maxConcurrentCampaignContactFetches = 5
+
 func (c *Connector) lookupMarketingCampaignContacts(ctx context.Context, // nolint:funlen
 	campaignIdentifiers []string,
 ) (map[string][]common.Association, error) {
@@ -734,7 +740,7 @@ func (c *Connector) lookupMarketingCampaignContacts(ctx context.Context, // noli
 	}
 
 	// Wait for all routines.
-	if err := simultaneously.DoCtx(ctx, -1, callbacks...); err != nil {
+	if err := simultaneously.DoCtx(ctx, maxConcurrentCampaignContactFetches, callbacks...); err != nil {
 		close(responseChannel)
 
 		return nil, err
