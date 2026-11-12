@@ -22,8 +22,9 @@ import (
 )
 
 var (
-	errChildPagesExceeded = errors.New("acculynx: nested fetch exceeded page cap")
-	errMissingCount       = errors.New("acculynx: list response omitted count, cannot determine when pagination ends")
+	errChildPagesExceeded  = errors.New("acculynx: nested fetch exceeded page cap")
+	errMissingCount        = errors.New("acculynx: list response omitted count, cannot determine when pagination ends")
+	errParentPagesExceeded = errors.New("acculynx: parent list exceeded page cap")
 )
 
 const (
@@ -57,12 +58,25 @@ const (
 	// one Read call. 200 pages × 25 per page = 5000 records per parent,
 	// generous for any sane window. For unbounded reads on outlier datasets
 	// (e.g. jobs with hundreds of thousands of history entries), the cap fires
-	// with a clear error pointing the caller at Since/Until — see fetchChildPages.
+	// with a clear error pointing the caller at Since/Until — see walkChildPages.
 	maxChildPagesPerParent = 200
 
-	// /calendars/{calendarId}/appointments requires startDate/endDate. When the
-	// caller supplies neither, default to a 30-day window ending now.
-	defaultAppointmentsWindow = 30 * 24 * time.Hour
+	// /calendars/{calendarId}/appointments requires startDate/endDate. A
+	// missing Since reaches 30 days back. A missing Until is now, or, for an
+	// occurrence read or a repeated-id lookahead read (see appointmentReadMode),
+	// 60 days ahead (see appointmentWindows), so the upcoming appointments are
+	// included.
+	defaultAppointmentsWindow    = 30 * 24 * time.Hour
+	defaultAppointmentsLookahead = 60 * 24 * time.Hour
+
+	// The API rejects a range of 90 days or more between startDate and endDate
+	// (400 "Range between Start Date and End Date must be less than 90 days."),
+	// so longer ranges are read as consecutive windows of at most 89 days.
+	maxAppointmentsWindowDays = 89
+
+	// appointmentIDField is the field calendars/appointments rows carry
+	// AccuLynx's appointment id in (see appointmentRecord).
+	appointmentIDField = "appointmentId"
 )
 
 const (
@@ -433,14 +447,56 @@ func (c *Connector) parseNestedResponse(
 		return nil, err
 	}
 
-	rows, err := c.fetchChildrenForParents(ctx, parentNodes, params, nested)
+	nextPage, err := c.nestedNextPage(params, nested, request, body)
 	if err != nil {
 		return nil, err
 	}
 
-	reqURL, err := urlbuilder.FromRawURL(request.URL)
+	// Decided once here, so every calendar this call reads is read the same way
+	// even if a flag changes during the read.
+	mode := appointmentReadModeFor(ctx, params)
+
+	// An occurrence read and a repeated-id lookahead read merge the repeats of an
+	// occurrence across calendars (see mergeRepeatedOccurrences), so they read
+	// the rest of the calendar list now and fan out over every calendar in this
+	// one call. Merging within one page of the list would let an occurrence on
+	// calendars of two pages come back twice.
+	if mode != appointmentReadPlain && nextPage != "" {
+		moreParents, err := c.readRemainingParents(ctx, nested.parentObject, nextPage)
+		if err != nil {
+			return nil, err
+		}
+
+		parentNodes = append(parentNodes, moreParents...)
+		nextPage = ""
+	}
+
+	rows, err := c.fetchChildrenForParents(ctx, parentNodes, params, nested, mode)
 	if err != nil {
 		return nil, err
+	}
+
+	rows = flaggedAppointmentRows(ctx, params, mode, rows)
+
+	return &common.ReadResult{
+		Rows:     int64(len(rows)),
+		Data:     rows,
+		NextPage: common.NextPageToken(nextPage),
+		Done:     nextPage == "",
+	}, nil
+}
+
+// nestedNextPage returns the next page of the parent list a nested read walks,
+// or "" after its last page.
+func (c *Connector) nestedNextPage(
+	params common.ReadParams,
+	nested nestedSpec,
+	request *http.Request,
+	body *ajson.Node,
+) (string, error) {
+	reqURL, err := urlbuilder.FromRawURL(request.URL)
+	if err != nil {
+		return "", err
 	}
 
 	nextPageFunc := c.makeNextPage(nested.parentObject, reqURL)
@@ -450,17 +506,85 @@ func (c *Connector) parseNestedResponse(
 		nextPageFunc = c.makeJobsNextPage(listParams, reqURL, nextPageFunc)
 	}
 
-	nextPage, err := nextPageFunc(body)
-	if err != nil {
-		return nil, err
+	return nextPageFunc(body)
+}
+
+// flaggedAppointmentRows applies what the appointment flags turn on to the rows
+// of a calendars/appointments read, once every calendar is read: occurrence ids
+// (appointmentOccurrencesFlag), the merged repeats of a repeated-id lookahead
+// read (appointmentLookaheadRepeatedIDsFlag) and merged spans
+// (appointmentMergedSpansFlag). With every flag off, and for every other
+// object, it returns rows as they are.
+func flaggedAppointmentRows(
+	ctx context.Context,
+	params common.ReadParams,
+	mode appointmentReadMode,
+	rows []common.ReadResultRow,
+) []common.ReadResultRow {
+	if mode == appointmentReadOccurrences {
+		rows = appointmentOccurrences(rows)
 	}
 
-	return &common.ReadResult{
-		Rows:     int64(len(rows)),
-		Data:     rows,
-		NextPage: common.NextPageToken(nextPage),
-		Done:     nextPage == "",
-	}, nil
+	if mode == appointmentReadLookaheadRepeatedIDs {
+		rows = mergeRepeatedOccurrences(rows)
+	}
+
+	if readsMergedAppointmentSpans(ctx, params) {
+		addMergedAppointmentSpans(rows)
+	}
+
+	return rows
+}
+
+// readRemainingParents reads a parent list from nextPage to its end and returns
+// its records. Occurrence reads and repeated-id lookahead reads of
+// calendars/appointments use it to fan out over every calendar in one call
+// (see parseNestedResponse).
+func (c *Connector) readRemainingParents(
+	ctx context.Context,
+	parentObject string,
+	nextPage string,
+) ([]*ajson.Node, error) {
+	var parents []*ajson.Node
+
+	for range maxChildPagesPerParent {
+		if nextPage == "" {
+			return parents, nil
+		}
+
+		pageURL, err := parseNextPageURL(nextPage)
+		if err != nil {
+			return nil, err
+		}
+
+		resp, err := c.JSONHTTPClient().Get(ctx, pageURL.String())
+		if err != nil {
+			return nil, err
+		}
+
+		body, ok := resp.Body()
+		if !ok {
+			return parents, nil
+		}
+
+		nodes, err := c.recordsFunc(parentObject)(body)
+		if err != nil {
+			return nil, err
+		}
+
+		parents = append(parents, nodes...)
+
+		nextPage, err = c.makeNextPage(parentObject, pageURL)(body)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if nextPage == "" {
+		return parents, nil
+	}
+
+	return nil, fmt.Errorf("%w: %s after %d pages", errParentPagesExceeded, parentObject, maxChildPagesPerParent)
 }
 
 func extractIDs(nodes []*ajson.Node) []string {
@@ -479,12 +603,14 @@ func extractIDs(nodes []*ajson.Node) []string {
 }
 
 // fetchChildrenForParents fans out one request per parent ID concurrently and
-// preserves the parent order in the flattened result.
+// preserves the parent order in the flattened result. mode is passed to
+// fetchChildPages.
 func (c *Connector) fetchChildrenForParents(
 	ctx context.Context,
 	parents []*ajson.Node,
 	params common.ReadParams,
 	nested nestedSpec,
+	mode appointmentReadMode,
 ) ([]common.ReadResultRow, error) {
 	ids := extractIDs(parents)
 	if len(ids) == 0 {
@@ -498,7 +624,7 @@ func (c *Connector) fetchChildrenForParents(
 		idx, id := i, parentID
 
 		jobs[idx] = func(ctx context.Context) error {
-			rows, fetchErr := c.fetchChildPages(ctx, id, params, nested)
+			rows, fetchErr := c.fetchChildPages(ctx, id, params, nested, mode)
 			if fetchErr != nil {
 				return fmt.Errorf("fetching %s for %s %s: %w",
 					nested.leafSuffix, nested.parentObject, id, fetchErr)
@@ -522,12 +648,6 @@ func (c *Connector) fetchChildrenForParents(
 	return data, nil
 }
 
-// fetchChildPages walks every page of one parent's nested collection.
-// AccuLynx server-side paginates these endpoints (jobs/invoices,
-// jobs/estimates, jobs/history, etc. — verified in the OpenAPI spec), so
-// the loop follows result.NextPage until the records-array length signals the
-// last page. Children configured as paginationNone exit after one iteration
-// because makeNextPage returns "" immediately.
 // buildChildURL constructs the first-page URL of one parent's leaf endpoint,
 // with the object's pagination, includes and date-window parameters applied.
 func (c *Connector) buildChildURL(
@@ -551,24 +671,260 @@ func (c *Connector) buildChildURL(
 	applyIncludes(reqURL, params.ObjectName, params)
 	applyHistoryDateWindow(reqURL, params)
 
-	if params.ObjectName == "calendars/appointments" {
-		applyAppointmentsDateWindow(reqURL, params)
-	}
-
 	return reqURL, nil
 }
 
+// fetchChildPages reads every record of one parent's nested collection. An
+// occurrence read or a repeated-id lookahead read of calendars/appointments
+// (see appointmentReadMode) is read window by window (see appointmentWindows);
+// every other leaf, and a plain calendars/appointments read, is a single page
+// walk.
 func (c *Connector) fetchChildPages(
 	ctx context.Context,
 	parentID string,
 	params common.ReadParams,
 	nested nestedSpec,
+	mode appointmentReadMode,
 ) ([]common.ReadResultRow, error) {
 	reqURL, err := c.buildChildURL(parentID, params, nested)
 	if err != nil {
 		return nil, err
 	}
 
+	if mode != appointmentReadPlain {
+		return c.fetchAppointmentWindows(ctx, parentID, params, nested, reqURL)
+	}
+
+	if params.ObjectName == "calendars/appointments" {
+		applyAppointmentsDateWindow(reqURL, params)
+	}
+
+	return c.walkChildPages(ctx, parentID, params, nested, reqURL)
+}
+
+// fetchAppointmentWindows reads one calendar's appointments across every
+// window of appointmentWindows. A row can come back from two windows;
+// parseNestedResponse merges the repeats (see mergeRepeatedOccurrences) once
+// every calendar is read.
+func (c *Connector) fetchAppointmentWindows(
+	ctx context.Context,
+	parentID string,
+	params common.ReadParams,
+	nested nestedSpec,
+	reqURL *urlbuilder.URL,
+) ([]common.ReadResultRow, error) {
+	var allRows []common.ReadResultRow
+
+	for _, window := range appointmentWindows(params, time.Now().UTC()) {
+		windowURL, err := cloneURL(reqURL)
+		if err != nil {
+			return nil, err
+		}
+
+		windowURL.WithQueryParam("startDate", window.start.Format(time.DateOnly))
+		windowURL.WithQueryParam("endDate", window.end.Format(time.DateOnly))
+
+		rows, err := c.walkChildPages(ctx, parentID, params, nested, windowURL)
+		if err != nil {
+			return nil, err
+		}
+
+		allRows = append(allRows, rows...)
+	}
+
+	return allRows, nil
+}
+
+// appointmentOccurrences returns one row per appointment occurrence, each with
+// an id of its own. AccuLynx returns a multi-day or recurring appointment as
+// one row per scheduled day, all under the appointment's id, so that id names
+// the appointment, not the occurrence. Downstream every record is keyed on its
+// id, and rows sharing one in a single read become concurrent writes to the
+// same record.
+//
+// It merges the repeats of each occurrence (see mergeRepeatedOccurrences), then
+// replaces each row's Id, and its "id" field when requested, with the
+// occurrence id (see appointmentOccurrenceID). Raw and the appointmentId field
+// (see appointmentRecord) keep AccuLynx's appointment id. Rows without an id or
+// a parsable start are kept as they are.
+func appointmentOccurrences(rows []common.ReadResultRow) []common.ReadResultRow {
+	occurrences := mergeRepeatedOccurrences(rows)
+
+	for idx := range occurrences {
+		occurrenceID, ok := appointmentOccurrenceID(occurrences[idx])
+		if !ok {
+			continue
+		}
+
+		occurrences[idx].Id = occurrenceID
+
+		if _, requested := occurrences[idx].Fields["id"]; requested {
+			occurrences[idx].Fields["id"] = occurrenceID
+		}
+	}
+
+	return occurrences
+}
+
+// mergeRepeatedOccurrences merges the rows that are the same occurrence: the
+// same AccuLynx appointment id and the same start instant (see
+// appointmentOccurrenceID). AccuLynx returns an occurrence once for each
+// calendar it is on, and a row can come back from two adjacent windows. The
+// first row is kept, in first-seen order, with the associations of every
+// repeat, so an occurrence on two calendars carries both users. Ids are not
+// changed. Rows without an id are kept as they are, and a row whose start does
+// not parse merges only with rows that have its id and the same start text
+// (see occurrenceMergeKey).
+//
+// Occurrence reads and repeated-id lookahead reads both use it, so neither
+// returns the same occurrence twice.
+func mergeRepeatedOccurrences(rows []common.ReadResultRow) []common.ReadResultRow {
+	merged := make([]common.ReadResultRow, 0, len(rows))
+	indexByKey := make(map[string]int, len(rows))
+
+	for _, row := range rows {
+		key, ok := occurrenceMergeKey(row)
+		if !ok {
+			merged = append(merged, row)
+
+			continue
+		}
+
+		if idx, seen := indexByKey[key]; seen {
+			mergeAssociations(&merged[idx], row.Associations)
+
+			continue
+		}
+
+		indexByKey[key] = len(merged)
+		merged = append(merged, row)
+	}
+
+	return merged
+}
+
+// occurrenceMergeKey returns the key mergeRepeatedOccurrences merges rows on:
+// the occurrence id (see appointmentOccurrenceID) when the row's start parses,
+// and otherwise the appointment id with the start as AccuLynx wrote it, or
+// with none, the key #3723 merged window repeats on. It reports false for a
+// row without an id.
+func occurrenceMergeKey(row common.ReadResultRow) (string, bool) {
+	if occurrenceID, ok := appointmentOccurrenceID(row); ok {
+		return occurrenceID, true
+	}
+
+	appointmentID, _ := row.Raw["id"].(string)
+	if appointmentID == "" {
+		return "", false
+	}
+
+	start, _ := row.Raw["start"].(string)
+
+	return appointmentID + "|" + start, true
+}
+
+// appointmentOccurrenceID returns "<appointment id>_<start>", the start being
+// the occurrence's start in UTC as RFC 3339, e.g.
+// "3fa85f64_2026-11-14T13:00:00Z". Two occurrences of one appointment never
+// share it, even on the same day, and the same instant written with different
+// offsets gives the same id. It changes when an occurrence is rescheduled. It
+// reports false when the row has no id or its start is not an RFC 3339 time.
+func appointmentOccurrenceID(row common.ReadResultRow) (string, bool) {
+	appointmentID, _ := row.Raw["id"].(string)
+	if appointmentID == "" {
+		return "", false
+	}
+
+	start, ok := parseAppointmentTime(row.Raw["start"])
+	if !ok {
+		return "", false
+	}
+
+	return appointmentID + "_" + start.UTC().Format(time.RFC3339), true
+}
+
+// childRecordTransformer returns the record transformer of a nested read:
+// appointmentRecord for calendars/appointments, and nil, the record as AccuLynx
+// returns it, for every other leaf.
+func childRecordTransformer(params common.ReadParams) common.RecordTransformer {
+	if params.ObjectName == "calendars/appointments" {
+		return appointmentRecord
+	}
+
+	return nil
+}
+
+// appointmentRecord returns an appointment record with an appointmentId field
+// added: AccuLynx's id for the appointment, the same on every occurrence of a
+// multi-day or recurring appointment. An occurrence read replaces the row's id
+// with an occurrence id (see appointmentOccurrences) and leaves appointmentId
+// alone, so appointmentId tells which occurrences are one appointment. Without
+// the occurrence flag it equals id. Raw is built separately and keeps
+// AccuLynx's payload as returned.
+func appointmentRecord(node *ajson.Node) (map[string]any, error) {
+	record, err := jsonquery.Convertor.ObjectToMap(node)
+	if err != nil {
+		return nil, err
+	}
+
+	if appointmentID, ok := record["id"]; ok {
+		record[appointmentIDField] = appointmentID
+	}
+
+	return record, nil
+}
+
+// mergeAssociations adds each of the given associations to the row unless the
+// row already has the same object id under the same key.
+func mergeAssociations(dst *common.ReadResultRow, src map[string][]common.Association) {
+	for key, associations := range src {
+		for _, association := range associations {
+			if hasAssociation(dst.Associations[key], association.ObjectId) {
+				continue
+			}
+
+			if dst.Associations == nil {
+				dst.Associations = make(map[string][]common.Association)
+			}
+
+			dst.Associations[key] = append(dst.Associations[key], association)
+		}
+	}
+}
+
+func parseAppointmentTime(value any) (time.Time, bool) {
+	text, ok := value.(string)
+	if !ok {
+		return time.Time{}, false
+	}
+
+	parsed, err := time.Parse(time.RFC3339, text)
+	if err != nil {
+		return time.Time{}, false
+	}
+
+	return parsed, true
+}
+
+func hasAssociation(associations []common.Association, objectID string) bool {
+	return slices.ContainsFunc(associations, func(association common.Association) bool {
+		return association.ObjectId == objectID
+	})
+}
+
+// walkChildPages walks every page of one parent's nested collection, starting
+// at reqURL. AccuLynx server-side paginates these endpoints (jobs/invoices,
+// jobs/estimates, jobs/history, etc. — verified in the OpenAPI spec), so
+// the loop follows result.NextPage until the records-array length signals the
+// last page. Children configured as paginationNone exit after one iteration
+// because makeNextPage returns "" immediately.
+func (c *Connector) walkChildPages(
+	ctx context.Context,
+	parentID string,
+	params common.ReadParams,
+	nested nestedSpec,
+	reqURL *urlbuilder.URL,
+) ([]common.ReadResultRow, error) {
 	var allRows []common.ReadResultRow
 
 	for range maxChildPagesPerParent {
@@ -595,7 +951,7 @@ func (c *Connector) fetchChildPages(
 			resp,
 			c.recordsFunc(params.ObjectName),
 			c.makeFilterFunc(params, reqURL),
-			common.MakeMarshaledDataFunc(nil),
+			common.MakeMarshaledDataFunc(childRecordTransformer(params)),
 			params.Fields,
 		)
 		if err != nil {
@@ -629,9 +985,10 @@ func parseNextPageURL(s string) (*urlbuilder.URL, error) {
 	return urlbuilder.FromRawURL(parsed)
 }
 
-// applyAppointmentsDateWindow ensures /calendars/{id}/appointments always
-// receives startDate + endDate (the OpenAPI marks both as required). Defaults
-// to a 30-day window ending now when the caller supplies neither bound.
+// applyAppointmentsDateWindow sets the single startDate + endDate of a plain
+// calendars/appointments read (appointmentReadPlain; the OpenAPI marks both as
+// required): Since to Until, defaulting to a 30-day window ending now
+// when the caller supplies neither bound.
 func applyAppointmentsDateWindow(url *urlbuilder.URL, params common.ReadParams) {
 	until := params.Until
 	if until.IsZero() {
@@ -645,6 +1002,70 @@ func applyAppointmentsDateWindow(url *urlbuilder.URL, params common.ReadParams) 
 
 	url.WithQueryParam("startDate", since.Format(time.DateOnly))
 	url.WithQueryParam("endDate", until.Format(time.DateOnly))
+}
+
+type dateWindow struct {
+	start, end time.Time
+}
+
+// appointmentWindows returns the date windows that cover an occurrence read or
+// a repeated-id lookahead read of calendars/appointments. /calendars/{id}/appointments
+// requires startDate + endDate (YYYY-MM-DD) and filters on the appointment's
+// own start, not on a modified date (appointments carry none). A missing bound
+// defaults relative to the other one, or to now, so the range is never
+// reversed (the API answers 400 "End Date is before Start Date."):
+//   - Until → 60 days after the later of now and Since
+//   - Since → 30 days before the earlier of now and Until
+//
+// The range is split into consecutive windows of at most
+// maxAppointmentsWindowDays, since the API rejects a range of 90 days or more.
+//
+// Reference: https://apidocs.acculynx.com/reference/getappointments
+func appointmentWindows(params common.ReadParams, now time.Time) []dateWindow {
+	since, until := params.Since, params.Until
+
+	if until.IsZero() {
+		anchor := now
+		if since.After(anchor) {
+			anchor = since
+		}
+
+		until = anchor.Add(defaultAppointmentsLookahead)
+	}
+
+	if since.IsZero() {
+		anchor := now
+		if until.Before(anchor) {
+			anchor = until
+		}
+
+		since = anchor.Add(-defaultAppointmentsWindow)
+	}
+
+	start := utcDate(since)
+	end := utcDate(until)
+
+	var windows []dateWindow
+
+	for start.Compare(end) <= 0 {
+		windowEnd := start.AddDate(0, 0, maxAppointmentsWindowDays)
+		if windowEnd.After(end) {
+			windowEnd = end
+		}
+
+		windows = append(windows, dateWindow{start: start, end: windowEnd})
+		start = windowEnd.AddDate(0, 0, 1)
+	}
+
+	return windows
+}
+
+// utcDate returns midnight UTC of t's UTC calendar day, the granularity of the
+// API's YYYY-MM-DD startDate/endDate.
+func utcDate(t time.Time) time.Time {
+	year, month, day := t.UTC().Date()
+
+	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
 }
 
 // makeNextPage returns a NextPageFunc tailored to the object's paginationStyle.

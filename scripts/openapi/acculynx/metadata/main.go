@@ -143,7 +143,8 @@ func responseKeyFor(objectName, specResponseKey string) string {
 //   - rename: the spec names a property differently from the payload. The
 //     field's type is unchanged, only its key, so the mapping is lossless.
 //   - drop:   declared by the spec but never present in a response.
-//   - add:    returned by every response but absent from the spec.
+//   - add:    returned by every response, or added by the read connector, but
+//     absent from the spec.
 type fieldFixes struct {
 	rename map[string]string
 	drop   datautils.StringSet
@@ -199,6 +200,14 @@ var fieldFixesByObject = map[string]fieldFixes{
 	// values endpoints never return.
 	"contacts/custom-fields": customFieldValueFixes(),
 	"jobs/custom-fields":     customFieldValueFixes(),
+	// The read connector adds appointmentId, AccuLynx's id for the appointment,
+	// to every row. An occurrence read replaces id with an occurrence id, so
+	// appointmentId is what tells which occurrences of a multi-day or recurring
+	// appointment belong together (see appointmentRecord in
+	// providers/acculynx/read.go).
+	"calendars/appointments": {
+		add: []metadatadef.Field{{Name: "appointmentId", Type: "string"}},
+	},
 	// History entries expose action/date/createdBy only; "type" is not returned.
 	"jobs/history": {
 		drop: datautils.NewStringSet("type"),
