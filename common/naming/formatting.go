@@ -41,6 +41,10 @@ func SeparateDotWords(text string) string {
 	return strings.ReplaceAll(text, ".", " ")
 }
 
+func SeparateKebabWords(text string) string {
+	return strings.ReplaceAll(text, "-", " ")
+}
+
 // SeparateCamelCaseWords converts camelCase or PascalCase into space-separated words
 // by inserting a space before each uppercase letter that follows a lowercase letter.
 // Acronyms (consecutive uppercase letters) are kept as a single word.
