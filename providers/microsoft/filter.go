@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/providers/microsoft/internal/core"
 )
 
 // List of objects to response fields.
@@ -284,10 +285,10 @@ var incrementalObjects = map[string]string{
 	"workforceIntegrations":                                  "lastModifiedDateTime",
 
 	// Objects of Messages domain (core+virtual):
-	objectNameMessages:         "lastModifiedDateTime",
-	virtualObjectDrafts:        "lastModifiedDateTime",
-	virtualObjectSentMessages:  "lastModifiedDateTime",
-	virtualObjectInboxMessages: "lastModifiedDateTime",
+	core.ObjectNameMessages:         "lastModifiedDateTime",
+	core.VirtualObjectDrafts:        "lastModifiedDateTime",
+	core.VirtualObjectSentMessages:  "lastModifiedDateTime",
+	core.VirtualObjectInboxMessages: "lastModifiedDateTime",
 }
 
 // https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
