@@ -1,0 +1,131 @@
+{
+  "success": true,
+  "data": {
+    "type": "payments",
+    "layout": "summary",
+    "columns": [
+      {
+        "id": "date",
+        "label": "Date",
+        "format": "report_date",
+        "kind": "dimension"
+      },
+      {
+        "id": "payment_type",
+        "label": "Payment Type",
+        "format": null,
+        "kind": "dimension"
+      },
+      {
+        "id": "gl_code",
+        "label": "GL Code",
+        "format": null,
+        "kind": "dimension"
+      },
+      {
+        "id": "payment",
+        "label": "Payment",
+        "format": "report_money",
+        "kind": "measure"
+      },
+      {
+        "id": "tips",
+        "label": "Tips",
+        "format": "report_money",
+        "kind": "measure"
+      },
+      {
+        "id": "count",
+        "label": "Count",
+        "format": null,
+        "kind": "measure"
+      }
+    ],
+    "rows": [
+      [
+        "Nov 05, 2026",
+        "MC",
+        "",
+        null,
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        "1411.96",
+        "180.76",
+        "36"
+      ],
+      [
+        "Nov 05, 2026",
+        "Cash",
+        "",
+        null,
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        "490.46",
+        null,
+        "21"
+      ]
+    ],
+    "applied": {
+      "filters": {
+        "separate_stores": null,
+        "selection": "close_date",
+        "use_time": null,
+        "dow": null,
+        "employee_id": null,
+        "cashier_id": null,
+        "open_station_id": null,
+        "close_station_id": null,
+        "table_type_id": null,
+        "table_type_group_id": null,
+        "web_order": null,
+        "kiosk_order": null,
+        "web_source": null,
+        "web_type": null,
+        "kiosk_type": null,
+        "customer_id": null,
+        "customer_groups": null,
+        "payment_type_id": null,
+        "processor_id": null,
+        "txn_station_id": null,
+        "txn_employee_id": null,
+        "txn_status": null,
+        "third_party_loyalty_id": null,
+        "shift_id": null,
+        "status": null,
+        "fiscal_status": null,
+        "cc_invoices_only": null,
+        "dsp_id": null,
+        "dsp_status": null,
+        "remove_cash_change": null,
+        "net_cash_deducts_tips": null,
+        "net_cash_deducts_service_charges": null,
+        "only_discount_approved_items": null,
+        "only_discount_approved_invoices": null,
+        "only_discount_approved_items_invoices": null,
+        "card_entry_method": null,
+        "weather_type": null,
+        "precip_type": null,
+        "max_temp": null,
+        "min_temp": null
+      },
+      "date_range": {
+        "date_from": "2026-11-05 00:00:00",
+        "date_to": "2026-11-05 23:59:59"
+      },
+      "store_scope": null,
+      "result_limit": null,
+      "include_empty_rows": null
+    }
+  },
+  "write_mode": "live"
+}
