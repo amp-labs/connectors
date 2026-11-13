@@ -169,6 +169,19 @@ func (c *Connector) fetchSingleRecord(
 
 	rawCopy := *raw
 
+	// Same enrichment as the jobs read (see workflowstatus.go), so a webhook
+	// record fetched by id carries the status the event announced.
+	if objectName == objectJobs && wantsWorkflowStatus(fieldSet.List()) {
+		status, ok, err := c.workflowStatusFor(ctx, recordID)
+		if err != nil {
+			return common.ReadResultRow{}, err
+		}
+
+		if ok {
+			rawCopy[fieldCurrentWorkflowStatus] = status
+		}
+	}
+
 	return common.ReadResultRow{
 		Id:     recordID,
 		Fields: pickFields(rawCopy, fieldSet),

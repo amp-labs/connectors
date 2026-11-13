@@ -305,6 +305,14 @@ func main() {
 			utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(field), nil, nil)
 	}
 
+	// currentWorkflowStatus is not part of the /jobs payload: the read
+	// connector fetches it per job from GET /jobs/{jobId}/milestones/current
+	// when the caller selects it (see providers/acculynx/workflowstatus.go),
+	// so it is merged into the jobs schema here to make it selectable.
+	schemas.Add(common.ModuleRoot, "jobs", "Jobs", "/api/v2/jobs", "items",
+		utilsopenapi.ConvertMetadataFieldToFieldMetadataMapV2(
+			metadatadef.Field{Name: "currentWorkflowStatus", Type: "object"}), nil, nil)
+
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))
 

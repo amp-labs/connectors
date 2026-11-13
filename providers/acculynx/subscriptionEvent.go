@@ -248,10 +248,14 @@ func (e SubscriptionEvent) EventTimeStampNano() (int64, error) {
 // field can express the change, so UpdatedFields stays empty and consumers
 // watch with watchFieldsAuto.
 //
+// The status topic also reports currentWorkflowStatus, the jobs read field
+// that carries the changed status (see workflowstatus.go), so integrations
+// watching that field receive the event.
+//
 //nolint:gochecknoglobals
 var topicToUpdatedFields = map[string][]string{
 	"job.milestone.current_changed":                     {"milestone"},
-	"job.milestone.status.current_changed":              {"milestone"},
+	"job.milestone.status.current_changed":              {"milestone", fieldCurrentWorkflowStatus},
 	"job.financials.approved-value_changed":             {"financials"},
 	"job.category_changed":                              {"jobCategory"},
 	"job.work-type_changed":                             {"workType"},

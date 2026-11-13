@@ -252,7 +252,8 @@ func TestSubscriptionEvent_UpdatedFields(t *testing.T) {
 		// Specific-change topics — each maps to a single field name verified
 		// against live AccuLynx test-event payloads.
 		{"job.milestone.current_changed", []string{"milestone"}},
-		{"job.milestone.status.current_changed", []string{"milestone"}},
+		// Also reports the jobs read field that carries the status.
+		{"job.milestone.status.current_changed", []string{"milestone", "currentWorkflowStatus"}},
 		{"job.financials.approved-value_changed", []string{"financials"}},
 		{"job.category_changed", []string{"jobCategory"}},
 		{"job.work-type_changed", []string{"workType"}},

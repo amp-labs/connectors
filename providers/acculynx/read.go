@@ -314,6 +314,8 @@ func (c *Connector) parseReadResponse(
 //   - estimates hydration (opt-in, one detail call per row — see
 //     estimates.go), chained first so the association extractors below see
 //     the final rows;
+//   - jobs workflow status (only when currentWorkflowStatus is selected, one
+//     call per row — see workflowstatus.go);
 //   - jobs -> contacts association: contact ids and isPrimary arrive via
 //     ?includes=contacts, pure reshape (the server hydrates the contacts);
 //   - estimates -> jobs association: the job stub ({id, _link}) and
@@ -327,6 +329,10 @@ func (c *Connector) readMarshaller(
 
 	if params.ObjectName == objectEstimates && shouldHydrateEstimates(params) {
 		marshaller = readhelper.ChainedMarshaller(marshaller, c.hydrateEstimateRows(ctx, params))
+	}
+
+	if params.ObjectName == objectJobs && wantsWorkflowStatus(params.Fields.List()) {
+		marshaller = readhelper.ChainedMarshaller(marshaller, c.attachWorkflowStatusRows(ctx))
 	}
 
 	if params.ObjectName == objectJobs &&
