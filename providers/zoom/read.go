@@ -3,7 +3,6 @@ package zoom
 import (
 	"context"
 	"errors"
-	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
@@ -11,12 +10,8 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/parallelfetch"
+	"github.com/amp-labs/connectors/providers/zoom/internal/associations"
 	"github.com/amp-labs/connectors/providers/zoom/internal/core"
-)
-
-const (
-	DefaultPageSize    = 300
-	maxReadConcurrency = 1
 )
 
 func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
@@ -45,10 +40,10 @@ func (c *Connector) readFirstPage(ctx context.Context, params common.ReadParams)
 		return nil, err
 	}
 
-	url.WithQueryParam("page_size", strconv.Itoa(DefaultPageSize))
+	url.WithQueryParam("page_size", core.DefaultPageSize)
 	addTimeFilterParams(params, url)
 
-	return c.readRecords(ctx, params.ObjectName, params.Fields, url)
+	return c.readRecords(ctx, params.ObjectName, params.Fields, url, params.AssociatedObjects)
 }
 
 func (c *Connector) readNextPage(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
@@ -63,13 +58,14 @@ func (c *Connector) readNextPage(ctx context.Context, params common.ReadParams) 
 		return nil, err
 	}
 
-	return c.readRecords(ctx, params.ObjectName, params.Fields, url)
+	return c.readRecords(ctx, params.ObjectName, params.Fields, url, params.AssociatedObjects)
 }
 
 func (c *Connector) readRecords(ctx context.Context,
 	objectName string,
 	selectedFields datautils.StringSet,
 	url *urlbuilder.URL,
+	associatedObjects []string,
 ) (*common.ReadResult, error) {
 	rsp, err := c.Base.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
@@ -81,9 +77,11 @@ func (c *Connector) readRecords(ctx context.Context,
 
 	return common.ParseResult(
 		rsp,
-		common.ExtractRecordsFromPath(responseFieldName),
+		common.MakeRecordsFunc(responseFieldName),
 		getNextRecordURL(url),
-		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField(identifier)),
+		associations.CreateDataMarshallerWithAssociations(ctx,
+			c.Base, common.ObjectName(objectName), associatedObjects, identifier,
+		),
 		selectedFields,
 	)
 }
@@ -106,14 +104,15 @@ func (c *Connector) readForUsers(
 			return nil, err
 		}
 
-		url.WithQueryParam("page_size", strconv.Itoa(DefaultPageSize))
+		url.WithQueryParam("page_size", core.DefaultPageSize)
 		addTimeFilterParams(params, url)
 
 		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
-			// TODO figure out the rate limiting.
-			time.Sleep(500 * time.Millisecond) // nolint:mnd
+			if err := core.Wait(ctx); err != nil {
+				return userId, nil, err
+			}
 
-			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url)
+			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url, params.AssociatedObjects)
 
 			return userId, result, err
 		}
@@ -138,10 +137,11 @@ func (c *Connector) readNextPageForUsers(ctx context.Context,
 
 		// Create parallel task for this account's next page
 		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
-			// TODO figure out the rate limiting.
-			time.Sleep(500 * time.Millisecond) // nolint:mnd
+			if err := core.Wait(ctx); err != nil {
+				return userId, nil, err
+			}
 
-			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url)
+			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url, params.AssociatedObjects)
 
 			return userId, result, err
 		}
@@ -153,7 +153,7 @@ func (c *Connector) readNextPageForUsers(ctx context.Context,
 func executeReadTasksUsers(ctx context.Context,
 	tasks []parallelfetch.Task[string, common.ReadResult],
 ) (*common.ReadResult, error) {
-	result := parallelfetch.Execute(ctx, tasks, maxReadConcurrency)
+	result := parallelfetch.Execute(ctx, tasks, core.MaxReadConcurrency)
 	if len(result.Errors) != 0 {
 		return nil, errors.Join(result.Errors.Values()...)
 	}
@@ -178,7 +178,7 @@ func (c *Connector) listAllUsers(ctx context.Context) ([]string, error) {
 		return nil, err
 	}
 
-	url.WithQueryParam("page_size", strconv.Itoa(DefaultPageSize))
+	url.WithQueryParam("page_size", core.DefaultPageSize)
 
 	userIds := make([]string, 0)
 

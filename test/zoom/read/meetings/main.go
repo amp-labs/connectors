@@ -23,5 +23,6 @@ func main() {
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "meetings",
 		Fields:     connectors.Fields("email"),
+		// AssociatedObjects: []string{"participants"},
 	})
 }

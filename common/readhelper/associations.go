@@ -53,7 +53,7 @@ type RowID = string
 //
 // For each related object, it fetches associations keyed by source row ID and
 // attaches them in place to the matching rows.
-func hydrateAssociations(ctx context.Context,
+func hydrateAssociations(ctx context.Context, // nolint:cyclop
 	fromObjName common.ObjectName,
 	toAssociatedObjects []string,
 	rows []common.ReadResultRow,
@@ -64,6 +64,11 @@ func hydrateAssociations(ctx context.Context,
 	}
 
 	rowIDs := getUniqueIDs(rows)
+
+	if len(rowIDs) == 0 {
+		// Early exit.
+		return nil
+	}
 
 	// Fetch associations for each source-target object pair.
 	for _, targetObject := range toAssociatedObjects {

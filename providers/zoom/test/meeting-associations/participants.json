@@ -1,0 +1,21 @@
+{
+  "next_page_token": "",
+  "page_count": 1,
+  "page_size": 30,
+  "total_records": 1,
+  "participants": [
+    {
+      "id": "30R7kT7bTIKSNUFEuH_Qlg",
+      "name": "Jill Chill",
+      "user_id": "27423744",
+      "registrant_id": "_f08HhPJS82MIVLuuFaJPg",
+      "user_email": "jchill@example.com",
+      "join_time": "2022-03-23T06:58:09Z",
+      "leave_time": "2022-03-23T07:02:28Z",
+      "duration": 259,
+      "failover": false,
+      "status": "in_meeting",
+      "internal_user": false
+    }
+  ]
+}
