@@ -5,6 +5,7 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/providers/zoom/internal/core"
 	"github.com/spyzhov/ajson"
 )
 
@@ -14,7 +15,7 @@ func (c *Connector) Write(ctx context.Context, config common.WriteParams) (*comm
 		return nil, err
 	}
 
-	if !supportedObjectsByWrite.Has(config.ObjectName) {
+	if !core.SupportedObjectsByWrite.Has(config.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 

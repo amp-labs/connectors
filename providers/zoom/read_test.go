@@ -17,12 +17,15 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	t.Parallel()
 
 	errorBadRequest := testutils.DataFromFile(t, "bad-request.json")
-	responseUsersFirstPage := testutils.DataFromFile(t, "read-users-first-page.json")
-	responseUsersSecondPage := testutils.DataFromFile(t, "read-users-second-page.json")
-	responseArchiveFilesFirstPage := testutils.DataFromFile(t, "archive-files-first-page.json")
-	responseArchiveFilesSecondPage := testutils.DataFromFile(t, "archive-files-second-page.json")
-	responseRecordingsFirstPage := testutils.DataFromFile(t, "recordings-first-page.json")
-	responseRecordingsSecondPage := testutils.DataFromFile(t, "recordings-second-page.json")
+	responseUsersFirstPage := testutils.DataFromFile(t, "read/users/1-first-page.json")
+	responseUsersSecondPage := testutils.DataFromFile(t, "read/users/2-second-page.json")
+	responseArchiveFilesFirstPage := testutils.DataFromFile(t, "read/archive_files/1-first-page.json")
+	responseArchiveFilesSecondPage := testutils.DataFromFile(t, "read/archive_files/2-second-page.json")
+	responseRecordingsFirstPage := testutils.DataFromFile(t, "read/recordings/1-first-page.json")
+	responseRecordingsSecondPage := testutils.DataFromFile(t, "read/recordings/2-second-page.json")
+	responseUser1MeetingsFirstPage := testutils.DataFromFile(t, "read/account_meetings/user-a/1-first-page.json")
+	responseUser2MeetingsFirstPage := testutils.DataFromFile(t, "read/account_meetings/user-b/1-first-page.json")
+	responseUser2MeetingsSecondPage := testutils.DataFromFile(t, "read/account_meetings/user-b/2-second-page.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -352,6 +355,129 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				}},
 				NextPage: testconn.URLTestServer + "/v2/users?next_page_token=8V8HigQkzm2O5r9RUn31D9ZyJHgrmFfbLa2&page_size=300", //nolint:lll
 				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read Meetings first page",
+			Input: common.ReadParams{
+				ObjectName: "meetings",
+				Fields:     connectors.Fields("topic"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2/users/me/meetings"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseUser2MeetingsFirstPage),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"topic": "Team Coffee Chat & Trivia"},
+					Id:     "86535688426",
+					Raw:    map[string]any{"created_at": "2026-10-30T20:04:50Z"},
+				}, {
+					Fields: map[string]any{"topic": "Virtual Happy Hour"},
+					Id:     "84059314795",
+					Raw:    map[string]any{"created_at": "2026-10-30T20:05:26Z"},
+				}},
+				NextPage: testconn.URLTestServer + "/v2/users/me/meetings?next_page_token=i2Gm6qVgwKn5yteiAwgyLVWEOBzA7Pb3TH2&page_size=300",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read Account Meetings first page across all users",
+			Input: common.ReadParams{
+				ObjectName: "account_meetings",
+				Fields:     connectors.Fields("id", "topic"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If: mockcond.And{
+						mockcond.Path("/v2/users"),
+						mockcond.QueryParam("page_size", "300"),
+						mockcond.QueryParamsMissing("next_page_token"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseUsersFirstPage),
+				}, {
+					If: mockcond.And{
+						mockcond.Path("/v2/users"),
+						mockcond.QueryParam("next_page_token", "8V8HigQkzm2O5r9RUn31D9ZyJHgrmFfbLa2"),
+					},
+					Then: mockserver.Response(http.StatusOK, responseUsersSecondPage),
+				}, {
+					If:   mockcond.Path("/v2/users/KDcuGIm1QgePTO8WbOqwIQ/meetings"),
+					Then: mockserver.Response(http.StatusOK, responseUser1MeetingsFirstPage),
+				}, {
+					If:   mockcond.Path("/v2/users/KfDcuGIdfdlfdQgePTO8WbOqwIQ/meetings"),
+					Then: mockserver.Response(http.StatusOK, responseUser2MeetingsFirstPage),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetReadSorted,
+			Expected: &common.ReadResult{
+				Rows: 4,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"topic": "Virtual Happy Hour"},
+					Id:     "84059314795",
+					Raw:    map[string]any{"created_at": "2026-10-30T20:05:26Z"},
+				}, {
+					Fields: map[string]any{"topic": "Q4 Departmental Alignment & Sync"},
+					Id:     "86381714576",
+					Raw:    map[string]any{"created_at": "2026-10-30T20:11:05Z"},
+				}, {
+					Fields: map[string]any{"topic": "Team Coffee Chat & Trivia"},
+					Id:     "86535688426",
+					Raw:    map[string]any{"created_at": "2026-10-30T20:04:50Z"},
+				}, {
+					Fields: map[string]any{"topic": "Quick sync"},
+					Id:     "87414255009",
+					Raw:    map[string]any{"created_at": "2026-10-30T20:11:45Z"},
+				}},
+				NextPage: `[{
+					"context": "KfDcuGIdfdlfdQgePTO8WbOqwIQ",
+					"value": "` + testconn.URLTestServer + `/v2/users/KfDcuGIdfdlfdQgePTO8WbOqwIQ/meetings?next_page_token=i2Gm6qVgwKn5yteiAwgyLVWEOBzA7Pb3TH2&page_size=300"
+				}]`,
+				Done: false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Account meetings correctly navigates to the next page using aggregate page token",
+			Input: common.ReadParams{
+				ObjectName: "account_meetings",
+				Fields:     connectors.Fields("topic"),
+				NextPage: `[{
+					"context": "KfDcuGIdfdlfdQgePTO8WbOqwIQ",
+					"value": "` + testconn.URLTestServer + `/v2/users/KfDcuGIdfdlfdQgePTO8WbOqwIQ/meetings?next_page_token=i2Gm6qVgwKn5yteiAwgyLVWEOBzA7Pb3TH2&page_size=300"
+				}]`,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2/users/KfDcuGIdfdlfdQgePTO8WbOqwIQ/meetings"),
+					mockcond.QueryParam("next_page_token", "i2Gm6qVgwKn5yteiAwgyLVWEOBzA7Pb3TH2"),
+					mockcond.QueryParam("page_size", "300"),
+				},
+				Then: mockserver.Response(http.StatusOK, responseUser2MeetingsSecondPage),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetReadSorted,
+			Expected: &common.ReadResult{
+				Rows: 2,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"topic": "Database Migration & Architecture Sync"},
+					Id:     "83625651564",
+					Raw:    map[string]any{"created_at": "2026-10-30T20:06:17Z"},
+				}, {
+					Fields: map[string]any{"topic": "Project Alpha: Weekly Status Update"},
+					Id:     "88033623689",
+					Raw:    map[string]any{"created_at": "2026-10-30T20:06:17Z"},
+				}},
+				NextPage: "",
+				Done:     true,
 			},
 			ExpectedErrs: nil,
 		},

@@ -2,64 +2,215 @@ package zoom
 
 import (
 	"context"
+	"errors"
 	"strconv"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
+	"github.com/amp-labs/connectors/internal/parallelfetch"
+	"github.com/amp-labs/connectors/providers/zoom/internal/core"
 )
 
-const DefaultPageSize = 300
+const (
+	DefaultPageSize    = 300
+	maxReadConcurrency = 1
+)
 
-func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common.ReadResult, error) {
-	if err := config.ValidateParams(true); err != nil {
+func (c *Connector) Read(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if err := params.ValidateParams(true); err != nil {
 		return nil, err
 	}
 
-	if !supportedObjectsByRead.Has(config.ObjectName) {
+	if !core.SupportedObjectsByRead.Has(params.ObjectName) {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
 
-	url, err := c.buildReadURL(config)
+	if params.IsFirstPage() {
+		return c.readFirstPage(ctx, params)
+	}
+
+	return c.readNextPage(ctx, params)
+}
+
+func (c *Connector) readFirstPage(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if core.ObjectCategoryAllUsers.Has(params.ObjectName) {
+		return c.readForUsers(ctx, params)
+	}
+
+	url, err := c.GetReadURL(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
 
+	url.WithQueryParam("page_size", strconv.Itoa(DefaultPageSize))
+	addTimeFilterParams(params, url)
+
+	return c.readRecords(ctx, params.ObjectName, params.Fields, url)
+}
+
+func (c *Connector) readNextPage(ctx context.Context, params common.ReadParams) (*common.ReadResult, error) {
+	if token, ok := readhelper.GetAggregateToken[string](params.NextPage); ok {
+		return c.readNextPageForUsers(ctx, params, token)
+	}
+
+	// Default read of the next page.
+	// It is not an aggregate token but a raw URL.
+	url, err := urlbuilder.New(params.NextPage.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return c.readRecords(ctx, params.ObjectName, params.Fields, url)
+}
+
+func (c *Connector) readRecords(ctx context.Context,
+	objectName string,
+	selectedFields datautils.StringSet,
+	url *urlbuilder.URL,
+) (*common.ReadResult, error) {
 	rsp, err := c.Base.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
 
-	responseFieldName := objectNameToResponseField[config.ObjectName]
-	identifier := objectNameToReadResponseIdentifier.Get(config.ObjectName)
+	responseFieldName := objectNameToResponseField[objectName]
+	identifier := objectNameToReadResponseIdentifier.Get(objectName)
 
 	return common.ParseResult(
 		rsp,
 		common.ExtractRecordsFromPath(responseFieldName),
 		getNextRecordURL(url),
 		readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField(identifier)),
-		config.Fields,
+		selectedFields,
 	)
 }
 
-func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, error) {
-	if len(config.NextPage) != 0 {
-		// Next page
-		return urlbuilder.New(config.NextPage.String())
+func (c *Connector) readForUsers(
+	ctx context.Context,
+	params common.ReadParams,
+) (*common.ReadResult, error) {
+	userIds, err := c.listAllUsers(ctx)
+	if err != nil {
+		return nil, err
 	}
 
-	// First page
-	url, err := c.GetReadURL(config.ObjectName)
+	// Parallelized read across all users.
+	tasks := make([]parallelfetch.Task[string, common.ReadResult], len(userIds))
+	for index, userId := range userIds {
+		// Each task reads records for a specific user.
+		url, err := c.GetReadUrlForUser(params.ObjectName, userId)
+		if err != nil {
+			return nil, err
+		}
+
+		url.WithQueryParam("page_size", strconv.Itoa(DefaultPageSize))
+		addTimeFilterParams(params, url)
+
+		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
+			// TODO figure out the rate limiting.
+			time.Sleep(500 * time.Millisecond) // nolint:mnd
+
+			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url)
+
+			return userId, result, err
+		}
+	}
+
+	return executeReadTasksUsers(ctx, tasks)
+}
+
+func (c *Connector) readNextPageForUsers(ctx context.Context,
+	params common.ReadParams,
+	aggregateToken readhelper.AggregateNextPage[string],
+) (*common.ReadResult, error) {
+	tasks := make([]parallelfetch.Task[string, common.ReadResult], len(aggregateToken))
+	for index, token := range aggregateToken {
+		userId := token.Context
+		nextPageToken := token.Value.String()
+
+		url, err := urlbuilder.New(nextPageToken)
+		if err != nil {
+			return nil, err
+		}
+
+		// Create parallel task for this account's next page
+		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
+			// TODO figure out the rate limiting.
+			time.Sleep(500 * time.Millisecond) // nolint:mnd
+
+			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url)
+
+			return userId, result, err
+		}
+	}
+
+	return executeReadTasksUsers(ctx, tasks)
+}
+
+func executeReadTasksUsers(ctx context.Context,
+	tasks []parallelfetch.Task[string, common.ReadResult],
+) (*common.ReadResult, error) {
+	result := parallelfetch.Execute(ctx, tasks, maxReadConcurrency)
+	if len(result.Errors) != 0 {
+		return nil, errors.Join(result.Errors.Values()...)
+	}
+
+	return readhelper.AggregateReadResults(
+		result.Records,
+		func(userId string) string {
+			// User ID uniquely identifies the source for next-page token resolution.
+			// The context for this NextPageToken is represented solely by userId.
+			return userId
+		},
+		func(userId string, row *common.ReadResultRow) {
+			// Enhance fields to indicate what user this row is associated with.
+			row.Fields[core.FieldUserId] = userId
+		},
+	)
+}
+
+func (c *Connector) listAllUsers(ctx context.Context) ([]string, error) {
+	url, err := c.GetReadURL(core.ObjectNameUser)
 	if err != nil {
 		return nil, err
 	}
 
 	url.WithQueryParam("page_size", strconv.Itoa(DefaultPageSize))
 
-	addTimeFilterParams(config, url)
+	userIds := make([]string, 0)
 
-	return url, nil
+	for {
+		res, err := c.JSONHTTPClient().Get(ctx, url.String())
+		if err != nil {
+			return nil, err
+		}
+
+		usersResp, err := common.UnmarshalJSON[usersListResponse](res)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, user := range usersResp.Users {
+			userIds = append(userIds, user.Id)
+		}
+
+		if usersResp.NextPageToken == "" || len(userIds) == 0 {
+			return userIds, nil // => Desired return with collected ids.
+		}
+
+		// Prepare next page URL by advancing the page token.
+		url.WithQueryParam("next_page_token", usersResp.NextPageToken)
+	}
+}
+
+type usersListResponse struct {
+	NextPageToken string `json:"next_page_token"`
+	Users         []struct {
+		Id string `json:"id"`
+	} `json:"users"`
 }
 
 // nolint:nestif
