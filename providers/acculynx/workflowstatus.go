@@ -31,9 +31,7 @@ import (
 //
 // workflowStatus.id is the stable company-defined status key. The entry is
 // exposed on jobs as currentWorkflowStatus, as AccuLynx sends it except for
-// duration.endDate: an open interval's end is the server clock, so it changes
-// on every call (verified live on the milestone's own duration) and would make
-// the value differ on every read.
+// duration.endDate (see currentStatus).
 //
 // The fetch costs one extra call per job, so it runs only when the caller
 // selects currentWorkflowStatus — reads that do not select it are unchanged.
@@ -48,7 +46,16 @@ const fieldCurrentWorkflowStatus = "currentWorkflowStatus"
 // currentMilestoneResponse is the part of GET /jobs/{jobId}/milestones/current
 // the status lookup needs.
 type currentMilestoneResponse struct {
-	Statuses []map[string]any `json:"statuses"`
+	Id        string           `json:"id"`
+	JobId     string           `json:"jobId"`
+	Statuses  []map[string]any `json:"statuses"`
+	Name      string           `json:"name"`
+	IsCurrent bool             `json:"isCurrent"`
+	Link      string           `json:"_link"`
+	Duration  struct {
+		StartDate string `json:"startDate"`
+		EndDate   string `json:"endDate"`
+	} `json:"duration"`
 }
 
 // wantsWorkflowStatus reports whether the caller selected currentWorkflowStatus.
@@ -129,6 +136,10 @@ func currentStatus(statuses []map[string]any) any {
 			continue
 		}
 
+		// The current status has not ended, so AccuLynx fills endDate with the
+		// server clock (seen live on the current milestone's own duration).
+		// Kept, it would change on every read and make every job look modified
+		// downstream; the time in status is still derivable from startDate.
 		if duration, ok := status["duration"].(map[string]any); ok {
 			delete(duration, "endDate")
 		}
