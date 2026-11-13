@@ -107,6 +107,7 @@ func parseMetadataResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadat
 	}
 
 	metadata := &common.ObjectMetadata{
+		Fields:    make(common.FieldsMetadata),
 		FieldsMap: make(map[string]string),
 	}
 
@@ -118,10 +119,15 @@ func parseMetadataResponse(resp *common.JSONHTTPResponse) (*common.ObjectMetadat
 		return metadata, nil
 	}
 
-	// Ranging on the fields Slice, to construct the metadata fields.
-	for k := range response.Data[0] {
-		// TODO fix deprecated
-		metadata.FieldsMap[k] = k // nolint:staticcheck
+	// Close has no describe endpoint, so fields are sampled from the first record.
+	// The value type is inferred from the sampled value; null values resolve to "other".
+	for field, value := range response.Data[0] {
+		metadata.AddFieldMetadata(field, common.FieldMetadata{
+			DisplayName:  field,
+			ValueType:    common.InferValueTypeFromData(value),
+			ProviderType: "", // not available
+			Values:       nil,
+		})
 	}
 
 	return metadata, nil

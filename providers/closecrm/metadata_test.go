@@ -30,7 +30,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/api/v1/lead"),
+					If:   mockcond.Path("/api/v1/lead/"),
 					Then: mockserver.Response(http.StatusOK, leadsResponse),
 				}},
 			}.Server(),
@@ -39,6 +39,32 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Result: map[string]common.ObjectMetadata{
 					"lead": {
 						DisplayName: "lead",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   common.ValueTypeString,
+							},
+							"date_created": {
+								DisplayName: "date_created",
+								ValueType:   common.ValueTypeString,
+							},
+							"custom.cf_VrDASliEOprzQEnsi88KGAEVjGUOB00ea12dpa63hlr": {
+								DisplayName: "custom.cf_VrDASliEOprzQEnsi88KGAEVjGUOB00ea12dpa63hlr",
+								ValueType:   common.ValueTypeFloat,
+							},
+							"contacts": {
+								DisplayName: "contacts",
+								ValueType:   common.ValueTypeOther,
+							},
+							"custom": {
+								DisplayName: "custom",
+								ValueType:   common.ValueTypeOther,
+							},
+							"updated_by": {
+								DisplayName: "updated_by",
+								ValueType:   common.ValueTypeOther,
+							},
+						},
 						FieldsMap: map[string]string{
 							"addresses":       "addresses",
 							"contacts":        "contacts",

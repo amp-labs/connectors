@@ -62,7 +62,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/api/v1/activity"),
+				If:    mockcond.Path("/api/v1/activity/"),
 				Then:  mockserver.Response(http.StatusOK, activityResponse),
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetRead,
