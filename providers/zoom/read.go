@@ -108,7 +108,9 @@ func (c *Connector) readForUsers(
 		addTimeFilterParams(params, url)
 
 		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
-			core.Wait()
+			if err := core.Wait(ctx); err != nil {
+				return userId, nil, err
+			}
 
 			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url, params.AssociatedObjects)
 
@@ -135,7 +137,9 @@ func (c *Connector) readNextPageForUsers(ctx context.Context,
 
 		// Create parallel task for this account's next page
 		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
-			core.Wait()
+			if err := core.Wait(ctx); err != nil {
+				return userId, nil, err
+			}
 
 			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url, params.AssociatedObjects)
 

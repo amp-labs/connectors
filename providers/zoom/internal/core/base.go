@@ -1,8 +1,10 @@
 package core
 
 import (
+	"context"
 	"time"
 
+	"github.com/amp-labs/amp-common/utils"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -20,9 +22,23 @@ const (
 	apiVersion = "v2"
 )
 
-func Wait() {
-	// TODO figure out the rate limiting.
-	time.Sleep(500 * time.Millisecond) // nolint:mnd
+// Wait inserts a 500 ms delay between Zoom requests.
+//
+// TODO: Implement proper Zoom rate limiting.
+//
+// Zoom's lowest available rate-limit tier is the Basic (free) plan, which
+// allows up to 2 requests per second. As a result, requests cannot currently
+// be parallelized: all requests must be executed sequentially and throttled
+// with a 500 ms delay between calls to avoid exceeding the rate limit.
+//
+// This helper is currently called from multiple places in the codebase to
+// insert that delay. Replace these scattered calls with a centralized,
+// provider-aware rate limiter that supports configurable concurrency and
+// delay per provider/plan.
+//
+// Until then, this 500 ms wait is a temporary safeguard against Zoom rate limiting.
+func Wait(ctx context.Context) error {
+	return utils.SleepCtx(ctx, 500*time.Millisecond) // nolint:mnd
 }
 
 type Base struct {

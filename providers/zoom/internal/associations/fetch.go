@@ -10,7 +10,9 @@ import (
 
 // It retrieves a single resource and treats the entire JSON response as one record.
 func fetchItem(ctx context.Context, base *core.Base, url *urlbuilder.URL, identifierField string) (recordItems, error) {
-	core.Wait()
+	if err := core.Wait(ctx); err != nil {
+		return nil, err
+	}
 
 	resp, err := base.JSONHTTPClient().Get(ctx, url.String())
 	if err != nil {
@@ -48,7 +50,9 @@ func fetchItems(ctx context.Context, // nolint:cyclop
 	records := make(recordItems)
 
 	for {
-		core.Wait()
+		if err := core.Wait(ctx); err != nil {
+			return nil, err
+		}
 
 		resp, err := base.JSONHTTPClient().Get(ctx, url.String())
 		if err != nil {
