@@ -1,0 +1,107 @@
+{
+  "data": {
+    "companies": [
+      {
+        "id": "64f8acbb-ee41-4877-ab83-3a1f33931628",
+        "searchVector": "'fixture':1 'gamma':2 'gamma.example.com':4 'sas':3",
+        "createdAt": "2026-10-25T13:07:55.295Z",
+        "updatedAt": "2026-10-25T13:07:55.295Z",
+        "deletedAt": null,
+        "name": "Fixture Gamma SAS",
+        "domainName": {
+          "primaryLinkLabel": "",
+          "primaryLinkUrl": "gamma.example.com",
+          "secondaryLinks": []
+        },
+        "address": {
+          "addressStreet1": "",
+          "addressStreet2": "",
+          "addressCity": "Nantes",
+          "addressPostcode": "",
+          "addressState": "",
+          "addressCountry": "",
+          "addressLat": null,
+          "addressLng": null
+        },
+        "linkedinLink": {
+          "primaryLinkLabel": "",
+          "primaryLinkUrl": "",
+          "secondaryLinks": []
+        },
+        "annualRevenue": {
+          "amountMicros": null,
+          "currencyCode": null
+        },
+        "position": -2,
+        "createdBy": {
+          "source": "API",
+          "workspaceMemberId": null,
+          "name": "ampersand-connector-live-test",
+          "context": {}
+        },
+        "updatedBy": {
+          "source": "API",
+          "workspaceMemberId": null,
+          "name": "ampersand-connector-live-test",
+          "context": {}
+        },
+        "accountOwnerId": null,
+        "legacyRating": null
+      },
+      {
+        "id": "9280d032-94f2-4748-936f-62e34540eef7",
+        "searchVector": "'beta':2 'beta.example.com':4 'fixture':1 'gmbh':3",
+        "createdAt": "2026-10-25T13:07:55.279Z",
+        "updatedAt": "2026-10-25T13:07:55.279Z",
+        "deletedAt": null,
+        "name": "Fixture Beta GmbH",
+        "domainName": {
+          "primaryLinkLabel": "",
+          "primaryLinkUrl": "beta.example.com",
+          "secondaryLinks": []
+        },
+        "address": {
+          "addressStreet1": "",
+          "addressStreet2": "",
+          "addressCity": "Bremen",
+          "addressPostcode": "",
+          "addressState": "",
+          "addressCountry": "",
+          "addressLat": null,
+          "addressLng": null
+        },
+        "linkedinLink": {
+          "primaryLinkLabel": "",
+          "primaryLinkUrl": "",
+          "secondaryLinks": []
+        },
+        "annualRevenue": {
+          "amountMicros": null,
+          "currencyCode": null
+        },
+        "position": -1,
+        "createdBy": {
+          "source": "API",
+          "workspaceMemberId": null,
+          "name": "ampersand-connector-live-test",
+          "context": {}
+        },
+        "updatedBy": {
+          "source": "API",
+          "workspaceMemberId": null,
+          "name": "ampersand-connector-live-test",
+          "context": {}
+        },
+        "accountOwnerId": null,
+        "legacyRating": null
+      }
+    ]
+  },
+  "totalCount": 3,
+  "pageInfo": {
+    "startCursor": "eyJpZCI6IjY0ZjhhY2JiLWVlNDEtNDg3Ny1hYjgzLTNhMWYzMzkzMTYyOCJ9",
+    "endCursor": "eyJpZCI6IjkyODBkMDMyLTk0ZjItNDc0OC05MzZmLTYyZTM0NTQwZWVmNyJ9",
+    "hasNextPage": true,
+    "hasPreviousPage": false
+  }
+}
