@@ -47,6 +47,8 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 							"id":               "id",
 							"createdDate":      "createdDate",
 							"currentMilestone": "currentMilestone",
+							// Connector-assembled per job; see workflowstatus.go.
+							"currentWorkflowStatus": "currentWorkflowStatus",
 						},
 					},
 				},
