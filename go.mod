@@ -53,8 +53,6 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/neilotoole/slogt v1.1.0 // indirect
 	github.com/oapi-codegen/runtime v1.8.0 // indirect
-	github.com/oasdiff/yaml v0.1.1 // indirect
-	github.com/oasdiff/yaml3 v0.0.14 // indirect
 	github.com/pb33f/ordered-map/v2 v2.3.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.33 // indirect
 	github.com/prometheus/client_golang v1.25.0 // indirect
@@ -75,7 +73,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.47.0 // indirect
 	go.uber.org/atomic v1.12.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	go.yaml.in/yaml/v4 v4.0.0-rc.2 // indirect
+	go.yaml.in/yaml/v4 v4.0.0 // indirect
 	golang.org/x/crypto v0.58.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/mod v0.42.0 // indirect
@@ -105,7 +103,7 @@ require (
 	github.com/chromedp/chromedp v0.22.1
 	github.com/deiu/linkparser v0.0.0-20170608193052-9b6849e15168
 	github.com/gertd/go-pluralize v0.2.1
-	github.com/getkin/kin-openapi v0.152.0
+	github.com/getkin/kin-openapi v0.153.0
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-test/deep v1.1.2
 	github.com/gobwas/glob v1.1.0
