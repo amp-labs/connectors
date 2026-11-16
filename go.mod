@@ -122,7 +122,7 @@ require (
 	github.com/stretchr/testify v1.12.1
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
 	golang.org/x/net v0.62.0
-	golang.org/x/oauth2 v0.37.0
+	golang.org/x/oauth2 v0.38.0
 	golang.org/x/text v0.43.0
 	google.golang.org/api v0.311.0
 	google.golang.org/grpc v1.85.0
