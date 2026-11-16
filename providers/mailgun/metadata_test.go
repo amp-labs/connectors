@@ -90,6 +90,28 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 			},
 		},
 		{
+			// messages is write-only (no list endpoint); its send fields are
+			// curated in the generator.
+			Name:       "Describe write-only messages object",
+			Input:      []string{"messages"},
+			Server:     mockserver.Dummy(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"messages": {
+						DisplayName: "Messages",
+						Fields: map[string]common.FieldMetadata{
+							"from": {DisplayName: "from", ValueType: common.ValueTypeString, ProviderType: "string"},
+							"to":   {DisplayName: "to", ValueType: common.ValueTypeString, ProviderType: "string"},
+							"t:variables": {
+								DisplayName: "t:variables", ValueType: common.ValueTypeString, ProviderType: "string",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			Name:       "Describe multiple objects at once",
 			Input:      []string{"webhooks", "routes", "analytics/tags"},
 			Server:     mockserver.Dummy(),
