@@ -1,0 +1,21 @@
+[
+  {
+    "email": "agent@example.com",
+    "create_date": "2024-02-15T16:23:00Z",
+    "enabled_departments": [],
+    "id": 26363624373267,
+    "last_name": "",
+    "role_id": 26363612841875,
+    "skills": [],
+    "departments": [26363643448211],
+    "enabled": true,
+    "first_name": "Test",
+    "display_name": "Test Agent",
+    "last_login": null,
+    "login_count": 29,
+    "roles": {
+      "administrator": true,
+      "owner": false
+    }
+  }
+]
