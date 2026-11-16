@@ -40,6 +40,11 @@ removed, prefixes preserved. `account/templates` is the one curated name:
 (both truncate to `templates`), and the prefix mirrors Mailgun's own "Account
 Templates" / "Domain Templates" docs sections.
 
+`messages` (POST `/v3/{domain_name}/messages`) is write-only: there is no list
+endpoint and so no response schema to extract. The generator adds it with a
+hand-curated list of send fields (`messagesFields` in the script) so metadata
+is available for field mapping. Read stays unsupported.
+
 `alerts/settings` is read from the `events` array of the `/v1/alerts/settings`
 envelope and created, updated and deleted at `/v1/alerts/settings/events`; one
 name covers both, per the "same object across operations" rule.

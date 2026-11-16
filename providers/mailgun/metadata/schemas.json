@@ -980,6 +980,69 @@
             }
           }
         },
+        "messages": {
+          "displayName": "Messages",
+          "path": "3/{domain_name}/messages",
+          "responseKey": "",
+          "fields": {
+            "bcc": {
+              "displayName": "bcc",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "cc": {
+              "displayName": "cc",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "from": {
+              "displayName": "from",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "h:Reply-To": {
+              "displayName": "h:Reply-To",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "html": {
+              "displayName": "html",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "o:tag": {
+              "displayName": "o:tag",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "subject": {
+              "displayName": "subject",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "t:variables": {
+              "displayName": "t:variables",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "template": {
+              "displayName": "template",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "text": {
+              "displayName": "text",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "to": {
+              "displayName": "to",
+              "valueType": "string",
+              "providerType": "string"
+            }
+          },
+          "docs": "https://documentation.mailgun.com/docs/mailgun/api-reference/send/mailgun/messages"
+        },
         "routes": {
           "displayName": "Routes",
           "path": "3/routes",

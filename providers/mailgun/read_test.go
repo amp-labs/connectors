@@ -55,6 +55,16 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
 		},
 		{
+			// messages has a schema entry for metadata but is write-only.
+			Name: "Write-only messages object is not readable",
+			Input: common.ReadParams{
+				ObjectName: "messages",
+				Fields:     connectors.Fields("id"),
+			},
+			Server:       mockserver.Dummy(),
+			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
+		},
+		{
 			Name: "Domain-scoped object without workspace errors",
 			Input: common.ReadParams{
 				ObjectName: "bounces",

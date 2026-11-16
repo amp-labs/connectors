@@ -114,6 +114,35 @@ var displayNameOverride = map[string]string{
 	"alerts/settings":                   "Alerts",
 }
 
+// messagesFields are the send-message form parameters exposed as fields of the
+// write-only messages object. Mailgun accepts more (attachments, o:/h:/v:
+// options); these are the ones a field mapping needs.
+//
+// API reference: https://documentation.mailgun.com/docs/mailgun/api-reference/send/mailgun/messages
+//
+//nolint:gochecknoglobals
+var messagesFields = []string{
+	"from", "to", "cc", "bcc", "subject", "text", "html",
+	"template", "t:variables", "h:Reply-To", "o:tag",
+}
+
+// addMessages adds the write-only messages object. POST /v3/{domain_name}/messages
+// has no list or read endpoint, so there is no response schema to extract fields
+// from; they are listed by hand instead. Read stays unsupported (objectReadSpecs).
+func addMessages(schemas *staticschema.Metadata[staticschema.FieldMetadataMapV2, any]) {
+	fields := make(staticschema.FieldMetadataMapV2, len(messagesFields))
+	for _, name := range messagesFields {
+		fields[name] = staticschema.FieldMetadata{
+			DisplayName:  name,
+			ValueType:    common.ValueTypeString,
+			ProviderType: "string",
+		}
+	}
+
+	docs := "https://documentation.mailgun.com/docs/mailgun/api-reference/send/mailgun/messages"
+	schemas.Add(common.ModuleRoot, "messages", "Messages", "/v3/{domain_name}/messages", "", fields, &docs, nil)
+}
+
 func pathsOf(m map[string]string) []string {
 	paths := make([]string, 0, len(m))
 	for path := range m {
@@ -150,6 +179,8 @@ func main() {
 			registry.Add(queryParam, object.ObjectName)
 		}
 	}
+
+	addMessages(schemas)
 
 	goutils.MustBeNil(metadata.FileManager.SaveSchemas(schemas))
 	goutils.MustBeNil(metadata.FileManager.SaveQueryParamStats(scrapper.CalculateQueryParamStats(registry)))

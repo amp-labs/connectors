@@ -19,18 +19,15 @@ import (
 
 // collectionPathOverrides names the write/delete collection for objects whose
 // mutation endpoint differs from (or has no) read path. Every other object
-// shares its read path, looked up from the static schema.
+// shares its read path, looked up from the static schema (write-only messages
+// has a schema entry too, for its metadata; it has no read spec).
 //
-//   - messages is write-only: Mailgun offers no list/read for sent messages, so
-//     it has no schema entry.
-//     https://documentation.mailgun.com/docs/mailgun/api-reference/send/mailgun/messages
 //   - alerts/settings is read from the /v1/alerts/settings envelope ("events"
 //     key) but created, updated and deleted at /v1/alerts/settings/events.
 //     https://documentation.mailgun.com/docs/mailgun/api-reference/send/mailgun/alerts
 //
 //nolint:gochecknoglobals
 var collectionPathOverrides = map[string]string{
-	"messages":        "/v3/{domain_name}/messages",
 	"alerts/settings": "/v1/alerts/settings/events",
 }
 

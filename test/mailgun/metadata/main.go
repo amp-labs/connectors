@@ -22,6 +22,7 @@ func main() {
 		"domains/credentials",
 		"templates",
 		"domains/keys",
+		"messages", // write-only; fields curated in the generator
 
 		// Account-scoped.
 		"domains",
