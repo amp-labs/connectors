@@ -10,6 +10,10 @@ import (
 
 func records(objectName string) common.RecordsFunc {
 	return func(node *ajson.Node) ([]map[string]any, error) {
+		if singletonObjects.Has(objectName) {
+			return singletonRecord(node)
+		}
+
 		records, err := jsonquery.New(node, "data").ArrayOptional(objectName)
 		if err != nil {
 			return nil, err
@@ -17,6 +21,30 @@ func records(objectName string) common.RecordsFunc {
 
 		return jsonquery.Convertor.ArrayToMap(records)
 	}
+}
+
+// singletonRecord returns the "data" object as the only record.
+// An absent or empty "data" object yields no records.
+func singletonRecord(node *ajson.Node) ([]map[string]any, error) {
+	data, err := jsonquery.New(node).ObjectOptional("data")
+	if err != nil {
+		return nil, err
+	}
+
+	if data == nil {
+		return []map[string]any{}, nil
+	}
+
+	record, err := jsonquery.Convertor.ObjectToMap(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(record) == 0 {
+		return []map[string]any{}, nil
+	}
+
+	return []map[string]any{record}, nil
 }
 
 func nextRecordsURL() common.NextPageFunc {

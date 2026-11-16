@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"os"
 
 	"github.com/amp-labs/connectors/test/hunter"
 	"github.com/amp-labs/connectors/test/utils"
@@ -18,14 +18,13 @@ func run() error {
 	ctx := context.Background()
 	connector := hunter.GetHunterConnector(ctx)
 
-	m, err := connector.ListObjectMetadata(ctx, []string{"leads", "leads_lists"})
+	m, err := connector.ListObjectMetadata(ctx, []string{"leads", "leads_lists", "campaigns", "leads_custom_attributes"})
 	if err != nil {
 		return err
 	}
 
 	// Print the results
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 
 	return nil
 }
