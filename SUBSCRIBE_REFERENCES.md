@@ -45,7 +45,9 @@ All four interfaces are defined in [`connectors.go`](./connectors.go). Note that
 `WebhookVerifierConnector` embeds `Connector` (base HTTP client + provider identity) **and**
 `BatchRecordReaderConnector` (`GetRecordsByIds`). This does **not** require a full read connector
 (no `Read`/pagination) — only `GetRecordsByIds`, which the caller uses to fetch a record's full state
-by id after a webhook event arrives.
+by id after a webhook event arrives. It returns a `*common.BatchReadResult` with the fetched rows and a
+failure for each id it could not fetch; see [PR 2 — Fetching
+records](./docs/subscribe-onboarding/pr-2-verification.md#fetching-records-getrecordsbyids).
 
 This ladder is about *interface embedding*, **not PR/build order**. Although `RegisterSubscribeConnector`
 embeds `SubscribeConnector`, registration is *sequenced before* subscribe in the PR stack because the

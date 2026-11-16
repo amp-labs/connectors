@@ -31,17 +31,91 @@ the affected record's **id and event metadata**, not the record body — after t
 server fetches the full record via `GetRecordsByIds`. So your event types only need to expose the object
 name, record id, and event type.
 
-> **Required: populate `ReadResultRow.Id` in `GetRecordsByIds`.** The server correlates each fetched
-> record back to its webhook event by matching the event's record id against `ReadResultRow.Id`
-> (`fetchedByID[row.Id]`). If your parser leaves `Id` empty and only fills `Raw`/`Fields`, the lookup
-> misses, the record is **silently dropped**, and the event is delivered with no record body attached —
-> even though the provider fetch returned `200 OK` with the record. Set `row.Id` to the record id
-> (the same value the event's `RecordId()` returns) for every row you return.
-
 Plus a provider-specific `VerificationParams` struct (the caller fills it in per installation) and one
 or more event types.
 
 Files: `providers/<provider>/subscribeEvent.go` (or similarly named).
+
+## Fetching records: `GetRecordsByIds`
+
+```go
+GetRecordsByIds(
+    ctx context.Context,
+    objectName string,
+    recordIds []string,
+    fields []string,
+    associations []string,
+) (*common.BatchReadResult, error)
+```
+
+`common.BatchReadResult` (in [`common/batchread.go`](../../common/batchread.go)) holds the fetched
+`Rows` and the ids that could not be fetched, `Failures`. Each `common.RecordFailure` carries the
+`RecordId` as requested, the underlying `Err`, and a `Reason`: `not_found`, `rate_limited`,
+`transient`, `permanent` or `unknown`. `common.NewRecordFailure` and `result.AddFailure` derive the
+reason from the error, so return the connectors' errors, such as `common.ErrNotFound` or
+`common.ErrForbidden`, rather than plain ones.
+
+The contract, from the interface comment in [`connectors.go`](../../connectors.go):
+
+- Report every id you could not fetch in `Failures`, with its error.
+- When any failure is not a not-found, also return an error that joins them, and still return the
+  result with the fetched rows and every failure.
+- A not-found on its own is not an error: return the result with the failure and a `nil` error.
+- Return a `nil` result with an error only when the whole call failed, for example when a batch
+  request itself returned an error.
+
+Use the helper that matches how the provider fetches:
+
+| Provider API | Helper | Example |
+|---|---|---|
+| One request for many ids (batch or search endpoint) | `result.ReportMissingIds(recordIds)`: every requested id missing from `Rows` becomes a `not_found` failure | [`providers/salesloft/records.go`](../../providers/salesloft/records.go) |
+| One request per id (fan-out) | Fetch every id even when some fail (`parallelfetch.Execute` does), then `return batch, batch.ReportFetchErrors(ids, errs)`: every per-id error becomes a failure, and the ones that are not a not-found are returned joined | [`providers/stripe/record.go`](../../providers/stripe/record.go) |
+
+```go
+// Batch: one request for all ids.
+result := common.NewBatchReadResult(parsed.Data)
+result.ReportMissingIds(recordIds)
+
+return result, nil
+```
+
+```go
+// Fan-out: one request per id.
+result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+batch := common.NewBatchReadResult(rowsInRequestedOrder(result.Records, len(ids)))
+
+return batch, batch.ReportFetchErrors(ids, result.Errors)
+```
+
+> **Required: populate `ReadResultRow.Id`.** The server matches each webhook event to its fetched
+> record by the event's record id (`RecordId()`) and `ReadResultRow.Id`, and `ReportMissingIds`
+> compares the requested ids against `Id` too. If `Id` is empty, `ReportMissingIds` reports every
+> requested id as not found and the server drops their events, even though the provider returned
+> `200 OK` with the records. Without `ReportMissingIds`, the event is delivered with no record body.
+> Set `row.Id` to the same value `RecordId()` returns for every row.
+
+### How the server handles each failure
+
+When a subscribe event's record cannot be fetched, the error in the failure (or the returned error)
+decides what happens to the webhook message. The full rule is in the server's `AGENTS.md`, under
+"Record fetch failure handling", and in the `fetchOutcome` doc comment in
+`messenger/subscribeEventProcessor_classify_error.go`.
+
+| The connector reports | Server |
+|---|---|
+| `common.ErrNotFound`, reason `not_found`, or an HTTP 404 | Retries the id once after 5s, then drops that id's events and delivers the rest |
+| `common.ErrForbidden` or an HTTP 403 | Drops that id's events, no retry |
+| `common.ErrFieldNotFound` (a requested field is missing or hidden from the user) | Same as 403 |
+| `common.ErrAccessToken`, `common.ErrInvalidGrant`, `common.ErrInvalidSessionId`, or an HTTP 401 | Drops the whole message: the consumer must reconnect |
+| `common.ErrBadRequest`, `common.ErrCaller`, or another 4xx | Nacks the message without a retry; Pub/Sub dead-letters it after the subscription's maximum delivery attempts |
+| `common.ErrLimitExceeded` (429), `common.ErrServer` (5xx), or an error with no HTTP status | Retries once after 5s, then nacks |
+| `common.ErrRecordsOnlyInline` | Reads the records from the webhook events. See [below](#objects-whose-records-exist-only-in-the-payload) |
+| `common.ErrGetRecordNotSupportedForObject` | Drops the object's events in the message |
+
+A 404 that means the request itself was wrong (for example a bad URL on a batch endpoint), not that a
+record is gone, should be wrapped as `common.ErrBadRequest` without `common.ErrNotFound`. The server
+then nacks it instead of dropping the ids. The shared interpreter's 404 (`ErrBadRequest` with
+`ErrNotFound`) counts as not found.
 
 ## Event types
 
@@ -123,7 +197,7 @@ for everything else.
 ```go
 func (c *Connector) GetRecordsByIds(
     ctx context.Context, objectName string, ids, fields []string, associations []string,
-) ([]common.ReadResultRow, error) {
+) (*common.BatchReadResult, error) {
     if webhook.ObjectRecordsInline(objectName) {
         return nil, fmt.Errorf("%w: %s", common.ErrRecordsOnlyInline, objectName)
     }
@@ -137,9 +211,9 @@ full provider record, `Fields` holds the requested subset, and `Id` holds the sa
 returns.
 
 Do not reach for `ErrGetRecordNotSupportedForObject` here. That error says only that the fetch is
-unavailable, so the server delivers the event with no record body. `ErrRecordsOnlyInline` additionally
-says where the record does live, which tells the server to proceed with no fetched records and read
-them from the events instead of dropping the batch or retrying.
+unavailable, so the server drops the object's events. `ErrRecordsOnlyInline` additionally says where
+the record does live, which tells the server to proceed with no fetched records and read them from the
+events instead of dropping the batch or retrying.
 
 Two things follow from this that are easy to miss:
 
@@ -237,6 +311,10 @@ See [Live Tests (Stage 1)](./live-tests.md#stage-1-webhook-verification-runwebho
       real payload. Use the shared table-driven suites in `test/utils/testconn/`:
       `testconn.TestCaseVerifyWebhookMessage` (webhook verification) and
       `testconn.TestCaseSubscriptionEvent` (event mapping).
+- [ ] `GetRecordsByIds` returns a `*common.BatchReadResult`, sets `ReadResultRow.Id` on every row,
+      and reports each id it could not fetch: `ReportMissingIds` for a batch request,
+      `ReportFetchErrors` for one request per id. See [Fetching
+      records](#fetching-records-getrecordsbyids).
 - [ ] Any object the provider cannot fetch by id returns `common.ErrRecordsOnlyInline` from
       `GetRecordsByIds` and implements `SubscriptionEventWithRecord`, so its record is read from the
       payload. See [Objects whose records exist only in the
@@ -247,6 +325,8 @@ See [Live Tests (Stage 1)](./live-tests.md#stage-1-webhook-verification-runwebho
 - Signature algorithm matches the provider's docs (header name, hash, encoding).
 - Untrusted requests return `(false, nil)` rather than erroring.
 - Event mapping (object name, record id, event type) is correct for real payloads.
+- `GetRecordsByIds` reports every failed id with the connectors' error for it, and returns a `nil`
+  result only when the whole call failed.
 - Objects with no by-id fetch return `ErrRecordsOnlyInline` rather than
   `ErrGetRecordNotSupportedForObject`, and the check is scoped to those objects.
 
