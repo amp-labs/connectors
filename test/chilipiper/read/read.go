@@ -90,7 +90,7 @@ func testReadTeams(ctx context.Context, conn *cp.Connector) error {
 
 func testReadWorkspaceUsers(ctx context.Context, conn *cp.Connector) error {
 	params := common.ReadParams{
-		ObjectName: "workspace_users",
+		ObjectName: "workspace/users",
 		Fields:     connectors.Fields("name", "id"),
 		Since:      time.Now().Add(-1000 * time.Hour),
 		// NextPage:   "https://fire.chilipiper.com/api/fire-edge/v1/org/workspace/users?page=1\u0026pageSize=2",

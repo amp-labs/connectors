@@ -9,7 +9,11 @@
           "path": "",
           "responseKey": "",
           "fields": {
-            "id": "id"
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "meetings_meetings": {
@@ -17,8 +21,15 @@
           "path": "",
           "responseKey": "",
           "fields": {
-            "data": "data",
-            "hasMore": "hasMore"
+            "data": {
+              "displayName": "data",
+              "valueType": "other"
+            },
+            "hasMore": {
+              "displayName": "hasMore",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "team": {
@@ -26,11 +37,30 @@
           "path": "",
           "responseKey": "",
           "fields": {
-            "id": "id",
-            "members": "members",
-            "metadata": "metadata",
-            "name": "name",
-            "workspaceId": "workspaceId"
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "members": {
+              "displayName": "members",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "other"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "workspaceId": {
+              "displayName": "workspaceId",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "user_find": {
@@ -38,13 +68,41 @@
           "path": "",
           "responseKey": "",
           "fields": {
-            "email": "email",
-            "id": "id",
-            "isSuperAdmin": "isSuperAdmin",
-            "licenses": "licenses",
-            "managedTeams": "managedTeams",
-            "managedWorkspaces": "managedWorkspaces",
-            "name": "name"
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isSuperAdmin": {
+              "displayName": "isSuperAdmin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "licenses": {
+              "displayName": "licenses",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "managedTeams": {
+              "displayName": "managedTeams",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "managedWorkspaces": {
+              "displayName": "managedWorkspaces",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "user_read_{p1}": {
@@ -52,13 +110,41 @@
           "path": "",
           "responseKey": "",
           "fields": {
-            "email": "email",
-            "id": "id",
-            "isSuperAdmin": "isSuperAdmin",
-            "licenses": "licenses",
-            "managedTeams": "managedTeams",
-            "managedWorkspaces": "managedWorkspaces",
-            "name": "name"
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isSuperAdmin": {
+              "displayName": "isSuperAdmin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "licenses": {
+              "displayName": "licenses",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "managedTeams": {
+              "displayName": "managedTeams",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "managedWorkspaces": {
+              "displayName": "managedWorkspaces",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
         "workspace": {
@@ -66,25 +152,73 @@
           "path": "",
           "responseKey": "",
           "fields": {
-            "emoji": "emoji",
-            "id": "id",
-            "logo": "logo",
-            "metadata": "metadata",
-            "name": "name"
+            "emoji": {
+              "displayName": "emoji",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "logo": {
+              "displayName": "logo",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "metadata": {
+              "displayName": "metadata",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         },
-        "workspace_users": {
-          "displayName": "workspace_users",
+        "workspace/users": {
+          "displayName": "workspace/users",
           "path": "",
           "responseKey": "",
           "fields": {
-            "email": "email",
-            "id": "id",
-            "isSuperAdmin": "isSuperAdmin",
-            "licenses": "licenses",
-            "managedTeams": "managedTeams",
-            "managedWorkspaces": "managedWorkspaces",
-            "name": "name"
+            "email": {
+              "displayName": "email",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "id": {
+              "displayName": "id",
+              "valueType": "string",
+              "providerType": "string"
+            },
+            "isSuperAdmin": {
+              "displayName": "isSuperAdmin",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "licenses": {
+              "displayName": "licenses",
+              "valueType": "other",
+              "providerType": "object"
+            },
+            "managedTeams": {
+              "displayName": "managedTeams",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "managedWorkspaces": {
+              "displayName": "managedWorkspaces",
+              "valueType": "other",
+              "providerType": "array"
+            },
+            "name": {
+              "displayName": "name",
+              "valueType": "string",
+              "providerType": "string"
+            }
           }
         }
       }

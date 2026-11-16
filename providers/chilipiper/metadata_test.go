@@ -17,6 +17,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 
 	workspace := testutils.DataFromFile(t, "workspace.json")
 	unsupportedResponse := testutils.DataFromFile(t, "unsupported.txt")
+	emptyResponse := testutils.DataFromFile(t, "empty.json")
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
@@ -43,6 +44,24 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Result: map[string]common.ObjectMetadata{
 					"workspace": {
 						DisplayName: "Workspace",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   common.ValueTypeString,
+							},
+							"name": {
+								DisplayName: "name",
+								ValueType:   common.ValueTypeString,
+							},
+							"logo": {
+								DisplayName: "logo",
+								ValueType:   common.ValueTypeOther,
+							},
+							"metadata": {
+								DisplayName: "metadata",
+								ValueType:   common.ValueTypeOther,
+							},
+						},
 						FieldsMap: map[string]string{
 							"emoji":    "emoji",
 							"id":       "id",
@@ -55,6 +74,49 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Errors: map[string]error{
 					"meme": common.ErrObjectNotSupported,
 				},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Empty response falls back to static schema",
+			Input: []string{"workspace/users"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/api/fire-edge/v1/org/workspace/users"),
+					Then: mockserver.Response(http.StatusOK, emptyResponse),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"workspace/users": {
+						DisplayName: "workspace/users",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName:  "id",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+							},
+							"isSuperAdmin": {
+								DisplayName:  "isSuperAdmin",
+								ValueType:    common.ValueTypeBoolean,
+								ProviderType: "boolean",
+							},
+							"licenses": {
+								DisplayName:  "licenses",
+								ValueType:    common.ValueTypeOther,
+								ProviderType: "object",
+							},
+						},
+						FieldsMap: map[string]string{
+							"id":           "id",
+							"isSuperAdmin": "isSuperAdmin",
+							"licenses":     "licenses",
+						},
+					},
+				},
+				Errors: map[string]error{},
 			},
 			ExpectedErrs: nil,
 		},

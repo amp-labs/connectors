@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
+	"os"
 
 	"github.com/amp-labs/connectors/test/chilipiper"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -13,12 +14,11 @@ func main() {
 
 	conn := chilipiper.GetChiliPiperConnector(ctx)
 
-	m, err := conn.ListObjectMetadata(ctx, []string{"workspace", "team", "workspace_users", "meme"})
+	m, err := conn.ListObjectMetadata(ctx, []string{"workspace", "team", "workspace/users", "meme"})
 	if err != nil {
 		slog.Error(err.Error())
 	}
 
 	// Print the results
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 }
