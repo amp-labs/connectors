@@ -543,6 +543,17 @@ type Oauth2Opts struct {
 	// TokenMetadataFields Fields to be used to extract token metadata from the token response.
 	TokenMetadataFields TokenMetadataFields `json:"tokenMetadataFields"`
 
+	// TokenParams Extra parameters to send in the body of every request to the token URL
+	// (authorization code exchange, refresh, client credentials and password grants),
+	// for providers whose token endpoint needs fields beyond the OAuth 2.0 ones.
+	// Values may use catalog variables such as {{.workspace}}. A parameter here never
+	// replaces one that the grant itself sets. A client_id or client_secret here is a
+	// default that is used only when the connection has no client credentials of its own.
+	//
+	//
+	// Example: {"platform":"{{.platform}}"}
+	TokenParams map[string]string `json:"tokenParams,omitempty"`
+
 	// TokenURL The token URL.
 	//
 	// Example: https://login.salesforce.com/services/oauth2/token
