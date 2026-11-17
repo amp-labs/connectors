@@ -116,7 +116,7 @@ func interpretJSONError(res *http.Response, body []byte) error { // nolint:cyclo
 		switch sfErr.ErrorCode {
 		case "INVALID_SESSION_ID":
 			return createError(common.ErrInvalidSessionId, sfErr, res, body)
-		case "INSUFFICIENT_ACCESS_OR_READONLY":
+		case "INSUFFICIENT_ACCESS_OR_READONLY", "INSUFFICIENT_ACCESS", "INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY":
 			return createError(common.ErrForbidden, sfErr, res, body)
 		case "API_DISABLED_FOR_ORG":
 			return createError(common.ErrApiDisabled, sfErr, res, body)
@@ -171,6 +171,8 @@ func interpretXMLError(res *http.Response, body []byte) error {
 		matchingErr = common.ErrBadRequest
 	case "sf:INVALID_SESSION_ID":
 		matchingErr = common.ErrAccessToken
+	case "sf:REQUEST_LIMIT_EXCEEDED":
+		matchingErr = common.ErrLimitExceeded
 	}
 
 	if matchingErr == nil {
