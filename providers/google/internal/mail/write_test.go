@@ -29,13 +29,21 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			ExpectedErrs: []error{common.ErrMissingRecordData},
 		},
 		{
-			Name:  "Create Draft",
-			Input: common.WriteParams{ObjectName: "drafts", RecordData: "dummy"},
+			Name: "Create Draft",
+			Input: common.WriteParams{
+				ObjectName: "drafts",
+				RecordData: map[string]any{
+					"message": map[string]any{
+						"raw": "someBase64EncodedDraft",
+					},
+				},
+			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPOST(),
 					mockcond.Path("/gmail/v1/users/me/drafts"),
+					mockcond.Body(`{"message": {"raw":"someBase64EncodedDraft"}}`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseDrafts),
 			}.Server(),
@@ -61,14 +69,19 @@ func TestWrite(t *testing.T) { // nolint:funlen,cyclop
 			Name: "Update Draft",
 			Input: common.WriteParams{
 				ObjectName: "drafts",
-				RecordData: "dummy",
-				RecordId:   "r5151461288000502025",
+				RecordData: map[string]any{
+					"message": map[string]any{
+						"raw": "someBase64EncodedDraftUpdated",
+					},
+				},
+				RecordId: "r5151461288000502025",
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
 				If: mockcond.And{
 					mockcond.MethodPUT(),
 					mockcond.Path("/gmail/v1/users/me/drafts/r5151461288000502025"),
+					mockcond.Body(`{"message":{"raw":"someBase64EncodedDraftUpdated"}}`),
 				},
 				Then: mockserver.Response(http.StatusOK, responseDrafts),
 			}.Server(),

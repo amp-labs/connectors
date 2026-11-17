@@ -1,0 +1,42 @@
+{
+  "payload": {
+    "body": {
+      "data": "{{.TEXT}}"
+    },
+    "headers": [
+      {
+        "name": "Received",
+        "value": "from 863187603009 named unknown by gmailapi.google.com with HTTPREST; Thu, 12 Nov 2026 20:54:29 -0800"
+      },
+      {
+        "name": "Content-Type",
+        "value": "text/plain; charset=\"utf-8\""
+      },
+      {
+        "name": "Content-Transfer-Encoding",
+        "value": "7bit"
+      },
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "To",
+        "value": "{{.To}}"
+      },
+      {
+        "name": "From",
+        "value": "{{.From}}"
+      },
+      {
+        "name": "Subject",
+        "value": "{{.Subject}}"
+      },
+      {
+        "name": "Date",
+        "value": "Thu, 12 Nov 2026 20:54:29 -0800"
+      }
+    ],
+    "mimeType": "text/plain"
+  }
+}

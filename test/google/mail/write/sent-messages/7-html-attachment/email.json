@@ -1,0 +1,95 @@
+{
+  "payload": {
+    "body": {},
+    "headers": [
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Date",
+        "value": "Sat, 14 Nov 2026 04:48:29 +0200"
+      },
+      {
+        "name": "To",
+        "value": "{{.To}}"
+      },
+      {
+        "name": "From",
+        "value": "{{.From}}"
+      },
+      {
+        "name": "Subject",
+        "value": "{{.Subject}}"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/mixed; boundary=\"0000000000006dbcf90660339412\""
+      }
+    ],
+    "mimeType": "multipart/mixed",
+    "parts": [
+      {
+        "body": {},
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "multipart/alternative; boundary=\"0000000000006dbcf70660339410\""
+          }
+        ],
+        "mimeType": "multipart/alternative",
+        "parts": [
+          {
+            "body": {
+              "data": "{{.TEXT}}"
+            },
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=\"UTF-8\""
+              }
+            ],
+            "mimeType": "text/plain"
+          },
+          {
+            "body": {
+              "data": "{{.HTML}}"
+            },
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=\"UTF-8\""
+              }
+            ],
+            "mimeType": "text/html"
+          }
+        ]
+      },
+      {
+        "body": {
+          "data": "{{.Document}}"
+        },
+        "filename": "html-attachment-test.html",
+        "headers": [
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"html-attachment-test.html\""
+          },
+          {
+            "name": "Content-Id",
+            "value": "<html-attachment-test.html>"
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/html"
+          }
+        ],
+        "mimeType": "application/html"
+      }
+    ]
+  }
+}
