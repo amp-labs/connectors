@@ -163,6 +163,88 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			// Marketo can answer with HTTP 200 and no result. This used to panic with index out of range.
+			Name:  "Describe response without result falls back to static schema",
+			Input: []string{"companies"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/rest/v1/companies/describe.json"),
+					Then: mockserver.Response(http.StatusOK, []byte(`{"success": true, "result": []}`)),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"companies": {
+						DisplayName: "companies",
+						FieldsMap: map[string]string{
+							"id": "id",
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Sampled response with empty first record falls back to static schema",
+			Input: []string{"channels"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/rest/asset/v1/channels.json"),
+					Then: mockserver.Response(http.StatusOK, []byte(`{"success": true, "result": [null]}`)),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"channels": {
+						DisplayName: "channels",
+						FieldsMap: map[string]string{
+							"id":                  "id",
+							"progressionStatuses": "progressionStatuses",
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Malformed describe response fails only that object",
+			Input: []string{"companies", "channels"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/rest/v1/companies/describe.json"),
+					Then: mockserver.Response(http.StatusOK, []byte(`{"success": true, "result": [{"fields": [5]}]}`)),
+				}, {
+					If:   mockcond.Path("/rest/asset/v1/channels.json"),
+					Then: mockserver.Response(http.StatusOK, channelsResponse),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"channels": {
+						DisplayName: "channels",
+						Fields: map[string]common.FieldMetadata{
+							"name": {
+								DisplayName: "name",
+								ValueType:   common.ValueTypeString,
+							},
+						},
+					},
+				},
+				Errors: map[string]error{
+					"companies": ErrFailedConvertFields,
+				},
+			},
+			ExpectedErrs: nil,
+		},
 	}
 
 	for _, tt := range tests {

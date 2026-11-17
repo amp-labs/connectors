@@ -61,14 +61,16 @@ func (c *Connector) ListObjectMetadata(ctx context.Context,
 		}
 
 		data, err := parseMetadataFromResponse(resp, obj)
-		if err != nil {
-			if errors.Is(err, common.ErrMissingExpectedValues) {
-				runFallback(obj, &metadataResult)
+		if errors.Is(err, common.ErrMissingExpectedValues) {
+			runFallback(obj, &metadataResult)
 
-				continue
-			} else {
-				return nil, err
-			}
+			continue
+		}
+
+		if err != nil { // A response that cannot be parsed fails only this object, not the whole request.
+			metadataResult.Errors[obj] = err
+
+			continue
 		}
 
 		data.DisplayName = obj
@@ -84,12 +86,14 @@ func parseMetadataFromResponse(resp *common.JSONHTTPResponse, objectName string)
 		return nil, err
 	}
 
-	if _, ok := hasMetadataResource(objectName); ok {
-		return parseDescribeResponse(response.Result[0])
+	// An empty result or an empty first record leaves nothing to describe, so the static schema is used instead.
+	// Marketo may answer with HTTP 200 and no result, even for describe endpoints.
+	if len(response.Result) == 0 || len(response.Result[0]) == 0 {
+		return nil, common.ErrMissingExpectedValues
 	}
 
-	if len(response.Result) == 0 {
-		return nil, common.ErrMissingExpectedValues
+	if _, ok := hasMetadataResource(objectName); ok {
+		return parseDescribeResponse(response.Result[0])
 	}
 
 	data := common.ObjectMetadata{
