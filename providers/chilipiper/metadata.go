@@ -40,6 +40,7 @@ func (conn *Connector) ListObjectMetadata(ctx context.Context,
 
 	for _, object := range objectNames {
 		objectMetadata := common.ObjectMetadata{
+			Fields:      make(common.FieldsMetadata),
 			FieldsMap:   make(map[string]string),
 			DisplayName: naming.CapitalizeFirstLetterEveryWord(object),
 		}
@@ -79,9 +80,14 @@ func fetchDataFields(
 		return false
 	}
 
-	for fld := range resp.Results[0] {
-		// TODO fix deprecated
-		mtd.FieldsMap[fld] = fld // nolint:staticcheck
+	// ChiliPiper has no describe endpoint, so the value type is inferred from the sampled value.
+	for fld, value := range resp.Results[0] {
+		mtd.AddFieldMetadata(fld, common.FieldMetadata{
+			DisplayName:  fld,
+			ValueType:    common.InferValueTypeFromData(value),
+			ProviderType: "", // not available
+			Values:       nil,
+		})
 	}
 
 	res.Result[obj] = *mtd

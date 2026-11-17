@@ -50,13 +50,22 @@ type Components struct {
 }
 
 type Schema struct {
+	Type       string              `yaml:"type"`
+	Format     string              `yaml:"format"`
 	Properties map[string]Property `yaml:"properties"`
 }
 
 type Property struct {
+	Ref         string `yaml:"$ref"`
 	Type        string `yaml:"type"`
 	Format      string `yaml:"format"`
 	Description string `yaml:"description"`
+}
+
+// objectNameOverrides renames objects derived from the URL path
+// so that metadata uses the same object names as Read.
+var objectNameOverrides = map[string]string{ // nolint:gochecknoglobals
+	"workspace_users": "workspace/users",
 }
 
 func main() {
@@ -94,20 +103,22 @@ func run() error {
 	return nil
 }
 
-func constructProperties(data OpenAPI, schemas map[string]string) map[string][]string {
-	properties := make(map[string][]string)
+func constructProperties(data OpenAPI, schemas map[string]string) map[string]map[string]Property {
+	properties := make(map[string]map[string]Property)
 
 	for object, schemaRef := range schemas {
 		schemaName := strings.Split(schemaRef, "/")[schemaIdx]
-		if !strings.HasPrefix(schemaName, paginatedSchemaPrefix) {
-			for property := range data.Components.Schemas[schemaName].Properties {
-				properties[object] = append(properties[object], property)
-			}
-		} else {
-			schemaName, _ := strings.CutPrefix(schemaName, paginatedSchemaPrefix)
-			for property := range data.Components.Schemas[schemaName].Properties {
-				properties[object] = append(properties[object], property)
-			}
+		schemaName = strings.TrimPrefix(schemaName, paginatedSchemaPrefix)
+
+		// Schemas without properties produce no object.
+		schemaProperties := data.Components.Schemas[schemaName].Properties
+		if len(schemaProperties) == 0 {
+			continue
+		}
+
+		properties[object] = make(map[string]Property)
+		for name, property := range schemaProperties {
+			properties[object][name] = resolveProperty(data, property)
 		}
 	}
 
@@ -121,6 +132,11 @@ func constructProperties(data OpenAPI, schemas map[string]string) map[string][]s
 		if len(strings.Split(resourcePath, "/")) > 4 { //nolint:mnd
 			objects := strings.Split(resourcePath, "/")
 			customNamedObject := strings.Join(objects[3:], "_")
+
+			if override, ok := objectNameOverrides[customNamedObject]; ok {
+				customNamedObject = override
+			}
+
 			properties[customNamedObject] = flds
 			delete(properties, resourcePath)
 		}
@@ -129,24 +145,71 @@ func constructProperties(data OpenAPI, schemas map[string]string) map[string][]s
 	return properties
 }
 
-func saveSchemas(properties map[string][]string) {
-	objectMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV1, any])
+// resolveProperty follows a $ref to a component schema, so that the type of the referenced schema is used.
+// Ex: "id" references "#/components/schemas/UserId", which is a string.
+func resolveProperty(data OpenAPI, property Property) Property {
+	if property.Ref == "" {
+		return property
+	}
+
+	refSchema, ok := data.Components.Schemas[strings.Split(property.Ref, "/")[schemaIdx]]
+	if !ok {
+		return property
+	}
+
+	property.Type = refSchema.Type
+	property.Format = refSchema.Format
+
+	return property
+}
+
+// valueType maps OpenAPI types to Ampersand value types.
+func valueType(property Property) common.ValueType {
+	switch property.Type {
+	case "string":
+		switch property.Format {
+		case "date-time":
+			return common.ValueTypeDateTime
+		case "date":
+			return common.ValueTypeDate
+		default:
+			return common.ValueTypeString
+		}
+	case "boolean":
+		return common.ValueTypeBoolean
+	case "integer":
+		return common.ValueTypeInt
+	case "number":
+		return common.ValueTypeFloat
+	default:
+		return common.ValueTypeOther
+	}
+}
+
+func saveSchemas(properties map[string]map[string]Property) {
+	objectMetadata := make(map[string]staticschema.Object[staticschema.FieldMetadataMapV2, any])
 
 	for object, flds := range properties {
-		fldsMap := make(map[string]string)
-		for _, fld := range flds {
-			fldsMap[fld] = fld
+		fldsMap := make(staticschema.FieldMetadataMapV2)
+		for name, property := range flds {
+			fldsMap[name] = staticschema.FieldMetadata{
+				DisplayName:  name,
+				ValueType:    valueType(property),
+				ProviderType: property.Type,
+				ReadOnly:     nil,
+				Values:       nil,
+			}
 		}
 
-		om := staticschema.Object[staticschema.FieldMetadataMapV1, any]{
+		om := staticschema.Object[staticschema.FieldMetadataMapV2, any]{
 			DisplayName: object,
 			Fields:      fldsMap,
 		}
 		objectMetadata[object] = om
 	}
 
-	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV1, any]{
-		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV1, any]{
+	goutils.MustBeNil(metadata.FileManager.SaveSchemas(&staticschema.Metadata[staticschema.FieldMetadataMapV2, any]{
+		Modules: map[common.ModuleID]staticschema.Module[staticschema.FieldMetadataMapV2, any]{
 			common.ModuleRoot: {
 				Objects: objectMetadata,
 			},
