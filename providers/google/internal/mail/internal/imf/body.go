@@ -16,12 +16,12 @@ func (m emailMessage) extractBody() (text, html []byte, err error) {
 
 func extractBody(part emailMessagePart) (text, html []byte, err error) { // nolint:cyclop
 	switch {
-	case part.MimeType == "text/plain":
+	case part.Filename == "" && part.MimeType == "text/plain":
 		text, err = decodeBodyData(part.Body.Data)
 		if err != nil {
 			return nil, nil, err
 		}
-	case part.MimeType == "text/html":
+	case part.Filename == "" && part.MimeType == "text/html":
 		html, err = decodeBodyData(part.Body.Data)
 		if err != nil {
 			return nil, nil, err

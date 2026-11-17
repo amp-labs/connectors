@@ -11,4 +11,6 @@ var (
 	ImageHouse []byte
 	//go:embed "Develop on Google Workspace.pdf"
 	DocumentAboutGoogleDev []byte
+	//go:embed "html-attachment-test.html"
+	DocumentHtml []byte
 )
