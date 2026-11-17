@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
+	"os"
 
 	"github.com/amp-labs/connectors/test/marketo"
+	"github.com/amp-labs/connectors/test/utils"
 )
 
 func main() {
@@ -18,7 +19,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Print the results
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 }

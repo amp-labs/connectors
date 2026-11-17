@@ -16,6 +16,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 	t.Parallel()
 
 	channelsResponse := testutils.DataFromFile(t, "channels.json")
+	describeCompaniesResponse := testutils.DataFromFile(t, "describe-companies.json")
 
 	tests := []testconn.TestCaseListObjectMetadata{
 		{
@@ -55,7 +56,7 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
 				Cases: []mockserver.Case{{
-					If:   mockcond.Path("/rest/v1/channels.json"),
+					If:   mockcond.Path("/rest/asset/v1/channels.json"),
 					Then: mockserver.Response(http.StatusOK, channelsResponse),
 				}},
 			}.Server(),
@@ -63,6 +64,32 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				Result: map[string]common.ObjectMetadata{
 					"channels": {
 						DisplayName: "channels",
+						Fields: map[string]common.FieldMetadata{
+							"id": {
+								DisplayName: "id",
+								ValueType:   common.ValueTypeFloat,
+							},
+							"name": {
+								DisplayName: "name",
+								ValueType:   common.ValueTypeString,
+							},
+							"progressionStatuses": {
+								DisplayName: "progressionStatuses",
+								ValueType:   common.ValueTypeOther,
+							},
+							"applicableProgramType": {
+								DisplayName: "applicableProgramType",
+								ValueType:   common.ValueTypeString,
+							},
+							"createdAt": {
+								DisplayName: "createdAt",
+								ValueType:   common.ValueTypeString,
+							},
+							"updatedAt": {
+								DisplayName: "updatedAt",
+								ValueType:   common.ValueTypeString,
+							},
+						},
 						FieldsMap: map[string]string{
 							"applicableProgramType": "applicableProgramType",
 							"createdAt":             "createdAt",
@@ -74,6 +101,147 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen,gocognit,cyclop
 					},
 				},
 				Errors: make(map[string]error),
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Successfully describe object having describe endpoint",
+			Input: []string{"companies"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/rest/v1/companies/describe.json"),
+					Then: mockserver.Response(http.StatusOK, describeCompaniesResponse),
+				}},
+			}.Server(),
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"companies": {
+						DisplayName: "companies",
+						Fields: map[string]common.FieldMetadata{
+							"createdAt": {
+								DisplayName:  "Created At",
+								ValueType:    common.ValueTypeDateTime,
+								ProviderType: "datetime",
+								ReadOnly:     new(true),
+							},
+							"externalCompanyId": {
+								DisplayName:  "External Company Id",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+								ReadOnly:     new(true),
+							},
+							"id": {
+								DisplayName:  "Id",
+								ValueType:    common.ValueTypeInt,
+								ProviderType: "integer",
+								ReadOnly:     new(true),
+							},
+							"annualRevenue": {
+								DisplayName:  "Annual Revenue",
+								ValueType:    common.ValueTypeFloat,
+								ProviderType: "currency",
+								ReadOnly:     new(false),
+							},
+							"billingCity": {
+								DisplayName:  "Billing City",
+								ValueType:    common.ValueTypeString,
+								ProviderType: "string",
+								ReadOnly:     new(false),
+							},
+						},
+						FieldsMap: map[string]string{
+							"createdAt":         "Created At",
+							"externalCompanyId": "External Company Id",
+							"id":                "Id",
+							"annualRevenue":     "Annual Revenue",
+							"billingCity":       "Billing City",
+						},
+					},
+				},
+				Errors: make(map[string]error),
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			// Marketo can answer with HTTP 200 and no result. This used to panic with index out of range.
+			Name:  "Describe response without result falls back to static schema",
+			Input: []string{"companies"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/rest/v1/companies/describe.json"),
+					Then: mockserver.Response(http.StatusOK, []byte(`{"success": true, "result": []}`)),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"companies": {
+						DisplayName: "companies",
+						FieldsMap: map[string]string{
+							"id": "id",
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Sampled response with empty first record falls back to static schema",
+			Input: []string{"channels"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/rest/asset/v1/channels.json"),
+					Then: mockserver.Response(http.StatusOK, []byte(`{"success": true, "result": [null]}`)),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"channels": {
+						DisplayName: "channels",
+						FieldsMap: map[string]string{
+							"id":                  "id",
+							"progressionStatuses": "progressionStatuses",
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name:  "Malformed describe response fails only that object",
+			Input: []string{"companies", "channels"},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/rest/v1/companies/describe.json"),
+					Then: mockserver.Response(http.StatusOK, []byte(`{"success": true, "result": [{"fields": [5]}]}`)),
+				}, {
+					If:   mockcond.Path("/rest/asset/v1/channels.json"),
+					Then: mockserver.Response(http.StatusOK, channelsResponse),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"channels": {
+						DisplayName: "channels",
+						Fields: map[string]common.FieldMetadata{
+							"name": {
+								DisplayName: "name",
+								ValueType:   common.ValueTypeString,
+							},
+						},
+					},
+				},
+				Errors: map[string]error{
+					"companies": ErrFailedConvertFields,
+				},
 			},
 			ExpectedErrs: nil,
 		},
