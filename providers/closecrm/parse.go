@@ -2,6 +2,8 @@ package closecrm
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -46,8 +48,19 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 					return "", ErrSkipFailure
 				}
 
-				url.WithQueryParam(skipQuery, currSkip+defaultPageSize)
-				url.WithQueryParam(limitQuery, defaultPageSize)
+				// The page size is carried by the URL, so the next page keeps the same limit.
+				currLimit, exists := url.GetFirstQueryParam(limitQuery)
+				if !exists {
+					currLimit = defaultPageSize
+				}
+
+				nextSkip, err := addPageSize(currSkip, currLimit)
+				if err != nil {
+					return "", err
+				}
+
+				url.WithQueryParam(skipQuery, nextSkip)
+				url.WithQueryParam(limitQuery, currLimit)
 
 				return addTrailingSlashIfNeeded(url.String()), nil
 			}
@@ -55,6 +68,22 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 
 		return "", nil
 	}
+}
+
+// addPageSize returns the offset of the next page.
+// Offsets are numbers sent as strings, so they are added as integers, not concatenated.
+func addPageSize(currSkip, pageSize string) (string, error) {
+	skip, err := strconv.Atoi(currSkip)
+	if err != nil {
+		return "", fmt.Errorf("%w: invalid %s value %q: %w", ErrSkipFailure, skipQuery, currSkip, err)
+	}
+
+	limit, err := strconv.Atoi(pageSize)
+	if err != nil {
+		return "", fmt.Errorf("%w: invalid %s value %q: %w", ErrSkipFailure, limitQuery, pageSize, err)
+	}
+
+	return strconv.Itoa(skip + limit), nil
 }
 
 /*
