@@ -41,32 +41,30 @@ func nextRecordsURL(url *urlbuilder.URL) common.NextPageFunc {
 			return "", err
 		}
 
-		if hasMore != nil {
-			if *hasMore {
-				currSkip, exists := url.GetFirstQueryParam(skipQuery)
-				if !exists {
-					return "", ErrSkipFailure
-				}
-
-				// The page size is carried by the URL, so the next page keeps the same limit.
-				currLimit, exists := url.GetFirstQueryParam(limitQuery)
-				if !exists {
-					currLimit = defaultPageSize
-				}
-
-				nextSkip, err := addPageSize(currSkip, currLimit)
-				if err != nil {
-					return "", err
-				}
-
-				url.WithQueryParam(skipQuery, nextSkip)
-				url.WithQueryParam(limitQuery, currLimit)
-
-				return addTrailingSlashIfNeeded(url.String()), nil
-			}
+		if hasMore == nil || !*hasMore {
+			return "", nil
 		}
 
-		return "", nil
+		currSkip, exists := url.GetFirstQueryParam(skipQuery)
+		if !exists {
+			return "", ErrSkipFailure
+		}
+
+		// The page size is carried by the URL, so the next page keeps the same limit.
+		currLimit, exists := url.GetFirstQueryParam(limitQuery)
+		if !exists {
+			currLimit = defaultPageSize
+		}
+
+		nextSkip, err := addPageSize(currSkip, currLimit)
+		if err != nil {
+			return "", err
+		}
+
+		url.WithQueryParam(skipQuery, nextSkip)
+		url.WithQueryParam(limitQuery, currLimit)
+
+		return addTrailingSlashIfNeeded(url.String()), nil
 	}
 }
 
