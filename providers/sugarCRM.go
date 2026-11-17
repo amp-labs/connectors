@@ -57,7 +57,7 @@ func init() {
 					Name:        "workspace",
 					DisplayName: "Base URL",
 					Prompt: "The address of your Sugar instance, without a trailing slash. " +
-						"For example, https://mycompany.sugarondemand.com.",
+						"For example, `https://mycompany.sugarondemand.com`.",
 				},
 				{
 					Name:        "platform",
