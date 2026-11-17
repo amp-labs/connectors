@@ -30,12 +30,58 @@ func TestPasswordGrantForm(t *testing.T) {
 func TestParseTokenResponse(t *testing.T) {
 	t.Parallel()
 
-	tok, err := parseTokenResponse([]byte(`{"access_token":"AT","refresh_token":"RT","expires_in":"3600"}`))
-	if err != nil {
-		t.Fatal(err)
+	tests := []struct {
+		name       string
+		body       string
+		wantExpiry bool
+	}{
+		{
+			name:       "expires_in is a number",
+			body:       `{"access_token":"AT","refresh_token":"RT","expires_in":3600}`,
+			wantExpiry: true,
+		},
+		{
+			name:       "expires_in is a string",
+			body:       `{"access_token":"AT","refresh_token":"RT","expires_in":"3600"}`,
+			wantExpiry: true,
+		},
+		{
+			name:       "expires_in is null",
+			body:       `{"access_token":"AT","refresh_token":"RT","expires_in":null}`,
+			wantExpiry: false,
+		},
+		{
+			name:       "expires_in is absent",
+			body:       `{"access_token":"AT","refresh_token":"RT"}`,
+			wantExpiry: false,
+		},
 	}
 
-	if tok.AccessToken != "AT" || tok.RefreshToken != "RT" || time.Until(tok.Expiry) < 59*time.Minute {
-		t.Fatalf("unexpected token: %+v", tok)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			tok, err := parseTokenResponse([]byte(tt.body))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if tok.AccessToken != "AT" || tok.RefreshToken != "RT" {
+				t.Fatalf("unexpected token: %+v", tok)
+			}
+
+			if !tt.wantExpiry {
+				if !tok.Expiry.IsZero() {
+					t.Fatalf("expiry should be unset, got %v", tok.Expiry)
+				}
+
+				return
+			}
+
+			// The expiry is set from time.Now(), so allow a minute for the test to run.
+			if remaining := time.Until(tok.Expiry); remaining < 59*time.Minute || remaining > time.Hour {
+				t.Fatalf("expiry should be an hour away, is %v", remaining)
+			}
+		})
 	}
 }
