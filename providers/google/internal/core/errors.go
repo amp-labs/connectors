@@ -101,3 +101,13 @@ func InterpretJSONError(
 
 	return fmt.Errorf("%w: %s", common.ErrLimitExceeded, message)
 }
+
+// InterpretSharedClientError is the error handler for the shared JSON client, which serves
+// calls outside the Reader/Writer/Deleter (e.g. Gmail messages.get). It maps Google's 403
+// rate-limit responses to ErrLimitExceeded instead of ErrForbidden.
+//
+// The fallback is common.InterpretError, the client's default, so other errors keep their
+// *common.HTTPError wrapper. The Gmail 404 skip in fetchMessageRecord relies on it.
+func InterpretSharedClientError(res *http.Response, body []byte) error {
+	return InterpretJSONError(res, body, common.InterpretError)
+}

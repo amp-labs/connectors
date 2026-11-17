@@ -18,6 +18,7 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 
 	errorForbidden := testutils.DataFromFile(t, "forbidden.json")
 	errorNotFound := testutils.DataFromFile(t, "not-found.html")
+	errorRateLimit := testutils.DataFromFile(t, "rate-limit.json")
 	responseMessagesFirstPage := testutils.DataFromFile(t, "read/messages/1-first-page.json")
 	responseMessagesLastPage := testutils.DataFromFile(t, "read/messages/2-last-page.json")
 	responseMessagesList := testutils.DataFromFile(t, "read/messages/list.json")
@@ -63,6 +64,27 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 				common.ErrNotFound,
 				testutils.StringError("The requested URL /gmail/v1/users/me/butterfly was not found on this server. That’s all we know"), // nolint:lll
 			},
+		},
+		{
+			// ENG-4287: messages.list succeeds, then hydrating a message with messages.get hits
+			// Gmail's per-user quota (403 RATE_LIMIT_EXCEEDED). The read must fail as a
+			// retryable rate limit, not as forbidden, so the schedule is not paused.
+			Name: "Rate limit while hydrating messages is retryable",
+			Input: common.ReadParams{
+				ObjectName: "messages",
+				Fields:     connectors.Fields("id", "snippet"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: mockserver.Cases{{
+					If:   mockcond.Path("/gmail/v1/users/me/messages"),
+					Then: mockserver.Response(http.StatusOK, responseMessagesList),
+				}, {
+					If:   mockcond.Path("/gmail/v1/users/me/messages/1a0cae6d02f3bbe3"),
+					Then: mockserver.Response(http.StatusForbidden, errorRateLimit),
+				}},
+			}.Server(),
+			ExpectedErrs: []error{common.ErrLimitExceeded},
 		},
 		{
 			Name: "Read messages first page",

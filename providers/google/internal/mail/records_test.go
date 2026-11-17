@@ -24,6 +24,8 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 	responseMessageOK3 := testutils.DataFromFile(t, "records-by-ids/message-ok-3.json")
 	errorNotFound := testutils.DataFromFile(t, "records-by-ids/error-not-found.json")
 	errorServer := testutils.DataFromFile(t, "records-by-ids/error-server.json")
+	errorRateLimit := testutils.DataFromFile(t, "rate-limit.json")
+	errorForbidden := testutils.DataFromFile(t, "forbidden.json")
 
 	const (
 		idOK1      = "19dbd733d5637396"
@@ -38,6 +40,7 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 		ids          []string
 		server       func() *mockserver.Switch
 		expectErrs   []error
+		rejectErrs   []error  // must not be in the error chain
 		expectRowIds []string // sorted
 		// expectFailures maps a requested id to its expected failure reason.
 		expectFailures map[string]common.FailureReason
@@ -151,6 +154,56 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 			expectRowIds:   []string{idOK1},
 			expectFailures: map[string]common.FailureReason{idMissing: common.FailureReasonTransient},
 		},
+		{
+			// Gmail reports per-user quota exhaustion as 403 RATE_LIMIT_EXCEEDED (ENG-4287).
+			// It must surface as a retryable rate limit, not as a permanent forbidden.
+			name:   "403 rate limit on one id is reported as rate limited, the rest still come back",
+			object: "messages",
+			ids:    []string{idOK1, idMissing},
+			server: func() *mockserver.Switch {
+				return &mockserver.Switch{
+					Setup: mockserver.ContentJSON(),
+					Cases: []mockserver.Case{
+						{
+							If:   mockcond.Path(pathPrefix + idOK1),
+							Then: mockserver.Response(http.StatusOK, responseMessageOK1),
+						},
+						{
+							If:   mockcond.Path(pathPrefix + idMissing),
+							Then: mockserver.Response(http.StatusForbidden, errorRateLimit),
+						},
+					},
+				}
+			},
+			expectErrs:     []error{common.ErrLimitExceeded},
+			rejectErrs:     []error{common.ErrForbidden},
+			expectRowIds:   []string{idOK1},
+			expectFailures: map[string]common.FailureReason{idMissing: common.FailureReasonRateLimited},
+		},
+		{
+			name:   "403 without a rate-limit reason stays forbidden",
+			object: "messages",
+			ids:    []string{idOK1, idMissing},
+			server: func() *mockserver.Switch {
+				return &mockserver.Switch{
+					Setup: mockserver.ContentJSON(),
+					Cases: []mockserver.Case{
+						{
+							If:   mockcond.Path(pathPrefix + idOK1),
+							Then: mockserver.Response(http.StatusOK, responseMessageOK1),
+						},
+						{
+							If:   mockcond.Path(pathPrefix + idMissing),
+							Then: mockserver.Response(http.StatusForbidden, errorForbidden),
+						},
+					},
+				}
+			},
+			expectErrs:     []error{common.ErrForbidden},
+			rejectErrs:     []error{common.ErrLimitExceeded},
+			expectRowIds:   []string{idOK1},
+			expectFailures: map[string]common.FailureReason{idMissing: common.FailureReasonPermanent},
+		},
 	}
 
 	for _, tt := range tests {
@@ -179,6 +232,12 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 			for _, wantErr := range tt.expectErrs {
 				if !errors.Is(err, wantErr) {
 					t.Fatalf("expected error %v in chain, got %v", wantErr, err)
+				}
+			}
+
+			for _, unwantedErr := range tt.rejectErrs {
+				if errors.Is(err, unwantedErr) {
+					t.Fatalf("expected error %v not in chain, got %v", unwantedErr, err)
 				}
 			}
 
