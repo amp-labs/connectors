@@ -491,6 +491,8 @@ func (c *Connector) fetchChildrenForParents(
 		return nil, nil
 	}
 
+	parentJobs := parentJobsByID(params, parents)
+
 	results := make([][]common.ReadResultRow, len(ids))
 	jobs := make([]simultaneously.Job, len(ids))
 
@@ -498,7 +500,7 @@ func (c *Connector) fetchChildrenForParents(
 		idx, id := i, parentID
 
 		jobs[idx] = func(ctx context.Context) error {
-			rows, fetchErr := c.fetchChildPages(ctx, id, params, nested)
+			rows, fetchErr := c.fetchChildPages(ctx, id, parentJobs[id], params, nested)
 			if fetchErr != nil {
 				return fmt.Errorf("fetching %s for %s %s: %w",
 					nested.leafSuffix, nested.parentObject, id, fetchErr)
@@ -561,6 +563,7 @@ func (c *Connector) buildChildURL(
 func (c *Connector) fetchChildPages(
 	ctx context.Context,
 	parentID string,
+	parentRaw map[string]any,
 	params common.ReadParams,
 	nested nestedSpec,
 ) ([]common.ReadResultRow, error) {
@@ -602,7 +605,7 @@ func (c *Connector) fetchChildPages(
 			return nil, err
 		}
 
-		attachNestedAssociations(params, parentID, result.Data)
+		attachNestedAssociations(params, parentID, parentRaw, result.Data)
 		allRows = append(allRows, result.Data...)
 
 		if result.NextPage == "" {

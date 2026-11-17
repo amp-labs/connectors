@@ -4,6 +4,8 @@ import (
 	"slices"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/spyzhov/ajson"
 )
 
 // appointmentJobAssociation and appointmentUserAssociation are the association
@@ -46,33 +48,78 @@ func attachAppointmentAssociations(params common.ReadParams, calendarID string, 
 	for idx := range rows {
 		if wantJob {
 			if jobID, _ := rows[idx].Raw["jobId"].(string); jobID != "" {
-				addAssociation(&rows[idx], appointmentJobAssociation, jobID)
+				addAssociation(&rows[idx], appointmentJobAssociation, jobID, nil)
 			}
 		}
 
 		if wantUser && calendarID != "" {
-			addAssociation(&rows[idx], appointmentUserAssociation, calendarID)
+			addAssociation(&rows[idx], appointmentUserAssociation, calendarID, nil)
 		}
 	}
 }
 
-// addAssociation appends a reference-shape association (ObjectId only) under the
-// given key, initialising the row's association map on first use.
-func addAssociation(row *common.ReadResultRow, key, objectID string) {
+// addAssociation appends an association under the given key, initialising the
+// row's association map on first use. A nil raw gives the reference shape
+// (ObjectId only), which the server hydrates via GetRecordsByIds.
+func addAssociation(row *common.ReadResultRow, key, objectID string, raw map[string]any) {
 	if row.Associations == nil {
 		row.Associations = make(map[string][]common.Association)
 	}
 
-	row.Associations[key] = append(row.Associations[key], common.Association{ObjectId: objectID})
+	row.Associations[key] = append(row.Associations[key], common.Association{ObjectId: objectID, Raw: raw})
 }
 
 // attachNestedAssociations attaches the parent-derived edges for nested
 // fan-out rows. Each attacher is a no-op unless params.ObjectName is its
-// object, so fetchChildPages calls this unconditionally per page.
-func attachNestedAssociations(params common.ReadParams, parentID string, rows []common.ReadResultRow) {
+// object, so fetchChildPages calls this unconditionally per page. parentRaw is
+// the parent record from the list page, or nil (see parentJobsByID).
+func attachNestedAssociations(
+	params common.ReadParams, parentID string, parentRaw map[string]any, rows []common.ReadResultRow,
+) {
 	attachAppointmentAssociations(params, parentID, rows)
-	attachRepresentativeAssociations(params, parentID, rows)
-	attachFinancialAssociations(params, parentID, rows)
+	attachRepresentativeAssociations(params, parentID, parentRaw, rows)
+	attachFinancialAssociations(params, parentID, parentRaw, rows)
+}
+
+// parentJobsByID returns the parent jobs of a jobs/financials or
+// jobs/representatives page, keyed by job id, when the Job association is
+// requested; nil otherwise.
+//
+// The Job association carries this job as Raw, so the server uses it as-is
+// instead of calling GET /jobs/{id} once per row (it only hydrates
+// associations with empty Raw). The list job is the same record that call
+// returns: the parent /jobs list carries the same ?includes= as
+// fetchSingleRecord (applyIncludes for objectJobs), and every next-page URL is
+// a clone of it.
+//
+// A parent that fails to convert is left out, so its rows fall back to the
+// id-only shape and the server hydrates them as before.
+func parentJobsByID(params common.ReadParams, parents []*ajson.Node) map[string]map[string]any {
+	if params.ObjectName != "jobs/financials" && params.ObjectName != objectJobsRepresentatives {
+		return nil
+	}
+
+	if !slices.Contains(params.AssociatedObjects, objectJobs) {
+		return nil
+	}
+
+	jobs := make(map[string]map[string]any, len(parents))
+
+	for _, node := range parents {
+		id, err := jsonquery.New(node).StringRequired("id")
+		if err != nil {
+			continue
+		}
+
+		job, err := jsonquery.Convertor.ObjectToMap(node)
+		if err != nil {
+			continue
+		}
+
+		jobs[id] = job
+	}
+
+	return jobs
 }
 
 // representativeJobAssociation, estimateJobAssociation and financialJobAssociation are the association
@@ -90,12 +137,15 @@ const (
 // body carries only id, type, user and _link — no jobId (see
 // https://apidocs.acculynx.com/reference/getrepresentativesforjob) — so the
 // job id is threaded in from the fan-out parent, the same way the
-// Appointment->User edge uses the parent calendar id. Reference shape
-// (ObjectId only): jobs are batch-readable, the server hydrates them.
+// Appointment->User edge uses the parent calendar id. The parent job from the
+// /jobs list page rides along as Raw (see parentJobsByID); a job can have
+// several representatives, and each row gets the same job.
 //
 // It is a no-op for any object other than jobs/representatives, so the nested
 // fan-out can call it unconditionally.
-func attachRepresentativeAssociations(params common.ReadParams, jobID string, rows []common.ReadResultRow) {
+func attachRepresentativeAssociations(
+	params common.ReadParams, jobID string, job map[string]any, rows []common.ReadResultRow,
+) {
 	if params.ObjectName != "jobs/representatives" || jobID == "" {
 		return
 	}
@@ -105,13 +155,15 @@ func attachRepresentativeAssociations(params common.ReadParams, jobID string, ro
 	}
 
 	for idx := range rows {
-		addAssociation(&rows[idx], representativeJobAssociation, jobID)
+		addAssociation(&rows[idx], representativeJobAssociation, jobID, job)
 	}
 }
 
 // attachFinancialAssociations attaches the Financial->Job edge to jobs/financials
-// rows, using the fan-out parent job id like attachRepresentativeAssociations.
-func attachFinancialAssociations(params common.ReadParams, jobID string, rows []common.ReadResultRow) {
+// rows, using the fan-out parent job like attachRepresentativeAssociations.
+func attachFinancialAssociations(
+	params common.ReadParams, jobID string, job map[string]any, rows []common.ReadResultRow,
+) {
 	if params.ObjectName != "jobs/financials" || jobID == "" {
 		return
 	}
@@ -121,7 +173,7 @@ func attachFinancialAssociations(params common.ReadParams, jobID string, rows []
 	}
 
 	for idx := range rows {
-		addAssociation(&rows[idx], financialJobAssociation, jobID)
+		addAssociation(&rows[idx], financialJobAssociation, jobID, job)
 	}
 }
 
