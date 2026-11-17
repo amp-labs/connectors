@@ -22,8 +22,10 @@ func main() {
 
 	res, err := conn.Read(ctx, common.ReadParams{
 		ObjectName: "AMPERSAND-messages",
-		//Fields:     connectors.Fields("id"),
-		Fields:   connectors.Fields("snippet"),
+		Fields: connectors.Fields(
+			"snippet",
+			"$['payload']",
+		),
 		PageSize: 1,
 	})
 	if err != nil {

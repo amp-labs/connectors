@@ -1,0 +1,89 @@
+{
+  "historyId": "121639",
+  "id": "1a1d7f4c99547658",
+  "internalDate": "1794624505000",
+  "labelIds": [
+    "SENT"
+  ],
+  "payload": {
+    "body": {
+      "size": 0
+    },
+    "filename": "",
+    "headers": [
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Date",
+        "value": "Sat, 14 Nov 2026 04:48:25 +0200"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<CAEJ5D9mMOdMexQuzBFEPJrkMQhU3e66O-TCNhN1DZ3N_UV3fpQ@mail.gmail.com>"
+      },
+      {
+        "name": "Subject",
+        "value": "{003} HTML Format Test"
+      },
+      {
+        "name": "From",
+        "value": "Constantin Koval <constantin@withampersand.com>"
+      },
+      {
+        "name": "To",
+        "value": "ayanbarua@ampersand280.onmicrosoft.com"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/alternative; boundary=\"0000000000002f06070660339476\""
+      }
+    ],
+    "mimeType": "multipart/alternative",
+    "partId": "",
+    "parts": [
+      {
+        "body": {
+          "data": "TUlNRSBJbnRlcm5ldCBNZXNzYWdlIEZvcm1hdCB0ZXN0DQoNClRoaXMgbWVzc2FnZSBpcyBpbnRlbmRlZCB0byBiZWNvbWUgYW4gSFRNTCBNSU1FIHBhcnQuDQoNCkhlbGxvLA0KDQpUaGlzIGlzIGEgKnJpY2gtdGV4dCBIVE1MIGVtYWlsKiBjcmVhdGVkIHRvIGluc3BlY3QgaG93IEdtYWlsIHJlcHJlc2VudHMNCmZvcm1hdHRpbmcgaW4gdGhlIHJlc3VsdGluZyBNSU1FIG1lc3NhZ2UuDQoNCkl0IGluY2x1ZGVzIHNldmVyYWwgSFRNTCBmZWF0dXJlcyB0aGF0IG1heSBwcm9kdWNlIGEgbXVsdGlwYXJ0L2FsdGVybmF0aXZlDQpzdHJ1Y3R1cmUsIHdpdGggYW4gSFRNTCByZXByZXNlbnRhdGlvbiBhbmQgcG9zc2libHkgYSBwbGFpbi10ZXh0IGZhbGxiYWNrLg0KDQogICAtIEJvbGQgYW5kIGl0YWxpYyB0ZXh0DQogICAtIEEgaHlwZXJsaW5rDQogICAtIEEgYnVsbGV0IGxpc3QNCiAgIC0gQSBzaW1wbGUgdGFibGUNCiAgIC0gRW1vamk6IMOixZPigKYgw7DFuOKAnMKnIMOwxbjCp8KqDQoNClZpc2l0IHRoZSBSRkMgNTMyMiBJbnRlcm5ldCBNZXNzYWdlIEZvcm1hdCBzcGVjaWZpY2F0aW9uDQo8aHR0cHM6Ly9kYXRhdHJhY2tlci5pZXRmLm9yZy9kb2MvaHRtbC9yZmM1MzIyPmZvciB0aGUgdW5kZXJseWluZw0KZW1haWwtaGVhZGVyIGZvcm1hdC4NCk1JTUUgY29uY2VwdCBXaGF0IHRvIGxvb2sgZm9yDQpIVE1MIGJvZHkgdGV4dC9odG1sDQpQbGFpbi10ZXh0IGZhbGxiYWNrIHRleHQvcGxhaW4NCkFsdGVybmF0aXZlIHBhcnRzIG11bHRpcGFydC9hbHRlcm5hdGl2ZQ0KDQpSZWdhcmRzLA0KKk1JTUUgRXhwbG9yZXIqDQo=",
+          "size": 806
+        },
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "text/plain; charset=\"UTF-8\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "quoted-printable"
+          }
+        ],
+        "mimeType": "text/plain",
+        "partId": "0"
+      },
+      {
+        "body": {
+          "data": "PGRpdiBkaXI9Imx0ciI-PGRpdiBkaXI9Imx0ciI-PGRpdiBkaXI9Imx0ciI-PHRhYmxlIHJvbGU9InByZXNlbnRhdGlvbiIgd2lkdGg9IjYwMCIgY2VsbHBhZGRpbmc9IjAiIGNlbGxzcGFjaW5nPSIwIiBzdHlsZT0iZm9udC1zaXplOm1lZGl1bTtiYWNrZ3JvdW5kLWltYWdlOmluaXRpYWw7YmFja2dyb3VuZC1wb3NpdGlvbjppbml0aWFsO2JhY2tncm91bmQtc2l6ZTppbml0aWFsO2JhY2tncm91bmQtcmVwZWF0OmluaXRpYWw7YmFja2dyb3VuZC1vcmlnaW46aW5pdGlhbDtiYWNrZ3JvdW5kLWNsaXA6aW5pdGlhbDtib3JkZXItcmFkaXVzOjhweCI-PHRib2R5Pjx0cj48dGQgc3R5bGU9InBhZGRpbmc6MjRweDtib3JkZXItYm90dG9tOjFweCBzb2xpZCByZ2IoMjI5LDIzMSwyMzUpIj48aDEgc3R5bGU9Im1hcmdpbjowcHg7Zm9udC1zaXplOjIycHg7Y29sb3I6cmdiKDE3LDE3LDE3KSI-TUlNRSBJbnRlcm5ldCBNZXNzYWdlIEZvcm1hdCB0ZXN0PC9oMT48cCBzdHlsZT0ibWFyZ2luOjhweCAwcHggMHB4O2ZvbnQtc2l6ZToxNHB4O2NvbG9yOnJnYig4NSw4NSw4NSkiPlRoaXMgbWVzc2FnZSBpcyBpbnRlbmRlZCB0byBiZWNvbWUgYW4gSFRNTCBNSU1FIHBhcnQuPC9wPjwvdGQ-PC90cj48dHI-PHRkIHN0eWxlPSJwYWRkaW5nOjI0cHgiPjxwIHN0eWxlPSJtYXJnaW46MHB4IDBweCAxNnB4O2ZvbnQtc2l6ZToxNXB4O2xpbmUtaGVpZ2h0OjEuNSI-SGVsbG8sPC9wPjxwIHN0eWxlPSJtYXJnaW46MHB4IDBweCAxNnB4O2ZvbnQtc2l6ZToxNXB4O2xpbmUtaGVpZ2h0OjEuNSI-VGhpcyBpcyBhIDxzdHJvbmc-cmljaC10ZXh0IEhUTUwgZW1haWw8L3N0cm9uZz4gY3JlYXRlZCB0byBpbnNwZWN0IGhvdyBHbWFpbCByZXByZXNlbnRzIGZvcm1hdHRpbmcgaW4gdGhlIHJlc3VsdGluZyBNSU1FIG1lc3NhZ2UuPC9wPjxwIHN0eWxlPSJtYXJnaW46MHB4IDBweCAxNnB4O2ZvbnQtc2l6ZToxNXB4O2xpbmUtaGVpZ2h0OjEuNSI-SXQgaW5jbHVkZXMgc2V2ZXJhbCBIVE1MIGZlYXR1cmVzIHRoYXQgbWF5IHByb2R1Y2UgYSA8Y29kZSBzdHlsZT0iYmFja2dyb3VuZDpyZ2IoMjQxLDI0MywyNDQpO3BhZGRpbmc6MnB4IDRweDtib3JkZXItcmFkaXVzOjNweCI-bXVsdGlwYXJ0L2FsdGVybmF0aXZlPC9jb2RlPiBzdHJ1Y3R1cmUsIHdpdGggYW4gSFRNTCByZXByZXNlbnRhdGlvbiBhbmQgcG9zc2libHkgYSBwbGFpbi10ZXh0IGZhbGxiYWNrLjwvcD48dWwgc3R5bGU9Im1hcmdpbjowcHggMHB4IDE2cHg7cGFkZGluZy1sZWZ0OjIwcHg7Zm9udC1zaXplOjE1cHg7bGluZS1oZWlnaHQ6MS42Ij48bGk-Qm9sZCBhbmQgaXRhbGljIHRleHQ8L2xpPjxsaT5BIGh5cGVybGluazwvbGk-PGxpPkEgYnVsbGV0IGxpc3Q8L2xpPjxsaT5BIHNpbXBsZSB0YWJsZTwvbGk-PGxpPkVtb2ppOiDDosWT4oCmIMOwxbjigJzCpyDDsMW4wqfCqjwvbGk-PC91bD48cCBzdHlsZT0ibWFyZ2luOjBweCAwcHggMTZweDtmb250LXNpemU6MTVweDtsaW5lLWhlaWdodDoxLjUiPlZpc2l0IHRoZSA8YSBocmVmPSJodHRwczovL2RhdGF0cmFja2VyLmlldGYub3JnL2RvYy9odG1sL3JmYzUzMjIiIHN0eWxlPSJjb2xvcjpyZ2IoMjYsMTE1LDIzMikiIHRhcmdldD0iX2JsYW5rIj5SRkMgNTMyMiBJbnRlcm5ldCBNZXNzYWdlIEZvcm1hdCBzcGVjaWZpY2F0aW9uIDwvYT5mb3IgdGhlIHVuZGVybHlpbmcgZW1haWwtaGVhZGVyIGZvcm1hdC48L3A-PHRhYmxlIHJvbGU9InByZXNlbnRhdGlvbiIgd2lkdGg9IjEwMCUiIGNlbGxwYWRkaW5nPSIwIiBjZWxsc3BhY2luZz0iMCIgc3R5bGU9ImJvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtmb250LXNpemU6MTRweCI-PHRib2R5Pjx0ciBzdHlsZT0iYmFja2dyb3VuZDpyZ2IoMjQxLDI0MywyNDQpIj48dGggYWxpZ249ImxlZnQiIHN0eWxlPSJwYWRkaW5nOjhweDtib3JkZXI6MXB4IHNvbGlkIHJnYigyMTgsMjIwLDIyNCkiPk1JTUUgY29uY2VwdDwvdGg-PHRoIGFsaWduPSJsZWZ0IiBzdHlsZT0icGFkZGluZzo4cHg7Ym9yZGVyOjFweCBzb2xpZCByZ2IoMjE4LDIyMCwyMjQpIj5XaGF0IHRvIGxvb2sgZm9yPC90aD48L3RyPjx0cj48dGQgc3R5bGU9InBhZGRpbmc6OHB4O2JvcmRlcjoxcHggc29saWQgcmdiKDIxOCwyMjAsMjI0KSI-SFRNTCBib2R5PC90ZD48dGQgc3R5bGU9InBhZGRpbmc6OHB4O2JvcmRlcjoxcHggc29saWQgcmdiKDIxOCwyMjAsMjI0KSI-PGNvZGU-dGV4dC9odG1sPC9jb2RlPjwvdGQ-PC90cj48dHI-PHRkIHN0eWxlPSJwYWRkaW5nOjhweDtib3JkZXI6MXB4IHNvbGlkIHJnYigyMTgsMjIwLDIyNCkiPlBsYWluLXRleHQgZmFsbGJhY2s8L3RkPjx0ZCBzdHlsZT0icGFkZGluZzo4cHg7Ym9yZGVyOjFweCBzb2xpZCByZ2IoMjE4LDIyMCwyMjQpIj48Y29kZT50ZXh0L3BsYWluPC9jb2RlPjwvdGQ-PC90cj48dHI-PHRkIHN0eWxlPSJwYWRkaW5nOjhweDtib3JkZXI6MXB4IHNvbGlkIHJnYigyMTgsMjIwLDIyNCkiPkFsdGVybmF0aXZlIHBhcnRzPC90ZD48dGQgc3R5bGU9InBhZGRpbmc6OHB4O2JvcmRlcjoxcHggc29saWQgcmdiKDIxOCwyMjAsMjI0KSI-PGNvZGU-bXVsdGlwYXJ0L2FsdGVybmF0aXZlPC9jb2RlPjwvdGQ-PC90cj48L3Rib2R5PjwvdGFibGU-PHAgc3R5bGU9Im1hcmdpbjoyNHB4IDBweCAwcHg7Zm9udC1zaXplOjE1cHg7bGluZS1oZWlnaHQ6MS41Ij5SZWdhcmRzLDxicj48c3Ryb25nPk1JTUUgRXhwbG9yZXI8L3N0cm9uZz48L3A-PC90ZD48L3RyPjwvdGJvZHk-PC90YWJsZT48L2Rpdj4NCjwvZGl2Pg0KPC9kaXY-DQo=",
+          "size": 2756
+        },
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "text/html; charset=\"UTF-8\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "quoted-printable"
+          }
+        ],
+        "mimeType": "text/html",
+        "partId": "1"
+      }
+    ]
+  },
+  "sizeEstimate": 4482,
+  "snippet": "MIME Internet Message Format test This message is intended to become an HTML MIME part. Hello, This is a rich-text HTML email created to inspect how Gmail represents formatting in the resulting MIME",
+  "threadId": "1a1d7413318d8360"
+}

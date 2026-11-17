@@ -1,0 +1,61 @@
+{
+  "id": "r2257008487859818769",
+  "message": {
+    "historyId": "119980",
+    "id": "1a1d341d6f54ecb7",
+    "internalDate": "1794545669000",
+    "labelIds": [
+      "DRAFT"
+    ],
+    "payload": {
+      "body": {
+        "data": "TWVzc2FnZSBjb21lcyBmcm9tIGNvbm5lY3Rvci5Xcml0ZShPYmplY3ROYW1lOiBBTVBFUlNBTkQtbWVzc2FnZXMp",
+        "size": 88
+      },
+      "filename": "",
+      "headers": [
+        {
+          "name": "Received",
+          "value": "from 863187603009 named unknown by gmailapi.google.com with HTTPREST; Thu, 12 Nov 2026 20:54:29 -0800"
+        },
+        {
+          "name": "Content-Type",
+          "value": "text/plain; charset=\"utf-8\""
+        },
+        {
+          "name": "Content-Transfer-Encoding",
+          "value": "7bit"
+        },
+        {
+          "name": "MIME-Version",
+          "value": "1.0"
+        },
+        {
+          "name": "To",
+          "value": "ayanbarua@ampersand280.onmicrosoft.com"
+        },
+        {
+          "name": "From",
+          "value": "Constantin Koval <constantin@withampersand.com>"
+        },
+        {
+          "name": "Subject",
+          "value": "Brand new updated subject"
+        },
+        {
+          "name": "Date",
+          "value": "Thu, 12 Nov 2026 20:54:29 -0800"
+        },
+        {
+          "name": "Message-Id",
+          "value": "<CAEJ5D9kY9wJRLSvBSuYLmGvFUdjahhjdfPTBPzXCyYhTav+Ryg@mail.gmail.com>"
+        }
+      ],
+      "mimeType": "text/plain",
+      "partId": ""
+    },
+    "sizeEstimate": 497,
+    "snippet": "Message comes from connector.Write(ObjectName: AMPERSAND-messages)",
+    "threadId": "1a1d341d6f54ecb7"
+  }
+}

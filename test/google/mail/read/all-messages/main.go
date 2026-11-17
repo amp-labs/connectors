@@ -22,11 +22,14 @@ func main() {
 	testscenario.ReadThroughPages(ctx, conn, common.ReadParams{
 		ObjectName: "messages",
 		Fields: connectors.Fields(
+			"id",
+			"threadId",
+			"labelIds",
 			"snippet",
-			"$['payload']['body']",
-			"$['payload']['mimeType']",
+			"$['payload']",
+			"$['payload']['body']['data']",
 		),
-		Since:    time.Now().Add(-1 * time.Hour * 24),
+		Since:    time.Now().Add(-1 * time.Minute * 2),
 		PageSize: 10,
 	})
 }

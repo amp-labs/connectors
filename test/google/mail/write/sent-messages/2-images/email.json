@@ -1,0 +1,175 @@
+{
+  "historyId": "121465",
+  "id": "1a1d7f4c065bff8c",
+  "internalDate": "1794624503000",
+  "labelIds": [
+    "SENT"
+  ],
+  "payload": {
+    "body": {
+      "size": 0
+    },
+    "filename": "",
+    "headers": [
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Date",
+        "value": "Sat, 14 Nov 2026 04:48:23 +0200"
+      },
+      {
+        "name": "Bcc",
+        "value": "dobrbobr2022@gmail.com"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<CAEJ5D9mAQtKDsKCB-8VcpvFWoiY+9vQzUwX9cWTGkV3SL51U3Q@mail.gmail.com>"
+      },
+      {
+        "name": "Subject",
+        "value": "{002} Email with Image"
+      },
+      {
+        "name": "From",
+        "value": "Constantin Koval <constantin@withampersand.com>"
+      },
+      {
+        "name": "To",
+        "value": "ayanbarua@ampersand280.onmicrosoft.com"
+      },
+      {
+        "name": "Cc",
+        "value": "Integration test <integration.test@withampersand.com>"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/mixed; boundary=\"0000000000000fde0d06603394dc\""
+      }
+    ],
+    "mimeType": "multipart/mixed",
+    "partId": "",
+    "parts": [
+      {
+        "body": {
+          "size": 0
+        },
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "multipart/alternative; boundary=\"0000000000000fde0c06603394da\""
+          }
+        ],
+        "mimeType": "multipart/alternative",
+        "partId": "0",
+        "parts": [
+          {
+            "body": {
+              "data": "VGhpcyBlbWFpbCBoYXMgc29tZSB0ZXh0IGFuZCAyIGltYWdlIGF0dGFjaG1lbnRzLg0KQWxzbyBoZXJlIGFyZSBzb21lIGVtb2ppczog8J-YgfCfpbPwn5q0DQoNCkFkZGl0aW9uYWxseSB0aGUgY2MsIGJjYyBhcmUgaW5jbHVkZWQgaW4gdGhpcyBlbWFpbC4NCg==",
+              "size": 148
+            },
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=\"UTF-8\""
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "quoted-printable"
+              }
+            ],
+            "mimeType": "text/plain",
+            "partId": "0.0"
+          },
+          {
+            "body": {
+              "data": "PGRpdiBkaXI9Imx0ciI-PGRpdiBkaXI9Imx0ciI-PGRpdiBkaXI9Imx0ciI-VGhpcyBlbWFpbCBoYXMgc29tZSB0ZXh0IGFuZCAyIGltYWdlIGF0dGFjaG1lbnRzLjxkaXY-QWxzbyBoZXJlIGFyZSBzb21lIGVtb2ppczrCoPCfmIHwn6Wz8J-atDwvZGl2PjxkaXY-PGJyPjwvZGl2PjxkaXY-QWRkaXRpb25hbGx5IHRoZSBjYywgYmNjIGFyZSBpbmNsdWRlZCBpbiB0aGlzIGVtYWlsLjwvZGl2PjwvZGl2Pg0KPC9kaXY-DQo8L2Rpdj4NCg==",
+              "size": 247
+            },
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=\"UTF-8\""
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "quoted-printable"
+              }
+            ],
+            "mimeType": "text/html",
+            "partId": "0.1"
+          }
+        ]
+      },
+      {
+        "body": {
+          "size": 2547813,
+          "data": "{{.Norway}}"
+        },
+        "filename": "norway.png",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "image/png; name=\"norway.png\""
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"norway.png\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "X-Attachment-Id",
+            "value": "f_mwflvsf00"
+          },
+          {
+            "name": "Content-ID",
+            "value": "<f_mwflvsf00>"
+          }
+        ],
+        "mimeType": "image/png",
+        "partId": "1"
+      },
+      {
+        "body": {
+          "size": 3748375,
+          "data": "{{.Bridge}}"
+        },
+        "filename": "bridge.png",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "image/png; name=\"bridge.png\""
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"bridge.png\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "X-Attachment-Id",
+            "value": "f_mwflw5041"
+          },
+          {
+            "name": "Content-ID",
+            "value": "<f_mwflw5041>"
+          }
+        ],
+        "mimeType": "image/png",
+        "partId": "2"
+      }
+    ]
+  },
+  "sizeEstimate": 8617881,
+  "snippet": "This email has some text and 2 image attachments. Also here are some emojis: 😁🥳🚴 Additionally the cc, bcc are included in this email.",
+  "threadId": "1a1d73a229453f5e"
+}

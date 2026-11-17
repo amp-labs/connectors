@@ -1,0 +1,222 @@
+{
+  "historyId": "124042",
+  "id": "1a1e5c47899eab2f",
+  "internalDate": "1794856220000",
+  "labelIds": [
+    "SENT"
+  ],
+  "payload": {
+    "body": {
+      "size": 0
+    },
+    "filename": "",
+    "headers": [
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Date",
+        "value": "Mon, 16 Nov 2026 21:10:20 +0200"
+      },
+      {
+        "name": "References",
+        "value": "<CAEJ5D9=w4y1EtSpkBo0b2yOLgZVsrG_kirT4d_Pi6RnLYGbYEw@mail.gmail.com>"
+      },
+      {
+        "name": "In-Reply-To",
+        "value": "<CAEJ5D9=w4y1EtSpkBo0b2yOLgZVsrG_kirT4d_Pi6RnLYGbYEw@mail.gmail.com>"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<CAEJ5D9=jdPBsUVTYojPMFw6nbWhLcYj1j5fbsi+1M5hhiy4B4Q@mail.gmail.com>"
+      },
+      {
+        "name": "Subject",
+        "value": "Re: Brand new updated subject"
+      },
+      {
+        "name": "From",
+        "value": "Constantin Koval <constantin@withampersand.com>"
+      },
+      {
+        "name": "To",
+        "value": "Integration test <integration.test@withampersand.com>"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/mixed; boundary=\"0000000000007423390660698781\""
+      }
+    ],
+    "mimeType": "multipart/mixed",
+    "partId": "",
+    "parts": [
+      {
+        "body": {
+          "size": 0
+        },
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "multipart/related; boundary=\"0000000000007423380660698780\""
+          }
+        ],
+        "mimeType": "multipart/related",
+        "partId": "0",
+        "parts": [
+          {
+            "body": {
+              "size": 0
+            },
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "multipart/alternative; boundary=\"000000000000742335066069877f\""
+              }
+            ],
+            "mimeType": "multipart/alternative",
+            "partId": "0.0",
+            "parts": [
+              {
+                "body": {
+                  "data": "SGksDQoNClRoaXMgaXMgYSByZXBseSB0byBhIHRocmVhZC4gSXQgaW5jbHVkZXMgYW4gZW1iZWRkZWQgaW1hZ2UgYXMgd2VsbCBhcyBhbg0KYXR0YWNoZWQgcGRmIGFuZCBpbWFnZS4NCltpbWFnZTogaG91c2UucG5nXQ0KDQoNCkJlc3QgUmVnYXJkLA0KVGVzdCBEZXZlbG9wbWVudA0KDQpPbiBNb24sIE5vdiAxNiwgMjAyNiBhdCA5OjA34oCvUE0gQ29uc3RhbnRpbiBLb3ZhbCA8DQpjb25zdGFudGluQHdpdGhhbXBlcnNhbmQuY29tPiB3cm90ZToNCg0KPiBNZXNzYWdlIGNvbWVzIGZyb20gY29ubmVjdG9yLldyaXRlKE9iamVjdE5hbWU6IEFNUEVSU0FORC1tZXNzYWdlcykNCg==",
+                  "size": 328
+                },
+                "filename": "",
+                "headers": [
+                  {
+                    "name": "Content-Type",
+                    "value": "text/plain; charset=\"UTF-8\""
+                  },
+                  {
+                    "name": "Content-Transfer-Encoding",
+                    "value": "quoted-printable"
+                  }
+                ],
+                "mimeType": "text/plain",
+                "partId": "0.0.0"
+              },
+              {
+                "body": {
+                  "data": "PGRpdiBkaXI9Imx0ciI-PGRpdj5IaSw8L2Rpdj48ZGl2Pjxicj48L2Rpdj5UaGlzIGlzIGEgcmVwbHkgdG8gYSB0aHJlYWQuIEl0IGluY2x1ZGVzIGFuIGVtYmVkZGVkIGltYWdlIGFzIHdlbGwgYXMgYW4gYXR0YWNoZWQgcGRmIGFuZCBpbWFnZS48ZGl2PjxpbWcgc3JjPSJjaWQ6aWlfbXdqbjAwOGgwIiBhbHQ9ImhvdXNlLnBuZyIgd2lkdGg9IjE1NCIgaGVpZ2h0PSI4MSI-PGJyPjwvZGl2PjxkaXY-PGJyPjxkaXY-PGJyPjwvZGl2PjxkaXY-QmVzdCBSZWdhcmQsPC9kaXY-PGRpdj5UZXN0IERldmVsb3BtZW50PC9kaXY-PC9kaXY-PC9kaXY-PGJyPjxkaXYgY2xhc3M9ImdtYWlsX3F1b3RlIGdtYWlsX3F1b3RlX2NvbnRhaW5lciI-PGRpdiBkaXI9Imx0ciIgY2xhc3M9ImdtYWlsX2F0dHIiPk9uIE1vbiwgTm92IDE2LCAyMDI2IGF0IDk6MDfigK9QTSBDb25zdGFudGluIEtvdmFsICZsdDs8YSBocmVmPSJtYWlsdG86Y29uc3RhbnRpbkB3aXRoYW1wZXJzYW5kLmNvbSI-Y29uc3RhbnRpbkB3aXRoYW1wZXJzYW5kLmNvbTwvYT4mZ3Q7IHdyb3RlOjxicj48L2Rpdj48YmxvY2txdW90ZSBjbGFzcz0iZ21haWxfcXVvdGUiIHN0eWxlPSJtYXJnaW46MHB4IDBweCAwcHggMC44ZXg7Ym9yZGVyLWxlZnQ6MXB4IHNvbGlkIHJnYigyMDQsMjA0LDIwNCk7cGFkZGluZy1sZWZ0OjFleCI-TWVzc2FnZSBjb21lcyBmcm9tIGNvbm5lY3Rvci5Xcml0ZShPYmplY3ROYW1lOiBBTVBFUlNBTkQtbWVzc2FnZXMpPC9ibG9ja3F1b3RlPjwvZGl2Pg0K",
+                  "size": 756
+                },
+                "filename": "",
+                "headers": [
+                  {
+                    "name": "Content-Type",
+                    "value": "text/html; charset=\"UTF-8\""
+                  },
+                  {
+                    "name": "Content-Transfer-Encoding",
+                    "value": "quoted-printable"
+                  }
+                ],
+                "mimeType": "text/html",
+                "partId": "0.0.1"
+              }
+            ]
+          },
+          {
+            "body": {
+              "size": 31489,
+              "data": "{{.House}}"
+            },
+            "filename": "house.png",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "image/png; name=\"house.png\""
+              },
+              {
+                "name": "Content-Disposition",
+                "value": "attachment; filename=\"house.png\""
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "base64"
+              },
+              {
+                "name": "X-Attachment-Id",
+                "value": "ii_mwjn008h0"
+              },
+              {
+                "name": "Content-ID",
+                "value": "<ii_mwjn008h0>"
+              }
+            ],
+            "mimeType": "image/png",
+            "partId": "0.1"
+          }
+        ]
+      },
+      {
+        "body": {
+          "size": 187444,
+          "data": "{{.Norway}}"
+        },
+        "filename": "norway.png",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "image/png; name=\"norway.png\""
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"norway.png\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "X-Attachment-Id",
+            "value": "f_mwjn1bg31"
+          },
+          {
+            "name": "Content-ID",
+            "value": "<f_mwjn1bg31>"
+          }
+        ],
+        "mimeType": "image/png",
+        "partId": "1"
+      },
+      {
+        "body": {
+          "size": 205615,
+          "data": "{{.Document}}"
+        },
+        "filename": "Develop on Google Workspace.pdf",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/pdf; name=\"Develop on Google Workspace.pdf\""
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"Develop on Google Workspace.pdf\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "X-Attachment-Id",
+            "value": "f_mwjn1kjx2"
+          },
+          {
+            "name": "Content-ID",
+            "value": "<f_mwjn1kjx2>"
+          }
+        ],
+        "mimeType": "application/pdf",
+        "partId": "2"
+      }
+    ]
+  },
+  "sizeEstimate": 583946,
+  "snippet": "Hi, This is a reply to a thread. It includes an embedded image as well as an attached pdf and image. Best Regard, Test Development On Mon, Nov 16, 2026 at 9:07 PM Constantin Koval &lt;constantin@",
+  "threadId": "1a1e5c1b0be54bf1"
+}
