@@ -85,6 +85,11 @@
               "valueType": "boolean",
               "providerType": "boolean"
             },
+            "appointmentId": {
+              "displayName": "appointmentId",
+              "valueType": "string",
+              "providerType": "string"
+            },
             "end": {
               "displayName": "end",
               "valueType": "string",
