@@ -41,15 +41,14 @@ var readRegistry = datautils.Map[string, readEndpoint]{
 	},
 	objectFileRequests: {
 		responseKey:   "file_requests",
-		continuePath:  "/2/file_requests/list/continue_v2",
+		continuePath:  "/2/file_requests/list/continue",
 		idField:       "id",
 		supportsLimit: true,
 	},
 	objectSharedLinks: {
-		responseKey:   "links",
-		continuePath:  "/2/sharing/list_shared_links/continue",
-		idField:       "id",
-		supportsLimit: true,
+		responseKey:  "links",
+		continuePath: "/2/sharing/list_shared_links",
+		idField:      "id",
 	},
 	objectSharedFolders: {
 		responseKey:   "entries",

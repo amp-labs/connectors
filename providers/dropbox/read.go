@@ -18,7 +18,7 @@ const defaultPageSize = 100
 
 // buildReadRequest calls Dropbox RPC list routes (all POST + JSON).
 // Pagination uses a cursor returned in the response; NextPage holds that cursor,
-// not a URL. Continue routes are listed in readRegistry.
+// not a URL. Most objects use a dedicated continuePath; shared_links re-POSTs the list route.
 // https://docs.dropboxapi.com/dropbox-api/api-reference/user-endpoints/files/list-folder
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if err := params.ValidateParams(true); err != nil {
