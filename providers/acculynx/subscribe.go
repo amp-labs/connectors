@@ -79,15 +79,42 @@ type subscriptionCreateResponse struct {
 // objectEventTopics maps (object, framework event) to AccuLynx topic name.
 // AccuLynx has no delete topics; non-standard topics go via PassThroughEvents.
 //
+// The update event collapses every topic that changes a field on the record
+// the server enriches with (GET /jobs/{id}, GET /contacts/{id} plus custom
+// fields). job_updated / contact_changed alone miss work type, trade type,
+// category and custom-field edits (verified live), so consumers listening to
+// update would never see those changes.
+//
+// Left out on purpose:
+//   - *.custom-field.status_changed: a definition toggled on/off, not a record
+//     change, and the payload carries no parent id (see topicsWithoutParentRecordID).
+//   - job.financials.*, job.invoice_*, job.accounting.*: not on the job
+//     record, so the enriched event would show no change for one more API call.
+//   - job.representatives.*: owned by the jobs/representatives object.
+//
 //nolint:gochecknoglobals
 var objectEventTopics = map[common.ObjectName]map[common.SubscriptionEventType][]string{
 	objectContacts: {
 		common.SubscriptionEventTypeCreate: {"contact_added"},
-		common.SubscriptionEventTypeUpdate: {"contact_changed"},
+		common.SubscriptionEventTypeUpdate: {
+			"contact_changed",
+			"contact.custom-field.value_changed",
+		},
 	},
 	objectJobs: {
 		common.SubscriptionEventTypeCreate: {"job_created"},
-		common.SubscriptionEventTypeUpdate: {"job_updated"},
+		common.SubscriptionEventTypeUpdate: {
+			"job_updated",
+			"job.appointments.initial_created",
+			"job.appointments.initial_updated",
+			"job.category_changed",
+			"job.contacts.primary_changed",
+			"job.custom-field.value_changed",
+			"job.milestone.current_changed",
+			"job.milestone.status.current_changed",
+			"job.trade-type_changed",
+			"job.work-type_changed",
+		},
 	},
 	// The company representative is a per-job singleton with its own read
 	// object and get-by-id path (/jobs/{jobId}/representatives/company), so it

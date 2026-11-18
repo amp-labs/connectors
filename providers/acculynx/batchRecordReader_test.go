@@ -498,3 +498,48 @@ func TestGetRecordsByIds_AssociationOnObjectWithoutOneIsIgnored(t *testing.T) {
 	assert.Equal(t, len(rows), 1)
 	assert.Equal(t, len(rows[0].Associations), 0)
 }
+
+// A webhook for job.custom-field.value_changed is enriched through this path,
+// so a requested custom field must be fetched and flattened like the read path
+// does; Raw stays exactly what GET /jobs/{id} returned.
+func TestGetRecordsByIds_AttachesRequestedCustomFields(t *testing.T) {
+	t.Parallel()
+
+	srv := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/v2/jobs/job-1"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"id":"job-1","jobName":"First"}`),
+			},
+			{
+				If: mockcond.And{
+					mockcond.MethodGET(),
+					mockcond.Path("/api/v2/jobs/job-1/custom-fields"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK,
+					`{"count":1,"pageStartIndex":0,"items":[`+
+						`{"id":"cf-1","label":"Appointment Outcome","fieldType":"Text","values":["Sold"]}]}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+
+	conn, err := constructTestReadConnector(srv.URL)
+	assert.NilError(t, err)
+
+	batchRes, err := conn.GetRecordsByIds(context.Background(), objectJobs,
+		[]string{"job-1"}, []string{"jobname", "appointment_outcome"}, nil)
+	assert.NilError(t, err)
+
+	rows := batchRes.Rows
+	assert.Equal(t, len(rows), 1)
+	assert.Equal(t, rows[0].Fields["jobname"], "First")
+	assert.Equal(t, rows[0].Fields["appointment_outcome"], "Sold")
+
+	_, inRaw := rows[0].Raw["appointment_outcome"]
+	assert.Assert(t, !inRaw)
+}

@@ -58,7 +58,6 @@ func TestSubscriptionEvent_EventType(t *testing.T) {
 	}{
 		{"contact_added", common.SubscriptionEventTypeCreate},
 		{"job_created", common.SubscriptionEventTypeCreate},
-		{"job.appointments.initial_created", common.SubscriptionEventTypeCreate},
 		{"contact_changed", common.SubscriptionEventTypeUpdate},
 		{"job_updated", common.SubscriptionEventTypeUpdate},
 		{"job.milestone.current_changed", common.SubscriptionEventTypeUpdate},
@@ -67,6 +66,9 @@ func TestSubscriptionEvent_EventType(t *testing.T) {
 		// update — the representative slot always exists, assignment fills it.
 		{"job.representatives.company_assigned", common.SubscriptionEventTypeUpdate},
 		{"job.representatives.company_changed", common.SubscriptionEventTypeUpdate},
+		// _created would suffix-classify as create; it sets the appointment on
+		// a job that already exists.
+		{"job.appointments.initial_created", common.SubscriptionEventTypeUpdate},
 		{"job.something_weird", common.SubscriptionEventTypeOther},
 	}
 
