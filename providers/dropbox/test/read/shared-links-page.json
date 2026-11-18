@@ -1,0 +1,12 @@
+{
+  "has_more": true,
+  "cursor": "shared-links-cursor-2",
+  "links": [
+    {
+      ".tag": "file",
+      "id": "id:link1",
+      "name": "report.pdf",
+      "url": "https://www.dropbox.com/s/abc/report.pdf"
+    }
+  ]
+}
