@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/amp-labs/connectors/common"
-	"github.com/amp-labs/connectors/providers/google/internal/core"
+	"github.com/amp-labs/connectors/providers/google/internal/shared"
 )
 
 func (a *Adapter) buildDeleteRequest(ctx context.Context, params common.DeleteParams) (*http.Request, error) {
-	endpoint, err := endpoints.Find(core.OperationDelete, params.ObjectName, params.RecordId)
+	endpoint, err := endpoints.Find(shared.OperationDelete, params.ObjectName, params.RecordId)
 	if err != nil {
 		return nil, err
 	}

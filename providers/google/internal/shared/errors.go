@@ -1,6 +1,6 @@
-// Package core hosts cross-module helpers shared by the Google connector's
+// Package shared hosts cross-module helpers shared by the Google connector's
 // Gmail, Calendar, and Contacts adapters.
-package core
+package shared
 
 import (
 	"encoding/json"
