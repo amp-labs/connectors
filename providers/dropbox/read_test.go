@@ -18,6 +18,8 @@ func TestRead(t *testing.T) { //nolint:funlen
 	responseFilesFirstPage := testutils.DataFromFile(t, "read/files-first-page.json")
 	responseFilesLastPage := testutils.DataFromFile(t, "read/files-last-page.json")
 	responseSharedFolders := testutils.DataFromFile(t, "read/shared-folders.json")
+	responseSharedLinks := testutils.DataFromFile(t, "read/shared-links-page.json")
+	responseFileRequestsContinue := testutils.DataFromFile(t, "read/file-requests-continue.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -95,6 +97,88 @@ func TestRead(t *testing.T) { //nolint:funlen
 				}},
 				NextPage: "",
 				Done:     true,
+			},
+		},
+		{
+			Name: "Shared links first page does not send limit",
+			Input: common.ReadParams{
+				ObjectName: objectSharedLinks,
+				Fields:     connectors.Fields("name", "url"),
+				PageSize:   50,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/2/sharing/list_shared_links"),
+					mockcond.Body(`{}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseSharedLinks),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id:     "id:link1",
+					Fields: map[string]any{"name": "report.pdf", "url": "https://www.dropbox.com/s/abc/report.pdf"},
+					Raw:    map[string]any{".tag": "file"},
+				}},
+				NextPage: "shared-links-cursor-2",
+				Done:     false,
+			},
+		},
+		{
+			Name: "Shared links continue re-posts list_shared_links with cursor",
+			Input: common.ReadParams{
+				ObjectName: objectSharedLinks,
+				Fields:     connectors.Fields("name"),
+				NextPage:   "shared-links-cursor-2",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/2/sharing/list_shared_links"),
+					mockcond.Body(`{"cursor":"shared-links-cursor-2"}`),
+				},
+				Then: mockserver.Response(http.StatusOK, []byte(`{"has_more":false,"links":[{"id":"id:link2","name":"other.pdf"}]}`)),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id:     "id:link2",
+					Fields: map[string]any{"name": "other.pdf"},
+					Raw:    map[string]any{"id": "id:link2", "name": "other.pdf"},
+				}},
+				Done: true,
+			},
+		},
+		{
+			Name: "File requests continue uses list/continue not continue_v2",
+			Input: common.ReadParams{
+				ObjectName: objectFileRequests,
+				Fields:     connectors.Fields("title"),
+				NextPage:   "fr-cursor-1",
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/2/file_requests/list/continue"),
+					mockcond.Body(`{"cursor":"fr-cursor-1"}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseFileRequestsContinue),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id:     "fr-2",
+					Fields: map[string]any{"title": "Upload receipts"},
+					Raw:    map[string]any{"is_open": true},
+				}},
+				Done: true,
 			},
 		},
 		{
