@@ -1,0 +1,128 @@
+{
+  "historyId": "121546",
+  "id": "1a1d7f4d96e52158",
+  "internalDate": "1794624509000",
+  "labelIds": [
+    "SENT"
+  ],
+  "payload": {
+    "body": {
+      "size": 0
+    },
+    "filename": "",
+    "headers": [
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Date",
+        "value": "Sat, 14 Nov 2026 04:48:29 +0200"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<CAEJ5D9nNUBE7j=tDtDL_wicAh3nruVj1Rza_t+jmqk3zRFQmWA@mail.gmail.com>"
+      },
+      {
+        "name": "Subject",
+        "value": "{005} Email with PDF attachment"
+      },
+      {
+        "name": "From",
+        "value": "Constantin Koval <constantin@withampersand.com>"
+      },
+      {
+        "name": "To",
+        "value": "ayanbarua@ampersand280.onmicrosoft.com"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/mixed; boundary=\"0000000000006dbcf90660339412\""
+      }
+    ],
+    "mimeType": "multipart/mixed",
+    "partId": "",
+    "parts": [
+      {
+        "body": {
+          "size": 0
+        },
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "multipart/alternative; boundary=\"0000000000006dbcf70660339410\""
+          }
+        ],
+        "mimeType": "multipart/alternative",
+        "partId": "0",
+        "parts": [
+          {
+            "body": {
+              "data": "SGVsbG8sDQoNClRoaXMgaXMgTUlNRSB0ZXN0IDUuDQoNClRoaXMgbWVzc2FnZSBoYXMgYSBQREYgYXR0YWNoZWQgYXMgYSBzZXBhcmF0ZSBkb3dubG9hZGFibGUgZmlsZS4NCg0KUGxlYXNlIGluc3BlY3QgdGhlIHJhdyBtZXNzYWdlIGFuZCBsb29rIGZvcjoNCg0KLSBtdWx0aXBhcnQvbWl4ZWQNCi0gdGV4dC9wbGFpbiBhbmQvb3IgdGV4dC9odG1sDQotIGFwcGxpY2F0aW9uL3BkZg0KLSBDb250ZW50LURpc3Bvc2l0aW9uOiBhdHRhY2htZW50DQotIENvbnRlbnQtVHJhbnNmZXItRW5jb2Rpbmc6IGJhc2U2NA0KLSBmaWxlbmFtZT0ibWltZS10ZXN0LnBkZiINCg0KUmVnYXJkcywNCk1JTUUgRXhwbG9yZXINCg==",
+              "size": 346
+            },
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=\"UTF-8\""
+              }
+            ],
+            "mimeType": "text/plain",
+            "partId": "0.0"
+          },
+          {
+            "body": {
+              "data": "PGRpdiBkaXI9Imx0ciI-PGRpdiBkaXI9Imx0ciI-PHByZT5IZWxsbywNCg0KVGhpcyBpcyBNSU1FIHRlc3QgNS4NCg0KVGhpcyBtZXNzYWdlIGhhcyBhIFBERiBhdHRhY2hlZCBhcyBhIHNlcGFyYXRlIGRvd25sb2FkYWJsZSBmaWxlLg0KDQpQbGVhc2UgaW5zcGVjdCB0aGUgcmF3IG1lc3NhZ2UgYW5kIGxvb2sgZm9yOg0KDQotIG11bHRpcGFydC9taXhlZA0KLSB0ZXh0L3BsYWluIGFuZC9vciB0ZXh0L2h0bWwNCi0gYXBwbGljYXRpb24vcGRmDQotIENvbnRlbnQtRGlzcG9zaXRpb246IGF0dGFjaG1lbnQNCi0gQ29udGVudC1UcmFuc2Zlci1FbmNvZGluZzogYmFzZTY0DQotIGZpbGVuYW1lPSZxdW90O21pbWUtdGVzdC5wZGYmcXVvdDsNCg0KUmVnYXJkcywNCk1JTUUgRXhwbG9yZXI8L3ByZT48L2Rpdj4NCjwvZGl2Pg0K",
+              "size": 411
+            },
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=\"UTF-8\""
+              }
+            ],
+            "mimeType": "text/html",
+            "partId": "0.1"
+          }
+        ]
+      },
+      {
+        "body": {
+          "size": 205615,
+          "data": "{{.Document}}"
+        },
+        "filename": "Develop on Google Workspace.pdf",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/pdf; name=\"Develop on Google Workspace.pdf\""
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"Develop on Google Workspace.pdf\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "X-Attachment-Id",
+            "value": "f_mwfmot4j0"
+          },
+          {
+            "name": "Content-ID",
+            "value": "<f_mwfmot4j0>"
+          }
+        ],
+        "mimeType": "application/pdf",
+        "partId": "1"
+      }
+    ]
+  },
+  "sizeEstimate": 283093,
+  "snippet": "Hello, This is MIME test 5. This message has a PDF attached as a separate downloadable file. Please inspect the raw message and look for: - multipart/mixed - text/plain and/or text/html - application/",
+  "threadId": "1a1d74df85564a1e"
+}

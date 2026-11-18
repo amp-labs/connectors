@@ -1,0 +1,128 @@
+{
+  "historyId": "121642",
+  "id": "1a1d7f4d11eecfaf",
+  "internalDate": "1794624508000",
+  "labelIds": [
+    "SENT"
+  ],
+  "payload": {
+    "body": {
+      "size": 0
+    },
+    "filename": "",
+    "headers": [
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Date",
+        "value": "Sat, 14 Nov 2026 04:48:28 +0200"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<CAEJ5D9=V8+LeJJ=3LcATZOdiXBtKSGHsrPLtpGXvsomn_9vGLQ@mail.gmail.com>"
+      },
+      {
+        "name": "Subject",
+        "value": "{004} Embedded image"
+      },
+      {
+        "name": "From",
+        "value": "Constantin Koval <constantin@withampersand.com>"
+      },
+      {
+        "name": "To",
+        "value": "ayanbarua@ampersand280.onmicrosoft.com"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/related; boundary=\"000000000000500a050660339460\""
+      }
+    ],
+    "mimeType": "multipart/related",
+    "partId": "",
+    "parts": [
+      {
+        "body": {
+          "size": 0
+        },
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "multipart/alternative; boundary=\"000000000000500a05066033945f\""
+          }
+        ],
+        "mimeType": "multipart/alternative",
+        "partId": "0",
+        "parts": [
+          {
+            "body": {
+              "data": "SGVsbG8sCgpUaGlzIGlzIE1JTUUgdGVzdCA0LgoKVGhlIGltYWdlIGJlbG93IGlzIGVtYmVkZGVkIGluIHRoZSBtZXNzYWdlIGJvZHkgcmF0aGVyIHRoYW4gYXR0YWNoZWQKYXMgYSBzZXBhcmF0ZSBkb3dubG9hZGFibGUgZmlsZS4KW2ltYWdlOiBpbWFnZS5wbmddCgpBZnRlciBzZW5kaW5nIHRoaXMgbWVzc2FnZSwgaW5zcGVjdCBpdHMgcmF3IHNvdXJjZS4gTG9vayBmb3I6CgotIG11bHRpcGFydC9yZWxhdGVkCi0gdGV4dC9odG1sCi0gaW1hZ2UvcG5nIG9yIGltYWdlL2pwZWcKLSBDb250ZW50LUlECi0gY2lkOiByZWZlcmVuY2UgaW4gdGhlIEhUTUwKLSBDb250ZW50LURpc3Bvc2l0aW9uOiBpbmxpbmUKClRoZSBIVE1MIHNob3VsZCBjb250YWluIHNvbWV0aGluZyBjb25jZXB0dWFsbHkgbGlrZToKCjxpbWcgc3JjPSJjaWQ6c29tZS1pbWFnZS1pZCI-CgpSZWdhcmRzLApNSU1FIEV4cGxvcmVyCg",
+              "size": 477
+            },
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=\"UTF-8\""
+              }
+            ],
+            "mimeType": "text/plain",
+            "partId": "0.0"
+          },
+          {
+            "body": {
+              "data": "PGRpdiBkaXI9Imx0ciI-PGRpdiBkaXI9Imx0ciI-PHByZT5IZWxsbywKClRoaXMgaXMgTUlNRSB0ZXN0IDQuCgpUaGUgaW1hZ2UgYmVsb3cgaXMgZW1iZWRkZWQgaW4gdGhlIG1lc3NhZ2UgYm9keSByYXRoZXIgdGhhbiBhdHRhY2hlZAphcyBhIHNlcGFyYXRlIGRvd25sb2FkYWJsZSBmaWxlLgoKPGltZyBzcmM9ImNpZDppaV9td2ZtZzBqdTAiIGFsdD0iaW1hZ2UucG5nIiB3aWR0aD0iMTU4IiBoZWlnaHQ9Ijg1Ij4KCkFmdGVyIHNlbmRpbmcgdGhpcyBtZXNzYWdlLCBpbnNwZWN0IGl0cyByYXcgc291cmNlLiBMb29rIGZvcjoKCi0gbXVsdGlwYXJ0L3JlbGF0ZWQKLSB0ZXh0L2h0bWwKLSBpbWFnZS9wbmcgb3IgaW1hZ2UvanBlZwotIENvbnRlbnQtSUQKLSBjaWQ6IHJlZmVyZW5jZSBpbiB0aGUgSFRNTAotIENvbnRlbnQtRGlzcG9zaXRpb246IGlubGluZQoKVGhlIEhUTUwgc2hvdWxkIGNvbnRhaW4gc29tZXRoaW5nIGNvbmNlcHR1YWxseSBsaWtlOgoKJmx0O2ltZyBzcmM9JnF1b3Q7Y2lkOnNvbWUtaW1hZ2UtaWQmcXVvdDsmZ3Q7CgpSZWdhcmRzLApNSU1FIEV4cGxvcmVyPC9wcmU-PC9kaXY-CjwvZGl2Pgo",
+              "size": 600
+            },
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=\"UTF-8\""
+              }
+            ],
+            "mimeType": "text/html",
+            "partId": "0.1"
+          }
+        ]
+      },
+      {
+        "body": {
+          "data": "{{.House}}",
+          "size": 27520
+        },
+        "filename": "house.png",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "image.png; name=\"house.png\""
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"house.png\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "X-Attachment-Id",
+            "value": "ii_mwfmg0ju0"
+          },
+          {
+            "name": "Content-ID",
+            "value": "<ii_mwfmg0ju0>"
+          }
+        ],
+        "mimeType": "image/png",
+        "partId": "1"
+      }
+    ]
+  },
+  "sizeEstimate": 39646,
+  "snippet": "Hello, This is MIME test 4. The image below is embedded in the message body rather than attached as a separate downloadable file. After sending this message, inspect its raw source. Look for: -",
+  "threadId": "1a1d749c7ab749ef"
+}
