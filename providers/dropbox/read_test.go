@@ -18,6 +18,7 @@ func TestRead(t *testing.T) { //nolint:funlen
 	responseFilesFirstPage := testutils.DataFromFile(t, "read/files-first-page.json")
 	responseFilesLastPage := testutils.DataFromFile(t, "read/files-last-page.json")
 	responseSharedFolders := testutils.DataFromFile(t, "read/shared-folders.json")
+	responseSharedFoldersPaged := testutils.DataFromFile(t, "read/shared-folders-paged.json")
 	responseSharedLinks := testutils.DataFromFile(t, "read/shared-links-page.json")
 	responseFileRequestsContinue := testutils.DataFromFile(t, "read/file-requests-continue.json")
 
@@ -179,6 +180,33 @@ func TestRead(t *testing.T) { //nolint:funlen
 					Raw:    map[string]any{"is_open": true},
 				}},
 				Done: true,
+			},
+		},
+		{
+			Name: "Shared folders continue when cursor present without has_more",
+			Input: common.ReadParams{
+				ObjectName: objectSharedFolders,
+				Fields:     connectors.Fields("name"),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/2/sharing/list_folders"),
+					mockcond.Body(`{"limit":100}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseSharedFoldersPaged),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id:     "84528196421",
+					Fields: map[string]any{"name": "Team Share"},
+					Raw:    map[string]any{"name": "Team Share"},
+				}},
+				NextPage: "shared-folders-cursor-2",
+				Done:     false,
 			},
 		},
 		{

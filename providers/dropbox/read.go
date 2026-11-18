@@ -105,16 +105,20 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
-// nextDropboxCursor returns the cursor for the next page when has_more is true.
+// nextDropboxCursor returns the cursor for the next read page.
+// Most list routes set has_more; sharing list_folders / list_mountable_folders /
+// list_received_files omit it and only return cursor when more entries exist.
+// When has_more is absent but cursor is set, treat the page as incomplete.
 func nextDropboxCursor(node *ajson.Node) (string, error) {
-	hasMore, err := jsonquery.New(node).BoolWithDefault("has_more", false)
-	if err != nil {
+	cursor, err := jsonquery.New(node).StrWithDefault("cursor", "")
+	if err != nil || cursor == "" {
 		return "", err
 	}
 
-	if !hasMore {
-		return "", nil
+	hasMore, err := jsonquery.New(node).BoolWithDefault("has_more", true)
+	if err != nil || !hasMore {
+		return "", err
 	}
 
-	return jsonquery.New(node).StrWithDefault("cursor", "")
+	return cursor, nil
 }
