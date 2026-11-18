@@ -1,0 +1,12 @@
+{
+  "cursor": "fr-cursor-2",
+  "has_more": false,
+  "file_requests": [
+    {
+      "id": "fr-2",
+      "title": "Upload receipts",
+      "is_open": true,
+      "url": "https://www.dropbox.com/request/xyz"
+    }
+  ]
+}
