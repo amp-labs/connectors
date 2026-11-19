@@ -1,0 +1,15 @@
+{
+  "responseCode": 200,
+  "policyList": [
+    {
+      "id": "POLICY_ABC123",
+      "name": "Test Company Policy",
+      "outputCurrency": "USD",
+      "type": "team",
+      "owner": "admin@testcompany.com",
+      "autoReporting": true,
+      "requiresCategory": false,
+      "employees": 10
+    }
+  ]
+}
