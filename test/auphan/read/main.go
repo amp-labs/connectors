@@ -16,31 +16,42 @@ import (
 	"github.com/amp-labs/connectors/test/utils"
 )
 
-// liveTestReads are the reads The Stand's daily Sage Intacct journals are built from, with the
-// columns each uses. Reports need at least one column. sales is read twice, grouped two ways.
+// liveTestReads are the reads a daily accounting export of a store is built from: what the store
+// took in, what it sold, the tax it collected, and the cash moved in and out of the drawer.
+// Report objects need at least one field: the fields are the report's columns.
+//
+// In a report, the text fields (dimensions) decide the rows and the amounts (measures) are summed
+// per row. Asking sales for report_category and discount_name gives one row per category and
+// discount, e.g. "Food" with "10% Off" and "Food" with no discount.
 //
 //nolint:gochecknoglobals
 var liveTestReads = []struct {
 	object string
 	fields []string
 }{
-	// Sales journal debits: receipts per payment type. Card payments include their tips.
-	// AR: house-account payment types (e.g. Kaiser), one row per order.
+	// Money received, per payment type.
+	//   payment_type: how the customer paid (Visa, Cash, or a house account billed later).
+	//   gl_code: the GL account set on the payment type in Auphan, often empty.
+	//   customer_group, order_id: who a house-account order belongs to, and which order it is.
+	//   payment, tips, count: amount paid (card payments include tips), the tips, number of payments.
 	{"payments", []string{"payment_type", "gl_code", "customer_group", "order_id", "payment", "tips", "count"}},
-	// Sales journal credits: sales before discounts per report category (Food, Beer & Wine, ...).
-	// Sales journal debits: discounts and sale rules (coupons, loyalty, employee meals).
-	// Auphan groups by every dimension asked for, so rows are per category and discount; amounts add up.
+	// Items sold, per report category (Food, Beer & Wine, ...).
+	//   report_category, gl_code_report_category: the menu category and its GL account.
+	//   discount_name, invoice_discount, salerule_name: the item discount, order discount and
+	//   automatic promotion (sale rule) applied, empty when none.
+	//   gross_sales, net_sales, taxes: sales before discounts, after discounts, and tax on them.
+	//   item_discounts, invoice_discounts, salerule_amount: the amount each discount took off.
 	{"sales", []string{
 		"report_category", "gl_code_report_category", "discount_name", "invoice_discount", "salerule_name",
 		"gross_sales", "net_sales", "taxes", "item_discounts", "invoice_discounts", "salerule_amount",
 	}},
-	// Sales journal credit: sales tax collected.
+	// Tax collected, per tax (Sales Tax, ...): name, its GL account, and the total.
 	{"tax", []string{"name", "gl_code", "tax_total"}},
-	// Sales journal: petty cash in and out of the drawer.
+	// Cash put into or taken out of the drawer: in or out, the reason typed at the till, GL account, amount.
 	{"petty_cash", []string{"petty_cash_type", "reason", "gl_code", "amount"}},
-	// DSS tie-out: the day's invoice totals.
+	// The day's order totals, to check that the reports above add up.
 	{"invoices", []string{"gross_sales", "net_sales", "total_discounts", "taxes", "total", "tips", "count"}},
-	// One journal per store.
+	// The store being read.
 	{"stores", []string{"store_id", "name", "timezone"}},
 }
 

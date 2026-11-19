@@ -1,12 +1,9 @@
 package auphan
 
 import (
-	"bytes"
 	"encoding/json"
-	"maps"
 	"strconv"
 
-	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 	"github.com/spyzhov/ajson"
 )
@@ -25,135 +22,176 @@ type reportTypeResponse struct {
 	} `json:"data"`
 }
 
-type reportResponse struct {
-	Data struct {
-		Columns []reportColumn `json:"columns"`
-		// Cells are kept raw so money and counts reach the caller exactly as sent.
-		Rows [][]json.RawMessage `json:"rows"`
-	} `json:"data"`
-}
-
-// parseReport reads a report response. Auphan has no paging inside a report, so one call returns
-// every row and the read is done.
-func parseReport(response *common.JSONHTTPResponse, fields []string) (*common.ReadResult, error) {
-	report, err := common.UnmarshalJSON[reportResponse](response)
+// extractReportRecords cuts a report table into records. A report response is a table:
+//
+//	{"data": {"columns": [{"id": "payment_type", "kind": "dimension"}, ...], "rows": [["MC", null], ...]}}
+//
+// Each record keeps the table's columns and the original rows it is made of, so its Raw is the
+// table as Auphan sent it: {"columns": [...], "rows": [[...], ...]}. mergeReportRecord then maps
+// those rows to one {column id: value} object for Fields.
+func extractReportRecords(body *ajson.Node) ([]*ajson.Node, error) {
+	columnNodes, err := jsonquery.New(body, "data").ArrayRequired("columns")
 	if err != nil {
 		return nil, err
 	}
 
-	records := mergeReportRows(report.Data.Columns, report.Data.Rows)
-
-	rows, err := common.GetMarshaledData(records, fields)
+	rowNodes, err := jsonquery.New(body, "data").ArrayOptional("rows")
 	if err != nil {
 		return nil, err
 	}
 
-	return &common.ReadResult{
-		Rows: int64(len(rows)),
-		Data: rows,
-		Done: true,
-	}, nil
+	columns := make([]reportColumn, len(columnNodes))
+	for i, node := range columnNodes {
+		if err := json.Unmarshal(node.Source(), &columns[i]); err != nil {
+			return nil, err
+		}
+	}
+
+	rows := make([][]*ajson.Node, len(rowNodes))
+	for i, node := range rowNodes {
+		if rows[i], err = node.GetArray(); err != nil {
+			return nil, err
+		}
+	}
+
+	groups := groupReportRows(columns, rows)
+	records := make([]*ajson.Node, len(groups))
+
+	for i, group := range groups {
+		groupRows := make([]*ajson.Node, len(group))
+		for j, row := range group {
+			groupRows[j] = rowNodes[row].Clone()
+		}
+
+		records[i] = ajson.ObjectNode("", map[string]*ajson.Node{
+			"columns": ajson.ArrayNode("", cloneNodes(columnNodes)),
+			"rows":    ajson.ArrayNode("", groupRows),
+		})
+	}
+
+	return records, nil
 }
 
-// mergeReportRows turns report rows into records keyed by column id.
+// groupReportRows returns, for each record, the indexes of the rows it is made of.
 //
 // The "summary" layout sends each group as a dimension row (every measure null) followed by
 // one or more measure rows (every dimension null). Usually there is one measure row, but some
 // columns split a group into detail rows (tax with tax_date sends one measure row per invoice).
-// Each measure row becomes one record carrying its group's dimensions.
-// Each row is checked on its own, so a layout that sends whole rows still works.
-func mergeReportRows(columns []reportColumn, rows [][]json.RawMessage) []map[string]any {
-	records := make([]map[string]any, 0, len(rows))
+// Each measure row becomes one record together with its group's dimension row.
+// Any other row is a record on its own, so a layout that sends whole rows still works.
+func groupReportRows(columns []reportColumn, rows [][]*ajson.Node) [][]int {
+	groups := make([][]int, 0, len(rows))
 
 	for row := 0; row < len(rows); row++ {
-		record := rowToRecord(columns, rows[row])
-
-		next := row + 1
-		for isGroup := onlyKind(columns, rows[row], false); isGroup && next < len(rows) &&
-			onlyKind(columns, rows[next], true); next++ {
-			merged := maps.Clone(record)
-
-			for id, value := range rowToRecord(columns, rows[next]) {
-				if value != nil {
-					merged[id] = value
-				}
-			}
-
-			records = append(records, merged)
-		}
-
-		if next == row+1 {
-			records = append(records, record)
-		}
-
-		row = next - 1
-	}
-
-	return records
-}
-
-// onlyKind reports whether the row has values only in measure columns (measures=true)
-// or only in dimension columns (measures=false). Both kinds must be present among the columns.
-func onlyKind(columns []reportColumn, row []json.RawMessage, measures bool) bool {
-	var hasOwn, hasOther bool
-
-	for i, column := range columns {
-		own := (column.Kind == measureKind) == measures
-		if own {
-			hasOwn = true
+		isDimensionRow := isHomogenous(columns, rows[row], false)
+		if !isDimensionRow {
+			groups = append(groups, []int{row})
 
 			continue
 		}
 
-		hasOther = true
+		dimensionRow := row
+		for row+1 < len(rows) && isHomogenous(columns, rows[row+1], true) {
+			row++
+			groups = append(groups, []int{dimensionRow, row})
+		}
 
-		if i < len(row) && !isNull(row[i]) {
+		// A dimension row with no measure rows under it.
+		if row == dimensionRow {
+			groups = append(groups, []int{dimensionRow})
+		}
+	}
+
+	return groups
+}
+
+// isHomogenous reports whether the row has values only in measure columns (measures=true)
+// or only in dimension columns (measures=false). Rows that mix both kinds are not homogenous.
+func isHomogenous(columns []reportColumn, row []*ajson.Node, measures bool) bool {
+	for i, column := range columns {
+		isMeasure := column.Kind == measureKind
+		if isMeasure != measures && i < len(row) && !row[i].IsNull() {
 			return false
 		}
 	}
 
-	return hasOwn && hasOther
+	return true
 }
 
-func rowToRecord(columns []reportColumn, row []json.RawMessage) map[string]any {
+// mergeReportRecord maps a record from extractReportRecords to {column id: value}.
+// A value in a later row (the measures) fills in what the dimension row left null.
+func mergeReportRecord(node *ajson.Node) (map[string]any, error) {
+	columns, err := jsonquery.New(node).ArrayRequired("columns")
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := jsonquery.New(node).ArrayRequired("rows")
+	if err != nil {
+		return nil, err
+	}
+
+	ids := make([]string, len(columns))
 	record := make(map[string]any, len(columns))
 
 	for i, column := range columns {
-		if i < len(row) {
-			record[column.ID] = cellValue(row[i])
-		} else {
-			record[column.ID] = nil
+		if ids[i], err = jsonquery.New(column).StringRequired("id"); err != nil {
+			return nil, err
+		}
+
+		record[ids[i]] = nil
+	}
+
+	if err := fillRecord(record, ids, rows); err != nil {
+		return nil, err
+	}
+
+	return record, nil
+}
+
+// fillRecord sets record[ids[i]] to every non-null value in column i of the rows.
+func fillRecord(record map[string]any, ids []string, rows []*ajson.Node) error {
+	for _, row := range rows {
+		cells, err := row.GetArray()
+		if err != nil {
+			return err
+		}
+
+		for i, cell := range cells {
+			if i >= len(ids) || cell.IsNull() {
+				continue
+			}
+
+			if record[ids[i]], err = cellValue(cell); err != nil {
+				return err
+			}
 		}
 	}
 
-	return record
+	return nil
 }
 
-// cellValue keeps strings as strings and numbers as json.Number, so no value goes through float64.
-func cellValue(raw json.RawMessage) any {
-	if isNull(raw) {
-		return nil
+// cellValue keeps numbers as json.Number, so no value goes through float64.
+func cellValue(cell *ajson.Node) (any, error) {
+	if cell.IsNumeric() {
+		return json.Number(cell.Source()), nil
 	}
 
-	var text string
-	if err := json.Unmarshal(raw, &text); err == nil {
-		return text
-	}
-
-	var value any
-
-	decoder := json.NewDecoder(bytes.NewReader(raw))
-	decoder.UseNumber()
-
-	if err := decoder.Decode(&value); err != nil {
-		return string(raw)
-	}
-
-	return value
+	return cell.Unpack()
 }
 
-func isNull(raw json.RawMessage) bool {
-	return len(raw) == 0 || string(raw) == "null"
+func cloneNodes(nodes []*ajson.Node) []*ajson.Node {
+	clones := make([]*ajson.Node, len(nodes))
+	for i, node := range nodes {
+		clones[i] = node.Clone()
+	}
+
+	return clones
+}
+
+// reportNextPage ends the read after one call: Auphan has no paging inside a report.
+func reportNextPage(*ajson.Node) (string, error) {
+	return "", nil
 }
 
 // nextPage reads data.pagination {page, total_pages} from a list response.

@@ -10,27 +10,27 @@ import (
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
 const (
 	// Max page size for list endpoints.
-	pageSize = 200
+	maxPageSize = 200
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
-	if reportObjects.Has(objectName) {
+	if objectCategoryReport.Has(objectName) {
 		return c.newRequest(ctx, "reports/types.get", map[string]any{"type": objectName})
 	}
 
-	endpoint, ok := listObjects[objectName]
-	if !ok {
-		return nil, common.ErrObjectNotSupported
+	if list, ok := objectCategoryList[objectName]; ok {
+		// One record is enough to sample the field names.
+		return c.newRequest(ctx, list.endpoint, map[string]any{"page": 1, "per_page": 1})
 	}
 
-	// One record is enough to sample the field names.
-	return c.newRequest(ctx, endpoint, map[string]any{"page": 1, "per_page": 1})
+	return nil, common.ErrObjectNotSupported
 }
 
 func (c *Connector) parseSingleObjectMetadataResponse(
@@ -39,31 +39,45 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
+	// See parseReadResponse: a failure can arrive with HTTP 200.
 	if err := validateResponseSuccess(response); err != nil {
 		return nil, err
 	}
 
 	displayName := naming.CapitalizeFirstLetterEveryWord(naming.SeparateUnderscoreWords(objectName))
 
-	metadata := common.NewObjectMetadata(displayName, common.FieldsMetadata{})
+	switch {
+	case objectCategoryReport.Has(objectName):
+		return parseReportMetadata(displayName, response)
+	case objectCategoryList.Has(objectName):
+		return parseListMetadata(displayName, response)
+	default:
+		return nil, common.ErrObjectNotSupported
+	}
+}
 
-	if reportObjects.Has(objectName) {
-		reportType, err := common.UnmarshalJSON[reportTypeResponse](response)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, column := range reportType.Data.Columns {
-			metadata.AddFieldMetadata(column.ID, common.FieldMetadata{
-				DisplayName:  column.Label,
-				ValueType:    common.ValueTypeString, // values come back as strings, money included
-				ProviderType: column.Kind,            // dimension or measure
-			})
-		}
-
-		return metadata, nil
+// parseReportMetadata reads the columns reports/types.get lists for a report.
+func parseReportMetadata(displayName string, response *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
+	reportType, err := common.UnmarshalJSON[reportTypeResponse](response)
+	if err != nil {
+		return nil, err
 	}
 
+	metadata := common.NewObjectMetadata(displayName, common.FieldsMetadata{})
+
+	for _, column := range reportType.Data.Columns {
+		metadata.AddFieldMetadata(column.ID, common.FieldMetadata{
+			DisplayName:  column.Label,
+			ValueType:    common.ValueTypeString, // values come back as strings, money included
+			ProviderType: column.Kind,            // dimension or measure
+		})
+	}
+
+	return metadata, nil
+}
+
+// parseListMetadata samples the field names from the first record of a list endpoint.
+func parseListMetadata(displayName string, response *common.JSONHTTPResponse) (*common.ObjectMetadata, error) {
 	body, ok := response.Body()
 	if !ok {
 		return nil, common.ErrEmptyJSONHTTPResponse
@@ -83,6 +97,8 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, common.ErrMissingMetadata
 	}
 
+	metadata := common.NewObjectMetadata(displayName, common.FieldsMetadata{})
+
 	for field := range records[0] {
 		metadata.AddFieldMetadata(field, common.FieldMetadata{
 			DisplayName: field,
@@ -94,11 +110,11 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	if reportObjects.Has(params.ObjectName) {
+	if objectCategoryReport.Has(params.ObjectName) {
 		return c.buildReportRequest(ctx, params)
 	}
 
-	endpoint, ok := listObjects[params.ObjectName]
+	list, ok := objectCategoryList[params.ObjectName]
 	if !ok {
 		return nil, common.ErrOperationNotSupportedForObject
 	}
@@ -114,13 +130,16 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		}
 	}
 
-	return c.newRequest(ctx, endpoint, map[string]any{"page": page, "per_page": pageSize})
+	perPage := min(readhelper.PageSizeWithDefault(params, maxPageSize), maxPageSize)
+
+	return c.newRequest(ctx, list.endpoint, map[string]any{"page": page, "per_page": perPage})
 }
 
 func (c *Connector) buildReportRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
-	filters := c.reportFilters(params, reportObjects[params.ObjectName])
+	filters := c.reportFilters(params, objectCategoryReport[params.ObjectName])
 
-	// Fields is a set, so sort for a stable request. Auphan ids are lowercase.
+	// Fields is a set, so its order changes from call to call. Sorting only keeps the request body
+	// the same for the same fields; Auphan returns columns in the report's own order either way.
 	columns := params.Fields.List()
 	slices.Sort(columns)
 
@@ -137,19 +156,34 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	// Auphan can send a failure with HTTP 200: {"success": false, "error": {...}}.
+	// The ErrorHandler only sees non-2xx responses, so such a failure reaches this point and is
+	// caught here. Past this check the response is a success and only records are parsed.
 	if err := validateResponseSuccess(response); err != nil {
 		return nil, err
 	}
 
-	if reportObjects.Has(params.ObjectName) {
-		return parseReport(response, params.Fields.List())
+	if objectCategoryReport.Has(params.ObjectName) {
+		return common.ParseResult(
+			response,
+			extractReportRecords,
+			reportNextPage,
+			// Report records are totals grouped by dimensions, so they have no ID.
+			readhelper.MakeMarshaledDataFuncWithId(mergeReportRecord, readhelper.IdFieldQuery{}),
+			params.Fields,
+		)
+	}
+
+	list, ok := objectCategoryList[params.ObjectName]
+	if !ok {
+		return nil, common.ErrOperationNotSupportedForObject
 	}
 
 	return common.ParseResult(
 		response,
 		common.ExtractOptionalRecordsFromPath("items", "data"),
 		nextPage,
-		common.GetMarshaledData,
+		readhelper.MakeGetMarshaledDataWithId(list.idField),
 		params.Fields,
 	)
 }

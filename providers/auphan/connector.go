@@ -31,31 +31,31 @@ type Connector struct {
 	// connection reads one store.
 	storeId int
 
-	// location is the store timezone from the "timezone" metadata. Report times are converted to it.
-	// Nil means times keep their own location: Auphan returns no timezone for a store.
+	// location is the store timezone from the "timezone" metadata, UTC when not set.
+	// Report times are converted to it. Auphan doesn't return a store's timezone.
 	location *time.Location
 }
 
 // NewConnector connects to a production store. The workspace is the store ID, which also picks the host.
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return newConnector(providers.Auphan, params, params.Workspace)
+	return newConnector(providers.Auphan, params)
 }
 
-// NewSandboxConnector connects to an Auphan demo install. The workspace is the demo name,
-// and the seeded store ID comes from the "storeId" metadata.
+// NewSandboxConnector connects to an Auphan demo install. The workspace is the store ID seeded in
+// the demo, and the "demoName" metadata picks the demo install.
 func NewSandboxConnector(params common.ConnectorParams) (*Connector, error) {
-	return newConnector(providers.AuphanSandbox, params, params.Metadata["storeId"])
+	return newConnector(providers.AuphanSandbox, params)
 }
 
-func newConnector(provider providers.Provider, params common.ConnectorParams, storeId string) (*Connector, error) {
+func newConnector(provider providers.Provider, params common.ConnectorParams) (*Connector, error) {
 	conn, err := components.Init(provider, params, constructor)
 	if err != nil {
 		return nil, err
 	}
 
-	conn.storeId, err = strconv.Atoi(storeId)
+	conn.storeId, err = strconv.Atoi(params.Workspace)
 	if err != nil {
-		return nil, fmt.Errorf("%w: store ID must be a number, got %q", errInvalidStoreID, storeId)
+		return nil, fmt.Errorf("%w: store ID must be a number, got %q", errInvalidStoreID, params.Workspace)
 	}
 
 	conn.location, err = loadLocation(params.Metadata["timezone"])

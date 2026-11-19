@@ -40,9 +40,12 @@ func init() {
 					DisplayName: "Store ID",
 				},
 				{
-					Name:        "timezone",
-					DisplayName: "Store Timezone",
-					Prompt:      "IANA timezone of the store, e.g. America/Los_Angeles. Report dates are sent in this zone.",
+					Name:         "timezone",
+					DisplayName:  "Store Timezone",
+					DefaultValue: "UTC",
+					Prompt: "IANA timezone of the store, e.g. America/Los_Angeles. Defaults to UTC. " +
+						"Set it to the store's zone: report dates are sent in this zone, which decides " +
+						"which day an incremental read covers.",
 				},
 			},
 		},
@@ -64,7 +67,7 @@ func init() {
 	SetInfo(AuphanSandbox, ProviderInfo{
 		DisplayName: "Auphan Sandbox",
 		AuthType:    ApiKey,
-		BaseURL:     "https://api1.auphansoftware.com/{{.workspace}}/api/v1.php",
+		BaseURL:     "https://api1.auphansoftware.com/{{.demoName}}/api/v1.php",
 		ApiKeyOpts: &ApiKeyOpts{
 			AttachmentType: Header,
 			Header: &ApiKeyOptsHeader{
@@ -88,16 +91,20 @@ func init() {
 			Input: []MetadataItemInput{
 				{
 					Name:        "workspace",
-					DisplayName: "Demo Name",
-				},
-				{
-					Name:        "storeId",
 					DisplayName: "Store ID",
 				},
 				{
-					Name:        "timezone",
-					DisplayName: "Store Timezone",
-					Prompt:      "IANA timezone of the store, e.g. America/Los_Angeles. Report dates are sent in this zone.",
+					Name:        "demoName",
+					DisplayName: "Demo Name",
+					Prompt:      "The demo install name Auphan gave you, as in api1.auphansoftware.com/<demo name>.",
+				},
+				{
+					Name:         "timezone",
+					DisplayName:  "Store Timezone",
+					DefaultValue: "UTC",
+					Prompt: "IANA timezone of the store, e.g. America/Los_Angeles. Defaults to UTC. " +
+						"Set it to the store's zone: report dates are sent in this zone, which decides " +
+						"which day an incremental read covers.",
 				},
 			},
 		},

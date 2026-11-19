@@ -1,9 +1,9 @@
 package auphan
 
 import (
-	"strings"
 	"errors"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -16,7 +16,6 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
-// reportBody is the reports/execute body for payments with one "payment" column.
 // reportBody is a payments request with the given filters, plus the defaults payments always sends.
 func reportBody(filters string) string {
 	filters = strings.Replace(filters, "{", `{"status": [2], "remove_cash_change": 1, "net_cash_deducts_tips": 1, `, 1)
@@ -36,7 +35,7 @@ func TestReadReportFilters(t *testing.T) { //nolint:funlen
 
 		metadata map[string]string
 	}{
-		{TestCaseRead: testconn.TestCaseRead{
+		{
 			Name: "Since and Until are sent as the date range, in one call",
 			Input: common.ReadParams{
 				ObjectName: "payments", Fields: connectors.Fields("payment"),
@@ -49,8 +48,8 @@ func TestReadReportFilters(t *testing.T) { //nolint:funlen
 				Then: mockserver.Response(http.StatusOK, responseEmpty),
 			}.Server(),
 			Expected: done,
-		}},
-		{TestCaseRead: testconn.TestCaseRead{
+		},
+		{
 			Name: "Without Until no date_to is sent, so Auphan reads through today",
 			Input: common.ReadParams{
 				ObjectName: "payments", Fields: connectors.Fields("payment"), Since: marchMid,
@@ -61,8 +60,8 @@ func TestReadReportFilters(t *testing.T) { //nolint:funlen
 				Then:  mockserver.Response(http.StatusOK, responseEmpty),
 			}.Server(),
 			Expected: done,
-		}},
-		{TestCaseRead: testconn.TestCaseRead{
+		},
+		{
 			Name: "Without Since the read starts at 2000-01-01, so the whole history is read",
 			Input: common.ReadParams{
 				ObjectName: "payments", Fields: connectors.Fields("payment"),
@@ -73,8 +72,8 @@ func TestReadReportFilters(t *testing.T) { //nolint:funlen
 				Then:  mockserver.Response(http.StatusOK, responseEmpty),
 			}.Server(),
 			Expected: done,
-		}},
-		{TestCaseRead: testconn.TestCaseRead{
+		},
+		{
 			Name: "A report's required filters are sent, and it gets no selection when it has none",
 			Input: common.ReadParams{
 				ObjectName: "attendance", Fields: connectors.Fields("employee"), Since: marchMid, Until: marchMid,
@@ -86,8 +85,8 @@ func TestReadReportFilters(t *testing.T) { //nolint:funlen
 				Then: mockserver.Response(http.StatusOK, responseEmpty),
 			}.Server(),
 			Expected: done,
-		}},
-		{TestCaseRead: testconn.TestCaseRead{
+		},
+		{
 			Name: "Sales sends the defaults Auphan does not apply by itself",
 			Input: common.ReadParams{
 				ObjectName: "sales", Fields: connectors.Fields("net_sales"), Since: marchMid, Until: marchMid,
@@ -100,8 +99,8 @@ func TestReadReportFilters(t *testing.T) { //nolint:funlen
 				Then: mockserver.Response(http.StatusOK, responseEmpty),
 			}.Server(),
 			Expected: done,
-		}},
-		{TestCaseRead: testconn.TestCaseRead{
+		},
+		{
 			Name: "A report on dates gets date-only bounds",
 			Input: common.ReadParams{
 				ObjectName: "salerules", Fields: connectors.Fields("salerule_name"),
@@ -114,8 +113,8 @@ func TestReadReportFilters(t *testing.T) { //nolint:funlen
 				Then: mockserver.Response(http.StatusOK, responseEmpty),
 			}.Server(),
 			Expected: done,
-		}},
-		{TestCaseRead: testconn.TestCaseRead{
+		},
+		{
 			Name: "A report without a date range gets no dates, even with Since",
 			Input: common.ReadParams{
 				ObjectName: "usergroups", Fields: connectors.Fields("name"), Since: marchMid,
@@ -127,42 +126,51 @@ func TestReadReportFilters(t *testing.T) { //nolint:funlen
 				Then: mockserver.Response(http.StatusOK, responseEmpty),
 			}.Server(),
 			Expected: done,
-		}},
+		},
 		{
-			TestCaseRead: testconn.TestCaseRead{
-				Name: "The 2000-01-01 default is not shifted by the store timezone",
-				Input: common.ReadParams{
-					ObjectName: "salerules", Fields: connectors.Fields("salerule_name"), Until: marchMid,
-				},
-				Server: mockserver.Conditional{
-					Setup: mockserver.ContentJSON(),
-					If: mockcond.Body(`{"store_id": 73921, "params": {"type": "salerules", "columns": ["salerule_name"],
-						"filters": {"date_from": "2000-01-01", "date_to": "2000-03-14"}}}`),
-					Then: mockserver.Response(http.StatusOK, responseEmpty),
-				}.Server(),
-				Expected: done,
+			Name: "The 2000-01-01 default is not shifted by the store timezone",
+			Input: common.ReadParams{
+				ObjectName: "salerules", Fields: connectors.Fields("salerule_name"), Until: marchMid,
 			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.Body(`{"store_id": 73921, "params": {"type": "salerules", "columns": ["salerule_name"],
+					"filters": {"date_from": "2000-01-01", "date_to": "2000-03-14"}}}`),
+				Then: mockserver.Response(http.StatusOK, responseEmpty),
+			}.Server(),
+			Expected: done,
 			metadata: map[string]string{"timezone": "America/Los_Angeles"},
 		},
 		{
-			TestCaseRead: testconn.TestCaseRead{
-				Name: "UTC times are sent as the store's local day",
-				Input: common.ReadParams{
-					ObjectName: "payments", Fields: connectors.Fields("payment"),
-					Since: time.Date(2026, 11, 5, 8, 0, 0, 0, time.UTC),
-					Until: time.Date(2026, 11, 6, 7, 59, 59, 0, time.UTC),
-				},
-				Server: mockserver.Conditional{
-					Setup: mockserver.ContentJSON(),
-					If: mockcond.Body(reportBody(`{"selection": "close_date",
-						"date_from": "2026-11-05 00:00:00", "date_to": "2026-11-05 23:59:59"}`)),
-					Then: mockserver.Response(http.StatusOK, responseEmpty),
-				}.Server(),
-				Expected: done,
+			Name: "UTC times are sent as the store's local day",
+			Input: common.ReadParams{
+				ObjectName: "payments", Fields: connectors.Fields("payment"),
+				Since: time.Date(2026, 11, 5, 8, 0, 0, 0, time.UTC),
+				Until: time.Date(2026, 11, 6, 7, 59, 59, 0, time.UTC),
 			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.Body(reportBody(`{"selection": "close_date",
+					"date_from": "2026-11-05 00:00:00", "date_to": "2026-11-05 23:59:59"}`)),
+				Then: mockserver.Response(http.StatusOK, responseEmpty),
+			}.Server(),
+			Expected: done,
 			metadata: map[string]string{"timezone": "America/Los_Angeles"},
 		},
-		{TestCaseRead: testconn.TestCaseRead{
+		{
+			Name: "Without a timezone, times are sent in UTC",
+			Input: common.ReadParams{
+				ObjectName: "payments", Fields: connectors.Fields("payment"),
+				Since: time.Date(2026, 11, 5, 0, 0, 0, 0, time.FixedZone("EST", -5*60*60)),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If:    mockcond.Body(reportBody(`{"selection": "close_date", "date_from": "2026-11-05 05:00:00"}`)),
+				Then:  mockserver.Response(http.StatusOK, responseEmpty),
+			}.Server(),
+			Expected: done,
+		},
+		{
 			Name: "Since after Until is rejected",
 			Input: common.ReadParams{
 				ObjectName: "payments", Fields: connectors.Fields("payment"),
@@ -170,7 +178,7 @@ func TestReadReportFilters(t *testing.T) { //nolint:funlen
 			},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrSinceUntilChronOrder},
-		}},
+		},
 	}
 
 	for _, tt := range tests {
@@ -178,7 +186,7 @@ func TestReadReportFilters(t *testing.T) { //nolint:funlen
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableReader, error) {
-				return constructTestConnectorWithMetadata(tt.Server.URL, tt.metadata)
+				return constructTestConnectorWithMetadata(tt.Server, tt.metadata)
 			})
 		})
 	}

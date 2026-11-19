@@ -49,6 +49,9 @@ type apiError struct {
 	Details any    `json:"details,omitempty"`
 }
 
+// CombineErr adds Auphan's message and code to base. For a non-2xx response the interpreter picks
+// base from the HTTP status. A failure sent with HTTP 200 has no useful status, so
+// validateResponseSuccess passes errorFromCode as base instead.
 func (r responseEnvelope) CombineErr(base error) error {
 	if r.Error == nil {
 		return base

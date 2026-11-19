@@ -3,6 +3,7 @@ package auphan
 import (
 	"errors"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -28,10 +29,19 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 	responsePettyCash := testutils.DataFromFile(t, "petty-cash.json")
 	responseTaxDetailRows := testutils.DataFromFile(t, "tax-detail-rows.json")
 
-	// A day in a fixed zone that is not UTC: request times must keep it, unconverted.
-	zone := time.FixedZone("store", -5*60*60)
-	since := time.Date(2026, 11, 5, 0, 0, 0, 0, zone)
-	until := time.Date(2026, 11, 5, 23, 59, 59, 0, zone)
+	// No timezone metadata, so the store is on UTC and these times are sent as they are.
+	since := time.Date(2026, 11, 5, 0, 0, 0, 0, time.UTC)
+	until := time.Date(2026, 11, 5, 23, 59, 59, 0, time.UTC)
+
+	// Columns of payments.json, as Auphan sends them. Every payments record carries them in Raw.
+	paymentsColumns := []any{
+		map[string]any{"id": "date", "label": "Date", "format": "report_date", "kind": "dimension"},
+		map[string]any{"id": "payment_type", "label": "Payment Type", "format": nil, "kind": "dimension"},
+		map[string]any{"id": "gl_code", "label": "GL Code", "format": nil, "kind": "dimension"},
+		map[string]any{"id": "payment", "label": "Payment", "format": "report_money", "kind": "measure"},
+		map[string]any{"id": "tips", "label": "Tips", "format": "report_money", "kind": "measure"},
+		map[string]any{"id": "count", "label": "Count", "format": nil, "kind": "measure"},
+	}
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -86,12 +96,11 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						"count":        "36",
 					},
 					Raw: map[string]any{
-						"date":         "Nov 05, 2026",
-						"payment_type": "MC",
-						"gl_code":      "",
-						"payment":      "1411.96",
-						"tips":         "180.76",
-						"count":        "36",
+						"columns": paymentsColumns,
+						"rows": []any{
+							[]any{"Nov 05, 2026", "MC", "", nil, nil, nil},
+							[]any{nil, nil, nil, "1411.96", "180.76", "36"},
+						},
 					},
 				}, {
 					Fields: map[string]any{
@@ -101,12 +110,11 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						"count":        "21",
 					},
 					Raw: map[string]any{
-						"date":         "Nov 05, 2026",
-						"payment_type": "Cash",
-						"gl_code":      "",
-						"payment":      "490.46",
-						"tips":         nil,
-						"count":        "21",
+						"columns": paymentsColumns,
+						"rows": []any{
+							[]any{"Nov 05, 2026", "Cash", "", nil, nil, nil},
+							[]any{nil, nil, nil, "490.46", nil, "21"},
+						},
 					},
 				}},
 				Done: true,
@@ -122,6 +130,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
+				// The point of this test: "filters" must have no "selection".
 				If: mockcond.Body(`{
 					"store_id": 73921,
 					"params": {
@@ -140,13 +149,19 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 						"petty_cash_type": "Petty Cash Out",
 						"amount":          "-80.26",
 					},
-					Raw: map[string]any{"reason": "Alex tips"},
+					Raw: map[string]any{"rows": []any{
+						[]any{"Petty Cash Out", "Alex tips", "Nov 05, 26 4:06 pm", nil},
+						[]any{nil, nil, nil, "-80.26"},
+					}},
 				}, {
 					Fields: map[string]any{
 						"petty_cash_type": "Petty Cash In",
 						"amount":          "11.50",
 					},
-					Raw: map[string]any{"tracking_date": "Nov 05, 26 11:13 pm"},
+					Raw: map[string]any{"rows": []any{
+						[]any{"Petty Cash In", "Staff Tips RECEIVED", "Nov 05, 26 11:13 pm", nil},
+						[]any{nil, nil, nil, "11.50"},
+					}},
 				}},
 				Done: true,
 			},
@@ -187,14 +202,15 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Setup:  mockserver.ContentJSON(),
 				Always: mockserver.Response(http.StatusOK, responsePaymentsSingleRows),
 			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
 			Expected: &common.ReadResult{
 				Rows: 2,
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{"payment_type": "Visa", "payment": "4680.61", "count": "153"},
-					Raw:    map[string]any{"payment_type": "Visa", "payment": "4680.61", "count": "153"},
+					Raw:    map[string]any{"rows": []any{[]any{"Visa", "4680.61", "153"}}},
 				}, {
 					Fields: map[string]any{"payment_type": "Amex", "payment": "232.70", "count": "6"},
-					Raw:    map[string]any{"payment_type": "Amex", "payment": "232.70", "count": "6"},
+					Raw:    map[string]any{"rows": []any{[]any{"Amex", "232.70", "6"}}},
 				}},
 				Done: true,
 			},
@@ -310,6 +326,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{"store_id": "73921"},
 					Raw:    map[string]any{"store_id": "73921"},
+					Id:     "73921",
 				}},
 				NextPage: "2",
 				Done:     false,
@@ -333,6 +350,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{"store_id": "73922"},
 					Raw:    map[string]any{"store_id": "73922"},
+					Id:     "73922",
 				}},
 				NextPage: "",
 				Done:     true,
@@ -345,19 +363,19 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableReader, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}
 }
 
-func constructTestConnector(serverURL string) (*Connector, error) {
-	return constructTestConnectorWithMetadata(serverURL, nil)
+func constructTestConnector(server *httptest.Server) (*Connector, error) {
+	return constructTestConnectorWithMetadata(server, nil)
 }
 
-func constructTestConnectorWithMetadata(serverURL string, metadata map[string]string) (*Connector, error) {
+func constructTestConnectorWithMetadata(server *httptest.Server, metadata map[string]string) (*Connector, error) {
 	connector, err := NewConnector(common.ConnectorParams{
-		AuthenticatedClient: mockutils.NewClient(),
+		AuthenticatedClient: server.Client(),
 		Workspace:           "73921",
 		Metadata:            metadata,
 	})
@@ -366,7 +384,7 @@ func constructTestConnectorWithMetadata(serverURL string, metadata map[string]st
 	}
 
 	// Send calls to the mock server, keeping the /api/v1.php path.
-	connector.SetUnitTestMockServerBaseUrl(serverURL)
+	connector.SetUnitTestMockServerBaseUrl(server.URL)
 
 	return connector, nil
 }
@@ -378,7 +396,7 @@ func TestSandboxRead(t *testing.T) {
 
 	tests := []testconn.TestCaseRead{
 		{
-			Name:  "Sandbox puts the demo name in the path and the metadata store ID in the body",
+			Name:  "Sandbox puts the demo name in the path and the workspace store ID in the body",
 			Input: common.ReadParams{ObjectName: "stores", Fields: connectors.Fields("store_id")},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
@@ -394,6 +412,7 @@ func TestSandboxRead(t *testing.T) {
 				Data: []common.ReadResultRow{{
 					Fields: map[string]any{"store_id": "73922"},
 					Raw:    map[string]any{"store_id": "73922"},
+					Id:     "73922",
 				}},
 				Done: true,
 			},
@@ -406,9 +425,9 @@ func TestSandboxRead(t *testing.T) {
 
 			tt.Run(t, func() (testconn.TestableReader, error) {
 				connector, err := NewSandboxConnector(common.ConnectorParams{
-					AuthenticatedClient: mockutils.NewClient(),
-					Workspace:           "AmpersandDemo",
-					Metadata:            map[string]string{"storeId": "1001"},
+					AuthenticatedClient: tt.Server.Client(),
+					Workspace:           "1001",
+					Metadata:            map[string]string{"demoName": "AmpersandDemo"},
 				})
 				if err != nil {
 					return nil, err
@@ -422,20 +441,26 @@ func TestSandboxRead(t *testing.T) {
 	}
 }
 
-func TestSandboxNeedsStoreID(t *testing.T) {
+func TestStoreIDMustBeANumber(t *testing.T) {
 	t.Parallel()
 
 	_, err := NewSandboxConnector(common.ConnectorParams{
 		AuthenticatedClient: mockutils.NewClient(),
 		Workspace:           "AmpersandDemo",
+		Metadata:            map[string]string{"demoName": "AmpersandDemo"},
 	})
 	if !errors.Is(err, errInvalidStoreID) {
 		t.Fatalf("expected errInvalidStoreID, got %v", err)
 	}
 }
 
+// taxRow is a tax-detail-rows.json record: its group's dimension row and one measure row.
 func taxRow(name, total string) common.ReadResultRow {
-	fields := map[string]any{"name": name, "tax_date": "Nov 05, 2026", "tax_total": total}
-
-	return common.ReadResultRow{Fields: fields, Raw: fields}
+	return common.ReadResultRow{
+		Fields: map[string]any{"name": name, "tax_date": "Nov 05, 2026", "tax_total": total},
+		Raw: map[string]any{"rows": []any{
+			[]any{name, "Nov 05, 2026", nil},
+			[]any{nil, nil, total},
+		}},
+	}
 }

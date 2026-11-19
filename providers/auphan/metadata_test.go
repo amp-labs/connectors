@@ -88,7 +88,7 @@ func TestListObjectMetadata(t *testing.T) { //nolint:funlen
 			t.Parallel()
 
 			tt.Run(t, func() (testconn.TestableMetadataReader, error) {
-				return constructTestConnector(tt.Server.URL)
+				return constructTestConnector(tt.Server)
 			})
 		})
 	}

@@ -9,14 +9,14 @@ API reference: https://api1.auphansoftware.com/resources/
 ## Auth and base URLs
 
 - API key in the `X-Auphan-Api-Token` header.
-| Provider        | Constructor           | Base URL                                               | Store ID comes from  |
-|-----------------|-----------------------|--------------------------------------------------------|----------------------|
-| `auphan`        | `NewConnector`        | `https://{workspace}.gw1.auphansoftware.com/api/v1.php` | workspace            |
-| `auphanSandbox` | `NewSandboxConnector` | `https://api1.auphansoftware.com/{workspace}/api/v1.php` | `storeId` metadata  |
+| Provider        | Constructor           | Base URL                                                |
+|-----------------|-----------------------|---------------------------------------------------------|
+| `auphan`        | `NewConnector`        | `https://{workspace}.gw1.auphansoftware.com/api/v1.php`  |
+| `auphanSandbox` | `NewSandboxConnector` | `https://api1.auphansoftware.com/{demoName}/api/v1.php`  |
 
-- In production, the workspace is the store ID.
-- In the sandbox, the workspace is the demo name. Auphan provisions it per partner with its own
-  seeded store ID and token, so the store ID is a separate input.
+- In both, the workspace is the store ID.
+- The sandbox is a demo install Auphan provisions per partner, with its own seeded store and token.
+  The `demoName` metadata picks the install.
 - Every call is a `POST {base}/{domain}/{action}` with the body `{"store_id": <int>, "params": {...}}`.
 - One connection reads one store. A franchise HQ token can read many stores by changing
   `store_id`, which this connector does not do yet.
@@ -25,7 +25,7 @@ API reference: https://api1.auphansoftware.com/resources/
 
 | Object | Endpoint | Pagination |
 |---|---|---|
-| `stores` | `settings/stores.list` | `data.pagination.page` / `total_pages`, 200 per page |
+| `stores` | `settings/stores.list` | `data.pagination.page` / `total_pages`, `PageSize` up to 200 (the default) |
 | 31 report objects (below) | `reports/execute` | none: one call returns the whole date range |
 
 Every report Auphan lists in `reports/types.list` is an object, named by its report type:
@@ -44,7 +44,7 @@ All 31 were read live for one day and their metadata loads. Left out, because th
 - `inventory`, `Inventory_Categories` and `inventory_modifier` fail with `INTERNAL_ERROR`, likely
   because the inventory module is off for the store.
 
-Each report's settings live in `reportObjects` in `support.go`. To add a report, check `reports/types.get`:
+Each report's settings live in `objectCategoryReport` in `support.go`. To add a report, check `reports/types.get`:
 
 - whether it has a `selection` filter (reports without one reject it with `UNKNOWN_FILTER`);
 - which filters are required without a default (`attendance` needs `status`, sent as Auphan's default `[4]`);
@@ -52,7 +52,8 @@ Each report's settings live in `reportObjects` in `support.go`. To add a report,
 
 ### Report reads
 
-- `ObjectName` is the report `type`. `Fields` become `columns`, sorted so the request is stable.
+- `ObjectName` is the report `type`. `Fields` become `columns`, sorted only so the same fields give
+  the same request body. Auphan returns columns in the report's own order whatever order is sent.
   Auphan requires at least one column. Some reports fail on some columns (`shifts` returns
   `INTERNAL_ERROR` for its first columns but not for others).
 - **Dates:** `Since` is sent as `date_from` and `Until` as `date_to`. Auphan reads a missing
@@ -69,8 +70,9 @@ Each report's settings live in `reportObjects` in `support.go`. To add a report,
 - **No range cap:** every dated report was read live from 2000-01-01 to today in one call, without errors and in
   under 6 s. The largest was `invoice_logs`, at 78k rows and 1 MB. This store's data only starts on 2026-09-24, so years
   of real data have not been tested.
-- **Timezone:** with the `timezone` metadata (an IANA name like `America/Los_Angeles`), times are
-  converted to the store's zone before sending. Without it, times keep their own location.
+- **Timezone:** times are converted to the `timezone` metadata (an IANA name like
+  `America/Los_Angeles`) before sending. It defaults to UTC, so it should be set to the store's zone:
+  it decides which store day an incremental read covers.
 - Dates go out as `YYYY-MM-DD HH:MM:SS`.
 - Values come back as strings (`"1411.96"`, `"36"`, `"Nov 05, 2026"`). They are returned as received
   and never converted to float, because this is accounting data.
@@ -88,8 +90,12 @@ and the measure row that follows has every dimension null:
 [null, null, null, "1411.96", "180.76", "36"]
 ```
 
-Each pair is merged into one record keyed by column `id`. Rows are checked one at a time, so a
-layout that returns whole rows is kept as is.
+Each pair becomes one record. `Raw` is the table as Auphan sent it, cut down to that record's
+rows: `{"columns": [...], "rows": [[...], [...]]}`. `Fields` merges those rows into one object
+keyed by column `id` (`{"payment_type": "MC", "payment": "1411.96", ...}`). A row that already
+has both kinds of values is a record on its own.
+
+Report records are totals, so they have no ID. `stores` records use `store_id`.
 
 ### Metadata
 
@@ -123,15 +129,15 @@ so a revoked token shows up as bad credentials. JSON 403s from the store, like
 `test/auphan/metadata` lists metadata for every object. Both read `./auphan-creds.json`:
 
 ```json
-{"provider": "auphan", "apiKey": "<token>", "substitutions": {"workspace": "<store id>"}}
+{"provider": "auphan", "apiKey": "<token>", "metadata": {"workspace": "<store id>"}}
 ```
 
 They only call read endpoints.
 
 ## Open questions
 
-- **Timezone.** Auphan returns `null` for the store timezone, so the `timezone` input has no
-  default. Without it, the caller has to pass times in the store's local time. Someone needs to
-  confirm with Auphan which zone `close_date` uses.
+- **Timezone.** Auphan returns `null` for the store timezone, so the `timezone` input defaults to
+  UTC and is asked for at installation. Someone needs to confirm with Auphan which zone
+  `close_date` uses.
 - **Presets.** Presets are not used. System presets have negative IDs, and `presets.get` rejects
   them.

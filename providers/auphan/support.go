@@ -4,6 +4,7 @@ import (
 	"maps"
 	"time"
 
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
@@ -38,9 +39,9 @@ func (p reportPayload) with(filters map[string]any) reportPayload {
 	return p
 }
 
-// reportObjects lists every object read through the reports endpoint (reports/execute).
+// objectCategoryReport lists the objects exposed through Auphan reports (reports/execute).
 // The key is both the object name and the Auphan report type.
-var reportObjects = datautils.Map[string, reportPayload]{ //nolint:gochecknoglobals
+var objectCategoryReport = datautils.Map[string, reportPayload]{ //nolint:gochecknoglobals
 	"adjustments":     {dateLayout: time.DateTime},
 	"attendance":      {filters: map[string]any{"status": []int{4}}, dateLayout: time.DateTime},
 	"bank_drop":       {dateLayout: time.DateTime},
@@ -79,7 +80,13 @@ var reportObjects = datautils.Map[string, reportPayload]{ //nolint:gochecknoglob
 	"worked_hours":        selection("sales_date"),
 }
 
-// listObjects are read from a paginated list endpoint.
-var listObjects = map[string]string{ //nolint:gochecknoglobals
-	"stores": "settings/stores.list",
+// listObject is an object read from a paginated list endpoint.
+type listObject struct {
+	endpoint string
+	idField  readhelper.IdFieldQuery
+}
+
+// objectCategoryList lists the objects exposed through paginated list endpoints.
+var objectCategoryList = datautils.Map[string, listObject]{ //nolint:gochecknoglobals
+	"stores": {endpoint: "settings/stores.list", idField: readhelper.NewIdField("store_id")},
 }
