@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -132,4 +133,127 @@ func TestGetRecordsByIds_GraphQLErrorSurfaces(t *testing.T) {
 	assert.Equal(t, len(batchRes.Failures), 1)
 	assert.Equal(t, batchRes.Failures[0].RecordId, "MQ==")
 	assert.Assert(t, errors.Is(batchRes.Failures[0].Err, errRecordFetchFailed))
+}
+
+// Jobber's throttling response: an "errors" entry with code THROTTLED and no "data".
+// https://developer.getjobber.com/docs/using_jobbers_api/api_rate_limits
+const throttledResponse = `{
+	"errors": [{"message": "Throttled", "extensions": {"code": "THROTTLED"}}],
+	"extensions": {"cost": {"requestedQueryCost": 142, "actualQueryCost": 0}}
+}`
+
+func getClientsByIds(t *testing.T, server *mockserver.Switch, ids ...string) (*common.BatchReadResult, error) {
+	t.Helper()
+
+	srv := server.Server()
+	t.Cleanup(srv.Close)
+
+	conn, err := constructTestConnector(srv.URL)
+	assert.NilError(t, err)
+
+	return conn.GetRecordsByIds(t.Context(), "clients", ids, nil, nil)
+}
+
+func respondAlways(body string) *mockserver.Switch {
+	return &mockserver.Switch{
+		Setup:   mockserver.ContentJSON(),
+		Default: mockserver.ResponseString(http.StatusOK, body),
+	}
+}
+
+// A THROTTLED error is reported as rate-limited and returned as the error.
+func TestGetRecordsByIds_ThrottledIsRateLimited(t *testing.T) {
+	t.Parallel()
+
+	batchRes, err := getClientsByIds(t, respondAlways(throttledResponse), "MQ==")
+
+	assert.ErrorIs(t, err, common.ErrLimitExceeded)
+	assert.ErrorIs(t, err, errRecordFetchFailed)
+	assert.ErrorContains(t, err, "Throttled")
+	assert.Equal(t, len(batchRes.Rows), 0)
+	assert.Equal(t, len(batchRes.Failures), 1)
+	assert.Equal(t, batchRes.Failures[0].RecordId, "MQ==")
+	assert.Equal(t, batchRes.Failures[0].Reason, common.FailureReasonRateLimited)
+}
+
+// An UNAUTHENTICATED error is reported as an authentication failure, even when the record node is null.
+func TestGetRecordsByIds_UnauthenticatedIsAuthFailure(t *testing.T) {
+	t.Parallel()
+
+	batchRes, err := getClientsByIds(t, respondAlways(`{
+		"errors": [{"message": "Unauthenticated", "extensions": {"code": "UNAUTHENTICATED"}}],
+		"data": {"client": null}
+	}`), "MQ==")
+
+	assert.ErrorIs(t, err, common.ErrAccessToken)
+	assert.ErrorIs(t, err, errRecordFetchFailed)
+	assert.Equal(t, len(batchRes.Failures), 1)
+	assert.Equal(t, batchRes.Failures[0].Reason, common.FailureReasonPermanent)
+}
+
+// An error alongside a null record node is reported as not found and is not returned as the error.
+func TestGetRecordsByIds_ErrorWithNullRecordIsNotFound(t *testing.T) {
+	t.Parallel()
+
+	batchRes, err := getClientsByIds(t, respondAlways(`{
+		"errors": [{"message": "Record not found", "path": ["client"]}],
+		"data": {"client": null}
+	}`), "MQ==")
+
+	assert.NilError(t, err)
+	assert.Equal(t, len(batchRes.Rows), 0)
+	assert.Equal(t, len(batchRes.Failures), 1)
+	assert.Equal(t, batchRes.Failures[0].RecordId, "MQ==")
+	assert.Equal(t, batchRes.Failures[0].Reason, common.FailureReasonNotFound)
+	assert.Assert(t, errors.Is(batchRes.Failures[0].Err, errRecordFetchNotFound))
+	assert.ErrorContains(t, batchRes.Failures[0].Err, "Record not found")
+}
+
+// An error alongside a returned record stays a fetch failure, as before.
+func TestGetRecordsByIds_ErrorWithRecordIsFetchFailure(t *testing.T) {
+	t.Parallel()
+
+	batchRes, err := getClientsByIds(t, respondAlways(`{
+		"errors": [{"message": "Field failed", "path": ["client", "balance"]}],
+		"data": {"client": {"id": "MQ==", "balance": null}}
+	}`), "MQ==")
+
+	assert.ErrorIs(t, err, errRecordFetchFailed)
+	assert.ErrorContains(t, err, "Field failed")
+	assert.Equal(t, len(batchRes.Rows), 0)
+	assert.Equal(t, len(batchRes.Failures), 1)
+	assert.Assert(t, !errors.Is(batchRes.Failures[0].Err, common.ErrNotFound))
+}
+
+// Rows of the ids that resolved are returned alongside the failures of the others.
+func TestGetRecordsByIds_PartialSuccessKeepsRows(t *testing.T) {
+	t.Parallel()
+
+	server := &mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{{
+			If:   bodyContains(`"id":"found"`),
+			Then: mockserver.ResponseString(http.StatusOK, `{"data": {"client": {"id": "found", "firstName": "A"}}}`),
+		}, {
+			If: bodyContains(`"id":"missing"`),
+			Then: mockserver.ResponseString(http.StatusOK,
+				`{"errors": [{"message": "Record not found"}], "data": {"client": null}}`),
+		}, {
+			If:   bodyContains(`"id":"throttled"`),
+			Then: mockserver.ResponseString(http.StatusOK, throttledResponse),
+		}},
+	}
+
+	batchRes, err := getClientsByIds(t, server, "found", "missing", "throttled")
+
+	assert.ErrorIs(t, err, common.ErrLimitExceeded)
+	assert.ErrorContains(t, err, "record throttled")
+	assert.Assert(t, !strings.Contains(err.Error(), "record missing"))
+	assert.Equal(t, len(batchRes.Rows), 1)
+	assert.Equal(t, batchRes.Rows[0].Id, "found")
+	assert.Equal(t, len(batchRes.Failures), 2)
+	assert.Equal(t, batchRes.Failures[0].RecordId, "missing")
+	assert.Equal(t, batchRes.Failures[0].Reason, common.FailureReasonNotFound)
+	assert.Equal(t, batchRes.Failures[1].RecordId, "throttled")
+	assert.Equal(t, batchRes.Failures[1].Reason, common.FailureReasonRateLimited)
 }
