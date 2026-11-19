@@ -7,7 +7,7 @@ func init() {
 	SetInfo(ClickUp, ProviderInfo{
 		DisplayName: "ClickUp",
 		AuthType:    Oauth2,
-		BaseURL:     "https://api.clickup.com",
+		BaseURL:     "https://api.clickup.com/api",
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.clickup.com/api",
@@ -35,6 +35,15 @@ func init() {
 			Regular: &MediaTypeRegular{
 				IconURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722536894/media/clickup.com_1722536893.svg",
 				LogoURL: "https://res.cloudinary.com/dycvts6vp/image/upload/v1722537034/media/clickup.com_1722537033.svg",
+			},
+		},
+		Metadata: &ProviderMetadata{
+			Input: []MetadataItemInput{
+				{
+					Name:        "workspace",
+					DisplayName: "Workspace (Team)",
+					DocsURL:     "https://developer.clickup.com/reference/getauthorizedteams",
+				},
 			},
 		},
 	})
