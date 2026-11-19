@@ -207,6 +207,14 @@ var (
 
 	// ErrMissingProviderParam is returned when connector expects non-empty value for a param inside VerificationParams.
 	ErrMissingProviderParam = errors.New("missing required provider parameter")
+
+	// ErrSearchFilterOperatorUnsupported indicates that the filter operator is not
+	// supported by the provider API.
+	ErrSearchFilterOperatorUnsupported = errors.New("search filter Operator is not supported by connector")
+
+	// ErrSearchFilterValueUnsupported indicates that the filter value has an
+	// unsupported type for the specified search operator.
+	ErrSearchFilterValueUnsupported = errors.New("search filter Value is not supported for this operation")
 )
 
 // ReadParams defines how we are reading data from a SaaS API.
@@ -1161,7 +1169,13 @@ type FieldFilter struct {
 type FilterOperator string
 
 const (
+	// FilterOperatorEQ represents the equality operator.
+	// Example: userName eq "John".
 	FilterOperatorEQ FilterOperator = "eq"
+
+	// FilterOperatorIn represents the set membership operator.
+	// Example: orderId in (2,3,4).
+	FilterOperatorIn FilterOperator = "in"
 )
 
 type SearchParams struct {
