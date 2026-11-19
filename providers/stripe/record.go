@@ -114,6 +114,13 @@ func (c *Connector) fetchSingleRecord(
 		return nil, fmt.Errorf("failed to parse record %s: %w", recordID, err)
 	}
 
+	// Stripe returns a deleted object with status 200 and "deleted": true instead of a 404, for
+	// example a deleted Customer: https://docs.stripe.com/api/customers/retrieve
+	// Report it as not found, like an id that does not exist.
+	if deleted, _ := record["deleted"].(bool); deleted {
+		return nil, fmt.Errorf("%w: %s deleted", common.ErrNotFound, recordID)
+	}
+
 	// extract ID from record (Stripe  returns id field)
 	idStr, _ := record["id"].(string)
 	if idStr == "" {
