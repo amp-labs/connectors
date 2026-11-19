@@ -1,7 +1,14 @@
 package outreach
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
+	"net/http/httptest"
+	"slices"
+	"strconv"
+	"strings"
+	"sync"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -406,4 +413,201 @@ func TestGetRecordsByIds_ReportsMissingIds(t *testing.T) {
 
 	testconn.RequireRowIds(t, result, "1", "2", "5")
 	testconn.RequireMissingIds(t, result, "3", "4")
+}
+
+// numberedIds returns the ids "1" to "n".
+func numberedIds(n int) []string {
+	ids := make([]string, n)
+	for i := range ids {
+		ids[i] = strconv.Itoa(i + 1)
+	}
+
+	return ids
+}
+
+// accountsPage renders an Outreach collection response with one account per id and an optional next link.
+func accountsPage(ids []string, next string) string {
+	records := make([]string, len(ids))
+	for i, id := range ids {
+		records[i] = fmt.Sprintf(`{"type":"account","id":%s,"attributes":{"name":"Account %s"}}`, id, id)
+	}
+
+	links := "{}"
+	if next != "" {
+		links = fmt.Sprintf(`{"next":%q}`, next)
+	}
+
+	return fmt.Sprintf(`{"data":[%s],"links":%s}`, strings.Join(records, ","), links)
+}
+
+// accountsServer answers filter[id] requests with one account per requested id, returning at most page[size]
+// accounts, or 50 when page[size] is not set, as Outreach does. Each request's filter[id] values are recorded.
+type accountsServer struct {
+	mu       sync.Mutex
+	requests [][]string
+	// failWhen makes the server answer 500 to a request whose filter[id] includes this id.
+	failWhen string
+}
+
+func (s *accountsServer) handle(w http.ResponseWriter, r *http.Request) {
+	ids := strings.Split(r.URL.Query().Get("filter[id]"), ",")
+
+	s.mu.Lock()
+	s.requests = append(s.requests, ids)
+	s.mu.Unlock()
+
+	if s.failWhen != "" && slices.Contains(ids, s.failWhen) {
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	pageSize := 50
+	if size, err := strconv.Atoi(r.URL.Query().Get("page[size]")); err == nil {
+		pageSize = size
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write([]byte(accountsPage(ids[:min(pageSize, len(ids))], "")))
+}
+
+func getAccountsByIds(t *testing.T, handler http.HandlerFunc, ids []string) (*common.BatchReadResult, error) {
+	t.Helper()
+
+	server := httptest.NewServer(handler)
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	return conn.GetRecordsByIds(t.Context(), "accounts", ids, []string{"name"}, nil)
+}
+
+// Outreach returns 50 records per page by default, so more than 50 ids must still all come back.
+func TestGetRecordsByIds_ReturnsMoreThanDefaultPageSize(t *testing.T) {
+	t.Parallel()
+
+	ids := numberedIds(120)
+	server := &accountsServer{}
+
+	result, err := getAccountsByIds(t, server.handle, ids)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	testconn.RequireRowIds(t, result, ids...)
+	testconn.RequireNoFailures(t, result)
+}
+
+// Ids beyond one chunk are sent in several requests, each with page[size] covering the whole chunk.
+func TestGetRecordsByIds_SplitsIdsIntoChunks(t *testing.T) {
+	t.Parallel()
+
+	ids := numberedIds(2*readByIdsChunkSize + 50)
+	server := &accountsServer{}
+
+	result, err := getAccountsByIds(t, server.handle, ids)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	testconn.RequireRowIds(t, result, ids...)
+	testconn.RequireNoFailures(t, result)
+
+	wantSizes := []int{readByIdsChunkSize, readByIdsChunkSize, 50}
+	if len(server.requests) != len(wantSizes) {
+		t.Fatalf("got %d requests, want %d", len(server.requests), len(wantSizes))
+	}
+
+	for i, requested := range server.requests {
+		if len(requested) != wantSizes[i] {
+			t.Errorf("request %d has %d ids, want %d", i, len(requested), wantSizes[i])
+		}
+	}
+}
+
+// When a response has links.next, the next page is read and its records are returned.
+func TestGetRecordsByIds_FollowsNextLink(t *testing.T) {
+	t.Parallel()
+
+	var serverURL string
+
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		if r.URL.Query().Get("page[after]") == "" {
+			_, _ = w.Write([]byte(accountsPage([]string{"1"}, serverURL+"/api/v2/accounts?page[after]=cursor1")))
+
+			return
+		}
+
+		_, _ = w.Write([]byte(accountsPage([]string{"2", "3"}, "")))
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(handler))
+	t.Cleanup(server.Close)
+
+	serverURL = server.URL
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	result, err := conn.GetRecordsByIds(t.Context(), "accounts", []string{"1", "2", "3"}, []string{"name"}, nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	testconn.RequireRowIds(t, result, "1", "2", "3")
+	testconn.RequireNoFailures(t, result)
+}
+
+// A failed chunk reports its ids with the chunk's error, keeps the rows of the other chunks,
+// and returns the error alongside the result.
+func TestGetRecordsByIds_ReportsFailedChunk(t *testing.T) {
+	t.Parallel()
+
+	ids := numberedIds(readByIdsChunkSize + 50)
+	server := &accountsServer{failWhen: strconv.Itoa(readByIdsChunkSize + 1)}
+
+	result, err := getAccountsByIds(t, server.handle, ids)
+	if !errors.Is(err, common.ErrServer) {
+		t.Fatalf("error = %v, want one wrapping common.ErrServer", err)
+	}
+
+	testconn.RequireRowIds(t, result, ids[:readByIdsChunkSize]...)
+
+	failedIds := ids[readByIdsChunkSize:]
+	if len(result.Failures) != len(failedIds) {
+		t.Fatalf("got %d failures, want %d", len(result.Failures), len(failedIds))
+	}
+
+	for i, failure := range result.Failures {
+		if failure.RecordId != failedIds[i] || failure.Reason != common.FailureReasonTransient {
+			t.Errorf("failure %d = {%s %s}, want {%s %s}", i,
+				failure.RecordId, failure.Reason, failedIds[i], common.FailureReasonTransient)
+		}
+	}
+}
+
+// No ids means no request: without a filter[id], Outreach would return unrelated records.
+func TestGetRecordsByIds_NoIdsSendsNoRequest(t *testing.T) {
+	t.Parallel()
+
+	server := &accountsServer{}
+
+	result, err := getAccountsByIds(t, server.handle, nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	testconn.RequireRowIds(t, result)
+	testconn.RequireNoFailures(t, result)
+
+	if len(server.requests) != 0 {
+		t.Errorf("got %d requests, want none", len(server.requests))
+	}
 }
