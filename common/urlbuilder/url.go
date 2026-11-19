@@ -174,9 +174,6 @@ func (u *URL) String() string {
 func (u *URL) queryValuesToString() string { // nolint:funcorder
 	// Encode the query params
 	result := u.queryParams.Encode()
-	if len(result) == 0 {
-		return ""
-	}
 
 	// Apply encoding exceptions
 	for before, after := range u.encodingExceptions {
