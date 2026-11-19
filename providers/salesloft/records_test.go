@@ -1,7 +1,10 @@
 package salesloft
 
 import (
+	"errors"
 	"net/http"
+	"slices"
+	"strconv"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -263,4 +266,153 @@ func TestGetRecordsByIds_ReportsMissingIds(t *testing.T) {
 
 	testconn.RequireRowIds(t, result, "164510523", "164510464")
 	testconn.RequireMissingIds(t, result, "164510001", "164510002")
+}
+
+// makeIds returns count ids starting at first, as strings.
+func makeIds(first, count int) []string {
+	ids := make([]string, count)
+	for i := range ids {
+		ids[i] = strconv.Itoa(first + i)
+	}
+
+	return ids
+}
+
+// More ids than fit on one page are requested in groups of DefaultPageSize, and the rows of every
+// group are returned.
+func TestGetRecordsByIds_SplitsIdsIntoPages(t *testing.T) {
+	t.Parallel()
+
+	ids := makeIds(1001, 150)
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{{
+			If: mockcond.And{
+				mockcond.Path("/v2/people"),
+				mockcond.QueryParam("per_page", "100"),
+				mockcond.QueryParam("ids[]", ids[:100]...),
+			},
+			Then: mockserver.ResponseString(http.StatusOK, `{"data":[{"id":1001},{"id":1100}]}`),
+		}, {
+			If: mockcond.And{
+				mockcond.Path("/v2/people"),
+				mockcond.QueryParam("per_page", "100"),
+				mockcond.QueryParam("ids[]", ids[100:]...),
+			},
+			Then: mockserver.ResponseString(http.StatusOK, `{"data":[{"id":1101},{"id":1150}]}`),
+		}},
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	result, err := conn.GetRecordsByIds(t.Context(), "people", ids, []string{"id"}, nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	testconn.RequireRowIds(t, result, "1001", "1100", "1101", "1150")
+
+	// Every id that neither response returned is reported as not found.
+	var missing []string
+
+	for _, id := range ids {
+		if !slices.Contains([]string{"1001", "1100", "1101", "1150"}, id) {
+			missing = append(missing, id)
+		}
+	}
+
+	testconn.RequireMissingIds(t, result, missing...)
+}
+
+// When one group of ids fails, its ids are reported as failures and returned in the error, while the
+// rows of the other group are kept.
+func TestGetRecordsByIds_FailedPageKeepsOtherRows(t *testing.T) {
+	t.Parallel()
+
+	ids := makeIds(1001, 150)
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{{
+			If: mockcond.And{
+				mockcond.Path("/v2/people"),
+				mockcond.QueryParam("ids[]", ids[:100]...),
+			},
+			Then: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"Internal Server Error"}`),
+		}, {
+			If: mockcond.And{
+				mockcond.Path("/v2/people"),
+				mockcond.QueryParam("ids[]", ids[100:]...),
+			},
+			Then: mockserver.ResponseString(http.StatusOK, `{"data":[{"id":1101},{"id":1150}]}`),
+		}},
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	result, err := conn.GetRecordsByIds(t.Context(), "people", ids, []string{"id"}, nil)
+	if !errors.Is(err, common.ErrServer) {
+		t.Fatalf("expected the failed request's error, got %v", err)
+	}
+
+	testconn.RequireRowIds(t, result, "1101", "1150")
+
+	failedIds := make([]string, 0, len(result.Failures))
+	notFoundIds := make([]string, 0, len(result.Failures))
+
+	for _, failure := range result.Failures {
+		if failure.Reason == common.FailureReasonNotFound {
+			notFoundIds = append(notFoundIds, failure.RecordId)
+		} else {
+			failedIds = append(failedIds, failure.RecordId)
+		}
+	}
+
+	if !slices.Equal(failedIds, ids[:100]) {
+		t.Errorf("failed ids %v, want the first 100 requested ids", failedIds)
+	}
+
+	// The second group returned 1101 and 1150; its other ids are not found.
+	wantNotFound := slices.DeleteFunc(slices.Clone(ids[100:]), func(id string) bool {
+		return id == "1101" || id == "1150"
+	})
+	if !slices.Equal(notFoundIds, wantNotFound) {
+		t.Errorf("not-found ids %v, want %v", notFoundIds, wantNotFound)
+	}
+}
+
+// A 404 still fails the whole call with the provider's error, as it did before ids were split into
+// groups.
+func TestGetRecordsByIds_NotFoundFailsCall(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If:    mockcond.Path("/v2/people"),
+		Then:  mockserver.ResponseString(http.StatusNotFound, `{"error":"Not Found"}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	result, err := conn.GetRecordsByIds(t.Context(), "people", []string{"1001", "1002"}, []string{"id"}, nil)
+	if !errors.Is(err, common.ErrNotFound) {
+		t.Fatalf("expected a not-found error, got %v", err)
+	}
+
+	if result != nil {
+		t.Errorf("expected no result, got %+v", result)
+	}
 }
