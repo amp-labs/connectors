@@ -38,8 +38,14 @@ import (
 //     https://developers.google.com/workspace/gmail/api/reference/quota
 const gmailMaxConcurrentFetches = 5
 
-// errMessageNotFound marks a message that returned 404.
-var errMessageNotFound = fmt.Errorf("gmail: message not found: %w", common.ErrNotFound)
+var (
+	// errMessageNotFound marks a message that returned 404.
+	errMessageNotFound = fmt.Errorf("gmail: message not found: %w", common.ErrNotFound)
+
+	// errMessageMissingID marks a successful messages.get response without a message id, such as an
+	// empty body.
+	errMessageMissingID = errors.New("gmail: message response has no id")
+)
 
 // fetchMessages retrieves the full message payloads for all message IDs found
 // in the provided collection response.
@@ -93,14 +99,14 @@ func (a *Adapter) fetchMessages(
 	return messageRegistry, nil
 }
 
-// fetchMessagesByIDs fetches full message payloads for the given IDs concurrently.
-// This is the same fan-out/fan-in pattern as fetchMessages but accepts explicit IDs
-// instead of extracting them from a collection response.
+// fetchMessagesByIDs fetches full message payloads for the given IDs concurrently, every id even when
+// some fail. It returns the fetched messages in the order of messageIDs, and the errors keyed by
+// position in messageIDs.
 func (a *Adapter) fetchMessagesByIDs(
 	ctx context.Context, messageIDs []string,
-) (MessageRecords, map[int]error, error) {
+) ([]MessageRecord, map[int]error) {
 	if len(messageIDs) == 0 {
-		return MessageRecords{}, nil, nil
+		return []MessageRecord{}, nil
 	}
 
 	tasks := make([]parallelfetch.Task[int, MessageRecord], len(messageIDs))
@@ -118,22 +124,17 @@ func (a *Adapter) fetchMessagesByIDs(
 		}
 	}
 
-	// Fetches every id, even when some fail.
 	result := parallelfetch.Execute(ctx, tasks, gmailMaxConcurrentFetches)
 
-	messageRegistry := make(MessageRecords, len(messageIDs))
+	messages := make([]MessageRecord, 0, len(result.Records))
 
-	for _, message := range result.Records {
-		id, ok := message["id"].(string)
-		if !ok {
-			return nil, nil, errors.New("missing field 'id' in response for object 'messages'") // nolint:err113
+	for idx := range messageIDs {
+		if message, ok := result.Records[idx]; ok {
+			messages = append(messages, message)
 		}
-
-		messageRegistry[id] = message
 	}
 
-	// Returns failures keyed by position.
-	return messageRegistry, result.Errors, nil
+	return messages, result.Errors
 }
 
 // fetchMessage returns a concurrently executable job that fetches a single message
@@ -169,7 +170,8 @@ func (a *Adapter) fetchMessage(messagesChannel chan MessageRecord, messageId str
 	}
 }
 
-// fetchMessageRecord fetches a single message by ID.
+// fetchMessageRecord fetches a single message by ID. A response without a message id is an error, so
+// every returned message has one.
 func (a *Adapter) fetchMessageRecord(ctx context.Context, messageId string) (*MessageRecord, error) {
 	url, err := a.getMessageUrl(messageId)
 	if err != nil {
@@ -185,7 +187,16 @@ func (a *Adapter) fetchMessageRecord(ctx context.Context, messageId string) (*Me
 		return nil, err
 	}
 
-	return common.UnmarshalJSON[MessageRecord](resp)
+	message, err := common.UnmarshalJSON[MessageRecord](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	if id, ok := (*message)["id"].(string); !ok || id == "" {
+		return nil, fmt.Errorf("%w (id %s)", errMessageMissingID, messageId)
+	}
+
+	return message, nil
 }
 
 func messagesEmbedMessageRaw(messages MessageRecords) common.RecordTransformer {
