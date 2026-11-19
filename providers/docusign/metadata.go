@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/docusign/metadata"
+	"github.com/spyzhov/ajson"
 )
 
 var (
@@ -63,6 +65,11 @@ func (c *Connector) GetPostAuthInfo(
 			continue
 		}
 
+		c.accountId = getAccountId(account)
+		authVars := AuthMetadataVars{
+			AccountId: c.accountId,
+		}
+
 		baseURI, err := account.GetKey("base_uri")
 		if err != nil {
 			return nil, err
@@ -75,9 +82,8 @@ func (c *Connector) GetPostAuthInfo(
 
 		if baseURLWithoutHTTPS, found := strings.CutPrefix(baseURIString, "https://"); found {
 			if parts := strings.SplitN(baseURLWithoutHTTPS, ".", 2); len(parts) > 1 { // nolint:mnd
-				postAuthInfo.CatalogVars = AuthMetadataVars{
-					Server: parts[0],
-				}.AsMap()
+				authVars.Server = parts[0]
+				postAuthInfo.CatalogVars = authVars.AsMap()
 
 				return &postAuthInfo, nil
 			}
@@ -87,4 +93,25 @@ func (c *Connector) GetPostAuthInfo(
 	}
 
 	return nil, ErrNoDefaultAccount
+}
+
+func getAccountId(account *ajson.Node) string {
+	accountId, err := account.GetKey("account_id")
+	if err != nil {
+		// The connector can still be used as a proxy if we've failed to retrieve the account ID.
+		return ""
+	}
+
+	accountIdString, err := accountId.GetString()
+	if err != nil {
+		return ""
+	}
+
+	return accountIdString
+}
+
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context, objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	return metadata.Schemas.Select(common.ModuleRoot, objectNames)
 }
