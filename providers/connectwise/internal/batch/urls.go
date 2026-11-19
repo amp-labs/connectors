@@ -29,6 +29,8 @@ type identifierGroup struct {
 type urlWrapper struct {
 	// URL is the complete URL with the 'conditions' query parameter containing the identifiers.
 	URL string
+	// identifiers are the identifiers listed in the 'conditions' query parameter.
+	identifiers []string
 	// estimatedSize is the expected length as calculated by the algorithm.
 	estimatedSize int
 }
@@ -86,6 +88,7 @@ func withIdentifiers(baseURL *urlbuilder.URL, identifiers []string, maxURLLength
 		url.WithQueryParam("conditions", fmt.Sprintf("id in (%v)", strings.Join(group.IDs, ",")))
 		urls = append(urls, urlWrapper{
 			URL:           url.String(),
+			identifiers:   group.IDs,
 			estimatedSize: group.TotalSize + reservedSize,
 		})
 	}

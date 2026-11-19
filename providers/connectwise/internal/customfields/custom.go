@@ -71,8 +71,13 @@ func requestCustomFields(ctx context.Context,
 		return nil, err
 	}
 
+	// Every definition is needed, so one failed request fails the lookup.
+	if err = customFieldDefinitions.Err(); err != nil {
+		return nil, err
+	}
+
 	fields := make(map[string]modelCustomField)
-	for _, def := range customFieldDefinitions {
+	for _, def := range customFieldDefinitions.Records {
 		fields[strconv.Itoa(def.Id)] = def
 	}
 
