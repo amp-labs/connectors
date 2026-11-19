@@ -15,6 +15,10 @@ import (
 var _ connectors.BatchRecordReaderConnector = (*Connector)(nil)
 
 // GetRecordsByIds scoped reading of records given their ids.
+//
+// Each id is one request inside Graph's $batch. A failed request does not fail the call: every failed
+// id is reported in Failures, and the rows of the ids that resolved are returned. Failures other than
+// not-found are also returned, joined, as the error.
 // nolint:revive
 func (c *Connector) GetRecordsByIds(ctx context.Context,
 	objectName string, recordIds []string,
@@ -24,15 +28,15 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 		return nil, common.ErrMissingObjects
 	}
 
-	batchParams, requestIdentifiers, err := c.paramsForBatchRead(objectName, recordIds)
+	// Graph rejects a whole $batch request when two of its requests share an id.
+	ids := uniqueInOrder(recordIds)
+
+	batchParams, requestIdentifiers, err := c.paramsForBatchRead(objectName, ids)
 	if err != nil {
 		return nil, err
 	}
 
 	batchResponse := batch.Execute[map[string]any](ctx, c.batchStrategy, batchParams)
-	if err = batchResponse.JoinedErr(); err != nil {
-		return nil, err
-	}
 
 	marshaler := readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField("id"))
 	uniqueFields := datautils.NewSetFromList(fields).List()
@@ -42,7 +46,49 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 		return nil, err
 	}
 
-	return common.NewBatchReadResult(rows), nil
+	result := common.NewBatchReadResult(rows)
+
+	return result, result.ReportFetchErrors(ids, batchErrorsByPosition(batchResponse, ids, requestIdentifiers))
+}
+
+// batchErrorsByPosition keys each failed id's error by its position in ids, as ReportFetchErrors expects.
+// An id Graph left out of its response is reported as not found.
+func batchErrorsByPosition(
+	batchResponse *batch.Result[map[string]any], ids []string, requestIdentifiers []batch.RequestID,
+) map[int]error {
+	errs := make(map[int]error)
+
+	for index, requestIdentifier := range requestIdentifiers {
+		if failure, ok := batchResponse.Errors[requestIdentifier]; ok {
+			errs[index] = failure.Data
+
+			continue
+		}
+
+		if _, ok := batchResponse.Responses[requestIdentifier]; !ok {
+			errs[index] = fmt.Errorf("%w: %s not returned by the batch request", common.ErrNotFound, ids[index])
+		}
+	}
+
+	return errs
+}
+
+// uniqueInOrder removes repeated ids, keeping the first occurrence of each.
+func uniqueInOrder(ids []string) []string {
+	seen := make(map[string]bool, len(ids))
+	unique := make([]string, 0, len(ids))
+
+	for _, id := range ids {
+		if seen[id] {
+			continue
+		}
+
+		seen[id] = true
+
+		unique = append(unique, id)
+	}
+
+	return unique
 }
 
 func (c *Connector) paramsForBatchRead(
