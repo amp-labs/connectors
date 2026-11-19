@@ -27,7 +27,7 @@ func init() { //nolint:funlen
 		Oauth2Opts: &Oauth2Opts{
 			GrantType:                 AuthorizationCode,
 			AuthURL:                   "https://app.hubspot.com/oauth/authorize",
-			TokenURL:                  "https://api.hubapi.com/oauth/v1/token",
+			TokenURL:                  "https://api.hubapi.com/oauth/2026-03/token",
 			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 		},
