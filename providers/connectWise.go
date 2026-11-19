@@ -1,8 +1,20 @@
 package providers
 
+import (
+	"github.com/amp-labs/connectors/common"
+)
+
 const ConnectWise Provider = "connectWise"
 
 func init() {
+	// ConnectWise requires a ClientId header on every request in addition to
+	// Basic Auth; the value comes from the clientId connection metadata input.
+	SetHTTPOptionSpecs(ConnectWise, HTTPOptionSpec{
+		In:            common.HTTPOptionInHeader,
+		Key:           "ClientId",
+		MetadataField: "clientId",
+	})
+
 	SetInfo(ConnectWise, ProviderInfo{
 		DisplayName: "ConnectWise",
 		AuthType:    Basic,
