@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/providers/docusign/metadata"
 )
 
 var (
@@ -87,4 +88,10 @@ func (c *Connector) GetPostAuthInfo(
 	}
 
 	return nil, ErrNoDefaultAccount
+}
+
+func (c *Connector) ListObjectMetadata(
+	ctx context.Context, objectNames []string,
+) (*common.ListObjectMetadataResult, error) {
+	return metadata.Schemas.Select(common.ModuleRoot, objectNames)
 }
