@@ -1,6 +1,7 @@
 package api3
 
 import (
+	"log/slog"
 	"sort"
 	"strings"
 
@@ -121,7 +122,8 @@ func (e Explorer[C]) ReadObjects(
 }
 
 // GetPathItems returns path items where object name is a single word.
-func (e Explorer[C]) GetPathItems(
+
+func (e Explorer[C]) GetPathItems( // nolint: funlen
 	pathMatcher PathMatcher, endpointResources map[string]string,
 ) []PathItem[C] {
 	items := datautils.Map[string, PathItem[C]]{} // URL path to item
@@ -138,7 +140,13 @@ func (e Explorer[C]) GetPathItems(
 			// ObjectName is empty at this time.
 			// We need to do some processing to infer ObjectName from URL path.
 			// By default, the last URL part is the ObjectName describing this REST resource.
-			parts := strings.Split(path, "/")
+			if e.versionPrefix == "" {
+				slog.Warn("no version prefix provided using `/`")
+
+				e.versionPrefix = "/"
+			}
+
+			parts := strings.Split(path, e.versionPrefix)
 			objectName = parts[len(parts)-1]
 		}
 
