@@ -3,11 +3,11 @@ package housecallpro
 import (
 	"context"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/amp-labs/connectors/providers/housecallPro/metadata"
 )
 
@@ -37,40 +37,31 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 
 	marshal := readhelper.MakeGetMarshaledDataWithId(readIDFieldByObject.Get(objectName))
 
-	// Fetches each id concurrently, keeping rows in requested order.
-	// Keyed by position so rows keep requested order.
-	tasks := make([]parallelfetch.Task[int, []common.ReadResultRow], len(recordIDs))
+	result := common.NewBatchReadResult([]common.ReadResultRow{})
+
+	// Fetches each id concurrently. Rows are added in the order their fetches finish.
+	jobs := make([]simultaneously.Job, len(recordIDs))
 
 	for i, recordID := range recordIDs {
-		idx, currentID := i, recordID
-
-		tasks[idx] = func(ctx context.Context) (int, *[]common.ReadResultRow, error) {
-			rows, err := c.fetchSingleRecord(ctx, path, currentID, fields, marshal)
+		jobs[i] = func(ctx context.Context) error {
+			rows, err := c.fetchSingleRecord(ctx, path, recordID, fields, marshal)
 			if err != nil {
-				return idx, nil, err
+				result.AddFailure(recordID, err)
+
+				return nil
 			}
 
-			return idx, &rows, nil
+			extractAssociations(objectName, associations, rows)
+			result.AddSuccess(rows...)
+
+			// Never fails the job, so one failed id does not stop the others.
+			return nil
 		}
 	}
 
-	// Fetches every id, even when some fail.
-	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+	_ = simultaneously.DoCtx(ctx, maxConcurrentRecordFetch, jobs...)
 
-	out := make([]common.ReadResultRow, 0, len(recordIDs))
-
-	for i := range recordIDs {
-		if rows, ok := result.Records[i]; ok {
-			out = append(out, rows...)
-		}
-	}
-
-	extractAssociations(objectName, associations, out)
-
-	batch := common.NewBatchReadResult(out)
-
-	// Every per-id error is a failure; the error joins the ones that are not not-found.
-	return batch, batch.ReportFetchErrors(recordIDs, result.Errors)
+	return result, result.Err()
 }
 
 // fetchSingleRecord fetches one record by id and marshals it into rows.

@@ -9,10 +9,10 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/parallelfetch"
 )
 
 // AccuLynx has no batch read endpoint; GetRecordsByIds fans out per id
@@ -60,39 +60,40 @@ func (c *Connector) GetRecordsByIds(
 	}
 
 	fieldSet := datautils.NewSetFromList(fields)
+	withJobContacts := objectName == objectJobs && slices.Contains(associations, jobContactsAssociation)
 
-	// Keyed by position so rows keep requested order.
-	tasks := make([]parallelfetch.Task[int, common.ReadResultRow], len(recordIds))
+	result := common.NewBatchReadResult([]common.ReadResultRow{})
+
+	jobs := make([]simultaneously.Job, len(recordIds))
 
 	for i, recordID := range recordIds {
-		idx, currentID := i, recordID
-
-		tasks[idx] = func(ctx context.Context) (int, *common.ReadResultRow, error) {
-			row, err := c.fetchSingleRecord(ctx, objectName, currentID, fieldSet, associations)
+		jobs[i] = func(ctx context.Context) error {
+			row, err := c.fetchSingleRecord(ctx, objectName, recordID, fieldSet, associations)
 			if err != nil {
-				return idx, nil, fmt.Errorf("fetch %s/%s: %w", objectName, currentID, err)
+				result.AddFailure(recordID, fmt.Errorf("fetch %s/%s: %w", objectName, recordID, err))
+
+				return nil
 			}
 
-			return idx, &row, nil
+			rows := []common.ReadResultRow{row}
+
+			// The embedded payload requested above still has to be lifted into
+			// Associations; without this the caller receives a full record and an empty
+			// associations map. Mirrors what the read path does via parseReadResponse.
+			if withJobContacts {
+				extractJobContacts(rows)
+			}
+
+			result.AddSuccess(rows...)
+
+			// Never fails the job, so one failed id does not stop the others.
+			return nil
 		}
 	}
 
-	// Fetches every id, even when some fail.
-	result := parallelfetch.Execute(ctx, tasks, maxConcurrentChildFetch)
+	_ = simultaneously.DoCtx(ctx, maxConcurrentChildFetch, jobs...)
 
-	out := compactFound(result.Records, len(recordIds))
-
-	// The embedded payload requested above still has to be lifted into
-	// Associations; without this the caller receives a full record and an empty
-	// associations map. Mirrors what the read path does via parseReadResponse.
-	if objectName == objectJobs && slices.Contains(associations, jobContactsAssociation) {
-		extractJobContacts(out)
-	}
-
-	batch := common.NewBatchReadResult(out)
-
-	// Every per-id error is a failure; the error joins the ones that are not not-found.
-	return batch, batch.ReportFetchErrors(recordIds, result.Errors)
+	return result, result.Err()
 }
 
 // isNotFound reports whether err represents a 404 from AccuLynx. The base JSON
@@ -109,19 +110,6 @@ func isNotFound(err error) bool {
 	}
 
 	return false
-}
-
-// compactFound returns the found records in requested order.
-func compactFound(records map[int]common.ReadResultRow, total int) []common.ReadResultRow {
-	out := make([]common.ReadResultRow, 0, total)
-
-	for i := range total {
-		if row, ok := records[i]; ok {
-			out = append(out, row)
-		}
-	}
-
-	return out
 }
 
 // singleRecordURL builds the get-by-id URL for a batch-readable object. Most

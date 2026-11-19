@@ -3,6 +3,7 @@ package testconn
 import (
 	"errors"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
@@ -35,6 +36,37 @@ func RequireRowIds(t *testing.T, result *common.BatchReadResult, wantIds ...stri
 	if !slices.Equal(gotIds, wantIds) {
 		t.Errorf("row ids %v, want %v", gotIds, wantIds)
 	}
+}
+
+// RequireRowIdsAnyOrder checks that the batch result's rows carry exactly wantIds, in any order. Use it
+// for connectors that add rows in the order their fetches finish.
+func RequireRowIdsAnyOrder(t *testing.T, result *common.BatchReadResult, wantIds ...string) {
+	t.Helper()
+
+	if result == nil {
+		t.Fatal("expected a result, got nil")
+	}
+
+	gotIds := make([]string, 0, len(result.Rows))
+	for _, row := range result.Rows {
+		gotIds = append(gotIds, row.Id)
+	}
+
+	slices.Sort(gotIds)
+
+	wantSorted := slices.Sorted(slices.Values(wantIds))
+
+	if !slices.Equal(gotIds, wantSorted) {
+		t.Errorf("row ids %v, want %v in any order", gotIds, wantSorted)
+	}
+}
+
+// SortRowsByID sorts rows by id, so a test can index the rows of a connector that adds them in the
+// order its fetches finish.
+func SortRowsByID(rows []common.ReadResultRow) {
+	slices.SortFunc(rows, func(a, b common.ReadResultRow) int {
+		return strings.Compare(a.Id, b.Id)
+	})
 }
 
 // RequireMissingIds checks that the batch result reports exactly wantIds, in requested

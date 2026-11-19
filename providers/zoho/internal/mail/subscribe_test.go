@@ -16,6 +16,7 @@ import (
 	"github.com/amp-labs/connectors/providers"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"gotest.tools/v3/assert"
 )
 
@@ -411,8 +412,9 @@ func TestGetTaskRecordsByIds(t *testing.T) {
 	assert.Equal(t, rows[0].Fields["title"], "Personal task")
 }
 
-// Rows come back in requested order even when an earlier id responds slower.
-func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
+// Every id's row is returned even when an earlier id responds slower. Rows are added in the order
+// their fetches finish.
+func TestGetRecordsByIds_ReturnsEveryRowWhenFetchesFinishOutOfOrder(t *testing.T) {
 	t.Parallel()
 
 	const (
@@ -460,6 +462,9 @@ func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
 
 	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 2)
+
+	testconn.SortRowsByID(rows)
+
 	assert.Equal(t, rows[0].Id, folderID+"/"+firstMsgID)
 	assert.Equal(t, rows[0].Fields["subject"], "First")
 	assert.Equal(t, rows[1].Id, folderID+"/"+lastMsgID)
