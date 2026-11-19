@@ -32,6 +32,7 @@ func main() {
 			"type",
 		),
 		Since: time.Unix(1726674883, 0),
+		Until: time.Unix(1726674885, 0),
 	})
 	if err != nil {
 		utils.Fail("error reading from Intercom", "error", err)

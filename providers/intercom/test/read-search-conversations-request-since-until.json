@@ -1,0 +1,20 @@
+{
+  "query": {
+    "operator": "AND",
+    "value": [
+      {
+        "field": "updated_at",
+        "operator": ">",
+        "value": "1726674883"
+      },
+      {
+        "field": "updated_at",
+        "operator": "<=",
+        "value": "1726674885"
+      }
+    ]
+  },
+  "pagination": {
+    "per_page": 150
+  }
+}

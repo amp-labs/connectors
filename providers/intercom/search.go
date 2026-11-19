@@ -19,7 +19,7 @@ func (c *Connector) readViaSearch(
 		return nil, nil, nil, false
 	}
 
-	if config.Since.IsZero() && config.ObjectName != ticketsObjectName {
+	if isTimeSearch(config) && config.ObjectName != ticketsObjectName {
 		// Search is only relevant when we do incremental reading.
 		// Tickets is an exception. We can do full read only via POST.
 		return nil, nil, nil, false
@@ -44,7 +44,7 @@ func (c *Connector) readViaSearch(
 }
 
 func (c *Connector) createSearchPayload(params common.ReadParams) (*searchReqPayload, error) {
-	if params.Since.IsZero() && params.ObjectName == ticketsObjectName {
+	if isTimeSearch(params) && params.ObjectName == ticketsObjectName {
 		// Perform full read for tickets using POST query.
 		// This is a hack, query is designed to return all objects.
 		return &searchReqPayload{
@@ -71,19 +71,13 @@ func (c *Connector) createSearchPayload(params common.ReadParams) (*searchReqPay
 		return nil, err
 	}
 
-	// Unix time format is used.
-	updatedAfter := strconv.FormatInt(params.Since.Unix(), 10)
 	// We no longer request by GET, so query parameter must be moved to the POST payload.
 	startingAfter, _ := url.GetFirstQueryParam("starting_after")
 
 	conversation := searchReqPayload{
 		Query: searchQuery{
 			Operator: "AND",
-			Value: []searchQueryValue{{
-				Field:    "updated_at",
-				Operator: ">",
-				Value:    updatedAfter,
-			}},
+			Value:    makeQueries(params),
 		},
 		Pagination: searchPagination{
 			PerPage:       incrementalSearchObjectPagination.Get(params.ObjectName),
@@ -92,6 +86,35 @@ func (c *Connector) createSearchPayload(params common.ReadParams) (*searchReqPay
 	}
 
 	return &conversation, nil
+}
+
+// Unix time format is used for both Since & Until.
+func makeQueries(params common.ReadParams) []searchQueryValue {
+	queries := make([]searchQueryValue, 0)
+
+	if !params.Since.IsZero() {
+		updatedAfter := strconv.FormatInt(params.Since.Unix(), 10)
+		queries = append(queries, searchQueryValue{
+			Field:    "updated_at",
+			Operator: ">",
+			Value:    updatedAfter,
+		})
+	}
+
+	if !params.Until.IsZero() {
+		updatedBefore := strconv.FormatInt(params.Until.Unix(), 10)
+		queries = append(queries, searchQueryValue{
+			Field:    "updated_at",
+			Operator: "<=",
+			Value:    updatedBefore,
+		})
+	}
+
+	return queries
+}
+
+func isTimeSearch(config common.ReadParams) bool {
+	return config.Since.IsZero() && config.Until.IsZero()
 }
 
 type searchReqPayload struct {
