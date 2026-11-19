@@ -316,3 +316,77 @@ func TestGetRecordsByIds_ReportsMissingIds(t *testing.T) {
 	testconn.RequireRowIds(t, result, "52947912500572621", "137982752092261989")
 	testconn.RequireMissingIds(t, result, "11111111111111111", "22222222222222222")
 }
+
+// Gong answers 404 when no records match the filter, so every requested id is reported as not found
+// and the call does not fail.
+func TestGetRecordsByIds_NotFoundReportsEveryId(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If:    mockcond.Path("/v2/calls/extensive"),
+		Then: mockserver.ResponseString(http.StatusNotFound, `{
+			"requestId": "4al018gzaztcr8nbukw",
+			"errors": ["No calls found for the specified period"]
+		}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	result, err := conn.GetRecordsByIds(t.Context(), "calls",
+		[]string{"11111111111111111", "22222222222222222"}, []string{"id"}, nil)
+	if err != nil {
+		t.Fatalf("a 404 for unmatched ids must not fail the call: %v", err)
+	}
+
+	testconn.RequireRowIds(t, result)
+	testconn.RequireMissingIds(t, result, "11111111111111111", "22222222222222222")
+}
+
+// The cursor of each page is sent back with the same filter until a page has no cursor, and the
+// rows of every page are returned.
+func TestGetRecordsByIds_FollowsCursor(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{{
+			If: mockcond.And{
+				mockcond.Path("/v2/users/extensive"),
+				mockcond.Body(`{
+					"filter":{"userIds":["8000000000000001","8000000000000002","8000000000000003"]},
+					"cursor":"USERS_PAGE_2"
+				}`),
+			},
+			Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_users_page2.json")),
+		}, {
+			If: mockcond.And{
+				mockcond.Path("/v2/users/extensive"),
+				mockcond.Body(`{
+					"filter":{"userIds":["8000000000000001","8000000000000002","8000000000000003"]}
+				}`),
+			},
+			Then: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "read_users_page1.json")),
+		}},
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	result, err := conn.GetRecordsByIds(t.Context(), "users",
+		[]string{"8000000000000001", "8000000000000002", "8000000000000003"}, []string{"id"}, nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Page 1 holds ...001 and page 2 holds ...002; ...003 is on neither.
+	testconn.RequireRowIds(t, result, "8000000000000001", "8000000000000002")
+	testconn.RequireMissingIds(t, result, "8000000000000003")
+}
