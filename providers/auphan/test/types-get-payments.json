@@ -1,0 +1,140 @@
+{
+  "success": true,
+  "data": {
+    "type": "payments",
+    "name": "payments",
+    "description": "Report_Desc_Type_Payments",
+    "columns": [
+      {
+        "id": "date",
+        "label": "Date",
+        "kind": "dimension",
+        "format": "report_date",
+        "semantic_type": "date",
+        "groupable": true,
+        "aggregatable": false,
+        "displayable": true,
+        "default_aggregate": null,
+        "allowed_aggregates": []
+      },
+      {
+        "id": "payment_type",
+        "label": "Payment Type",
+        "kind": "dimension",
+        "format": null,
+        "semantic_type": null,
+        "groupable": true,
+        "aggregatable": false,
+        "displayable": true,
+        "default_aggregate": null,
+        "allowed_aggregates": []
+      },
+      {
+        "id": "gl_code",
+        "label": "gl_code",
+        "kind": "dimension",
+        "format": null,
+        "semantic_type": null,
+        "groupable": true,
+        "aggregatable": false,
+        "displayable": true,
+        "default_aggregate": null,
+        "allowed_aggregates": []
+      },
+      {
+        "id": "payment",
+        "label": "Payment",
+        "kind": "measure",
+        "format": "report_money",
+        "semantic_type": "currency",
+        "groupable": false,
+        "aggregatable": true,
+        "displayable": true,
+        "default_aggregate": "sum",
+        "allowed_aggregates": [
+          "sum",
+          "avg",
+          "count",
+          "running"
+        ]
+      },
+      {
+        "id": "tips",
+        "label": "Tips",
+        "kind": "measure",
+        "format": "report_money",
+        "semantic_type": "currency",
+        "groupable": false,
+        "aggregatable": true,
+        "displayable": true,
+        "default_aggregate": "sum",
+        "allowed_aggregates": [
+          "sum",
+          "avg",
+          "count",
+          "running"
+        ]
+      },
+      {
+        "id": "count",
+        "label": "Count",
+        "kind": "measure",
+        "format": null,
+        "semantic_type": null,
+        "groupable": false,
+        "aggregatable": true,
+        "displayable": true,
+        "default_aggregate": "sum",
+        "allowed_aggregates": [
+          "sum",
+          "avg",
+          "count",
+          "running"
+        ]
+      }
+    ],
+    "filters": [
+      {
+        "id": "selection",
+        "type": "enum",
+        "raw_type": "select",
+        "label": "Date Field",
+        "required": true,
+        "default": "close_date"
+      },
+      {
+        "id": "date_from",
+        "type": "datetime",
+        "raw_type": "datetime",
+        "label": "date_from",
+        "required": true,
+        "default": [
+          "today",
+          "start"
+        ]
+      },
+      {
+        "id": "date_to",
+        "type": "datetime",
+        "raw_type": "datetime",
+        "label": "date_to",
+        "required": true,
+        "default": [
+          "today",
+          "end"
+        ]
+      }
+    ],
+    "constraints": {
+      "min_output_columns": 1,
+      "pivot_supported": true,
+      "pivot_aggregate_functions": [
+        "sum",
+        "avg",
+        "count",
+        "running"
+      ]
+    }
+  },
+  "write_mode": "live"
+}

@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "data": {
+    "type": "payments",
+    "layout": "summary",
+    "columns": [
+      {"id": "payment_type", "kind": "dimension"},
+      {"id": "payment", "kind": "measure", "format": "report_money"}
+    ],
+    "rows": []
+  }
+}

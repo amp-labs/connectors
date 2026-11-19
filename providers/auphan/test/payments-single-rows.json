@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "data": {
+    "type": "payments",
+    "layout": "detail",
+    "columns": [
+      {"id": "payment_type", "kind": "dimension"},
+      {"id": "payment", "kind": "measure", "format": "report_money"},
+      {"id": "count", "kind": "measure"}
+    ],
+    "rows": [
+      ["Visa", "4680.61", "153"],
+      ["Amex", "232.70", "6"]
+    ]
+  }
+}

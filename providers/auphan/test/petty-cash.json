@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "data": {
+    "type": "petty_cash",
+    "layout": "summary",
+    "columns": [
+      {"id": "petty_cash_type", "label": "Petty Cash Type", "format": null, "kind": "dimension"},
+      {"id": "reason", "label": "Reason", "format": null, "kind": "dimension"},
+      {"id": "tracking_date", "label": "Date", "format": "report_datetime", "kind": "dimension"},
+      {"id": "amount", "label": "Amount", "format": "report_money", "kind": "measure"}
+    ],
+    "rows": [
+      ["Petty Cash Out", "Alex tips", "Nov 05, 26 4:06 pm", null],
+      [null, null, null, "-80.26"],
+      ["Petty Cash In", "Staff Tips RECEIVED", "Nov 05, 26 11:13 pm", null],
+      [null, null, null, "11.50"]
+    ]
+  }
+}

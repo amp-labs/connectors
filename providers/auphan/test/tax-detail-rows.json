@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "data": {
+    "type": "tax",
+    "layout": "summary",
+    "columns": [
+      {"id": "name", "label": "Tax", "format": null, "kind": "dimension"},
+      {"id": "tax_date", "label": "Date", "format": "report_date", "kind": "dimension"},
+      {"id": "tax_total", "label": "Tax Total", "format": "report_money", "kind": "measure"}
+    ],
+    "rows": [
+      ["Delivery Fee", "Nov 05, 2026", null],
+      [null, null, "0.00"],
+      ["Sales Tax", "Nov 05, 2026", null],
+      [null, null, "1.46"],
+      [null, null, "1.58"],
+      [null, null, "5.12"]
+    ]
+  }
+}
