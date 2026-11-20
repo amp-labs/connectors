@@ -10,6 +10,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"gotest.tools/v3/assert"
 )
 
@@ -69,7 +70,7 @@ func TestGetRecordsByIds_EmptyIdsReturnsEmptySlice(t *testing.T) {
 	assert.Equal(t, len(rows), 0)
 }
 
-func TestGetRecordsByIds_FetchesEachIdInOrder(t *testing.T) {
+func TestGetRecordsByIds_FetchesEachId(t *testing.T) {
 	t.Parallel()
 
 	srv := mockserver.Switch{
@@ -105,6 +106,9 @@ func TestGetRecordsByIds_FetchesEachIdInOrder(t *testing.T) {
 
 	rows := batchRes.Rows
 	assert.Equal(t, len(rows), 2)
+
+	// Rows are added in the order their fetches finish.
+	testconn.SortRowsByID(rows)
 
 	assert.Equal(t, rows[0].Id, "job-1")
 	assert.Equal(t, rows[0].Fields["id"], "job-1")
@@ -471,6 +475,9 @@ func TestGetRecordsByIds_AssociationsAttachPerRowAcrossBatch(t *testing.T) {
 	assert.NilError(t, err)
 
 	rows := batchRes.Rows
+
+	// Rows are added in the order their fetches finish.
+	testconn.SortRowsByID(rows)
 	assert.Equal(t, len(rows), 3)
 	assert.Equal(t, rows[0].Associations[jobContactsAssociation][0].ObjectId, "ctc-1")
 	assert.Equal(t, len(rows[1].Associations), 0)

@@ -9,6 +9,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/mockutils"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 )
 
 func TestGetRecordsByIds_job_withCustomerAssociation(t *testing.T) {
@@ -157,8 +158,9 @@ func TestGetRecordsByIds_unknownObject(t *testing.T) {
 	}
 }
 
-// Rows come back in requested order even when an earlier id responds slower.
-func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
+// Every id's row is returned even when an earlier id responds slower. Rows are added in the order
+// their fetches finish.
+func TestGetRecordsByIds_ReturnsEveryRowWhenFetchesFinishOutOfOrder(t *testing.T) {
 	t.Parallel()
 
 	server := mockserver.Switch{
@@ -199,12 +201,6 @@ func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rows := batchRes.Rows
-	if len(rows) != 2 {
-		t.Fatalf("expected 2 rows, got %d", len(rows))
-	}
-
-	if rows[0].Id != "job_first" || rows[1].Id != "job_second" {
-		t.Fatalf("rows out of requested order: got %q, %q", rows[0].Id, rows[1].Id)
-	}
+	testconn.RequireRowIdsAnyOrder(t, batchRes, "job_first", "job_second")
+	testconn.RequireNoFailures(t, batchRes)
 }

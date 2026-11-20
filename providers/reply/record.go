@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/spyzhov/ajson"
 )
 
@@ -36,9 +36,9 @@ const maxConcurrentRecordFetch = 4
 // endpoint, so it makes one GET per id, concurrently, and always fetches every id.
 //
 // An id that could not be fetched is reported in the result's Failures with its reason, and the
-// rows that did resolve are still returned, in requested order. An id that no longer exists is a
-// not-found failure and does not produce an error; any other failure is also returned, joined, as
-// the error. Each row is built the way Read builds it.
+// rows that did resolve are still returned, in the order their fetches finished. An id that no
+// longer exists is a not-found failure and does not produce an error; any other failure is also
+// returned, joined, as the error. Each row is built the way Read builds it.
 func (c *Connector) GetRecordsByIds( //nolint:revive
 	ctx context.Context,
 	objectName string,
@@ -56,37 +56,27 @@ func (c *Connector) GetRecordsByIds( //nolint:revive
 		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
-	// Keyed by position so rows keep requested order.
-	tasks := make([]parallelfetch.Task[int, []common.ReadResultRow], len(recordIds))
+	result := common.NewBatchReadResult([]common.ReadResultRow{})
+
+	jobs := make([]simultaneously.Job, len(recordIds))
 
 	for i, recordID := range recordIds {
-		idx, currentID := i, recordID
-
-		tasks[idx] = func(ctx context.Context) (int, *[]common.ReadResultRow, error) {
-			rows, err := c.fetchRows(ctx, objectName, currentID, fields)
+		jobs[i] = func(ctx context.Context) error {
+			rows, err := c.fetchRows(ctx, objectName, recordID, fields)
 			if err != nil {
-				return idx, nil, err
+				result.AddFailure(recordID, err)
+			} else {
+				result.AddSuccess(rows...)
 			}
 
-			return idx, &rows, nil
+			// Never fails the job, so one failed id does not stop the others.
+			return nil
 		}
 	}
 
-	// Fetches every id, even when some fail.
-	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+	_ = simultaneously.DoCtx(ctx, maxConcurrentRecordFetch, jobs...)
 
-	out := make([]common.ReadResultRow, 0, len(recordIds))
-
-	for i := range recordIds {
-		if rows, ok := result.Records[i]; ok {
-			out = append(out, rows...)
-		}
-	}
-
-	batch := common.NewBatchReadResult(out)
-
-	// Every per-id error is a failure; the error joins the ones that are not not-found.
-	return batch, batch.ReportFetchErrors(recordIds, result.Errors)
+	return result, result.Err()
 }
 
 // fetchRows fetches one record by id and builds its rows.

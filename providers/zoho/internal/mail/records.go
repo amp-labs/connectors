@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/spyzhov/ajson"
 )
 
@@ -58,47 +58,38 @@ func (a *Adapter) GetRecordsByIds(
 		return nil, errNoRecordIDs
 	}
 
-	// Fetches each id concurrently, keeping rows in requested order.
-	// Keyed by position so rows keep requested order.
-	tasks := make([]parallelfetch.Task[int, common.ReadResultRow], len(recordIds))
+	result := common.NewBatchReadResult([]common.ReadResultRow{})
+
+	// Fetches each id concurrently. Rows are added in the order their fetches finish.
+	jobs := make([]simultaneously.Job, len(recordIds))
 
 	for i, recordID := range recordIds {
-		idx, currentID := i, recordID
-
-		tasks[idx] = func(ctx context.Context) (int, *common.ReadResultRow, error) {
+		jobs[i] = func(ctx context.Context) error {
 			var (
 				row common.ReadResultRow
 				err error
 			)
 
 			if objectName == objectNameTasks {
-				row, err = a.getTaskByID(ctx, currentID, fields)
+				row, err = a.getTaskByID(ctx, recordID, fields)
 			} else {
-				row, err = a.getMessageByID(ctx, currentID, fields)
+				row, err = a.getMessageByID(ctx, recordID, fields)
 			}
 
 			if err != nil {
-				return idx, nil, err
+				result.AddFailure(recordID, err)
+			} else {
+				result.AddSuccess(row)
 			}
 
-			return idx, &row, nil
+			// Never fails the job, so one failed id does not stop the others.
+			return nil
 		}
 	}
 
-	// Fetches every id, even when some fail.
-	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+	_ = simultaneously.DoCtx(ctx, maxConcurrentRecordFetch, jobs...)
 
-	rows := make([]common.ReadResultRow, 0, len(recordIds))
-	for i := range recordIds {
-		if row, ok := result.Records[i]; ok {
-			rows = append(rows, row)
-		}
-	}
-
-	batch := common.NewBatchReadResult(rows)
-
-	// Every per-id error is a failure; the error joins the ones that are not not-found.
-	return batch, batch.ReportFetchErrors(recordIds, result.Errors)
+	return result, result.Err()
 }
 
 // getMessageByID fetches a single email's metadata. The folderId is mandatory,
