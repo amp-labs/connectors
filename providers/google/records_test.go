@@ -1,6 +1,7 @@
 package google
 
 import (
+	"errors"
 	"net/http"
 	"sort"
 	"testing"
@@ -129,6 +130,58 @@ func TestCalendarGetRecordsByIds(t *testing.T) { //nolint:funlen
 				}
 			}
 		})
+	}
+}
+
+// A 404 from events.list means the calendar does not exist or is not accessible. It is returned as
+// a bad request, so that the caller does not read it as "the records do not exist".
+func TestCalendarGetRecordsByIds_NotFoundIsBadRequest(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Fixed{
+		Setup: mockserver.ContentJSON(),
+		Always: mockserver.ResponseString(http.StatusNotFound,
+			`{"error":{"code":404,"message":"Not Found","errors":[{"reason":"notFound","message":"Not Found"}]}}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestCalendarConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	_, err = conn.GetRecordsByIds(t.Context(), "events", []string{"2026-06-17T00:00:00.000Z"}, nil, nil)
+	if !errors.Is(err, common.ErrBadRequest) {
+		t.Fatalf("error = %v, want one wrapping common.ErrBadRequest", err)
+	}
+
+	if errors.Is(err, common.ErrNotFound) {
+		t.Errorf("error %v must not wrap common.ErrNotFound", err)
+	}
+
+	if httpErr, ok := errors.AsType[*common.HTTPError](err); ok && httpErr.Status == http.StatusNotFound {
+		t.Errorf("error %v must not wrap a 404 *common.HTTPError", err)
+	}
+}
+
+// The request asks for 2500 events per page, the most events.list allows.
+func TestCalendarGetRecordsByIds_RequestsMaxPageSize(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Conditional{
+		Setup: mockserver.ContentJSON(),
+		If:    mockcond.QueryParam("maxResults", "2500"),
+		Then:  mockserver.ResponseString(http.StatusOK, `{"kind":"calendar#events","items":[]}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestCalendarConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	if _, err := conn.GetRecordsByIds(t.Context(), "events", []string{"2026-06-17T00:00:00.000Z"}, nil, nil); err != nil {
+		t.Fatalf("expected the request to carry maxResults=2500, got error: %v", err)
 	}
 }
 
