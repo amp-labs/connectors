@@ -14,12 +14,39 @@ import (
 // The number 3 is chosen at random.
 const maxConcurrency = 3
 
+// Result is the outcome of a batch read. The identifiers are split across several requests,
+// and a failed request does not discard the records returned by the others.
+type Result[B any] struct {
+	// Records are the records returned by the requests that succeeded.
+	Records []B
+	// Failures are the requests that failed, in the order they were built.
+	Failures []Failure
+}
+
+// Failure is a request that failed, with the identifiers it asked for.
+type Failure struct {
+	Identifiers []string
+	Err         error
+}
+
+// Err joins the errors of the failed requests. It is nil when every request succeeded.
+func (r Result[B]) Err() error {
+	errs := make([]error, 0, len(r.Failures))
+	for _, failure := range r.Failures {
+		errs = append(errs, failure.Err)
+	}
+
+	return errors.Join(errs...)
+}
+
 // Read performs a batch read for the requested object type and identifiers.
+// The returned error is set only when the requests could not be built; errors of the requests
+// themselves are in Result.Failures.
 func Read[B any](ctx context.Context,
 	base *core.Base,
 	objectName string,
 	identifiers []string,
-) ([]B, error) {
+) (*Result[B], error) {
 	baseURL, err := base.GetUrl(objectName)
 	if err != nil {
 		return nil, err
@@ -59,17 +86,26 @@ func Read[B any](ctx context.Context,
 		}
 	}
 
-	result := parallelfetch.Execute(ctx, tasks, maxConcurrency)
-	if len(result.Errors) != 0 {
-		return nil, errors.Join(result.Errors.Values()...)
+	response := parallelfetch.Execute(ctx, tasks, maxConcurrency)
+
+	result := &Result[B]{
+		Records: make([]B, 0),
 	}
 
-	records := make([]B, 0)
-	for _, list := range result.Records {
-		records = append(records, list...)
+	for index, wrapper := range urls {
+		if err, failed := response.Errors[index]; failed {
+			result.Failures = append(result.Failures, Failure{
+				Identifiers: wrapper.identifiers,
+				Err:         err,
+			})
+
+			continue
+		}
+
+		result.Records = append(result.Records, response.Records[index]...)
 	}
 
-	return records, nil
+	return result, nil
 }
 
 // readResponse mirrors the ConnectWise read response which is array at the root level.
