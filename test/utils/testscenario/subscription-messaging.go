@@ -154,7 +154,12 @@ func ValidateSubscribeReceiveEvents(
 
 	server.SetupConnectorVerification(conn, verificationParams)
 
-	fmt.Println("============== Invoking connector.Write/Delete() ==================")
+	if len(suite.Operations) != 0 {
+		fmt.Println("============== Invoking connector.Write/Delete() ==================")
+	} else {
+		fmt.Println("============== Trigger connector or API manually ===============")
+	}
+
 	for _, trigger := range suite.Operations {
 		switch trigger.Method {
 		case ConnectorMethodCreate:
