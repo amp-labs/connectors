@@ -1,0 +1,23 @@
+{
+  "data": {
+    "campaigns": [
+      {
+        "id": 677335,
+        "name": "New campaign 23-May-2025",
+        "recipients_count": 1,
+        "editable": true,
+        "started": true,
+        "archived": false,
+        "paused": false,
+        "owner": {
+          "id": 4813420,
+          "email": "owner@example.com"
+        }
+      }
+    ]
+  },
+  "meta": {
+    "limit": 1,
+    "offset": 0
+  }
+}
