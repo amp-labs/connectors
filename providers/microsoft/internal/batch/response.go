@@ -2,7 +2,6 @@ package batch
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/amp-labs/connectors/common"
@@ -43,20 +42,14 @@ type Envelope[B any] struct {
 // Missing or failed IDs will not be returned.
 func (r Result[B]) GetInOrder(requestIdentifiers []RequestID) []B {
 	result := make([]B, 0, len(requestIdentifiers))
+
 	for _, identifier := range requestIdentifiers {
-		result = append(result, r.Responses[identifier].Data)
+		if response, ok := r.Responses[identifier]; ok {
+			result = append(result, response.Data)
+		}
 	}
 
 	return result
-}
-
-func (r Result[B]) JoinedErr() error {
-	var err error
-	for _, e := range r.Errors {
-		err = errors.Join(err, e.Data)
-	}
-
-	return err
 }
 
 // storeResponseBody classifies a single API response into success or failure.
