@@ -474,6 +474,26 @@ Ampersand has its own rate limiting layer (Gubernator, per-provider, per-custome
 1. **Return `common.ErrRateLimited`** when the provider returns a 429. Ampersand handles the backoff.
 2. **Read `Retry-After` headers** if the provider includes them and propagate that information if the error type supports it.
 3. **Do not implement your own retry loop** inside a connector — that's Ampersand's job at the Temporal layer.
+4. **Send fan-outs with `DoBatch`.** When a read needs one request per record (custom fields per job, participants per meeting), build the requests and send them with `JSONHTTPClient.DoBatch` instead of your own goroutines, sleeps or retries. `DoBatch` caps concurrency, stops at a 429 and returns the error, which you return unchanged. When the server tries the read again, `DoBatch` reuses the responses it saved, so only the missing requests are sent. Requests that depend on an earlier response, such as further pages, go in the next batch.
+
+```go
+requests := make([]common.BatchRequest, len(jobIDs))
+for i, id := range jobIDs {
+    requests[i] = common.BatchRequest{Method: http.MethodGet, URL: c.customFieldsURL(id)}
+}
+
+responses, err := c.JSONHTTPClient().DoBatch(ctx, requests)
+if err != nil {
+    return nil, err
+}
+
+for i, rsp := range responses {
+    if rsp.Err != nil {
+        // This request alone failed, e.g. a 404 for jobIDs[i].
+    }
+    // Parse rsp.Response; responses are in the same order as requests.
+}
+```
 
 ---
 
