@@ -1,0 +1,1 @@
+{"statusCode":429,"error":"RATE_LIMITED","messages":["Rate limit exceeded for apiKey: 100 requests per 60s."],"limitKind":"speed","exhaustedKind":"limit","scope":{"spenderType":"apiKey","spenderId":null,"operationType":"API_REQUEST"},"limit":100,"remaining":0,"periodCount":60,"periodUnit":"second","retryAfterSeconds":1}

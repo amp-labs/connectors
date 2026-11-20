@@ -1,0 +1,60 @@
+{
+  "data": {
+    "companies": [
+      {
+        "id": "c6f82506-260c-4ee5-a880-1cb4cce21178",
+        "searchVector": "'alpha':2 'alpha.example.com':4 'fixture':1 'ltd':3",
+        "createdAt": "2026-10-25T13:07:55.261Z",
+        "updatedAt": "2026-10-25T13:07:55.261Z",
+        "deletedAt": null,
+        "name": "Fixture Alpha Ltd",
+        "domainName": {
+          "primaryLinkLabel": "",
+          "primaryLinkUrl": "alpha.example.com",
+          "secondaryLinks": []
+        },
+        "address": {
+          "addressStreet1": "",
+          "addressStreet2": "",
+          "addressCity": "Lyon",
+          "addressPostcode": "",
+          "addressState": "",
+          "addressCountry": "",
+          "addressLat": null,
+          "addressLng": null
+        },
+        "linkedinLink": {
+          "primaryLinkLabel": "",
+          "primaryLinkUrl": "",
+          "secondaryLinks": []
+        },
+        "annualRevenue": {
+          "amountMicros": null,
+          "currencyCode": null
+        },
+        "position": 0,
+        "createdBy": {
+          "source": "API",
+          "workspaceMemberId": null,
+          "name": "ampersand-connector-live-test",
+          "context": {}
+        },
+        "updatedBy": {
+          "source": "API",
+          "workspaceMemberId": null,
+          "name": "ampersand-connector-live-test",
+          "context": {}
+        },
+        "accountOwnerId": null,
+        "legacyRating": null
+      }
+    ]
+  },
+  "totalCount": 3,
+  "pageInfo": {
+    "startCursor": "eyJpZCI6ImM2ZjgyNTA2LTI2MGMtNGVlNS1hODgwLTFjYjRjY2UyMTE3OCJ9",
+    "endCursor": "eyJpZCI6ImM2ZjgyNTA2LTI2MGMtNGVlNS1hODgwLTFjYjRjY2UyMTE3OCJ9",
+    "hasNextPage": false,
+    "hasPreviousPage": true
+  }
+}

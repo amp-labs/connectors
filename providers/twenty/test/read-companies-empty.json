@@ -1,0 +1,12 @@
+{
+  "data": {
+    "companies": []
+  },
+  "totalCount": 0,
+  "pageInfo": {
+    "startCursor": null,
+    "endCursor": null,
+    "hasNextPage": false,
+    "hasPreviousPage": false
+  }
+}
