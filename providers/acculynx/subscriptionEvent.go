@@ -95,11 +95,14 @@ var topicObjectOverrides = map[string]string{
 // topicEventTypeOverrides pins topics whose suffix misclassifies them.
 // company_assigned ends in _assigned (suffix heuristic: other), but it is an
 // update to the job's representative slot: the slot always exists, assignment
-// fills it. Consulted before the suffix switch in EventType.
+// fills it. appointments.initial_created ends in _created (heuristic: create),
+// but it sets the initial appointment on a job that already exists.
+// Consulted before the suffix switch in EventType.
 //
 //nolint:gochecknoglobals
 var topicEventTypeOverrides = map[string]common.SubscriptionEventType{
 	"job.representatives.company_assigned": common.SubscriptionEventTypeUpdate,
+	"job.appointments.initial_created":     common.SubscriptionEventTypeUpdate,
 }
 
 // PreLoadData is a no-op for AccuLynx — webhook payloads are self-contained.

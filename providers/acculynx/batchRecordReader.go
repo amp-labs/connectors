@@ -168,12 +168,51 @@ func (c *Connector) fetchSingleRecord(
 	}
 
 	rawCopy := *raw
+	fields := rawCopy
+
+	// Custom fields live behind their own endpoint, as on the read path. Without
+	// them, an update event fired by job.custom-field.value_changed would carry
+	// the record minus the very field that changed.
+	if usesCustomFields(objectName) && requestsMissingField(rawCopy, fieldSet) {
+		values, err := c.fetchCustomFieldValuesForRecord(ctx, objectName, recordID)
+		if err != nil {
+			return common.ReadResultRow{}, fmt.Errorf("fetch custom field values: %w", err)
+		}
+
+		// Raw stays as AccuLynx returned it, matching the read path.
+		fields = maps.Clone(rawCopy)
+		for _, value := range values {
+			fields[slugFromLabel(value.Label)] = unwrapValueItems(value.Values)
+		}
+	}
 
 	return common.ReadResultRow{
 		Id:     recordID,
-		Fields: pickFields(rawCopy, fieldSet),
+		Fields: pickFields(fields, fieldSet),
 		Raw:    rawCopy,
 	}, nil
+}
+
+// requestsMissingField reports whether the caller wants a field the record
+// payload doesn't carry. Custom fields are never on it, so only then is the
+// extra custom-fields call worth making. An empty fieldSet means every field.
+func requestsMissingField(raw map[string]any, fieldSet datautils.StringSet) bool {
+	if len(fieldSet) == 0 {
+		return true
+	}
+
+	keys := make(datautils.StringSet, len(raw))
+	for k := range raw {
+		keys.AddOne(strings.ToLower(k))
+	}
+
+	for field := range fieldSet {
+		if !keys.Has(strings.ToLower(field)) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // pickFields filters raw to entries in fieldSet. Empty fieldSet returns a

@@ -29,8 +29,53 @@ func TestResolveTopics_StandardEvents(t *testing.T) {
 	got, err := resolveTopics(events)
 	assert.NilError(t, err)
 
-	expected := []string{"contact_added", "contact_changed", "job_created"}
+	expected := []string{
+		"contact.custom-field.value_changed",
+		"contact_added",
+		"contact_changed",
+		"job_created",
+	}
 	assert.DeepEqual(t, got, expected)
+}
+
+// The jobs update event collapses every topic that changes a field on the
+// enriched job: job_updated alone misses work type, trade type, category and
+// custom-field edits, so a consumer listening to update would never see them.
+func TestResolveTopics_JobsUpdateCollapsesGranularTopics(t *testing.T) {
+	t.Parallel()
+
+	got, err := resolveTopics(map[common.ObjectName]common.ObjectEvents{
+		objectJobs: {Events: []common.SubscriptionEventType{common.SubscriptionEventTypeUpdate}},
+	})
+	assert.NilError(t, err)
+
+	expected := []string{
+		"job.appointments.initial_created",
+		"job.appointments.initial_updated",
+		"job.category_changed",
+		"job.contacts.primary_changed",
+		"job.custom-field.value_changed",
+		"job.milestone.current_changed",
+		"job.milestone.status.current_changed",
+		"job.trade-type_changed",
+		"job.work-type_changed",
+		"job_updated",
+	}
+	assert.DeepEqual(t, got, expected)
+
+	// Every collapsed topic must come back as a jobs update, or the server
+	// would route it to another object or event and the consumer would miss it.
+	for _, topic := range got {
+		evt := SubscriptionEvent{eventFieldTopicName: topic}
+
+		obj, err := evt.ObjectName()
+		assert.NilError(t, err)
+		assert.Equal(t, obj, objectJobs, topic)
+
+		evtType, err := evt.EventType()
+		assert.NilError(t, err)
+		assert.Equal(t, evtType, common.SubscriptionEventTypeUpdate, topic)
+	}
 }
 
 func TestResolveTopics_JobsRepresentativesUpdateEvent(t *testing.T) {
@@ -306,7 +351,9 @@ func TestUpdateSubscription_PutsToSubscriptionByIdEndpoint(t *testing.T) {
 
 	stored, ok := res.Result.(*SubscriptionResult)
 	assert.Assert(t, ok)
-	assert.DeepEqual(t, stored.TopicNames, []string{"job_created", "job_updated"})
+	assert.Assert(t, slices.Contains(stored.TopicNames, "job_created"))
+	assert.Assert(t, slices.Contains(stored.TopicNames, "job_updated"))
+	assert.Assert(t, slices.Contains(stored.TopicNames, "job.work-type_changed"))
 }
 
 func TestUpdateSubscription_RejectsConsumerUrlChange(t *testing.T) {
