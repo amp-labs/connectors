@@ -2,116 +2,123 @@ package associations
 
 import (
 	"context"
-	"errors"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
-	"github.com/amp-labs/connectors/internal/parallelfetch"
+	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/pagedbatch"
 	"github.com/amp-labs/connectors/providers/zoom/internal/core"
 )
 
 type (
-	recordItem                  map[string]any
-	recordId                    = string
-	recordItems                 map[recordId]recordItem
-	meetingAssociationCollector func(ctx context.Context, base *core.Base, meetingId string) (recordItems, error)
+	recordItem  map[string]any
+	recordId    = string
+	recordItems map[recordId]recordItem
 )
 
-// meetingAssociationsToObject fetches an association for multiple Meetings
-// concurrently and groups the resulting records by their parent Meeting ID.
+// meetingAssociation is how one kind of meeting association is fetched: the URL of its first
+// request for a meeting, and how its responses are read.
+type meetingAssociation struct {
+	url  func(base *core.Base, meetingId string) (*urlbuilder.URL, error)
+	read readFunc
+}
+
+// meetingAssociationsToObject fetches an association for multiple Meetings as request batches, and
+// groups the resulting records by their parent Meeting ID. Paginated associations go out page by
+// page: the first page for every meeting, then the next page for every meeting that has one.
 //
 // Each returned association contains the associated record's identifier and
-// raw response data. If fetching any association fails, the collected errors
-// are returned together.
+// raw response data. If fetching any association fails, that error is returned.
 func meetingAssociationsToObject(ctx context.Context,
 	base *core.Base,
 	meetingIds []readhelper.RowID,
-	fetchRecords meetingAssociationCollector,
+	association meetingAssociation,
 ) (map[readhelper.RowID][]common.Association, error) {
-	tasks := make([]parallelfetch.Task[string, recordItems], len(meetingIds))
-	for index, meetingId := range meetingIds {
-		tasks[index] = func(ctx context.Context) (taskID string, data *recordItems, err error) {
-			records, err := fetchRecords(ctx, base, meetingId)
-			if err != nil {
-				return "", nil, err
-			}
+	first := make([]common.BatchRequest, len(meetingIds))
+	records := make([]recordItems, len(meetingIds))
 
-			return meetingId, &records, nil
+	for index, meetingId := range meetingIds {
+		url, err := association.url(base, meetingId)
+		if err != nil {
+			return nil, err
 		}
+
+		first[index] = pagedbatch.Get(url.String())
+		records[index] = make(recordItems)
 	}
 
-	result := parallelfetch.Execute(ctx, tasks, core.MaxReadConcurrency)
-	if len(result.Errors) != 0 {
-		return nil, errors.Join(result.Errors.Values()...)
+	err := pagedbatch.Run(ctx, base.JSONHTTPClient(), first,
+		func(walk int, rsp common.BatchResponse) (common.BatchRequest, bool, error) {
+			next, err := association.read(rsp, records[walk])
+
+			switch {
+			case err != nil:
+				return pagedbatch.Fail(err)
+			case next == "":
+				return pagedbatch.Done()
+			default:
+				return pagedbatch.Next(next)
+			}
+		})
+	if err != nil {
+		return nil, err
 	}
 
 	registry := make(map[readhelper.RowID][]common.Association)
-	for meetingId, records := range result.Records {
-		registry[meetingId] = make([]common.Association, len(records))
 
-		idx := 0
-		for objectId, record := range records {
-			registry[meetingId][idx] = common.Association{
+	for index, meetingId := range meetingIds {
+		associations := make([]common.Association, 0, len(records[index]))
+
+		for objectId, record := range records[index] {
+			associations = append(associations, common.Association{
 				ObjectId:                    objectId,
 				Raw:                         record,
 				ProviderAssociationMetadata: nil,
-			}
-			idx += 1
+			})
 		}
+
+		registry[meetingId] = associations
 	}
 
 	return registry, nil
 }
 
 // https://developers.zoom.us/docs/api/meetings/#tag/meetings/get/past_meetings/{meetingId}/participants
-func fetchMeetingParticipants(ctx context.Context,
-	base *core.Base,
-	meetingId string,
-) (recordItems, error) {
-	url, err := base.GetMeetingParticipantUrl(meetingId)
-	if err != nil {
-		return nil, err
-	}
+//
+//nolint:gochecknoglobals
+var meetingParticipants = meetingAssociation{
+	url: func(base *core.Base, meetingId string) (*urlbuilder.URL, error) {
+		url, err := base.GetMeetingParticipantUrl(meetingId)
+		if err != nil {
+			return nil, err
+		}
 
-	url.WithQueryParam("page_size", core.DefaultPageSize)
+		url.WithQueryParam("page_size", core.DefaultPageSize)
 
-	return fetchItems(ctx, base, url, "participants", "id")
+		return url, nil
+	},
+	read: readItems("participants", "id"),
 }
 
 // Transcript is a single object rather than a collection, so it is treated
 // as additional metadata for a Meeting.
 // https://developers.zoom.us/docs/api/meetings/#tag/meeting-transcript/get/meetings/{meetingId}/transcript
-func fetchMeetingTranscript(ctx context.Context,
-	base *core.Base,
-	meetingId string,
-) (recordItems, error) {
-	url, err := base.GetMeetingTranscriptUrl(meetingId)
-	if err != nil {
-		return nil, err
-	}
-
-	item, err := fetchItem(ctx, base, url, "meeting_id")
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) && strings.Contains(err.Error(), "error code (3322)") {
-			// This meeting transcript does not exist.
-			// No associations to return.
-			return make(recordItems), nil
-		}
-
-		return nil, err
-	}
-
-	return item, nil
+//
+//nolint:gochecknoglobals
+var meetingTranscript = meetingAssociation{
+	url: func(base *core.Base, meetingId string) (*urlbuilder.URL, error) {
+		return base.GetMeetingTranscriptUrl(meetingId)
+	},
+	read: readTranscript,
 }
 
 // Summary is an additional metadata for a Meeting.
 // https://developers.zoom.us/docs/api/meetings/#tag/summaries/get/meetings/{meetingId}/meeting_summary
-func fetchMeetingSummary(ctx context.Context, base *core.Base, meetingId string) (recordItems, error) {
-	url, err := base.GetMeetingSummaryUrl(meetingId)
-	if err != nil {
-		return nil, err
-	}
-
-	return fetchItem(ctx, base, url, "meeting_id")
+//
+//nolint:gochecknoglobals
+var meetingSummary = meetingAssociation{
+	url: func(base *core.Base, meetingId string) (*urlbuilder.URL, error) {
+		return base.GetMeetingSummaryUrl(meetingId)
+	},
+	read: readItem("meeting_id"),
 }

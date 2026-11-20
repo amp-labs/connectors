@@ -1,101 +1,122 @@
 package associations
 
 import (
-	"context"
+	"errors"
+	"strings"
 
+	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/providers/zoom/internal/core"
+	"github.com/spyzhov/ajson"
 )
 
-// It retrieves a single resource and treats the entire JSON response as one record.
-func fetchItem(ctx context.Context, base *core.Base, url *urlbuilder.URL, identifierField string) (recordItems, error) {
-	if err := core.Wait(ctx); err != nil {
-		return nil, err
-	}
+// readFunc adds the records of one response to records, and returns the URL of the next page, or
+// "" when there is none.
+type readFunc func(rsp common.BatchResponse, records recordItems) (string, error)
 
-	resp, err := base.JSONHTTPClient().Get(ctx, url.String())
-	if err != nil {
-		return nil, err
-	}
+// readItem treats the entire JSON response as one record.
+func readItem(identifierField string) readFunc {
+	return func(rsp common.BatchResponse, records recordItems) (string, error) {
+		if rsp.Err != nil {
+			return "", rsp.Err
+		}
 
-	body, ok := resp.Body()
-	if !ok {
-		return make(recordItems), nil
-	}
+		body, ok := rsp.Response.Body()
+		if !ok {
+			return "", nil
+		}
 
-	record, err := jsonquery.Convertor.ObjectToMap(body)
-	if err != nil {
-		return nil, err
-	}
+		record, err := jsonquery.Convertor.ObjectToMap(body)
+		if err != nil {
+			return "", err
+		}
 
-	if len(record) == 0 {
-		return make(recordItems), nil
-	}
+		if len(record) == 0 {
+			return "", nil
+		}
 
-	identifier, err := jsonquery.New(body).TextWithDefault(identifierField, "")
-	if err != nil {
-		return nil, err
-	}
+		identifier, err := jsonquery.New(body).TextWithDefault(identifierField, "")
+		if err != nil {
+			return "", err
+		}
 
-	return recordItems{identifier: record}, nil
+		records[identifier] = record
+
+		return "", nil
+	}
 }
 
-// It retrieves a collection of resources from a paginated endpoint.
-func fetchItems(ctx context.Context, // nolint:cyclop
-	base *core.Base,
-	url *urlbuilder.URL,
-	responseFieldName, identifierField string,
-) (recordItems, error) {
-	records := make(recordItems)
-
-	for {
-		if err := core.Wait(ctx); err != nil {
-			return nil, err
+// readItems reads one page of a paginated collection.
+func readItems(responseFieldName, identifierField string) readFunc {
+	return func(rsp common.BatchResponse, records recordItems) (string, error) {
+		if rsp.Err != nil {
+			return "", rsp.Err
 		}
 
-		resp, err := base.JSONHTTPClient().Get(ctx, url.String())
-		if err != nil {
-			return nil, err
-		}
-
-		body, ok := resp.Body()
+		body, ok := rsp.Response.Body()
 		if !ok {
-			return records, nil
+			return "", nil
 		}
 
 		array, err := jsonquery.New(body).ArrayOptional(responseFieldName)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 
 		if len(array) == 0 {
-			return records, nil
+			return "", nil
 		}
 
-		for _, item := range array {
-			record, err := jsonquery.Convertor.ObjectToMap(item)
-			if err != nil {
-				return nil, err
-			}
-
-			identifier, err := jsonquery.New(item).TextWithDefault(identifierField, "")
-			if err != nil {
-				return nil, err
-			}
-
-			records[identifier] = record
+		if err := addRecords(array, identifierField, records); err != nil {
+			return "", err
 		}
 
 		nextPageToken, err := jsonquery.New(body).StrWithDefault("next_page_token", "")
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 
 		if nextPageToken == "" {
-			return records, nil
+			return "", nil
+		}
+
+		url, err := urlbuilder.New(rsp.Request.URL)
+		if err != nil {
+			return "", err
 		}
 
 		url.WithQueryParam("next_page_token", nextPageToken)
+
+		return url.String(), nil
 	}
+}
+
+// addRecords adds every item of a page to records, keyed by its identifier.
+func addRecords(items []*ajson.Node, identifierField string, records recordItems) error {
+	for _, item := range items {
+		record, err := jsonquery.Convertor.ObjectToMap(item)
+		if err != nil {
+			return err
+		}
+
+		identifier, err := jsonquery.New(item).TextWithDefault(identifierField, "")
+		if err != nil {
+			return err
+		}
+
+		records[identifier] = record
+	}
+
+	return nil
+}
+
+// readTranscript reads a meeting transcript. A meeting without one has no records.
+func readTranscript(rsp common.BatchResponse, records recordItems) (string, error) {
+	if rsp.Err != nil && errors.Is(rsp.Err, common.ErrNotFound) && strings.Contains(rsp.Err.Error(), "error code (3322)") {
+		// This meeting transcript does not exist.
+		// No associations to return.
+		return "", nil
+	}
+
+	return readItem("meeting_id")(rsp, records)
 }

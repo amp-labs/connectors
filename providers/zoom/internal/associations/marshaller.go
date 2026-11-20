@@ -48,11 +48,11 @@ func meetingAssociations(ctx context.Context,
 ) (map[readhelper.RowID][]common.Association, error) {
 	switch toObject {
 	case MeetingParticipants:
-		return meetingAssociationsToObject(ctx, base, ids, fetchMeetingParticipants)
+		return meetingAssociationsToObject(ctx, base, ids, meetingParticipants)
 	case MeetingTranscripts:
-		return meetingAssociationsToObject(ctx, base, ids, fetchMeetingTranscript)
+		return meetingAssociationsToObject(ctx, base, ids, meetingTranscript)
 	case MeetingSummaries:
-		return meetingAssociationsToObject(ctx, base, ids, fetchMeetingSummary)
+		return meetingAssociationsToObject(ctx, base, ids, meetingSummary)
 	default:
 		return nil, readhelper.ErrAssociationsUnsupported
 	}

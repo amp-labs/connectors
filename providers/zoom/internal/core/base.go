@@ -2,9 +2,8 @@ package core
 
 import (
 	"context"
-	"time"
+	"net/http"
 
-	"github.com/amp-labs/amp-common/utils"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
 	"github.com/amp-labs/connectors/common/urlbuilder"
@@ -16,31 +15,16 @@ import (
 )
 
 const (
-	MaxReadConcurrency = 1
-	DefaultPageSize    = "300"
+	DefaultPageSize = "300"
 
 	apiVersion = "v2"
 )
 
-// Wait inserts a 500 ms delay between Zoom requests.
+// Base is the part of the Zoom connector that its reads and associations share.
 //
-// TODO: Implement proper Zoom rate limiting.
-//
-// Zoom's lowest available rate-limit tier is the Basic (free) plan, which
-// allows up to 2 requests per second. As a result, requests cannot currently
-// be parallelized: all requests must be executed sequentially and throttled
-// with a 500 ms delay between calls to avoid exceeding the rate limit.
-//
-// This helper is currently called from multiple places in the codebase to
-// insert that delay. Replace these scattered calls with a centralized,
-// provider-aware rate limiter that supports configurable concurrency and
-// delay per provider/plan.
-//
-// Until then, this 500 ms wait is a temporary safeguard against Zoom rate limiting.
-func Wait(ctx context.Context) error {
-	return utils.SleepCtx(ctx, 500*time.Millisecond) // nolint:mnd
-}
-
+// Zoom's request rate is paced by the host's rate limiter (2 requests per second by default, the
+// lowest plan's limit), and request batches cap how many are in flight. Connector code sends
+// fan-outs with JSONHTTPClient.DoBatch, or pagedbatch for paginated ones, and adds no delays.
 type Base struct {
 	// Basic connector
 	*components.Connector
@@ -62,6 +46,18 @@ func constructor(params common.ConnectorParams, base *components.Connector) (*Ba
 	return &Base{
 		Connector: base,
 	}, nil
+}
+
+// GetWithCheckpoint sends one GET as a request batch. Its response is saved with the read's other
+// responses, so a read that is tried again gets the same response, and from it builds the same
+// follow-up requests, whose saved responses are then reused too.
+func (b Base) GetWithCheckpoint(ctx context.Context, url string) (*common.JSONHTTPResponse, error) {
+	responses, err := b.JSONHTTPClient().DoBatch(ctx, []common.BatchRequest{{Method: http.MethodGet, URL: url}})
+	if err != nil {
+		return nil, err
+	}
+
+	return responses[0].Response, responses[0].Err
 }
 
 func (b Base) GetReadURL(objectName string) (*urlbuilder.URL, error) {
