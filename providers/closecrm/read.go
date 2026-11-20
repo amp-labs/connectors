@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
+	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 )
 
@@ -35,8 +36,13 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// Add initial query parameters for mutating the response fields.
 	url.WithQueryParam("_fields", strings.Join(config.Fields.List(), ","))
-	url.WithQueryParam(skipQuery, "0")
-	url.WithQueryParam(limitQuery, defaultPageSize)
+
+	// The first page starts at offset zero.
+	// The next page URL already carries its offset, which must not be overwritten.
+	if len(config.NextPage) == 0 {
+		url.WithQueryParam(skipQuery, "0")
+		url.WithQueryParam(limitQuery, readhelper.PageSizeWithDefaultStr(config, defaultPageSize))
+	}
 
 	urlstring := addTrailingSlashIfNeeded(url.String())
 
