@@ -32,6 +32,13 @@ type BatchCheckpointStore interface {
 	Save(ctx context.Context, values map[string][]byte, ttl time.Duration) error
 }
 
+// BatchCheckpointDefaultTTL is implemented by a BatchCheckpointStore that sets how long saved
+// responses are kept when a batch doesn't say (WithBatchCheckpointTTL). Hosts use it to make the
+// default configurable. A DefaultTTL of zero or less leaves DefaultBatchCheckpointTTL in place.
+type BatchCheckpointDefaultTTL interface {
+	DefaultTTL() time.Duration
+}
+
 type batchCheckpointStoreKey struct{}
 
 // WithBatchCheckpointStore returns a context whose request batches save their successful responses
@@ -97,10 +104,24 @@ func newBatchCheckpoints(
 
 	return &batchCheckpoints{
 		store:   store,
-		ttl:     ttl,
+		ttl:     checkpointTTL(store, ttl),
 		keys:    keys,
 		pending: make(map[string][]byte),
 	}
+}
+
+// checkpointTTL is how long a batch's saved responses are kept: the batch's own TTL if it set one,
+// else the store's default if it has one, else DefaultBatchCheckpointTTL.
+func checkpointTTL(store BatchCheckpointStore, batchTTL time.Duration) time.Duration {
+	if batchTTL > 0 {
+		return batchTTL
+	}
+
+	if withDefault, ok := store.(BatchCheckpointDefaultTTL); ok && withDefault.DefaultTTL() > 0 {
+		return withDefault.DefaultTTL()
+	}
+
+	return DefaultBatchCheckpointTTL
 }
 
 // restore fills in the results whose responses were saved by an earlier attempt, and returns how

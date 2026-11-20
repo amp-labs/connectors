@@ -19,8 +19,8 @@ const (
 	// unless WithBatchConcurrency says otherwise.
 	DefaultBatchConcurrency = 4
 
-	// DefaultBatchCheckpointTTL is how long saved responses are kept for a later attempt,
-	// unless WithBatchCheckpointTTL says otherwise.
+	// DefaultBatchCheckpointTTL is how long saved responses are kept for a later attempt, unless
+	// WithBatchCheckpointTTL or the store's own default (BatchCheckpointDefaultTTL) says otherwise.
 	DefaultBatchCheckpointTTL = time.Hour
 )
 
@@ -108,7 +108,8 @@ func WithBatchExecutor(executor simultaneously.Executor) BatchOption {
 }
 
 // WithBatchCheckpointTTL sets how long the responses this batch saves are kept for a later
-// attempt. Values of zero or less keep DefaultBatchCheckpointTTL.
+// attempt. It wins over the store's default (BatchCheckpointDefaultTTL) and DefaultBatchCheckpointTTL.
+// Values of zero or less are ignored.
 func WithBatchCheckpointTTL(ttl time.Duration) BatchOption {
 	return func(opts *batchOptions) {
 		if ttl > 0 {
@@ -118,9 +119,10 @@ func WithBatchCheckpointTTL(ttl time.Duration) BatchOption {
 }
 
 func newBatchOptions(opts []BatchOption) batchOptions {
+	// checkpointTTL stays zero unless WithBatchCheckpointTTL sets it, so the store's default can
+	// apply (see newBatchCheckpoints).
 	options := batchOptions{
-		concurrency:   DefaultBatchConcurrency,
-		checkpointTTL: DefaultBatchCheckpointTTL,
+		concurrency: DefaultBatchConcurrency,
 	}
 
 	for _, opt := range opts {

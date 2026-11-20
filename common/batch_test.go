@@ -516,17 +516,36 @@ func TestBatchCheckpointsSaveWhenBufferIsFull(t *testing.T) {
 	})
 }
 
+// storeWithDefaultTTL is a memoryCheckpointStore that sets its own default TTL.
+type storeWithDefaultTTL struct {
+	*memoryCheckpointStore
+
+	defaultTTL time.Duration
+}
+
+func (s storeWithDefaultTTL) DefaultTTL() time.Duration {
+	return s.defaultTTL
+}
+
 func TestDoBatchCheckpointTTL(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name string
-		opts []BatchOption
-		want time.Duration
+		name       string
+		storeTTL   time.Duration
+		opts       []BatchOption
+		want       time.Duration
+		hasDefault bool
 	}{
 		{name: "default", want: DefaultBatchCheckpointTTL},
 		{name: "override", opts: []BatchOption{WithBatchCheckpointTTL(5 * time.Minute)}, want: 5 * time.Minute},
 		{name: "invalid override", opts: []BatchOption{WithBatchCheckpointTTL(0)}, want: DefaultBatchCheckpointTTL},
+		{name: "store default", hasDefault: true, storeTTL: 3 * time.Hour, want: 3 * time.Hour},
+		{
+			name: "override wins over store default", hasDefault: true, storeTTL: 3 * time.Hour,
+			opts: []BatchOption{WithBatchCheckpointTTL(5 * time.Minute)}, want: 5 * time.Minute,
+		},
+		{name: "store default unset", hasDefault: true, storeTTL: 0, want: DefaultBatchCheckpointTTL},
 	}
 
 	for _, tt := range tests {
@@ -536,7 +555,13 @@ func TestDoBatchCheckpointTTL(t *testing.T) {
 			server := newBatchTestServer(t)
 			store := newMemoryCheckpointStore()
 
-			_, err := server.jsonClient().DoBatch(WithBatchCheckpointStore(t.Context(), store), itemRequests(3), tt.opts...)
+			var ctxStore BatchCheckpointStore = store
+			if tt.hasDefault {
+				ctxStore = storeWithDefaultTTL{memoryCheckpointStore: store, defaultTTL: tt.storeTTL}
+			}
+
+			_, err := server.jsonClient().DoBatch(WithBatchCheckpointStore(t.Context(), ctxStore), itemRequests(3),
+				tt.opts...)
 			require.NoError(t, err)
 
 			store.mutex.Lock()
