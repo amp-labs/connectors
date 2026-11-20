@@ -102,3 +102,39 @@ func fieldsFromProperties() readhelper.SelectedFieldsFunc {
 		return filteredRoot, identifier, nil
 	}
 }
+
+// BatchError is one entry of the errors array in a batch response. HubSpot returns the array,
+// with status 207, when some inputs of a batch request failed and others succeeded.
+//
+// https://developers.hubspot.com/docs/api-reference/crm-contacts-v3/batch/post-crm-v3-objects-contacts-batch-read
+type BatchError struct {
+	Category string            `json:"category"`
+	Message  string            `json:"message"`
+	Context  BatchErrorContext `json:"context"`
+}
+
+// BatchErrorContext lists the inputs a BatchError applies to.
+type BatchErrorContext struct {
+	IDs []string `json:"ids"`
+}
+
+// GetBatchErrors returns the errors array of a batch response, or nil when it has none.
+func GetBatchErrors(node *ajson.Node) ([]BatchError, error) {
+	items, err := jsonquery.New(node).ArrayOptional("errors")
+	if err != nil {
+		return nil, err
+	}
+
+	batchErrors := make([]BatchError, 0, len(items))
+
+	for _, item := range items {
+		batchError, err := jsonquery.ParseNode[BatchError](item)
+		if err != nil {
+			return nil, err
+		}
+
+		batchErrors = append(batchErrors, *batchError)
+	}
+
+	return batchErrors, nil
+}

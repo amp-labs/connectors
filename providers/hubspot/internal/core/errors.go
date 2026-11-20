@@ -92,3 +92,27 @@ type ErrLinks struct {
 	APIKey        string `json:"apiKey,omitempty"`
 	KnowledgeBase string `json:"knowledgeBase,omitempty"`
 }
+
+// Error categories HubSpot reports in the errors array of a batch response.
+const (
+	// Seen in a captured batch update response: test/batch/update/contacts/err-partial-success.json.
+	batchErrorCategoryObjectNotFound = "OBJECT_NOT_FOUND"
+	// https://developers.hubspot.com/docs/api/error-handling
+	batchErrorCategoryValidation = "VALIDATION_ERROR"
+)
+
+// errBatchInputFailed is used for a batch error whose category has no matching common error.
+var errBatchInputFailed = errors.New("hubspot batch input failed")
+
+// Err converts the batch error to an error that callers can classify: a missing object wraps
+// common.ErrNotFound and a validation error wraps common.ErrBadRequest.
+func (e BatchError) Err() error {
+	switch e.Category {
+	case batchErrorCategoryObjectNotFound:
+		return fmt.Errorf("%w: %s", common.ErrNotFound, e.Message)
+	case batchErrorCategoryValidation:
+		return fmt.Errorf("%w: %s", common.ErrBadRequest, e.Message)
+	default:
+		return fmt.Errorf("%w: %s: %s", errBatchInputFailed, e.Category, e.Message)
+	}
+}
