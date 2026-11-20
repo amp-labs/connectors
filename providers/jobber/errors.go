@@ -95,8 +95,15 @@ func interpretGraphQLError(resp *common.JSONHTTPResponse) error {
 		return nil
 	}
 
+	return graphqlCodeError(payload.Errors[0].Extensions.Code, body)
+}
+
+// graphqlCodeError returns the typed error the shared FaultyResponder produces
+// for the HTTP status that a Jobber GraphQL error code maps to. The messages
+// of the "errors" array in body are appended to it.
+func graphqlCodeError(code string, body []byte) error {
 	synthetic := &http.Response{
-		StatusCode: graphqlStatusCode(payload.Errors[0].Extensions.Code),
+		StatusCode: graphqlStatusCode(code),
 		Header:     http.Header{"Content-Type": []string{"application/json"}},
 	}
 
