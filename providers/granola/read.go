@@ -88,12 +88,38 @@ func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadPar
 			embedFields(notes),
 			embedRaw(notes),
 		)
+
+		return common.ParseResultFiltered(params,
+			resp,
+			common.MakeRecordsFunc(params.ObjectName),
+			func(params common.ReadParams, body *ajson.Node, records []*ajson.Node) ([]*ajson.Node, string, error) {
+				next, err := makeNextRecordsUrl(body)
+
+				// TODO should we return partial "Note" or filter out those that have failed to be enhanced.
+				// filtered := make([]*ajson.Node, 0, len(records))
+				filtered := records
+				// for _, record := range records {
+				//	id, err := jsonquery.New(record).StrWithDefault("id", "")
+				//	if err != nil {
+				//		return nil, "", err
+				//	}
+				//
+				//	if _, found := notes[id]; found {
+				//		filtered = append(filtered, record)
+				//	}
+				//}
+
+				return filtered, next, err
+			},
+			marshaller,
+			params.Fields,
+		)
 	}
 
 	return common.ParseResult(
 		resp,
 		common.MakeRecordsFunc(params.ObjectName),
-		makeNextRecordsURL(),
+		makeNextRecordsUrl,
 		marshaller,
 		params.Fields,
 	)
@@ -108,17 +134,6 @@ func (c *Connector) parseReadResponse(ctx context.Context, params common.ReadPar
 		"cursor": "eyJjcmVkZW50aWFsfQ=="
 	  }
 */
-func makeNextRecordsURL() common.NextPageFunc {
-	return func(node *ajson.Node) (string, error) {
-		cursor, err := jsonquery.New(node).StringOptional("cursor")
-		if err != nil {
-			return "", err
-		}
-
-		if cursor == nil {
-			return "", nil
-		}
-
-		return *cursor, nil
-	}
+func makeNextRecordsUrl(node *ajson.Node) (string, error) {
+	return jsonquery.New(node).StrWithDefault("cursor", "")
 }
