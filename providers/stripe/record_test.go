@@ -464,3 +464,46 @@ func TestGetRecordsByIds_ServerErrorIsReportedAndReturned(t *testing.T) {
 		t.Errorf("expected pi_boom as the only transient failure, got %+v", batchRes.Failures)
 	}
 }
+
+// Stripe returns a deleted object with status 200 and "deleted": true. It is reported as not found,
+// without an error, and the other rows are returned.
+func TestGetRecordsByIds_DeletedObjectIsNotFound(t *testing.T) {
+	t.Parallel()
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			{
+				If: mockcond.Path("/v1/customers/cus_first"),
+				Then: mockserver.ResponseString(http.StatusOK,
+					`{"id":"cus_first","object":"customer","email":"first@example.com"}`),
+			},
+			{
+				If: mockcond.Path("/v1/customers/cus_deleted"),
+				Then: mockserver.ResponseString(http.StatusOK,
+					`{"id":"cus_deleted","object":"customer","deleted":true}`),
+			},
+			{
+				If: mockcond.Path("/v1/customers/cus_last"),
+				Then: mockserver.ResponseString(http.StatusOK,
+					`{"id":"cus_last","object":"customer","email":"last@example.com"}`),
+			},
+		},
+		Default: mockserver.ResponseString(http.StatusInternalServerError, `{"error":"unexpected"}`),
+	}.Server()
+	t.Cleanup(server.Close)
+
+	conn, err := constructTestConnector(server)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	batchRes, err := conn.GetRecordsByIds(t.Context(), "customers",
+		[]string{"cus_first", "cus_deleted", "cus_last"}, []string{"id"}, nil)
+	if err != nil {
+		t.Fatalf("a deleted object must not produce an error, got %v", err)
+	}
+
+	testconn.RequireRowIds(t, batchRes, "cus_first", "cus_last")
+	testconn.RequireMissingIds(t, batchRes, "cus_deleted")
+}
