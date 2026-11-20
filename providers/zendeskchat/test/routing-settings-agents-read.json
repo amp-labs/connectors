@@ -1,0 +1,16 @@
+{
+  "data": {
+    "27774298335251": {
+      "routing": {
+        "chat_limit": 3
+      },
+      "skills": []
+    },
+    "26363624373267": {
+      "routing": {
+        "chat_limit": 3
+      },
+      "skills": [101]
+    }
+  }
+}

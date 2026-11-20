@@ -15,11 +15,12 @@ import (
 )
 
 const (
-	bans            = "bans"
-	account         = "account"
-	chats           = "chats"
-	id              = "id"
-	defaultPageSize = 1000
+	bans                  = "bans"
+	routingSettingsAgents = "routing_settings/agents"
+	account               = "account"
+	chats                 = "chats"
+	id                    = "id"
+	defaultPageSize       = 1000
 )
 
 func (c *Connector) buildSingleObjectMetadataRequest(ctx context.Context, objectName string) (*http.Request, error) {
@@ -38,6 +39,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
+		Fields:      make(common.FieldsMetadata),
 		FieldsMap:   make(map[string]string),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
@@ -47,9 +49,14 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, err
 	}
 
-	for fld := range firstRecord {
-		// TODO fix deprecated
-		objectMetadata.FieldsMap[fld] = fld // nolint:staticcheck
+	// Zendesk Chat has no describe endpoint, so the value type is inferred from the sampled value.
+	for fld, value := range firstRecord {
+		objectMetadata.AddFieldMetadata(fld, common.FieldMetadata{
+			DisplayName:  fld,
+			ValueType:    common.InferValueTypeFromData(value),
+			ProviderType: "", // not available
+			Values:       nil,
+		})
 	}
 
 	return &objectMetadata, nil
@@ -83,9 +90,32 @@ func parseIndividualResponse(objectName string, response *common.JSONHTTPRespons
 	switch objectName {
 	case bans, account:
 		return parseObjectResponse(response)
+	case routingSettingsAgents:
+		return parseKeyedObjectResponse(response)
 	default:
 		return parseListResponse(response)
 	}
+}
+
+// parseKeyedObjectResponse returns the first record from a response
+// where records are values of the "data" object keyed by their identifier.
+// The record has the same shape as returned by Read, see keyedRecords.
+func parseKeyedObjectResponse(response *common.JSONHTTPResponse) (map[string]any, error) {
+	body, ok := response.Body()
+	if !ok {
+		return nil, fmt.Errorf("no records found in response: %w", common.ErrMissingExpectedValues)
+	}
+
+	records, err := keyedRecords(body)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(records) == 0 {
+		return nil, fmt.Errorf("no records found in response: %w", common.ErrMissingExpectedValues)
+	}
+
+	return records[0], nil
 }
 
 func parseObjectResponse(response *common.JSONHTTPResponse) (map[string]any, error) {
@@ -140,9 +170,14 @@ func (c *Connector) parseReadResponse(
 	request *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	recordsFunc := common.ExtractRecordsFromPath(responseField(params.ObjectName))
+	if params.ObjectName == routingSettingsAgents {
+		recordsFunc = keyedRecords
+	}
+
 	return common.ParseResult(
 		response,
-		common.ExtractRecordsFromPath(responseField(params.ObjectName)),
+		recordsFunc,
 		nextRecordsURL(params.ObjectName),
 		common.GetMarshaledData,
 		params.Fields,

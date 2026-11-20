@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"os"
 
 	"github.com/amp-labs/connectors/test/utils"
 	"github.com/amp-labs/connectors/test/zendeskchat"
@@ -24,8 +24,7 @@ func run() error {
 	}
 
 	// Print the results
-	fmt.Println("Results: ", m.Result)
-	fmt.Println("Errors: ", m.Errors)
+	utils.DumpJSON(m, os.Stdout)
 
 	return nil
 }
