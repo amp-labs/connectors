@@ -272,6 +272,10 @@ func (a *Adapter) stopWatch(ctx context.Context) error {
 
 // GetRecordsByIds fetches full Gmail message payloads for the given IDs.
 // Only the "messages" object is supported; other objects return ErrGetRecordNotSupportedForObject.
+//
+// Each id is fetched separately. A failed id does not fail the call: it is reported in Failures, and
+// the rows of the ids that resolved are returned in requested order. Failures other than not-found
+// are also returned, joined, as the error.
 func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 	objectName string,
 	recordIds []string, //nolint:revive
@@ -286,15 +290,23 @@ func (a *Adapter) GetRecordsByIds(ctx context.Context, // nolint: revive
 		return common.NewBatchReadResult([]common.ReadResultRow{}), nil
 	}
 
-	messages, failures, err := a.fetchMessagesByIDs(ctx, recordIds)
-	if err != nil {
-		return nil, fmt.Errorf("GetRecordsByIds: fetching messages: %w", err)
-	}
+	messages, failures := a.fetchMessagesByIDs(ctx, recordIds)
 
 	fieldSet := datautils.NewSetFromList(fields)
 	rows := make([]common.ReadResultRow, 0, len(messages))
+	added := make(map[string]bool, len(messages))
 
-	for id, msg := range messages {
+	for _, msg := range messages {
+		// fetchMessageRecord only returns messages that have an id.
+		id, _ := msg["id"].(string)
+
+		// A repeated id is returned once.
+		if added[id] {
+			continue
+		}
+
+		added[id] = true
+
 		row := common.ReadResultRow{
 			Id:  id,
 			Raw: msg,
