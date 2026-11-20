@@ -7,6 +7,10 @@ import (
 	"github.com/amp-labs/connectors/internal/datautils"
 )
 
+// errRecordNotFound is returned when Slack says the requested record does not exist. It keeps
+// the ErrCaller class these codes had before and also matches ErrNotFound.
+var errRecordNotFound = fmt.Errorf("%w: %w", common.ErrCaller, common.ErrNotFound) //nolint:gochecknoglobals
+
 // slackErrorCodeMapping maps Slack's error codes (returned in the "error" field when ok=false)
 // to standard sentinel errors. This lets callers use errors.Is to decide how to react
 // (e.g. re-auth on ErrAccessToken, retry on ErrRetryable) without inspecting raw strings.
@@ -42,6 +46,15 @@ var slackErrorCodeMapping = datautils.Map[string, error]{ //nolint:gochecknoglob
 	"fatal_error":         common.ErrServer,
 	"internal_error":      common.ErrServer,
 	"service_unavailable": common.ErrServer,
+
+	// The requested record does not exist. GetRecordsByIds reports these ids as not found.
+	"channel_not_found": errRecordNotFound, // conversations.info
+	"user_not_found":    errRecordNotFound, // users.info
+	"file_not_found":    errRecordNotFound, // files.info, files.remote.info
+	"file_deleted":      errRecordNotFound, // files.info
+	"bot_not_found":     errRecordNotFound, // bots.info
+	"team_not_found":    errRecordNotFound, // team.info
+	"invalid_call_id":   errRecordNotFound, // calls.info
 }
 
 // interpretSlackErrorCode maps a Slack error code to a sentinel error.

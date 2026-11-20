@@ -18,8 +18,18 @@ import (
 
 var _ connectors.BatchRecordReaderConnector = (*Connector)(nil)
 
+// maxConcurrentRecordFetch caps how many ".info" requests run at once. Slack has no bulk
+// endpoint for singular records, so each id is one request.
+const maxConcurrentRecordFetch = 4
+
 // GetRecordsByIds retrieves records for a given object type by their IDs.
-// It performs batched parallel reads since Slack has no bulk endpoints for singular records.
+// Slack has no bulk endpoints for singular records, so it makes one request per id,
+// concurrently, and always fetches every id.
+//
+// An id that could not be fetched is reported in the result's Failures with its reason, and the
+// rows that did resolve are still returned, in requested order. An id Slack says does not exist
+// is a not-found failure and does not produce an error; any other failure is also returned,
+// joined, as the error.
 // nolint:revive
 func (c *Connector) GetRecordsByIds(ctx context.Context,
 	objectName string, recordIds []string,
@@ -36,8 +46,7 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 		return nil, fmt.Errorf("%w: %s", common.ErrRecordsOnlyInline, objectName)
 	}
 
-	// Ensure identifiers are non-repeating.
-	identifiers := datautils.NewSetFromList(recordIds).List()
+	identifiers := uniqueInOrder(recordIds)
 
 	info, err := mappings.GetReadItemInfo(c.Provider(), objectName)
 	if err != nil {
@@ -51,39 +60,38 @@ func (c *Connector) GetRecordsByIds(ctx context.Context,
 		return nil, err
 	}
 
-	batchResult, err := c.batchRead(ctx, info, identifiers)
-	if err != nil {
-		return nil, err
-	}
+	records, fetchErrs := c.batchRead(ctx, info, identifiers)
 
 	marshaler := readhelper.MakeGetMarshaledDataWithId(readhelper.NewIdField(info.ResponseIdField))
 	uniqueFields := datautils.NewSetFromList(fields).List()
 
-	rows, err := marshaler(batchResult, uniqueFields)
+	rows, err := marshaler(records, uniqueFields)
 	if err != nil {
 		return nil, err
 	}
 
-	return common.NewBatchReadResult(rows), nil
+	result := common.NewBatchReadResult(rows)
+
+	return result, result.ReportFetchErrors(identifiers, fetchErrs)
 }
 
-// batchRead performs parallel reads for multiple singular records.
+// batchRead fetches each record with its own request, since Slack has no batch endpoints.
 //
 // Slack resources ending with ".info" (e.g., "channels.info") require a query parameter
-// containing a single record identifier. The query parameter name varies by object type,
-// and only one identifier can be sent per URL—there are no batch endpoints.
+// containing a single record identifier. The query parameter name varies by object type.
 //
-// This method makes multiple parallel requests to fetch each record individually.
+// It returns the fetched records in the order of identifiers, and the errors of the ids
+// that failed, keyed by their position in identifiers.
 func (c *Connector) batchRead(ctx context.Context,
 	info mappings.ReadItemInfo,
 	identifiers []string,
-) ([]map[string]any, error) {
+) ([]map[string]any, map[int]error) {
 	resourceName := info.Href
 	queryPramName := info.RequestIdField
 
-	tasks := make([]parallelfetch.Task[string, map[string]any], len(identifiers))
+	tasks := make([]parallelfetch.Task[int, map[string]any], len(identifiers))
 	for index, identifier := range identifiers {
-		tasks[index] = func(ctx context.Context) (taskID string, data *map[string]any, err error) {
+		tasks[index] = func(ctx context.Context) (taskID int, data *map[string]any, err error) {
 			defer func() {
 				if err != nil {
 					err = fmt.Errorf("%w: resourceName %v(%v=%v)", err, resourceName, queryPramName, identifier)
@@ -93,40 +101,63 @@ func (c *Connector) batchRead(ctx context.Context,
 			// Make an API URL and make a call.
 			url, err := urlbuilder.New(c.ProviderInfo().BaseURL, resourceName)
 			if err != nil {
-				return identifier, nil, err
+				return index, nil, err
 			}
 
 			url.WithQueryParam(queryPramName, identifier)
 
 			res, err := c.JSONHTTPClient().Get(ctx, url.String())
 			if err != nil {
-				return identifier, nil, err
+				return index, nil, err
 			}
 
 			// Unwrap the record from the response and convert to map[string]any.
 			body, ok := res.Body()
 			if !ok {
-				return identifier, nil, common.ErrEmptyJSONHTTPResponse
+				return index, nil, common.ErrEmptyJSONHTTPResponse
 			}
 
 			node, err := getResponseSingleRecord(body, info.ResponseField)
 			if err != nil {
-				return identifier, nil, err
+				return index, nil, err
 			}
 
 			apiResponse, err := jsonquery.Convertor.ObjectToMap(node)
 			if err != nil {
-				return identifier, nil, err
+				return index, nil, err
 			}
 
-			return identifier, &apiResponse, nil
+			return index, &apiResponse, nil
 		}
 	}
 
-	result := parallelfetch.Execute(ctx, tasks, -1)
-	if len(result.Errors) != 0 {
-		return nil, errors.Join(result.Errors.Values()...)
+	result := parallelfetch.Execute(ctx, tasks, maxConcurrentRecordFetch)
+
+	records := make([]map[string]any, 0, len(identifiers))
+
+	for index := range identifiers {
+		if record, ok := result.Records[index]; ok {
+			records = append(records, record)
+		}
 	}
 
-	return result.Records.Values(), nil
+	return records, result.Errors
+}
+
+// uniqueInOrder removes repeated ids, keeping the first occurrence of each.
+func uniqueInOrder(ids []string) []string {
+	seen := make(map[string]bool, len(ids))
+	unique := make([]string, 0, len(ids))
+
+	for _, id := range ids {
+		if seen[id] {
+			continue
+		}
+
+		seen[id] = true
+
+		unique = append(unique, id)
+	}
+
+	return unique
 }
