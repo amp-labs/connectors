@@ -1,0 +1,41 @@
+{
+  "id": "893c971d-4dba-4b95-ae1e-a4ba477b906c",
+  "jobId": "job-001",
+  "_link": "https://api.acculynx.com/api/v2/jobs/job-001/milestones/893c971d-4dba-4b95-ae1e-a4ba477b906c",
+  "name": "Prospect",
+  "isCurrent": true,
+  "duration": {
+    "startDate": "2023-11-03T20:31:50Z",
+    "endDate": "2026-11-13T09:20:00Z"
+  },
+  "statuses": [
+    {
+      "id": "0b7d6a52-6f3c-4b8e-9d0a-2f1c7e5a9b11",
+      "_link": "https://api.acculynx.com/api/v2/jobs/job-001/milestones/893c971d-4dba-4b95-ae1e-a4ba477b906c/statuses/0b7d6a52-6f3c-4b8e-9d0a-2f1c7e5a9b11",
+      "name": "Consultation",
+      "duration": {
+        "startDate": "2023-11-03T20:31:50Z",
+        "endDate": "2023-11-10T15:00:00Z"
+      },
+      "workflowStatus": {
+        "id": "7a1e4c2d-3b5f-4e6a-8c9d-0e1f2a3b4c5d",
+        "name": "Consultation"
+      },
+      "isCurrent": false
+    },
+    {
+      "id": "31081f76-4a5d-4efd-8bc3-22a1a3fbb83f",
+      "_link": "https://api.acculynx.com/api/v2/jobs/job-001/milestones/893c971d-4dba-4b95-ae1e-a4ba477b906c/statuses/31081f76-4a5d-4efd-8bc3-22a1a3fbb83f",
+      "name": "Follow Up",
+      "duration": {
+        "startDate": "2023-11-10T15:00:00Z",
+        "endDate": "2026-11-13T09:20:00Z"
+      },
+      "workflowStatus": {
+        "id": "40be7484-ece1-4a01-9b4c-2de030d0c841",
+        "name": "Follow Up"
+      },
+      "isCurrent": true
+    }
+  ]
+}

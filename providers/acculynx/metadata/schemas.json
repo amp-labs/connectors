@@ -918,6 +918,11 @@
                 }
               ]
             },
+            "currentWorkflowStatus": {
+              "displayName": "currentWorkflowStatus",
+              "valueType": "other",
+              "providerType": "object"
+            },
             "geoLocation": {
               "displayName": "geoLocation",
               "valueType": "other",

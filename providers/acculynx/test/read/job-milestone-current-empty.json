@@ -1,0 +1,12 @@
+{
+  "name": "Lead",
+  "isCurrent": true,
+  "statuses": [],
+  "duration": {
+    "startDate": "2024-08-02T16:17:26Z",
+    "endDate": "2026-11-13T09:20:03Z"
+  },
+  "id": "3755d2f7-dc0d-4795-bda4-6ed6031aa550",
+  "jobId": "job-002",
+  "_link": "https://api.acculynx.com/api/v2/jobs/job-002/milestones/3755d2f7-dc0d-4795-bda4-6ed6031aa550"
+}
