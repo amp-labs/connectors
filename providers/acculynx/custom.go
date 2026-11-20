@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/internal/pagedbatch"
 	"github.com/spyzhov/ajson"
 )
 
@@ -203,9 +203,9 @@ func (c *Connector) fetchCustomFieldDefinitions(
 	return registry, nil
 }
 
-// fetchCustomFieldValuesForRecords fans out one GET per parent ID concurrently,
-// honouring the per-key rate limit via maxConcurrentChildFetch. Returns a
-// map keyed by parent ID with the slice of values that record carries.
+// fetchCustomFieldValuesForRecords fetches every page of every parent's custom-field values as
+// request batches: the first page of every parent, then the next page of every parent that has one.
+// Returns a map keyed by parent ID with the slice of values that record carries.
 func (c *Connector) fetchCustomFieldValuesForRecords(
 	ctx context.Context,
 	parentObject string,
@@ -215,36 +215,77 @@ func (c *Connector) fetchCustomFieldValuesForRecords(
 		return map[string][]customFieldValue{}, nil
 	}
 
-	results := make([][]customFieldValue, len(parentIDs))
-	jobs := make([]simultaneously.Job, len(parentIDs))
+	first := make([]common.BatchRequest, len(parentIDs))
 
 	for i, parentID := range parentIDs {
-		idx, id := i, parentID
-
-		jobs[idx] = func(ctx context.Context) error {
-			values, err := c.fetchCustomFieldValuesForRecord(ctx, parentObject, id)
-			if err != nil {
-				return fmt.Errorf("fetch custom field values for %s %s: %w", parentObject, id, err)
-			}
-
-			results[idx] = values
-
-			return nil
+		url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.modulePath(), parentObject, parentID, "custom-fields")
+		if err != nil {
+			return nil, err
 		}
+
+		url.WithQueryParam(pageSizeParam, defaultPageSize)
+		url.WithQueryParam(pageStartParam, "0")
+
+		first[i] = pagedbatch.Get(url.String())
 	}
 
-	if err := simultaneously.DoCtx(ctx, maxConcurrentChildFetch, jobs...); err != nil {
+	collected := make([][]customFieldValue, len(parentIDs))
+
+	err := pagedbatch.Run(ctx, c.JSONHTTPClient(), first,
+		func(walk int, rsp common.BatchResponse) (common.BatchRequest, bool, error) {
+			items, next, more, err := readCustomFieldValuesPage(rsp)
+			if err != nil {
+				return pagedbatch.Fail(fmt.Errorf("fetch custom field values for %s %s: %w",
+					parentObject, parentIDs[walk], err))
+			}
+
+			collected[walk] = append(collected[walk], items...)
+
+			return next, more, nil
+		})
+	if err != nil {
 		return nil, err
 	}
 
 	out := make(map[string][]customFieldValue, len(parentIDs))
 	for i, id := range parentIDs {
-		out[id] = results[i]
+		out[id] = collected[i]
 	}
 
 	return out, nil
 }
 
+// readCustomFieldValuesPage reads one page of a record's custom-field values. It returns the values
+// and the request for the next page, with false when this was the last page.
+func readCustomFieldValuesPage(
+	rsp common.BatchResponse,
+) ([]customFieldValue, common.BatchRequest, bool, error) {
+	if rsp.Err != nil {
+		return nil, common.BatchRequest{}, false, rsp.Err
+	}
+
+	page, err := common.UnmarshalJSON[customFieldsResponse](rsp.Response)
+	if err != nil || page == nil {
+		return nil, common.BatchRequest{}, false, err
+	}
+
+	url, err := parseNextPageURL(rsp.Request.URL)
+	if err != nil {
+		return nil, common.BatchRequest{}, false, err
+	}
+
+	requested := queryParamIntOrDefault(url, pageStartParam, 0)
+	if paginationExhausted(len(page.Items), requested, page.PageStartIndex, page.Count, maxPageSize) {
+		return page.Items, common.BatchRequest{}, false, nil
+	}
+
+	url.WithQueryParam(pageStartParam, strconv.Itoa(requested+len(page.Items)))
+
+	return page.Items, pagedbatch.Get(url.String()), true, nil
+}
+
+// fetchCustomFieldValuesForRecord fetches every page of one record's custom-field values. The
+// subscribe path uses it to enrich a single record.
 func (c *Connector) fetchCustomFieldValuesForRecord(
 	ctx context.Context,
 	parentObject string,

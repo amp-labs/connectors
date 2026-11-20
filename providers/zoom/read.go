@@ -2,14 +2,14 @@ package zoom
 
 import (
 	"context"
-	"errors"
+	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
-	"github.com/amp-labs/connectors/internal/parallelfetch"
 	"github.com/amp-labs/connectors/providers/zoom/internal/associations"
 	"github.com/amp-labs/connectors/providers/zoom/internal/core"
 )
@@ -67,11 +67,22 @@ func (c *Connector) readRecords(ctx context.Context,
 	url *urlbuilder.URL,
 	associatedObjects []string,
 ) (*common.ReadResult, error) {
-	rsp, err := c.Base.JSONHTTPClient().Get(ctx, url.String())
+	// The page is saved with the read's responses, so a retry fetches the same meetings' associations.
+	rsp, err := c.Base.GetWithCheckpoint(ctx, url.String())
 	if err != nil {
 		return nil, err
 	}
 
+	return c.parseRecords(ctx, rsp, objectName, selectedFields, url, associatedObjects)
+}
+
+func (c *Connector) parseRecords(ctx context.Context,
+	rsp *common.JSONHTTPResponse,
+	objectName string,
+	selectedFields datautils.StringSet,
+	url *urlbuilder.URL,
+	associatedObjects []string,
+) (*common.ReadResult, error) {
 	responseFieldName := objectNameToResponseField[objectName]
 	identifier := objectNameToReadResponseIdentifier.Get(objectName)
 
@@ -95,10 +106,9 @@ func (c *Connector) readForUsers(
 		return nil, err
 	}
 
-	// Parallelized read across all users.
-	tasks := make([]parallelfetch.Task[string, common.ReadResult], len(userIds))
+	urls := make([]*urlbuilder.URL, len(userIds))
+
 	for index, userId := range userIds {
-		// Each task reads records for a specific user.
 		url, err := c.GetReadUrlForUser(params.ObjectName, userId)
 		if err != nil {
 			return nil, err
@@ -107,59 +117,67 @@ func (c *Connector) readForUsers(
 		url.WithQueryParam("page_size", core.DefaultPageSize)
 		addTimeFilterParams(params, url)
 
-		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
-			if err := core.Wait(ctx); err != nil {
-				return userId, nil, err
-			}
-
-			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url, params.AssociatedObjects)
-
-			return userId, result, err
-		}
+		urls[index] = url
 	}
 
-	return executeReadTasksUsers(ctx, tasks)
+	return c.readUsersPages(ctx, params, userIds, urls)
 }
 
 func (c *Connector) readNextPageForUsers(ctx context.Context,
 	params common.ReadParams,
 	aggregateToken readhelper.AggregateNextPage[string],
 ) (*common.ReadResult, error) {
-	tasks := make([]parallelfetch.Task[string, common.ReadResult], len(aggregateToken))
-	for index, token := range aggregateToken {
-		userId := token.Context
-		nextPageToken := token.Value.String()
+	userIds := make([]string, len(aggregateToken))
+	urls := make([]*urlbuilder.URL, len(aggregateToken))
 
-		url, err := urlbuilder.New(nextPageToken)
+	for index, token := range aggregateToken {
+		url, err := urlbuilder.New(token.Value.String())
 		if err != nil {
 			return nil, err
 		}
 
-		// Create parallel task for this account's next page
-		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
-			if err := core.Wait(ctx); err != nil {
-				return userId, nil, err
-			}
-
-			result, err := c.readRecords(ctx, params.ObjectName, params.Fields, url, params.AssociatedObjects)
-
-			return userId, result, err
-		}
+		userIds[index] = token.Context
+		urls[index] = url
 	}
 
-	return executeReadTasksUsers(ctx, tasks)
+	return c.readUsersPages(ctx, params, userIds, urls)
 }
 
-func executeReadTasksUsers(ctx context.Context,
-	tasks []parallelfetch.Task[string, common.ReadResult],
+// readUsersPages reads one page for every user as a request batch, and aggregates the pages into
+// one result whose next page token holds every user's next page.
+func (c *Connector) readUsersPages(ctx context.Context,
+	params common.ReadParams,
+	userIds []string,
+	urls []*urlbuilder.URL,
 ) (*common.ReadResult, error) {
-	result := parallelfetch.Execute(ctx, tasks, core.MaxReadConcurrency)
-	if len(result.Errors) != 0 {
-		return nil, errors.Join(result.Errors.Values()...)
+	requests := make([]common.BatchRequest, len(urls))
+	for index, url := range urls {
+		requests[index] = common.BatchRequest{Method: http.MethodGet, URL: url.String()}
+	}
+
+	responses, err := c.JSONHTTPClient().DoBatch(ctx, requests)
+	if err != nil {
+		return nil, err
+	}
+
+	results := make(map[string]common.ReadResult, len(userIds))
+
+	for index, rsp := range responses {
+		if rsp.Err != nil {
+			return nil, fmt.Errorf("reading %s for user %s: %w", params.ObjectName, userIds[index], rsp.Err)
+		}
+
+		result, err := c.parseRecords(ctx, rsp.Response, params.ObjectName, params.Fields, urls[index],
+			params.AssociatedObjects)
+		if err != nil {
+			return nil, err
+		}
+
+		results[userIds[index]] = *result
 	}
 
 	return readhelper.AggregateReadResults(
-		result.Records,
+		results,
 		func(userId string) string {
 			// User ID uniquely identifies the source for next-page token resolution.
 			// The context for this NextPageToken is represented solely by userId.
@@ -172,6 +190,8 @@ func executeReadTasksUsers(ctx context.Context,
 	)
 }
 
+// listAllUsers pages through the account's users. Each page is saved with the read's responses, so
+// a read that is tried again sends the same per-user requests and reuses their saved responses.
 func (c *Connector) listAllUsers(ctx context.Context) ([]string, error) {
 	url, err := c.GetReadURL(core.ObjectNameUser)
 	if err != nil {
@@ -183,7 +203,7 @@ func (c *Connector) listAllUsers(ctx context.Context) ([]string, error) {
 	userIds := make([]string, 0)
 
 	for {
-		res, err := c.JSONHTTPClient().Get(ctx, url.String())
+		res, err := c.GetWithCheckpoint(ctx, url.String())
 		if err != nil {
 			return nil, err
 		}

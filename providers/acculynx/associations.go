@@ -71,7 +71,7 @@ func addAssociation(row *common.ReadResultRow, key, objectID string, raw map[str
 
 // attachNestedAssociations attaches the parent-derived edges for nested
 // fan-out rows. Each attacher is a no-op unless params.ObjectName is its
-// object, so fetchChildPages calls this unconditionally per page. parentRaw is
+// object, so readChildPage calls this unconditionally per page. parentRaw is
 // the parent record from the list page, or nil (see parentJobsByID).
 func attachNestedAssociations(
 	params common.ReadParams, parentID string, parentRaw map[string]any, rows []common.ReadResultRow,

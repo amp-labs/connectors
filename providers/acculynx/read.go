@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
+	"github.com/amp-labs/connectors/internal/pagedbatch"
 	"github.com/amp-labs/connectors/providers/acculynx/metadata"
 	"github.com/spyzhov/ajson"
 )
@@ -57,7 +57,7 @@ const (
 	// one Read call. 200 pages × 25 per page = 5000 records per parent,
 	// generous for any sane window. For unbounded reads on outlier datasets
 	// (e.g. jobs with hundreds of thousands of history entries), the cap fires
-	// with a clear error pointing the caller at Since/Until — see fetchChildPages.
+	// with a clear error pointing the caller at Since/Until — see fetchChildrenForParents.
 	maxChildPagesPerParent = 200
 
 	// /calendars/{calendarId}/appointments requires startDate/endDate. When the
@@ -478,7 +478,8 @@ func extractIDs(nodes []*ajson.Node) []string {
 	return ids
 }
 
-// fetchChildrenForParents fans out one request per parent ID concurrently and
+// fetchChildrenForParents walks every page of every parent's nested collection as request
+// batches: the first page of every parent, then the next page of every parent that has one. It
 // preserves the parent order in the flattened result.
 func (c *Connector) fetchChildrenForParents(
 	ctx context.Context,
@@ -491,30 +492,32 @@ func (c *Connector) fetchChildrenForParents(
 		return nil, nil
 	}
 
-	parentJobs := parentJobsByID(params, parents)
+	walk := &childPagesWalk{
+		connector:  c,
+		parentIDs:  ids,
+		parentJobs: parentJobsByID(params, parents),
+		params:     params,
+		nested:     nested,
+		results:    make([][]common.ReadResultRow, len(ids)),
+		pagesRead:  make([]int, len(ids)),
+	}
 
-	results := make([][]common.ReadResultRow, len(ids))
-	jobs := make([]simultaneously.Job, len(ids))
+	first := make([]common.BatchRequest, len(ids))
 
 	for i, parentID := range ids {
-		idx, id := i, parentID
-
-		jobs[idx] = func(ctx context.Context) error {
-			rows, fetchErr := c.fetchChildPages(ctx, id, parentJobs[id], params, nested)
-			if fetchErr != nil {
-				return fmt.Errorf("fetching %s for %s %s: %w",
-					nested.leafSuffix, nested.parentObject, id, fetchErr)
-			}
-
-			results[idx] = rows
-
-			return nil
+		reqURL, err := c.buildChildURL(parentID, params, nested)
+		if err != nil {
+			return nil, err
 		}
+
+		first[i] = pagedbatch.Get(reqURL.String())
 	}
 
-	if err := simultaneously.DoCtx(ctx, maxConcurrentChildFetch, jobs...); err != nil {
+	if err := pagedbatch.Run(ctx, c.JSONHTTPClient(), first, walk.next); err != nil {
 		return nil, err
 	}
+
+	results := walk.results
 
 	var data []common.ReadResultRow
 	for _, rows := range results {
@@ -524,12 +527,6 @@ func (c *Connector) fetchChildrenForParents(
 	return data, nil
 }
 
-// fetchChildPages walks every page of one parent's nested collection.
-// AccuLynx server-side paginates these endpoints (jobs/invoices,
-// jobs/estimates, jobs/history, etc. — verified in the OpenAPI spec), so
-// the loop follows result.NextPage until the records-array length signals the
-// last page. Children configured as paginationNone exit after one iteration
-// because makeNextPage returns "" immediately.
 // buildChildURL constructs the first-page URL of one parent's leaf endpoint,
 // with the object's pagination, includes and date-window parameters applied.
 func (c *Connector) buildChildURL(
@@ -560,67 +557,98 @@ func (c *Connector) buildChildURL(
 	return reqURL, nil
 }
 
-func (c *Connector) fetchChildPages(
-	ctx context.Context,
+// childPagesWalk collects the pages of every parent's nested collection.
+type childPagesWalk struct {
+	connector  *Connector
+	parentIDs  []string
+	parentJobs map[string]map[string]any
+	params     common.ReadParams
+	nested     nestedSpec
+	results    [][]common.ReadResultRow
+	pagesRead  []int
+}
+
+// next reads one page of the parent at index walk and returns the request for its next page.
+func (w *childPagesWalk) next(walk int, rsp common.BatchResponse) (common.BatchRequest, bool, error) {
+	parentID := w.parentIDs[walk]
+
+	rows, nextURL, err := w.connector.readChildPage(rsp, parentID, w.parentJobs[parentID], w.params)
+	if err == nil && nextURL != nil && w.pagesRead[walk]+1 >= maxChildPagesPerParent {
+		err = fmt.Errorf(
+			"%w: %s/%s/%s after %d pages — for jobs/history pass Since/Until to filter server-side",
+			errChildPagesExceeded, w.nested.parentObject, parentID, w.nested.leafSuffix, maxChildPagesPerParent)
+	}
+
+	if err != nil {
+		return pagedbatch.Fail(fmt.Errorf("fetching %s for %s %s: %w",
+			w.nested.leafSuffix, w.nested.parentObject, parentID, err))
+	}
+
+	w.pagesRead[walk]++
+	w.results[walk] = append(w.results[walk], rows...)
+
+	if nextURL == nil {
+		return pagedbatch.Done()
+	}
+
+	return pagedbatch.Next(nextURL.String())
+}
+
+// readChildPage reads one page of a parent's nested collection. It returns the page's rows and the
+// URL of the next page, or nil on the last page. AccuLynx server-side paginates these endpoints
+// (jobs/invoices, jobs/estimates, jobs/history, etc. — verified in the OpenAPI spec); children
+// configured as paginationNone have no next page because makeNextPage returns "" immediately.
+func (c *Connector) readChildPage(
+	rsp common.BatchResponse,
 	parentID string,
 	parentRaw map[string]any,
 	params common.ReadParams,
-	nested nestedSpec,
-) ([]common.ReadResultRow, error) {
-	reqURL, err := c.buildChildURL(parentID, params, nested)
+) ([]common.ReadResultRow, *urlbuilder.URL, error) {
+	if rsp.Err != nil {
+		// Some leaves do not exist for every job: unassigned jobs answer
+		// 404 on representatives, estimates and milestone-history. The
+		// trigger is the assignment itself, not the milestone — an
+		// assigned job in the Lead milestone answers 200 on all leaves
+		// (verified live; the API reference documents only a generic
+		// 404). A missing leaf means "no child records", not a failed
+		// read — the same way non-user calendars 404 in GetRecordsByIds.
+		// This ends only this parent's page walk.
+		if isNotFound(rsp.Err) {
+			return nil, nil, nil
+		}
+
+		return nil, nil, rsp.Err
+	}
+
+	reqURL, err := parseNextPageURL(rsp.Request.URL)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var allRows []common.ReadResultRow
-
-	for range maxChildPagesPerParent {
-		resp, err := c.JSONHTTPClient().Get(ctx, reqURL.String())
-		if err != nil {
-			// Some leaves do not exist for every job: unassigned jobs answer
-			// 404 on representatives, estimates and milestone-history. The
-			// trigger is the assignment itself, not the milestone — an
-			// assigned job in the Lead milestone answers 200 on all leaves
-			// (verified live; the API reference documents only a generic
-			// 404). A missing leaf means "no child records", not a failed
-			// read — the same way non-user calendars 404 in GetRecordsByIds.
-			// This ends only this parent's page walk; the other parents each
-			// run their own fetchChildPages call.
-			if isNotFound(err) {
-				return allRows, nil
-			}
-
-			return nil, err
-		}
-
-		result, err := common.ParseResultFiltered(
-			params,
-			resp,
-			c.recordsFunc(params.ObjectName),
-			c.makeFilterFunc(params, reqURL),
-			common.MakeMarshaledDataFunc(nil),
-			params.Fields,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		attachNestedAssociations(params, parentID, parentRaw, result.Data)
-		allRows = append(allRows, result.Data...)
-
-		if result.NextPage == "" {
-			return allRows, nil
-		}
-
-		reqURL, err = parseNextPageURL(result.NextPage.String())
-		if err != nil {
-			return nil, err
-		}
+	result, err := common.ParseResultFiltered(
+		params,
+		rsp.Response,
+		c.recordsFunc(params.ObjectName),
+		c.makeFilterFunc(params, reqURL),
+		common.MakeMarshaledDataFunc(nil),
+		params.Fields,
+	)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return nil, fmt.Errorf(
-		"%w: %s/%s/%s after %d pages — for jobs/history pass Since/Until to filter server-side",
-		errChildPagesExceeded, nested.parentObject, parentID, nested.leafSuffix, maxChildPagesPerParent)
+	attachNestedAssociations(params, parentID, parentRaw, result.Data)
+
+	if result.NextPage == "" {
+		return result.Data, nil, nil
+	}
+
+	nextURL, err := parseNextPageURL(result.NextPage.String())
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return result.Data, nextURL, nil
 }
 
 func parseNextPageURL(s string) (*urlbuilder.URL, error) {

@@ -2,10 +2,9 @@ package acculynx
 
 import (
 	"context"
-	"fmt"
 	"maps"
+	"net/http"
 
-	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/logging"
 	"github.com/amp-labs/connectors/common/readhelper"
@@ -50,7 +49,7 @@ const estimateDetailIncludes = "createdBy,modifiedBy,sections"
 // wins on overlapping keys, it is the authoritative superset. Fields is
 // re-extracted from the merged Raw with the caller's field selection, the
 // same derivation the base marshaller uses. Rows whose detail fetch failed
-// (404, 429, 5xx — see fetchEstimateDetails) keep their stub shape.
+// on its own (a 404 or 5xx — see fetchEstimateDetails) keep their stub shape.
 func (c *Connector) hydrateEstimateRows(
 	ctx context.Context,
 	params common.ReadParams,
@@ -87,15 +86,12 @@ func (c *Connector) hydrateEstimateRows(
 	}
 }
 
-// fetchEstimateDetails fans out one GET /estimates/{id} per estimate
-// concurrently, honouring the per-key rate limit via maxConcurrentChildFetch.
-// A failed detail fetch is skipped rather than sinking the whole page — 404
-// (deleted between the list and detail calls), 429 (a page bursts up to
-// pageSize calls against the 10 req/sec key limit and the base client does
-// not retry), or 5xx: the row keeps its thin list shape either way, so a
-// partial result beats no result. Skips are logged because a skipped row is
-// otherwise indistinguishable from an estimate with no data. Only the read's
-// own cancellation aborts the fan-out.
+// fetchEstimateDetails fetches GET /estimates/{id} for every estimate as one request batch. A
+// detail that fails on its own, such as a 404 for an estimate deleted between the list and detail
+// calls, or a 5xx, is skipped rather than sinking the whole page: the row keeps its thin list shape,
+// so a partial result beats no result. Skips are logged because a skipped row is otherwise
+// indistinguishable from an estimate with no data. A 429 or the read's own cancellation stops the
+// batch and fails the page, so the read is tried again and reuses the details already fetched.
 func (c *Connector) fetchEstimateDetails(
 	ctx context.Context,
 	estimateIDs []string,
@@ -104,60 +100,56 @@ func (c *Connector) fetchEstimateDetails(
 		return map[string]map[string]any{}, nil
 	}
 
-	results := make([]map[string]any, len(estimateIDs))
-	jobs := make([]simultaneously.Job, len(estimateIDs))
+	requests := make([]common.BatchRequest, len(estimateIDs))
 
 	for i, estimateID := range estimateIDs {
-		idx, id := i, estimateID
-
-		jobs[idx] = func(ctx context.Context) error {
-			detail, err := c.fetchEstimateDetail(ctx, id)
-			if err != nil {
-				if ctx.Err() != nil {
-					return fmt.Errorf("fetch estimate %s detail: %w", id, ctx.Err())
-				}
-
-				logging.Logger(ctx).Warn("could not fetch estimate detail, keeping thin row",
-					"estimateId", id, "error", err.Error())
-
-				return nil
-			}
-
-			results[idx] = detail
-
-			return nil
+		url, err := c.estimateDetailURL(estimateID)
+		if err != nil {
+			return nil, err
 		}
+
+		requests[i] = common.BatchRequest{Method: http.MethodGet, URL: url.String()}
 	}
 
-	if err := simultaneously.DoCtx(ctx, maxConcurrentChildFetch, jobs...); err != nil {
+	responses, err := c.JSONHTTPClient().DoBatch(ctx, requests)
+	if err != nil {
 		return nil, err
 	}
 
 	out := make(map[string]map[string]any, len(estimateIDs))
 
-	for i, id := range estimateIDs {
-		if results[i] != nil {
-			out[id] = results[i]
+	for i, rsp := range responses {
+		detail, err := estimateDetail(rsp)
+		if err != nil {
+			logging.Logger(ctx).Warn("could not fetch estimate detail, keeping thin row",
+				"estimateId", estimateIDs[i], "error", err.Error())
+
+			continue
 		}
+
+		out[estimateIDs[i]] = detail
 	}
 
 	return out, nil
 }
 
-func (c *Connector) fetchEstimateDetail(ctx context.Context, estimateID string) (map[string]any, error) {
-	u, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.modulePath(), objectEstimates, estimateID)
+func (c *Connector) estimateDetailURL(estimateID string) (*urlbuilder.URL, error) {
+	url, err := urlbuilder.New(c.ProviderInfo().BaseURL, c.modulePath(), objectEstimates, estimateID)
 	if err != nil {
 		return nil, err
 	}
 
-	u.WithQueryParam("includes", estimateDetailIncludes)
+	url.WithQueryParam("includes", estimateDetailIncludes)
 
-	resp, err := c.JSONHTTPClient().Get(ctx, u.String())
-	if err != nil {
-		return nil, err
+	return url, nil
+}
+
+func estimateDetail(rsp common.BatchResponse) (map[string]any, error) {
+	if rsp.Err != nil {
+		return nil, rsp.Err
 	}
 
-	detail, err := common.UnmarshalJSON[map[string]any](resp)
+	detail, err := common.UnmarshalJSON[map[string]any](rsp.Response)
 	if err != nil {
 		return nil, err
 	}
