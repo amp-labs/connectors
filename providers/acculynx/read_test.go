@@ -201,7 +201,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					},
 				},
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment%2Ccontacts&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment%2Ccontacts&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -242,7 +242,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -304,7 +304,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -430,7 +430,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&dateFilterType=ModifiedDate&endDate=2026-04-30&includes=initialAppointment&pageSize=25&pageStartIndex=0&startDate=2026-04-01",
+					"/api/v2/jobs?assignment=unassigned&dateFilterType=ModifiedDate&endDate=2026-04-30&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-04-01",
 				Done: false,
 			},
 		},
@@ -577,7 +577,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					},
 				},
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -636,7 +636,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					},
 				},
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -648,7 +648,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				ObjectName: "jobs",
 				Fields:     connectors.Fields("id"),
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
@@ -676,41 +676,64 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			// AccuLynx rejects a page that ends past position 100000, so a list
-			// with more matches must be read sorted by modifiedDate.
-			Name: "Read jobs with more than 100000 matches restarts the list sorted by modifiedDate",
+			// The first page is already sorted by modifiedDate, so a list with
+			// more than 100000 matches keeps paging it: no restart from 0.
+			// The server answers only the sorted first page.
+			Name: "Read jobs with more than 100000 matches keeps paging the sorted list",
 			Input: common.ReadParams{
 				ObjectName: "jobs",
 				Fields:     connectors.Fields("id"),
 				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 				Until:      time.Date(2026, 11, 6, 0, 0, 0, 0, time.UTC),
 			},
-			Server: jobsServer(map[string]string{"startDate": "2026-01-01", "pageStartIndex": "0"},
-				jobsPage(150000, 0, 25, "2026-03-01T10:00:00Z", "2026-02-01T10:00:00Z")),
+			Server: jobsServer(map[string]string{
+				"startDate": "2026-01-01", "pageStartIndex": "0",
+				"sortBy": "ModifiedDate", "sortOrder": "Ascending",
+			}, jobsPage(150000, 0, 25, "2026-02-01T10:00:00Z", "2026-03-01T10:00:00Z")),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 25,
 				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06&includes=initialAppointment" +
-					"&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-01-01"),
+					"&pageSize=25&pageStartIndex=25&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-01-01"),
 			},
 		},
 		{
-			// The default order (by created date) does not move when a job is
-			// edited during the read, so it is kept whenever it can reach the end.
-			Name: "Read jobs with 100000 matches or fewer keeps the default order",
+			// Jobs are always read sorted by modifiedDate, even when the list is
+			// small enough to reach its end in the default order. The server
+			// answers only the sorted first page.
+			Name: "Read jobs with 100000 matches or fewer is sorted by modifiedDate",
 			Input: common.ReadParams{
 				ObjectName: "jobs",
 				Fields:     connectors.Fields("id"),
 				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 				Until:      time.Date(2026, 11, 6, 0, 0, 0, 0, time.UTC),
 			},
-			Server: jobsServer(map[string]string{"startDate": "2026-01-01", "pageStartIndex": "0"},
-				jobsPage(247, 0, 25, "2026-03-01T10:00:00Z", "2026-02-01T10:00:00Z")),
+			Server: jobsServer(map[string]string{
+				"startDate": "2026-01-01", "pageStartIndex": "0",
+				"sortBy": "ModifiedDate", "sortOrder": "Ascending",
+			}, jobsPage(247, 0, 25, "2026-02-01T10:00:00Z", "2026-03-01T10:00:00Z")),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 25,
 				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=2026-11-06&includes=initialAppointment" +
-					"&pageSize=25&pageStartIndex=25&startDate=2026-01-01"),
+					"&pageSize=25&pageStartIndex=25&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-01-01"),
+			},
+		},
+		{
+			// A read with no Since/Until has no date filter, but is still sorted.
+			Name: "Read jobs without Since/Until is sorted by modifiedDate",
+			Input: common.ReadParams{
+				ObjectName: "jobs",
+				Fields:     connectors.Fields("id"),
+			},
+			Server: jobsServer(map[string]string{
+				"pageStartIndex": "0", "sortBy": "ModifiedDate", "sortOrder": "Ascending",
+			}, jobsPage(247, 0, 25, "2026-02-01T10:00:00Z", "2026-03-01T10:00:00Z")),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows: 25,
+				NextPage: jobsURL("includes=initialAppointment&pageSize=25&pageStartIndex=25" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending"),
 			},
 		},
 		{
@@ -832,8 +855,8 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 		},
 		{
 			// The unassigned jobs are a new list: they start from the read's own
-			// dates in the default order, not from where the assigned list ended.
-			Name: "Jobs unassigned sweep restores the read's dates and default order",
+			// dates, not from where the assigned list ended, and stay sorted.
+			Name: "Jobs unassigned sweep restores the read's dates and keeps the sort",
 			Input: common.ReadParams{
 				ObjectName: "jobs",
 				Fields:     connectors.Fields("id"),
@@ -849,21 +872,24 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Expected: &common.ReadResult{
 				Rows: 25,
 				NextPage: jobsURL("assignment=unassigned&dateFilterType=ModifiedDate&endDate=2026-11-06" +
-					"&includes=initialAppointment&pageSize=25&pageStartIndex=0&startDate=2026-01-01"),
+					"&includes=initialAppointment&pageSize=25&pageStartIndex=0" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-01-01"),
 			},
 		},
 		{
-			// jobs/* objects page the /jobs list too, so they have the same limit.
-			Name: "Read jobs/representatives over more than 100000 jobs restarts the job list sorted",
+			// jobs/* objects page the /jobs list too, so it is sorted for them as
+			// well. The server answers only the sorted first page.
+			Name: "Read jobs/representatives pages the job list sorted by modifiedDate",
 			Input: common.ReadParams{
 				ObjectName: "jobs/representatives",
 				Fields:     connectors.Fields("id"),
 			},
-			Server: jobsServer(map[string]string{"pageStartIndex": "0"},
-				jobsPage(150000, 0, 25, "2026-03-01T10:00:00Z", "2026-02-01T10:00:00Z")),
+			Server: jobsServer(map[string]string{
+				"pageStartIndex": "0", "sortBy": "ModifiedDate", "sortOrder": "Ascending",
+			}, jobsPage(150000, 0, 25, "2026-02-01T10:00:00Z", "2026-03-01T10:00:00Z")),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
-				NextPage: jobsURL("includes=initialAppointment&pageSize=25&pageStartIndex=0" +
+				NextPage: jobsURL("includes=initialAppointment&pageSize=25&pageStartIndex=25" +
 					"&sortBy=ModifiedDate&sortOrder=Ascending"),
 			},
 		},
@@ -900,7 +926,8 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				jobsPage(75, 50, 25, "2026-08-01T10:00:00Z", "2026-08-02T10:00:00Z")),
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
-				NextPage: jobsURL("assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0"),
+				NextPage: jobsURL("assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0" +
+					"&sortBy=ModifiedDate&sortOrder=Ascending"),
 			},
 		},
 		{
@@ -944,7 +971,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Expected: &common.ReadResult{
 				Rows: 2,
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -988,7 +1015,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1034,7 +1061,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=2&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=2&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1074,7 +1101,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1251,7 +1278,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 					},
 				},
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1291,7 +1318,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 				// The assigned sweep is exhausted; the read continues into the
 				// unassigned population before it is Done.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1770,7 +1797,7 @@ func TestReadPaginationTermination(t *testing.T) {
 				// The assigned sweep stops, and the read hands over to the
 				// unassigned population exactly once.
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1787,7 +1814,7 @@ func TestReadPaginationTermination(t *testing.T) {
 			Expected: &common.ReadResult{
 				Rows: 25,
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?includes=initialAppointment&pageSize=25&pageStartIndex=25",
+					"/api/v2/jobs?includes=initialAppointment&pageSize=25&pageStartIndex=25&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1806,7 +1833,7 @@ func TestReadPaginationTermination(t *testing.T) {
 			Expected: &common.ReadResult{
 				Rows: 25,
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1825,7 +1852,7 @@ func TestReadPaginationTermination(t *testing.T) {
 			Expected: &common.ReadResult{
 				Rows: 25,
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
@@ -1873,7 +1900,7 @@ func TestReadPaginationTermination(t *testing.T) {
 			Expected: &common.ReadResult{
 				Rows: 10,
 				NextPage: testconn.URLTestServer +
-					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0",
+					"/api/v2/jobs?assignment=unassigned&includes=initialAppointment&pageSize=25&pageStartIndex=0&sortBy=ModifiedDate&sortOrder=Ascending",
 				Done: false,
 			},
 		},
