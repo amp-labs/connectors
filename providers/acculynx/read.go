@@ -226,6 +226,7 @@ func (c *Connector) buildInitialURL(params common.ReadParams) (*urlbuilder.URL, 
 
 	applyPagination(url, objectName, params)
 	applyIncludes(url, objectName, params)
+	applyJobsOrdering(url, objectName)
 
 	return url, nil
 }

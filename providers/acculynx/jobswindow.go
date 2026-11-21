@@ -41,27 +41,30 @@ const (
 	jobsModifiedDateField = "modifiedDate"
 )
 
-// How we read more than 100000 jobs
+// How we read jobs, including more than 100000
 //
-// Normally we keep AccuLynx's default order (by created date). A job's created
-// date never changes, so jobs stay in the same place while we read, even if
-// someone edits one. No job gets skipped.
+// We always ask for jobs sorted oldest-modified first
+// (sortBy=ModifiedDate&sortOrder=Ascending, see applyJobsOrdering). In this
+// order the last job we delivered tells us how far a read got: every job we
+// have not read yet was modified on or after it. So a read that stops part way
+// can be started again from that date, and a read can get past AccuLynx's
+// 100000 limit by moving its start date forward.
 //
-// Sorting by modified date is risky. When someone edits a job, it moves to the
-// end of the list, every job after it moves up one place, and the next page
-// misses one job. So we only sort by modified date when we have to.
+// The cost: when someone edits a job while we read, it moves to the end of the
+// list, every job after it moves up one place, and the next page can miss one
+// job. The edited job itself is not lost, because it is now at the end of the
+// list.
 //
-// We have to when the list has more than 100000 jobs. Then we:
-//  1. Start the list again from position 0, sorted oldest-modified first.
-//  2. Read pages as usual until the next page would go past 100000.
-//  3. Ask for a new list that starts the day before the newest job we have
+// When the list has more than 100000 jobs we:
+//  1. Read pages as usual until the next page would go past 100000.
+//  2. Ask for a new list that starts the day before the newest job we have
 //     read, and start again from position 0 (advanceJobsWindow).
 //
 // AccuLynx filters by whole days, so a few jobs from that last day or two come
 // twice. That is fine: getting a job twice is better than missing it.
 //
 // When the assigned jobs are done, the unassigned jobs start fresh with the
-// read's own dates and the default order (restoreJobsWindowStart).
+// read's own dates, still sorted oldest-modified first (restoreJobsWindowStart).
 //
 // All of these rules are in fitJobsCursorUnderCap. Every jobs next-page URL
 // goes through it, whether we just built it or it was saved from an earlier
@@ -75,10 +78,10 @@ func (c *Connector) fitJobsCursorUnderCap(
 	previousResponse *ajson.Node,
 	params common.ReadParams,
 ) error {
-	// Default order (by created date). We cannot move the start date forward in
-	// this order, so the only way past 100000 is to sort by modified date and
-	// start again from 0. We only do this when the list is too big, because the
-	// default order is safer when someone edits a job while we read.
+	// Default order. New reads always ask for the sorted order, so only a URL
+	// saved before that change gets here. We cannot move the start date forward
+	// in this order, so we keep paging it as it is, and only when the list is too
+	// big do we switch to the sorted order and start again from 0.
 	if !hasJobsOrdering(cursor) {
 		if listingPastOffsetCap(previousResponse, cursor) {
 			restartJobsWindowOrdered(cursor)
@@ -135,9 +138,25 @@ func listingPastOffsetCap(previousResponse *ajson.Node, cursor *urlbuilder.URL) 
 // restartJobsWindowOrdered makes the URL start again from position 0 of the
 // same list, sorted oldest-modified first.
 func restartJobsWindowOrdered(cursor *urlbuilder.URL) {
-	cursor.WithQueryParam(sortByParam, modifiedDateValue)
-	cursor.WithQueryParam(sortOrderParam, ascendingValue)
+	setJobsOrdering(cursor)
 	cursor.WithQueryParam(pageStartParam, "0")
+}
+
+// applyJobsOrdering asks for the /jobs list sorted oldest-modified first. It
+// is applied to every first-page URL of the /jobs list, including the parent
+// list that jobs/* objects page through. Other objects are left alone.
+func applyJobsOrdering(url *urlbuilder.URL, objectName string) {
+	if objectName != objectJobs {
+		return
+	}
+
+	setJobsOrdering(url)
+}
+
+// setJobsOrdering adds sortBy=ModifiedDate&sortOrder=Ascending to the URL.
+func setJobsOrdering(url *urlbuilder.URL) {
+	url.WithQueryParam(sortByParam, modifiedDateValue)
+	url.WithQueryParam(sortOrderParam, ascendingValue)
 }
 
 // hasJobsOrdering says whether the URL asks for jobs sorted oldest-modified
@@ -145,8 +164,8 @@ func restartJobsWindowOrdered(cursor *urlbuilder.URL) {
 //
 // We need this order to move the start date forward. In this order, every job
 // we have not read yet was modified on or after the newest job we have read,
-// so a new list starting from that date skips nothing. In the default order
-// (by created date) the modified dates are mixed up, so this is not safe.
+// so a new list starting from that date skips nothing. In AccuLynx's default
+// order the modified dates are mixed up, so this is not safe.
 func hasJobsOrdering(url *urlbuilder.URL) bool {
 	sortBy, _ := url.GetFirstQueryParam(sortByParam)
 	sortOrder, _ := url.GetFirstQueryParam(sortOrderParam)
@@ -175,8 +194,8 @@ func (c *Connector) makeJobsNextPage(
 		previousResponse := root
 
 		// The assigned jobs are done and the unassigned jobs start. That is a new
-		// list, so put back the read's own dates and the default order. Do not
-		// pass the previous response: its job count belongs to the assigned list.
+		// list, so put back the read's own dates, sorted oldest-modified first. Do
+		// not pass the previous response: its job count belongs to the assigned list.
 		if startsUnassignedSweep(reqURL, nextURL) {
 			restoreJobsWindowStart(nextURL, params)
 
@@ -214,11 +233,10 @@ func startsUnassignedSweep(reqURL, nextURL *urlbuilder.URL) bool {
 	return !current && next
 }
 
-// restoreJobsWindowStart puts the read's own dates and the default order back
-// on the URL.
+// restoreJobsWindowStart puts the read's own dates back on the URL, sorted
+// oldest-modified first like every other jobs list.
 func restoreJobsWindowStart(url *urlbuilder.URL, params common.ReadParams) {
-	url.RemoveQueryParam(sortByParam)
-	url.RemoveQueryParam(sortOrderParam)
+	setJobsOrdering(url)
 
 	// The read had no Since/Until, so remove any date filter we added to get
 	// past 100000.
