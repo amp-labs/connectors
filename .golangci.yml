@@ -90,6 +90,10 @@ linters:
         # nothing in this repo that needs to spawn a bare goroutine. If that changes, add the
         # path here under `exclude-paths`.
         settings: {}
+      nosleep:
+        type: module
+        description: Forbids time.Sleep and amp-common utils.SleepCtx in connector code - let the HTTP client retry and back off (DoBatch) instead
+        settings: {}
   exclusions:
     generated: lax
     presets:
@@ -128,6 +132,11 @@ linters:
           - gosec
         text: "G101"
         path: ^providers/
+      # Sleeping is forbidden in library code only. Tests, live test scripts and
+      # developer tooling may wait on real time.
+      - linters:
+          - nosleep
+        path: (_test\.go$|^(test|scripts|examples|tools|\.github)/)
     paths:
       - playground
       - test

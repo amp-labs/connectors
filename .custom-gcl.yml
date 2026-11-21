@@ -5,3 +5,5 @@ plugins:
     path: './tools/linters/nogoroutine'
   - module: 'github.com/amp-labs/connectors/tools/linters/modulelinter'
     path: './tools/linters/modulelinter'
+  - module: 'github.com/amp-labs/connectors/tools/linters/nosleep'
+    path: './tools/linters/nosleep'

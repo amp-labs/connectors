@@ -37,7 +37,7 @@ jobs:
           restore-keys: |
             v1-ci-go1.27.1-
 
-      # The custom golangci-lint binary (with the nogoroutine/modulelinter
+      # The custom golangci-lint binary (with the nogoroutine/modulelinter/nosleep
       # plugins) only changes when its config or plugin source changes, so
       # cache it instead of rebuilding it from source every run.
       - name: Cache custom-gcl binary
