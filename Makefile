@@ -50,11 +50,11 @@ check-linters:
 		cargo install typos-cli; \
 	fi
 
-# Build custom golangci-lint binary with linter plugins nogoroutine, modulelinter.
+# Build custom golangci-lint binary with linter plugins nogoroutine, modulelinter, nosleep.
 .PHONY: custom-gcl
 custom-gcl: check-linters
 	@if [ ! -f custom-gcl ]; then \
-		echo "Building custom golangci-lint binary with nogoroutine & module linter..."; \
+		echo "Building custom golangci-lint binary with nogoroutine, module & nosleep linters..."; \
 		golangci-lint custom --verbose || exit 1; \
 	fi
 
