@@ -93,7 +93,7 @@ require (
 require (
 	cloud.google.com/go/bigquery v1.86.2
 	github.com/PuerkitoBio/goquery v1.13.0
-	github.com/amp-labs/amp-common v0.0.0-20261120232910-21a97e4c3fce
+	github.com/amp-labs/amp-common v0.0.0-20261123085722-ce3f9c03059b
 	github.com/antchfx/xmlquery v1.5.2
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/aws/aws-sdk-go-v2 v1.48.0
