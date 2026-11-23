@@ -105,7 +105,8 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		}
 	}
 
-	// Metadata comes from Jobber's read type, which has no clientId; creating a request needs it.
+	// clientId is the ID of the Jobber Client (customer) the request belongs to, not an OAuth client ID.
+	// Metadata comes from Jobber's read type Request, which has no clientId; requestCreate needs it.
 	if objectName == objectRequests {
 		objectMetadata.Fields["clientId"] = common.FieldMetadata{
 			DisplayName:  "clientId",
