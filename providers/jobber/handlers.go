@@ -105,6 +105,15 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		}
 	}
 
+	// Metadata comes from Jobber's read type, which has no clientId; creating a request needs it.
+	if objectName == objectRequests {
+		objectMetadata.Fields["clientId"] = common.FieldMetadata{
+			DisplayName:  "clientId",
+			ValueType:    common.ValueTypeString,
+			ProviderType: "EncodedId",
+		}
+	}
+
 	return &objectMetadata, nil
 }
 
