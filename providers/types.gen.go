@@ -543,7 +543,7 @@ type Oauth2Opts struct {
 	// TokenMetadataFields Fields to be used to extract token metadata from the token response.
 	TokenMetadataFields TokenMetadataFields `json:"tokenMetadataFields"`
 
-	// TokenParams Extra parameters to send in the body of every request to the token URL
+	// TokenReqBodyParams Extra parameters to send in the body of every request to the token URL
 	// (authorization code exchange, refresh, client credentials and password grants),
 	// for providers whose token endpoint needs fields beyond the OAuth 2.0 ones.
 	// Values may use catalog variables such as {{.workspace}}. A parameter here never
@@ -552,7 +552,7 @@ type Oauth2Opts struct {
 	//
 	//
 	// Example: {"platform":"{{.platform}}"}
-	TokenParams map[string]string `json:"tokenParams,omitempty"`
+	TokenReqBodyParams map[string]string `json:"tokenReqBodyParams,omitempty"`
 
 	// TokenURL The token URL.
 	//
