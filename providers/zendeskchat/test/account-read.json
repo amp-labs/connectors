@@ -1,0 +1,10 @@
+{
+  "account_key": "sample-account-key",
+  "status": "active",
+  "create_date": "2024-02-15T16:22:59Z",
+  "plan": {
+    "name": "enterprise",
+    "max_agents": 5,
+    "rest_api": true
+  }
+}

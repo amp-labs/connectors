@@ -1,0 +1,17 @@
+{
+  "chats": [
+    {
+      "id": "2404.20015967.U8hSBNJn7ON55",
+      "type": "chat",
+      "timestamp": "2024-04-10T12:00:00Z",
+      "missed": false,
+      "tags": [],
+      "visitor": {
+        "name": "Visitor 1",
+        "email": "visitor@example.com"
+      },
+      "rating": null
+    }
+  ],
+  "count": 1
+}
