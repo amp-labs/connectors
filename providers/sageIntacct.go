@@ -13,7 +13,11 @@ func init() {
 			ExplicitScopesRequired:    false,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
-			DocsURL:                   "https://developer.sage.com/intacct/docs/developer-portal/getting-started/quick-start",
+			// Sage Intacct only returns a refresh token when the authorize request
+			// asks for offline_access. Without it the connection dies when the
+			// access token expires.
+			AuthURLParams: map[string]string{"scope": "offline_access"},
+			DocsURL:       "https://developer.sage.com/intacct/docs/developer-portal/getting-started/quick-start",
 		},
 		//nolint:lll
 		Media: &Media{
