@@ -74,11 +74,11 @@ require (
 	go.uber.org/atomic v1.12.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	go.yaml.in/yaml/v4 v4.0.0 // indirect
-	golang.org/x/crypto v0.58.0 // indirect
+	golang.org/x/crypto v0.59.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/mod v0.43.0 // indirect
 	golang.org/x/sync v0.25.0 // indirect
-	golang.org/x/sys v0.49.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
 	golang.org/x/telemetry v0.0.0-20261009151841-97e8ea77aa2a // indirect
 	golang.org/x/time v0.16.0 // indirect
 	golang.org/x/tools v0.52.0 // indirect
@@ -93,7 +93,7 @@ require (
 require (
 	cloud.google.com/go/bigquery v1.86.2
 	github.com/PuerkitoBio/goquery v1.13.0
-	github.com/amp-labs/amp-common v0.0.0-20261120232910-21a97e4c3fce
+	github.com/amp-labs/amp-common v0.0.0-20261123085832-55b2692f22bb
 	github.com/antchfx/xmlquery v1.5.2
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/aws/aws-sdk-go-v2 v1.48.0
@@ -119,7 +119,7 @@ require (
 	github.com/spyzhov/ajson v0.9.6
 	github.com/stretchr/testify v1.12.1
 	gitlab.com/c0b/go-ordered-json v0.0.0-20201030195603-febf46534d5a
-	golang.org/x/net v0.62.0
+	golang.org/x/net v0.63.0
 	golang.org/x/oauth2 v0.38.0
 	golang.org/x/text v0.44.0
 	google.golang.org/api v0.315.0
