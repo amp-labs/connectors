@@ -32,6 +32,11 @@ func init() { //nolint: funlen
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+			Search: SearchSupport{
+				Operators: SearchOperators{
+					Equals: true,
+				},
+			},
 		},
 		DefaultModule: ModulePipedriveLegacy,
 		Modules: &Modules{
@@ -63,6 +68,13 @@ func init() { //nolint: funlen
 					Read:      false,
 					Subscribe: false,
 					Write:     false,
+					// Persons can be looked up by id, email, phone.
+					// Organizations by id.
+					Search: SearchSupport{
+						Operators: SearchOperators{
+							Equals: true,
+						},
+					},
 				},
 			},
 		},

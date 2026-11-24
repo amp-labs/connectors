@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": 3,
+      "name": "Organization name",
+      "owner_id": 1,
+      "add_time": "2024-10-15T09:33:33Z",
+      "update_time": "2024-10-16T09:33:33Z",
+      "is_deleted": false,
+      "visible_to": 3,
+      "label_ids": [],
+      "custom_fields": {}
+    }
+  ],
+  "additional_data": {
+    "next_cursor": null
+  }
+}
