@@ -1,0 +1,27 @@
+{
+  "_pagination": {
+    "next": "https://example.api.frontapp.com/conversations/search/is:archived?limit=100&page_token=abc"
+  },
+  "_links": {
+    "self": "https://example.api.frontapp.com/conversations/search/is:archived?limit=100"
+  },
+  "_results": [
+    {
+      "id": "cnv_1alzn15o",
+      "type": "conversation",
+      "subject": "Package update?",
+      "status": "archived",
+      "created_at": 1749195156.6,
+      "is_private": false
+    },
+    {
+      "id": "cnv_2bmao26p",
+      "type": "conversation",
+      "subject": "Refund request",
+      "status": "archived",
+      "created_at": 1749195200.1,
+      "is_private": false
+    }
+  ],
+  "_total": 2
+}

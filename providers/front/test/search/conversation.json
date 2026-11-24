@@ -1,0 +1,17 @@
+{
+  "_links": {
+    "self": "https://example.api.frontapp.com/conversations/cnv_1alzn15o"
+  },
+  "id": "cnv_1alzn15o",
+  "type": "conversation",
+  "subject": "Package update?",
+  "status": "archived",
+  "ticket_ids": [],
+  "assignee": null,
+  "recipient": {"name": "Sabrina Calhoun", "handle": "sabrina@example.com", "role": "from"},
+  "tags": [],
+  "links": [],
+  "custom_fields": {},
+  "created_at": 1749195156.6,
+  "is_private": false
+}

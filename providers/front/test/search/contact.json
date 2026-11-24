@@ -1,0 +1,25 @@
+{
+  "_links": {
+    "self": "https://example.api.frontapp.com/contacts/crd_4mhsx24",
+    "related": {
+      "notes": "https://example.api.frontapp.com/contacts/crd_4mhsx24/notes",
+      "conversations": "https://example.api.frontapp.com/contacts/crd_4mhsx24/conversations",
+      "owner": null
+    }
+  },
+  "id": "crd_4mhsx24",
+  "name": "Pep Hernandez",
+  "description": "A market lead at Acme Inc",
+  "avatar_url": null,
+  "links": ["https://bit.ly/profile"],
+  "handles": [
+    {"source": "email", "handle": "pep@example.com"},
+    {"source": "phone", "handle": "+15555550100"}
+  ],
+  "groups": [],
+  "lists": [],
+  "updated_at": 1749195156.6,
+  "custom_fields": {},
+  "is_private": false,
+  "account": null
+}
