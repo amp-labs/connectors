@@ -20,7 +20,7 @@ func NewConnector(ctx context.Context) *freshchat.Connector {
 	}
 
 	conn, err := freshchat.NewConnector(
-		common.ConnectorParams{AuthenticatedClient: client, Workspace: "marsinc-team-d57fdeb9aafa7f517755548"},
+		common.ConnectorParams{AuthenticatedClient: client, Workspace: reader.Get(credscanning.Fields.Workspace)},
 	)
 	if err != nil {
 		utils.Fail("error creating connector", "error", err)
