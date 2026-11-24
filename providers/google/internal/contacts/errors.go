@@ -10,7 +10,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/interpreter"
-	"github.com/amp-labs/connectors/providers/google/internal/core"
+	"github.com/amp-labs/connectors/providers/google/internal/shared"
 )
 
 var errorFormats = interpreter.NewFormatSwitch( // nolint:gochecknoglobals
@@ -68,7 +68,7 @@ func (d ErrorDetails) CombineErr(base error) error {
 // per-user quota violations; without this hook the response maps to ErrForbidden
 // (unrecoverable) instead of ErrLimitExceeded (retryable).
 func (a *Adapter) interpretJSONError(res *http.Response, body []byte) error {
-	return core.InterpretJSONError(res, body, jsonResponder.HandleErrorResponse)
+	return shared.InterpretJSONError(res, body, jsonResponder.HandleErrorResponse)
 }
 
 // Typical HTML google error message has Title with paragraph describing the problem.

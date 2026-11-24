@@ -10,7 +10,7 @@ import (
 	"github.com/amp-labs/connectors/internal/components/reader"
 	"github.com/amp-labs/connectors/internal/components/writer"
 	"github.com/amp-labs/connectors/providers"
-	"github.com/amp-labs/connectors/providers/google/internal/core"
+	"github.com/amp-labs/connectors/providers/google/internal/shared"
 )
 
 const apiVersion = "v1"
@@ -33,7 +33,7 @@ func constructor(_ common.ConnectorParams, base *components.Connector) (*Adapter
 
 	// Calls made directly on the shared JSON client (outside the Reader/Writer/Deleter) need
 	// Google rate-limit detection too, so a quota 403 is retryable rather than forbidden.
-	adapter.SetErrorHandler(core.InterpretSharedClientError)
+	adapter.SetErrorHandler(shared.InterpretSharedClientError)
 
 	errorHandler := interpreter.ErrorHandler{
 		JSON: &interpreter.DirectFaultyResponder{Callback: adapter.interpretJSONError},
