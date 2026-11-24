@@ -64,6 +64,7 @@ import (
 	"github.com/amp-labs/connectors/providers/fireflies"
 	"github.com/amp-labs/connectors/providers/flatfile"
 	"github.com/amp-labs/connectors/providers/fourfour"
+	"github.com/amp-labs/connectors/providers/freshchat"
 	"github.com/amp-labs/connectors/providers/freshdesk"
 	"github.com/amp-labs/connectors/providers/front"
 	"github.com/amp-labs/connectors/providers/g2"
@@ -236,6 +237,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Fireflies:                         wrapper(newFirefliesConnector),
 	providers.Flatfile:                          wrapper(newFlatfileConnector),
 	providers.FourFour:                          wrapper(newFourFourConnector),
+	providers.Freshchat:                         wrapper(newFreshchatConnector),
 	providers.Freshdesk:                         wrapper(newFreshdeskConnector),
 	providers.Front:                             wrapper(newFrontConnector),
 	providers.G2:                                wrapper(newG2Connector),
@@ -923,6 +925,12 @@ func newGetResponseConnector(
 	params common.ConnectorParams,
 ) (*getresponse.Connector, error) {
 	return getresponse.NewConnector(params)
+}
+
+func newFreshchatConnector(
+	params common.ConnectorParams,
+) (*freshchat.Connector, error) {
+	return freshchat.NewConnector(params)
 }
 
 func newFreshdeskConnector(
