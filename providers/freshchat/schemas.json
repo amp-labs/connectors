@@ -64,6 +64,11 @@
               "valueType": "string",
               "providerType": "string",
               "description": "Deployment datacenter: US, EUC, AUS, IND, US2"
+            },
+            "web_chat_id": {
+              "displayName": "web_chat_id",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         },
@@ -148,13 +153,13 @@
             },
             "is_deactivated": {
               "displayName": "is_deactivated",
-              "valueType": "bool",
+              "valueType": "boolean",
               "providerType": "boolean",
               "description": "Specifies whether the agent is deactivated"
             },
             "is_deleted": {
               "displayName": "is_deleted",
-              "valueType": "bool",
+              "valueType": "boolean",
               "providerType": "boolean",
               "description": "Specifies whether agent's details are deleted"
             },
@@ -178,7 +183,7 @@
             },
             "login_status": {
               "displayName": "login_status",
-              "valueType": "bool",
+              "valueType": "boolean",
               "providerType": "boolean",
               "description": "Whether agent is logged into Freshchat system"
             },
@@ -235,6 +240,16 @@
               "valueType": "string",
               "providerType": "string",
               "description": "Timezone in Area/Location format (e.g., Asia/Kolkata)"
+            },
+            "freshchat_access": {
+              "displayName": "freshchat_access",
+              "valueType": "boolean",
+              "providerType": "boolean"
+            },
+            "round_robin_access": {
+              "displayName": "round_robin_access",
+              "valueType": "boolean",
+              "providerType": "boolean"
             }
           }
         },
@@ -274,6 +289,11 @@
               "valueType": "string",
               "providerType": "string",
               "description": "Routing logic: DISABLED, LOAD_BASED, ROUND_ROBIN, OCR"
+            },
+            "chat_group_id": {
+              "displayName": "chat_group_id",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         },
@@ -310,13 +330,13 @@
             },
             "enabled": {
               "displayName": "enabled",
-              "valueType": "bool",
+              "valueType": "boolean",
               "providerType": "boolean",
               "description": "Whether to display the topic on the conversation widget"
             },
             "public": {
               "displayName": "public",
-              "valueType": "bool",
+              "valueType": "boolean",
               "providerType": "boolean",
               "description": "Whether the topic is visible across all web pages"
             },
@@ -337,6 +357,11 @@
               "valueType": "string",
               "providerType": "string",
               "description": "Language ISO-639 code for multi-language support"
+            },
+            "source": {
+              "displayName": "source",
+              "valueType": "string",
+              "providerType": "string"
             }
           }
         },
@@ -361,7 +386,7 @@
             },
             "is_custom_role": {
               "displayName": "is_custom_role",
-              "valueType": "bool",
+              "valueType": "boolean",
               "providerType": "boolean",
               "description": "Specifies whether the role is a custom role"
             },
@@ -370,132 +395,6 @@
               "valueType": "string",
               "providerType": "string",
               "description": "Meaningful description about the role"
-            }
-          }
-        },
-        "outbound_messages": {
-          "displayName": "Outbound Messages",
-          "description": "Sends outbound messages through integrated business channels (e.g., WhatsApp).",
-          "path": "/v2/outbound-messages",
-          "httpMethod": "GET",
-          "responseKey": "",
-          "fields": {
-            "message_id": {
-              "displayName": "message_id",
-              "valueType": "string",
-              "providerType": "string",
-              "description": "Identifier of an outbound message (response attribute)"
-            },
-            "from": {
-              "displayName": "from",
-              "valueType": "other",
-              "providerType": "object",
-              "description": "Business number from which the message is sent (mandatory)"
-            },
-            "provider": {
-              "displayName": "provider",
-              "valueType": "string",
-              "providerType": "string",
-              "description": "Channel through which messages are received: whatsapp (mandatory)"
-            },
-            "to": {
-              "displayName": "to",
-              "valueType": "other",
-              "providerType": "array",
-              "description": "List of recipient numbers or handles (mandatory)"
-            },
-            "data": {
-              "displayName": "data",
-              "valueType": "other",
-              "providerType": "object",
-              "description": "Message template data posted to the recipient (mandatory)"
-            },
-            "request_id": {
-              "displayName": "request_id",
-              "valueType": "string",
-              "providerType": "string",
-              "description": "Identifier of the request to send an outbound message (response attribute)"
-            },
-            "status": {
-              "displayName": "status",
-              "valueType": "string",
-              "providerType": "string",
-              "description": "Status: Accepted, Sent, Delivered, Failed (mandatory)"
-            },
-            "failure_code": {
-              "displayName": "failure_code",
-              "valueType": "string",
-              "providerType": "string",
-              "description": "Code explaining why the request failed (response attribute)"
-            },
-            "failure_reason": {
-              "displayName": "failure_reason",
-              "valueType": "string",
-              "providerType": "string",
-              "description": "Reason why the request failed (response attribute)"
-            },
-            "created_on": {
-              "displayName": "created_on",
-              "valueType": "int",
-              "providerType": "integer",
-              "description": "Timestamp when the request was triggered (epoch format, response attribute)"
-            }
-          }
-        },
-        "historical_metrics": {
-          "displayName": "Historical Metrics",
-          "description": "Retrieves historical metrics for conversations, CSAT, and other analytics.",
-          "path": "/v2/metrics/historical",
-          "httpMethod": "GET",
-          "responseKey": "",
-          "fields": {
-            "metric": {
-              "displayName": "metric",
-              "valueType": "string",
-              "providerType": "string",
-              "description": "Name of the metric to be retrieved (mandatory)"
-            },
-            "start": {
-              "displayName": "start",
-              "valueType": "datetime",
-              "providerType": "date-time",
-              "description": "Starting date of the time period (UTC, mandatory)"
-            },
-            "end": {
-              "displayName": "end",
-              "valueType": "datetime",
-              "providerType": "date-time",
-              "description": "Ending date of the time period (UTC, mandatory)"
-            },
-            "interval": {
-              "displayName": "interval",
-              "valueType": "string",
-              "providerType": "string",
-              "description": "Frequency: 1m, 5m, 15m, 1h, 1d, 1w, 1mo"
-            },
-            "aggregator": {
-              "displayName": "aggregator",
-              "valueType": "string",
-              "providerType": "string",
-              "description": "Method to summarize atomic metrics: min, max, avg, median, p90"
-            },
-            "x_time": {
-              "displayName": "x_time",
-              "valueType": "int",
-              "providerType": "integer",
-              "description": "Minutes for real-time metrics like assigned_x_mins_ago"
-            },
-            "group_by": {
-              "displayName": "group_by",
-              "valueType": "string",
-              "providerType": "string",
-              "description": "Grouping criteria: group, agent, rating"
-            },
-            "filter_by": {
-              "displayName": "filter_by",
-              "valueType": "string",
-              "providerType": "string",
-              "description": "Filter by agent.id or group.id (e.g., group=group_id_1)"
             }
           }
         },
@@ -543,7 +442,7 @@
             },
             "login_status": {
               "displayName": "login_status",
-              "valueType": "bool",
+              "valueType": "boolean",
               "providerType": "boolean"
             },
             "org_contact_id": {

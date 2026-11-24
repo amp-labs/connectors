@@ -36,10 +36,10 @@ var (
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
 	// Create base connector with provider info
-	return components.Initialize(providers.Freshchat, params, constructor)
+	return components.Init(providers.Freshchat, params, constructor)
 }
 
-func constructor(base *components.Connector) (*Connector, error) {
+func constructor(_ common.ConnectorParams, base *components.Connector) (*Connector, error) {
 	connector := &Connector{Connector: base}
 
 	// Set the metadata provider for the connector
