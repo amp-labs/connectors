@@ -5,8 +5,6 @@ import (
 	"github.com/amp-labs/connectors/providers/zoom/internal/core"
 )
 
-const DateFormat = "2006-01-02"
-
 type Connector struct {
 	*core.Base
 }

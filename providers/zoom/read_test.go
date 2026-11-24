@@ -26,9 +26,6 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 	responseUser1MeetingsFirstPage := testutils.DataFromFile(t, "read/account_meetings/user-a/1-first-page.json")
 	responseUser2MeetingsFirstPage := testutils.DataFromFile(t, "read/account_meetings/user-b/1-first-page.json")
 	responseUser2MeetingsSecondPage := testutils.DataFromFile(t, "read/account_meetings/user-b/2-second-page.json")
-	meetingParticipants := testutils.DataFromFile(t, "meeting-associations/participants.json")
-	meetingTranscript := testutils.DataFromFile(t, "meeting-associations/transcript.json")
-	meetingSummary := testutils.DataFromFile(t, "meeting-associations/summary.json")
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -484,40 +481,94 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 			},
 			ExpectedErrs: nil,
 		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			t.Parallel()
+			tt.Run(t, func() (testconn.TestableReader, error) {
+				return constructTestConnector(tt.Server)
+			})
+		})
+	}
+}
+
+func TestReadAssociations(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
+	t.Parallel()
+
+	responseUsers := testutils.DataFromFile(t, "read/users/2-second-page.json")
+	responseUser2MeetingsSecondPage := testutils.DataFromFile(t, "read/account_meetings/user-b/2-second-page.json")
+	meetingParticipantsFirstPage := testutils.DataFromFile(t, "meeting-associations/latest-participants/1-first-page.json")
+	meetingParticipantsLastPage := testutils.DataFromFile(t, "meeting-associations/latest-participants/2-last-page.json")
+	meetingTranscript := testutils.DataFromFile(t, "meeting-associations/latest-transcript.json")
+	meetingSummary := testutils.DataFromFile(t, "meeting-associations/latest-summary.json")
+
+	instancesMeetingA := testutils.DataFromFile(t, "meeting-associations/meeting-a-instances.json")
+	instancesMeetingB := testutils.DataFromFile(t, "meeting-associations/meeting-b-instances.json")
+	errorNoParticipants := testutils.DataFromFile(t, "meeting-associations/meeting-participants-absent.json")
+	errorNoSummary := testutils.DataFromFile(t, "meeting-associations/meeting-summary-absent.json")
+	errorNoTranscript := testutils.DataFromFile(t, "meeting-associations/meeting-transcript-absent.json")
+
+	tests := []testconn.TestCaseRead{
 		{
 			Name: "Read Account Meetings with associations",
 			Input: common.ReadParams{
 				ObjectName:        "account_meetings",
 				Fields:            connectors.Fields("id", "topic"),
-				AssociatedObjects: []string{"participants", "transcript", "summary"},
+				AssociatedObjects: []string{"participants", "transcripts", "summaries"},
 			},
 			Server: mockserver.Switch{
 				Setup: mockserver.ContentJSON(),
-				Cases: mockserver.Cases{{
-					If:   mockcond.Path("/v2/users"),
-					Then: mockserver.Response(http.StatusOK, responseUsersSecondPage),
-				}, {
-					If:   mockcond.Path("/v2/users/KfDcuGIdfdlfdQgePTO8WbOqwIQ/meetings"),
-					Then: mockserver.Response(http.StatusOK, responseUser2MeetingsSecondPage),
-				}, {
-					If:   mockcond.Path("/v2/past_meetings/83625651564/participants"),
-					Then: mockserver.Response(http.StatusOK, meetingParticipants),
-				}, {
-					If:   mockcond.Path("/v2/past_meetings/88033623689/participants"),
-					Then: mockserver.ResponseString(http.StatusOK, `{}`),
-				}, {
-					If:   mockcond.Path("/v2/meetings/83625651564/transcript"),
-					Then: mockserver.Response(http.StatusOK, meetingTranscript),
-				}, {
-					If:   mockcond.Path("/v2/meetings/88033623689/transcript"),
-					Then: mockserver.ResponseString(http.StatusOK, `{}`),
-				}, {
-					If:   mockcond.Path("/v2/meetings/83625651564/meeting_summary"),
-					Then: mockserver.ResponseString(http.StatusOK, `{}`),
-				}, {
-					If:   mockcond.Path("/v2/meetings/88033623689/meeting_summary"),
-					Then: mockserver.Response(http.StatusOK, meetingSummary),
-				}},
+				Cases: mockserver.Cases{
+					// Users.
+					{
+						If:   mockcond.Path("/v2/users"),
+						Then: mockserver.Response(http.StatusOK, responseUsers),
+					}, {
+						If:   mockcond.Path("/v2/users/KfDcuGIdfdlfdQgePTO8WbOqwIQ/meetings"),
+						Then: mockserver.Response(http.StatusOK, responseUser2MeetingsSecondPage),
+					},
+					// Participants.
+					{
+						If: mockcond.And{
+							mockcond.Path("/v2/past_meetings/83625651564/participants"),
+							mockcond.QueryParamsMissing("next_page_token"),
+						},
+						Then: mockserver.Response(http.StatusOK, meetingParticipantsFirstPage),
+					}, {
+						If: mockcond.And{
+							mockcond.Path("/v2/past_meetings/83625651564/participants"),
+							mockcond.QueryParam("next_page_token", "q2vW3UIYIvbsdLxb7ETqv4pF2sYFwaVUZO2"),
+						},
+						Then: mockserver.Response(http.StatusOK, meetingParticipantsLastPage),
+					}, {
+						If:   mockcond.Path("/v2/past_meetings/88033623689/participants"),
+						Then: mockserver.Response(http.StatusNotFound, errorNoParticipants),
+					},
+					// Meeting instances.
+					{
+						If:   mockcond.Path("/v2/past_meetings/83625651564/instances"),
+						Then: mockserver.Response(http.StatusOK, instancesMeetingA),
+					}, {
+						If:   mockcond.Path("/v2/past_meetings/88033623689/instances"),
+						Then: mockserver.Response(http.StatusOK, instancesMeetingB),
+					},
+					// Transcripts.
+					{
+						If:   mockcond.PathRaw("/v2/meetings/g%2FV6sgFvQcig9IDJRvILLA%3D%3D/transcript"),
+						Then: mockserver.Response(http.StatusOK, meetingTranscript),
+					}, {
+						If:   mockcond.PathRaw("/v2/meetings/a%2FOxBvo0RU%2BRKtzYXKEPCw%3D%3D/transcript"),
+						Then: mockserver.Response(http.StatusNotFound, errorNoTranscript),
+					},
+					// Summaries.
+					{
+						If:   mockcond.PathRaw("/v2/meetings/g%2FV6sgFvQcig9IDJRvILLA%3D%3D/meeting_summary"),
+						Then: mockserver.Response(http.StatusNotFound, errorNoSummary),
+					}, {
+						If:   mockcond.PathRaw("/v2/meetings/a%2FOxBvo0RU%2BRKtzYXKEPCw%3D%3D/meeting_summary"),
+						Then: mockserver.Response(http.StatusOK, meetingSummary),
+					}},
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetReadSorted,
 			Expected: &common.ReadResult{
@@ -528,14 +579,29 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Raw:    map[string]any{"created_at": "2026-10-30T20:06:17Z"},
 					Associations: map[string][]common.Association{
 						"participants": {{
-							ObjectId: "30R7kT7bTIKSNUFEuH_Qlg",
-							Raw:      map[string]any{"name": "Jill Chill"},
+							ObjectId: "16778240",
+							Raw:      map[string]any{"name": "Bill Davis"},
+						}, {
+							ObjectId: "16785408",
+							Raw:      map[string]any{"name": "Martina Hyde"},
+						}, {
+							ObjectId: "16787456",
+							Raw:      map[string]any{"name": "Frank Spicer"},
+						}, {
+							ObjectId: "16789504",
+							Raw:      map[string]any{"name": "Timothy Bingham"},
+						}, {
+							ObjectId: "external_user_0",
+							Raw:      map[string]any{"name": "Mitchell Bruce"},
+						}, {
+							ObjectId: "external_user_1",
+							Raw:      map[string]any{"name": "John Williams"},
 						}},
-						"transcript": {{
-							ObjectId: "uaFkQyFCSwya8iNYtkAw3A==",
+						"transcripts": {{
+							ObjectId: "g/V6sgFvQcig9IDJRvILLA==",
 							Raw:      map[string]any{"transcript_created_time": "2025-06-27T13:48:24Z"},
 						}},
-						"summary": {},
+						"summaries": {},
 					},
 				}, {
 					Fields: map[string]any{"topic": "Project Alpha: Weekly Status Update"},
@@ -543,9 +609,9 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop,maintidx
 					Raw:    map[string]any{"created_at": "2026-10-30T20:06:17Z"},
 					Associations: map[string][]common.Association{
 						"participants": {},
-						"transcript":   {},
-						"summary": {{
-							ObjectId: "88033623689",
+						"transcripts":  {},
+						"summaries": {{
+							ObjectId: "a/OxBvo0RU+RKtzYXKEPCw==",
 							Raw:      map[string]any{"summary_start_time": "2019-07-15T23:24:52Z"},
 						}},
 					},

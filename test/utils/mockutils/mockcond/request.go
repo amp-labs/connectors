@@ -13,6 +13,15 @@ func Path(expectedPath string) Check {
 	}
 }
 
+// PathRaw returns a check expecting escaped request URL path to match the template.
+func PathRaw(expectedPath string) Check {
+	return func(w http.ResponseWriter, r *http.Request) bool {
+		path := r.URL.EscapedPath()
+
+		return path == expectedPath
+	}
+}
+
 // Method returns a check expecting HTTP method name to match the template.
 func Method(methodName string) Check {
 	return func(w http.ResponseWriter, r *http.Request) bool {

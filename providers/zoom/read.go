@@ -40,7 +40,7 @@ func (c *Connector) readFirstPage(ctx context.Context, params common.ReadParams)
 		return nil, err
 	}
 
-	url.WithQueryParam("page_size", core.DefaultPageSize)
+	url.WithQueryParam("page_size", readhelper.PageSizeWithDefaultStr(params, core.DefaultPageSize))
 	addTimeFilterParams(params, url)
 
 	return c.readRecords(ctx, params.ObjectName, params.Fields, url, params.AssociatedObjects)
@@ -104,7 +104,7 @@ func (c *Connector) readForUsers(
 			return nil, err
 		}
 
-		url.WithQueryParam("page_size", core.DefaultPageSize)
+		url.WithQueryParam("page_size", readhelper.PageSizeWithDefaultStr(params, core.DefaultPageSize))
 		addTimeFilterParams(params, url)
 
 		tasks[index] = func(ctx context.Context) (taskID string, data *common.ReadResult, err error) {
@@ -214,33 +214,33 @@ type usersListResponse struct {
 }
 
 // nolint:nestif
-func addTimeFilterParams(config common.ReadParams, url *urlbuilder.URL) {
+func addTimeFilterParams(params common.ReadParams, url *urlbuilder.URL) {
 	// Zoom API uses "from" and "to" query parameters with date format YYYY-MM-DD.
 	// Reference: https://developers.zoom.us/docs/api/meetings/#tag/archiving/get/archive_files
-	if incrementalObjects.Has(config.ObjectName) {
+	if incrementalObjects.Has(params.ObjectName) {
 		// Some objects require mandatory from/to parameters
-		if mandatoryDateObjects.Has(config.ObjectName) {
+		if mandatoryDateObjects.Has(params.ObjectName) {
 			// Set default date range to last 29 days if not provided
 			startDate := time.Now().AddDate(0, 0, -29)
 			endDate := time.Now()
 
-			if !config.Since.IsZero() {
-				startDate = config.Since
+			if !params.Since.IsZero() {
+				startDate = params.Since
 			}
 
-			if !config.Until.IsZero() {
-				endDate = config.Until
+			if !params.Until.IsZero() {
+				endDate = params.Until
 			}
 
-			url.WithQueryParam("from", startDate.UTC().Format(DateFormat))
-			url.WithQueryParam("to", endDate.UTC().Format(DateFormat))
+			url.WithQueryParam("from", datautils.Time.FormatDateOnly(startDate))
+			url.WithQueryParam("to", datautils.Time.FormatDateOnly(endDate))
 		} else {
-			if !config.Since.IsZero() {
-				url.WithQueryParam("from", config.Since.UTC().Format(DateFormat))
+			if !params.Since.IsZero() {
+				url.WithQueryParam("from", datautils.Time.FormatDateOnly(params.Since))
 			}
 
-			if !config.Until.IsZero() {
-				url.WithQueryParam("to", config.Until.UTC().Format(DateFormat))
+			if !params.Until.IsZero() {
+				url.WithQueryParam("to", datautils.Time.FormatDateOnly(params.Until))
 			}
 		}
 	}

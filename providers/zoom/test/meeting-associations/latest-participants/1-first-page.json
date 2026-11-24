@@ -1,0 +1,64 @@
+{
+  "page_count": 2,
+  "page_size": 4,
+  "total_records": 6,
+  "next_page_token": "q2vW3UIYIvbsdLxb7ETqv4pF2sYFwaVUZO2",
+  "participants": [
+    {
+      "id": "vXmRiQjKSsSJGZVguLJMAQ",
+      "user_id": "16778240",
+      "name": "Bill Davis",
+      "user_email": "bill.davis@withampersand.com",
+      "join_time": "2026-11-21T04:05:57Z",
+      "leave_time": "2026-11-21T04:12:41Z",
+      "duration": 404,
+      "registrant_id": "",
+      "failover": false,
+      "status": "in_meeting",
+      "groupId": "",
+      "internal_user": true
+    },
+    {
+      "id": "",
+      "user_id": "16785408",
+      "name": "Martina Hyde",
+      "user_email": "",
+      "join_time": "2026-11-21T04:07:35Z",
+      "leave_time": "2026-11-21T04:12:07Z",
+      "duration": 272,
+      "registrant_id": "",
+      "failover": false,
+      "status": "in_meeting",
+      "groupId": "",
+      "internal_user": false
+    },
+    {
+      "id": "",
+      "user_id": "",
+      "name": "Mitchell Bruce",
+      "user_email": "",
+      "join_time": "2026-11-21T04:08:06Z",
+      "leave_time": "2026-11-21T04:11:58Z",
+      "duration": 232,
+      "registrant_id": "",
+      "failover": false,
+      "status": "in_meeting",
+      "groupId": "",
+      "internal_user": false
+    },
+    {
+      "id": "",
+      "user_id": "16787456",
+      "name": "Frank Spicer",
+      "user_email": "",
+      "join_time": "2026-11-21T04:09:17Z",
+      "leave_time": "2026-11-21T04:11:51Z",
+      "duration": 154,
+      "registrant_id": "",
+      "failover": false,
+      "status": "in_meeting",
+      "groupId": "",
+      "internal_user": false
+    }
+  ]
+}

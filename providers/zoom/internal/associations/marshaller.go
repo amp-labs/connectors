@@ -10,8 +10,8 @@ import (
 
 const (
 	MeetingParticipants = "participants"
-	MeetingTranscripts  = "transcript"
-	MeetingSummaries    = "summary"
+	MeetingTranscripts  = "transcripts"
+	MeetingSummaries    = "summaries"
 )
 
 // CreateDataMarshallerWithAssociations creates a marshaller that hydrates with Meetings associations.
@@ -46,14 +46,22 @@ func meetingAssociations(ctx context.Context,
 	base *core.Base,
 	ids []readhelper.RowID,
 ) (map[readhelper.RowID][]common.Association, error) {
-	switch toObject {
-	case MeetingParticipants:
+	if toObject == MeetingParticipants {
 		return meetingAssociationsToObject(ctx, base, ids, fetchMeetingParticipants)
-	case MeetingTranscripts:
-		return meetingAssociationsToObject(ctx, base, ids, fetchMeetingTranscript)
-	case MeetingSummaries:
-		return meetingAssociationsToObject(ctx, base, ids, fetchMeetingSummary)
-	default:
-		return nil, readhelper.ErrAssociationsUnsupported
 	}
+
+	if toObject == MeetingTranscripts || toObject == MeetingSummaries {
+		meetingInstances, err := fetchLatestMeetingInstance(ctx, base, ids)
+		if err != nil {
+			return nil, err
+		}
+
+		if toObject == MeetingTranscripts {
+			return meetingAssociationsToObject(ctx, base, ids, fetchMeetingTranscript(meetingInstances))
+		}
+
+		return meetingAssociationsToObject(ctx, base, ids, fetchMeetingSummary(meetingInstances))
+	}
+
+	return nil, readhelper.ErrAssociationsUnsupported
 }
