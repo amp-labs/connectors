@@ -1,0 +1,220 @@
+{
+  "company": {
+    "path": "/v1/companies/company",
+    "displayName": "Company",
+    "fields": {
+      "accounting_code": {
+        "displayName": "Accounting Code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "archived_buyer_or_seller": {
+        "displayName": "Archived Buyer Or Seller",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "archived_customer": {
+        "displayName": "Archived Customer",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "archived_subcontractor": {
+        "displayName": "Archived Subcontractor",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "archived_supplier": {
+        "displayName": "Archived Supplier",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "bank_accounts": {
+        "displayName": "Bank Accounts",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "billing_location": {
+        "displayName": "Billing Location",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "code": {
+        "displayName": "Code",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "contacts": {
+        "displayName": "Contacts",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "credit_limit_total": {
+        "displayName": "Credit Limit Total",
+        "valueType": "float",
+        "providerType": "number"
+      },
+      "credit_policy": {
+        "displayName": "Credit Policy",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "currency": {
+        "displayName": "Currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "custom_fields": {
+        "displayName": "Custom Fields",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "default_invoice_customer": {
+        "displayName": "Default Invoice Customer",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "is_blocked": {
+        "displayName": "Is Blocked",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_buyer_or_seller": {
+        "displayName": "Is Buyer Or Seller",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_customer": {
+        "displayName": "Is Customer",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_subcontractor": {
+        "displayName": "Is Subcontractor",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "is_supplier": {
+        "displayName": "Is Supplier",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "legal_name": {
+        "displayName": "Legal Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "locale": {
+        "displayName": "Locale",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "note": {
+        "displayName": "Note",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "payment_term": {
+        "displayName": "Payment Term",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "purchase": {
+        "displayName": "Purchase",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "reference_numbers": {
+        "displayName": "Reference Numbers",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "sales": {
+        "displayName": "Sales",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "status": {
+        "displayName": "Status",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "PROSPECT",
+            "displayValue": "PROSPECT"
+          },
+          {
+            "value": "NOT_APPROVED",
+            "displayValue": "NOT_APPROVED"
+          },
+          {
+            "value": "APPROVED",
+            "displayValue": "APPROVED"
+          },
+          {
+            "value": "WARNING",
+            "displayValue": "WARNING"
+          },
+          {
+            "value": "BLOCKED",
+            "displayValue": "BLOCKED"
+          }
+        ]
+      },
+      "tax_type": {
+        "displayName": "Tax Type",
+        "valueType": "singleSelect",
+        "providerType": "string",
+        "values": [
+          {
+            "value": "VAT",
+            "displayValue": "VAT"
+          },
+          {
+            "value": "REVERSE_CHARGE",
+            "displayValue": "REVERSE_CHARGE"
+          },
+          {
+            "value": "UK_REVERSE_CHARGE",
+            "displayValue": "UK_REVERSE_CHARGE"
+          },
+          {
+            "value": "TRANSIT",
+            "displayValue": "TRANSIT"
+          },
+          {
+            "value": "NO_VAT",
+            "displayValue": "NO_VAT"
+          },
+          {
+            "value": "CO_CONTRACTING",
+            "displayValue": "CO_CONTRACTING"
+          },
+          {
+            "value": "OTHER",
+            "displayValue": "OTHER"
+          }
+        ]
+      },
+      "timestamp_updated": {
+        "displayName": "Timestamp Updated",
+        "valueType": "datetime",
+        "providerType": "string"
+      },
+      "vat_number": {
+        "displayName": "Vat Number",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  }
+}

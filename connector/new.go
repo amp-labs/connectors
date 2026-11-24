@@ -130,6 +130,7 @@ import (
 	"github.com/amp-labs/connectors/providers/podium"
 	"github.com/amp-labs/connectors/providers/procore"
 	"github.com/amp-labs/connectors/providers/pylon"
+	"github.com/amp-labs/connectors/providers/qargo"
 	"github.com/amp-labs/connectors/providers/quickbooks"
 	"github.com/amp-labs/connectors/providers/ramp"
 	"github.com/amp-labs/connectors/providers/recurly"
@@ -313,6 +314,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.Procore:                           wrapper(newProcoreConnector),
 	providers.ProcoreSandbox:                    wrapper(newProcoreSandboxConnector),
 	providers.Pylon:                             wrapper(newPylonConnector),
+	providers.Qargo:                             wrapper(newQargoConnector),
 	providers.QuickBooks:                        wrapper(newQuickbooksConnector),
 	providers.QuickbooksSandbox:                 wrapper(newQuickbooksSandboxConnector),
 	providers.Ramp:                              wrapper(newRampConnector),
@@ -1208,6 +1210,12 @@ func newPylonConnector(
 	params common.ConnectorParams,
 ) (*pylon.Connector, error) {
 	return pylon.NewConnector(params)
+}
+
+func newQargoConnector(
+	params common.ConnectorParams,
+) (*qargo.Connector, error) {
+	return qargo.NewConnector(params)
 }
 
 func newBambooHRConnector(
