@@ -13,6 +13,8 @@ var (
 	//go:embed openapi.json
 	apiFile []byte
 
+	// OpenApiData is the raw spec, for component schemas that no list endpoint returns.
+	OpenApiData = apiFile                             // nolint:gochecknoglobals
 	OpenApiFile = api.NewFile(apiFile)                // nolint:gochecknoglobals
 	OutputDir   = "providers/qargo/internal/metadata" // nolint:gochecknoglobals
 )

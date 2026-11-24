@@ -19,7 +19,7 @@ func main() {
 
 	conn := qargo.NewConnector(ctx)
 
-	metadata, err := conn.ListObjectMetadata(ctx, []string{"company", "sales-invoice/payment"})
+	metadata, err := conn.ListObjectMetadata(ctx, []string{"company", "sales-invoice", "sales-credit-note", "sales-invoice/payment"})
 	if err != nil {
 		utils.Fail("error listing metadata", "error", err)
 	}

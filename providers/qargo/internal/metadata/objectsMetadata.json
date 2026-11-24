@@ -216,5 +216,172 @@
         "providerType": "string"
       }
     }
+  },
+  "sales-credit-note": {
+    "path": "/v1/accounting/sync-tasks",
+    "displayName": "Sales Credit Note",
+    "fields": {
+      "billing_entity": {
+        "displayName": "Billing Entity",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "booking_date": {
+        "displayName": "Booking Date",
+        "valueType": "date",
+        "providerType": "string"
+      },
+      "currency": {
+        "displayName": "Currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "custom_fields": {
+        "displayName": "Custom Fields",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "customer": {
+        "displayName": "Customer",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "customer_reference_numbers": {
+        "displayName": "Customer Reference Numbers",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "date": {
+        "displayName": "Date",
+        "valueType": "date",
+        "providerType": "string"
+      },
+      "e_invoicing": {
+        "displayName": "E Invoicing",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "exchange_rate": {
+        "displayName": "Exchange Rate",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "line_items": {
+        "displayName": "Line Items",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "total_excl_tax": {
+        "displayName": "Total Excl Tax",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "total_incl_tax": {
+        "displayName": "Total Incl Tax",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "total_tax": {
+        "displayName": "Total Tax",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  "sales-invoice": {
+    "path": "/v1/accounting/sync-tasks",
+    "displayName": "Sales Invoice",
+    "fields": {
+      "billing_entity": {
+        "displayName": "Billing Entity",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "booking_date": {
+        "displayName": "Booking Date",
+        "valueType": "date",
+        "providerType": "string"
+      },
+      "currency": {
+        "displayName": "Currency",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "custom_fields": {
+        "displayName": "Custom Fields",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "customer": {
+        "displayName": "Customer",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "customer_reference_numbers": {
+        "displayName": "Customer Reference Numbers",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "date": {
+        "displayName": "Date",
+        "valueType": "date",
+        "providerType": "string"
+      },
+      "due_date": {
+        "displayName": "Due Date",
+        "valueType": "date",
+        "providerType": "string"
+      },
+      "e_invoicing": {
+        "displayName": "E Invoicing",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "exchange_rate": {
+        "displayName": "Exchange Rate",
+        "valueType": "other",
+        "providerType": "object"
+      },
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "line_items": {
+        "displayName": "Line Items",
+        "valueType": "other",
+        "providerType": "array"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "total_excl_tax": {
+        "displayName": "Total Excl Tax",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "total_incl_tax": {
+        "displayName": "Total Incl Tax",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "total_tax": {
+        "displayName": "Total Tax",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
   }
 }

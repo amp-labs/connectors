@@ -17,6 +17,10 @@ const (
 	// https://api-docs.qargo.com/docs/section/concepts/company
 	objectNameCompany = "company"
 
+	// Approved sales invoices and credit notes, read from the accounting sync-task queue (see queue.go).
+	objectNameSalesInvoice    = "sales-invoice"
+	objectNameSalesCreditNote = "sales-credit-note"
+
 	// Payment status of a sales invoice, keyed by the invoice id:
 	// POST /v1/accounting/sales-invoice/{id}/payment/update-status. Update only; there is no create.
 	// https://api-docs.qargo.com/docs/api-accounting ("Report Payment Status For Sales Invoice")
@@ -25,6 +29,14 @@ const (
 
 var readObjects = []string{ // nolint:gochecknoglobals
 	objectNameCompany,
+	objectNameSalesInvoice,
+	objectNameSalesCreditNote,
+}
+
+// Sync task type that carries each queue object, POST_INVOICE or POST_CREDIT_NOTE (TaskType in the spec).
+var queueTaskTypes = map[string]string{ // nolint:gochecknoglobals
+	objectNameSalesInvoice:    "POST_INVOICE",
+	objectNameSalesCreditNote: "POST_CREDIT_NOTE",
 }
 
 // SupportedReadObjects lists the objects this connector reads.

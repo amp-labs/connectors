@@ -37,6 +37,9 @@ func constructor(_ common.ConnectorParams, base *components.Connector) (*Connect
 		JSON: interpreter.NewFaultyResponder(errorFormats, nil),
 	}.Handle
 
+	// Used by the task detail requests the queue read makes through JSONHTTPClient.
+	connector.HTTPClient().ErrorHandler = errorHandler
+
 	connector.SchemaProvider = schema.NewDelegateSchemaProvider(connector.listObjectMetadata)
 
 	connector.Reader = reader.NewHTTPReader(

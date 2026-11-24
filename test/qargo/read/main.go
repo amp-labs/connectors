@@ -33,4 +33,20 @@ func main() {
 
 	fmt.Println("Reading companies")
 	utils.DumpJSON(res, os.Stdout)
+
+	// Invoices and credit notes waiting in the accounting sync-task queue. Reading does not
+	// complete their tasks, so they come back on every run.
+	for _, objectName := range []string{"sales-invoice", "sales-credit-note"} {
+		res, err = conn.Read(ctx, connectors.ReadParams{
+			ObjectName: objectName,
+			Fields:     connectors.Fields("id", "name", "date", "customer", "billing_entity", "line_items"),
+			PageSize:   5,
+		})
+		if err != nil {
+			utils.Fail("error reading "+objectName, "error", err)
+		}
+
+		fmt.Println("Reading " + objectName)
+		utils.DumpJSON(res, os.Stdout)
+	}
 }

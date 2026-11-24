@@ -33,11 +33,13 @@ func main() {
 		"/v1/companies/company",
 	)
 
-	pipe := pipeline.NewSchemaPipe(getSchemas).
+	listPipe := pipeline.NewSchemaPipe(getSchemas).
 		Filter(filters.KeepWithPath(filters.AndPathMatcher{
 			filters.NoIdPath{}, filters.NewAllowPathStrategy(readObjects),
 		})).
-		Reduce(reducers.ShortestNameFromUrlWithFullFallback).
+		Reduce(reducers.ShortestNameFromUrlWithFullFallback)
+
+	pipe := pipeline.NewSchemaPipe(append(listPipe.List(), queueSchemas()...)).
 		Map(mapping.DisplayNameFromObjectName).
 		Map(mapping.DisplayNameFormat(
 			mapping.CamelCaseToSpaceSeparated,
@@ -56,6 +58,64 @@ func main() {
 	goutils.MustBeNil(output.WriteMetadata(files.OutputDir, pipe))
 	goutils.MustBeNil(output.WriteQueryParamStats(files.OutputDir, pipe))
 	goutils.MustBeNil(output.WriteEndpoints(files.OutputDir, &pipe, nil, nil, nil))
+}
+
+// queueSchemas describes sales invoices and credit notes. Qargo lists them only through the accounting
+// sync-task queue: GET /v1/accounting/sync-tasks lists task ids, and each task's detail carries the
+// document in payload.instance, which is what Read returns as the record. Neither response is a list
+// of documents, so the extractor can't reach their schemas; they are taken from the components.
+// https://api-docs.qargo.com/docs/section/accounting/synchronize-invoicescredit-notes
+func queueSchemas() []spec.Schema {
+	document, err := openapi3.NewLoader().LoadFromData(files.OpenApiData)
+	goutils.MustBeNil(err)
+
+	objects := []struct {
+		objectName string
+		component  string
+	}{
+		{objectName: "sales-invoice", component: "SalesInvoiceOutput"},
+		{objectName: "sales-credit-note", component: "SalesCreditNoteOutput"},
+	}
+
+	schemas := make([]spec.Schema, 0, len(objects))
+
+	for _, object := range objects {
+		component, ok := document.Components.Schemas[object.component]
+		if !ok || component.Value == nil {
+			panic("missing component schema " + object.component)
+		}
+
+		schemas = append(schemas, spec.Schema{
+			ObjectName:  object.objectName,
+			UrlPath:     "/v1/accounting/sync-tasks",
+			Operation:   "GET",
+			ResponseKey: "tasks",
+			Fields:      componentFields("/v1/accounting/sync-tasks", component.Value),
+		})
+	}
+
+	return schemas
+}
+
+func componentFields(urlPath string, schema *openapi3.Schema) spec.Fields {
+	fields := make(spec.Fields)
+
+	for name, property := range schema.Properties {
+		field := spec.Field{
+			URLPath:     urlPath,
+			Name:        name,
+			DisplayName: name,
+			Origin:      spec.FieldOrigin{ItemsSchema: schema, Schema: schema},
+		}
+
+		if property.Value != nil && property.Value.Type != nil && len(*property.Value.Type) != 0 {
+			field.Type = (*property.Value.Type)[0]
+		}
+
+		fields[name] = field
+	}
+
+	return fields
 }
 
 // nullableField types an optional property by its non-null option. The spec (OpenAPI 3.1,

@@ -25,9 +25,11 @@ const (
 	updatedAfterParam = "updated_after"
 )
 
-// buildReadRequest lists companies. The first page carries updated_after; later pages send only the
-// cursor, as the docs require ("Do not combine cursor with other query parameters"), and the cursor
-// keeps the filter of the request that started it.
+// buildReadRequest lists companies, or the sync-task queue for invoices and credit notes (queue.go),
+// which takes no parameters.
+// For companies the first page carries updated_after; later pages send only the cursor, as the docs
+// require ("Do not combine cursor with other query parameters"), and the cursor keeps the filter of
+// the request that started it.
 // There is no page size parameter and no updated-before filter, so Until is applied in parseReadResponse.
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	path, err := metadata.Catalog.ReadPath(params.ObjectName)
@@ -38,6 +40,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	readURL, err := urlbuilder.New(c.ProviderInfo().BaseURL, path)
 	if err != nil {
 		return nil, err
+	}
+
+	if _, isQueue := queueTaskTypes[params.ObjectName]; isQueue {
+		return http.NewRequestWithContext(ctx, http.MethodGet, readURL.String(), nil)
 	}
 
 	if params.NextPage != "" {
@@ -52,11 +58,15 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 }
 
 func (c *Connector) parseReadResponse(
-	_ context.Context,
+	ctx context.Context,
 	params common.ReadParams,
 	_ *http.Request,
 	response *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
+	if _, isQueue := queueTaskTypes[params.ObjectName]; isQueue {
+		return c.parseQueueResponse(ctx, params, response)
+	}
+
 	return common.ParseResultFiltered(params, response,
 		common.MakeRecordsFunc("items"),
 		makeUpdatedFilter(),
