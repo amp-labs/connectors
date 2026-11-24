@@ -114,8 +114,10 @@ func (c *Connector) parseWriteResponse(
 ) (*common.WriteResult, error) {
 	body, ok := response.Body()
 	if !ok {
+		// An update answers with no body, the record being the one that was addressed.
 		return &common.WriteResult{
-			Success: true,
+			Success:  true,
+			RecordId: params.RecordId,
 		}, nil
 	}
 
@@ -134,9 +136,15 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
+	// Not every response names the record, in which case it is the one that was addressed.
+	id := params.RecordId
+	if recordId != nil {
+		id = *recordId
+	}
+
 	return &common.WriteResult{
 		Success:  true,
-		RecordId: *recordId,
+		RecordId: id,
 		Data:     data,
 	}, nil
 }
