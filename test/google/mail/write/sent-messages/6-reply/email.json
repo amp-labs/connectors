@@ -1,0 +1,185 @@
+{
+  "payload": {
+    "body": {},
+    "headers": [
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Date",
+        "value": "Mon, 16 Nov 2026 21:10:20 +0200"
+      },
+      {
+        "name": "To",
+        "value": "{{.To}}"
+      },
+      {
+        "name": "From",
+        "value": "{{.From}}"
+      },
+      {
+        "name": "References",
+        "value": "{{.Reply}}"
+      },
+      {
+        "name": "In-Reply-To",
+        "value": "{{.Reply}}"
+      },
+      {
+        "name": "Subject",
+        "value": "{{.Subject}}"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/mixed; boundary=\"0000000000007423390660698781\""
+      }
+    ],
+    "mimeType": "multipart/mixed",
+    "parts": [
+      {
+        "body": {},
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "multipart/related; boundary=\"0000000000007423380660698780\""
+          }
+        ],
+        "mimeType": "multipart/related",
+        "parts": [
+          {
+            "body": {},
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "multipart/alternative; boundary=\"000000000000742335066069877f\""
+              }
+            ],
+            "mimeType": "multipart/alternative",
+            "parts": [
+              {
+                "body": {
+                  "data": "{{.TEXT}}"
+                },
+                "headers": [
+                  {
+                    "name": "Content-Type",
+                    "value": "text/plain; charset=\"UTF-8\""
+                  },
+                  {
+                    "name": "Content-Transfer-Encoding",
+                    "value": "quoted-printable"
+                  }
+                ],
+                "mimeType": "text/plain"
+              },
+              {
+                "body": {
+                  "data": "{{.HTML}}"
+                },
+                "headers": [
+                  {
+                    "name": "Content-Type",
+                    "value": "text/html; charset=\"UTF-8\""
+                  },
+                  {
+                    "name": "Content-Transfer-Encoding",
+                    "value": "quoted-printable"
+                  }
+                ],
+                "mimeType": "text/html"
+              }
+            ]
+          },
+          {
+            "body": {
+              "data": "{{.House}}"
+            },
+            "filename": "house.png",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "image/png; name=\"house.png\""
+              },
+              {
+                "name": "Content-Disposition",
+                "value": "attachment; filename=\"house.png\""
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "base64"
+              },
+              {
+                "name": "X-Attachment-Id",
+                "value": "ii_mwjn008h0"
+              },
+              {
+                "name": "Content-ID",
+                "value": "<ii_mwjn008h0>"
+              }
+            ],
+            "mimeType": "image/png"
+          }
+        ]
+      },
+      {
+        "body": {
+          "data": "{{.Norway}}"
+        },
+        "filename": "norway.png",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "image/png; name=\"norway.png\""
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"norway.png\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "X-Attachment-Id",
+            "value": "f_mwjn1bg31"
+          },
+          {
+            "name": "Content-ID",
+            "value": "<f_mwjn1bg31>"
+          }
+        ],
+        "mimeType": "image/png"
+      },
+      {
+        "body": {
+          "data": "{{.Document}}"
+        },
+        "filename": "Develop on Google Workspace.pdf",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/pdf; name=\"Develop on Google Workspace.pdf\""
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"Develop on Google Workspace.pdf\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "X-Attachment-Id",
+            "value": "f_mwjn1kjx2"
+          },
+          {
+            "name": "Content-ID",
+            "value": "<f_mwjn1kjx2>"
+          }
+        ],
+        "mimeType": "application/pdf"
+      }
+    ]
+  }
+}
