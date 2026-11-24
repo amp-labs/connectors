@@ -75,6 +75,42 @@ func TestListObjectMetadata(t *testing.T) { // nolint:funlen
 			},
 		},
 		{
+			Name:       "Queue documents are described by their component schemas",
+			Input:      []string{"sales-invoice", "sales-credit-note"},
+			Server:     mockserver.Dummy(),
+			Comparator: testconn.ComparatorSubsetMetadata,
+			Expected: &common.ListObjectMetadataResult{
+				Result: map[string]common.ObjectMetadata{
+					"sales-invoice": {
+						DisplayName: "Sales Invoice",
+						Fields: map[string]common.FieldMetadata{
+							"due_date": {
+								DisplayName:  "Due Date",
+								ValueType:    common.ValueTypeDate,
+								ProviderType: "string",
+							},
+							"line_items": {
+								DisplayName:  "Line Items",
+								ValueType:    common.ValueTypeOther,
+								ProviderType: "array",
+							},
+						},
+					},
+					"sales-credit-note": {
+						DisplayName: "Sales Credit Note",
+						Fields: map[string]common.FieldMetadata{
+							"billing_entity": {
+								DisplayName:  "Billing Entity",
+								ValueType:    common.ValueTypeOther,
+								ProviderType: "object",
+							},
+						},
+					},
+				},
+				Errors: map[string]error{},
+			},
+		},
+		{
 			Name:       "Payment status describes the documented request body",
 			Input:      []string{"sales-invoice/payment"},
 			Server:     mockserver.Dummy(),
