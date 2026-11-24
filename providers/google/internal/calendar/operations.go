@@ -13,7 +13,7 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/providers/google/internal/core"
+	"github.com/amp-labs/connectors/providers/google/internal/shared"
 	"github.com/spyzhov/ajson"
 )
 
@@ -81,7 +81,7 @@ func (a *Adapter) buildReadURL(params common.ReadParams) (*urlbuilder.URL, error
 //
 // https://developers.google.com/workspace/calendar/api/v3/reference/events/list
 func applyEventsQueryParams(url *urlbuilder.URL, params common.ReadParams) {
-	opts, _ := params.Opts.(core.ReadParamsOpts)
+	opts, _ := params.Opts.(shared.ReadParamsOpts)
 
 	maxResults := defaultPageSize
 	if opts.MaxResults > 0 {

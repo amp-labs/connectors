@@ -3,7 +3,7 @@ package contacts
 import (
 	"net/http"
 
-	"github.com/amp-labs/connectors/providers/google/internal/core"
+	"github.com/amp-labs/connectors/providers/google/internal/shared"
 )
 
 const (
@@ -16,8 +16,8 @@ const (
 )
 
 // Maps object names to URL endpoints.
-var endpoints = core.Endpoints{ // nolint:gochecknoglobals
-	core.OperationCreate: {
+var endpoints = shared.Endpoints{ // nolint:gochecknoglobals
+	shared.OperationCreate: {
 		objectNameContactGroups: {
 			Method: http.MethodPost,
 			Path:   "/contactGroups",
@@ -28,7 +28,7 @@ var endpoints = core.Endpoints{ // nolint:gochecknoglobals
 			Path: "/people:createContact",
 		},
 	},
-	core.OperationUpdate: {
+	shared.OperationUpdate: {
 		objectNameContactGroups: {
 			Method: http.MethodPut,
 			Path:   "/contactGroups",
@@ -39,7 +39,7 @@ var endpoints = core.Endpoints{ // nolint:gochecknoglobals
 			Path:   "/people/{{.recordID}}:updateContact",
 		},
 	},
-	core.OperationDelete: {
+	shared.OperationDelete: {
 		objectNameContactGroups: {
 			Path: "/contactGroups",
 		},

@@ -12,13 +12,13 @@ import (
 	"github.com/amp-labs/connectors/common/urlbuilder"
 	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
-	"github.com/amp-labs/connectors/providers/google/internal/core"
+	"github.com/amp-labs/connectors/providers/google/internal/shared"
 )
 
 func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WriteParams) (*http.Request, error) {
-	operationName := core.OperationCreate
+	operationName := shared.OperationCreate
 	if params.RecordId != "" {
-		operationName = core.OperationUpdate
+		operationName = shared.OperationUpdate
 	}
 
 	endpoint, err := endpoints.Find(operationName, params.ObjectName, params.RecordId)
@@ -36,7 +36,7 @@ func (a *Adapter) buildWriteRequest(ctx context.Context, params common.WritePara
 		return nil, err
 	}
 
-	if operationName == core.OperationUpdate && params.ObjectName == objectNameMyConnections {
+	if operationName == shared.OperationUpdate && params.ObjectName == objectNameMyConnections {
 		attachMyConnectionsWriteQueryParams(url, recordData)
 	}
 

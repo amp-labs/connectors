@@ -1,4 +1,4 @@
-package core
+package shared
 
 import (
 	"strings"
