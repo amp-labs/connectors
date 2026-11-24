@@ -35,7 +35,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 	// users requires 1 filtering query parameter.
 	isDefaultTimeRange := params.Since.IsZero() && params.Until.IsZero()
 	if params.ObjectName == "users" && isDefaultTimeRange {
-		url.WithQueryParam("created_from", time.Unix(0, 0).UTC().GoString())
+		url.WithQueryParam("created_from", time.Unix(0, 0).UTC().Format(time.RFC3339))
 	}
 
 	if !params.Since.IsZero() {
