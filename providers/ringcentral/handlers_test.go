@@ -3,6 +3,7 @@ package ringcentral
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -310,6 +311,35 @@ func TestRead(t *testing.T) { //nolint:funlen,gocognit,cyclop
 						"enabled":     false,
 						"id":          "dnd",
 					},
+				}},
+				NextPage: "",
+				Done:     true,
+			},
+			ExpectedErrs: nil,
+		},
+		{
+			Name: "Read call-log with Since and Until sends dateFrom and dateTo",
+			Input: common.ReadParams{
+				ObjectName: "call-log",
+				Fields:     connectors.Fields("id"),
+				Since:      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+				Until:      time.Date(2026, 1, 31, 0, 0, 0, 0, time.UTC),
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/restapi/v1.0/account/~/extension/~/call-log"),
+					mockcond.QueryParam("dateFrom", "2026-01-01T00:00:00Z"),
+					mockcond.QueryParam("dateTo", "2026-01-31T00:00:00Z"),
+				},
+				Then: mockserver.ResponseString(http.StatusOK, `{"records":[{"id":"call-1"}]}`),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"id": "call-1"},
+					Raw:    map[string]any{"id": "call-1"},
 				}},
 				NextPage: "",
 				Done:     true,
