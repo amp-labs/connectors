@@ -24,7 +24,13 @@ type Connector struct {
 }
 
 func NewConnector(params common.ConnectorParams) (*Connector, error) {
-	return components.Initialize(providers.SageIntacct, params, constructor)
+	return NewConnectorForProvider(providers.SageIntacct, params)
+}
+
+// NewConnectorForProvider creates a Sage Intacct connector under a twin provider
+// name, such as SageIntacctClientCredentials, that differs only in how it authenticates.
+func NewConnectorForProvider(provider providers.Provider, params common.ConnectorParams) (*Connector, error) {
+	return components.Initialize(provider, params, constructor)
 }
 
 func constructor(base *components.Connector) (*Connector, error) {
