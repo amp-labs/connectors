@@ -20,7 +20,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.5.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.25 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.14.12 // indirect
-	github.com/aws/aws-sdk-go-v2/service/signin v1.13.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/signin v1.14.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.39.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.44.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.52.0 // indirect
@@ -98,10 +98,10 @@ require (
 	github.com/antchfx/xmlquery v1.5.2
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/aws/aws-sdk-go-v2 v1.48.0
-	github.com/aws/aws-sdk-go-v2/config v1.33.19
-	github.com/aws/aws-sdk-go-v2/credentials v1.21.1
+	github.com/aws/aws-sdk-go-v2/config v1.33.20
+	github.com/aws/aws-sdk-go-v2/credentials v1.21.2
 	github.com/brianvoe/gofakeit/v6 v6.28.0
-	github.com/chromedp/chromedp v0.23.1
+	github.com/chromedp/chromedp v0.24.0
 	github.com/deiu/linkparser v0.0.0-20170608193052-9b6849e15168
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/getkin/kin-openapi v0.153.0
