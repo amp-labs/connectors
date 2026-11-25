@@ -322,6 +322,7 @@ var connectorConstructors = map[providers.Provider]outputConstructorFunc{ // nol
 	providers.RevenueCat:                        wrapper(newRevenueCatConnector),
 	providers.RingCentral:                       wrapper(newRingCentral),
 	providers.SageIntacct:                       wrapper(newSageIntacctConnector),
+	providers.SageIntacctClientCredentials:      wrapper(newSageIntacctClientCredentialsConnector),
 	providers.Salesfinity:                       wrapper(newSalesfinityConnector),
 	providers.Salesflare:                        wrapper(newSalesflareConnector),
 	providers.Salesforce:                        wrapper(newSalesforceConnector),
@@ -1238,6 +1239,12 @@ func newSageIntacctConnector(
 	params common.ConnectorParams,
 ) (*sageintacct.Connector, error) {
 	return sageintacct.NewConnector(params)
+}
+
+func newSageIntacctClientCredentialsConnector(
+	params common.ConnectorParams,
+) (*sageintacct.Connector, error) {
+	return sageintacct.NewConnectorForProvider(providers.SageIntacctClientCredentials, params)
 }
 
 func newLinearConnector(
