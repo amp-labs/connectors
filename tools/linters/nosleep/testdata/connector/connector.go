@@ -8,9 +8,9 @@ import (
 )
 
 func badExample(ctx context.Context) {
-	time.Sleep(time.Second) // want `Sleeping in connector code is forbidden \(time.Sleep\)`
+	time.Sleep(time.Second) // want `Sleeping in connector code is forbidden \(time.Sleep\)\. This library serves short-lived requests and must not become the long pole\..*add //nolint:nosleep with a reason\.`
 
-	_ = ampcommon.SleepCtx(ctx, time.Second) // want `Sleeping in connector code is forbidden \(utils.SleepCtx\)`
+	_ = ampcommon.SleepCtx(ctx, time.Second) // want `Sleeping in connector code is forbidden \(utils.SleepCtx\)\. This library serves short-lived requests and must not become the long pole\..*add //nolint:nosleep with a reason\.`
 }
 
 type utils struct{}

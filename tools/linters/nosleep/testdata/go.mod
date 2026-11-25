@@ -1,6 +1,6 @@
 module nosleeptest
 
-go 1.24.6
+go 1.27.1
 
 require github.com/amp-labs/amp-common v0.0.0
 

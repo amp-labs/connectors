@@ -1,3 +1,3 @@
 module github.com/amp-labs/amp-common
 
-go 1.24.6
+go 1.27.1

@@ -132,8 +132,8 @@ linters:
           - gosec
         text: "G101"
         path: ^providers/
-      # Sleeping is forbidden in library code only. Tests, live test scripts and
-      # developer tooling may wait on real time.
+      # nosleep only checks library code. It skips test files and the
+      # test, scripts, examples, tools and .github directories.
       - linters:
           - nosleep
         path: (_test\.go$|^(test|scripts|examples|tools|\.github)/)

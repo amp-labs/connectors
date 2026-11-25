@@ -68,7 +68,11 @@ func (n *NoSleep) run(pass *analysis.Pass) (any, error) {
 				Pos: call.Pos(),
 				End: call.End(),
 				Message: "Sleeping in connector code is forbidden (" + fn.Pkg().Name() + "." + fn.Name() + "). " +
-					"Let the HTTP client retry and back off (DoBatch) instead of sleeping.",
+					"This library serves short-lived requests and must not become the long pole. " +
+					"Sleeping also makes deployments harder, because they gradually become stateful. " +
+					"A sleep needs a discussion: rate limiting, pacing and the like need a centralized solution, " +
+					"not one in the connectors repo. " +
+					"In a truly exceptional case, add //nolint:nosleep with a reason.",
 			})
 
 			return true
