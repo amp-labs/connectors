@@ -1,15 +1,7 @@
 package providers
 
-// SageIntacctClientCredentials is a twin of the Sage Intacct provider that
-// connects as a Web Services user instead of a person. Web Services users
-// cannot sign in to the Sage Intacct UI, so they cannot complete the
-// authorization code flow that SageIntacct uses. The connector implementation
-// in providers/sageintacct is reused under this provider name.
-//
-// Before a token can be issued, a company admin authorizes the integration's
-// client ID for the Web Services user under Company > Setup > Company >
-// Security > Authorized Client Applications. The Web Services user's password
-// is never needed.
+// SageIntacctClientCredentials is a twin of the Sage Intacct provider that uses
+// the client credentials grant. The connector in providers/sageintacct is reused.
 // https://developer.sage.com/intacct/docs/1/sage-intacct-rest-api/authorization-and-security/oauth2#client-credentials-grant-type
 const SageIntacctClientCredentials Provider = "sageIntacctClientCredentials"
 
