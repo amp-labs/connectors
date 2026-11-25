@@ -244,63 +244,34 @@ func TestSubscriptionEvent_RawMap_ReturnsCloneNotAlias(t *testing.T) {
 	assert.Equal(t, got, "job_created", "original should be unchanged")
 }
 
-func TestSubscriptionEvent_UpdatedFields(t *testing.T) {
+func TestSubscriptionEvent_UpdatedFieldsAlwaysEmpty(t *testing.T) {
 	t.Parallel()
 
-	cases := []struct {
-		topic    string
-		expected []string
-	}{
-		// Specific-change topics — each maps to a single field name verified
-		// against live AccuLynx test-event payloads.
-		{"job.milestone.current_changed", []string{"milestone"}},
-		{"job.milestone.status.current_changed", []string{"milestone"}},
-		{"job.financials.approved-value_changed", []string{"financials"}},
-		{"job.category_changed", []string{"jobCategory"}},
-		{"job.work-type_changed", []string{"workType"}},
-		{"job.trade-type_changed", []string{"tradeTypes"}},
-		{"job.contacts.primary_changed", []string{"contacts"}},
-		// Representative topics are updates to jobs/representatives itself, so
-		// no single job field describes the change — empty, per watchFieldsAuto.
-		{"job.representatives.company_assigned", []string{}},
-		{"job.representatives.company_changed", []string{}},
-		{"job.appointments.initial_created", []string{"initialAppointment"}},
-		{"job.appointments.initial_updated", []string{"initialAppointment"}},
-		{"job.invoice_updated", []string{"invoice"}},
-		{"job.invoice_voided", []string{"invoice"}},
-		{"job.custom-field.value_changed", []string{"customField"}},
-		{"job.custom-field.status_changed", []string{"customField"}},
-		{"contact.custom-field.value_changed", []string{"customField"}},
-		{"contact.custom-field.status_changed", []string{"customField"}},
-		{"job.accounting.integration-status.current_changed", []string{"accounting"}},
-		// Generic update topics — field is unknown, empty slice expected.
-		{"job_updated", []string{}},
-		{"contact_changed", []string{}},
-		// Create topics — not field-specific, empty slice expected.
-		{"job_created", []string{}},
-		{"contact_added", []string{}},
+	cases := []string{
+		"job.milestone.current_changed",
+		"job.category_changed",
+		"job.representatives.company_assigned",
+		"job_updated",
+		"contact_changed",
+		"job_created",
+		"contact_added",
+		"",
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.topic, func(t *testing.T) {
+	for _, topic := range cases {
+		t.Run(topic, func(t *testing.T) {
 			t.Parallel()
 
-			evt := SubscriptionEvent{eventFieldTopicName: tc.topic}
+			evt := SubscriptionEvent{}
+			if topic != "" {
+				evt[eventFieldTopicName] = topic
+			}
 
 			got, err := evt.UpdatedFields()
 			assert.NilError(t, err)
-			assert.DeepEqual(t, got, tc.expected)
+			assert.DeepEqual(t, got, []string{})
 		})
 	}
-}
-
-func TestSubscriptionEvent_UpdatedFields_MissingTopicReturnsError(t *testing.T) {
-	t.Parallel()
-
-	evt := SubscriptionEvent{}
-
-	_, err := evt.UpdatedFields()
-	assert.Assert(t, errors.Is(err, errMissingTopicName))
 }
 
 // Real production payload captured live for contact_added — round-trips through
@@ -391,11 +362,10 @@ func TestSubscriptionEvent_RealPayload_JobMilestoneChanged(t *testing.T) {
 
 	fields, err := evt.UpdatedFields()
 	assert.NilError(t, err)
-	assert.DeepEqual(t, fields, []string{"milestone"})
+	assert.DeepEqual(t, fields, []string{})
 }
 
-// Real production payload captured live for job.invoice_updated — verifies the
-// invoice (singular) field path our mapping returns.
+// Real production payload captured live for job.invoice_updated.
 func TestSubscriptionEvent_RealPayload_JobInvoiceUpdated(t *testing.T) {
 	t.Parallel()
 
@@ -424,7 +394,7 @@ func TestSubscriptionEvent_RealPayload_JobInvoiceUpdated(t *testing.T) {
 
 	fields, err := evt.UpdatedFields()
 	assert.NilError(t, err)
-	assert.DeepEqual(t, fields, []string{"invoice"})
+	assert.DeepEqual(t, fields, []string{})
 }
 
 // Verifies the special-case handling for *.custom-field.status_changed payloads:
@@ -515,7 +485,7 @@ func TestSubscriptionEvent_RealPayload_JobContactsPrimaryChanged_CapitalisedWrap
 
 	fields, err := evt.UpdatedFields()
 	assert.NilError(t, err)
-	assert.DeepEqual(t, fields, []string{"contacts"})
+	assert.DeepEqual(t, fields, []string{})
 }
 
 // The documented lowercase spelling must keep working — the case-insensitive

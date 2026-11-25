@@ -244,45 +244,9 @@ func (e SubscriptionEvent) EventTimeStampNano() (int64, error) {
 	return t.UnixNano(), nil
 }
 
-// topicToUpdatedFields maps each specific-change topic to its wire-format
-// field name under event.<object>. Generic and create topics resolve to an
-// empty slice in UpdatedFields. Representative topics are absent on purpose:
-// they are updates to the jobs/representatives object itself, where no single
-// field can express the change, so UpdatedFields stays empty and consumers
-// watch with watchFieldsAuto.
-//
-//nolint:gochecknoglobals
-var topicToUpdatedFields = map[string][]string{
-	"job.milestone.current_changed":                     {"milestone"},
-	"job.milestone.status.current_changed":              {"milestone"},
-	"job.financials.approved-value_changed":             {"financials"},
-	"job.category_changed":                              {"jobCategory"},
-	"job.work-type_changed":                             {"workType"},
-	"job.trade-type_changed":                            {"tradeTypes"},
-	"job.contacts.primary_changed":                      {"contacts"},
-	"job.appointments.initial_created":                  {"initialAppointment"},
-	"job.appointments.initial_updated":                  {"initialAppointment"},
-	"job.invoice_updated":                               {"invoice"},
-	"job.invoice_voided":                                {"invoice"},
-	"job.custom-field.value_changed":                    {"customField"},
-	"job.custom-field.status_changed":                   {"customField"},
-	"contact.custom-field.value_changed":                {"customField"},
-	"contact.custom-field.status_changed":               {"customField"},
-	"job.accounting.integration-status.current_changed": {"accounting"},
-}
-
-// UpdatedFields returns the field name(s) the topic implies. Empty slice for
-// generic update/create topics.
+// UpdatedFields is always empty. AccuLynx webhook payloads do not name the
+// fields that changed, and we do not infer them from the topic.
 func (e SubscriptionEvent) UpdatedFields() ([]string, error) {
-	topic, err := e.RawEventName()
-	if err != nil {
-		return nil, err
-	}
-
-	if fields, ok := topicToUpdatedFields[topic]; ok {
-		return fields, nil
-	}
-
 	return []string{}, nil
 }
 
