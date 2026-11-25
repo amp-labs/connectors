@@ -148,7 +148,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		}
 
 		if dateFromObjects.Has(params.ObjectName) {
-			url.WithQueryParam("dateTo", params.Since.Format(time.RFC3339))
+			url.WithQueryParam("dateTo", params.Until.Format(time.RFC3339))
 		}
 	}
 
