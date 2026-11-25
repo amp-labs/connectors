@@ -118,10 +118,40 @@ func applyJobsIncrementalFilter(url *urlbuilder.URL, params common.ReadParams) {
 		return
 	}
 
-	since, until := pairedDateWindow(params.Since, params.Until)
+	since, until := jobsDateWindow(params)
 	url.WithQueryParam("dateFilterType", "ModifiedDate")
 	url.WithQueryParam("startDate", since.Format(time.DateOnly))
 	url.WithQueryParam("endDate", until.Format(time.DateOnly))
+}
+
+// jobsOpenEndWindow is how far past today the endDate goes when a /jobs read
+// has no Until.
+const jobsOpenEndWindow = 365 * 24 * time.Hour
+
+// jobsOpenEndDate returns the endDate sent to /jobs when the read has no Until:
+// a year from now. AccuLynx requires an endDate whenever startDate is set, and
+// accepts one in the future.
+//
+// Today's date must not be used here. The endDate is saved in the next-page URL
+// and stays the same for the whole read, so a read that runs past the end of
+// that day would never see jobs modified after it. Those jobs would also drop
+// out of the list while it is being paged, which moves later jobs up a position
+// and skips them. With an end date far ahead, a job modified during the read
+// moves to the end of the sorted list and is read there.
+func jobsOpenEndDate() time.Time {
+	return time.Now().UTC().Add(jobsOpenEndWindow)
+}
+
+// jobsDateWindow returns the startDate and endDate for a /jobs list. It is
+// pairedDateWindow, except that a read with no Until gets jobsOpenEndDate
+// instead of today.
+func jobsDateWindow(params common.ReadParams) (time.Time, time.Time) {
+	until := params.Until
+	if until.IsZero() {
+		until = jobsOpenEndDate()
+	}
+
+	return pairedDateWindow(params.Since, until)
 }
 
 // applyHistoryDateWindow pushes Since/Until into AccuLynx's server-side

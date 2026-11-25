@@ -803,7 +803,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			},
 		},
 		{
-			// With no Since/Until the URL has no endDate yet, so today is used.
+			// With no Since/Until the URL has no endDate yet, so a year from now is used.
 			Name: "Read jobs without Since/Until adds a date filter at the 100000 limit",
 			Input: common.ReadParams{
 				ObjectName: "jobs",
@@ -816,7 +816,7 @@ func TestRead(t *testing.T) { //nolint:funlen,maintidx
 			Comparator: testconn.ComparatorPagination,
 			Expected: &common.ReadResult{
 				Rows: 25,
-				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=" + time.Now().UTC().Format(time.DateOnly) +
+				NextPage: jobsURL("dateFilterType=ModifiedDate&endDate=" + jobsOpenEndDate().Format(time.DateOnly) +
 					"&includes=initialAppointment&pageSize=25&pageStartIndex=0" +
 					"&sortBy=ModifiedDate&sortOrder=Ascending&startDate=2026-07-13"),
 			},

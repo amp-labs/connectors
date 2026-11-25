@@ -95,7 +95,44 @@ func TestApplyJobsIncrementalFilter_OnlySinceSet(t *testing.T) {
 
 	assertQueryParam(t, u, "dateFilterType", "ModifiedDate")
 	assertQueryParam(t, u, "startDate", "2026-05-26")
-	assertQueryParamPresent(t, u, "endDate")
+	// A year from now, not today: the endDate stays on the next-page URL for
+	// the whole read, so today would cut off jobs modified after a long read's
+	// first day.
+	got, ok := u.GetFirstQueryParam("endDate")
+	if !ok {
+		t.Fatal("endDate is missing")
+	}
+
+	end, err := time.Parse(time.DateOnly, got)
+	if err != nil {
+		t.Fatalf("endDate %q: %v", got, err)
+	}
+
+	if earliest := time.Now().UTC().AddDate(0, 0, 363); end.Before(earliest) {
+		t.Errorf("endDate = %s, want about a year from now", got)
+	}
+}
+
+// TestApplyJobsIncrementalFilter_UntilSet checks that a read with its own Until
+// keeps it as the endDate.
+func TestApplyJobsIncrementalFilter_UntilSet(t *testing.T) {
+	t.Parallel()
+
+	u, err := urlbuilder.New("https://api.acculynx.com", "/api/v2/jobs")
+	if err != nil {
+		t.Fatalf("urlbuilder: %v", err)
+	}
+
+	params := common.ReadParams{
+		ObjectName: "jobs",
+		Since:      time.Date(2026, 5, 26, 0, 0, 0, 0, time.UTC),
+		Until:      time.Date(2026, 6, 30, 12, 0, 0, 0, time.UTC),
+	}
+
+	applyJobsIncrementalFilter(u, params)
+
+	assertQueryParam(t, u, "startDate", "2026-05-26")
+	assertQueryParam(t, u, "endDate", "2026-06-30")
 }
 
 // TestApplyHistoryDateWindow_OnlySinceSet mirrors the jobs regression test for

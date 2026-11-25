@@ -248,7 +248,7 @@ func restoreJobsWindowStart(url *urlbuilder.URL, params common.ReadParams) {
 		return
 	}
 
-	since, until := pairedDateWindow(params.Since, params.Until)
+	since, until := jobsDateWindow(params)
 	url.WithQueryParam(dateFilterTypeParam, modifiedDateValue)
 	url.WithQueryParam(startDateParam, since.Format(time.DateOnly))
 	url.WithQueryParam(endDateParam, until.Format(time.DateOnly))
@@ -268,8 +268,8 @@ func advanceJobsWindow(
 	}
 
 	// End date: keep the one already on the URL. A read without Since/Until has
-	// none the first time it reaches 100000, so use the read's Until, or today.
-	// AccuLynx needs both startDate and endDate.
+	// none the first time it reaches 100000, so use the read's Until, or a
+	// year from now. AccuLynx needs both startDate and endDate.
 	end := pairedUntilDate(params)
 
 	if raw, ok := cursor.GetFirstQueryParam(endDateParam); ok {
@@ -312,9 +312,9 @@ func advanceJobsWindow(
 	return nil
 }
 
-// pairedUntilDate returns the read's Until, or today if there is none.
+// pairedUntilDate returns the read's Until, or a year from now if there is none.
 func pairedUntilDate(params common.ReadParams) time.Time {
-	_, until := pairedDateWindow(params.Since, params.Until)
+	_, until := jobsDateWindow(params)
 
 	// Cut off the time of day, so advanceJobsWindow compares whole days.
 	return until.UTC().Truncate(24 * time.Hour) //nolint:mnd
