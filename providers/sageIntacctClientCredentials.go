@@ -2,7 +2,8 @@ package providers
 
 // SageIntacctClientCredentials is a twin of the Sage Intacct provider that uses
 // the client credentials grant. The connector in providers/sageintacct is reused.
-// https://developer.sage.com/intacct/docs/1/sage-intacct-rest-api/authorization-and-security/oauth2#client-credentials-grant-type
+// See "Client credentials grant type" in
+// https://developer.sage.com/intacct/docs/1/sage-intacct-rest-api/authorization-and-security/oauth2
 const SageIntacctClientCredentials Provider = "sageIntacctClientCredentials"
 
 func init() {
