@@ -352,6 +352,33 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Read campaigns with small page size returns next page when page is full",
+			Input: common.ReadParams{
+				ObjectName: "campaigns",
+				Fields:     connectors.Fields("name"),
+				PageSize:   2,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v3/campaigns"),
+					mockcond.QueryParam("perPage", "2"),
+					mockcond.QueryParam("page", "1"),
+				},
+				Then: mockserver.Response(http.StatusOK, []byte(`[
+					{"campaignId": "c1", "name": "First"},
+					{"campaignId": "c2", "name": "Second"}
+				]`)),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected: &common.ReadResult{
+				Rows:     2,
+				NextPage: testconn.URLTestServer + "/v3/campaigns?fields=name&page=2&perPage=2",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 			Name: "Read contacts with pagination (empty response indicates last page)",
 			Input: common.ReadParams{
 				ObjectName: "contacts",
