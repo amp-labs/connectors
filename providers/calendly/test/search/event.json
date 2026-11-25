@@ -1,0 +1,38 @@
+{
+  "resource": {
+    "calendar_event": {
+      "external_id": "ipmj1lgk34f9migtt0lpjbd6ak",
+      "kind": "google"
+    },
+    "created_at": "2026-11-24T16:18:32.651149Z",
+    "end_time": "2026-11-30T06:30:00.000000Z",
+    "event_guests": [],
+    "event_memberships": [
+      {
+        "buffered_end_time": "2026-11-30T06:30:00.000000Z",
+        "buffered_start_time": "2026-11-30T06:00:00.000000Z",
+        "user": "https://api.calendly.com/users/eacddb9f-f46d-4c98-ae7e-cd28651420a5",
+        "user_email": "host@example.com",
+        "user_name": "Test Host"
+      }
+    ],
+    "event_type": "https://api.calendly.com/event_types/e680f436-8e38-440e-8a77-11a86e23be4a",
+    "invitees_counter": {
+      "active": 1,
+      "limit": 1,
+      "total": 1
+    },
+    "location": {
+      "join_url": "https://calendly.com/events/bf1b889a-fecc-492d-a5d5-8d224bf5b1f9/google_meet",
+      "status": "pushed",
+      "type": "google_conference"
+    },
+    "meeting_notes_html": null,
+    "meeting_notes_plain": null,
+    "name": "30 Minute Meeting",
+    "start_time": "2026-11-30T06:00:00.000000Z",
+    "status": "active",
+    "updated_at": "2026-11-24T16:18:35.128750Z",
+    "uri": "https://api.calendly.com/scheduled_events/bf1b889a-fecc-492d-a5d5-8d224bf5b1f9"
+  }
+}
