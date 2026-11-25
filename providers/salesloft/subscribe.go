@@ -683,8 +683,8 @@ func findEventMapping(objectName common.ObjectName) (salesloftObjectMapping, boo
 
 // lastPathSegment returns the part after the last "/" in s, or s itself if there is no "/".
 func lastPathSegment(s string) string {
-	if idx := strings.LastIndex(s, "/"); idx >= 0 {
-		return s[idx+1:]
+	if _, after, ok := strings.CutLast(s, "/"); ok {
+		return after
 	}
 
 	return s
