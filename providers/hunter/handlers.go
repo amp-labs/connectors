@@ -11,6 +11,7 @@ import (
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/naming"
 	"github.com/amp-labs/connectors/common/urlbuilder"
+	"github.com/amp-labs/connectors/internal/datautils"
 	"github.com/amp-labs/connectors/internal/jsonquery"
 )
 
@@ -23,6 +24,10 @@ const (
 	metaField        = "meta"
 	pageSize         = 100
 )
+
+// singletonObjects are objects whose response "data" is the record itself, rather than a list of records.
+// Ex: GET /v2/account returns {"data": {"first_name": "...", "email": "...", ...}}.
+var singletonObjects = datautils.NewSet("account") //nolint:gochecknoglobals
 
 type readResponse struct {
 	Data map[string]any `json:"data"`
@@ -48,6 +53,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	response *common.JSONHTTPResponse,
 ) (*common.ObjectMetadata, error) {
 	objectMetadata := common.ObjectMetadata{
+		Fields:      make(common.FieldsMetadata),
 		FieldsMap:   make(map[string]string),
 		DisplayName: naming.CapitalizeFirstLetterEveryWord(objectName),
 	}
@@ -55,6 +61,36 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 	resp, err := common.UnmarshalJSON[readResponse](response)
 	if err != nil {
 		return nil, common.ErrFailedToUnmarshalBody
+	}
+
+	firstRecord, err := sampleRecord(objectName, resp)
+	if err != nil {
+		return nil, err
+	}
+
+	// Hunter has no describe endpoint, so the value type is inferred from the sampled value.
+	for fld, value := range firstRecord {
+		objectMetadata.AddFieldMetadata(fld, common.FieldMetadata{
+			DisplayName:  fld,
+			ValueType:    common.InferValueTypeFromData(value),
+			ProviderType: "", // not available
+			Values:       nil,
+		})
+	}
+
+	return &objectMetadata, nil
+}
+
+// sampleRecord returns the record used to describe the object.
+// Singleton objects are returned as the "data" object itself,
+// while other objects are returned as a list under "data.<objectName>", where the first item is used.
+func sampleRecord(objectName string, resp *readResponse) (map[string]any, error) {
+	if singletonObjects.Has(objectName) {
+		if len(resp.Data) == 0 {
+			return nil, fmt.Errorf("%w: could not find a record to sample fields from", common.ErrMissingExpectedValues)
+		}
+
+		return resp.Data, nil
 	}
 
 	records, okay := resp.Data[objectName].([]any)
@@ -71,12 +107,7 @@ func (c *Connector) parseSingleObjectMetadataResponse(
 		return nil, fmt.Errorf("couldn't convert the data response field data to a map: %w", common.ErrMissingExpectedValues) // nolint:lll
 	}
 
-	for fld := range firstRecord {
-		// TODO fix deprecated
-		objectMetadata.FieldsMap[fld] = fld // nolint:staticcheck
-	}
-
-	return &objectMetadata, nil
+	return firstRecord, nil
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {

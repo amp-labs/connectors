@@ -1,0 +1,22 @@
+{
+  "data": {
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "email": "jane.doe@example.com",
+    "plan_name": "Free",
+    "plan_level": 0,
+    "reset_date": "2026-12-02",
+    "team_id": 4841347,
+    "requests": {
+      "credits": {
+        "used": 0,
+        "available": 50.0,
+        "remaining": 50.0
+      }
+    },
+    "calls": {
+      "used": 0,
+      "available": 75
+    }
+  }
+}
