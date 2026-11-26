@@ -21,18 +21,19 @@ jobs:
           # go.mod/go.sum-only bump PRs still restore a warm cache.
           cache: false
 
-      # Restore Go module/build caches and the golangci-lint analysis cache.
-      # PRs restore (falling back to the latest main cache via restore-keys)
-      # but never save; only main pushes save, to avoid PR-branch cache churn.
+      # Go module/build caches and the golangci-lint analysis cache.
       #
-      # GitHub never overwrites a cache key, so the key ends in the commit SHA:
-      # every main push saves a new cache. With a key of only the go.sum hash,
-      # every main push after the first spent ~3 minutes packing the cache and
-      # then failed to save it ("Unable to reserve cache"), and PRs restored a
-      # cache that only caught up with main when go.sum changed.
-      # A restore takes the newest cache for this go.sum, else the newest of any.
+      # Main pushes start cold and save what they built; PRs restore the newest
+      # main cache and never save. So the cache only ever holds what one main
+      # build needs (~3.6 GB, ~60k files). When main restored the previous
+      # cache before saving, old module versions and build outputs piled up:
+      # 32 GB and 665k files, which took 2 to 4 minutes to unpack on every run.
+      #
+      # GitHub never overwrites a cache key, so the key ends in the commit SHA.
+      # A key of only the go.sum hash made every main push after the first
+      # spend ~3 minutes packing the cache and then fail to save it.
       - name: Restore Go caches
-        id: go-cache
+        if: github.ref != 'refs/heads/main'
         # git ls-remote https://github.com/actions/cache.git refs/tags/v4
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
         with:
@@ -40,10 +41,11 @@ jobs:
             ~/go/pkg/mod
             ~/.cache/go-build
             ~/.cache/golangci-lint
-          key: v1-ci-go1.27.1-${{ hashFiles('go.sum') }}-${{ github.sha }}
+          key: v2-ci-go1.27.1-${{ hashFiles('go.sum') }}-${{ github.sha }}
+          # Newest cache for this go.sum, else the newest of any.
           restore-keys: |
-            v1-ci-go1.27.1-${{ hashFiles('go.sum') }}-
-            v1-ci-go1.27.1-
+            v2-ci-go1.27.1-${{ hashFiles('go.sum') }}-
+            v2-ci-go1.27.1-
 
       # TEMPORARY: measures what the restored cache holds. Remove before merge.
       - name: Show cache sizes
@@ -103,8 +105,18 @@ jobs:
           GOFLAGS: ${{ github.ref == 'refs/heads/main' && '-count=1' || '' }}
         run: make test
 
+      # TEMPORARY: measures what gets saved. Remove before merge.
+      - name: Show cache sizes before save
+        if: always()
+        run: |
+          for d in ~/go/pkg/mod ~/go/pkg/mod/cache/download ~/.cache/go-build ~/.cache/golangci-lint; do
+            echo "$(du -sh "$d" | cut -f1) $(find "$d" -type f | wc -l) files  $d"
+          done
+
       - name: Save Go caches
-        if: always() && github.ref == 'refs/heads/main'
+        # TEMPORARY: also saves on this PR, to measure a cold run and then a
+        # warm one. Remove the head_ref clause before merge.
+        if: always() && (github.ref == 'refs/heads/main' || github.head_ref == 'ci/faster-ci')
         # git ls-remote https://github.com/actions/cache.git refs/tags/v4
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
         with:
@@ -112,4 +124,5 @@ jobs:
             ~/go/pkg/mod
             ~/.cache/go-build
             ~/.cache/golangci-lint
-          key: ${{ steps.go-cache.outputs.cache-primary-key }}
+          # Same key as "Restore Go caches", which doesn't run on main.
+          key: v2-ci-go1.27.1-${{ hashFiles('go.sum') }}-${{ github.sha }}
