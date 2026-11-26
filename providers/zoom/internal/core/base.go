@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"net/url"
 	"time"
 
 	"github.com/amp-labs/amp-common/utils"
@@ -94,18 +95,34 @@ func (b Base) GetWriteURL(objectName string) (*urlbuilder.URL, error) {
 }
 
 // GetMeetingParticipantUrl returns the URL for listing meeting participants.
+// https://developers.zoom.us/docs/api/meetings/#tag/meetings/get/past_meetings/%7BmeetingId%7D/participants
 func (b Base) GetMeetingParticipantUrl(meetingId string) (*urlbuilder.URL, error) {
 	return urlbuilder.New(b.ProviderInfo().BaseURL, apiVersion, "past_meetings", meetingId, "participants")
 }
 
-// GetMeetingTranscriptUrl returns the URL for retrieving a meeting transcript.
-func (b Base) GetMeetingTranscriptUrl(meetingId string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(b.ProviderInfo().BaseURL, apiVersion, "meetings", meetingId, "transcript")
+// GetMeetingInstancesUrl returns the URL for retrieving a list of meeting instances.
+// https://developers.zoom.us/docs/api/meetings/#tag/meetings/get/past_meetings/%7BmeetingId%7D/instances
+func (b Base) GetMeetingInstancesUrl(meetingId string) (*urlbuilder.URL, error) {
+	return urlbuilder.New(b.ProviderInfo().BaseURL, apiVersion, "past_meetings", meetingId, "instances")
 }
 
-// GetMeetingSummaryUrl returns the URL for retrieving a meeting summary.
-func (b Base) GetMeetingSummaryUrl(meetingId string) (*urlbuilder.URL, error) {
-	return urlbuilder.New(b.ProviderInfo().BaseURL, apiVersion, "meetings", meetingId, "meeting_summary")
+// GetMeetingTranscriptUrl returns the API URL for retrieving a meeting instance's transcript.
+// meetingInstanceId must identify the meeting instance, not the scheduled meeting.
+//
+// See https://developers.zoom.us/docs/api/meetings/#tag/meeting-transcript/get/meetings/%7BmeetingId%7D/transcript
+func (b Base) GetMeetingTranscriptUrl(meetingInstanceId string) (*urlbuilder.URL, error) {
+	encodedId := url.QueryEscape(meetingInstanceId)
+
+	return urlbuilder.New(b.ProviderInfo().BaseURL, apiVersion, "meetings", encodedId, "transcript")
+}
+
+// GetMeetingSummaryUrl returns the API URL for retrieving a meeting instance's summary.
+// meetingInstanceId must identify the meeting instance, not the scheduled meeting.
+// // https://developers.zoom.us/docs/api/meetings/#tag/summaries/get/meetings/%7BmeetingId%7D/meeting_summary
+func (b Base) GetMeetingSummaryUrl(meetingInstanceId string) (*urlbuilder.URL, error) {
+	encodedId := url.QueryEscape(meetingInstanceId)
+
+	return urlbuilder.New(b.ProviderInfo().BaseURL, apiVersion, "meetings", encodedId, "meeting_summary")
 }
 
 var objectNameToWritePath = datautils.NewDefaultMap(map[string]string{ // nolint: gochecknoglobals

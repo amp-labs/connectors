@@ -2,6 +2,7 @@ package mockutils
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/internal/datautils"
@@ -149,8 +150,11 @@ func (readResultComparator) SubsetAssociationsRaw(actual, expected *common.ReadR
 			for _, expectedAssociation := range expectedAssociations {
 				actualAssociation, ok := actualByObjectID[expectedAssociation.ObjectId]
 				if !ok {
-					result.AddDiff("Data[%d].Associations[%s].ObjectId %s is missing",
-						i, key, expectedAssociation.ObjectId)
+					keys := (datautils.Map[string, common.Association](actualByObjectID)).Keys()
+					sort.Strings(keys)
+
+					result.AddDiff("Data[%d].Associations[%s].ObjectId %s is missing, available ObjectIds %v",
+						i, key, expectedAssociation.ObjectId, keys)
 					continue
 				}
 

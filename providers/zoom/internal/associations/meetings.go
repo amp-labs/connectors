@@ -3,7 +3,6 @@ package associations
 import (
 	"context"
 	"errors"
-	"strings"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
@@ -64,7 +63,7 @@ func meetingAssociationsToObject(ctx context.Context,
 	return registry, nil
 }
 
-// https://developers.zoom.us/docs/api/meetings/#tag/meetings/get/past_meetings/{meetingId}/participants
+// https://developers.zoom.us/docs/api/meetings/#tag/meetings/get/past_meetings/%7BmeetingId%7D/participants
 func fetchMeetingParticipants(ctx context.Context,
 	base *core.Base,
 	meetingId string,
@@ -76,42 +75,46 @@ func fetchMeetingParticipants(ctx context.Context,
 
 	url.WithQueryParam("page_size", core.DefaultPageSize)
 
-	return fetchItems(ctx, base, url, "participants", "id")
+	return fetchPagedParticipants(ctx, base, url)
 }
 
-// Transcript is a single object rather than a collection, so it is treated
-// as additional metadata for a Meeting.
-// https://developers.zoom.us/docs/api/meetings/#tag/meeting-transcript/get/meetings/{meetingId}/transcript
-func fetchMeetingTranscript(ctx context.Context,
-	base *core.Base,
-	meetingId string,
-) (recordItems, error) {
-	url, err := base.GetMeetingTranscriptUrl(meetingId)
-	if err != nil {
-		return nil, err
-	}
-
-	item, err := fetchItem(ctx, base, url, "meeting_id")
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) && strings.Contains(err.Error(), "error code (3322)") {
-			// This meeting transcript does not exist.
-			// No associations to return.
+// Meeting transcript is a transcript for the latest meeting instance.
+// https://developers.zoom.us/docs/api/meetings/#tag/meeting-transcript/get/meetings/%7BmeetingId%7D/transcript
+func fetchMeetingTranscript(latestMeetingInstances map[string]string) meetingAssociationCollector {
+	return func(ctx context.Context,
+		base *core.Base,
+		meetingId string,
+	) (recordItems, error) {
+		meetingInstanceId, ok := latestMeetingInstances[meetingId]
+		if !ok {
 			return make(recordItems), nil
 		}
 
-		return nil, err
-	}
+		url, err := base.GetMeetingTranscriptUrl(meetingInstanceId)
+		if err != nil {
+			return nil, err
+		}
 
-	return item, nil
+		// meeting_id represents a UUID of a meeting instance.
+		return fetchItem(ctx, base, url, "meeting_id")
+	}
 }
 
-// Summary is an additional metadata for a Meeting.
-// https://developers.zoom.us/docs/api/meetings/#tag/summaries/get/meetings/{meetingId}/meeting_summary
-func fetchMeetingSummary(ctx context.Context, base *core.Base, meetingId string) (recordItems, error) {
-	url, err := base.GetMeetingSummaryUrl(meetingId)
-	if err != nil {
-		return nil, err
-	}
+// Meeting summary is a summary for the latest meeting instance.
+// https://developers.zoom.us/docs/api/meetings/#tag/summaries/get/meetings/%7BmeetingId%7D/meeting_summary
+func fetchMeetingSummary(latestMeetingInstances map[string]string) meetingAssociationCollector {
+	return func(ctx context.Context, base *core.Base, meetingId string) (recordItems, error) {
+		meetingInstanceId, ok := latestMeetingInstances[meetingId]
+		if !ok {
+			return make(recordItems), nil
+		}
 
-	return fetchItem(ctx, base, url, "meeting_id")
+		url, err := base.GetMeetingSummaryUrl(meetingInstanceId)
+		if err != nil {
+			return nil, err
+		}
+
+		// meeting_uuid represents a UUID of a meeting instance.
+		return fetchItem(ctx, base, url, "meeting_uuid")
+	}
 }

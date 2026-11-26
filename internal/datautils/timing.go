@@ -46,3 +46,8 @@ func (timing) FormatRFC3339WithOffset(input time.Time) string {
 func (timing) FormatRFC3339inLocation(input time.Time, location *time.Location) string {
 	return input.In(location).Format("2006-01-02 15:04:05")
 }
+
+// FormatDateOnly converts input to format "2006-01-02".
+func (timing) FormatDateOnly(input time.Time) string {
+	return input.UTC().Format(time.DateOnly)
+}
