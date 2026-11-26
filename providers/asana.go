@@ -21,7 +21,7 @@ func init() {
 		Oauth2Opts: &Oauth2Opts{
 			AuthURL:                   "https://app.asana.com/-/oauth_authorize",
 			TokenURL:                  "https://app.asana.com/-/oauth_token",
-			ExplicitScopesRequired:    false,
+			ExplicitScopesRequired:    true,
 			ExplicitWorkspaceRequired: false,
 			GrantType:                 AuthorizationCode,
 			TokenMetadataFields: TokenMetadataFields{
