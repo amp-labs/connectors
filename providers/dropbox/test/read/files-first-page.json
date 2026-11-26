@@ -1,0 +1,12 @@
+{
+  "entries": [
+    {
+      ".tag": "file",
+      "id": "id:abc123",
+      "name": "notes.txt",
+      "server_modified": "2024-06-01T12:00:00Z"
+    }
+  ],
+  "cursor": "cursor-page-2",
+  "has_more": true
+}
