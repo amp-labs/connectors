@@ -43,18 +43,13 @@ func main() {
 								common.SubscriptionEventTypeDelete,
 							},
 						},
-						//"butterflies": {
-						//	Events: []common.SubscriptionEventType{
-						//		common.SubscriptionEventTypeCreate,
-						//	},
-						//},
 					},
 				}
 			},
-			ExpectedWebhookCalls: 3,
+			ExpectedWebhookCalls: 4,
 			Operations: []testscenario.ConnectorOperation{
 				/* Create outlook message */ {
-					ObjectName: "me/messages",
+					ObjectName: "AMPERSAND-drafts",
 					Method:     testscenario.ConnectorMethodCreate,
 					Payload: payload{
 						Subject:      subject,
@@ -64,7 +59,7 @@ func main() {
 					},
 				},
 				/* Update outlook message */ {
-					ObjectName: "me/messages",
+					ObjectName: "AMPERSAND-drafts",
 					Method:     testscenario.ConnectorMethodUpdate,
 					Payload: payload{
 						Subject: updatedSubject,
@@ -77,7 +72,7 @@ func main() {
 					},
 				},
 				/* Remove outlook message */ {
-					ObjectName: "me/messages",
+					ObjectName: "AMPERSAND-drafts",
 					Method:     testscenario.ConnectorMethodDelete,
 					SearchProcedure: testscenario.SearchProcedure{
 						ReadFields:          datautils.NewSet("id", "subject"),
@@ -94,7 +89,7 @@ func main() {
 
 type payload struct {
 	Subject      string      `json:"subject,omitempty"`
-	Body         body        `json:"body,omitempty"`
+	Body         body        `json:"body"`
 	From         *recipient  `json:"from,omitempty"`
 	ToRecipients []recipient `json:"toRecipients,omitempty"`
 }
