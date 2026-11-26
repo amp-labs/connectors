@@ -21,7 +21,7 @@ func init() {
 		Oauth2Opts: &Oauth2Opts{
 			GrantType: Password,
 			TokenURL:  "{{.workspace}}/rest/v11_24/oauth2/token",
-			TokenParams: map[string]string{
+			TokenReqBodyParams: map[string]string{
 				"client_id":     "sugar",
 				"client_secret": "",
 				"platform":      "{{.platform}}",

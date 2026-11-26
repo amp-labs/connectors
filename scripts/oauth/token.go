@@ -464,7 +464,7 @@ func setup() *OAuthApp {
 				User: username,
 				Pass: password,
 			},
-			TokenParams: providerInfo.Oauth2Opts.TokenParams,
+			TokenParams: providerInfo.Oauth2Opts.TokenReqBodyParams,
 		}
 		if state != "" {
 			app.State = state

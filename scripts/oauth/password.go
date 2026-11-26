@@ -17,7 +17,7 @@ import (
 // passwordGrantToken signs in with the OAuth 2.0 resource owner password grant.
 //
 // It is used instead of oauth2.Config.PasswordCredentialsToken because that cannot send
-// the provider's extra token parameters (Oauth2Opts.TokenParams), such as SugarAI's
+// the provider's extra token parameters (Oauth2Opts.TokenReqBodyParams), such as SugarAI's
 // platform. Those are added to the form unless the grant already sets the field, and a
 // client_id or client_secret among them is only used when no client ID is configured.
 // The client is identified in the form body.
