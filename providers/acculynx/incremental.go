@@ -137,8 +137,9 @@ func jobsOpenEndDate() time.Time {
 	return time.Now().UTC().Add(jobsOpenEndWindow)
 }
 
-// jobsDateWindow returns the startDate and endDate for a /jobs list. A read
-// with no Until ends a year from now.
+// jobsDateWindow returns the startDate and endDate for a /jobs list. When
+// there's no Until, we use an end date that's a year in the future so we
+// capture all jobs even when the read workflow runs on for longer than a day.
 func jobsDateWindow(params common.ReadParams) (time.Time, time.Time) {
 	until := params.Until
 	if until.IsZero() {
