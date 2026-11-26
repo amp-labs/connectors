@@ -3,8 +3,9 @@ package granola
 import (
 	"context"
 	"errors"
-	"fmt"
+	"log/slog"
 	"maps"
+	"net/http"
 
 	"github.com/amp-labs/amp-common/simultaneously"
 	"github.com/amp-labs/connectors/common"
@@ -76,11 +77,19 @@ func (c *Connector) fetchNotes(
 
 // fetchNote returns a concurrently executable job that fetches a single note
 // by ID and sends the fully decoded NoteRecord to notesChannel.
-func (c *Connector) fetchNote(notesChannel chan NoteRecord, noteID string, includeTranscript bool,
+func (c *Connector) fetchNote(notesChannel chan NoteRecord, noteId string, includeTranscript bool,
 ) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
-		note, err := c.getNote(ctx, noteID, includeTranscript)
+		note, err := c.getNote(ctx, noteId, includeTranscript)
 		if err != nil {
+			if httpErr, ok := errors.AsType[*common.HTTPError](err); ok {
+				if httpErr.Status == http.StatusNotFound {
+					slog.Warn("fetching additional note fields failed, the note is not found", "note", noteId)
+
+					return nil
+				}
+			}
+
 			return err
 		}
 
@@ -123,9 +132,11 @@ func lookupNote(notes NoteRecords, node *ajson.Node) (NoteRecord, string, error)
 		return nil, "", err
 	}
 
-	note, err := notes.findByID(identifier)
-	if err != nil {
-		return nil, "", err
+	note, ok := notes[identifier]
+	if !ok {
+		result, err := jsonquery.Convertor.ObjectToMap(node)
+
+		return result, identifier, err
 	}
 
 	return note, identifier, nil
@@ -153,18 +164,12 @@ func embedFields(notes NoteRecords) readhelper.SelectedFieldsFunc {
 			return nil, "", err
 		}
 
+		if note == nil {
+			return nil, "", nil
+		}
+
 		selected := readhelper.SelectFields(note, datautils.NewSetFromList(fields))
 
 		return selected, identifier, nil
 	}
-}
-
-func (n NoteRecords) findByID(identifier string) (NoteRecord, error) {
-	note, ok := n[identifier]
-	if !ok || note == nil {
-		return nil, fmt.Errorf( // nolint:err113
-			"note with identifier %v was not found in the fetched registry", identifier)
-	}
-
-	return note, nil
 }

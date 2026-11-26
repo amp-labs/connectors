@@ -212,6 +212,65 @@ func TestRead(t *testing.T) {
 			ExpectedErrs: nil,
 		},
 		{
+			Name: "Read enriched notes where some enhancements return error not found",
+			Input: common.ReadParams{
+				ObjectName: "notes",
+				Fields:     connectors.Fields("summary_text"),
+			},
+			Server: mockserver.Switch{
+				Setup: mockserver.ContentJSON(),
+				Cases: []mockserver.Case{{
+					If:   mockcond.Path("/v1/notes"),
+					Then: mockserver.Response(http.StatusOK, responseNotes),
+				}, {
+					If:   mockcond.Path("/v1/notes/not_1d3tmYTlCICgjy"),
+					Then: mockserver.ResponseString(http.StatusNotFound, `{}`),
+				}, {
+					If:   mockcond.Path("/v1/notes/not_4f7kQhLpMNBvxy"),
+					Then: mockserver.Response(http.StatusOK, noteFull["not_4f7kQhLpMNBvxy"]),
+				}, {
+					If:   mockcond.Path("/v1/notes/not_9b2xRwNsTLCfop"),
+					Then: mockserver.ResponseString(http.StatusNotFound, `{}`),
+				}},
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 3,
+				Data: []common.ReadResultRow{
+					{
+						Fields: map[string]any{
+							"summary_text": nil,
+						},
+						Raw: map[string]any{
+							"id":           "not_1d3tmYTlCICgjy",
+							"summary_text": nil,
+						},
+					},
+					{
+						Fields: map[string]any{
+							"summary_text": "The monthly almond purchase analysis showed that we overspent by $5,000 but managed to negotiate better deals for next month.",
+						},
+						Raw: map[string]any{
+							"id":           "not_4f7kQhLpMNBvxy",
+							"summary_text": "The monthly almond purchase analysis showed that we overspent by $5,000 but managed to negotiate better deals for next month.",
+						},
+					},
+					{
+						Fields: map[string]any{
+							"summary_text": nil,
+						},
+						Raw: map[string]any{
+							"id":           "not_9b2xRwNsTLCfop",
+							"summary_text": nil,
+						},
+					},
+				},
+				NextPage: "eyJjcmVkZW50aWFsfQ==",
+				Done:     false,
+			},
+			ExpectedErrs: nil,
+		},
+		{
 
 			Name: "Read notes with extra field caps page size to 4",
 			Input: common.ReadParams{
