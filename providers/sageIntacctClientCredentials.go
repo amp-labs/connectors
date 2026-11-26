@@ -19,7 +19,7 @@ func init() {
 			// Sage Intacct identifies the user to act as by userId@companyId.
 			// The token is top-level; a request can target an entity with the
 			// X-IA-API-Param-Entity header.
-			TokenParams: map[string]string{
+			TokenReqBodyParams: map[string]string{
 				"username": "{{.userId}}@{{.companyId}}",
 			},
 			DocsURL: "https://developer.sage.com/intacct/docs/1/sage-intacct-rest-api/authorization-and-security/oauth2#client-credentials-grant-type", //nolint:lll

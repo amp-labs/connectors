@@ -13,7 +13,7 @@ func TestSageIntacctClientCredentialsUsername(t *testing.T) {
 		t.Fatalf("ReadInfo: %v", err)
 	}
 
-	if got, want := info.Oauth2Opts.TokenParams["username"], "Ampersand_WS@acme-corp"; got != want {
+	if got, want := info.Oauth2Opts.TokenReqBodyParams["username"], "Ampersand_WS@acme-corp"; got != want {
 		t.Errorf("username = %q, want %q", got, want)
 	}
 }
