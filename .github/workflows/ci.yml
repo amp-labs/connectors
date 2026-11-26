@@ -47,13 +47,6 @@ jobs:
             v2-ci-go1.27.1-${{ hashFiles('go.sum') }}-
             v2-ci-go1.27.1-
 
-      # TEMPORARY: measures what the restored cache holds. Remove before merge.
-      - name: Show cache sizes
-        run: |
-          for d in ~/go/pkg/mod ~/go/pkg/mod/cache/download ~/.cache/go-build ~/.cache/golangci-lint; do
-            echo "$(du -sh "$d" | cut -f1) $(find "$d" -type f | wc -l) files  $d"
-          done
-
       # The custom golangci-lint binary (with the nogoroutine/modulelinter
       # plugins) only changes when its config or plugin source changes, so
       # cache it instead of rebuilding it from source every run.
@@ -105,18 +98,8 @@ jobs:
           GOFLAGS: ${{ github.ref == 'refs/heads/main' && '-count=1' || '' }}
         run: make test
 
-      # TEMPORARY: measures what gets saved. Remove before merge.
-      - name: Show cache sizes before save
-        if: always()
-        run: |
-          for d in ~/go/pkg/mod ~/go/pkg/mod/cache/download ~/.cache/go-build ~/.cache/golangci-lint; do
-            echo "$(du -sh "$d" | cut -f1) $(find "$d" -type f | wc -l) files  $d"
-          done
-
       - name: Save Go caches
-        # TEMPORARY: also saves on this PR, to measure a cold run and then a
-        # warm one. Remove the head_ref clause before merge.
-        if: always() && (github.ref == 'refs/heads/main' || github.head_ref == 'ci/faster-ci')
+        if: always() && github.ref == 'refs/heads/main'
         # git ls-remote https://github.com/actions/cache.git refs/tags/v4
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
         with:
