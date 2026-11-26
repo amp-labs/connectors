@@ -98,6 +98,42 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Page size above the maximum is capped",
+			Input: common.ReadParams{
+				ObjectName: "activity",
+				Fields:     connectors.Fields("id"),
+				PageSize:   500,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v1/activity/"),
+					mockcond.QueryParam("_limit", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, activityResponse),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 1, Done: true},
+		},
+		{
+			Name: "Page size within the maximum is used as given",
+			Input: common.ReadParams{
+				ObjectName: "activity",
+				Fields:     connectors.Fields("id"),
+				PageSize:   5,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v1/activity/"),
+					mockcond.QueryParam("_limit", "5"),
+				},
+				Then: mockserver.Response(http.StatusOK, activityResponse),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 1, Done: true},
+		},
 	}
 
 	for _, tt := range tests {

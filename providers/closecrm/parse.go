@@ -23,6 +23,7 @@ Read Response Schema:
 
 const (
 	defaultPageSize = "100"      // nolint:gochecknoglobals
+	maxPageSize     = 100        // nolint:gochecknoglobals
 	limitQuery      = "_limit"   // nolint:gochecknoglobals
 	skipQuery       = "_skip"    // nolint:gochecknoglobals
 	hasMoreQuery    = "has_more" // nolint:gochecknoglobals
