@@ -13,6 +13,7 @@ import (
 	"github.com/amp-labs/connectors/test/utils/testscenario"
 )
 
+// Smoke test for all read objects. Prefer per-object scripts under test/dropbox/<object>/read.
 func main() {
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer done()

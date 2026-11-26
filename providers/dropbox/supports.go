@@ -16,6 +16,10 @@ const (
 	objectSharedFolders          = "shared_folders"
 	objectMountableSharedFolders = "mountable_shared_folders"
 	objectReceivedFiles          = "received_files"
+
+	fileRequestCreatePath = "/2/file_requests/create"
+	fileRequestUpdatePath = "/2/file_requests/update"
+	fileRequestDeletePath = "/2/file_requests/delete"
 )
 
 // readSpec holds read details that are not stored in objectsMetadata.json: how to build
@@ -93,6 +97,15 @@ func supportedOperations() components.EndpointRegistryInput {
 			{
 				Endpoint: fmt.Sprintf("{%s}", strings.Join(supportedReadObjects, ",")),
 				Support:  components.ReadSupport,
+			},
+			{
+				// POST create/update for file_requests only; other objects are read-only lists.
+				Endpoint: objectFileRequests,
+				Support:  components.WriteSupport,
+			},
+			{
+				Endpoint: objectFileRequests,
+				Support:  components.DeleteSupport,
 			},
 		},
 	}
