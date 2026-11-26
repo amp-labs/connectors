@@ -3,6 +3,7 @@ package dropbox
 import (
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/amp-labs/connectors"
 	"github.com/amp-labs/connectors/common"
@@ -21,6 +22,10 @@ func TestRead(t *testing.T) { //nolint:funlen
 	responseSharedFoldersPaged := testutils.DataFromFile(t, "read/shared-folders-paged.json")
 	responseSharedLinks := testutils.DataFromFile(t, "read/shared-links-page.json")
 	responseFileRequestsContinue := testutils.DataFromFile(t, "read/file-requests-continue.json")
+	responseFilesTimeFilter := testutils.DataFromFile(t, "read/files-time-filter.json")
+
+	since := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	until := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
 
 	tests := []testconn.TestCaseRead{
 		{
@@ -40,6 +45,34 @@ func TestRead(t *testing.T) { //nolint:funlen
 			Input:        common.ReadParams{ObjectName: "search", Fields: connectors.Fields("id")},
 			Server:       mockserver.Dummy(),
 			ExpectedErrs: []error{common.ErrOperationNotSupportedForObject},
+		},
+		{
+			Name: "Files Since Until filter on server_modified",
+			Input: common.ReadParams{
+				ObjectName: objectFiles,
+				Fields:     connectors.Fields("name"),
+				Since:      since,
+				Until:      until,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.MethodPOST(),
+					mockcond.Path("/2/files/list_folder"),
+					mockcond.Body(`{"limit":100,"path":"","recursive":false}`),
+				},
+				Then: mockserver.Response(http.StatusOK, responseFilesTimeFilter),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Id:     "id:new",
+					Fields: map[string]any{"name": "new.txt"},
+					Raw:    map[string]any{".tag": "file"},
+				}},
+				Done: true,
+			},
 		},
 		{
 			Name: "List folder root posts path and limit",

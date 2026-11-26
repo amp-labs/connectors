@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/common/readhelper"
@@ -19,6 +20,15 @@ const defaultPageSize = 100
 // buildReadRequest calls Dropbox RPC list routes (all POST + JSON).
 // Pagination uses a cursor returned in the response; NextPage holds that cursor,
 // not a URL. Most objects use a dedicated continuePath; shared_links re-POSTs the list route.
+//
+// files: list_folder requires path in the body; we send path:"" (root) and recursive:false.
+// That lists one folder level, not a workspace-wide "recent files" feed. Incremental coverage
+// of all paths would require recursive listing or per-folder walks; Dropbox also supports
+// list_folder/continue cursors for change polling and webhooks (Subscribe is out of scope here).
+//
+// Since/Until: list RPCs have no server-side time filters. When readSpec.timeField is set,
+// ParseResultFiltered drops records outside the window (same as Notion); pagination is not
+// shortened because Dropbox does not guarantee sort order by that field.
 // https://docs.dropboxapi.com/dropbox-api/api-reference/user-endpoints/files/list-folder
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
 	if err := params.ValidateParams(true); err != nil {
@@ -102,9 +112,23 @@ func (c *Connector) parseReadResponse(
 		params,
 		resp,
 		common.MakeRecordsFunc(spec.responseKey),
-		readhelper.MakeIdentityFilterFunc(nextDropboxCursor),
+		makeRecordsFilterFunc(spec),
 		readhelper.MakeMarshaledDataFuncWithId(nil, readhelper.NewIdField(spec.idField)),
 		params.Fields,
+	)
+}
+
+func makeRecordsFilterFunc(spec readSpec) common.RecordsFilterFunc {
+	if spec.timeField == "" {
+		return readhelper.MakeIdentityFilterFunc(nextDropboxCursor)
+	}
+
+	return readhelper.MakeTimeFilterFunc(
+		readhelper.Unordered,
+		readhelper.NewTimeBoundary(),
+		spec.timeField,
+		time.RFC3339,
+		nextDropboxCursor,
 	)
 }
 

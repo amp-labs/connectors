@@ -29,8 +29,14 @@ type readSpec struct {
 	continuePath  string
 	idField       string
 	supportsLimit bool
-	// listFolderRoot is true for POST /2/files/list_folder (requires path in the body).
+	// listFolderRoot is true for POST /2/files/list_folder. The API requires a path key in
+	// the JSON body; use "" for the connected root (not omitted, and not "/").
+	// https://docs.dropboxapi.com/dropbox-api/api-reference/user-endpoints/files/list-folder
 	listFolderRoot bool
+	// timeField enables connector-side Since/Until filtering when the list RPC has no time
+	// query params. Empty means incremental time filters are not applied. Lists are not
+	// ordered by this field, so every page is still fetched (Unordered).
+	timeField string
 }
 
 //nolint:gochecknoglobals
@@ -41,35 +47,41 @@ var readRegistry = datautils.Map[string, readSpec]{
 		idField:        "id",
 		supportsLimit:  true,
 		listFolderRoot: true,
+		timeField:      "server_modified",
 	},
 	objectFileRequests: {
 		responseKey:   "file_requests",
 		continuePath:  "/2/file_requests/list/continue",
 		idField:       "id",
 		supportsLimit: true,
+		timeField:     "created",
 	},
 	objectSharedLinks: {
-		responseKey:  "links",
-		continuePath: "/2/sharing/list_shared_links",
-		idField:      "id",
+		responseKey:   "links",
+		continuePath:  "/2/sharing/list_shared_links",
+		idField:       "id",
+		timeField:     "server_modified",
 	},
 	objectSharedFolders: {
 		responseKey:   "entries",
 		continuePath:  "/2/sharing/list_folders/continue",
 		idField:       "shared_folder_id",
 		supportsLimit: true,
+		timeField:     "time_invited",
 	},
 	objectMountableSharedFolders: {
 		responseKey:   "entries",
 		continuePath:  "/2/sharing/list_mountable_folders/continue",
 		idField:       "shared_folder_id",
 		supportsLimit: true,
+		timeField:     "time_invited",
 	},
 	objectReceivedFiles: {
 		responseKey:   "entries",
 		continuePath:  "/2/sharing/list_received_files/continue",
 		idField:       "id",
 		supportsLimit: true,
+		timeField:     "time_invited",
 	},
 }
 
