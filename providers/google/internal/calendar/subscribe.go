@@ -23,6 +23,10 @@ import (
 // parallel so we don't trip Google Calendar's per-user rate limits.
 const calendarMaxConcurrentWatches = 4
 
+// eventsListMaxPageSize is the largest page size events.list allows for maxResults.
+// ref: https://developers.google.com/workspace/calendar/api/v3/reference/events/list
+const eventsListMaxPageSize = 2500
+
 // Compile-time interface conformance checks.
 var (
 	_ connectors.SubscribeConnector              = &Adapter{}
@@ -312,6 +316,8 @@ func parseToken(request *common.WebhookRequest) (string, error) {
 //     captured (unlike timeMin/timeMax, which filter by scheduled time).
 //   - showDeleted=true so deletions are returned as events with status:"cancelled".
 //
+// A 404 from events.list is returned as a bad request, not as not found. See notFoundAsBadRequest.
+//
 // ref: https://developers.google.com/workspace/calendar/api/v3/reference/events/list
 func (a *Adapter) GetRecordsByIds( //nolint:revive
 	ctx context.Context,
@@ -335,7 +341,7 @@ func (a *Adapter) GetRecordsByIds( //nolint:revive
 		return nil, fmt.Errorf("GetRecordsByIds: building URL: %w", err)
 	}
 
-	url.WithQueryParam("maxResults", strconv.Itoa(defaultPageSize))
+	url.WithQueryParam("maxResults", strconv.Itoa(eventsListMaxPageSize))
 	url.WithQueryParam("showDeleted", "true")
 	url.WithQueryParam("updatedMin", updatedMin)
 
@@ -355,7 +361,7 @@ func (a *Adapter) GetRecordsByIds( //nolint:revive
 
 		response, err := a.JSONHTTPClient().Get(ctx, pageURL)
 		if err != nil {
-			return nil, fmt.Errorf("GetRecordsByIds: events.list: %w", err)
+			return nil, fmt.Errorf("GetRecordsByIds: events.list: %w", notFoundAsBadRequest(err))
 		}
 
 		result, err := a.parseReadResponse(ctx, readParams, request, response)
@@ -373,6 +379,24 @@ func (a *Adapter) GetRecordsByIds( //nolint:revive
 	}
 
 	return common.NewBatchReadResult(rows), nil
+}
+
+// notFoundAsBadRequest turns a 404 from events.list into common.ErrBadRequest. Other errors are
+// returned unchanged.
+//
+// The request lists the primary calendar, so a 404 means that calendar does not exist or the
+// user cannot access it, not that an event is missing:
+// https://developers.google.com/workspace/calendar/api/guides/errors
+// A GetRecordsByIds error that wraps common.ErrNotFound or a 404 *common.HTTPError tells the
+// caller the records do not exist. So that the caller sees a failure instead, the returned error
+// wraps neither; the original error is kept as text only.
+func notFoundAsBadRequest(err error) error {
+	httpErr, ok := errors.AsType[*common.HTTPError](err)
+	if !ok || httpErr.Status != http.StatusNotFound {
+		return err
+	}
+
+	return fmt.Errorf("%w: calendar not found or not accessible: %v", common.ErrBadRequest, err) //nolint:errorlint
 }
 
 // watchResult pairs a created watch channel with the object it belongs to so the
