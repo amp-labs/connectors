@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"net/http"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -128,11 +129,11 @@ func (c *Connector) fetchSingleRecord(
 	body := *parsed
 
 	// GraphQL reports failures with a 200 status; a missing record surfaces
-	// either as an "errors" array or as a null record node.
-	// TODO(ENG-4415): classify an "errors" entry that says the record does not exist as
-	// errRecordFetchNotFound instead of errRecordFetchFailed.
+	// either as an "errors" array or as a null record node. Jobber's not-found
+	// response has not been captured, so a null record node with errors is
+	// treated as not found.
 	if errs, ok := body["errors"].([]any); ok && len(errs) > 0 {
-		return common.ReadResultRow{}, fmt.Errorf("%w: %s", errRecordFetchFailed, errorMessages(errs))
+		return common.ReadResultRow{}, recordFetchError(resp, body, singularName, errs)
 	}
 
 	data, ok := body["data"].(map[string]any)
@@ -150,6 +151,60 @@ func (c *Connector) fetchSingleRecord(
 		Fields: pickFields(record, fieldSet),
 		Raw:    record,
 	}, nil
+}
+
+// recordFetchError builds the error for a single-record query whose response
+// has an "errors" array. Throttling and authentication codes keep the typed
+// error of their HTTP status, so the failure is reported as rate-limited or as
+// an authentication failure. Otherwise a null record node is not found, and a
+// response without a "data" object, or with the record present, stays a fetch
+// failure.
+func recordFetchError(
+	resp *common.JSONHTTPResponse,
+	body map[string]any,
+	singularName string,
+	errs []any,
+) error {
+	code := firstErrorCode(errs)
+
+	switch graphqlStatusCode(code) {
+	case http.StatusTooManyRequests, http.StatusUnauthorized:
+		return fmt.Errorf("%w: %w", errRecordFetchFailed, graphqlCodeError(code, responseBytes(resp)))
+	}
+
+	if data, ok := body["data"].(map[string]any); ok && data[singularName] == nil {
+		return fmt.Errorf("%w: %s", errRecordFetchNotFound, errorMessages(errs))
+	}
+
+	return fmt.Errorf("%w: %s", errRecordFetchFailed, errorMessages(errs))
+}
+
+// firstErrorCode returns extensions.code of the first GraphQL error, or an
+// empty string when it has none.
+func firstErrorCode(errs []any) string {
+	first, ok := errs[0].(map[string]any)
+	if !ok {
+		return ""
+	}
+
+	extensions, ok := first["extensions"].(map[string]any)
+	if !ok {
+		return ""
+	}
+
+	code, _ := extensions["code"].(string)
+
+	return code
+}
+
+// responseBytes returns the raw response body, or nil when there is none.
+func responseBytes(resp *common.JSONHTTPResponse) []byte {
+	node, ok := resp.Body()
+	if !ok {
+		return nil
+	}
+
+	return node.Source()
 }
 
 // pickFields filters raw to entries in fieldSet. An empty fieldSet returns a
