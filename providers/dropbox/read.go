@@ -108,10 +108,18 @@ func (c *Connector) parseReadResponse(
 	)
 }
 
-// nextDropboxCursor returns the cursor for the next read page.
-// Most list routes set has_more; sharing list_folders / list_mountable_folders /
-// list_received_files omit it and only return cursor when more entries exist.
-// When has_more is absent but cursor is set, treat the page as incomplete.
+// nextDropboxCursor returns the cursor for the next read page, or "" when listing is done.
+//
+// Dropbox uses two pagination styles:
+//   - list_folder, file_requests, shared_links, … document has_more. You must stop when
+//     has_more is false even if cursor is non-empty (list_folder returns a long-lived
+//     cursor on the last content page for /continue change polling, not another page).
+//   - sharing list_folders / list_mountable_folders / list_received_files omit has_more;
+//     cursor is only present when more shared-folder rows exist.
+//
+// BoolWithDefault("has_more", true) means “keep paginating on cursor alone” only when
+// the field is missing (sharing lists). When has_more is false, we ignore cursor so Read
+// does not loop on empty pages.
 func nextDropboxCursor(node *ajson.Node) (string, error) {
 	cursor, err := jsonquery.New(node).StrWithDefault("cursor", "")
 	if err != nil || cursor == "" {
