@@ -24,6 +24,13 @@ jobs:
       # Restore Go module/build caches and the golangci-lint analysis cache.
       # PRs restore (falling back to the latest main cache via restore-keys)
       # but never save; only main pushes save, to avoid PR-branch cache churn.
+      #
+      # GitHub never overwrites a cache key, so the key ends in the commit SHA:
+      # every main push saves a new cache. With a key of only the go.sum hash,
+      # every main push after the first spent ~3 minutes packing the cache and
+      # then failed to save it ("Unable to reserve cache"), and PRs restored a
+      # cache that only caught up with main when go.sum changed.
+      # A restore takes the newest cache for this go.sum, else the newest of any.
       - name: Restore Go caches
         id: go-cache
         # git ls-remote https://github.com/actions/cache.git refs/tags/v4
@@ -33,9 +40,17 @@ jobs:
             ~/go/pkg/mod
             ~/.cache/go-build
             ~/.cache/golangci-lint
-          key: v1-ci-go1.27.1-${{ hashFiles('go.sum') }}
+          key: v1-ci-go1.27.1-${{ hashFiles('go.sum') }}-${{ github.sha }}
           restore-keys: |
+            v1-ci-go1.27.1-${{ hashFiles('go.sum') }}-
             v1-ci-go1.27.1-
+
+      # TEMPORARY: measures what the restored cache holds. Remove before merge.
+      - name: Show cache sizes
+        run: |
+          for d in ~/go/pkg/mod ~/go/pkg/mod/cache/download ~/.cache/go-build ~/.cache/golangci-lint; do
+            echo "$(du -sh "$d" | cut -f1) $(find "$d" -type f | wc -l) files  $d"
+          done
 
       # The custom golangci-lint binary (with the nogoroutine/modulelinter
       # plugins) only changes when its config or plugin source changes, so
@@ -69,8 +84,14 @@ jobs:
       - name: Generate
         run: go generate ./...
 
+      # Compile every package without linking. `go build ./...` links all ~900
+      # main packages (test/, scripts/, examples/), and Go never caches a link,
+      # so that step took 4 to 7 minutes even with a warm cache.
+      # `go list -export` runs the compiler on every package, main packages
+      # included, and fails on the same compile errors. `make test` still
+      # links a test binary for every package that has tests.
       - name: Build
-        run: go build ./...
+        run: go list -export ./... > /dev/null
 
       - name: Lint
         run: make lint
