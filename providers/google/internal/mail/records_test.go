@@ -4,11 +4,13 @@ import (
 	"errors"
 	"net/http"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/amp-labs/connectors/common"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockcond"
 	"github.com/amp-labs/connectors/test/utils/mockutils/mockserver"
+	"github.com/amp-labs/connectors/test/utils/testconn"
 	"github.com/amp-labs/connectors/test/utils/testutils"
 )
 
@@ -283,5 +285,92 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 				}
 			}
 		})
+	}
+}
+
+// getMessagesByIds runs GetRecordsByIds for messages against a server that answers each message id
+// with its handler.
+func getMessagesByIds(
+	t *testing.T, responses map[string]http.HandlerFunc, ids ...string,
+) (*common.BatchReadResult, error) {
+	t.Helper()
+
+	cases := make([]mockserver.Case, 0, len(responses))
+	for id, response := range responses {
+		cases = append(cases, mockserver.Case{
+			If:   mockcond.Path("/gmail/v1/users/me/messages/" + id),
+			Then: response,
+		})
+	}
+
+	srv := mockserver.Switch{Setup: mockserver.ContentJSON(), Cases: cases}.Server()
+	t.Cleanup(srv.Close)
+
+	conn, err := constructTestAdapter(srv)
+	if err != nil {
+		t.Fatalf("failed to construct test connector: %v", err)
+	}
+
+	return conn.GetRecordsByIds(t.Context(), "messages", ids, nil, nil)
+}
+
+// A message whose response has no id, such as an empty body, is reported as a failure for that id and
+// returned as the error. The other messages are still returned.
+func TestGetRecordsByIds_MessageWithoutIdIsFailure(t *testing.T) {
+	t.Parallel()
+
+	const (
+		idOK1   = "19dbd733d5637396"
+		idEmpty = "19dbd7822499cd1a"
+		idOK3   = "19dbd78c8b2290af"
+	)
+
+	result, err := getMessagesByIds(t, map[string]http.HandlerFunc{
+		idOK1:   mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "records-by-ids/message-ok-1.json")),
+		idEmpty: mockserver.Response(http.StatusOK),
+		idOK3:   mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "records-by-ids/message-ok-3.json")),
+	}, idOK1, idEmpty, idOK3)
+	if err == nil || !strings.Contains(err.Error(), idEmpty) {
+		t.Fatalf("error = %v, want one naming %s", err, idEmpty)
+	}
+
+	testconn.RequireRowIds(t, result, idOK1, idOK3)
+
+	if len(result.Failures) != 1 || result.Failures[0].RecordId != idEmpty {
+		t.Fatalf("failures = %+v, want one failure for %s", result.Failures, idEmpty)
+	}
+
+	if result.Failures[0].Reason == common.FailureReasonNotFound {
+		t.Errorf("failure for %s must not be not_found", idEmpty)
+	}
+
+	if !errors.Is(result.Failures[0].Err, errMessageMissingID) {
+		t.Errorf("failure for %s: error %v, want one wrapping errMessageMissingID", idEmpty, result.Failures[0].Err)
+	}
+}
+
+// Rows come back in requested order.
+func TestGetRecordsByIds_RowsInRequestedOrder(t *testing.T) {
+	t.Parallel()
+
+	const (
+		idOK1 = "19dbd733d5637396"
+		idOK3 = "19dbd78c8b2290af"
+	)
+
+	responses := map[string]http.HandlerFunc{
+		idOK1: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "records-by-ids/message-ok-1.json")),
+		idOK3: mockserver.Response(http.StatusOK, testutils.DataFromFile(t, "records-by-ids/message-ok-3.json")),
+	}
+
+	// Ranging over a map gives a different order each run, so repeat to catch an unordered result.
+	for range 20 {
+		result, err := getMessagesByIds(t, responses, idOK3, idOK1)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		testconn.RequireRowIds(t, result, idOK3, idOK1)
+		testconn.RequireNoFailures(t, result)
 	}
 }
