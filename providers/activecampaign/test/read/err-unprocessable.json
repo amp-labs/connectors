@@ -1,0 +1,12 @@
+{
+  "errors": [
+    {
+      "title": "Contact Email Address is not valid.",
+      "detail": "",
+      "code": "email_invalid",
+      "source": {
+        "pointer": "/data/attributes/email"
+      }
+    }
+  ]
+}
