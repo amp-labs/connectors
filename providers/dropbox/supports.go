@@ -2,7 +2,6 @@ package dropbox
 
 import (
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -19,19 +18,23 @@ const (
 	objectReceivedFiles          = "received_files"
 )
 
-// readEndpoint holds read details that are not stored in objectsMetadata.json
-// (response array key, pagination continue route, record id field).
-type readEndpoint struct {
-	responseKey  string
-	continuePath string
-	idField      string
+// readSpec holds read details that are not stored in objectsMetadata.json: how to build
+// list/continue requests (limits, list_folder body) and how to parse list responses
+// (record array key, Ampersand record id field).
+type readSpec struct {
+	responseKey string
+	// continuePath is the RPC route for page 2+. The first page uses the list path from
+	// objectsMetadata.json (metadata.Catalog.ReadPath); Dropbox often exposes a separate
+	// */continue route, or re-POSTs the same list route (shared_links).
+	continuePath  string
+	idField       string
 	supportsLimit bool
 	// listFolderRoot is true for POST /2/files/list_folder (requires path in the body).
 	listFolderRoot bool
 }
 
 //nolint:gochecknoglobals
-var readRegistry = datautils.Map[string, readEndpoint]{
+var readRegistry = datautils.Map[string, readSpec]{
 	objectFiles: {
 		responseKey:    "entries",
 		continuePath:   "/2/files/list_folder/continue",
@@ -72,11 +75,6 @@ var readRegistry = datautils.Map[string, readEndpoint]{
 
 var supportedReadObjects = readRegistry.Keys() //nolint:gochecknoglobals
 
-// SupportedReadObjects lists object names implemented by Read.
-func SupportedReadObjects() []string {
-	return slices.Clone(supportedReadObjects)
-}
-
 func supportedOperations() components.EndpointRegistryInput {
 	return components.EndpointRegistryInput{
 		common.ModuleRoot: {
@@ -88,10 +86,10 @@ func supportedOperations() components.EndpointRegistryInput {
 	}
 }
 
-func readEndpointFor(objectName string) (readEndpoint, error) {
+func readSpecFor(objectName string) (readSpec, error) {
 	spec, ok := readRegistry[objectName]
 	if !ok {
-		return readEndpoint{}, common.ErrOperationNotSupportedForObject
+		return readSpec{}, common.ErrOperationNotSupportedForObject
 	}
 
 	return spec, nil

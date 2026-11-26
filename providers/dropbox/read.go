@@ -25,7 +25,7 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 		return nil, err
 	}
 
-	spec, err := readEndpointFor(params.ObjectName)
+	spec, err := readSpecFor(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,10 @@ func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadPara
 	return req, nil
 }
 
-func readURLPath(params common.ReadParams, spec readEndpoint) (string, error) {
+// readURLPath returns the POST path for this read. Page 1 uses the list route from
+// objectsMetadata.json; when NextPage (cursor) is set, readSpec.continuePath is used
+// instead — Dropbox pagination often hits a different RPC endpoint than the initial list.
+func readURLPath(params common.ReadParams, spec readSpec) (string, error) {
 	if params.NextPage != "" {
 		return spec.continuePath, nil
 	}
@@ -63,7 +66,7 @@ func readURLPath(params common.ReadParams, spec readEndpoint) (string, error) {
 	return metadata.Catalog.ReadPath(params.ObjectName)
 }
 
-func readRequestBody(params common.ReadParams, spec readEndpoint) ([]byte, error) {
+func readRequestBody(params common.ReadParams, spec readSpec) ([]byte, error) {
 	body := map[string]any{}
 
 	if params.NextPage != "" {
@@ -90,7 +93,7 @@ func (c *Connector) parseReadResponse(
 	_ *http.Request,
 	resp *common.JSONHTTPResponse,
 ) (*common.ReadResult, error) {
-	spec, err := readEndpointFor(params.ObjectName)
+	spec, err := readSpecFor(params.ObjectName)
 	if err != nil {
 		return nil, err
 	}
