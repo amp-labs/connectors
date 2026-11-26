@@ -138,10 +138,10 @@ func makeNextRecordsURL(requestURL *url.URL) common.NextPageFunc {
 			return "", nil //nolint:nilerr
 		}
 
-		// Parse pageSize to int for comparison
-		pageSizeInt, err := strconv.Atoi(pageSize)
+		// Parse the perPage sent in this request to int for comparison
+		pageSizeInt, err := strconv.Atoi(requestURL.Query().Get(pageSizeKey))
 		if err != nil {
-			return "", nil //nolint:nilerr
+			pageSizeInt = maxPageSizeInt
 		}
 
 		// If we got fewer records than pageSize, this is the last page
