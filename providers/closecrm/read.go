@@ -2,6 +2,7 @@ package closecrm
 
 import (
 	"context"
+	"strconv"
 	"strings"
 
 	"github.com/amp-labs/connectors/common"
@@ -35,8 +36,13 @@ func (c *Connector) Read(ctx context.Context, config common.ReadParams) (*common
 
 	// Add initial query parameters for mutating the response fields.
 	url.WithQueryParam("_fields", strings.Join(config.Fields.List(), ","))
-	url.WithQueryParam(skipQuery, "0")
-	url.WithQueryParam(limitQuery, defaultPageSize)
+
+	// The first page starts at offset zero.
+	// The next page URL already carries its offset, which must not be overwritten.
+	if len(config.NextPage) == 0 {
+		url.WithQueryParam(skipQuery, "0")
+		url.WithQueryParam(limitQuery, pageSize(config))
+	}
 
 	urlstring := addTrailingSlashIfNeeded(url.String())
 
@@ -60,4 +66,16 @@ func (c *Connector) buildReadURL(config common.ReadParams) (*urlbuilder.URL, err
 	}
 
 	return c.getAPIURL(config.ObjectName)
+}
+
+// pageSize returns the requested page size, capped at maxPageSize.
+// Close answers a _limit above the resource maximum with HTTP 400 instead of returning a smaller page,
+// and the maximum is not documented per resource, so larger requests are reduced to the default.
+// https://developer.close.com/topics/pagination/
+func pageSize(config common.ReadParams) string {
+	if config.PageSize <= 0 || config.PageSize > maxPageSize {
+		return defaultPageSize
+	}
+
+	return strconv.Itoa(config.PageSize)
 }

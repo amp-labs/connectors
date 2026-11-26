@@ -62,7 +62,7 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			Server: mockserver.Conditional{
 				Setup: mockserver.ContentJSON(),
-				If:    mockcond.Path("/api/v1/activity"),
+				If:    mockcond.Path("/api/v1/activity/"),
 				Then:  mockserver.Response(http.StatusOK, activityResponse),
 			}.Server(),
 			Comparator: testconn.ComparatorSubsetRead,
@@ -98,6 +98,42 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 			},
 			ExpectedErrs: nil,
 		},
+		{
+			Name: "Page size above the maximum is capped",
+			Input: common.ReadParams{
+				ObjectName: "activity",
+				Fields:     connectors.Fields("id"),
+				PageSize:   500,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v1/activity/"),
+					mockcond.QueryParam("_limit", "100"),
+				},
+				Then: mockserver.Response(http.StatusOK, activityResponse),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 1, Done: true},
+		},
+		{
+			Name: "Page size within the maximum is used as given",
+			Input: common.ReadParams{
+				ObjectName: "activity",
+				Fields:     connectors.Fields("id"),
+				PageSize:   5,
+			},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/api/v1/activity/"),
+					mockcond.QueryParam("_limit", "5"),
+				},
+				Then: mockserver.Response(http.StatusOK, activityResponse),
+			}.Server(),
+			Comparator: testconn.ComparatorPagination,
+			Expected:   &common.ReadResult{Rows: 1, Done: true},
+		},
 	}
 
 	for _, tt := range tests {
@@ -108,5 +144,73 @@ func TestRead(t *testing.T) { // nolint:funlen,gocognit,cyclop
 				return constructTestConnector(tt.Server.URL)
 			})
 		})
+	}
+}
+
+// TestReadPagination follows NextPage across three pages.
+// Each page must request the next offset, otherwise the same page is returned forever.
+// A third page catches offsets built by joining strings ("0"+"100"+"100") instead of adding numbers.
+func TestReadPagination(t *testing.T) { // nolint:funlen
+	t.Parallel()
+
+	pages := [][]byte{
+		testutils.DataFromFile(t, "leads-page-1.json"),
+		testutils.DataFromFile(t, "leads-page-2.json"),
+		testutils.DataFromFile(t, "leads-page-3.json"),
+	}
+
+	pageCase := func(skip string, body []byte) mockserver.Case {
+		return mockserver.Case{
+			If: mockcond.And{
+				mockcond.Path("/api/v1/lead/"),
+				mockcond.QueryParam("_skip", skip),
+				mockcond.QueryParam("_limit", "100"),
+			},
+			Then: mockserver.Response(http.StatusOK, body),
+		}
+	}
+
+	server := mockserver.Switch{
+		Setup: mockserver.ContentJSON(),
+		Cases: []mockserver.Case{
+			pageCase("0", pages[0]),
+			pageCase("100", pages[1]),
+			pageCase("200", pages[2]),
+		},
+	}.Server()
+	defer server.Close()
+
+	connector, err := constructTestConnector(server.URL)
+	if err != nil {
+		t.Fatalf("failed to construct connector: %v", err)
+	}
+
+	params := common.ReadParams{
+		ObjectName: "lead",
+		Fields:     connectors.Fields("id", "display_name"),
+	}
+
+	expectedIDs := []string{"lead_page_1", "lead_page_2", "lead_page_3"}
+
+	for pageIndex, expectedID := range expectedIDs {
+		result, err := connector.Read(t.Context(), params)
+		if err != nil {
+			t.Fatalf("page %d: unexpected error: %v", pageIndex+1, err)
+		}
+
+		if result.Rows != 1 {
+			t.Fatalf("page %d: expected 1 row, got %d", pageIndex+1, result.Rows)
+		}
+
+		if id := result.Data[0].Fields["id"]; id != expectedID {
+			t.Fatalf("page %d: expected record %q, got %q", pageIndex+1, expectedID, id)
+		}
+
+		isLastPage := pageIndex == len(expectedIDs)-1
+		if result.Done != isLastPage {
+			t.Fatalf("page %d: expected done=%v, got %v", pageIndex+1, isLastPage, result.Done)
+		}
+
+		params.NextPage = result.NextPage
 	}
 }
