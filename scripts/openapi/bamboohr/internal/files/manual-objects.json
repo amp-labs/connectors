@@ -1,6 +1,6 @@
 [
   {
-    "objectName": "meta_users",
+    "objectName": "meta/users",
     "displayName": "Users",
     "path": "/meta/users",
     "responseKey": "",
@@ -47,7 +47,7 @@
     }
   },
   {
-    "objectName": "employees_directory",
+    "objectName": "employees/directory",
     "displayName": "Employees Directory",
     "path": "/employees/directory",
     "responseKey": "employees",
@@ -172,6 +172,70 @@
       },
       "employerIdNumber": {
         "displayName": "Employer Id Number",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  {
+    "objectName": "training/category",
+    "displayName": "Training Categories",
+    "path": "/training/category",
+    "responseKey": "",
+    "fields": {
+      "id": {
+        "displayName": "Id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      }
+    }
+  },
+  {
+    "objectName": "training/type",
+    "displayName": "Training Types",
+    "path": "/training/type",
+    "responseKey": "",
+    "fields": {
+      "id": {
+        "displayName": "Id",
+        "valueType": "int",
+        "providerType": "integer"
+      },
+      "name": {
+        "displayName": "Name",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "renewable": {
+        "displayName": "Renewable",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      },
+      "required": {
+        "displayName": "Required",
+        "valueType": "boolean",
+        "providerType": "boolean"
+      }
+    }
+  },
+  {
+    "objectName": "compensation/planning_cycles",
+    "displayName": "Compensation Planning Cycles",
+    "path": "/compensation/planning_cycles",
+    "responseKey": "",
+    "fields": {
+      "id": {
+        "displayName": "Id",
+        "valueType": "string",
+        "providerType": "string"
+      },
+      "name": {
+        "displayName": "Name",
         "valueType": "string",
         "providerType": "string"
       }
