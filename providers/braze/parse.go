@@ -160,6 +160,8 @@ func setSinceQuery(params common.ReadParams, url *urlbuilder.URL) error {
 			return ErrMissingUntilTimestamp
 		}
 
+		url.WithQueryParam("end_time", datautils.Time.FormatRFC3339inUTC(params.Until))
+
 		// https://www.braze.com/docs/api/endpoints/templates/email_templates/get_list_email_templates
 		// https://www.braze.com/docs/api/endpoints/templates/content_blocks_templates/get_list_email_content_blocks
 	case "content_blocks/list", "templates/email/list":
