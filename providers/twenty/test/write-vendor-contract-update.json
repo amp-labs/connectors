@@ -1,0 +1,41 @@
+{
+  "data": {
+    "updateVendorContract": {
+      "id": "fe3cd1c7-d4e6-4eca-ade0-d98a865ec2e6",
+      "name": "VC-001 Fixture",
+      "createdAt": "2026-10-25T13:15:25.171Z",
+      "createdBy": {
+        "source": "API",
+        "workspaceMemberId": null,
+        "name": "ampersand-connector-live-test",
+        "context": {}
+      },
+      "deletedAt": null,
+      "position": 0,
+      "updatedAt": "2026-10-25T13:15:25.201Z",
+      "updatedBy": {
+        "source": "API",
+        "workspaceMemberId": null,
+        "name": "ampersand-connector-live-test",
+        "context": {}
+      },
+      "searchVector": "'-001':2 'fixture':3 'vc':1",
+      "renewalNotes": "Renewal signed",
+      "billingAddress": {
+        "addressStreet1": "1 Rue Exemple",
+        "addressStreet2": "",
+        "addressCity": "Paris",
+        "addressPostcode": "",
+        "addressState": "",
+        "addressCountry": "France",
+        "addressLat": null,
+        "addressLng": null
+      },
+      "contractStatus": "SIGNED",
+      "regions": [
+        "EUROPE"
+      ],
+      "vendorId": "c6f82506-260c-4ee5-a880-1cb4cce21178"
+    }
+  }
+}
