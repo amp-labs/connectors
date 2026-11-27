@@ -55,7 +55,7 @@ require (
 	github.com/neilotoole/slogt v1.1.0 // indirect
 	github.com/oapi-codegen/runtime v1.9.1 // indirect
 	github.com/pb33f/ordered-map/v2 v2.3.1 // indirect
-	github.com/pierrec/lz4/v4 v4.1.33 // indirect
+	github.com/pierrec/lz4/v4 v4.1.34 // indirect
 	github.com/prometheus/client_golang v1.25.0 // indirect
 	github.com/prometheus/client_model v0.6.3 // indirect
 	github.com/prometheus/common v0.72.0 // indirect
@@ -94,7 +94,7 @@ require (
 require (
 	cloud.google.com/go/bigquery v1.86.3
 	github.com/PuerkitoBio/goquery v1.14.0
-	github.com/amp-labs/amp-common v0.0.0-20261126054651-64c558465ba7
+	github.com/amp-labs/amp-common v0.0.0-20261127085628-e7663b9cf8e3
 	github.com/antchfx/xmlquery v1.5.2
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/aws/aws-sdk-go-v2 v1.48.0
