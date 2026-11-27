@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"net/http"
 	"slices"
+	"strconv"
+	"strings"
+	"sync"
 	"testing"
 )
 
@@ -289,4 +292,92 @@ func marshalForBatch(t *testing.T, records []map[string]any, fields []string) *B
 	}
 
 	return NewBatchReadResult(rows)
+}
+
+// AddSuccess and AddFailure can be called from concurrent fetches without losing a row or a failure.
+func TestBatchReadResult_AddSuccessAndAddFailureConcurrently(t *testing.T) {
+	t.Parallel()
+
+	const count = 200
+
+	result := NewBatchReadResult(nil)
+
+	var group sync.WaitGroup
+
+	for index := range count {
+		group.Go(func() {
+			id := strconv.Itoa(index)
+
+			if index%2 == 0 {
+				result.AddSuccess(ReadResultRow{Id: id})
+			} else {
+				result.AddFailure(id, ErrNotFound)
+			}
+		})
+	}
+
+	group.Wait()
+
+	if len(result.Rows) != count/2 || len(result.Failures) != count/2 {
+		t.Errorf("got %d rows and %d failures, want %d of each", len(result.Rows), len(result.Failures), count/2)
+	}
+}
+
+// AddSuccess adds every row passed to it.
+func TestBatchReadResult_AddSuccessAddsEveryRow(t *testing.T) {
+	t.Parallel()
+
+	result := NewBatchReadResult(nil)
+	result.AddSuccess(ReadResultRow{Id: "a"}, ReadResultRow{Id: "b"})
+	result.AddSuccess()
+
+	if len(result.Rows) != 2 || result.Rows[0].Id != "a" || result.Rows[1].Id != "b" {
+		t.Errorf("rows = %+v, want a and b", result.Rows)
+	}
+}
+
+// Err joins the failures that are not not-found, naming their ids, and is nil when every failure is
+// not-found.
+func TestBatchReadResult_Err(t *testing.T) {
+	t.Parallel()
+
+	serverErr := NewHTTPError(http.StatusInternalServerError, nil, nil, ErrServer)
+	notFoundErr := NewHTTPError(http.StatusNotFound, nil, nil, ErrRetryable)
+
+	result := NewBatchReadResult(nil)
+	result.AddFailure("a", ErrNotFound)
+	result.AddFailure("b", notFoundErr)
+
+	if err := result.Err(); err != nil {
+		t.Fatalf("Err() = %v, want nil when every failure is not-found", err)
+	}
+
+	result.AddFailure("c", serverErr)
+	result.AddFailure("d", ErrLimitExceeded)
+
+	err := result.Err()
+	if !errors.Is(err, ErrServer) || !errors.Is(err, ErrLimitExceeded) {
+		t.Fatalf("Err() = %v, want it to wrap ErrServer and ErrLimitExceeded", err)
+	}
+
+	if errors.Is(err, ErrNotFound) {
+		t.Errorf("Err() = %v, must not include the not-found failures", err)
+	}
+
+	for _, id := range []string{"record c", "record d"} {
+		if !strings.Contains(err.Error(), id) {
+			t.Errorf("Err() = %q, want it to name %s", err, id)
+		}
+	}
+}
+
+// Err handles a nil result.
+func TestBatchReadResult_ErrNil(t *testing.T) {
+	t.Parallel()
+
+	var result *BatchReadResult
+
+	if err := result.Err(); err != nil {
+		t.Errorf("Err() = %v, want nil", err)
+	}
 }

@@ -139,8 +139,9 @@ func TestGetRecordsByIds(t *testing.T) { //nolint:funlen
 	}
 }
 
-// Rows come back in requested order even when an earlier id responds slower.
-func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
+// Every id's row is returned even when an earlier id responds slower. Rows are added in the order
+// their fetches finish.
+func TestGetRecordsByIds_ReturnsEveryRowWhenFetchesFinishOutOfOrder(t *testing.T) {
 	t.Parallel()
 
 	server := mockserver.Switch{
@@ -169,11 +170,11 @@ func TestGetRecordsByIds_PreservesRequestedOrder(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	testconn.RequireRowIds(t, result, "1", "2")
+	testconn.RequireRowIdsAnyOrder(t, result, "1", "2")
 	testconn.RequireNoFailures(t, result)
 }
 
-// A deleted id is reported as a not-found failure without an error, and the other rows keep their order.
+// A deleted id is reported as a not-found failure without an error, and the other rows are returned.
 func TestGetRecordsByIds_ReportsNotFound(t *testing.T) {
 	t.Parallel()
 
@@ -202,7 +203,7 @@ func TestGetRecordsByIds_ReportsNotFound(t *testing.T) {
 		t.Fatalf("a not-found id must not produce an error, got %v", err)
 	}
 
-	testconn.RequireRowIds(t, result, "1", "3")
+	testconn.RequireRowIdsAnyOrder(t, result, "1", "3")
 
 	// Reply's 404 does not wrap common.ErrNotFound, so the reason is asserted rather than the sentinel.
 	if len(result.Failures) != 1 || result.Failures[0].RecordId != "404" ||
