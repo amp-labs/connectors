@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": 7,
+      "name": "Jane Doe",
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "owner_id": 1,
+      "org_id": 3,
+      "add_time": "2024-10-15T09:33:33Z",
+      "update_time": "2024-10-16T09:33:33Z",
+      "emails": [
+        {"value": "jane@pipedrive.com", "primary": true, "label": "work"}
+      ],
+      "phones": [
+        {"value": "+372 555555555", "primary": true, "label": "work"}
+      ],
+      "is_deleted": false,
+      "visible_to": 3,
+      "label_ids": [],
+      "custom_fields": {}
+    }
+  ],
+  "additional_data": {
+    "next_cursor": null
+  }
+}

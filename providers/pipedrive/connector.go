@@ -86,6 +86,16 @@ func (c *Connector) Write(ctx context.Context, params common.WriteParams) (*comm
 	return c.legacyAdapter.Write(ctx, params)
 }
 
+// Search looks up records by an exact field value.
+// It is available in the CRM module only, the Legacy module has no counterpart.
+func (c *Connector) Search(ctx context.Context, params *common.SearchParams) (*common.SearchResult, error) {
+	if c.crmAdapter != nil {
+		return c.crmAdapter.Search(ctx, params)
+	}
+
+	return nil, common.ErrOperationNotSupportedForObject
+}
+
 // Provider returns the pipedrive provider instance.
 func (c *Connector) Provider() providers.Provider {
 	return providers.Pipedrive
