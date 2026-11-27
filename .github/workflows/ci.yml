@@ -14,7 +14,7 @@ jobs:
 
       - name: Set up Go
         # git ls-remote https://github.com/actions/setup-go.git refs/tags/v7
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5
         with:
           go-version: "1.27.1"
           # Caching is handled explicitly below (with restore-keys), so that
