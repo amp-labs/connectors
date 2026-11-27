@@ -1,0 +1,10 @@
+{
+  "title": "Invalid Argument",
+  "message": "The supplied parameters are invalid.",
+  "details": [
+    {
+      "parameter": "status",
+      "message": "must be one of: active, canceled"
+    }
+  ]
+}

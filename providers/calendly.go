@@ -44,6 +44,12 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+			// Scheduled events can be looked up by uuid, invitee_email, status, min_start_time, max_start_time.
+			Search: SearchSupport{
+				Operators: SearchOperators{
+					Equals: true,
+				},
+			},
 		},
 		Metadata: &ProviderMetadata{
 			PostAuthentication: []MetadataItemPostAuthentication{
