@@ -24,6 +24,15 @@ func TestRead(t *testing.T) { //nolint:funlen
 		"pagination": {"total_items": 2, "total_pages": 1, "current_page": 1, "items_per_page": 100}
 	}`)
 
+	account := []byte(`{
+		"organisation_id": 1045221371785925871,
+		"account_id": 1199086781212829,
+		"account_domain": "test.freshchat.com",
+		"app_id": "83caa4b7-baec-499e-a39f-758a799ec6dc",
+		"plan_type": "Enterprise",
+		"datacenter": "US"
+	}`)
+
 	tests := []testconn.TestCaseRead{
 		{
 			// Freshchat refuses to list users without a filter, so a read with no time
@@ -71,6 +80,28 @@ func TestRead(t *testing.T) { //nolint:funlen
 			}.Server(),
 			Comparator: testconn.ComparatorPagination,
 			Expected:   &common.ReadResult{Rows: 2, Done: true},
+		},
+		{
+			// The account is a single record, read from its own path with nothing to page through.
+			Name:  "Accounts read returns the account configuration as one record",
+			Input: common.ReadParams{ObjectName: "accounts", Fields: connectors.Fields("account_id", "plan_type")},
+			Server: mockserver.Conditional{
+				Setup: mockserver.ContentJSON(),
+				If: mockcond.And{
+					mockcond.Path("/v2/accounts/configuration"),
+					mockcond.QueryParamsMissing("items_per_page"),
+				},
+				Then: mockserver.Response(http.StatusOK, account),
+			}.Server(),
+			Comparator: testconn.ComparatorSubsetRead,
+			Expected: &common.ReadResult{
+				Rows: 1,
+				Data: []common.ReadResultRow{{
+					Fields: map[string]any{"account_id": float64(1199086781212829), "plan_type": "Enterprise"},
+					Raw:    map[string]any{"datacenter": "US"},
+				}},
+				Done: true,
+			},
 		},
 	}
 

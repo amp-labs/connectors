@@ -24,11 +24,28 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 		err error
 	)
 
-	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, params.ObjectName)
+	path := params.ObjectName
+	if readPath, found := readPaths[params.ObjectName]; found {
+		path = readPath
+	}
+
+	url, err = urlbuilder.New(c.ProviderInfo().BaseURL, apiVersion, path)
 	if err != nil {
 		return nil, err
 	}
 
+	if singleRecordObjects.Has(params.ObjectName) {
+		// There is nothing to page through or to filter.
+		return url, nil
+	}
+
+	addReadQueryParams(url, params)
+
+	return url, nil
+}
+
+// addReadQueryParams sets the page size and the time range of a list of records.
+func addReadQueryParams(url *urlbuilder.URL, params common.ReadParams) {
 	if params.PageSize != 0 {
 		url.WithQueryParam("items_per_page", strconv.Itoa(params.PageSize))
 	} else {
@@ -37,7 +54,7 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 
 	// users requires 1 filtering query parameter.
 	isDefaultTimeRange := params.Since.IsZero() && params.Until.IsZero()
-	if params.ObjectName == "users" && isDefaultTimeRange {
+	if params.ObjectName == objectUsers && isDefaultTimeRange {
 		url.WithQueryParam("created_from", time.Unix(0, 0).UTC().Format(time.RFC3339))
 	}
 
@@ -52,8 +69,6 @@ func (c *Connector) buildReadURL(params common.ReadParams) (*urlbuilder.URL, err
 			url.WithQueryParam("updated_to", params.Until.Format(time.RFC3339))
 		}
 	}
-
-	return url, nil
 }
 
 func (c *Connector) buildReadRequest(ctx context.Context, params common.ReadParams) (*http.Request, error) {
@@ -96,6 +111,10 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 		url.AddPath(params.RecordId)
 
 		method = http.MethodPut
+
+		if isAgentStatusUpdate(params) {
+			method = http.MethodPatch
+		}
 	}
 
 	jsonData, err := json.Marshal(params.RecordData)
@@ -104,6 +123,25 @@ func (c *Connector) buildWriteRequest(ctx context.Context, params common.WritePa
 	}
 
 	return http.NewRequestWithContext(ctx, method, url.String(), bytes.NewReader(jsonData))
+}
+
+// isAgentStatusUpdate reports whether the write changes nothing but the status of an agent.
+// Freshchat has a dedicated endpoint for it, PATCH /v2/agents/{agent_id}, while every other
+// property of an agent is updated with PUT on the same path.
+// https://developers.freshchat.com/api/#update_agent_status
+func isAgentStatusUpdate(params common.WriteParams) bool {
+	if params.ObjectName != objectAgents || params.RecordId == "" {
+		return false
+	}
+
+	record, isMap := params.RecordData.(map[string]any)
+	if !isMap || len(record) != 1 {
+		return false
+	}
+
+	_, hasStatus := record[agentStatusField]
+
+	return hasStatus
 }
 
 func (c *Connector) parseWriteResponse(
@@ -126,7 +164,12 @@ func (c *Connector) parseWriteResponse(
 		return nil, err
 	}
 
-	recordId, err := jsonquery.New(resp).StringOptional("id")
+	idField := defaultIDField
+	if field, found := writeIDFields[params.ObjectName]; found {
+		idField = field
+	}
+
+	recordId, err := jsonquery.New(resp).StringOptional(idField)
 	if err != nil {
 		return nil, err
 	}
