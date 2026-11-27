@@ -1,0 +1,10 @@
+{
+  "file_requests": [
+    {
+      "id": "id:fr-closed",
+      "title": "Old upload",
+      "is_open": false,
+      "url": "https://www.dropbox.com/request/old"
+    }
+  ]
+}
