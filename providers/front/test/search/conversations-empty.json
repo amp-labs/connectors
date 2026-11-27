@@ -1,0 +1,6 @@
+{
+  "_pagination": {"next": null},
+  "_links": {"self": "https://example.api.frontapp.com/conversations/search/is:snoozed?limit=100"},
+  "_results": [],
+  "_total": 0
+}

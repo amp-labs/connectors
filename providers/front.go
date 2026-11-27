@@ -26,6 +26,13 @@ func init() {
 			Read:      true,
 			Subscribe: false,
 			Write:     true,
+			// Contacts can be looked up by id, email, phone.
+			// Conversations by id, status.
+			Search: SearchSupport{
+				Operators: SearchOperators{
+					Equals: true,
+				},
+			},
 		},
 		Media: &Media{
 			DarkMode: &MediaTypeDarkMode{
